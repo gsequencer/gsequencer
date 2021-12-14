@@ -44,6 +44,8 @@ struct _AgsFxLowPassChannel
 {
   AgsRecallChannel recall_channel;
 
+  AgsPort *enabled;
+
   AgsPort *q_lin;
   AgsPort *filter_gain;
 };

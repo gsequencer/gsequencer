@@ -43,6 +43,18 @@ typedef struct _AgsFxChorusChannelClass AgsFxChorusChannelClass;
 struct _AgsFxChorusChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *enabled;
+
+  AgsPort *input_volume;
+  AgsPort *output_volume;
+
+  AgsPort *lfo_oscillator;
+  AgsPort *lfo_frequency;
+
+  AgsPort *depth;
+  AgsPort *mix;
+  AgsPort *delay;
 };
 
 struct _AgsFxChorusChannelClass

@@ -36,6 +36,7 @@ void ags_fx_high_pass_channel_get_property(GObject *gobject,
 void ags_fx_high_pass_channel_dispose(GObject *gobject);
 void ags_fx_high_pass_channel_finalize(GObject *gobject);
 
+static AgsPluginPort* ags_fx_high_pass_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_fx_high_pass_channel_get_q_lin_plugin_port();
 static AgsPluginPort* ags_fx_high_pass_channel_get_filter_gain_plugin_port();
 
@@ -54,19 +55,22 @@ static gpointer ags_fx_high_pass_channel_parent_class = NULL;
 const gchar *ags_fx_high_pass_channel_plugin_name = "ags-fx-high-pass";
 
 const gchar* ags_fx_high_pass_channel_specifier[] = {
+  "./enabled[0]",
   "./q-lin[0]",
   "./filter-gain[0]",
   NULL,
 };
 
 const gchar* ags_fx_high_pass_channel_control_port[] = {
-  "1/2",
-  "2/2",
+  "1/3",
+  "2/3",
+  "3/3",
   NULL,
 };
 
 enum{
   PROP_0,
+  PROP_ENABLED,
   PROP_Q_LIN,
   PROP_FILTER_GAIN,
 };
@@ -122,6 +126,22 @@ ags_fx_high_pass_channel_class_init(AgsFxHighPassChannelClass *fx_high_pass_chan
 
   /* properties */
   /**
+   * AgsFxHighPassChannel:enabled:
+   *
+   * The enabled port.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("enabled",
+				   i18n_pspec("enabled of recall"),
+				   i18n_pspec("The recall's enabled"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ENABLED,
+				  param_spec);
+
+  /**
    * AgsFxHighPassChannel:q-lin:
    *
    * The q-lin port.
@@ -162,11 +182,31 @@ ags_fx_high_pass_channel_init(AgsFxHighPassChannel *fx_high_pass_channel)
   AGS_RECALL(fx_high_pass_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_high_pass_channel)->xml_type = "ags-fx-high_pass-channel";
 
-  /* q_lin */
+  /* enabled */
+  fx_high_pass_channel->enabled = g_object_new(AGS_TYPE_PORT,
+					       "plugin-name", ags_fx_high_pass_channel_plugin_name,
+					       "specifier", ags_fx_high_pass_channel_specifier[0],
+					       "control-port", ags_fx_high_pass_channel_control_port[0],
+					       "port-value-is-pointer", FALSE,
+					       "port-value-type", G_TYPE_FLOAT,
+					       "port-value-size", sizeof(gfloat),
+					       "port-value-length", 1,
+					       NULL);
+  
+  fx_high_pass_channel->enabled->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_high_pass_channel->enabled,
+	       "plugin-port", ags_fx_high_pass_channel_get_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_high_pass_channel,
+		      fx_high_pass_channel->enabled);
+
+  /* q-lin */
   fx_high_pass_channel->q_lin = g_object_new(AGS_TYPE_PORT,
 					     "plugin-name", ags_fx_high_pass_channel_plugin_name,
-					     "specifier", ags_fx_high_pass_channel_specifier[0],
-					     "control-port", ags_fx_high_pass_channel_control_port[0],
+					     "specifier", ags_fx_high_pass_channel_specifier[1],
+					     "control-port", ags_fx_high_pass_channel_control_port[1],
 					     "port-value-is-pointer", FALSE,
 					     "port-value-type", G_TYPE_FLOAT,
 					     "port-value-size", sizeof(gfloat),
@@ -185,8 +225,8 @@ ags_fx_high_pass_channel_init(AgsFxHighPassChannel *fx_high_pass_channel)
   /* filter gain */
   fx_high_pass_channel->filter_gain = g_object_new(AGS_TYPE_PORT,
 						   "plugin-name", ags_fx_high_pass_channel_plugin_name,
-						   "specifier", ags_fx_high_pass_channel_specifier[1],
-						   "control-port", ags_fx_high_pass_channel_control_port[1],
+						   "specifier", ags_fx_high_pass_channel_specifier[2],
+						   "control-port", ags_fx_high_pass_channel_control_port[2],
 						   "port-value-is-pointer", FALSE,
 						   "port-value-type", G_TYPE_FLOAT,
 						   "port-value-size", sizeof(gfloat),
@@ -219,6 +259,33 @@ ags_fx_high_pass_channel_set_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_high_pass_channel);
 
   switch(prop_id){
+  case PROP_ENABLED:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_high_pass_channel->enabled){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_high_pass_channel->enabled != NULL){
+      g_object_unref(G_OBJECT(fx_high_pass_channel->enabled));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_high_pass_channel->enabled = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_Q_LIN:
   {
     AgsPort *port;
@@ -295,6 +362,15 @@ ags_fx_high_pass_channel_get_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_high_pass_channel);
 
   switch(prop_id){
+  case PROP_ENABLED:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_high_pass_channel->enabled);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_Q_LIN:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -326,6 +402,13 @@ ags_fx_high_pass_channel_dispose(GObject *gobject)
   
   fx_high_pass_channel = AGS_FX_HIGH_PASS_CHANNEL(gobject);
 
+  /* enabled */
+  if(fx_high_pass_channel->enabled != NULL){
+    g_object_unref(G_OBJECT(fx_high_pass_channel->enabled));
+
+    fx_high_pass_channel->enabled = NULL;
+  }  
+
   /* q-lin */
   if(fx_high_pass_channel->q_lin != NULL){
     g_object_unref(G_OBJECT(fx_high_pass_channel->q_lin));
@@ -351,6 +434,11 @@ ags_fx_high_pass_channel_finalize(GObject *gobject)
   
   fx_high_pass_channel = AGS_FX_HIGH_PASS_CHANNEL(gobject);
 
+  /* enabled */
+  if(fx_high_pass_channel->enabled != NULL){
+    g_object_unref(G_OBJECT(fx_high_pass_channel->enabled));
+  }
+
   /* q-lin */
   if(fx_high_pass_channel->q_lin != NULL){
     g_object_unref(G_OBJECT(fx_high_pass_channel->q_lin));
@@ -363,6 +451,46 @@ ags_fx_high_pass_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_high_pass_channel_parent_class)->finalize(gobject);
+}
+
+static AgsPluginPort*
+ags_fx_high_pass_channel_get_enabled_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 static AgsPluginPort*

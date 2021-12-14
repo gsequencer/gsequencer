@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
+#include <ags/audio/ags_linear_interpolate_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
 #include <ags/audio/ags_chorus_util.h>
 
 G_BEGIN_DECLS
@@ -45,6 +47,8 @@ struct _AgsFxChorusAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
 
+  AgsLinearInterpolateUtil linear_interpolate_util;
+  AgsHQPitchUtil hq_pitch_util;
   AgsChorusUtil chorus_util;
 };
 
