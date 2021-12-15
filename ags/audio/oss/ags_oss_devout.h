@@ -186,6 +186,8 @@ struct _AgsOssDevout
 
   GList *io_channel;
   GList *tag;
+
+  gint64 poll_timeout;
 };
 
 struct _AgsOssDevoutClass
