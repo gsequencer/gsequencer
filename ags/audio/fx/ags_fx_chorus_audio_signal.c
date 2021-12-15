@@ -21,6 +21,11 @@
 
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/fx/ags_fx_chorus_audio.h>
+#include <ags/audio/fx/ags_fx_chorus_channel.h>
+#include <ags/audio/fx/ags_fx_chorus_channel_processor.h>
+#include <ags/audio/fx/ags_fx_chorus_recycling.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_chorus_audio_signal_class_init(AgsFxChorusAudioSignalClass *fx_chorus_audio_signal);
@@ -102,6 +107,9 @@ ags_fx_chorus_audio_signal_init(AgsFxChorusAudioSignal *fx_chorus_audio_signal)
   AGS_RECALL(fx_chorus_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_chorus_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_chorus_audio_signal)->xml_type = "ags-fx-chorus-audio-signal";
+
+  fx_chorus_audio_signal->chorus_util.hq_pitch_util = &(fx_chorus_audio_signal->hq_pitch_util);
+  fx_chorus_audio_signal->chorus_util.hq_pitch_util->linear_interpolate_util = &(fx_chorus_audio_signal->linear_interpolate_util);
 }
 
 void
@@ -129,7 +137,278 @@ ags_fx_chorus_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_chorus_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudioSignal *source;
+  AgsFxChorusAudio *fx_chorus_audio;
+  AgsFxChorusChannel *fx_chorus_channel;
+  AgsFxChorusChannelProcessor *fx_chorus_channel_processor;
+  AgsFxChorusRecycling *fx_chorus_recycling;
+  AgsFxChorusAudioSignal *fx_chorus_audio_signal;
+  
+  guint buffer_size;
+  guint format;
+  guint samplerate;
+  gboolean enabled;
+  gdouble input_volume;
+  gdouble output_volume;
+  guint lfo_oscillator;
+  gdouble lfo_frequency;
+  gdouble depth;
+  gdouble mix;
+  gdouble delay;
+  
+  GRecMutex *stream_mutex;
+  
+  source = NULL;
+
+  fx_chorus_audio = NULL;
+  fx_chorus_channel = NULL;
+  fx_chorus_channel_processor = NULL;
+  fx_chorus_recycling = NULL;
+  fx_chorus_audio_signal = (AgsFxChorusAudioSignal *) recall;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  
+  enabled = FALSE;
+
+  input_volume = 1.0;
+  output_volume = 1.0;
+
+  lfo_oscillator = AGS_SYNTH_OSCILLATOR_SIN;
+  lfo_frequency = 10.0;
+
+  depth = 0.0;
+  mix = 0.0;
+  delay = 0.0;  
+
+  g_object_get(recall,
+	       "parent", &fx_chorus_recycling,
+	       "source", &source,
+	       NULL);
+
+  g_object_get(fx_chorus_recycling,
+	       "parent", &fx_chorus_channel_processor,
+	       NULL);
+
+  g_object_get(fx_chorus_channel_processor,
+	       "recall-audio", &fx_chorus_audio,
+	       "recall-channel", &fx_chorus_channel,
+	       NULL);
+
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  if(fx_chorus_channel != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+        
+    /* enabled */    
+    g_object_get(fx_chorus_channel,
+		 "enabled", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      enabled = (g_value_get_float(&value) == 0.0) ? FALSE: TRUE;
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* input-volume */    
+    g_object_get(fx_chorus_channel,
+		 "input-volume", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      input_volume = g_value_get_float(&value);
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* output-volume */    
+    g_object_get(fx_chorus_channel,
+		 "output-volume", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      output_volume = g_value_get_float(&value);
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* lfo-oscillator */    
+    g_object_get(fx_chorus_channel,
+		 "lfo-oscillator", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      lfo_oscillator = (guint) g_value_get_float(&value);
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* lfo-frequency */    
+    g_object_get(fx_chorus_channel,
+		 "lfo-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      lfo_frequency = g_value_get_float(&value);
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* depth */    
+    g_object_get(fx_chorus_channel,
+		 "depth", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      depth = g_value_get_float(&value);
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* mix */    
+    g_object_get(fx_chorus_channel,
+		 "mix", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      mix = (g_value_get_float(&value) == 0.0) ? FALSE: TRUE;
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* delay */    
+    g_object_get(fx_chorus_channel,
+		 "delay", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      delay = (g_value_get_float(&value) == 0.0) ? FALSE: TRUE;
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+  }
+  
+  if(enabled &&
+     source != NULL &&
+     source->stream_current != NULL){
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+    
+    fx_chorus_audio_signal->chorus_util.destination = source->stream_current->data;
+    fx_chorus_audio_signal->chorus_util.destination_stride = 1;
+	
+    fx_chorus_audio_signal->chorus_util.source = source->stream_current->data;
+    fx_chorus_audio_signal->chorus_util.source_stride = 1;
+	
+    fx_chorus_audio_signal->chorus_util.buffer_length = buffer_size;
+    fx_chorus_audio_signal->chorus_util.format = format;
+    fx_chorus_audio_signal->chorus_util.samplerate = samplerate;
+	
+    fx_chorus_audio_signal->chorus_util.input_volume = input_volume;
+    fx_chorus_audio_signal->chorus_util.output_volume = output_volume;
+
+    fx_chorus_audio_signal->chorus_util.lfo_oscillator = lfo_oscillator;      
+    fx_chorus_audio_signal->chorus_util.lfo_frequency = lfo_frequency;
+      
+    fx_chorus_audio_signal->chorus_util.depth = depth;
+    fx_chorus_audio_signal->chorus_util.mix = mix;
+    fx_chorus_audio_signal->chorus_util.delay = delay;
+
+    g_rec_mutex_lock(stream_mutex);
+
+    ags_chorus_util_compute(&(fx_chorus_audio_signal->chorus_util));
+    
+    g_rec_mutex_unlock(stream_mutex);
+  }
+  
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
+
+  /* unref */
+  if(source != NULL){
+    g_object_unref(source);
+  }
+  
+  if(fx_chorus_audio != NULL){
+    g_object_unref(fx_chorus_audio);
+  }
+  
+  if(fx_chorus_channel != NULL){
+    g_object_unref(fx_chorus_channel);
+  }
+
+  if(fx_chorus_channel_processor != NULL){
+    g_object_unref(fx_chorus_channel_processor);
+  }
+
+  if(fx_chorus_recycling != NULL){
+    g_object_unref(fx_chorus_recycling);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_chorus_audio_signal_parent_class)->run_inter(recall);

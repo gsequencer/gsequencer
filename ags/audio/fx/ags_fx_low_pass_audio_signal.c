@@ -144,6 +144,7 @@ ags_fx_low_pass_audio_signal_real_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   guint samplerate;
+  gboolean enabled;
   gdouble q_lin;
   gdouble filter_gain;
 
@@ -160,6 +161,8 @@ ags_fx_low_pass_audio_signal_real_run_inter(AgsRecall *recall)
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  enabled = FALSE;
   
   q_lin = 0.0;
   filter_gain = 1.0;
@@ -183,12 +186,30 @@ ags_fx_low_pass_audio_signal_real_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       "samplerate", &samplerate,
 	       NULL);
-
+  
   if(fx_low_pass_channel != NULL){
     AgsPort *port;
 
     GValue value = {0,};
         
+    /* enabled */    
+    g_object_get(fx_low_pass_channel,
+		 "enabled", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      enabled = (g_value_get_float(&value) == 0.0) ? FALSE: TRUE;
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
     /* q-lin */    
     g_object_get(fx_low_pass_channel,
 		 "q-lin", &port,
@@ -206,7 +227,7 @@ ags_fx_low_pass_audio_signal_real_run_inter(AgsRecall *recall)
     }
 
     g_value_unset(&value);
-
+    
     /* filter gain */
     g_object_get(fx_low_pass_channel,
 		 "filter-gain", &port,
@@ -225,8 +246,9 @@ ags_fx_low_pass_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_value_unset(&value);
   }
-
-  if(source != NULL &&
+  
+  if(enabled &&
+     source != NULL &&
      source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
     

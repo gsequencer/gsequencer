@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_synth_enums.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_chorus_channel_class_init(AgsFxChorusChannelClass *fx_chorus_channel);
@@ -86,7 +88,13 @@ const gchar* ags_fx_chorus_channel_control_port[] = {
 enum{
   PROP_0,
   PROP_ENABLED,
-  PROP_CHORUS,
+  PROP_INPUT_VOLUME,
+  PROP_OUTPUT_VOLUME,
+  PROP_LFO_OSCILLATOR,
+  PROP_LFO_FREQUENCY,
+  PROP_DEPTH,
+  PROP_MIX,
+  PROP_DELAY,
 };
 
 GType
