@@ -202,6 +202,8 @@ struct _AgsAlsaDevout
   
   GList *io_channel;
   GList *tag;
+
+  gint64 poll_timeout;
 };
 
 struct _AgsAlsaDevoutClass

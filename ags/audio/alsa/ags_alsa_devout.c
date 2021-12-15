@@ -678,6 +678,8 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
 
   alsa_devout->io_channel = NULL;
   alsa_devout->tag = NULL;
+
+  alsa_devout->poll_timeout = -1;
 }
 
 void
@@ -2423,6 +2425,8 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
 #endif
 
   alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
+
+  alsa_devout->poll_timeout = -1;
   
   g_rec_mutex_unlock(alsa_devout_mutex);
 }
@@ -2734,23 +2738,26 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 			      alsa_devout->app_buffer[alsa_devout->app_buffer_mode]);
 
   /* wait until available */
-  poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) alsa_devout->samplerate * (gdouble) alsa_devout->buffer_size));
+  poll_timeout = alsa_devout->poll_timeout;
 
   g_rec_mutex_unlock(alsa_devout_mutex);
   
   //TODO:JK: implement me
   while(!ags_soundcard_is_available(AGS_SOUNDCARD(alsa_devout))){
-    g_usleep(1);
-
-    if(g_get_monotonic_time() > poll_timeout){
+    if(poll_timeout < 0 ||
+       g_get_monotonic_time() > poll_timeout){
       break;
     }
+    
+    g_usleep(1);
   }
   
   g_atomic_int_set(&(alsa_devout->available),
 		   FALSE);
   
   g_rec_mutex_lock(alsa_devout_mutex);
+
+  alsa_devout->poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) alsa_devout->samplerate * (gdouble) alsa_devout->buffer_size));
 
   /* write ring buffer */
 //  g_message("write %d", alsa_devout->buffer_size);
