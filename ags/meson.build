@@ -1187,6 +1187,8 @@ libgsequencer_sources = files(
   'X/machine/ags_fm_synth_input_line.c',
   'X/machine/ags_fm_synth_input_line_callbacks.c',
   'X/machine/ags_fm_synth_input_pad.c',
+  'X/machine/ags_hybrid_synth.c',
+  'X/machine/ags_hybrid_synth_callbacks.c',
   'X/machine/ags_ladspa_bridge.c',
   'X/machine/ags_ladspa_bridge_callbacks.c',
   'X/machine/ags_live_dssi_bridge.c',
