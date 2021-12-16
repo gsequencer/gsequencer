@@ -18,6 +18,9 @@
 
 AgsAddAudio AgsConnectable
 AgsAddEffect AgsConnectable
+AgsAlsaDevin AgsConnectable AgsSoundcard
+AgsAlsaDevout AgsConnectable AgsSoundcard
+AgsAlsaMidiin AgsConnectable AgsSequencer
 AgsRecall AgsConnectable
 AgsRecallAudioSignal AgsConnectable
 AgsAnalyseAudioSignal AgsConnectable
@@ -28,9 +31,13 @@ AgsEq10AudioSignal AgsConnectable
 AgsFeedAudioSignal AgsConnectable
 AgsFxAnalyseAudioSignal AgsConnectable
 AgsFxBufferAudioSignal AgsConnectable
+AgsFxChorusAudioSignal AgsConnectable
 AgsFxNotationAudioSignal AgsConnectable
 AgsFxDssiAudioSignal AgsConnectable
+AgsFxFMSynthAudioSignal AgsConnectable
 AgsFxLv2AudioSignal AgsConnectable
+AgsFxSynthAudioSignal AgsConnectable
+AgsFxVst3AudioSignal AgsConnectable
 AgsFxEnvelopeAudioSignal AgsConnectable
 AgsFxEq10AudioSignal AgsConnectable
 AgsFxHighPassAudioSignal AgsConnectable
@@ -64,9 +71,13 @@ AgsEq10Channel AgsConnectable
 AgsFeedChannel AgsConnectable
 AgsFxAnalyseChannel AgsConnectable
 AgsFxBufferChannel AgsConnectable
+AgsFxChorusChannel AgsConnectable
 AgsFxNotationChannel AgsConnectable
 AgsFxDssiChannel AgsConnectable
+AgsFxFMSynthChannel AgsConnectable
 AgsFxLv2Channel AgsConnectable
+AgsFxSynthChannel AgsConnectable
+AgsFxVst3Channel AgsConnectable
 AgsFxEnvelopeChannel AgsConnectable
 AgsFxEq10Channel AgsConnectable
 AgsFxHighPassChannel AgsConnectable
@@ -102,9 +113,13 @@ AgsEq10ChannelRun AgsConnectable
 AgsFeedChannelRun AgsConnectable
 AgsFxAnalyseChannelProcessor AgsConnectable
 AgsFxBufferChannelProcessor AgsConnectable
+AgsFxChorusChannelProcessor AgsConnectable
 AgsFxNotationChannelProcessor AgsConnectable
 AgsFxDssiChannelProcessor AgsConnectable
+AgsFxFMSynthChannelProcessor AgsConnectable
 AgsFxLv2ChannelProcessor AgsConnectable
+AgsFxSynthChannelProcessor AgsConnectable
+AgsFxVst3ChannelProcessor AgsConnectable
 AgsFxEnvelopeChannelProcessor AgsConnectable
 AgsFxEq10ChannelProcessor AgsConnectable
 AgsFxHighPassChannelProcessor AgsConnectable
@@ -137,9 +152,13 @@ AgsEq10Recycling AgsConnectable
 AgsFeedRecycling AgsConnectable
 AgsFxAnalyseRecycling AgsConnectable
 AgsFxBufferRecycling AgsConnectable
+AgsFxChorusRecycling AgsConnectable
 AgsFxNotationRecycling AgsConnectable
 AgsFxDssiRecycling AgsConnectable
+AgsFxFMSynthRecycling AgsConnectable
 AgsFxLv2Recycling AgsConnectable
+AgsFxSynthRecycling AgsConnectable
+AgsFxVst3Recycling AgsConnectable
 AgsFxEnvelopeRecycling AgsConnectable
 AgsFxEq10Recycling AgsConnectable
 AgsFxHighPassRecycling AgsConnectable
@@ -167,9 +186,13 @@ AgsCountBeatsAudio AgsConnectable AgsTactable
 AgsDelayAudio AgsConnectable AgsTactable
 AgsFxAnalyseAudio AgsConnectable
 AgsFxBufferAudio AgsConnectable
+AgsFxChorusAudio AgsConnectable
 AgsFxNotationAudio AgsConnectable
 AgsFxDssiAudio AgsConnectable
+AgsFxFMSynthAudio AgsConnectable
 AgsFxLv2Audio AgsConnectable
+AgsFxSynthAudio AgsConnectable
+AgsFxVst3Audio AgsConnectable
 AgsFxEnvelopeAudio AgsConnectable
 AgsFxEq10Audio AgsConnectable
 AgsFxHighPassAudio AgsConnectable
@@ -197,9 +220,13 @@ AgsCountBeatsAudioRun AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsDelayAudioRun AgsConnectable
 AgsFxAnalyseAudioProcessor AgsConnectable
 AgsFxBufferAudioProcessor AgsConnectable
+AgsFxChorusAudioProcessor AgsConnectable
 AgsFxNotationAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxDssiAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxFMSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxLv2AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxVst3AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxEnvelopeAudioProcessor AgsConnectable
 AgsFxEq10AudioProcessor AgsConnectable
 AgsFxHighPassAudioProcessor AgsConnectable
@@ -272,6 +299,9 @@ AgsJackServer AgsConnectable AgsSoundServer
 AgsLv2Worker AgsConnectable
 AgsMidiin AgsConnectable AgsSequencer
 AgsOscXmlrpcController AgsPluginController
+AgsOssDevin AgsConnectable AgsSoundcard
+AgsOssDevout AgsConnectable AgsSoundcard
+AgsOssMidiin AgsConnectable AgsSequencer
 AgsPattern AgsConnectable AgsTactable
 AgsPort AgsConnectable
 AgsPulseClient AgsConnectable

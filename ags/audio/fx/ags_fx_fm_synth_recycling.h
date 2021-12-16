@@ -26,7 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall_recycling.h>
+
+#include <ags/audio/fx/ags_fx_notation_recycling.h>
 
 G_BEGIN_DECLS
 
@@ -42,12 +43,12 @@ typedef struct _AgsFxFMSynthRecyclingClass AgsFxFMSynthRecyclingClass;
 
 struct _AgsFxFMSynthRecycling
 {
-  AgsRecallRecycling recall_recycling;
+  AgsFxNotationRecycling fx_notation_recycling;
 };
 
 struct _AgsFxFMSynthRecyclingClass
 {
-  AgsRecallRecyclingClass recall_recycling;
+  AgsFxNotationRecyclingClass fx_notation_recycling;
 };
 
 GType ags_fx_fm_synth_recycling_get_type();

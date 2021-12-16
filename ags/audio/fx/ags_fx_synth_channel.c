@@ -21,8 +21,6 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
-#include <ags/audio/ags_synth_enums.h>
-
 #include <ags/i18n.h>
 
 void ags_fx_synth_channel_class_init(AgsFxSynthChannelClass *fx_synth_channel);

@@ -26,7 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_channel_run.h>
+
+#include <ags/audio/fx/ags_fx_notation_channel_processor.h>
 
 G_BEGIN_DECLS
 
@@ -42,12 +43,12 @@ typedef struct _AgsFxFMSynthChannelProcessorClass AgsFxFMSynthChannelProcessorCl
 
 struct _AgsFxFMSynthChannelProcessor
 {
-  AgsRecallChannelRun recall_channel_run;
+  AgsFxNotationChannelProcessor fx_notation_channel_processor;
 };
 
 struct _AgsFxFMSynthChannelProcessorClass
 {
-  AgsRecallChannelRunClass recall_channel_run;
+  AgsFxNotationChannelProcessorClass fx_notation_channel_processor;
 };
 
 GType ags_fx_fm_synth_channel_processor_get_type();

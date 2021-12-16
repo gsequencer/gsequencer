@@ -26,7 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
+
+#include <ags/audio/fx/ags_fx_notation_audio_processor.h>
 
 G_BEGIN_DECLS
 
@@ -42,12 +43,12 @@ typedef struct _AgsFxFMSynthAudioProcessorClass AgsFxFMSynthAudioProcessorClass;
 
 struct _AgsFxFMSynthAudioProcessor
 {
-  AgsRecallAudioRun recall_audio_run;  
+  AgsFxNotationAudioProcessor fx_notation_audio_processor;
 };
 
 struct _AgsFxFMSynthAudioProcessorClass
 {
-  AgsRecallAudioRunClass recall_audio_run;
+  AgsFxNotationAudioProcessorClass fx_notation_audio_processor;
 };
 
 GType ags_fx_fm_synth_audio_processor_get_type();

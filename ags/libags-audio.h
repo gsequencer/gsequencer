@@ -376,6 +376,12 @@
 #include <ags/audio/fx/ags_fx_envelope_channel.h>
 #include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
 #include <ags/audio/fx/ags_fx_envelope_recycling.h>
+#include <ags/audio/fx/ags_fx_fm_synth_audio.h>
+#include <ags/audio/fx/ags_fx_fm_synth_audio_processor.h>
+#include <ags/audio/fx/ags_fx_fm_synth_audio_signal.h>
+#include <ags/audio/fx/ags_fx_fm_synth_channel.h>
+#include <ags/audio/fx/ags_fx_fm_synth_channel_processor.h>
+#include <ags/audio/fx/ags_fx_fm_synth_recycling.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio_processor.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio_signal.h>
