@@ -267,43 +267,43 @@ ags_synth_util_set_buffer_length(AgsSynthUtil *synth_util,
 }
 
 /**
- * ags_synth_util_get_audio_buffer_util_format:
+ * ags_synth_util_get_format:
  * @synth_util: the #AgsSynthUtil-struct
  * 
  * Get audio buffer util format of @synth_util.
  * 
  * Returns: the audio buffer util format
  * 
- * Since: 3.9.3
+ * Since: 3.14.0
  */
 guint
-ags_synth_util_get_audio_buffer_util_format(AgsSynthUtil *synth_util)
+ags_synth_util_get_format(AgsSynthUtil *synth_util)
 {
   if(synth_util == NULL){
     return(0);
   }
 
-  return(synth_util->audio_buffer_util_format);
+  return(synth_util->format);
 }
 
 /**
- * ags_synth_util_set_audio_buffer_util_format:
+ * ags_synth_util_set_format:
  * @synth_util: the #AgsSynthUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
+ * @format: the audio buffer util format
  *
- * Set @audio_buffer_util_format of @synth_util.
+ * Set @format of @synth_util.
  *
- * Since: 3.9.3
+ * Since: 3.14.0
  */
 void
-ags_synth_util_set_audio_buffer_util_format(AgsSynthUtil *synth_util,
-					    guint audio_buffer_util_format)
+ags_synth_util_set_format(AgsSynthUtil *synth_util,
+			  guint format)
 {
   if(synth_util == NULL){
     return;
   }
 
-  synth_util->audio_buffer_util_format = audio_buffer_util_format;
+  synth_util->format = format;
 }
 
 /**
@@ -344,6 +344,46 @@ ags_synth_util_set_samplerate(AgsSynthUtil *synth_util,
   }
 
   synth_util->samplerate = samplerate;
+}
+
+/**
+ * ags_synth_util_get_audio_buffer_util_format:
+ * @synth_util: the #AgsSynthUtil-struct
+ * 
+ * Get audio buffer util format of @synth_util.
+ * 
+ * Returns: the audio buffer util format
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_synth_util_get_audio_buffer_util_format(AgsSynthUtil *synth_util)
+{
+  if(synth_util == NULL){
+    return(0);
+  }
+
+  return(synth_util->audio_buffer_util_format);
+}
+
+/**
+ * ags_synth_util_set_audio_buffer_util_format:
+ * @synth_util: the #AgsSynthUtil-struct
+ * @audio_buffer_util_format: the audio buffer util format
+ *
+ * Set @audio_buffer_util_format of @synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_synth_util_set_audio_buffer_util_format(AgsSynthUtil *synth_util,
+					    guint audio_buffer_util_format)
+{
+  if(synth_util == NULL){
+    return;
+  }
+
+  synth_util->audio_buffer_util_format = audio_buffer_util_format;
 }
 
 /**

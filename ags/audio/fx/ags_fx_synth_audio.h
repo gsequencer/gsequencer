@@ -26,7 +26,9 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_synth_util.h>
+
+#include <ags/audio/fx/ags_fx_notation_audio.h>
 
 G_BEGIN_DECLS
 
@@ -38,16 +40,50 @@ G_BEGIN_DECLS
 #define AGS_FX_SYNTH_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_SYNTH_AUDIO, AgsFxSynthAudioClass))
 
 typedef struct _AgsFxSynthAudio AgsFxSynthAudio;
+typedef struct _AgsFxSynthAudioScopeData AgsFxSynthAudioScopeData;
+typedef struct _AgsFxSynthAudioChannelData AgsFxSynthAudioChannelData;
+typedef struct _AgsFxSynthAudioInputData AgsFxSynthAudioInputData;
 typedef struct _AgsFxSynthAudioClass AgsFxSynthAudioClass;
 
 struct _AgsFxSynthAudio
 {
-  AgsRecallAudio recall_audio;
+  AgsFxNotationAudio fx_notation_audio;
+
+  AgsFxSynthAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsFxSynthAudioClass
 {
-  AgsRecallAudioClass recall_audio;
+  AgsFxNotationAudioClass fx_notation_audio;
+};
+
+struct _AgsFxSynthAudioScopeData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+  
+  guint audio_channels;
+  
+  AgsFxSynthAudioChannelData **channel_data;
+};
+
+struct _AgsFxSynthAudioChannelData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+
+  AgsFxSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
+};
+
+struct _AgsFxSynthAudioInputData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+
+  AgsSynthUtil synth_util;
 };
 
 GType ags_fx_synth_audio_get_type();

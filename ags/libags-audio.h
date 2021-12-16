@@ -358,6 +358,12 @@
 #include <ags/audio/fx/ags_fx_buffer_channel.h>
 #include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
+#include <ags/audio/fx/ags_fx_chorus_audio.h>
+#include <ags/audio/fx/ags_fx_chorus_audio_processor.h>
+#include <ags/audio/fx/ags_fx_chorus_audio_signal.h>
+#include <ags/audio/fx/ags_fx_chorus_channel.h>
+#include <ags/audio/fx/ags_fx_chorus_channel_processor.h>
+#include <ags/audio/fx/ags_fx_chorus_recycling.h>
 #include <ags/audio/fx/ags_fx_dssi_audio.h>
 #include <ags/audio/fx/ags_fx_dssi_audio_processor.h>
 #include <ags/audio/fx/ags_fx_dssi_audio_signal.h>
@@ -424,6 +430,12 @@
 #include <ags/audio/fx/ags_fx_playback_channel.h>
 #include <ags/audio/fx/ags_fx_playback_channel_processor.h>
 #include <ags/audio/fx/ags_fx_playback_recycling.h>
+#include <ags/audio/fx/ags_fx_synth_audio.h>
+#include <ags/audio/fx/ags_fx_synth_audio_processor.h>
+#include <ags/audio/fx/ags_fx_synth_audio_signal.h>
+#include <ags/audio/fx/ags_fx_synth_channel.h>
+#include <ags/audio/fx/ags_fx_synth_channel_processor.h>
+#include <ags/audio/fx/ags_fx_synth_recycling.h>
 #include <ags/audio/fx/ags_fx_two_pass_aliase_audio.h>
 #include <ags/audio/fx/ags_fx_two_pass_aliase_audio_processor.h>
 #include <ags/audio/fx/ags_fx_two_pass_aliase_audio_signal.h>

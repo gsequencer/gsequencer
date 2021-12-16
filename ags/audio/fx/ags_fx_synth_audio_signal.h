@@ -26,8 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_audio_signal.h>
-#include <ags/audio/ags_synth_util.h>
+
+#include <ags/audio/fx/ags_fx_notation_audio_signal.h>
 
 G_BEGIN_DECLS
 
@@ -43,14 +43,12 @@ typedef struct _AgsFxSynthAudioSignalClass AgsFxSynthAudioSignalClass;
 
 struct _AgsFxSynthAudioSignal
 {
-  AgsRecallAudioSignal recall_audio_signal;
-
-  AgsSynthUtil synth_util;
+  AgsFxNotationAudioSignal fx_notation_audio_signal;
 };
 
 struct _AgsFxSynthAudioSignalClass
 {
-  AgsRecallAudioSignalClass recall_audio_signal;
+  AgsFxNotationAudioSignalClass fx_notation_audio_signal;
 };
 
 GType ags_fx_synth_audio_signal_get_type();

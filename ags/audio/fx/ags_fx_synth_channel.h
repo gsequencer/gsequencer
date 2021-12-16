@@ -26,7 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_channel.h>
+
+#include <ags/audio/fx/ags_fx_notation_channel.h>
 
 G_BEGIN_DECLS
 
@@ -42,12 +43,12 @@ typedef struct _AgsFxSynthChannelClass AgsFxSynthChannelClass;
 
 struct _AgsFxSynthChannel
 {
-  AgsRecallChannel recall_channel;
+  AgsFxNotationChannel fx_notation_channel;
 };
 
 struct _AgsFxSynthChannelClass
 {
-  AgsRecallChannelClass recall_channel;
+  AgsFxNotationChannelClass fx_notation_channel;
 };
 
 GType ags_fx_synth_channel_get_type();
