@@ -54,7 +54,7 @@ struct _AgsFxSynthAudio
 {
   AgsFxNotationAudio fx_notation_audio;
 
-  AgsPort *synth_0_oscillator_mode;
+  AgsPort *synth_0_oscillator;
   
   AgsPort *synth_0_octave;
   AgsPort *synth_0_key;
@@ -62,7 +62,23 @@ struct _AgsFxSynthAudio
   AgsPort *synth_0_phase;
   AgsPort *synth_0_volume;
 
-  AgsPort *synth_1_oscillator_mode;
+  AgsPort *synth_0_sync_enabled;
+
+  AgsPort *synth_0_sync_relative_attack_factor;
+
+  AgsPort *synth_0_sync_attack_0;
+  AgsPort *synth_0_sync_phase_0;
+
+  AgsPort *synth_0_sync_attack_1;
+  AgsPort *synth_0_sync_phase_1;
+
+  AgsPort *synth_0_sync_attack_2;
+  AgsPort *synth_0_sync_phase_2;
+
+  AgsPort *synth_0_sync_lfo_oscillator;
+  AgsPort *synth_0_sync_lfo_frequency;
+
+  AgsPort *synth_1_oscillator;
   
   AgsPort *synth_1_octave;
   AgsPort *synth_1_key;
@@ -70,8 +86,29 @@ struct _AgsFxSynthAudio
   AgsPort *synth_1_phase;
   AgsPort *synth_1_volume;
 
+  AgsPort *synth_1_sync_enabled;
+
+  AgsPort *synth_1_sync_relative_attack_factor;
+
+  AgsPort *synth_1_sync_attack_0;
+  AgsPort *synth_1_sync_phase_0;
+
+  AgsPort *synth_1_sync_attack_1;
+  AgsPort *synth_1_sync_phase_1;
+
+  AgsPort *synth_1_sync_attack_2;
+  AgsPort *synth_1_sync_phase_2;
+
+  AgsPort *synth_1_sync_lfo_oscillator;
+  AgsPort *synth_1_sync_lfo_frequency;
+
+  AgsPort *sequencer_enabled;
+  AgsPort *sequencer_sign;
+  
   AgsPort *pitch_tuning;
   
+  AgsPort *noise_gain;
+
   AgsPort *chorus_enabled;
   
   AgsPort *chorus_input_volume;
