@@ -42,7 +42,7 @@ static AgsPluginPort* ags_fx_low_pass_channel_get_filter_gain_plugin_port();
 
 /**
  * SECTION:ags_fx_low_pass_channel
- * @short_description: fx low_pass channel
+ * @short_description: fx low pass channel
  * @title: AgsFxLowPassChannel
  * @section_id:
  * @include: ags/audio/fx/ags_fx_low_pass_channel.h
@@ -177,10 +177,10 @@ ags_fx_low_pass_channel_class_init(AgsFxLowPassChannelClass *fx_low_pass_channel
 void
 ags_fx_low_pass_channel_init(AgsFxLowPassChannel *fx_low_pass_channel)
 {
-  AGS_RECALL(fx_low_pass_channel)->name = "ags-fx-low_pass";
+  AGS_RECALL(fx_low_pass_channel)->name = "ags-fx-low-pass";
   AGS_RECALL(fx_low_pass_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_low_pass_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_low_pass_channel)->xml_type = "ags-fx-low_pass-channel";
+  AGS_RECALL(fx_low_pass_channel)->xml_type = "ags-fx-low-pass-channel";
 
   /* enabled */
   fx_low_pass_channel->enabled = g_object_new(AGS_TYPE_PORT,

@@ -25,8 +25,47 @@
 
 void ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio);
 void ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio);
+void ags_fx_synth_audio_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_fx_synth_audio_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_fx_synth_audio_dispose(GObject *gobject);
 void ags_fx_synth_audio_finalize(GObject *gobject);
+
+static AgsPluginPort* ags_fx_synth_audio_get_synth_0_oscillator_mode_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_0_octave_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_0_key_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_0_phase_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_0_volume_plugin_port();
+
+static AgsPluginPort* ags_fx_synth_audio_get_synth_1_oscillator_mode_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_1_octave_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_1_key_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_1_phase_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_synth_1_volume_plugin_port();
+
+static AgsPluginPort* ags_fx_synth_audio_get_pitch_tuning_plugin_port();
+
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_enabled_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_input_volume_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_output_volume_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_lfo_oscillator_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_lfo_frequency_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_depth_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_mix_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_chorus_delay_plugin_port();
+
+static AgsPluginPort* ags_fx_synth_audio_get_low_pass_enabled__plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_low_pass_q_lin_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_low_pass_filter_gain_plugin_port();
+
+static AgsPluginPort* ags_fx_synth_audio_get_high_pass_enabled__plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_high_pass_q_lin_plugin_port();
+static AgsPluginPort* ags_fx_synth_audio_get_high_pass_filter_gain_plugin_port();
 
 /**
  * SECTION:ags_fx_synth_audio
@@ -43,10 +82,60 @@ static gpointer ags_fx_synth_audio_parent_class = NULL;
 const gchar *ags_fx_synth_audio_plugin_name = "ags-fx-synth";
 
 const gchar* ags_fx_synth_audio_specifier[] = {
+  "./synth-0-oscillator-mode[0]",
+  "./synth-0-octave[0]",
+  "./synth-0-key[0]",
+  "./synth-0-phase[0]",
+  "./synth-0-volume[0]",
+  "./synth-1-oscillator-mode[0]",
+  "./synth-1-octave[0]",
+  "./synth-1-key[0]",
+  "./synth-1-phase[0]",
+  "./synth-1-volume[0]",
+  "./pitch-tuning[0]",
+  "./chorus-enabled[0]",
+  "./chorus-input-volume[0]",
+  "./chorus-output-volume[0]",
+  "./chorus-lfo-oscillator[0]",
+  "./chorus-lfo-frequency[0]",
+  "./chorus-depth[0]",
+  "./chorus-mix[0]",
+  "./chorus-delay[0]",
+  "./low-pass-enabled[0]",
+  "./low-pass-q-lin[0]",
+  "./low-pass-filter-gain[0]",
+  "./high-pass-enabled[0]",
+  "./high-pass-q-lin[0]",
+  "./high-pass-filter-gain[0]",
   NULL,
 };
 
 const gchar* ags_fx_synth_audio_control_port[] = {
+  "1/25",
+  "2/25",
+  "3/25",
+  "4/25",
+  "5/25",
+  "6/25",
+  "7/25",
+  "8/25",
+  "9/25",
+  "10/25",
+  "11/25",
+  "12/25",
+  "13/25",
+  "14/25",
+  "15/25",
+  "16/25",
+  "17/25",
+  "18/25",
+  "19/25",
+  "20/25",
+  "21/25",
+  "22/25",
+  "23/25",
+  "24/25",
+  "25/25",
   NULL,
 };
 

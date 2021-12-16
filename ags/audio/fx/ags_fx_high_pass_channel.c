@@ -42,7 +42,7 @@ static AgsPluginPort* ags_fx_high_pass_channel_get_filter_gain_plugin_port();
 
 /**
  * SECTION:ags_fx_high_pass_channel
- * @short_description: fx high_pass channel
+ * @short_description: fx high pass channel
  * @title: AgsFxHighPassChannel
  * @section_id:
  * @include: ags/audio/fx/ags_fx_high_pass_channel.h
@@ -177,10 +177,10 @@ ags_fx_high_pass_channel_class_init(AgsFxHighPassChannelClass *fx_high_pass_chan
 void
 ags_fx_high_pass_channel_init(AgsFxHighPassChannel *fx_high_pass_channel)
 {
-  AGS_RECALL(fx_high_pass_channel)->name = "ags-fx-high_pass";
+  AGS_RECALL(fx_high_pass_channel)->name = "ags-fx-high-pass";
   AGS_RECALL(fx_high_pass_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_high_pass_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_high_pass_channel)->xml_type = "ags-fx-high_pass-channel";
+  AGS_RECALL(fx_high_pass_channel)->xml_type = "ags-fx-high-pass-channel";
 
   /* enabled */
   fx_high_pass_channel->enabled = g_object_new(AGS_TYPE_PORT,

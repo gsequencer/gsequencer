@@ -32,6 +32,7 @@
 
 #include <ags/plugin/ags_dssi_plugin.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 

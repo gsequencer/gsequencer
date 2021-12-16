@@ -37,7 +37,7 @@ void ags_fx_high_pass_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_high_pass_audio_signal
- * @short_description: fx high_pass audio signal
+ * @short_description: fx high pass audio signal
  * @title: AgsFxHighPassAudioSignal
  * @section_id:
  * @include: ags/audio/fx/ags_fx_high_pass_audio_signal.h
@@ -103,10 +103,10 @@ ags_fx_high_pass_audio_signal_class_init(AgsFxHighPassAudioSignalClass *fx_high_
 void
 ags_fx_high_pass_audio_signal_init(AgsFxHighPassAudioSignal *fx_high_pass_audio_signal)
 {
-  AGS_RECALL(fx_high_pass_audio_signal)->name = "ags-fx-high_pass";
+  AGS_RECALL(fx_high_pass_audio_signal)->name = "ags-fx-high-pass";
   AGS_RECALL(fx_high_pass_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_high_pass_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_high_pass_audio_signal)->xml_type = "ags-fx-high_pass-audio-signal";
+  AGS_RECALL(fx_high_pass_audio_signal)->xml_type = "ags-fx-high-pass-audio-signal";
 }
 
 void

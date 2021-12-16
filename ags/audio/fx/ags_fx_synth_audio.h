@@ -26,7 +26,12 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_chorus_util.h>
+#include <ags/audio/ags_fluid_iir_filter_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
@@ -49,6 +54,46 @@ struct _AgsFxSynthAudio
 {
   AgsFxNotationAudio fx_notation_audio;
 
+  AgsPort *synth_0_oscillator_mode;
+  
+  AgsPort *synth_0_octave;
+  AgsPort *synth_0_key;
+
+  AgsPort *synth_0_phase;
+  AgsPort *synth_0_volume;
+
+  AgsPort *synth_1_oscillator_mode;
+  
+  AgsPort *synth_1_octave;
+  AgsPort *synth_1_key;
+
+  AgsPort *synth_1_phase;
+  AgsPort *synth_1_volume;
+
+  AgsPort *pitch_tuning;
+  
+  AgsPort *chorus_enabled;
+  
+  AgsPort *chorus_input_volume;
+  AgsPort *chorus_output_volume;
+  
+  AgsPort *chorus_lfo_oscillator;
+  AgsPort *chorus_lfo_frequency;
+
+  AgsPort *chorus_depth;
+  AgsPort *chorus_mix;
+  AgsPort *chorus_delay;
+
+  AgsPort *low_pass_enabled;
+
+  AgsPort *low_pass_q_lin;
+  AgsPort *low_pass_filter_gain;
+
+  AgsPort *high_pass_enabled;
+
+  AgsPort *high_pass_q_lin;
+  AgsPort *high_pass_filter_gain;
+  
   AgsFxSynthAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
@@ -84,6 +129,15 @@ struct _AgsFxSynthAudioInputData
   gpointer parent;
 
   AgsSynthUtil synth_util;
+
+  AgsHQPitchUtil hq_pitch_util;
+  AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
+  
+  AgsChorusUtil chorus_util;
+  AgsHQPitchUtil chorus_hq_pitch_util;
+  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
+  
+  AgsFluidIIRFilterUtil fluid_iir_filter_util;
 };
 
 GType ags_fx_synth_audio_get_type();
