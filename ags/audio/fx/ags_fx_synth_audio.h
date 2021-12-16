@@ -179,6 +179,15 @@ struct _AgsFxSynthAudioInputData
 
 GType ags_fx_synth_audio_get_type();
 
+AgsFxSynthAudioScopeData* ags_fx_synth_audio_scope_data_alloc();
+void ags_fx_synth_audio_scope_data_free(AgsFxSynthAudioScopeData *scope_data);
+
+AgsFxSynthAudioChannelData* ags_fx_synth_audio_channel_data_alloc();
+void ags_fx_synth_audio_channel_data_free(AgsFxSynthAudioChannelData *channel_data);
+
+AgsFxSynthAudioInputData* ags_fx_synth_audio_input_data_alloc();
+void ags_fx_synth_audio_input_data_free(AgsFxSynthAudioInputData *input_data);
+
 /* instantiate */
 AgsFxSynthAudio* ags_fx_synth_audio_new(AgsAudio *audio);
 

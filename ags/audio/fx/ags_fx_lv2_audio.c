@@ -260,6 +260,10 @@ ags_fx_lv2_audio_notify_audio_callback(GObject *gobject,
 
   g_signal_connect_after((GObject *) audio, "set-pads",
 			 G_CALLBACK(ags_fx_lv2_audio_set_pads_callback), fx_lv2_audio);
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
 }
 
 void
