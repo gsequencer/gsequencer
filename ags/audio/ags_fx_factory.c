@@ -9492,6 +9492,18 @@ ags_fx_factory_create(AgsAudio *audio,
 						  position,
 						  create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
+				"ags-fx-synth",
+				13)){
+    start_recall = ags_fx_factory_create_synth(audio,
+					       play_container, recall_container,
+					       plugin_name,
+					       filename,
+					       effect,
+					       start_audio_channel, stop_audio_channel,
+					       start_pad, stop_pad,
+					       position,
+					       create_flags, recall_flags);
+  }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-ladspa",
 				14)){
     start_recall = ags_fx_factory_create_ladspa(audio,

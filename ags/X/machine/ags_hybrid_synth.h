@@ -70,6 +70,54 @@ struct _AgsHybridSynth
   
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
+
+  GtkComboBox *synth_0_oscillator;
+
+  AgsDial *synth_0_octave;
+  AgsDial *synth_0_key;
+
+  AgsDial *synth_0_phase;
+  AgsDial *synth_0_volume;
+
+  GtkCheckButton *synth_0_sync_enabled;
+  
+  AgsDial *synth_0_relative_attack_factor;
+
+  AgsDial *synth_0_sync_attack_0;
+  AgsDial *synth_0_sync_phase_0;
+
+  AgsDial *synth_0_sync_attack_1;
+  AgsDial *synth_0_sync_phase_1;
+
+  AgsDial *synth_0_sync_attack_2;
+  AgsDial *synth_0_sync_phase_2;
+
+  GtkComboBox *synth_0_sync_lfo_oscillator;
+  GtkSpinButton *synth_0_sync_lfo_frequency;
+  
+  GtkComboBox *synth_1_oscillator;  
+
+  AgsDial *synth_1_octave;
+  AgsDial *synth_1_key;
+
+  AgsDial *synth_1_phase;
+  AgsDial *synth_1_volume;
+
+  GtkCheckButton *synth_1_sync_enabled;
+  
+  AgsDial *synth_1_relative_attack_factor;
+
+  AgsDial *synth_1_sync_attack_0;
+  AgsDial *synth_1_sync_phase_0;
+
+  AgsDial *synth_1_sync_attack_1;
+  AgsDial *synth_1_sync_phase_1;
+
+  AgsDial *synth_1_sync_attack_2;
+  AgsDial *synth_1_sync_phase_2;
+
+  GtkComboBox *synth_1_sync_lfo_oscillator;
+  GtkSpinButton *synth_1_sync_lfo_frequency;
 };
 
 struct _AgsHybridSynthClass

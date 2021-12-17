@@ -63,7 +63,7 @@ void ags_hybrid_synth_output_map_recall(AgsHybridSynth *hybrid_synth,
  * @section_id:
  * @include: ags/X/machine/ags_hybrid_synth.h
  *
- * The #AgsHybridSynth is a composite widget to act as hybrid_synth.
+ * The #AgsHybridSynth is a composite widget to act as hybrid synth.
  */
 
 static gpointer ags_hybrid_synth_parent_class = NULL;
@@ -140,6 +140,15 @@ ags_hybrid_synth_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 {
+  GtkBox *vbox;
+  GtkBox *hbox;
+  GtkBox *osc_vbox;
+  GtkGrid *synth_0_grid;
+  GtkGrid *synth_1_grid;
+  GtkLabel *label;
+
+  GtkAdjustment *adjustment;
+  
   AgsAudio *audio;
 
   AgsApplicationContext *application_context;   
@@ -226,6 +235,234 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   hybrid_synth->name = NULL;
   hybrid_synth->xml_type = "ags-hybrid-synth"; 
 
+  /* widget */
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) hybrid_synth),
+		    (GtkWidget *) vbox);
+
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_container_add((GtkContainer *) vbox,
+		    (GtkWidget *) hbox);
+
+  /* oscillator */
+  osc_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				    0);
+  gtk_container_add((GtkContainer *) hbox,
+		    (GtkWidget *) osc_vbox);
+
+  /* OSC 1 */
+  synth_0_grid = (GtkGrid *) gtk_grid_new();
+  gtk_container_add((GtkContainer *) osc_vbox,
+		    (GtkWidget *) synth_0_grid);
+
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_0_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+				 "sine");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+				 "sawtooth");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+				 "triangle");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+				 "square");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+				 "impulse");
+
+  gtk_combo_box_set_active(hybrid_synth->synth_0_oscillator,
+			   0);
+
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_oscillator,
+		  1, 0,
+		  1, 1);
+
+  /* OSC 1 - octave */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - octave"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+
+  hybrid_synth->synth_0_octave = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_octave);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -6.0);
+  gtk_adjustment_set_upper(adjustment,
+			   6.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+  gtk_adjustment_set_page_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  hybrid_synth->synth_0_octave->scale_max_precision = 12;
+  
+  ags_dial_set_scale_precision(hybrid_synth->synth_0_octave,
+			       12);
+  ags_dial_set_radius(hybrid_synth->synth_0_octave,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_octave,
+		  3, 0,
+		  1, 1);
+
+  /* OSC 1 - key */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - key"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  4, 0,
+		  1, 1);
+
+  hybrid_synth->synth_0_key = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_key);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+  gtk_adjustment_set_page_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2.0);
+
+  hybrid_synth->synth_0_key->scale_max_precision = 12;
+  ags_dial_set_scale_precision(hybrid_synth->synth_0_key,
+			       12);
+  ags_dial_set_radius(hybrid_synth->synth_0_key,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_key,
+		  5, 0,
+		  1, 1);
+  
+  /* OSC 1 - phase */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - phase"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  2, 1,
+		  1, 1);
+
+  hybrid_synth->synth_0_phase = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_phase);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_phase,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_phase,
+		  3, 1,
+		  1, 1);
+
+  /* OSC 1 - volume */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  4, 1,
+		  1, 1);
+
+  hybrid_synth->synth_0_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.5);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_volume,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_volume,
+		  5, 1,
+		  1, 1);
+
+  /* OSC 2 */
+  synth_1_grid = (GtkGrid *) gtk_grid_new();
+  gtk_container_add((GtkContainer *) osc_vbox,
+		    (GtkWidget *) synth_1_grid);
+
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_1_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+				 "sine");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+				 "sawtooth");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+				 "triangle");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+				 "square");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+				 "impulse");
+
+  gtk_combo_box_set_active(hybrid_synth->synth_1_oscillator,
+			   0);
+
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_oscillator,
+		  1, 0,
+		  1, 1);
+  
   //TODO:JK: implement me
 }
 

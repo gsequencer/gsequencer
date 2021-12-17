@@ -854,6 +854,8 @@ ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio)
 void
 ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 {
+  guint i;
+  
   g_signal_connect(fx_synth_audio, "notify::audio",
 		   G_CALLBACK(ags_fx_synth_audio_notify_audio_callback), NULL);
 
@@ -1823,6 +1825,19 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 
   ags_recall_add_port((AgsRecall *) fx_synth_audio,
 		      fx_synth_audio->high_pass_filter_gain);
+
+  /* scope data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      fx_synth_audio->scope_data[i] = ags_fx_synth_audio_scope_data_alloc();
+      
+      fx_synth_audio->scope_data[i]->parent = fx_synth_audio;
+    }else{
+      fx_synth_audio->scope_data[i] = NULL;
+    }
+  }
 }
 
 void
