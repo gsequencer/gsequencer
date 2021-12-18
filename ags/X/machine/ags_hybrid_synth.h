@@ -118,6 +118,35 @@ struct _AgsHybridSynth
 
   GtkComboBox *synth_1_sync_lfo_oscillator;
   GtkSpinButton *synth_1_sync_lfo_frequency;
+
+  GtkCheckButton *sequencer_enabled;
+  GtkComboBox *sequencer_sign;
+
+  AgsDial *pitch_tuning;
+
+  AgsDial *noise_gain;
+
+  GtkCheckButton *low_pass_enabled;
+
+  AgsDial *low_pass_q_lin;
+  AgsDial *low_pass_filter_gain;
+
+  GtkCheckButton *high_pass_enabled;
+
+  AgsDial *high_pass_q_lin;
+  AgsDial *high_pass_filter_gain;
+
+  GtkCheckButton *chorus_enabled;
+
+  AgsDial *chorus_input_volume;
+  AgsDial *chorus_output_volume;
+
+  GtkComboBox *chorus_lfo_oscillator;  
+  GtkSpinButton *chorus_lfo_frequency;
+
+  AgsDial *chorus_depth;
+  AgsDial *chorus_mix;
+  AgsDial *chorus_delay;
 };
 
 struct _AgsHybridSynthClass

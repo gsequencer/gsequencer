@@ -145,6 +145,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   GtkBox *osc_vbox;
   GtkGrid *synth_0_grid;
   GtkGrid *synth_1_grid;
+  GtkGrid *misc_grid;
+  GtkBox *band_hbox;
+  GtkGrid *low_pass_grid;
+  GtkGrid *high_pass_grid;
+  GtkGrid *chorus_grid;
+  GtkFrame *frame;
   GtkLabel *label;
 
   GtkAdjustment *adjustment;
@@ -252,11 +258,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_container_add((GtkContainer *) hbox,
 		    (GtkWidget *) osc_vbox);
 
-  /* OSC 1 */
+  /* grid */
   synth_0_grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) osc_vbox,
 		    (GtkWidget *) synth_0_grid);
 
+  /* OSC 1 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1"));
   gtk_label_set_xalign(label,
 		       0.0);
@@ -429,11 +436,302 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  5, 1,
 		  1, 1);
 
-  /* OSC 2 */
+  /* OSC 1 - sync enabled */
+  hybrid_synth->synth_0_sync_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("OSC 1 - sync enabled"));
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_enabled,
+		  6, 0,
+		  1, 1);
+
+  /* OSC 1 - sync relative attack factor */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  6, 1,
+		  1, 1);
+  
+  hybrid_synth->synth_0_relative_attack_factor = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_relative_attack_factor);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_relative_attack_factor,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_relative_attack_factor,
+		  7, 1,
+		  1, 1);
+
+  /* OSC 1 - sync attack 0 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 0"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  10, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_attack_0 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_attack_0);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_attack_0,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_attack_0,
+		  11, 0,
+		  1, 1);
+
+  /* OSC 1 - sync phase 0 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 0"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  12, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_phase_0 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_phase_0);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_phase_0,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_phase_0,
+		  13, 0,
+		  1, 1);
+
+  /* OSC 1 - sync attack 1 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 1"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  10, 1,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_attack_1 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_attack_1);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_attack_1,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_attack_1,
+		  11, 1,
+		  1, 1);
+
+  /* OSC 1 - sync phase 1 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 1"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  12, 1,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_phase_1 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_phase_1);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_phase_1,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_phase_1,
+		  13, 1,
+		  1, 1);
+
+  /* OSC 1 - sync attack 2 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 2"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  10, 2,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_attack_2 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_attack_2);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_attack_2,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_attack_2,
+		  11, 2,
+		  1, 1);
+
+  /* OSC 1 - sync phase 2 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 2"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  12, 2,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_phase_2 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_phase_2);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_phase_2,
+		      12);
+  
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_phase_2,
+		  13, 2,
+		  1, 1);
+
+  /* OSC 1 LFO */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 LFO"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  14, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_0_sync_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+				 "sine");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+				 "sawtooth");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+				 "triangle");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+				 "square");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+				 "impulse");
+
+  gtk_combo_box_set_active(hybrid_synth->synth_0_sync_lfo_oscillator,
+			   0);
+
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_lfo_oscillator,
+		  15, 0,
+		  1, 1);
+
+  /* OSC 1 LFO frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 LFO frequency"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) label,
+		  14, 1,
+		  1, 1);
+
+  hybrid_synth->synth_0_sync_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 10.0, 0.01);
+  gtk_grid_attach(synth_0_grid,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_lfo_frequency,
+		  15, 1,
+		  1, 1);
+  
+  /* grid */
   synth_1_grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) osc_vbox,
 		    (GtkWidget *) synth_1_grid);
 
+  /* OSC 2 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2"));
   gtk_label_set_xalign(label,
 		       0.0);
@@ -463,6 +761,946 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  1, 0,
 		  1, 1);
   
+  /* OSC 2 - octave */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - octave"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+
+  hybrid_synth->synth_1_octave = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_octave);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -6.0);
+  gtk_adjustment_set_upper(adjustment,
+			   6.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+  gtk_adjustment_set_page_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  hybrid_synth->synth_1_octave->scale_max_precision = 12;
+  
+  ags_dial_set_scale_precision(hybrid_synth->synth_1_octave,
+			       12);
+  ags_dial_set_radius(hybrid_synth->synth_1_octave,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_octave,
+		  3, 0,
+		  1, 1);
+
+  /* OSC 2 - key */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - key"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  4, 0,
+		  1, 1);
+
+  hybrid_synth->synth_1_key = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_key);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+  gtk_adjustment_set_page_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2.0);
+
+  hybrid_synth->synth_1_key->scale_max_precision = 12;
+  ags_dial_set_scale_precision(hybrid_synth->synth_1_key,
+			       12);
+  ags_dial_set_radius(hybrid_synth->synth_1_key,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_key,
+		  5, 0,
+		  1, 1);
+  
+  /* OSC 2 - phase */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - phase"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  2, 1,
+		  1, 1);
+
+  hybrid_synth->synth_1_phase = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_phase);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_phase,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_phase,
+		  3, 1,
+		  1, 1);
+
+  /* OSC 2 - volume */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  4, 1,
+		  1, 1);
+
+  hybrid_synth->synth_1_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.5);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_volume,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_volume,
+		  5, 1,
+		  1, 1);
+
+  /* OSC 2 - sync enabled */
+  hybrid_synth->synth_1_sync_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("OSC 2 - sync enabled"));
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_enabled,
+		  6, 0,
+		  1, 1);
+
+  /* OSC 2 - sync relative attack factor */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  6, 1,
+		  1, 1);
+  
+  hybrid_synth->synth_1_relative_attack_factor = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_relative_attack_factor);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_relative_attack_factor,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_relative_attack_factor,
+		  7, 1,
+		  1, 1);
+
+  /* OSC 2 - sync attack 0 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 0"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  10, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_attack_0 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_attack_0);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_attack_0,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_attack_0,
+		  11, 0,
+		  1, 1);
+
+  /* OSC 2 - sync phase 0 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 0"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  12, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_phase_0 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_phase_0);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_phase_0,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_phase_0,
+		  13, 0,
+		  1, 1);
+
+  /* OSC 2 - sync attack 1 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 1"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  10, 1,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_attack_1 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_attack_1);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_attack_1,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_attack_1,
+		  11, 1,
+		  1, 1);
+
+  /* OSC 2 - sync phase 1 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 1"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  12, 1,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_phase_1 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_phase_1);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_phase_1,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_phase_1,
+		  13, 1,
+		  1, 1);
+
+  /* OSC 2 - sync attack 2 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 2"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  10, 2,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_attack_2 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_attack_2);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_attack_2,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_attack_2,
+		  11, 2,
+		  1, 1);
+
+  /* OSC 2 - sync phase 2 */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 2"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  12, 2,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_phase_2 = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_phase_2);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_phase_2,
+		      12);
+  
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_phase_2,
+		  13, 2,
+		  1, 1);
+
+  /* OSC 2 LFO */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 LFO"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  14, 0,
+		  1, 1);
+  
+  hybrid_synth->synth_1_sync_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+				 "sine");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+				 "sawtooth");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+				 "triangle");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+				 "square");
+  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+				 "impulse");
+
+  gtk_combo_box_set_active(hybrid_synth->synth_1_sync_lfo_oscillator,
+			   0);
+
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_lfo_oscillator,
+		  15, 0,
+		  1, 1);
+
+  /* OSC 2 LFO frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 LFO frequency"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) label,
+		  14, 1,
+		  1, 1);
+
+  hybrid_synth->synth_1_sync_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 10.0, 0.01);
+  gtk_grid_attach(synth_1_grid,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_lfo_frequency,
+		  15, 1,
+		  1, 1);
+
+  /* grid */
+  misc_grid = (GtkGrid *) gtk_grid_new();
+  gtk_container_add((GtkContainer *) vbox,
+		    (GtkWidget *) misc_grid);
+
+  /* sequencer */
+  hybrid_synth->sequencer_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("sequencer enabled"));
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) hybrid_synth->sequencer_enabled,
+		  0, 0,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("sequencer sign"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+  
+  hybrid_synth->sequencer_sign = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "A");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "A#");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "H");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "C");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "C#");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "D");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "D#");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "E");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "F");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "F#");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "G");
+  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+				 "G#");
+
+  gtk_combo_box_set_active(hybrid_synth->sequencer_sign,
+			   0);
+
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) hybrid_synth->sequencer_sign,
+		  3, 0,
+		  1, 1);
+
+  /* pitch */
+  label = (GtkLabel *) gtk_label_new(i18n("pitch tuning"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) label,
+		  4, 0,
+		  1, 1);
+
+  hybrid_synth->pitch_tuning = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->pitch_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -1200.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->pitch_tuning,
+		      12);
+  
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) hybrid_synth->pitch_tuning,
+		  5, 0,
+		  1, 1);
+  
+  /* noise */
+  label = (GtkLabel *) gtk_label_new(i18n("noise gain"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) label,
+		  6, 0,
+		  1, 1);
+
+  hybrid_synth->noise_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->noise_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->noise_gain,
+		      12);
+  
+  gtk_grid_attach(misc_grid,
+		  (GtkWidget *) hybrid_synth->noise_gain,
+		  7, 0,
+		  1, 1);
+
+  /* band */
+  band_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				     0);
+  gtk_container_add((GtkContainer *) vbox,
+		    (GtkWidget *) band_hbox);
+
+  /* low pass grid */
+  low_pass_grid = (GtkGrid *) gtk_grid_new();
+  gtk_container_add((GtkContainer *) band_hbox,
+		    (GtkWidget *) low_pass_grid);
+
+  hybrid_synth->low_pass_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("low pass enabled"));
+  gtk_grid_attach(low_pass_grid,
+		  (GtkWidget *) hybrid_synth->low_pass_enabled,
+		  0, 0,
+		  1, 1);
+
+  /* low pass q-lin */
+  label = (GtkLabel *) gtk_label_new(i18n("low pass q-lin"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(low_pass_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  hybrid_synth->low_pass_q_lin = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->low_pass_q_lin);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->low_pass_q_lin,
+		      12);
+  
+  gtk_grid_attach(low_pass_grid,
+		  (GtkWidget *) hybrid_synth->low_pass_q_lin,
+		  1, 1,
+		  1, 1);
+
+  /* low pass filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("low pass filter gain"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(low_pass_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
+  hybrid_synth->low_pass_filter_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->low_pass_filter_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->low_pass_filter_gain,
+		      12);
+  
+  gtk_grid_attach(low_pass_grid,
+		  (GtkWidget *) hybrid_synth->low_pass_filter_gain,
+		  1, 2,
+		  1, 1);
+
+  /* high pass grid */
+  high_pass_grid = (GtkGrid *) gtk_grid_new();
+  gtk_container_add((GtkContainer *) band_hbox,
+		    (GtkWidget *) high_pass_grid);
+
+  hybrid_synth->high_pass_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("high pass enabled"));
+  gtk_grid_attach(high_pass_grid,
+		  (GtkWidget *) hybrid_synth->high_pass_enabled,
+		  0, 0,
+		  1, 1);
+
+  /* high pass q-lin */
+  label = (GtkLabel *) gtk_label_new(i18n("high pass q-lin"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(high_pass_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  hybrid_synth->high_pass_q_lin = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->high_pass_q_lin);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->high_pass_q_lin,
+		      12);
+  
+  gtk_grid_attach(high_pass_grid,
+		  (GtkWidget *) hybrid_synth->high_pass_q_lin,
+		  1, 1,
+		  1, 1);
+
+  /* high pass filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("high pass filter gain"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(high_pass_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
+  hybrid_synth->high_pass_filter_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->high_pass_filter_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->high_pass_filter_gain,
+		      12);
+  
+  gtk_grid_attach(high_pass_grid,
+		  (GtkWidget *) hybrid_synth->high_pass_filter_gain,
+		  1, 2,
+		  1, 1);
+
+  /* chorus grid */
+  chorus_grid = (GtkGrid *) gtk_grid_new();
+  gtk_container_add((GtkContainer *) vbox,
+		    (GtkWidget *) chorus_grid);
+
+  /* chorus input volume */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus input volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+
+  hybrid_synth->chorus_input_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->chorus_input_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->chorus_input_volume,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_input_volume,
+		  1, 0,
+		  1, 1);
+
+  /* chorus output volume */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus output volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  hybrid_synth->chorus_output_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->chorus_output_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->chorus_output_volume,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_output_volume,
+		  1, 1,
+		  1, 1);
+  
+  /* chorus LFO */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus LFO"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+  
+  hybrid_synth->chorus_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+				 "sine");
+  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+				 "sawtooth");
+  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+				 "triangle");
+  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+				 "square");
+  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+				 "impulse");
+
+  gtk_combo_box_set_active(hybrid_synth->chorus_lfo_oscillator,
+			   0);
+
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_lfo_oscillator,
+		  3, 0,
+		  1, 1);
+
+  /* chorus LFO frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus LFO frequency"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  2, 1,
+		  1, 1);
+
+  hybrid_synth->chorus_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 10.0, 0.01);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_lfo_frequency,
+		  3, 1,
+		  1, 1);
+
+  /* chorus depth */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus depth"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  4, 0,
+		  1, 1);
+
+  hybrid_synth->chorus_depth = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->chorus_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->chorus_depth,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_depth,
+		  5, 0,
+		  1, 1);
+
+  /* chorus mix */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus mix"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  4, 1,
+		  1, 1);
+
+  hybrid_synth->chorus_mix = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->chorus_mix);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->chorus_mix,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_mix,
+		  5, 1,
+		  1, 1);
+
+  /* chorus delay */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus delay"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  4, 2,
+		  1, 1);
+
+  hybrid_synth->chorus_delay = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(hybrid_synth->chorus_delay);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(hybrid_synth->chorus_delay,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) hybrid_synth->chorus_delay,
+		  5, 2,
+		  1, 1);
+
   //TODO:JK: implement me
 }
 
