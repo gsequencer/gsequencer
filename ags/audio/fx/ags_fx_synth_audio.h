@@ -156,6 +156,19 @@ struct _AgsFxSynthAudioChannelData
   
   gpointer parent;
 
+  AgsSynthUtil synth_0;
+  AgsSynthUtil synth_1;
+
+  AgsHQPitchUtil hq_pitch_util;
+  AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
+  
+  AgsChorusUtil chorus_util;
+  AgsHQPitchUtil chorus_hq_pitch_util;
+  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
+  
+  AgsFluidIIRFilterUtil low_pass_filter;
+  AgsFluidIIRFilterUtil high_pass_filter;
+
   AgsFxSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
 
@@ -165,16 +178,7 @@ struct _AgsFxSynthAudioInputData
   
   gpointer parent;
 
-  AgsSynthUtil synth_util;
-
-  AgsHQPitchUtil hq_pitch_util;
-  AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
-  
-  AgsChorusUtil chorus_util;
-  AgsHQPitchUtil chorus_hq_pitch_util;
-  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
-  
-  AgsFluidIIRFilterUtil fluid_iir_filter_util;
+  guint key_on;
 };
 
 GType ags_fx_synth_audio_get_type();

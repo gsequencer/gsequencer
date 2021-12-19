@@ -563,6 +563,246 @@ ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio)
 				  param_spec);
 
   /**
+   * AgsFxSynthAudio:synth-1-oscillator:
+   *
+   * The synth-1 oscillator.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-oscillator",
+				   i18n_pspec("synth-1 oscillator of recall"),
+				   i18n_pspec("The synth-1's oscillator"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_OSCILLATOR,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-octave:
+   *
+   * The synth-1 octave.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-octave",
+				   i18n_pspec("synth-1 octave of recall"),
+				   i18n_pspec("The synth-1's octave"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_OCTAVE,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-key:
+   *
+   * The synth-1 key.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-key",
+				   i18n_pspec("synth-1 key of recall"),
+				   i18n_pspec("The synth-1's key"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_KEY,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-phase:
+   *
+   * The synth-1 phase.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-phase",
+				   i18n_pspec("synth-1 phase of recall"),
+				   i18n_pspec("The synth-1's phase"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_PHASE,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-volume:
+   *
+   * The synth-1 volume.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-volume",
+				   i18n_pspec("synth-1 volume of recall"),
+				   i18n_pspec("The synth-1's volume"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_VOLUME,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-enabled:
+   *
+   * The synth-1 sync enabled.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-enabled",
+				   i18n_pspec("synth-1 sync enabled of recall"),
+				   i18n_pspec("The synth-1's sync enabled"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_ENABLED,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-relative-attack-factor:
+   *
+   * The synth-1 sync relative attack factor.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-relative-attack-factor",
+				   i18n_pspec("synth-1 sync relative attack factor of recall"),
+				   i18n_pspec("The synth-1's sync relative attack factor"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_RELATIVE_ATTACK_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-attack-0:
+   *
+   * The synth-1 sync attack-0.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-attack-0",
+				   i18n_pspec("synth-1 sync attack-0 of recall"),
+				   i18n_pspec("The synth-1's sync attack-0"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_ATTACK_0,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-phase-0:
+   *
+   * The synth-1 sync phase-0.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-phase-0",
+				   i18n_pspec("synth-1 sync phase-0 of recall"),
+				   i18n_pspec("The synth-1's sync phase-0"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_PHASE_0,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-attack-1:
+   *
+   * The synth-1 sync attack-1.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-attack-1",
+				   i18n_pspec("synth-1 sync attack-1 of recall"),
+				   i18n_pspec("The synth-1's sync attack-1"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_ATTACK_1,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-phase-1:
+   *
+   * The synth-1 sync phase-1.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-phase-1",
+				   i18n_pspec("synth-1 sync phase-1 of recall"),
+				   i18n_pspec("The synth-1's sync phase-1"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_PHASE_1,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-attack-2:
+   *
+   * The synth-1 sync attack-2.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-attack-2",
+				   i18n_pspec("synth-1 sync attack-2 of recall"),
+				   i18n_pspec("The synth-1's sync attack-2"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_ATTACK_2,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-phase-2:
+   *
+   * The synth-1 sync phase-2.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-phase-2",
+				   i18n_pspec("synth-1 sync phase-2 of recall"),
+				   i18n_pspec("The synth-1's sync phase-2"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_PHASE_2,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-lfo-oscillator:
+   *
+   * The synth-1 sync LFO oscillator.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-lfo-oscillator",
+				   i18n_pspec("synth-1 sync LFO oscillator of recall"),
+				   i18n_pspec("The synth-1's sync LFO oscillator"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_LFO_OSCILLATOR,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:synth-1-sync-lfo-frequency:
+   *
+   * The synth-1 sync LFO frequency.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("synth-1-sync-lfo-frequency",
+				   i18n_pspec("synth-1 sync LFO frequency of recall"),
+				   i18n_pspec("The synth-1's sync LFO frequency"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_1_SYNC_LFO_FREQUENCY,
+				  param_spec);
+
+  /**
    * AgsFxSynthAudio:sequencer-enabled:
    *
    * The sequencer enabled.
@@ -4140,6 +4380,8 @@ ags_fx_synth_audio_input_data_alloc()
   g_rec_mutex_init(&(input_data->strct_mutex));
 
   input_data->parent = NULL;
+
+  input_data->key_on = 0;
   
   return(input_data);
 }
