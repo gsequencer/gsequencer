@@ -147,6 +147,8 @@ void ags_dial_value_changed(AgsDial *dial);
 void ags_dial_set_value(AgsDial *dial,
 			gdouble value);
 
+gdouble ags_dial_get_value(AgsDial *dial);
+
 /* instantiate */
 AgsDial* ags_dial_new();
 

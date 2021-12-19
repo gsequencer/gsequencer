@@ -35,6 +35,81 @@ G_BEGIN_DECLS
 
 void ags_hybrid_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsHybridSynth *hybrid_synth);
 
+void ags_hybrid_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_octave_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_key_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_phase_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_volume_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_sync_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_sync_attack_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_sync_phase_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_sync_attack_1_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_sync_phase_1_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_sync_attack_2_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_sync_phase_2_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_0_sync_lfo_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_sync_lfo_frequency_callback(GtkSpinButton *spin_button, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_octave_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_key_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_phase_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_volume_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_sync_attack_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_sync_phase_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_sync_attack_1_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_sync_phase_1_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_sync_attack_2_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_sync_phase_2_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_synth_1_sync_lfo_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_sync_lfo_frequency_callback(GtkSpinButton *spin_button, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_sequencer_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_sequencer_sign_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_pitch_tuning_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_noise_gain_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_low_pass_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_low_pass_q_lin_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_high_pass_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_high_pass_q_lin_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_high_pass_filter_gain_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_chorus_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_chorus_input_volume_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_chorus_output_volume_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_chorus_lfo_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, AgsHybridSynth *hybrid_synth);
+
+void ags_hybrid_synth_chorus_depth_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_chorus_mix_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_chorus_delay_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+
 void ags_hybrid_synth_volume_callback(GtkRange *range, AgsHybridSynth *hybrid_synth);
 
 G_END_DECLS

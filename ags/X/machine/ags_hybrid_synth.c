@@ -1725,7 +1725,149 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   /* AgsHybridSynth */
   hybrid_synth = AGS_HYBRID_SYNTH(connectable);
 
-  //TODO:JK: implement me
+  g_signal_connect_after(hybrid_synth->synth_0_oscillator, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_oscillator_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_octave, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_octave_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_key, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_key_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_phase, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_phase_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_volume, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_volume_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_enabled, "clicked",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_enabled_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_relative_attack_factor, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_relative_attack_factor_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_attack_0, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_0_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_phase_0, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_phase_0_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_attack_1, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_1_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_phase_1, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_phase_1_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_attack_2, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_2_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_phase_2, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_phase_2_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_lfo_oscillator, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_lfo_oscillator_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_0_sync_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_lfo_frequency_callback), hybrid_synth);
+
+  g_signal_connect_after(hybrid_synth->synth_1_oscillator, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_oscillator_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_octave, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_octave_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_key, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_key_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_phase, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_phase_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_volume, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_volume_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_enabled, "clicked",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_enabled_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_relative_attack_factor, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_relative_attack_factor_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_attack_0, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_0_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_phase_0, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_phase_0_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_attack_1, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_1_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_phase_1, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_phase_1_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_attack_2, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_2_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_phase_2, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_phase_2_callback), hybrid_synth);
+
+  g_signal_connect_after(hybrid_synth->synth_1_sync_lfo_oscillator, "changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_lfo_oscillator_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->synth_1_sync_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_lfo_frequency_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->sequencer_enabled, "clicked",
+			 G_CALLBACK(ags_hybrid_synth_sequencer_enabled_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->sequencer_sign, "changed",
+			 G_CALLBACK(ags_hybrid_synth_sequencer_sign_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->pitch_tuning, "changed",
+			 G_CALLBACK(ags_hybrid_synth_pitch_tuning_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->noise_gain, "changed",
+			 G_CALLBACK(ags_hybrid_synth_noise_gain_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_enabled, "clicked",
+			 G_CALLBACK(ags_hybrid_synth_chorus_enabled_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_input_volume, "changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_input_volume_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_output_volume, "changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_output_volume_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_lfo_oscillator, "changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_lfo_oscillator_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_lfo_frequency_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_depth, "changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_depth_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_mix, "changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_mix_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->chorus_delay, "changed",
+			 G_CALLBACK(ags_hybrid_synth_chorus_delay_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->low_pass_enabled, "clicked",
+			 G_CALLBACK(ags_hybrid_synth_low_pass_enabled_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->low_pass_q_lin, "changed",
+			 G_CALLBACK(ags_hybrid_synth_low_pass_q_lin_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->low_pass_filter_gain, "changed",
+			 G_CALLBACK(ags_hybrid_synth_low_pass_filter_gain_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->high_pass_enabled, "clicked",
+			 G_CALLBACK(ags_hybrid_synth_high_pass_enabled_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->high_pass_q_lin, "changed",
+			 G_CALLBACK(ags_hybrid_synth_high_pass_q_lin_callback), hybrid_synth);
+  
+  g_signal_connect_after(hybrid_synth->high_pass_filter_gain, "changed",
+			 G_CALLBACK(ags_hybrid_synth_high_pass_filter_gain_callback), hybrid_synth);
 }
 
 void
