@@ -331,6 +331,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       
       g_object_unref(port);
     }
+
+    g_value_unset(&value);
     
     /* synth-0 octave */
     octave = 0.0;
@@ -606,6 +608,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       
       g_object_unref(port);
     }
+
+    g_value_unset(&value);
     
     /* synth-1 octave */
     octave = 0.0;
@@ -1181,7 +1185,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     channel_data->synth_0.format = format;
     channel_data->synth_0.samplerate = samplerate;
 
-    channel_data->synth_0.offset = offset_counter;
+    channel_data->synth_0.frame_count = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size)) + buffer_size;
+    channel_data->synth_0.offset = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size));
     
     if(synth_0_sync_enabled){
       //TODO:JK: implement me
@@ -1222,7 +1227,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     channel_data->synth_1.format = format;
     channel_data->synth_1.samplerate = samplerate;
     
-    channel_data->synth_1.offset = offset_counter;
+    channel_data->synth_1.frame_count = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size)) + buffer_size;
+    channel_data->synth_1.offset = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size));
     
     if(synth_1_sync_enabled){
       //TODO:JK: implement me
@@ -1309,7 +1315,7 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       channel_data->chorus_util.format = format;
       channel_data->chorus_util.samplerate = samplerate;
       
-      channel_data->chorus_util.offset = offset_counter;
+      channel_data->chorus_util.offset = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size));
       
       ags_chorus_util_compute(&(channel_data->chorus_util));
     }

@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -4190,6 +4192,8 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 {
   guint input_pads;
   guint output_port_count, input_port_count;
+  guint buffer_size;
+  guint format;
   guint i, j, k;
 
   GRecMutex *recall_mutex;
@@ -4199,8 +4203,13 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 
   input_pads = 0;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
   g_object_get(audio,
 	       "input-pads", &input_pads,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
 	       NULL);
     
   /* allocate channel data */
@@ -4238,6 +4247,14 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_synth_audio_channel_data_alloc();
 
+	  channel_data->hq_pitch_util.low_mix_buffer = ags_stream_alloc(buffer_size,
+									format);
+	  channel_data->hq_pitch_util.new_mix_buffer = ags_stream_alloc(buffer_size,
+									format);
+
+	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(buffer_size,
+									format);
+	  
 	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxSynthAudioInputData *input_data;
 

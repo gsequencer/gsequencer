@@ -2286,43 +2286,43 @@ ags_synth_util_compute_sin(AgsSynthUtil *synth_util)
     return;
   }
 
-  switch(synth_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_synth_util_compute_sin_s8(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_synth_util_compute_sin_s16(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_synth_util_compute_sin_s24(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_synth_util_compute_sin_s32(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_synth_util_compute_sin_s64(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_synth_util_compute_sin_float(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_synth_util_compute_sin_double(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_synth_util_compute_sin_complex(synth_util);
   }
@@ -3892,43 +3892,43 @@ ags_synth_util_compute_sawtooth(AgsSynthUtil *synth_util)
     return;
   }
 
-  switch(synth_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_synth_util_compute_sawtooth_s8(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_synth_util_compute_sawtooth_s16(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_synth_util_compute_sawtooth_s24(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_synth_util_compute_sawtooth_s32(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_synth_util_compute_sawtooth_s64(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_synth_util_compute_sawtooth_float(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_synth_util_compute_sawtooth_double(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_synth_util_compute_sawtooth_complex(synth_util);
   }
@@ -5589,43 +5589,43 @@ ags_synth_util_compute_triangle(AgsSynthUtil *synth_util)
     return;
   }
 
-  switch(synth_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_synth_util_compute_triangle_s8(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_synth_util_compute_triangle_s16(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_synth_util_compute_triangle_s24(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_synth_util_compute_triangle_s32(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_synth_util_compute_triangle_s64(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_synth_util_compute_triangle_float(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_synth_util_compute_triangle_double(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_synth_util_compute_triangle_complex(synth_util);
   }
@@ -7197,43 +7197,43 @@ ags_synth_util_compute_square(AgsSynthUtil *synth_util)
     return;
   }
 
-  switch(synth_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_synth_util_compute_square_s8(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_synth_util_compute_square_s16(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_synth_util_compute_square_s24(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_synth_util_compute_square_s32(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_synth_util_compute_square_s64(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_synth_util_compute_square_float(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_synth_util_compute_square_double(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_synth_util_compute_square_complex(synth_util);
   }
@@ -8811,43 +8811,43 @@ ags_synth_util_compute_impulse(AgsSynthUtil *synth_util)
     return;
   }
 
-  switch(synth_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_synth_util_compute_impulse_s8(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_synth_util_compute_impulse_s16(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_synth_util_compute_impulse_s24(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_synth_util_compute_impulse_s32(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_synth_util_compute_impulse_s64(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_synth_util_compute_impulse_float(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_synth_util_compute_impulse_double(synth_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_synth_util_compute_impulse_complex(synth_util);
   }
