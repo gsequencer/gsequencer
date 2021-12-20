@@ -1142,10 +1142,6 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -1193,10 +1189,6 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -1242,10 +1234,6 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -1264,7 +1252,7 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint8) ((gint16) source[0] + (gint16) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -1303,10 +1291,6 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -1354,10 +1338,6 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -1403,10 +1383,6 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -1425,7 +1401,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint16) ((gint32) source[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -1464,10 +1440,6 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -1515,10 +1487,6 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -1564,10 +1532,6 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -1586,7 +1550,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint32) source[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -1625,10 +1589,6 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -1676,10 +1636,6 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -1725,10 +1681,6 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -1747,7 +1699,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint64) source[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -1786,10 +1738,6 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -1837,10 +1785,6 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -1886,10 +1830,6 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -1908,7 +1848,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint64) ((gint64) source[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -1945,10 +1885,6 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -1996,10 +1932,6 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -2045,10 +1977,6 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -2067,7 +1995,7 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gfloat) (source[0] + (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -2104,10 +2032,6 @@ ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sine;
@@ -2155,10 +2079,6 @@ ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -2204,10 +2124,6 @@ ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -2226,7 +2142,7 @@ ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gdouble) (source[0] + (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
@@ -2261,7 +2177,7 @@ ags_synth_util_compute_sin_complex(AgsSynthUtil *synth_util)
   
   i = 0;
   
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     ags_complex_set(source,
 		    (ags_complex_get(source) + (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume)));
 
@@ -2727,10 +2643,6 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -2778,10 +2690,6 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -2827,10 +2735,6 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -2849,7 +2753,7 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint8) ((gint16) source[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -2891,10 +2795,6 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -2942,10 +2842,6 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -2991,10 +2887,6 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -3013,7 +2905,7 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint16) ((gint32) source[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -3055,10 +2947,6 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -3106,10 +2994,6 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -3155,10 +3039,6 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -3177,7 +3057,7 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint32) source[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -3219,10 +3099,6 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -3270,10 +3146,6 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -3319,10 +3191,6 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -3341,7 +3209,7 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint64) source[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -3383,10 +3251,6 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -3434,10 +3298,6 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -3483,10 +3343,6 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -3505,7 +3361,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint64) ((gint64) source[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -3545,10 +3401,6 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -3596,10 +3448,6 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -3645,10 +3493,6 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -3667,7 +3511,7 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gfloat) (source[0] + ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -3707,10 +3551,6 @@ ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_sawtooth;
@@ -3758,10 +3598,6 @@ ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -3807,10 +3643,6 @@ ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -3829,7 +3661,7 @@ ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gdouble) (source[0] + ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume);
 
     source += synth_util->source_stride;
@@ -3867,7 +3699,7 @@ ags_synth_util_compute_sawtooth_complex(AgsSynthUtil *synth_util)
   
   i = 0;
   
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     ags_complex_set(source,
 		    (ags_complex_get(source) + ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), ratio) * 2.0 * ratio) - 1.0) * volume));
 
@@ -4356,10 +4188,6 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -4407,10 +4235,6 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -4455,10 +4279,6 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -4488,7 +4308,7 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -4529,10 +4349,6 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -4561,8 +4377,6 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
     };
 
-    i++;
-
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -4576,14 +4390,12 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
     *(source += synth_util->source_stride) = (gint16) v_buffer[6];
     *(source += synth_util->source_stride) = (gint16) v_buffer[7];
 
-    source += synth_util->source_stride;    
+    source += synth_util->source_stride;
+
+    i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -4628,10 +4440,6 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -4661,7 +4469,7 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -4702,10 +4510,6 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -4753,10 +4557,6 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -4801,10 +4601,6 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -4834,7 +4630,7 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -4875,10 +4671,6 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -4926,10 +4718,6 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -4974,10 +4762,6 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -5007,7 +4791,7 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -5048,10 +4832,6 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -5099,10 +4879,6 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -5147,10 +4923,6 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -5180,7 +4952,7 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -5221,10 +4993,6 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -5272,10 +5040,6 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -5320,10 +5084,6 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gfloat) (source[0] + (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -5353,7 +5113,7 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gfloat) (source[0] + (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -5394,10 +5154,6 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_triangle;
@@ -5445,10 +5201,6 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -5493,10 +5245,6 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     source[0] = (gdouble) (source[0] + (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
@@ -5526,7 +5274,7 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gdouble) (source[0] + (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
@@ -5564,7 +5312,7 @@ ags_synth_util_compute_triangle_complex(AgsSynthUtil *synth_util)
   
   i = 0;
   
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     ags_complex_set(source,
 		    (ags_complex_get(source) + (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)));
 
@@ -6051,10 +5799,6 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -6102,10 +5846,6 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -6151,10 +5891,6 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -6173,7 +5909,7 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint8) ((gint16) source[0] + (gint16) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -6212,10 +5948,6 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -6263,10 +5995,6 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -6312,10 +6040,6 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -6334,7 +6058,7 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint16) ((gint32) source[0] + (gint32) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -6373,10 +6097,6 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -6424,10 +6144,6 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -6473,10 +6189,6 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -6495,7 +6207,7 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint32) source[0] + (gint32) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -6534,10 +6246,6 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -6585,10 +6293,6 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -6634,10 +6338,6 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -6656,7 +6356,7 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint64) source[0] + (gint64) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -6695,10 +6395,6 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -6746,10 +6442,6 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -6795,10 +6487,6 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -6817,7 +6505,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint64) ((gint64) source[0] + (gint64) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -6856,10 +6544,6 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -6907,10 +6591,6 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -6956,10 +6636,6 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -6978,7 +6654,7 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gfloat) (source[0] + ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -7015,10 +6691,6 @@ ags_synth_util_compute_square_double(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_square;
@@ -7066,10 +6738,6 @@ ags_synth_util_compute_square_double(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -7115,10 +6783,6 @@ ags_synth_util_compute_square_double(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -7137,7 +6801,7 @@ ags_synth_util_compute_square_double(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gdouble) (source[0] + ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
@@ -7172,7 +6836,7 @@ ags_synth_util_compute_square_complex(AgsSynthUtil *synth_util)
 
   i = 0;
   
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     ags_complex_set(source,
 		    (gdouble) (ags_complex_get(source) + ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume)));
 
@@ -7667,10 +7331,6 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -7718,10 +7378,6 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -7767,10 +7423,6 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -7789,7 +7441,7 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint8) ((gint16) source[0] + (gint16) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -7828,10 +7480,6 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -7879,10 +7527,6 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -7928,10 +7572,6 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -7950,7 +7590,7 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint16) ((gint32) source[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -7989,10 +7629,6 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -8040,10 +7676,6 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -8089,10 +7721,6 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -8111,7 +7739,7 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint32) source[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -8150,10 +7778,6 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -8201,10 +7825,6 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -8250,10 +7870,6 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -8272,7 +7888,7 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint32) ((gint64) source[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -8311,10 +7927,6 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -8362,10 +7974,6 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -8411,10 +8019,6 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -8433,7 +8037,7 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gint64) ((gint64) source[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -8470,10 +8074,6 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -8521,10 +8121,6 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -8570,10 +8166,6 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -8592,7 +8184,7 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gfloat) (source[0] + (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -8629,10 +8221,6 @@ ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util)
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     ags_v8double v_buffer, v_impulse;
@@ -8680,10 +8268,6 @@ ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util)
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     double ret_v_buffer[8], tmp_ret_v_buffer[8];
@@ -8729,10 +8313,6 @@ ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util)
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
-
-  if(synth_util->offset + i_stop > synth_util->frame_count){
-    i_stop = (synth_util->frame_count - synth_util->offset) - ((synth_util->frame_count - synth_util->offset) % 8);
-  }
   
   for(; i < i_stop;){
     tmp_source = source;
@@ -8751,7 +8331,7 @@ ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util)
   }
 #endif
 
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     source[0] = (gdouble) (source[0] + (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume);
 
     source += synth_util->source_stride;
@@ -8786,7 +8366,7 @@ ags_synth_util_compute_impulse_complex(AgsSynthUtil *synth_util)
 
   i = 0;
   
-  for(; i < synth_util->buffer_length && synth_util->offset + i < synth_util->frame_count;){
+  for(; i < synth_util->buffer_length;){
     ags_complex_set(source,
 		    (gdouble) (ags_complex_get(source) + (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume));
 

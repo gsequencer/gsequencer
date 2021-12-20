@@ -374,6 +374,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     g_value_unset(&value);
 
     channel_data->synth_0.frequency = exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0;
+
+    g_message("synth 0 - osc = %d, frequency = %f, octave = %f, key= %f", channel_data->synth_0.synth_oscillator_mode, channel_data->synth_0.frequency, octave, key);
       
     /* synth-0 phase */    
     g_object_get(fx_synth_audio,
@@ -651,6 +653,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     g_value_unset(&value);
 
     channel_data->synth_1.frequency = exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0;
+
+    g_message("synth 1 - osc = %d, frequency = %f, octave = %f, key= %f", channel_data->synth_1.synth_oscillator_mode, channel_data->synth_1.frequency, octave, key);
       
     /* synth-1 phase */    
     g_object_get(fx_synth_audio,
@@ -1178,15 +1182,15 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       g_rec_mutex_unlock(fx_synth_audio_mutex);
     }
 
-    channel_data->synth_0.source = source->stream->data;
+    channel_data->synth_0.source = source->stream_current->data;
     channel_data->synth_0.source_stride = 1;
 
     channel_data->synth_0.buffer_length = buffer_size;
     channel_data->synth_0.format = format;
     channel_data->synth_0.samplerate = samplerate;
 
-    channel_data->synth_0.frame_count = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size)) + buffer_size;
-    channel_data->synth_0.offset = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size));
+    channel_data->synth_0.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
+    channel_data->synth_0.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
     
     if(synth_0_sync_enabled){
       //TODO:JK: implement me
@@ -1220,15 +1224,15 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       }
     }
     
-    channel_data->synth_1.source = source->stream->data;
+    channel_data->synth_1.source = source->stream_current->data;
     channel_data->synth_1.source_stride = 1;
 
     channel_data->synth_1.buffer_length = buffer_size;
     channel_data->synth_1.format = format;
     channel_data->synth_1.samplerate = samplerate;
     
-    channel_data->synth_1.frame_count = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size)) + buffer_size;
-    channel_data->synth_1.offset = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size));
+    channel_data->synth_1.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
+    channel_data->synth_1.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
     
     if(synth_1_sync_enabled){
       //TODO:JK: implement me
@@ -1262,62 +1266,62 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       }
     }
     
-    channel_data->hq_pitch_util.source = source->stream->data;
+    channel_data->hq_pitch_util.source = source->stream_current->data;
     channel_data->hq_pitch_util.source_stride = 1;
 
-    channel_data->hq_pitch_util.destination = source->stream->data;
+    channel_data->hq_pitch_util.destination = source->stream_current->data;
     channel_data->hq_pitch_util.destination_stride = 1;
 
     channel_data->hq_pitch_util.buffer_length = buffer_size;
     channel_data->hq_pitch_util.format = format;
     channel_data->hq_pitch_util.samplerate = samplerate;
     
-    ags_hq_pitch_util_pitch(&(channel_data->hq_pitch_util));
+//    ags_hq_pitch_util_pitch(&(channel_data->hq_pitch_util));
 
     //TODO:JK: implement me
 
     if(low_pass_enabled){
-      channel_data->low_pass_filter.source = source->stream->data;
+      channel_data->low_pass_filter.source = source->stream_current->data;
       channel_data->low_pass_filter.source_stride = 1;
 
-      channel_data->low_pass_filter.destination = source->stream->data;
+      channel_data->low_pass_filter.destination = source->stream_current->data;
       channel_data->low_pass_filter.destination_stride = 1;
 
       channel_data->low_pass_filter.buffer_length = buffer_size;
       channel_data->low_pass_filter.format = format;
       channel_data->low_pass_filter.samplerate = samplerate;
       
-      ags_fluid_iir_filter_util_process(&(channel_data->low_pass_filter));
+//      ags_fluid_iir_filter_util_process(&(channel_data->low_pass_filter));
     }
 
     if(high_pass_enabled){
-      channel_data->high_pass_filter.source = source->stream->data;
+      channel_data->high_pass_filter.source = source->stream_current->data;
       channel_data->high_pass_filter.source_stride = 1;
 
-      channel_data->high_pass_filter.destination = source->stream->data;
+      channel_data->high_pass_filter.destination = source->stream_current->data;
       channel_data->high_pass_filter.destination_stride = 1;
 
       channel_data->high_pass_filter.buffer_length = buffer_size;
       channel_data->high_pass_filter.format = format;
       channel_data->high_pass_filter.samplerate = samplerate;
       
-      ags_fluid_iir_filter_util_process(&(channel_data->high_pass_filter));
+//      ags_fluid_iir_filter_util_process(&(channel_data->high_pass_filter));
     }
 
     if(chorus_enabled){
-      channel_data->chorus_util.source = source->stream->data;
+      channel_data->chorus_util.source = source->stream_current->data;
       channel_data->chorus_util.source_stride = 1;
 
-      channel_data->chorus_util.destination = source->stream->data;
+      channel_data->chorus_util.destination = source->stream_current->data;
       channel_data->chorus_util.destination_stride = 1;
 
       channel_data->chorus_util.buffer_length = buffer_size;
       channel_data->chorus_util.format = format;
       channel_data->chorus_util.samplerate = samplerate;
       
-      channel_data->chorus_util.offset = (offset_counter * (delay * buffer_size) + (delay_counter * buffer_size));
+      channel_data->chorus_util.offset = floor(((offset_counter - x0) * (delay + delay_counter)) * buffer_size);
       
-      ags_chorus_util_compute(&(channel_data->chorus_util));
+//      ags_chorus_util_compute(&(channel_data->chorus_util));
     }
   }
   

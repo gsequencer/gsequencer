@@ -313,16 +313,14 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
-  gtk_adjustment_set_page_increment(adjustment,
-				    1.0);
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);
 
-  hybrid_synth->synth_0_octave->scale_max_precision = 12;
+//  hybrid_synth->synth_0_octave->scale_max_precision = 12;
   
-  ags_dial_set_scale_precision(hybrid_synth->synth_0_octave,
-			       12);
+//  ags_dial_set_scale_precision(hybrid_synth->synth_0_octave,
+//			       12);
   ags_dial_set_radius(hybrid_synth->synth_0_octave,
 		      12);
   
@@ -345,21 +343,19 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_key);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -12.0);
   gtk_adjustment_set_upper(adjustment,
 			   12.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
-  gtk_adjustment_set_page_increment(adjustment,
-				    1.0);
 
   gtk_adjustment_set_value(adjustment,
 			   2.0);
 
-  hybrid_synth->synth_0_key->scale_max_precision = 12;
-  ags_dial_set_scale_precision(hybrid_synth->synth_0_key,
-			       12);
+//  hybrid_synth->synth_0_key->scale_max_precision = 12;
+//  ags_dial_set_scale_precision(hybrid_synth->synth_0_key,
+//			       12);
   ags_dial_set_radius(hybrid_synth->synth_0_key,
 		      12);
   
@@ -781,16 +777,13 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
-  gtk_adjustment_set_page_increment(adjustment,
-				    1.0);
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);
 
-  hybrid_synth->synth_1_octave->scale_max_precision = 12;
-  
-  ags_dial_set_scale_precision(hybrid_synth->synth_1_octave,
-			       12);
+//  hybrid_synth->synth_1_octave->scale_max_precision = 12;
+//  ags_dial_set_scale_precision(hybrid_synth->synth_1_octave,
+//			       12);
   ags_dial_set_radius(hybrid_synth->synth_1_octave,
 		      12);
   
@@ -813,21 +806,19 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_key);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -12.0);
   gtk_adjustment_set_upper(adjustment,
 			   12.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
-  gtk_adjustment_set_page_increment(adjustment,
-				    1.0);
 
   gtk_adjustment_set_value(adjustment,
 			   2.0);
 
-  hybrid_synth->synth_1_key->scale_max_precision = 12;
-  ags_dial_set_scale_precision(hybrid_synth->synth_1_key,
-			       12);
+//  hybrid_synth->synth_1_key->scale_max_precision = 12;
+//  ags_dial_set_scale_precision(hybrid_synth->synth_1_key,
+//			       12);
   ags_dial_set_radius(hybrid_synth->synth_1_key,
 		      12);
   
@@ -1510,7 +1501,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(hybrid_synth->chorus_input_volume,
 		      12);
@@ -1544,7 +1535,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
 
   ags_dial_set_radius(hybrid_synth->chorus_output_volume,
 		      12);
@@ -1657,7 +1648,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   0.5);
 
   ags_dial_set_radius(hybrid_synth->chorus_mix,
 		      12);

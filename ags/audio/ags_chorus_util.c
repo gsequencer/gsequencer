@@ -374,15 +374,6 @@ ags_chorus_util_set_buffer_length(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->buffer_length = buffer_length;
-
-  ags_stream_free(chorus_util->pitch_mix_buffer);
-
-  chorus_util->pitch_mix_buffer = NULL;
-
-  if(buffer_length > 0){
-    chorus_util->pitch_mix_buffer = ags_stream_alloc(buffer_length,
-						     chorus_util->format);
-  }
 }
 
 /**
@@ -423,20 +414,6 @@ ags_chorus_util_set_format(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->format = format;
-
-  ags_stream_free(chorus_util->pitch_mix_buffer);
-
-  chorus_util->pitch_mix_buffer = NULL;
-
-  if(chorus_util->buffer_length > 0){
-    chorus_util->pitch_mix_buffer = ags_stream_alloc(chorus_util->buffer_length,
-						     format);
-  }
-
-  ags_stream_free(chorus_util->pitch_mix_buffer_history);
-
-  chorus_util->pitch_mix_buffer_history = ags_stream_alloc(chorus_util->history_buffer_length,
-							   format);
 }
 
 /**
@@ -1073,7 +1050,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint16 *) chorus_util->pitch_mix_buffer;
 
@@ -1113,7 +1090,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   mix_b *= 2.0;
 
   word_size = sizeof(gint16);
-  
+
   if(pitch_mix_buffer_length < chorus_util->history_buffer_length){
     memmove(chorus_util->pitch_mix_buffer_history, ((char *) chorus_util->pitch_mix_buffer_history) + ((chorus_util->history_buffer_length - pitch_mix_buffer_length) * word_size), (chorus_util->history_buffer_length - pitch_mix_buffer_length) * word_size);
     memcpy(((char *) chorus_util->pitch_mix_buffer_history) + ((chorus_util->history_buffer_length - pitch_mix_buffer_length) * word_size), (char *) chorus_util->pitch_mix_buffer, pitch_mix_buffer_length * word_size);

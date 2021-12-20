@@ -355,20 +355,6 @@ ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->buffer_length = buffer_length;
-
-  ags_stream_free(hq_pitch_util->low_mix_buffer);
-  ags_stream_free(hq_pitch_util->new_mix_buffer);
-
-  hq_pitch_util->low_mix_buffer = NULL;
-  hq_pitch_util->new_mix_buffer = NULL;
-
-  if(buffer_length > 0){
-    hq_pitch_util->low_mix_buffer = ags_stream_alloc(buffer_length,
-						     hq_pitch_util->format);
-    
-    hq_pitch_util->new_mix_buffer = ags_stream_alloc(buffer_length,
-						     hq_pitch_util->format);
-  }
 }
 
 /**
@@ -409,20 +395,6 @@ ags_hq_pitch_util_set_format(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->format = format;
-
-  ags_stream_free(hq_pitch_util->low_mix_buffer);
-  ags_stream_free(hq_pitch_util->new_mix_buffer);
-
-  hq_pitch_util->low_mix_buffer = NULL;
-  hq_pitch_util->new_mix_buffer = NULL;
-
-  if(hq_pitch_util->buffer_length > 0){
-    hq_pitch_util->low_mix_buffer = ags_stream_alloc(hq_pitch_util->buffer_length,
-						     format);
-    
-    hq_pitch_util->new_mix_buffer = ags_stream_alloc(hq_pitch_util->buffer_length,
-						     format);
-  }
 }
 
 /**

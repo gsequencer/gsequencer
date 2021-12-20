@@ -1157,7 +1157,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					     "port-value-length", 1,
 					     NULL);
   
-  fx_synth_audio->synth_0_key->port_value.ags_port_float = (gfloat) 0.0;
+  fx_synth_audio->synth_0_key->port_value.ags_port_float = (gfloat) 2.0;
 
   g_object_set(fx_synth_audio->synth_0_key,
 	       "plugin-port", ags_fx_synth_audio_get_synth_0_key_plugin_port(),
@@ -1458,7 +1458,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					     "port-value-length", 1,
 					     NULL);
   
-  fx_synth_audio->synth_1_key->port_value.ags_port_float = (gfloat) 0.0;
+  fx_synth_audio->synth_1_key->port_value.ags_port_float = (gfloat) 2.0;
 
   g_object_set(fx_synth_audio->synth_1_key,
 	       "plugin-port", ags_fx_synth_audio_get_synth_1_key_plugin_port(),
@@ -1799,7 +1799,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						"port-value-length", 2,
 						NULL);
   
-  fx_synth_audio->chorus_enabled->port_value.ags_port_float = (gfloat) FALSE;
+  fx_synth_audio->chorus_enabled->port_value.ags_port_float = (gfloat) TRUE;
 
   g_object_set(fx_synth_audio->chorus_enabled,
 	       "plugin-port", ags_fx_synth_audio_get_chorus_enabled_plugin_port(),
@@ -1919,7 +1919,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					    "port-value-length", 2,
 					    NULL);
   
-  fx_synth_audio->chorus_mix->port_value.ags_port_float = (gfloat) 0.0;
+  fx_synth_audio->chorus_mix->port_value.ags_port_float = (gfloat) 0.5;
 
   g_object_set(fx_synth_audio->chorus_mix,
 	       "plugin-port", ags_fx_synth_audio_get_chorus_mix_plugin_port(),
@@ -3370,6 +3370,7 @@ ags_fx_synth_audio_get_property(GObject *gobject,
       
     g_rec_mutex_unlock(recall_mutex);	
   }
+  break;
   case PROP_SYNTH_0_OCTAVE:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -3378,6 +3379,7 @@ ags_fx_synth_audio_get_property(GObject *gobject,
       
     g_rec_mutex_unlock(recall_mutex);	
   }
+  break;
   case PROP_SYNTH_0_KEY:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -3494,6 +3496,7 @@ ags_fx_synth_audio_get_property(GObject *gobject,
       
     g_rec_mutex_unlock(recall_mutex);	
   }
+  break;
   case PROP_SYNTH_1_OCTAVE:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -3502,6 +3505,7 @@ ags_fx_synth_audio_get_property(GObject *gobject,
       
     g_rec_mutex_unlock(recall_mutex);	
   }
+  break;
   case PROP_SYNTH_1_KEY:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -4254,6 +4258,10 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 
 	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(buffer_size,
 									format);
+
+	  channel_data->low_pass_filter.filter_type = AGS_FLUID_IIR_LOWPASS;
+	  
+	  channel_data->high_pass_filter.filter_type = AGS_FLUID_IIR_HIGHPASS;
 	  
 	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxSynthAudioInputData *input_data;
@@ -4526,9 +4534,9 @@ ags_fx_synth_audio_get_synth_0_key_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      2.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -12.0);
     g_value_set_float(plugin_port->upper_value,
 		      12.0);
   }
@@ -5112,9 +5120,9 @@ ags_fx_synth_audio_get_synth_1_key_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      2.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -12.0);
     g_value_set_float(plugin_port->upper_value,
 		      12.0);
   }
