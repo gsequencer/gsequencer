@@ -497,7 +497,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_0_sync_attack_0,
 		      12);
@@ -531,7 +531,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_0_sync_phase_0,
 		      12);
@@ -565,7 +565,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_0_sync_attack_1,
 		      12);
@@ -599,7 +599,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_0_sync_phase_1,
 		      12);
@@ -633,7 +633,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_0_sync_attack_2,
 		      12);
@@ -667,7 +667,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_0_sync_phase_2,
 		      12);
@@ -960,7 +960,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_1_sync_attack_0,
 		      12);
@@ -994,7 +994,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_1_sync_phase_0,
 		      12);
@@ -1028,7 +1028,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_1_sync_attack_1,
 		      12);
@@ -1062,7 +1062,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_1_sync_phase_1,
 		      12);
@@ -1096,7 +1096,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_1_sync_attack_2,
 		      12);
@@ -1130,7 +1130,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(hybrid_synth->synth_1_sync_phase_2,
 		      12);

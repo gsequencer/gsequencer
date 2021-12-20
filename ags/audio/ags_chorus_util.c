@@ -807,7 +807,6 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -836,8 +835,6 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -929,12 +926,12 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -991,7 +988,6 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -1020,8 +1016,6 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -1113,12 +1107,12 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -1175,7 +1169,6 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -1204,8 +1197,6 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -1297,12 +1288,12 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -1359,7 +1350,6 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -1388,8 +1378,6 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -1481,12 +1469,12 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -1543,7 +1531,6 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -1572,8 +1559,6 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -1665,12 +1650,12 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -1727,7 +1712,6 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -1756,8 +1740,6 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -1849,12 +1831,12 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -1911,7 +1893,6 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -1940,8 +1921,6 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -2033,12 +2012,12 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
@@ -2095,7 +2074,6 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  gdouble ratio;
   guint64 offset;
   guint word_size;    
   guint i;
@@ -2124,8 +2102,6 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
-
-  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -2217,12 +2193,12 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0)));
+      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      position = i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0)));
+      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:

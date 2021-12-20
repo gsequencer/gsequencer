@@ -2260,6 +2260,33 @@ ags_fx_synth_audio_set_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
+  case PROP_SYNTH_0_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_synth_audio->synth_0_sync_relative_attack_factor){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_synth_audio->synth_0_sync_relative_attack_factor != NULL){
+      g_object_unref(G_OBJECT(fx_synth_audio->synth_0_sync_relative_attack_factor));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_synth_audio->synth_0_sync_relative_attack_factor = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_SYNTH_0_SYNC_ATTACK_0:
   {
     AgsPort *port;
@@ -2634,6 +2661,33 @@ ags_fx_synth_audio_set_property(GObject *gobject,
     }
 
     fx_synth_audio->synth_1_sync_enabled = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_synth_audio->synth_1_sync_relative_attack_factor){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_synth_audio->synth_1_sync_relative_attack_factor != NULL){
+      g_object_unref(G_OBJECT(fx_synth_audio->synth_1_sync_relative_attack_factor));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_synth_audio->synth_1_sync_relative_attack_factor = port;
       
     g_rec_mutex_unlock(recall_mutex);	
   }
@@ -3416,6 +3470,15 @@ ags_fx_synth_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
+  case PROP_SYNTH_0_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_synth_audio->synth_0_sync_relative_attack_factor);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_SYNTH_0_SYNC_ATTACK_0:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -3538,6 +3601,15 @@ ags_fx_synth_audio_get_property(GObject *gobject,
     g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, fx_synth_audio->synth_1_sync_enabled);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_SYNTH_1_SYNC_RELATIVE_ATTACK_FACTOR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_synth_audio->synth_1_sync_relative_attack_factor);
       
     g_rec_mutex_unlock(recall_mutex);	
   }
