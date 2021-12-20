@@ -5,6 +5,7 @@ ags (3.14.0)
 	* TODO:JK: implemented ags-fx-fm-synth
 	* implemented ags-fx-chorus
 	* added enabled port to ags-fx-low-pass and ags-fx-high-pass
+	* fixed AgsSynthUtil sawtooth and triangle
 
 ags (3.13.8)
 
