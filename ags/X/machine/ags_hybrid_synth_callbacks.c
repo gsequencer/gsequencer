@@ -380,7 +380,7 @@ ags_hybrid_synth_synth_0_relative_attack_factor_callback(AgsDial *dial, AgsHybri
     port = NULL;
       
     g_object_get(recall->data,
-		 "synth-0-relative-attack-factor", &port,
+		 "synth-0-sync-relative-attack-factor", &port,
 		 NULL);
 
     if(port != NULL){
@@ -1145,7 +1145,7 @@ ags_hybrid_synth_synth_1_relative_attack_factor_callback(AgsDial *dial, AgsHybri
     port = NULL;
       
     g_object_get(recall->data,
-		 "synth-1-relative-attack-factor", &port,
+		 "synth-1-sync-relative-attack-factor", &port,
 		 NULL);
 
     if(port != NULL){

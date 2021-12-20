@@ -863,7 +863,7 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint8 *) chorus_util->pitch_mix_buffer;
 
@@ -1225,7 +1225,7 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
@@ -1406,7 +1406,7 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
@@ -1587,7 +1587,7 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint64 *) chorus_util->pitch_mix_buffer;
 
@@ -1768,7 +1768,7 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gfloat *) chorus_util->pitch_mix_buffer;
 
@@ -1949,7 +1949,7 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gdouble *) chorus_util->pitch_mix_buffer;
 
@@ -2130,7 +2130,7 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (AgsComplex *) chorus_util->pitch_mix_buffer;
 

@@ -1721,9 +1721,9 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       channel_data->chorus_util.format = format;
       channel_data->chorus_util.samplerate = samplerate;
       
-      channel_data->chorus_util.offset = floor(((offset_counter - x0) * (delay + delay_counter)) * buffer_size);
+      channel_data->chorus_util.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
       
-//      ags_chorus_util_compute(&(channel_data->chorus_util));
+      ags_chorus_util_compute(&(channel_data->chorus_util));
     }
   }
   
