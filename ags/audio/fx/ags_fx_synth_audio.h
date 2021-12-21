@@ -44,6 +44,8 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_SYNTH_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_SYNTH_AUDIO))
 #define AGS_FX_SYNTH_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_SYNTH_AUDIO, AgsFxSynthAudioClass))
 
+#define AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE (65536)
+
 typedef struct _AgsFxSynthAudio AgsFxSynthAudio;
 typedef struct _AgsFxSynthAudioScopeData AgsFxSynthAudioScopeData;
 typedef struct _AgsFxSynthAudioChannelData AgsFxSynthAudioChannelData;

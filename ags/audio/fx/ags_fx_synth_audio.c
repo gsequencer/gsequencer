@@ -4270,6 +4270,7 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
   guint output_port_count, input_port_count;
   guint buffer_size;
   guint format;
+  guint samplerate;
   guint i, j, k;
 
   GRecMutex *recall_mutex;
@@ -4281,11 +4282,13 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
+	       "samplerate", &samplerate,
 	       NULL);
     
   /* allocate channel data */
@@ -4323,18 +4326,47 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_synth_audio_channel_data_alloc();
 
-	  channel_data->hq_pitch_util.low_mix_buffer = ags_stream_alloc(buffer_size,
+	  channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
+	  channel_data->hq_pitch_linear_interpolate_util.format = format;
+	  channel_data->hq_pitch_linear_interpolate_util.samplerate = samplerate;
+
+	  channel_data->hq_pitch_util.destination = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+								     format);
+
+	  channel_data->hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 									format);
-	  channel_data->hq_pitch_util.new_mix_buffer = ags_stream_alloc(buffer_size,
+	  channel_data->hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 									format);
 
-	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(buffer_size,
-									format);
+	  channel_data->hq_pitch_util.buffer_length = buffer_size;
+	  channel_data->hq_pitch_util.format = format;
+	  channel_data->hq_pitch_util.samplerate = samplerate;
+	  
+	  channel_data->chorus_hq_pitch_util.buffer_length = buffer_size;
+	  channel_data->chorus_hq_pitch_util.format = format;
+	  channel_data->chorus_hq_pitch_util.samplerate = samplerate;
 
-	  channel_data->low_pass_filter.filter_type = AGS_FLUID_IIR_LOWPASS;
+	  channel_data->chorus_hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									       format);
+	  channel_data->chorus_hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									       format);
+
+	  channel_data->chorus_linear_interpolate_util.buffer_length = buffer_size;
+	  channel_data->chorus_linear_interpolate_util.format = format;
+	  channel_data->chorus_linear_interpolate_util.samplerate = samplerate;
+
+	  channel_data->chorus_linear_interpolate_util.factor = 1.0;
 	  
-	  channel_data->high_pass_filter.filter_type = AGS_FLUID_IIR_HIGHPASS;
+	  channel_data->chorus_util.destination = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+								   format);
+
+	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									format);
 	  
+	  channel_data->chorus_util.buffer_length = buffer_size;
+	  channel_data->chorus_util.format = format;
+	  channel_data->chorus_util.samplerate = samplerate;
+
 	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxSynthAudioInputData *input_data;
 
@@ -4424,6 +4456,78 @@ ags_fx_synth_audio_channel_data_alloc()
   g_rec_mutex_init(&(channel_data->strct_mutex));
 
   channel_data->parent = NULL;
+
+  /* HQ pitch util */
+  channel_data->hq_pitch_linear_interpolate_util.source = NULL;
+  channel_data->hq_pitch_linear_interpolate_util.source_stride = 1;
+	  
+  channel_data->hq_pitch_linear_interpolate_util.destination = NULL;
+  channel_data->hq_pitch_linear_interpolate_util.destination_stride = 1;
+	  
+  channel_data->hq_pitch_linear_interpolate_util.buffer_length = 0;
+  channel_data->hq_pitch_linear_interpolate_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->hq_pitch_linear_interpolate_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->hq_pitch_linear_interpolate_util.factor = 1.0;
+
+  channel_data->hq_pitch_util.source = NULL;
+  channel_data->hq_pitch_util.source_stride = 1;
+	  
+  channel_data->hq_pitch_util.destination = NULL;
+  channel_data->hq_pitch_util.destination_stride = 1;
+  
+  channel_data->hq_pitch_util.low_mix_buffer = NULL;
+  channel_data->hq_pitch_util.new_mix_buffer = NULL;
+
+  channel_data->hq_pitch_util.buffer_length = 0;
+  channel_data->hq_pitch_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->hq_pitch_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->hq_pitch_util.base_key = 0.0;
+  channel_data->hq_pitch_util.tuning = 0.0;
+
+  channel_data->hq_pitch_util.linear_interpolate_util = &(channel_data->hq_pitch_linear_interpolate_util);    
+
+  /* chorus util */
+  channel_data->chorus_linear_interpolate_util.source = NULL;
+  channel_data->chorus_linear_interpolate_util.source_stride = 1;
+
+  channel_data->chorus_linear_interpolate_util.destination = NULL;
+  channel_data->chorus_linear_interpolate_util.destination_stride = 1;
+
+  channel_data->chorus_linear_interpolate_util.buffer_length = 0;
+  channel_data->chorus_linear_interpolate_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->chorus_linear_interpolate_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->chorus_linear_interpolate_util.factor = 1.0;
+	  
+  channel_data->chorus_hq_pitch_util.source = NULL;
+  channel_data->chorus_hq_pitch_util.source_stride = 1;
+	  
+  channel_data->chorus_hq_pitch_util.destination = NULL;
+  channel_data->chorus_hq_pitch_util.destination_stride = 1;
+
+  channel_data->chorus_hq_pitch_util.low_mix_buffer = NULL;
+  channel_data->chorus_hq_pitch_util.new_mix_buffer = NULL;
+	  
+  channel_data->chorus_hq_pitch_util.buffer_length = 0;
+  channel_data->chorus_hq_pitch_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->chorus_hq_pitch_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->chorus_hq_pitch_util.base_key = 0.0;
+  channel_data->chorus_hq_pitch_util.tuning = 0.0;
+
+  channel_data->chorus_hq_pitch_util.linear_interpolate_util = &(channel_data->chorus_linear_interpolate_util);
+  
+  channel_data->chorus_util.pitch_mix_buffer = NULL;
+
+  channel_data->chorus_util.hq_pitch_util = &(channel_data->chorus_hq_pitch_util);
+
+  /* low pass filter util */
+  channel_data->low_pass_filter.filter_type = AGS_FLUID_IIR_LOWPASS;
+	  
+  /* high pass filter util */
+  channel_data->high_pass_filter.filter_type = AGS_FLUID_IIR_HIGHPASS;
   
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     channel_data->input_data[i] = ags_fx_synth_audio_input_data_alloc();

@@ -1259,9 +1259,9 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 			   1200.0);
 
   gtk_adjustment_set_step_increment(adjustment,
-				    0.01);
+				    1.0);
   gtk_adjustment_set_page_increment(adjustment,
-				    0.1);
+				    10.0);
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);

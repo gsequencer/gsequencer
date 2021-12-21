@@ -172,7 +172,9 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
   guint format;
   guint samplerate;
   guint copy_mode_out;
-
+  guint audio_buffer_util_format;
+  guint copy_mode;
+  
   gboolean synth_0_sync_enabled;
   gdouble synth_0_sync_relative_attack_factor;
   gdouble synth_0_sync_attack_0;
@@ -293,6 +295,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	       "samplerate", &samplerate,
 	       NULL);
 
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
+						  audio_buffer_util_format);
+  
   /* get synth mutex */
   fx_synth_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_synth_audio);
 
@@ -1670,60 +1677,58 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
     
     //TODO:JK: implement me
 
-    channel_data->hq_pitch_util.source = source->stream_current->data;
-    channel_data->hq_pitch_util.source_stride = 1;
+    if(channel_data->hq_pitch_util.tuning != 0.0){
+      channel_data->hq_pitch_util.source = source->stream_current->data;
 
-    channel_data->hq_pitch_util.destination = source->stream_current->data;
-    channel_data->hq_pitch_util.destination_stride = 1;
+      channel_data->hq_pitch_util.samplerate = samplerate;
+      channel_data->hq_pitch_util.buffer_length = buffer_size;
+      channel_data->hq_pitch_util.format = format;
+      
+      ags_hq_pitch_util_pitch(&(channel_data->hq_pitch_util));
 
-    channel_data->hq_pitch_util.buffer_length = buffer_size;
-    channel_data->hq_pitch_util.format = format;
-    channel_data->hq_pitch_util.samplerate = samplerate;
+      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+					 buffer_size, audio_buffer_util_format);
+
+      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						  channel_data->hq_pitch_util.destination, 1, 0,
+						  buffer_size, copy_mode);
+    }
     
-    ags_hq_pitch_util_pitch(&(channel_data->hq_pitch_util));
-
     if(low_pass_enabled){
       channel_data->low_pass_filter.source = source->stream_current->data;
-      channel_data->low_pass_filter.source_stride = 1;
 
       channel_data->low_pass_filter.destination = source->stream_current->data;
-      channel_data->low_pass_filter.destination_stride = 1;
 
-      channel_data->low_pass_filter.buffer_length = buffer_size;
-      channel_data->low_pass_filter.format = format;
-      channel_data->low_pass_filter.samplerate = samplerate;
-      
       ags_fluid_iir_filter_util_process(&(channel_data->low_pass_filter));
     }
 
     if(high_pass_enabled){
       channel_data->high_pass_filter.source = source->stream_current->data;
-      channel_data->high_pass_filter.source_stride = 1;
 
       channel_data->high_pass_filter.destination = source->stream_current->data;
-      channel_data->high_pass_filter.destination_stride = 1;
 
-      channel_data->high_pass_filter.buffer_length = buffer_size;
-      channel_data->high_pass_filter.format = format;
-      channel_data->high_pass_filter.samplerate = samplerate;
-      
       ags_fluid_iir_filter_util_process(&(channel_data->high_pass_filter));
     }
 
-    if(chorus_enabled){
+    if(channel_data->chorus_util.depth != 0.0 && chorus_enabled){
       channel_data->chorus_util.source = source->stream_current->data;
-      channel_data->chorus_util.source_stride = 1;
 
-      channel_data->chorus_util.destination = source->stream_current->data;
-      channel_data->chorus_util.destination_stride = 1;
-
+      channel_data->chorus_util.samplerate = samplerate;
       channel_data->chorus_util.buffer_length = buffer_size;
       channel_data->chorus_util.format = format;
-      channel_data->chorus_util.samplerate = samplerate;
       
       channel_data->chorus_util.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
+
+      channel_data->chorus_util.base_key = (gdouble) midi_note - 48.0;
       
       ags_chorus_util_compute(&(channel_data->chorus_util));
+
+      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+					 buffer_size, audio_buffer_util_format);
+
+      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						  channel_data->chorus_util.destination, 1, 0,
+						  buffer_size, copy_mode);
     }
   }
   

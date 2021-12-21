@@ -840,11 +840,11 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -863,7 +863,7 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint8 *) chorus_util->pitch_mix_buffer;
 
@@ -874,7 +874,7 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_8_BIT);
@@ -1021,11 +1021,11 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1038,13 +1038,13 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
     
     return;
   }
-  
+
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint16 *) chorus_util->pitch_mix_buffer;
 
@@ -1055,7 +1055,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_16_BIT);
@@ -1202,11 +1202,11 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1225,7 +1225,7 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
@@ -1236,7 +1236,7 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_24_BIT);
@@ -1383,11 +1383,11 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1406,7 +1406,7 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
@@ -1417,7 +1417,7 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -1564,11 +1564,11 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1587,7 +1587,7 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gint64 *) chorus_util->pitch_mix_buffer;
 
@@ -1598,7 +1598,7 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_64_BIT);
@@ -1745,11 +1745,11 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1768,7 +1768,7 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gfloat *) chorus_util->pitch_mix_buffer;
 
@@ -1779,7 +1779,7 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_FLOAT);
@@ -1926,11 +1926,11 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1949,7 +1949,7 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (gdouble *) chorus_util->pitch_mix_buffer;
 
@@ -1960,7 +1960,7 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_DOUBLE);
@@ -2107,11 +2107,11 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   delay = chorus_util->delay;
 
   /* frequency */
-  tuning = chorus_util->depth * 0.25;
+  tuning = chorus_util->depth * 33.3;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
-  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  pitch_freq = exp2((chorus_util->base_key - (tuning / 100.0)) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -2130,7 +2130,7 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   
   pitch_freq_period = samplerate / pitch_freq;
 
-  pitch_mix_buffer_length = buffer_length; // (freq_period / pitch_freq_period) * buffer_length;
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
   pitch_mix_buffer = (AgsComplex *) chorus_util->pitch_mix_buffer;
 
@@ -2141,7 +2141,7 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
 			       source);
 
   ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      pitch_mix_buffer_length);
+				      buffer_length);
 
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_COMPLEX);
