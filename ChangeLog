@@ -1,3 +1,8 @@
+ags (3.14.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_dial_get_value() missing return value
+
 ags (3.14.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

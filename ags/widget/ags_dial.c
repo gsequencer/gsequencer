@@ -2595,7 +2595,7 @@ gdouble
 ags_dial_get_value(AgsDial *dial)
 {
   if(!AGS_IS_DIAL(dial)){
-    return;
+    return(0.0);
   }
 
   return(gtk_adjustment_get_value(dial->adjustment));
