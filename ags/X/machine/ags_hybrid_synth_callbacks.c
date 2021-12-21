@@ -356,7 +356,7 @@ ags_hybrid_synth_synth_0_sync_enabled_callback(GtkButton *button, AgsHybridSynth
 }
 
 void
-ags_hybrid_synth_synth_0_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth)
+ags_hybrid_synth_synth_0_sync_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth)
 {
   AgsAudio *audio;
   
@@ -1121,7 +1121,7 @@ ags_hybrid_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsHybridSynth
 }
 
 void
-ags_hybrid_synth_synth_1_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth)
+ags_hybrid_synth_synth_1_sync_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth)
 {
   AgsAudio *audio;
   

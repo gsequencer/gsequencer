@@ -448,9 +448,9 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  6, 1,
 		  1, 1);
   
-  hybrid_synth->synth_0_relative_attack_factor = (AgsDial *) ags_dial_new();
+  hybrid_synth->synth_0_sync_relative_attack_factor = (AgsDial *) ags_dial_new();
 
-  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_relative_attack_factor);
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_0_sync_relative_attack_factor);
 
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
@@ -465,11 +465,11 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_adjustment_set_value(adjustment,
 			   1.0);
 
-  ags_dial_set_radius(hybrid_synth->synth_0_relative_attack_factor,
+  ags_dial_set_radius(hybrid_synth->synth_0_sync_relative_attack_factor,
 		      12);
   
   gtk_grid_attach(synth_0_grid,
-		  (GtkWidget *) hybrid_synth->synth_0_relative_attack_factor,
+		  (GtkWidget *) hybrid_synth->synth_0_sync_relative_attack_factor,
 		  7, 1,
 		  1, 1);
 
@@ -911,9 +911,9 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  6, 1,
 		  1, 1);
   
-  hybrid_synth->synth_1_relative_attack_factor = (AgsDial *) ags_dial_new();
+  hybrid_synth->synth_1_sync_relative_attack_factor = (AgsDial *) ags_dial_new();
 
-  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_relative_attack_factor);
+  adjustment = ags_dial_get_adjustment(hybrid_synth->synth_1_sync_relative_attack_factor);
 
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
@@ -928,11 +928,11 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_adjustment_set_value(adjustment,
 			   1.0);
 
-  ags_dial_set_radius(hybrid_synth->synth_1_relative_attack_factor,
+  ags_dial_set_radius(hybrid_synth->synth_1_sync_relative_attack_factor,
 		      12);
   
   gtk_grid_attach(synth_1_grid,
-		  (GtkWidget *) hybrid_synth->synth_1_relative_attack_factor,
+		  (GtkWidget *) hybrid_synth->synth_1_sync_relative_attack_factor,
 		  7, 1,
 		  1, 1);
 
@@ -1734,8 +1734,8 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->synth_0_sync_enabled, "clicked",
 			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_enabled_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->synth_0_relative_attack_factor, "value-changed",
-			 G_CALLBACK(ags_hybrid_synth_synth_0_relative_attack_factor_callback), hybrid_synth);
+  g_signal_connect_after(hybrid_synth->synth_0_sync_relative_attack_factor, "value-changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_relative_attack_factor_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->synth_0_sync_attack_0, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_0_callback), hybrid_synth);
@@ -1779,8 +1779,8 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->synth_1_sync_enabled, "clicked",
 			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_enabled_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->synth_1_relative_attack_factor, "value-changed",
-			 G_CALLBACK(ags_hybrid_synth_synth_1_relative_attack_factor_callback), hybrid_synth);
+  g_signal_connect_after(hybrid_synth->synth_1_sync_relative_attack_factor, "value-changed",
+			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_relative_attack_factor_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->synth_1_sync_attack_0, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_0_callback), hybrid_synth);

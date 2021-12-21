@@ -53,6 +53,8 @@
 #include <ags/X/machine/ags_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
 #include <ags/X/machine/ags_fm_syncsynth_callbacks.h>
+#include <ags/X/machine/ags_hybrid_synth.h>
+#include <ags/X/machine/ags_hybrid_synth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_fm_oscillator.h>
 
@@ -143,6 +145,7 @@ void ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node,
 void ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsMatrix *matrix);
 void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSyncsynth *syncsynth);
 void ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth);
+void ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridSynth *hybrid_synth);
 void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer);
@@ -3390,6 +3393,678 @@ ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *no
 }
 
 void
+ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridSynth *hybrid_synth)
+{
+  xmlChar *str;
+
+  /* synth-0 */
+  str = xmlGetProp(node,
+		   "synth-0-oscillator");
+
+  if(str != NULL){
+    guint oscillator;
+
+    oscillator = g_ascii_strtoll(str,
+				 NULL,
+				 10);
+
+    gtk_combo_box_set_active(hybrid_synth->synth_0_oscillator,
+			     oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-octave");
+
+  if(str != NULL){
+    gdouble octave;
+
+    octave = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_octave,
+		       octave);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-key");
+
+  if(str != NULL){
+    gdouble key;
+
+    key = g_ascii_strtod(str,
+			 NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_key,
+		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-phase");
+
+  if(str != NULL){
+    gdouble phase;
+
+    phase = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_phase,
+		       phase);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_volume,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-enabled");
+
+  if(str != NULL && !g_strcmp0(str, "false") == FALSE){
+    gtk_toggle_button_set_active(hybrid_synth->synth_0_sync_enabled,
+				 TRUE);
+    
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-relative-attack-factor");
+
+  if(str != NULL){
+    gdouble sync_relative_attack_factor;
+
+    sync_relative_attack_factor = g_ascii_strtod(str,
+						 NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_relative_attack_factor,
+		       sync_relative_attack_factor);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-0");
+
+  if(str != NULL){
+    gdouble sync_attack_0;
+
+    sync_attack_0 = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_attack_0,
+		       sync_attack_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-0");
+
+  if(str != NULL){
+    gdouble sync_phase_0;
+
+    sync_phase_0 = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_phase_0,
+		       sync_phase_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-1");
+
+  if(str != NULL){
+    gdouble sync_attack_1;
+
+    sync_attack_1 = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_attack_1,
+		       sync_attack_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-1");
+
+  if(str != NULL){
+    gdouble sync_phase_1;
+
+    sync_phase_1 = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_phase_1,
+		       sync_phase_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-attack-2");
+
+  if(str != NULL){
+    gdouble sync_attack_2;
+
+    sync_attack_2 = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_attack_2,
+		       sync_attack_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-phase-2");
+
+  if(str != NULL){
+    gdouble sync_phase_2;
+
+    sync_phase_2 = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_0_sync_phase_2,
+		       sync_phase_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-lfo-oscillator");
+
+  if(str != NULL){
+    guint sync_lfo_oscillator;
+
+    sync_lfo_oscillator = g_ascii_strtoll(str,
+					  NULL,
+					  10);
+
+    gtk_combo_box_set_active(hybrid_synth->synth_0_sync_lfo_oscillator,
+			     sync_lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-0-sync-lfo-frequency");
+
+  if(str != NULL){
+    gdouble sync_lfo_frequency;
+
+    sync_lfo_frequency = g_ascii_strtod(str,
+					NULL);
+
+    gtk_spin_button_set_value(hybrid_synth->synth_0_sync_lfo_frequency,
+			      sync_lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  /* synth-1 */
+  str = xmlGetProp(node,
+		   "synth-1-oscillator");
+
+  if(str != NULL){
+    guint oscillator;
+
+    oscillator = g_ascii_strtoll(str,
+				 NULL,
+				 10);
+
+    gtk_combo_box_set_active(hybrid_synth->synth_1_oscillator,
+			     oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-octave");
+
+  if(str != NULL){
+    gdouble octave;
+
+    octave = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_octave,
+		       octave);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-key");
+
+  if(str != NULL){
+    gdouble key;
+
+    key = g_ascii_strtod(str,
+			 NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_key,
+		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-phase");
+
+  if(str != NULL){
+    gdouble phase;
+
+    phase = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_phase,
+		       phase);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_volume,
+		       volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-enabled");
+
+  if(str != NULL && !g_strcmp0(str, "false") == FALSE){
+    gtk_toggle_button_set_active(hybrid_synth->synth_1_sync_enabled,
+				 TRUE);
+    
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-relative-attack-factor");
+
+  if(str != NULL){
+    gdouble sync_relative_attack_factor;
+
+    sync_relative_attack_factor = g_ascii_strtod(str,
+						 NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_relative_attack_factor,
+		       sync_relative_attack_factor);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-0");
+
+  if(str != NULL){
+    gdouble sync_attack_0;
+
+    sync_attack_0 = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_attack_0,
+		       sync_attack_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-0");
+
+  if(str != NULL){
+    gdouble sync_phase_0;
+
+    sync_phase_0 = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_phase_0,
+		       sync_phase_0);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-1");
+
+  if(str != NULL){
+    gdouble sync_attack_1;
+
+    sync_attack_1 = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_attack_1,
+		       sync_attack_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-1");
+
+  if(str != NULL){
+    gdouble sync_phase_1;
+
+    sync_phase_1 = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_phase_1,
+		       sync_phase_1);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-attack-2");
+
+  if(str != NULL){
+    gdouble sync_attack_2;
+
+    sync_attack_2 = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_attack_2,
+		       sync_attack_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-phase-2");
+
+  if(str != NULL){
+    gdouble sync_phase_2;
+
+    sync_phase_2 = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->synth_1_sync_phase_2,
+		       sync_phase_2);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-lfo-oscillator");
+
+  if(str != NULL){
+    guint sync_lfo_oscillator;
+
+    sync_lfo_oscillator = g_ascii_strtoll(str,
+					  NULL,
+					  10);
+
+    gtk_combo_box_set_active(hybrid_synth->synth_1_sync_lfo_oscillator,
+			     sync_lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-1-sync-lfo-frequency");
+
+  if(str != NULL){
+    gdouble sync_lfo_frequency;
+
+    sync_lfo_frequency = g_ascii_strtod(str,
+					NULL);
+
+    gtk_spin_button_set_value(hybrid_synth->synth_1_sync_lfo_frequency,
+			      sync_lfo_frequency);
+      
+    xmlFree(str);
+  }
+  
+  /* effects */
+  str = xmlGetProp(node,
+		   "pitch-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(hybrid_synth->pitch_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "noise-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = g_ascii_strtod(str,
+			  NULL);
+
+    ags_dial_set_value(hybrid_synth->noise_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+
+  /* low pass */
+  str = xmlGetProp(node,
+		   "low-pass-enabled");
+
+  if(str != NULL && !g_strcmp0(str, "false") == FALSE){
+    gtk_toggle_button_set_active(hybrid_synth->low_pass_enabled,
+				 TRUE);
+    
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-q-lin");
+
+  if(str != NULL){
+    gdouble q_lin;
+
+    q_lin = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(hybrid_synth->low_pass_q_lin,
+		       q_lin);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-filter-gain");
+
+  if(str != NULL){
+    gdouble filter_gain;
+
+    filter_gain = g_ascii_strtod(str,
+				 NULL);
+
+    ags_dial_set_value(hybrid_synth->low_pass_filter_gain,
+		       filter_gain);
+      
+    xmlFree(str);
+  }
+
+  /* high pass */
+  str = xmlGetProp(node,
+		   "high-pass-enabled");
+
+  if(str != NULL && !g_strcmp0(str, "false") == FALSE){
+    gtk_toggle_button_set_active(hybrid_synth->high_pass_enabled,
+				 TRUE);
+    
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "high-pass-q-lin");
+
+  if(str != NULL){
+    gdouble q_lin;
+
+    q_lin = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(hybrid_synth->high_pass_q_lin,
+		       q_lin);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "high-pass-filter-gain");
+
+  if(str != NULL){
+    gdouble filter_gain;
+
+    filter_gain = g_ascii_strtod(str,
+				 NULL);
+
+    ags_dial_set_value(hybrid_synth->high_pass_filter_gain,
+		       filter_gain);
+      
+    xmlFree(str);
+  }
+
+  /* chorus */
+  str = xmlGetProp(node,
+		   "chorus-input-volume");
+
+  if(str != NULL){
+    gdouble input_volume;
+
+    input_volume = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(hybrid_synth->chorus_input_volume,
+		       input_volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-output-volume");
+
+  if(str != NULL){
+    gdouble output_volume;
+
+    output_volume = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(hybrid_synth->chorus_output_volume,
+		       output_volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-lfo-oscillator");
+
+  if(str != NULL){
+    guint lfo_oscillator;
+
+    lfo_oscillator = g_ascii_strtoll(str,
+				     NULL,
+				     10);
+
+    gtk_combo_box_set_active(hybrid_synth->chorus_lfo_oscillator,
+			     lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-lfo-frequency");
+
+  if(str != NULL){
+    gdouble lfo_frequency;
+
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
+
+    gtk_spin_button_set_value(hybrid_synth->chorus_lfo_frequency,
+			      lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-depth");
+
+  if(str != NULL){
+    gdouble depth;
+
+    depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(hybrid_synth->chorus_depth,
+		       depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-mix");
+
+  if(str != NULL){
+    gdouble mix;
+
+    mix = g_ascii_strtod(str,
+			 NULL);
+
+    ags_dial_set_value(hybrid_synth->chorus_mix,
+		       mix);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-delay");
+
+  if(str != NULL){
+    gdouble delay;
+
+    delay = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(hybrid_synth->chorus_delay,
+		       delay);
+      
+    xmlFree(str);
+  }
+}
+
+void
 ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler)
 {
   GtkTreeModel *model;
@@ -4910,6 +5585,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_fm_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSynth *) machine);
   }else if(AGS_IS_FM_SYNCSYNTH(machine)){
     ags_simple_file_read_fm_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSyncsynth *) machine);
+  }else if(AGS_IS_HYBRID_SYNTH(machine)){
+    ags_simple_file_read_hybrid_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsHybridSynth *) machine);
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
     ags_simple_file_read_pitch_sampler_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsPitchSampler *) machine);
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -10230,11 +10907,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     AgsSyncsynth *syncsynth;
 
     syncsynth = (AgsSyncsynth *) machine;
+
+    str = g_strdup_printf("%lf", gtk_spin_button_get_value(syncsynth->lower));
     
     xmlNewProp(node,
 	       "base-note",
-	       g_strdup_printf("%lf", gtk_spin_button_get_value(syncsynth->lower)));
+	       str);
 
+    g_free(str);
+    
     str = g_strdup_printf("%u",
 			  (guint) round(gtk_spin_button_get_value(syncsynth->loop_start)));
     
@@ -10301,6 +10982,404 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);
+  }else if(AGS_IS_HYBRID_SYNTH(machine)){
+    AgsHybridSynth *hybrid_synth;
+
+    hybrid_synth = (AgsHybridSynth *) machine;
+
+    /* synth-0 */
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(hybrid_synth->synth_0_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-0-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_octave));
+    
+    xmlNewProp(node,
+	       "synth-0-octave",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_key));
+    
+    xmlNewProp(node,
+	       "synth-0-key",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_phase));
+    
+    xmlNewProp(node,
+	       "synth-0-phase",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_volume));
+    
+    xmlNewProp(node,
+	       "synth-0-volume",
+	       str);
+
+    g_free(str);    
+
+    if(gtk_toggle_button_get_active(hybrid_synth->synth_0_sync_enabled)){
+      xmlNewProp(node,
+		 "synth-0-sync-enabled",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_relative_attack_factor));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-relative-attack-factor",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_attack_0));
+    
+    xmlNewProp(node,
+	       "synth-0-attack-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_phase_0));
+    
+    xmlNewProp(node,
+	       "synth-0-phase-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_attack_1));
+    
+    xmlNewProp(node,
+	       "synth-0-attack-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_phase_1));
+    
+    xmlNewProp(node,
+	       "synth-0-phase-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_attack_2));
+    
+    xmlNewProp(node,
+	       "synth-0-attack-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_0_sync_phase_2));
+    
+    xmlNewProp(node,
+	       "synth-0-phase-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(hybrid_synth->synth_0_sync_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(hybrid_synth->synth_0_sync_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "synth-0-sync-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    /* synth-1 */
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(hybrid_synth->synth_1_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-1-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_octave));
+    
+    xmlNewProp(node,
+	       "synth-1-octave",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_key));
+    
+    xmlNewProp(node,
+	       "synth-1-key",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_phase));
+    
+    xmlNewProp(node,
+	       "synth-1-phase",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_volume));
+    
+    xmlNewProp(node,
+	       "synth-1-volume",
+	       str);
+
+    g_free(str);    
+
+    if(gtk_toggle_button_get_active(hybrid_synth->synth_1_sync_enabled)){
+      xmlNewProp(node,
+		 "synth-1-sync-enabled",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_relative_attack_factor));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-relative-attack-factor",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_attack_0));
+    
+    xmlNewProp(node,
+	       "synth-1-attack-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_phase_0));
+    
+    xmlNewProp(node,
+	       "synth-1-phase-0",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_attack_1));
+    
+    xmlNewProp(node,
+	       "synth-1-attack-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_phase_1));
+    
+    xmlNewProp(node,
+	       "synth-1-phase-1",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_attack_2));
+    
+    xmlNewProp(node,
+	       "synth-1-attack-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->synth_1_sync_phase_2));
+    
+    xmlNewProp(node,
+	       "synth-1-phase-2",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(hybrid_synth->synth_1_sync_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(hybrid_synth->synth_1_sync_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "synth-1-sync-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    /* effects */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->pitch_tuning));
+    
+    xmlNewProp(node,
+	       "pitch-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->noise_gain));
+    
+    xmlNewProp(node,
+	       "noise-gain",
+	       str);
+
+    g_free(str);    
+
+    /* low pass */
+    if(gtk_toggle_button_get_active(hybrid_synth->low_pass_enabled)){
+      xmlNewProp(node,
+		 "low-pass-enabled",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->low_pass_q_lin));
+    
+    xmlNewProp(node,
+	       "low-pass-q-lin",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->low_pass_filter_gain));
+    
+    xmlNewProp(node,
+	       "low-pass-filter-gain",
+	       str);
+
+    g_free(str);
+
+    /* high pass */
+    if(gtk_toggle_button_get_active(hybrid_synth->high_pass_enabled)){
+      xmlNewProp(node,
+		 "high-pass-enabled",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->high_pass_q_lin));
+    
+    xmlNewProp(node,
+	       "high-pass-q-lin",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->high_pass_filter_gain));
+    
+    xmlNewProp(node,
+	       "high-pass-filter-gain",
+	       str);
+
+    g_free(str);
+
+    /* chorus */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->chorus_input_volume));
+    
+    xmlNewProp(node,
+	       "chorus-input-volume",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->chorus_output_volume));
+    
+    xmlNewProp(node,
+	       "chorus-output-volume",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(hybrid_synth->chorus_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "chorus-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(hybrid_synth->chorus_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "chorus-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->chorus_depth));
+    
+    xmlNewProp(node,
+	       "chorus-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->chorus_mix));
+    
+    xmlNewProp(node,
+	       "chorus-mix",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(hybrid_synth->chorus_delay));
+    
+    xmlNewProp(node,
+	       "chorus-delay",
+	       str);
+
+    g_free(str);    
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
     AgsPitchSampler *pitch_sampler;
 

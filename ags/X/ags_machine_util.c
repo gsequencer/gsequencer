@@ -1670,6 +1670,10 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				15)){
     machine = ags_machine_util_new_fm_syncsynth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsHybridSynth",
+				16)){
+    machine = ags_machine_util_new_hybrid_synth();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsFFPlayer",
 				11)){
     machine = ags_machine_util_new_ffplayer();

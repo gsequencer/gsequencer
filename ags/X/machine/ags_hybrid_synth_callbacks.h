@@ -45,7 +45,7 @@ void ags_hybrid_synth_synth_0_volume_callback(AgsDial *dial, AgsHybridSynth *hyb
 
 void ags_hybrid_synth_synth_0_sync_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
 
-void ags_hybrid_synth_synth_0_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_0_sync_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
 
 void ags_hybrid_synth_synth_0_sync_attack_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
 void ags_hybrid_synth_synth_0_sync_phase_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
@@ -69,7 +69,7 @@ void ags_hybrid_synth_synth_1_volume_callback(AgsDial *dial, AgsHybridSynth *hyb
 
 void ags_hybrid_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsHybridSynth *hybrid_synth);
 
-void ags_hybrid_synth_synth_1_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
+void ags_hybrid_synth_synth_1_sync_relative_attack_factor_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
 
 void ags_hybrid_synth_synth_1_sync_attack_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);
 void ags_hybrid_synth_synth_1_sync_phase_0_callback(AgsDial *dial, AgsHybridSynth *hybrid_synth);

@@ -81,7 +81,7 @@ struct _AgsHybridSynth
 
   GtkCheckButton *synth_0_sync_enabled;
   
-  AgsDial *synth_0_relative_attack_factor;
+  AgsDial *synth_0_sync_relative_attack_factor;
 
   AgsDial *synth_0_sync_attack_0;
   AgsDial *synth_0_sync_phase_0;
@@ -105,7 +105,7 @@ struct _AgsHybridSynth
 
   GtkCheckButton *synth_1_sync_enabled;
   
-  AgsDial *synth_1_relative_attack_factor;
+  AgsDial *synth_1_sync_relative_attack_factor;
 
   AgsDial *synth_1_sync_attack_0;
   AgsDial *synth_1_sync_phase_0;

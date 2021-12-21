@@ -1,7 +1,8 @@
 ags (3.14.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags-fx-synth
+	* implemented AgsHybridSynth
+	* implemented ags-fx-synth
 	* TODO:JK: implemented ags-fx-fm-synth
 	* implemented ags-fx-chorus
 	* added enabled port to ags-fx-low-pass and ags-fx-high-pass
