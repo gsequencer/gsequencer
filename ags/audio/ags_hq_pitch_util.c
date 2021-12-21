@@ -275,6 +275,9 @@ ags_hq_pitch_util_set_source(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->source = source;
+
+  ags_linear_interpolate_util_set_source(hq_pitch_util->linear_interpolate_util,
+					 source);
 }
 
 /**

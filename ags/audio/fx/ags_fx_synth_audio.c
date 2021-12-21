@@ -4360,8 +4360,9 @@ ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data->chorus_util.destination = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 								   format);
 
-	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-									format);
+	  channel_data->chorus_hq_pitch_util.destination =
+	    channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									  format);
 	  
 	  channel_data->chorus_util.buffer_length = buffer_size;
 	  channel_data->chorus_util.format = format;
@@ -4518,6 +4519,16 @@ ags_fx_synth_audio_channel_data_alloc()
   channel_data->chorus_hq_pitch_util.tuning = 0.0;
 
   channel_data->chorus_hq_pitch_util.linear_interpolate_util = &(channel_data->chorus_linear_interpolate_util);
+
+  channel_data->chorus_util.source = NULL;
+  channel_data->chorus_util.source_stride = 1;
+	  
+  channel_data->chorus_util.destination = NULL;
+  channel_data->chorus_util.destination_stride = 1;
+
+  channel_data->chorus_util.buffer_length = 0;
+  channel_data->chorus_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->chorus_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
   channel_data->chorus_util.pitch_mix_buffer = NULL;
 

@@ -20,6 +20,7 @@
 #include <ags/audio/fx/ags_fx_synth_audio_signal.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_synth_audio.h>
 #include <ags/audio/fx/ags_fx_synth_audio_processor.h>
