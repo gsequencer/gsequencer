@@ -16,4 +16,4 @@ jobs:
     - name: meson
       run: mkdir build && cd build && meson ..
     - name: ninja
-      run: ninja
+      run: cd build && ninja
