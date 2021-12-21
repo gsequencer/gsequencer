@@ -133,7 +133,7 @@ ags_fx_volume_audio_class_init(AgsFxVolumeAudioClass *fx_volume_audio)
   /**
    * AgsFxVolumeAudio:muted:
    *
-   * The beats per minute.
+   * The muted port.
    * 
    * Since: 3.3.0
    */

@@ -30,7 +30,7 @@ void ags_fx_high_pass_channel_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_high_pass_channel_processor
- * @short_description: fx high_pass channel processor
+ * @short_description: fx high pass channel processor
  * @title: AgsFxHighPassChannelProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_high_pass_channel_processor.h
@@ -90,10 +90,10 @@ ags_fx_high_pass_channel_processor_class_init(AgsFxHighPassChannelProcessorClass
 void
 ags_fx_high_pass_channel_processor_init(AgsFxHighPassChannelProcessor *fx_high_pass_channel_processor)
 {
-  AGS_RECALL(fx_high_pass_channel_processor)->name = "ags-fx-high_pass";
+  AGS_RECALL(fx_high_pass_channel_processor)->name = "ags-fx-high-pass";
   AGS_RECALL(fx_high_pass_channel_processor)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_high_pass_channel_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_high_pass_channel_processor)->xml_type = "ags-fx-high_pass-channel-processor";
+  AGS_RECALL(fx_high_pass_channel_processor)->xml_type = "ags-fx-high-pass-channel-processor";
 
   AGS_RECALL(fx_high_pass_channel_processor)->child_type = AGS_TYPE_FX_HIGH_PASS_RECYCLING;
 }

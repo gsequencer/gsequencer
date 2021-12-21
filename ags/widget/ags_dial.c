@@ -1661,7 +1661,7 @@ ags_dial_motion_notify(GtkWidget *widget,
 
 /**
  * ags_dial_draw:
- * @dial: an #AgsDial
+ * @dial: the #AgsDial
  *
  * draws the widget
  *
@@ -2535,7 +2535,7 @@ ags_dial_get_adjustment(AgsDial *dial)
 
 /**
  * ags_dial_value_changed:
- * @dial: an #AgsDial
+ * @dial: the #AgsDial
  *
  * draws the widget
  *
@@ -2561,7 +2561,7 @@ ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 
 /**
  * ags_dial_set_value:
- * @dial: an #AgsDial
+ * @dial: the #AgsDial
  * @value: the value to set
  * 
  * Set value
@@ -2579,6 +2579,26 @@ ags_dial_set_value(AgsDial *dial,
   gtk_adjustment_set_value(dial->adjustment,
 			   value);
   gtk_widget_queue_draw((GtkWidget *) dial);
+}
+
+/**
+ * ags_dial_get_value:
+ * @dial: the #AgsDial
+ * 
+ * Get value
+ *
+ * Returns: the value
+ * 
+ * Since: 3.14.0
+ */
+gdouble
+ags_dial_get_value(AgsDial *dial)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+
+  return(gtk_adjustment_get_value(dial->adjustment));
 }
 
 /**

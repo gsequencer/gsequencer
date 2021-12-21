@@ -43,8 +43,10 @@ struct _AgsSynthUtil
   guint source_stride;
   
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
+
+  guint audio_buffer_util_format;
 
   guint synth_oscillator_mode;
   
@@ -75,13 +77,17 @@ guint ags_synth_util_get_buffer_length(AgsSynthUtil *synth_util);
 void ags_synth_util_set_buffer_length(AgsSynthUtil *synth_util,
 				      guint buffer_length);
 
-guint ags_synth_util_get_audio_buffer_util_format(AgsSynthUtil *synth_util);
-void ags_synth_util_set_audio_buffer_util_format(AgsSynthUtil *synth_util,
-						 guint audio_buffer_util_format);
+guint ags_synth_util_get_format(AgsSynthUtil *synth_util);
+void ags_synth_util_set_format(AgsSynthUtil *synth_util,
+			       guint format);
 
 guint ags_synth_util_get_samplerate(AgsSynthUtil *synth_util);
 void ags_synth_util_set_samplerate(AgsSynthUtil *synth_util,
 				   guint samplerate);
+
+guint ags_synth_util_get_audio_buffer_util_format(AgsSynthUtil *synth_util);
+void ags_synth_util_set_audio_buffer_util_format(AgsSynthUtil *synth_util,
+						 guint audio_buffer_util_format);
 
 guint ags_synth_util_get_synth_oscillator_mode(AgsSynthUtil *synth_util);
 void ags_synth_util_set_synth_oscillator_mode(AgsSynthUtil *synth_util,

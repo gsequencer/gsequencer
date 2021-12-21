@@ -30,7 +30,7 @@ void ags_fx_low_pass_channel_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_low_pass_channel_processor
- * @short_description: fx low_pass channel processor
+ * @short_description: fx low pass channel processor
  * @title: AgsFxLowPassChannelProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_low_pass_channel_processor.h
@@ -90,10 +90,10 @@ ags_fx_low_pass_channel_processor_class_init(AgsFxLowPassChannelProcessorClass *
 void
 ags_fx_low_pass_channel_processor_init(AgsFxLowPassChannelProcessor *fx_low_pass_channel_processor)
 {
-  AGS_RECALL(fx_low_pass_channel_processor)->name = "ags-fx-low_pass";
+  AGS_RECALL(fx_low_pass_channel_processor)->name = "ags-fx-low-pass";
   AGS_RECALL(fx_low_pass_channel_processor)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_low_pass_channel_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_low_pass_channel_processor)->xml_type = "ags-fx-low_pass-channel-processor";
+  AGS_RECALL(fx_low_pass_channel_processor)->xml_type = "ags-fx-low-pass-channel-processor";
 
   AGS_RECALL(fx_low_pass_channel_processor)->child_type = AGS_TYPE_FX_LOW_PASS_RECYCLING;
 }

@@ -28,7 +28,7 @@ void ags_fx_low_pass_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_low_pass_audio_processor
- * @short_description: fx low_pass audio processor
+ * @short_description: fx low pass audio processor
  * @title: AgsFxLowPassAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_low_pass_audio_processor.h
@@ -86,10 +86,10 @@ ags_fx_low_pass_audio_processor_class_init(AgsFxLowPassAudioProcessorClass *fx_l
 void
 ags_fx_low_pass_audio_processor_init(AgsFxLowPassAudioProcessor *fx_low_pass_audio_processor)
 {
-  AGS_RECALL(fx_low_pass_audio_processor)->name = "ags-fx-low_pass";
+  AGS_RECALL(fx_low_pass_audio_processor)->name = "ags-fx-low-pass";
   AGS_RECALL(fx_low_pass_audio_processor)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_low_pass_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_low_pass_audio_processor)->xml_type = "ags-fx-low_pass-audio-processor";
+  AGS_RECALL(fx_low_pass_audio_processor)->xml_type = "ags-fx-low-pass-audio-processor";
 }
 
 void

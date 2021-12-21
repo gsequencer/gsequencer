@@ -30,7 +30,7 @@ void ags_fx_high_pass_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_high_pass_recycling
- * @short_description: fx high_pass recycling
+ * @short_description: fx high pass recycling
  * @title: AgsFxHighPassRecycling
  * @section_id:
  * @include: ags/audio/fx/ags_fx_high_pass_recycling.h
@@ -90,10 +90,10 @@ ags_fx_high_pass_recycling_class_init(AgsFxHighPassRecyclingClass *fx_high_pass_
 void
 ags_fx_high_pass_recycling_init(AgsFxHighPassRecycling *fx_high_pass_recycling)
 {
-  AGS_RECALL(fx_high_pass_recycling)->name = "ags-fx-high_pass";
+  AGS_RECALL(fx_high_pass_recycling)->name = "ags-fx-high-pass";
   AGS_RECALL(fx_high_pass_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_high_pass_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_high_pass_recycling)->xml_type = "ags-fx-high_pass-recycling";
+  AGS_RECALL(fx_high_pass_recycling)->xml_type = "ags-fx-high-pass-recycling";
 
   AGS_RECALL(fx_high_pass_recycling)->child_type = AGS_TYPE_FX_HIGH_PASS_AUDIO_SIGNAL;
 }

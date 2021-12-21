@@ -40,6 +40,7 @@ GtkWidget* ags_machine_util_new_synth();
 GtkWidget* ags_machine_util_new_fm_synth();
 GtkWidget* ags_machine_util_new_syncsynth();
 GtkWidget* ags_machine_util_new_fm_syncsynth();
+GtkWidget* ags_machine_util_new_hybrid_synth();
 GtkWidget* ags_machine_util_new_ffplayer();
 GtkWidget* ags_machine_util_new_sf2_synth();
 GtkWidget* ags_machine_util_new_pitch_sampler();

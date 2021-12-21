@@ -28,7 +28,7 @@ void ags_fx_high_pass_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_high_pass_audio_processor
- * @short_description: fx high_pass audio processor
+ * @short_description: fx high pass audio processor
  * @title: AgsFxHighPassAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_high_pass_audio_processor.h
@@ -86,10 +86,10 @@ ags_fx_high_pass_audio_processor_class_init(AgsFxHighPassAudioProcessorClass *fx
 void
 ags_fx_high_pass_audio_processor_init(AgsFxHighPassAudioProcessor *fx_high_pass_audio_processor)
 {
-  AGS_RECALL(fx_high_pass_audio_processor)->name = "ags-fx-high_pass";
+  AGS_RECALL(fx_high_pass_audio_processor)->name = "ags-fx-high-pass";
   AGS_RECALL(fx_high_pass_audio_processor)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_high_pass_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(fx_high_pass_audio_processor)->xml_type = "ags-fx-high_pass-audio-processor";
+  AGS_RECALL(fx_high_pass_audio_processor)->xml_type = "ags-fx-high-pass-audio-processor";
 }
 
 void

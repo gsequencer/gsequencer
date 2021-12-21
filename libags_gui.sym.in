@@ -37,6 +37,7 @@ ags_dial_set_adjustment
 ags_dial_get_adjustment
 ags_dial_value_changed
 ags_dial_set_value
+ags_dial_get_value
 ags_dial_new
 ags_vlevel_box_get_type
 ags_vlevel_box_new

@@ -1,3 +1,19 @@
+ags (3.14.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gtk-doc missing types
+	* fixed ags/meson.build missing files
+
+ags (3.14.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsHybridSynth
+	* implemented ags-fx-synth
+	* TODO:JK: implemented ags-fx-fm-synth
+	* implemented ags-fx-chorus
+	* added enabled port to ags-fx-low-pass and ags-fx-high-pass
+	* fixed AgsSynthUtil sawtooth and triangle
+
 ags (3.13.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

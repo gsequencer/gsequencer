@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-12-15 08:54+0100\n"
+"POT-Creation-Date: 2021-12-21 13:24+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -234,69 +234,74 @@ msgstr "Syncsynth"
 msgid "FM Syncsynth"
 msgstr "FM Syncsynth"
 
-#: ags/X/ags_context_menu.c:205 ags/X/ags_menu_bar.c:202
+#: ags/X/ags_context_menu.c:204 ags/X/ags_menu_bar.c:201
+#, fuzzy
+msgid "Hybrid Synth"
+msgstr "FM Synth"
+
+#: ags/X/ags_context_menu.c:208 ags/X/ags_menu_bar.c:205
 msgid "FPlayer"
 msgstr "FPlayer"
 
-#: ags/X/ags_context_menu.c:209 ags/X/ags_menu_bar.c:206
+#: ags/X/ags_context_menu.c:212 ags/X/ags_menu_bar.c:209
 msgid "SF2 Synth"
 msgstr "SF2 Synth"
 
-#: ags/X/ags_context_menu.c:214 ags/X/ags_menu_bar.c:211
+#: ags/X/ags_context_menu.c:217 ags/X/ags_menu_bar.c:214
 msgid "Sampler"
 msgstr "Sampler"
 
-#: ags/X/ags_context_menu.c:218 ags/X/ags_menu_bar.c:215
+#: ags/X/ags_context_menu.c:221 ags/X/ags_menu_bar.c:218
 msgid "SFZ Synth"
 msgstr "SFZ Synth"
 
-#: ags/X/ags_context_menu.c:222 ags/X/ags_menu_bar.c:219
+#: ags/X/ags_context_menu.c:225 ags/X/ags_menu_bar.c:222
 msgid "Audiorec"
 msgstr "Audiorec"
 
-#: ags/X/ags_context_menu.c:226 ags/X/ags_menu_bar.c:223
+#: ags/X/ags_context_menu.c:229 ags/X/ags_menu_bar.c:226
 msgid "Desk"
 msgstr "Desk"
 
-#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:228
+#: ags/X/ags_context_menu.c:234 ags/X/ags_menu_bar.c:231
 #, fuzzy
 msgid "Notation"
 msgstr "notation"
 
-#: ags/X/ags_context_menu.c:237 ags/X/ags_menu_bar.c:234
+#: ags/X/ags_context_menu.c:240 ags/X/ags_menu_bar.c:237
 msgid "Automation"
 msgstr "Automation"
 
-#: ags/X/ags_context_menu.c:243 ags/X/ags_menu_bar.c:240
+#: ags/X/ags_context_menu.c:246 ags/X/ags_menu_bar.c:243
 msgid "Wave"
 msgstr "Forme d'onde"
 
-#: ags/X/ags_context_menu.c:252 ags/X/ags_menu_bar.c:249
+#: ags/X/ags_context_menu.c:255 ags/X/ags_menu_bar.c:252
 msgid "Preferences"
 msgstr "Préréglage"
 
-#: ags/X/ags_context_menu.c:262 ags/X/ags_machine.c:3716
-#: ags/X/ags_menu_bar.c:259
+#: ags/X/ags_context_menu.c:265 ags/X/ags_machine.c:3716
+#: ags/X/ags_menu_bar.c:262
 msgid "import"
 msgstr "importer"
 
-#: ags/X/ags_context_menu.c:265 ags/X/ags_menu_bar.c:262
+#: ags/X/ags_context_menu.c:268 ags/X/ags_menu_bar.c:265
 msgid "export track"
 msgstr "exporter trace"
 
-#: ags/X/ags_context_menu.c:271 ags/X/ags_menu_bar.c:268
+#: ags/X/ags_context_menu.c:274 ags/X/ags_menu_bar.c:271
 msgid "playback"
 msgstr "surjeu"
 
-#: ags/X/ags_context_menu.c:277 ags/X/ags_menu_bar.c:274
+#: ags/X/ags_context_menu.c:280 ags/X/ags_menu_bar.c:277
 msgid "_Help"
 msgstr "_Aide"
 
-#: ags/X/ags_context_menu.c:283 ags/X/ags_menu_bar.c:280
+#: ags/X/ags_context_menu.c:286 ags/X/ags_menu_bar.c:283
 msgid "Online help"
 msgstr "on-line aide"
 
-#: ags/X/ags_context_menu.c:286 ags/X/ags_menu_bar.c:283
+#: ags/X/ags_context_menu.c:289 ags/X/ags_menu_bar.c:286
 msgid "About"
 msgstr "Briefer"
 

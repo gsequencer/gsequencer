@@ -597,7 +597,7 @@ ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpola
   buffer_length = linear_interpolate_util->buffer_length;
 
   factor = linear_interpolate_util->factor;
-
+  
   for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint16 z, mix_z, im_z;
     gdouble t;

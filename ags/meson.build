@@ -409,6 +409,9 @@ libags_audio_sources = files(
   'audio/ags_track.c',
   'audio/ags_volume_util.c',
   'audio/ags_wave.c',
+  'audio/alsa/ags_alsa_devin.c',
+  'audio/alsa/ags_alsa_devout.c',
+  'audio/alsa/ags_alsa_midiin.c',
   'audio/audio-unit/ags_audio_unit_client.c',
   'audio/audio-unit/ags_audio_unit_devin.c',
   'audio/audio-unit/ags_audio_unit_devout.c',
@@ -449,6 +452,12 @@ libags_audio_sources = files(
   'audio/fx/ags_fx_buffer_channel.c',
   'audio/fx/ags_fx_buffer_channel_processor.c',
   'audio/fx/ags_fx_buffer_recycling.c',
+  'audio/fx/ags_fx_chorus_audio.c',
+  'audio/fx/ags_fx_chorus_audio_processor.c',
+  'audio/fx/ags_fx_chorus_audio_signal.c',
+  'audio/fx/ags_fx_chorus_channel.c',
+  'audio/fx/ags_fx_chorus_channel_processor.c',
+  'audio/fx/ags_fx_chorus_recycling.c',
   'audio/fx/ags_fx_dssi_audio.c',
   'audio/fx/ags_fx_dssi_audio_processor.c',
   'audio/fx/ags_fx_dssi_audio_signal.c',
@@ -467,6 +476,12 @@ libags_audio_sources = files(
   'audio/fx/ags_fx_eq10_channel.c',
   'audio/fx/ags_fx_eq10_channel_processor.c',
   'audio/fx/ags_fx_eq10_recycling.c',
+  'audio/fx/ags_fx_fm_synth_audio.c',
+  'audio/fx/ags_fx_fm_synth_audio_processor.c',
+  'audio/fx/ags_fx_fm_synth_audio_signal.c',
+  'audio/fx/ags_fx_fm_synth_channel.c',
+  'audio/fx/ags_fx_fm_synth_channel_processor.c',
+  'audio/fx/ags_fx_fm_synth_recycling.c',
   'audio/fx/ags_fx_high_pass_audio.c',
   'audio/fx/ags_fx_high_pass_audio_processor.c',
   'audio/fx/ags_fx_high_pass_audio_signal.c',
@@ -521,6 +536,12 @@ libags_audio_sources = files(
   'audio/fx/ags_fx_playback_channel.c',
   'audio/fx/ags_fx_playback_channel_processor.c',
   'audio/fx/ags_fx_playback_recycling.c',
+  'audio/fx/ags_fx_synth_audio.c',
+  'audio/fx/ags_fx_synth_audio_processor.c',
+  'audio/fx/ags_fx_synth_audio_signal.c',
+  'audio/fx/ags_fx_synth_channel.c',
+  'audio/fx/ags_fx_synth_channel_processor.c',
+  'audio/fx/ags_fx_synth_recycling.c',
   'audio/fx/ags_fx_two_pass_aliase_audio.c',
   'audio/fx/ags_fx_two_pass_aliase_audio_processor.c',
   'audio/fx/ags_fx_two_pass_aliase_audio_signal.c',
@@ -568,6 +589,9 @@ libags_audio_sources = files(
   'audio/osc/controller/ags_osc_renew_controller.c',
   'audio/osc/controller/ags_osc_status_controller.c',
   'audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c',
+  'audio/oss/ags_oss_devin.c',
+  'audio/oss/ags_oss_devout.c',
+  'audio/oss/ags_oss_midiin.c',
   'audio/pulse/ags_pulse_client.c',
   'audio/pulse/ags_pulse_devin.c',
   'audio/pulse/ags_pulse_devout.c',
@@ -1103,6 +1127,8 @@ libgsequencer_sources = files(
   'X/editor/ags_sheet_edit_callbacks.c',
   'X/editor/ags_sheet_toolbar.c',
   'X/editor/ags_sheet_toolbar_callbacks.c',
+  'X/editor/ags_time_stretch_buffer_dialog.c',
+  'X/editor/ags_time_stretch_buffer_dialog_callbacks.c',
   'X/editor/ags_vautomation_edit_box.c',
   'X/editor/ags_vwave_edit_box.c',
   'X/editor/ags_wave_edit_box.c',
@@ -1169,6 +1195,8 @@ libgsequencer_sources = files(
   'X/machine/ags_fm_synth_input_line.c',
   'X/machine/ags_fm_synth_input_line_callbacks.c',
   'X/machine/ags_fm_synth_input_pad.c',
+  'X/machine/ags_hybrid_synth.c',
+  'X/machine/ags_hybrid_synth_callbacks.c',
   'X/machine/ags_ladspa_bridge.c',
   'X/machine/ags_ladspa_bridge_callbacks.c',
   'X/machine/ags_live_dssi_bridge.c',
@@ -1661,6 +1689,12 @@ libags_audio_audio_fx_headers = [
   'audio/fx/ags_fx_buffer_channel.h',
   'audio/fx/ags_fx_buffer_channel_processor.h',
   'audio/fx/ags_fx_buffer_recycling.h',
+  'audio/fx/ags_fx_chorus_audio.h',
+  'audio/fx/ags_fx_chorus_audio_processor.h',
+  'audio/fx/ags_fx_chorus_audio_signal.h',
+  'audio/fx/ags_fx_chorus_channel.h',
+  'audio/fx/ags_fx_chorus_channel_processor.h',
+  'audio/fx/ags_fx_chorus_recycling.h',
   'audio/fx/ags_fx_dssi_audio.h',
   'audio/fx/ags_fx_dssi_audio_processor.h',
   'audio/fx/ags_fx_dssi_audio_signal.h',
@@ -1679,6 +1713,12 @@ libags_audio_audio_fx_headers = [
   'audio/fx/ags_fx_eq10_channel.h',
   'audio/fx/ags_fx_eq10_channel_processor.h',
   'audio/fx/ags_fx_eq10_recycling.h',
+  'audio/fx/ags_fx_fm_synth_audio.h',
+  'audio/fx/ags_fx_fm_synth_audio_processor.h',
+  'audio/fx/ags_fx_fm_synth_audio_signal.h',
+  'audio/fx/ags_fx_fm_synth_channel.h',
+  'audio/fx/ags_fx_fm_synth_channel_processor.h',
+  'audio/fx/ags_fx_fm_synth_recycling.h',
   'audio/fx/ags_fx_high_pass_audio.h',
   'audio/fx/ags_fx_high_pass_audio_processor.h',
   'audio/fx/ags_fx_high_pass_audio_signal.h',
@@ -1733,6 +1773,12 @@ libags_audio_audio_fx_headers = [
   'audio/fx/ags_fx_playback_channel.h',
   'audio/fx/ags_fx_playback_channel_processor.h',
   'audio/fx/ags_fx_playback_recycling.h',
+  'audio/fx/ags_fx_synth_audio.h',
+  'audio/fx/ags_fx_synth_audio_processor.h',
+  'audio/fx/ags_fx_synth_audio_signal.h',
+  'audio/fx/ags_fx_synth_channel.h',
+  'audio/fx/ags_fx_synth_channel_processor.h',
+  'audio/fx/ags_fx_synth_recycling.h',
   'audio/fx/ags_fx_two_pass_aliase_audio.h',
   'audio/fx/ags_fx_two_pass_aliase_audio_processor.h',
   'audio/fx/ags_fx_two_pass_aliase_audio_signal.h',
@@ -1769,6 +1815,18 @@ libags_audio_audio_gstreamer_headers = [
   'audio/gstreamer/ags_gstreamer_server.h',
 ]
 endif
+
+libags_audio_audio_alsa_headers = [
+  'audio/alsa/ags_alsa_devin.h',
+  'audio/alsa/ags_alsa_devout.h',
+  'audio/alsa/ags_alsa_midiin.h',
+]
+
+libags_audio_audio_oss_headers = [
+  'audio/oss/ags_oss_devin.h',
+  'audio/oss/ags_oss_devout.h',
+  'audio/oss/ags_oss_midiin.h',
+]
 
 libags_audio_audio_jack_headers = [
   'audio/jack/ags_jack_client.h',
@@ -2002,7 +2060,7 @@ libags_audio_audio_wasapi_headers = [
   'audio/wasapi/ags_wasapi_devout.h',
 ]
 
-libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
+libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_alsa_headers + libags_audio_audio_oss_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
 
 if get_option('vst3')
   libags_vst_host_headers = [
@@ -2163,6 +2221,8 @@ if get_option('gstreamer')
   install_headers(libags_audio_audio_gstreamer_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
 endif
 
+install_headers(libags_audio_audio_alsa_headers, install_dir: gsequencer_includedir / 'ags/audio/alsa')
+install_headers(libags_audio_audio_oss_headers, install_dir: gsequencer_includedir / 'ags/audio/oss')
 install_headers(libags_audio_audio_jack_headers, install_dir: gsequencer_includedir / 'ags/audio/jack')
 install_headers(libags_audio_audio_midi_headers, install_dir: gsequencer_includedir / 'ags/audio/midi')
 install_headers(libags_audio_audio_osc_headers, install_dir: gsequencer_includedir / 'ags/audio/osc')

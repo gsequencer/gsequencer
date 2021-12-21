@@ -1968,6 +1968,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_high_pass_channel_processor.h \
 	ags/audio/fx/ags_fx_high_pass_recycling.h \
 	ags/audio/fx/ags_fx_high_pass_audio_signal.h \
+	ags/audio/fx/ags_fx_chorus_audio.h \
+	ags/audio/fx/ags_fx_chorus_audio_processor.h \
+	ags/audio/fx/ags_fx_chorus_channel.h \
+	ags/audio/fx/ags_fx_chorus_channel_processor.h \
+	ags/audio/fx/ags_fx_chorus_recycling.h \
+	ags/audio/fx/ags_fx_chorus_audio_signal.h \
 	ags/audio/fx/ags_fx_eq10_audio.h \
 	ags/audio/fx/ags_fx_eq10_audio_processor.h \
 	ags/audio/fx/ags_fx_eq10_channel.h \
@@ -2010,6 +2016,18 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_notation_channel_processor.h \
 	ags/audio/fx/ags_fx_notation_recycling.h \
 	ags/audio/fx/ags_fx_notation_audio_signal.h \
+	ags/audio/fx/ags_fx_synth_audio.h \
+	ags/audio/fx/ags_fx_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_synth_channel.h \
+	ags/audio/fx/ags_fx_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_synth_recycling.h \
+	ags/audio/fx/ags_fx_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_fm_synth_audio.h \
+	ags/audio/fx/ags_fx_fm_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_fm_synth_channel.h \
+	ags/audio/fx/ags_fx_fm_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_fm_synth_recycling.h \
+	ags/audio/fx/ags_fx_fm_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_ladspa_audio.h \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
 	ags/audio/fx/ags_fx_ladspa_channel.h \
@@ -2087,6 +2105,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_lfo_channel_processor.c \
 	ags/audio/fx/ags_fx_lfo_recycling.c \
 	ags/audio/fx/ags_fx_lfo_audio_signal.c \
+	ags/audio/fx/ags_fx_chorus_audio.c \
+	ags/audio/fx/ags_fx_chorus_audio_processor.c \
+	ags/audio/fx/ags_fx_chorus_channel.c \
+	ags/audio/fx/ags_fx_chorus_channel_processor.c \
+	ags/audio/fx/ags_fx_chorus_recycling.c \
+	ags/audio/fx/ags_fx_chorus_audio_signal.c \
 	ags/audio/fx/ags_fx_eq10_audio.c \
 	ags/audio/fx/ags_fx_eq10_audio_processor.c \
 	ags/audio/fx/ags_fx_eq10_channel.c \
@@ -2129,6 +2153,18 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_notation_channel_processor.c \
 	ags/audio/fx/ags_fx_notation_recycling.c \
 	ags/audio/fx/ags_fx_notation_audio_signal.c \
+	ags/audio/fx/ags_fx_synth_audio.c \
+	ags/audio/fx/ags_fx_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_synth_channel.c \
+	ags/audio/fx/ags_fx_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_synth_recycling.c \
+	ags/audio/fx/ags_fx_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_fm_synth_audio.c \
+	ags/audio/fx/ags_fx_fm_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_fm_synth_channel.c \
+	ags/audio/fx/ags_fx_fm_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_fm_synth_recycling.c \
+	ags/audio/fx/ags_fx_fm_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_ladspa_audio.c \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
 	ags/audio/fx/ags_fx_ladspa_channel.c \
@@ -2791,6 +2827,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_fm_synth_input_pad.h \
 	ags/X/machine/ags_fm_synth_input_line.h \
 	ags/X/machine/ags_fm_synth_input_line_callbacks.h \
+	ags/X/machine/ags_hybrid_synth.h \
+	ags/X/machine/ags_hybrid_synth_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -2914,6 +2952,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_fm_synth_input_pad.c \
 	ags/X/machine/ags_fm_synth_input_line.c \
 	ags/X/machine/ags_fm_synth_input_line_callbacks.c \
+	ags/X/machine/ags_hybrid_synth.c \
+	ags/X/machine/ags_hybrid_synth_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
