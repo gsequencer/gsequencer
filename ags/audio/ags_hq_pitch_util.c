@@ -355,6 +355,9 @@ ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->buffer_length = buffer_length;
+
+  ags_linear_interpolate_util_set_buffer_length(hq_pitch_util->linear_interpolate_util,
+						buffer_length);
 }
 
 /**
@@ -395,6 +398,9 @@ ags_hq_pitch_util_set_format(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->format = format;
+
+  ags_linear_interpolate_util_set_format(hq_pitch_util->linear_interpolate_util,
+					 format);
 }
 
 /**
@@ -435,6 +441,9 @@ ags_hq_pitch_util_set_samplerate(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->samplerate = samplerate;
+
+  ags_linear_interpolate_util_set_samplerate(hq_pitch_util->linear_interpolate_util,
+					     samplerate);
 }
 
 /**

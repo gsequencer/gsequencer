@@ -374,6 +374,9 @@ ags_chorus_util_set_buffer_length(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->buffer_length = buffer_length;
+
+  ags_hq_pitch_util_set_buffer_length(chorus_util->hq_pitch_util,
+				      buffer_length);
 }
 
 /**
@@ -414,6 +417,9 @@ ags_chorus_util_set_format(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->format = format;
+
+  ags_hq_pitch_util_set_format(chorus_util->hq_pitch_util,
+			       format);
 }
 
 /**
@@ -454,6 +460,9 @@ ags_chorus_util_set_samplerate(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->samplerate = samplerate;
+
+  ags_hq_pitch_util_set_samplerate(chorus_util->hq_pitch_util,
+				   samplerate);
 }
 
 /**
@@ -879,6 +888,9 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_8_BIT);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -889,18 +901,13 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(gint8);
   
@@ -1060,6 +1067,9 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_16_BIT);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -1070,19 +1080,14 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
-
+  
   word_size = sizeof(gint16);
 
   if(pitch_mix_buffer_length < chorus_util->history_buffer_length){
@@ -1241,6 +1246,9 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_24_BIT);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -1251,18 +1259,13 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(gint32);
   
@@ -1422,6 +1425,9 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_32_BIT);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -1432,18 +1438,13 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(gint32);
   
@@ -1603,6 +1604,9 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_SIGNED_64_BIT);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -1613,18 +1617,13 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(gint64);
   
@@ -1784,6 +1783,9 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_FLOAT);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -1794,18 +1796,13 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(gfloat);
   
@@ -1965,6 +1962,9 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_DOUBLE);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -1975,18 +1975,13 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(gdouble);
   
@@ -2146,6 +2141,9 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   ags_hq_pitch_util_set_format(hq_pitch_util,
 			       AGS_SOUNDCARD_COMPLEX);
 
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   samplerate);
+
   ags_hq_pitch_util_set_base_key(hq_pitch_util,
 				 chorus_util->base_key);
 
@@ -2156,18 +2154,13 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
 
   /* mix pitch buffer */
   mix_a = mix;
-  mix_b = mix - 0.5;
+  mix_b = mix;
 
   if(mix_a > 0.5){
-    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+    mix_a = 1.0 - mix_b;
+  }else{
+    mix_a = -1.0 * (mix_a - 1.0);
   }
-
-  if(mix_b < 0.0){
-    mix_b = 0.5 - (-1.0 * mix_b);
-  }
-
-  mix_a *= 2.0;
-  mix_b *= 2.0;
 
   word_size = sizeof(AgsComplex);
   
