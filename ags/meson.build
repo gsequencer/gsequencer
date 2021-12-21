@@ -409,6 +409,9 @@ libags_audio_sources = files(
   'audio/ags_track.c',
   'audio/ags_volume_util.c',
   'audio/ags_wave.c',
+  'audio/alsa/ags_alsa_devin.c',
+  'audio/alsa/ags_alsa_devout.c',
+  'audio/alsa/ags_alsa_midiin.c',
   'audio/audio-unit/ags_audio_unit_client.c',
   'audio/audio-unit/ags_audio_unit_devin.c',
   'audio/audio-unit/ags_audio_unit_devout.c',
@@ -586,6 +589,9 @@ libags_audio_sources = files(
   'audio/osc/controller/ags_osc_renew_controller.c',
   'audio/osc/controller/ags_osc_status_controller.c',
   'audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c',
+  'audio/oss/ags_oss_devin.c',
+  'audio/oss/ags_oss_devout.c',
+  'audio/oss/ags_oss_midiin.c',
   'audio/pulse/ags_pulse_client.c',
   'audio/pulse/ags_pulse_devin.c',
   'audio/pulse/ags_pulse_devout.c',
@@ -1121,6 +1127,8 @@ libgsequencer_sources = files(
   'X/editor/ags_sheet_edit_callbacks.c',
   'X/editor/ags_sheet_toolbar.c',
   'X/editor/ags_sheet_toolbar_callbacks.c',
+  'X/editor/ags_time_stretch_buffer_dialog.c',
+  'X/editor/ags_time_stretch_buffer_dialog_callbacks.c',
   'X/editor/ags_vautomation_edit_box.c',
   'X/editor/ags_vwave_edit_box.c',
   'X/editor/ags_wave_edit_box.c',
@@ -1808,6 +1816,18 @@ libags_audio_audio_gstreamer_headers = [
 ]
 endif
 
+libags_audio_audio_alsa_headers = [
+  'audio/alsa/ags_alsa_devin.h',
+  'audio/alsa/ags_alsa_devout.h',
+  'audio/alsa/ags_alsa_midiin.h',
+]
+
+libags_audio_audio_oss_headers = [
+  'audio/oss/ags_oss_devin.h',
+  'audio/oss/ags_oss_devout.h',
+  'audio/oss/ags_oss_midiin.h',
+]
+
 libags_audio_audio_jack_headers = [
   'audio/jack/ags_jack_client.h',
   'audio/jack/ags_jack_devin.h',
@@ -2040,7 +2060,7 @@ libags_audio_audio_wasapi_headers = [
   'audio/wasapi/ags_wasapi_devout.h',
 ]
 
-libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
+libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_alsa_headers + libags_audio_audio_oss_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
 
 if get_option('vst3')
   libags_vst_host_headers = [
@@ -2201,6 +2221,8 @@ if get_option('gstreamer')
   install_headers(libags_audio_audio_gstreamer_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
 endif
 
+install_headers(libags_audio_audio_alsa_headers, install_dir: gsequencer_includedir / 'ags/audio/alsa')
+install_headers(libags_audio_audio_oss_headers, install_dir: gsequencer_includedir / 'ags/audio/oss')
 install_headers(libags_audio_audio_jack_headers, install_dir: gsequencer_includedir / 'ags/audio/jack')
 install_headers(libags_audio_audio_midi_headers, install_dir: gsequencer_includedir / 'ags/audio/midi')
 install_headers(libags_audio_audio_osc_headers, install_dir: gsequencer_includedir / 'ags/audio/osc')
