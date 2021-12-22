@@ -567,7 +567,7 @@ ags_recall_channel_automate(AgsRecall *recall)
     
     g_rec_mutex_lock(audio_mutex);
 
-    success = g_strv_contains(audio->automation_port, specifier);
+    success = (specifier != NULL && g_strv_contains(audio->automation_port, specifier)) ? TRUE: FALSE;
     
     g_rec_mutex_unlock(audio_mutex);
       

@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.14.4" date="2021-12-22">
+      <description>
+	<p>
+	  Fixed missing automation for fx effect processors.
+	</p>
+      </description>
+    </release>
+
     <release version="3.14.2" date="2021-12-21">
       <description>
 	<p>

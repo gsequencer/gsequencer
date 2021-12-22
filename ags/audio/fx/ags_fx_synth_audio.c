@@ -4845,6 +4845,7 @@ ags_fx_synth_audio_get_synth_0_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -5353,6 +5354,7 @@ ags_fx_synth_audio_get_synth_0_sync_lfo_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -5431,6 +5433,7 @@ ags_fx_synth_audio_get_synth_1_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -5939,6 +5942,7 @@ ags_fx_synth_audio_get_synth_1_sync_lfo_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -6292,6 +6296,7 @@ ags_fx_synth_audio_get_chorus_lfo_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
