@@ -616,6 +616,8 @@ ags_recall_channel_automate(AgsRecall *recall)
 					 &value);
 
 	if(ret_x != G_MAXUINT){
+//	  g_message("automate -> %f", g_value_get_float(&value));
+	  
 	  ags_port_safe_write(port->data,
 			      &value);
 	}

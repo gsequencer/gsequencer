@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.14.5" date="2021-12-22">
+      <description>
+	<p>
+	  Fixed automation editor to respect lower value correctly, integer and toggled ports.
+	</p>
+      </description>
+    </release>
+
     <release version="3.14.4" date="2021-12-22">
       <description>
 	<p>

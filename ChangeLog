@@ -1,3 +1,9 @@
+ags (3.14.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation editor to apply lower properly
+	* fixed automation editor to respect integer and toggled ports
+
 ags (3.14.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

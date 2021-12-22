@@ -1608,6 +1608,16 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
     automation_edit->flags |= AGS_AUTOMATION_EDIT_LOGARITHMIC;
   }
   
+  if(plugin_port != NULL &&
+     ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_INTEGER)){
+    automation_edit->flags |= AGS_AUTOMATION_EDIT_INTEGER;
+  }
+  
+  if(plugin_port != NULL &&
+     ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_TOGGLED)){
+    automation_edit->flags |= AGS_AUTOMATION_EDIT_TOGGLED;
+  }
+  
   gtk_box_pack_start((GtkBox *) AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
 		     (GtkWidget *) automation_edit,
 		     FALSE, FALSE,
