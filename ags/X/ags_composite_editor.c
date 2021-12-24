@@ -3088,6 +3088,7 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
 
     gdouble bpm;
     guint samplerate;
+    guint buffer_size;
     guint64 relative_offset;
     guint64 position_x;
     gint64 first_x, last_x;
@@ -3097,6 +3098,7 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     guint64 sample_width;
     guint64 cursor_position;
     gdouble delay_factor;
+    gdouble absolute_delay;
     gboolean paste_from_position;
 
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
@@ -3115,12 +3117,15 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     soundcard = NULL;
 
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     
     g_object_get(machine->audio,
 		 "output-soundcard", &soundcard,
 		 "samplerate", &samplerate,
+		 "buffer-size", &buffer_size,
 		 NULL);
     
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
@@ -3144,14 +3149,14 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
       AgsWaveEdit *wave_edit;
 
       GtkAdjustment *adjustment;
-      
+
       last_x = 0;
       paste_from_position = TRUE;
 
       zoom_correction = 1.0 / 16;
 
       map_width = (64.0) * (16.0 * 16.0 * 1200.0);
-      sample_width = (samplerate / (60.0 / bpm) / 16.0) * (16.0 * 16.0 * 1200.0);
+      sample_width = (absolute_delay * buffer_size) * (16.0 * 16.0 * 1200.0);
 
       wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
 
