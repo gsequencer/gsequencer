@@ -3092,6 +3092,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     guint64 position_x;
     gint64 first_x, last_x;
     double zoom, zoom_factor;
+    double zoom_correction;
+    guint map_width;
     gdouble delay_factor;
     gboolean paste_from_position;
 
@@ -3124,7 +3126,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
-    if(buffer == NULL){
+    if(!AGS_IS_WAVE_EDIT(composite_editor->wave_edit->focused_edit) ||
+       buffer == NULL){
       if(soundcard != NULL){
 	g_object_unref(soundcard);
       }
@@ -3139,10 +3142,16 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
       last_x = 0;
       paste_from_position = TRUE;
 
-      position_x = 15.0 * delay_factor * AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x * samplerate / (16.0 * bpm);
+      zoom_correction = 1.0 / 16;
+
+      map_width = (64.0) * (16.0 * 16.0 * 1200.0) * zoom_correction;
       
-#ifdef DEBUG
+//      position_x = 15.0 * delay_factor * AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x * samplerate / (16.0 * bpm);
+      position_x = (AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x * zoom_factor) / map_width * ((samplerate / (60.0 / bpm)) * (16.0 * 16.0 * 1200.0));
+      
+      
       printf("pasting at position: [%u]\n", position_x);
+#ifdef DEBUG
 #endif
     }else{
       paste_from_position = FALSE;
