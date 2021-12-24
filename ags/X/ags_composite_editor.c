@@ -3093,7 +3093,9 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     gint64 first_x, last_x;
     double zoom, zoom_factor;
     double zoom_correction;
-    guint map_width;
+    guint64 map_width;
+    guint64 sample_width;
+    guint64 cursor_position;
     gdouble delay_factor;
     gboolean paste_from_position;
 
@@ -3139,19 +3141,28 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     position_x = 0;
     
     if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
+      AgsWaveEdit *wave_edit;
+
+      GtkAdjustment *adjustment;
+      
       last_x = 0;
       paste_from_position = TRUE;
 
       zoom_correction = 1.0 / 16;
 
-      map_width = (64.0) * (16.0 * 16.0 * 1200.0) * zoom_correction;
+      map_width = (64.0) * (16.0 * 16.0 * 1200.0);
+      sample_width = (samplerate / (60.0 / bpm) / 16.0) * (16.0 * 16.0 * 1200.0);
+
+      wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
+
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->hscrollbar));
       
-//      position_x = 15.0 * delay_factor * AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x * samplerate / (16.0 * bpm);
-      position_x = (AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x * zoom_factor) / map_width * ((samplerate / (60.0 / bpm)) * (16.0 * 16.0 * 1200.0));
+      cursor_position = ((guint64) (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / gtk_adjustment_get_upper(adjustment) * map_width) + (16 * (guint64) ((double) (wave_edit->cursor_position_x - gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar))) / zoom_factor)));
+
+      position_x = (guint64) floorl(((long double) cursor_position / (long double) map_width) * (long double) sample_width);
       
-      
-      printf("pasting at position: [%u]\n", position_x);
 #ifdef DEBUG
+      printf("pasting at position: [%u]\n", position_x);
 #endif
     }else{
       paste_from_position = FALSE;

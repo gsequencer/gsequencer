@@ -27,6 +27,15 @@
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
+#include <ags/ags_api_config.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#if !defined(AGS_W32API)
+#include <poll.h>
+#endif
+
 #include <ags/i18n.h>
 
 void ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout);
