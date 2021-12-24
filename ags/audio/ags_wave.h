@@ -157,6 +157,9 @@ gboolean ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer);
 AgsBuffer* ags_wave_find_point(AgsWave *wave,
 			       guint64 x,
 			       gboolean use_selection_list);
+AgsBuffer* ags_wave_find_exact_point(AgsWave *wave,
+				     guint64 x,
+				     gboolean use_selection_list);
 GList* ags_wave_find_region(AgsWave *wave,
 			    guint64 x0,
 			    guint64 x1,

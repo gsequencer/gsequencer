@@ -3438,6 +3438,7 @@ ags_wave_remove_buffer
 ags_wave_get_selection
 ags_wave_is_buffer_selected
 ags_wave_find_point
+ags_wave_find_exact_point
 ags_wave_find_region
 ags_wave_free_selection
 ags_wave_add_region_to_selection

@@ -1,6 +1,7 @@
 ags (3.14.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented alternative AgsWave insert from clipboard
 	* fixed wave form editor cursor position
 	* fixed restore AgsAudiorec filename entry from XML
 	* fixed ALSA and OSSv4 export thread

@@ -3150,6 +3150,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
 
       GtkAdjustment *adjustment;
 
+      guint64 relative_offset;
+      
       last_x = 0;
       paste_from_position = TRUE;
 
@@ -3165,9 +3167,13 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
       cursor_position = ((guint64) (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / gtk_adjustment_get_upper(adjustment) * map_width) + (16 * (guint64) ((double) (wave_edit->cursor_position_x - gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar))) / zoom_factor)));
 
       position_x = (guint64) floorl(((long double) cursor_position / (long double) map_width) * (long double) sample_width);
+
+      relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+      position_x = (floor(position_x / relative_offset) * relative_offset) + (buffer_size * (floor(position_x - floor(position_x / relative_offset) * relative_offset) / buffer_size));
       
-#ifdef DEBUG
       printf("pasting at position: [%u]\n", position_x);
+#ifdef DEBUG
 #endif
     }else{
       paste_from_position = FALSE;

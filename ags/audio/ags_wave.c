@@ -39,6 +39,19 @@ void ags_wave_get_property(GObject *gobject,
 void ags_wave_dispose(GObject *gobject);
 void ags_wave_finalize(GObject *gobject);
   
+void ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
+								xmlNode *root_node, char *version,
+								char *x_boundary,
+								gboolean reset_x_offset, guint64 x_offset,
+								gdouble delay, guint attack,
+								gboolean match_line, gboolean do_replace,
+								guint current_line,
+								guint64 relative_offset,
+								guint wave_samplerate,
+								guint wave_buffer_size,
+								guint wave_format,
+								gboolean match_timestamp);
+
 void ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							       xmlNode *root_node, char *version,
 							       char *x_boundary,
@@ -2115,6 +2128,7 @@ ags_wave_find_point(AgsWave *wave,
     if(current_end_x + buffer_size < x){
       break;
     }
+
     
     if(current_end_x <= x &&
        current_end_x + buffer_size > x){
@@ -2144,10 +2158,130 @@ ags_wave_find_point(AgsWave *wave,
     }else if(current_x > x){
       current_start = current_start->next;
       current_end = current->prev;
-    }else{
+    }
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = (length - 1) / 2;
+
+    current = g_list_nth(current_start,
+			 position);
+  }
+
+  g_rec_mutex_unlock(wave_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_wave_find_point:
+ * @wave: the #AgsWave
+ * @x: offset
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find buffers by offset.
+ *
+ * Returns: (transfer none): the matching buffer as #AgsBuffer.
+ *
+ * Since: 3.14.6
+ */
+AgsBuffer*
+ags_wave_find_exact_point(AgsWave *wave,
+			  guint64 x,
+			  gboolean use_selection_list)
+{
+  AgsBuffer *retval;
+  
+  GList *buffer;
+  GList *current_start, *current_end, *current;
+
+  guint buffer_size;
+  guint64 current_start_x, current_end_x, current_x;
+  guint length, position;
+  gboolean success;
+
+  GRecMutex *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  /* get wave mutex */
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
+
+  /* find buffer */
+  g_rec_mutex_lock(wave_mutex);
+
+  buffer_size = wave->buffer_size;
+  
+  if(use_selection_list){
+    buffer = wave->selection;
+  }else{
+    buffer = wave->buffer;
+  }
+  
+  current_start = buffer;
+  current_end = g_list_last(buffer);
+  
+  length = g_list_length(buffer);
+  position = (length - 1) / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    g_object_get(current_start->data,
+		 "x", &current_start_x,
+		 NULL);
+
+    if(current_start_x > x){
+      break;
+    }
+    
+    if(current_start_x == x){
+      retval = current_start->data;
+
+      break;
+    }
+    
+    g_object_get(current_end->data,
+		 "x", &current_end_x,
+		 NULL);
+
+    if(current_end_x + buffer_size < x){
+      break;
+    }
+
+    
+    if(current_end_x == x){
+      retval = current_end->data;
+
+      break;
+    }
+
+    g_object_get(current->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x == x){
+      retval = current->data;
+      
+      break;
+    }
+
+    if(length <= 3){
+      break;
+    }
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else if(current_x > x){
       current_start = current_start->next;
-      //NOTE:JK: we want progression
-      //current_end = current_end->prev;
+      current_end = current->prev;
     }
 
     length = g_list_position(current_start,
@@ -2568,7 +2702,8 @@ ags_wave_copy_selection(AgsWave *wave)
   GList *start_selection, *selection;
 
   xmlChar *str;
-
+  gchar *gstr;
+  
   guint format;
   guint64 x_boundary;
 
@@ -2661,10 +2796,14 @@ ags_wave_copy_selection(AgsWave *wave)
     xmlAddChild(wave_node,
 		timestamp_node);
 
+    gstr = g_strdup_printf("%lu", ags_timestamp_get_ags_offset(timestamp));
+    
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%lu", ags_timestamp_get_ags_offset(timestamp))));
+	       BAD_CAST (gstr));
 
+    g_free(gstr);
+    
     g_object_unref(timestamp);
   }
   
@@ -2704,13 +2843,21 @@ ags_wave_copy_selection(AgsWave *wave)
 
     g_rec_mutex_lock(buffer_mutex);
 
+    gstr = g_strdup_printf("%u", buffer->samplerate);
+    
     xmlNewProp(current_buffer,
 	       BAD_CAST "samplerate",
-	       BAD_CAST (g_strdup_printf("%u", buffer->samplerate)));
+	       BAD_CAST (gstr));
 
+    g_free(gstr);
+
+    gstr = g_strdup_printf("%u", buffer->buffer_size);
+    
     xmlNewProp(current_buffer,
 	       BAD_CAST "buffer-size",
-	       BAD_CAST (g_strdup_printf("%u", buffer->buffer_size)));
+	       BAD_CAST (gstr));
+
+    g_free(gstr);
 
     switch(buffer->format){    
     case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2755,18 +2902,30 @@ ags_wave_copy_selection(AgsWave *wave)
 	       BAD_CAST (str));
 
     //    g_message("copy - buffer->x = %lu", buffer->x);
+
+    gstr = g_strdup_printf("%lu", buffer->x);
     
     xmlNewProp(current_buffer,
 	       BAD_CAST "x",
-	       BAD_CAST (g_strdup_printf("%lu", buffer->x)));
+	       BAD_CAST (gstr));
 
+    g_free(gstr);
+
+    gstr = g_strdup_printf("%lu", buffer->selection_x0);
+    
     xmlNewProp(current_buffer,
 	       BAD_CAST "selection-x0",
-	       BAD_CAST (g_strdup_printf("%lu", buffer->selection_x0)));
+	       BAD_CAST (gstr));
 
+    g_free(gstr);
+
+    gstr = g_strdup_printf("%lu", buffer->selection_x1);
+    
     xmlNewProp(current_buffer,
 	       BAD_CAST "selection-x1",
-	       BAD_CAST (g_strdup_printf("%lu", buffer->selection_x1)));
+	       BAD_CAST (gstr));
+
+    g_free(gstr);
     
     cbuffer = NULL;
     buffer_size = 0;
@@ -2811,22 +2970,26 @@ ags_wave_copy_selection(AgsWave *wave)
 
     g_rec_mutex_unlock(buffer_mutex);
 
-    //    current_buffer->content = g_base64_encode(cbuffer,
-    //					      buffer_size);
+    gstr = g_base64_encode(cbuffer,
+			   buffer_size);
+    
     xmlNodeSetContent(current_buffer,
-		      g_base64_encode(cbuffer,
-    				      buffer_size));
+		      gstr);
     
+    g_free(gstr);    
     g_free(cbuffer);
-    
+
     selection = selection->next;
   }
 
   g_list_free(start_selection);
-  
+
+  gstr = g_strdup_printf("%lu", x_boundary);
   xmlNewProp(wave_node,
 	     BAD_CAST "x-boundary",
-	     BAD_CAST (g_strdup_printf("%lu", x_boundary)));
+	     BAD_CAST (gstr));
+
+  g_free(gstr);
 
   return(wave_node);
 }
@@ -2879,6 +3042,301 @@ ags_wave_cut_selection(AgsWave *wave)
   ags_wave_free_selection(wave);
 
   return(wave_node);
+}
+
+void
+ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
+							   xmlNode *root_node, char *version,
+							   char *x_boundary,
+							   gboolean reset_x_offset, guint64 x_offset,
+							   gdouble delay, guint attack,
+							   gboolean match_line, gboolean do_replace,
+							   guint current_line,
+							   guint64 relative_offset,
+							   guint wave_samplerate,
+							   guint wave_buffer_size,
+							   guint wave_format,
+							   gboolean match_timestamp)
+{
+  AgsBuffer *buffer;
+
+  AgsTimestamp *timestamp;
+
+  xmlNode *node;
+
+  gpointer clipboard_data;
+  gpointer data;
+  
+  xmlChar *x;
+  guchar *clipboard_cdata;
+  xmlChar *samplerate;
+  xmlChar *buffer_size;
+  xmlChar *format;
+  xmlChar *content;
+  gchar *endptr;
+  
+  guint64 timestamp_offset;
+  guint64 first_x_val, x_val;
+  gsize clipboard_length;
+  guint samplerate_val;
+  guint buffer_size_val;
+  guint format_val;
+  guint word_size;
+  guint copy_mode;
+  
+  timestamp = ags_wave_get_timestamp(wave);
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return;
+  }
+  
+  timestamp_offset = ags_timestamp_get_ags_offset(timestamp);
+
+  node = root_node->children;
+
+  first_x_val = ~0;
+  
+  /* parse */
+  while(node != NULL){
+    if(node->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("buffer",
+		     node->name,
+		     7)){
+	/* retrieve x offset */
+	x = xmlGetProp(node,
+		       "x");
+
+	if(x == NULL){
+	  node = node->next;
+	  
+	  continue;
+	}
+
+	endptr = NULL;
+	errno = 0;
+	
+	x_val = g_ascii_strtoull(x,
+				 &endptr,
+				 10);
+
+	if(errno == ERANGE){
+	  node = node->next;
+	  
+	  continue;
+	}
+	
+	if(x == endptr){
+	  node = node->next;
+
+	  xmlFree(x);
+	  
+	  continue;
+	}
+
+	xmlFree(x);
+	content = xmlNodeGetContent(node);
+	
+	if(content == NULL){
+	  node = node->next;
+	  
+	  continue;
+	}
+
+	clipboard_cdata = g_base64_decode(content,
+					  &clipboard_length);
+	
+	xmlFree(content);
+
+	/* presets */
+	samplerate_val = 0;
+	samplerate = xmlGetProp(node,
+				"samplerate");
+
+	if(samplerate != NULL){
+	  samplerate_val = g_ascii_strtoull(samplerate,
+					    NULL,
+					    10);
+	}
+
+	xmlFree(samplerate);
+
+	buffer_size_val = 0;
+	buffer_size = xmlGetProp(node,
+				 "buffer-size");
+
+	if(buffer_size != NULL){
+	  buffer_size_val = g_ascii_strtoull(buffer_size,
+					     NULL,
+					     10);
+	}
+
+	xmlFree(buffer_size);
+
+	/* retrieve format */
+	format_val = 0;
+	format = xmlGetProp(node,
+			    "format");
+
+	word_size = 0;
+
+	if(!g_ascii_strncasecmp("s8",
+				format,
+				3)){
+	  format_val = AGS_SOUNDCARD_SIGNED_8_BIT;
+
+	  word_size = sizeof(gint8);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s8(clipboard_cdata,
+							     clipboard_length);
+	}else if(!g_ascii_strncasecmp("s16",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_16_BIT;
+
+	  word_size = sizeof(gint16);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s16(clipboard_cdata,
+							      clipboard_length);
+	}else if(!g_ascii_strncasecmp("s24",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_24_BIT;
+
+	  word_size = sizeof(gint32);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+							      clipboard_length);
+	}else if(!g_ascii_strncasecmp("s32",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_32_BIT;
+
+	  word_size = sizeof(gint32);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+							      clipboard_length);
+	}else if(!g_ascii_strncasecmp("s64",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_64_BIT;
+
+	  word_size = sizeof(gint64);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s64(clipboard_cdata,
+							      clipboard_length);
+	}else if(!g_ascii_strncasecmp("float",
+				      format,
+				      6)){
+	  format_val = AGS_SOUNDCARD_FLOAT;
+
+	  word_size = sizeof(gfloat);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_float(clipboard_cdata,
+								clipboard_length);
+	}else if(!g_ascii_strncasecmp("double",
+				      format,
+				      7)){
+	  format_val = AGS_SOUNDCARD_DOUBLE;
+
+	  word_size = sizeof(gdouble);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_double(clipboard_cdata,
+								 clipboard_length);
+	}else{
+	  node = node->next;
+
+	  xmlFree(format);
+	  g_free(clipboard_cdata);
+	  
+	  continue;
+	}
+
+	xmlFree(format);
+
+	if(buffer_size_val * word_size != clipboard_length){
+	  node = node->next;
+
+	  g_free(clipboard_cdata);
+	  g_free(clipboard_data);
+	  
+	  continue;
+	}
+
+	if(first_x_val == ~0){
+	  first_x_val = x_val;
+	}
+
+	if(match_timestamp &&
+	   !((floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)) >= timestamp_offset &&
+	     (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)) < timestamp_offset + relative_offset)){
+	  node = node->next;
+
+	  continue;
+	}
+		
+	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
+							ags_audio_buffer_util_format_from_soundcard(format_val));	
+
+	buffer = ags_wave_find_exact_point(wave,
+					   (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)),
+					   FALSE);
+
+	if(buffer == NULL){
+	  buffer = ags_buffer_new();
+	  g_object_set(buffer,
+		       "samplerate", wave_samplerate,
+		       "buffer-size", wave_buffer_size,
+		       "format", wave_format,
+		       NULL);  
+	      
+	  buffer->x = (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size));
+	      
+//	  g_message("created %d", buffer->x);
+	      
+	  ags_wave_add_buffer(wave,
+			      buffer,
+			      FALSE);
+	}else{
+	  if(do_replace){
+	    ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+					       wave_buffer_size, ags_audio_buffer_util_format_from_soundcard(wave_format));
+	  }
+	}
+
+	data = NULL;
+	
+	if(samplerate_val != wave_samplerate){
+	  data = ags_stream_alloc(wave_buffer_size,
+				  format_val);
+	  
+	  ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
+						     ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
+						     buffer_size_val,
+						     wave_samplerate,
+						     wave_buffer_size,
+						     data);
+	  
+	}else{
+	  data = buffer->data;		
+	}
+
+	ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+						    clipboard_data, 1, 0,
+						    wave_buffer_size, copy_mode);
+	
+	if(samplerate_val != wave_samplerate){
+	  g_free(data);
+	}
+	
+	g_free(clipboard_cdata);
+	g_free(clipboard_data);
+      }
+    }
+      
+    node = node->next;
+  }
+  
+  g_object_unref(timestamp);
 }
 
 void
@@ -3223,13 +3681,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	g_object_unref(timestamp);
 
 	if(!match_timestamp ||
-	   x_val < timestamp_offset + relative_offset){
+	   (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)) < timestamp_offset + relative_offset){
 	  guint copy_mode;
 	    
 	  /* find first */
-	  buffer = ags_wave_find_point(wave,
-				       (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
-				       FALSE);
+	  buffer = ags_wave_find_exact_point(wave,
+					     (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
+					     FALSE);
 
 	  if(buffer != NULL &&
 	     do_replace){
@@ -3327,6 +3785,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 				FALSE);
 	  }
 
+	  
 	  //	    g_message("insert - buffer->x = %lu", buffer->x);
 	  //	    g_message("%d %d", wave_format, format_val);
 	  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
@@ -3355,7 +3814,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  wave_buffer_size - attack, copy_mode);
 	    }
 
-	    free(target_data);
+	    g_free(target_data);
 	  }else{
 	    if(attack + frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -3367,7 +3826,8 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  wave_buffer_size - attack, copy_mode);
 	    }
 	  }
-	    
+
+#if 0	    
 	  /* find next */
 	  if(attack + frame_count > wave_buffer_size){
 	    buffer = ags_wave_find_point(wave,
@@ -3426,13 +3886,14 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  target_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 
-	      free(target_data);
+	      g_free(target_data);
 	    }else{
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  clipboard_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 	    }
 	  }
+#endif
 	}
       }
     }
@@ -3466,6 +3927,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    gdouble delay, guint attack,
 					    gboolean match_line, gboolean do_replace)
 {
+  xmlChar *str;
+  
   guint current_line;
   guint64 relative_offset;
   guint wave_samplerate;
@@ -3493,28 +3956,34 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * wave_samplerate;
 
+    str = xmlGetProp(root_node,
+		     "line");
+    
     if(match_line &&
-       current_line != g_ascii_strtoull(xmlGetProp(root_node,
-						   "line"),
+       current_line != g_ascii_strtoull(str,
 					NULL,
 					10)){
+      xmlFree(str);
+      
       //      g_message("line %d", current_line);
       
       return;
     }
+
+    xmlFree(str);
     
-    ags_wave_insert_native_level_from_clipboard_version_1_4_0(wave,
-							      root_node, version,
-							      x_boundary,
-							      reset_x_offset, x_offset,
-							      delay, attack,
-							      match_line, do_replace,
-							      current_line,
-							      relative_offset,
-							      wave_samplerate,
-							      wave_buffer_size,
-							      wave_format,
-							      match_timestamp);
+    ags_wave_insert_native_level_from_clipboard_version_3_14_6(wave,
+							       root_node, version,
+							       x_boundary,
+							       reset_x_offset, x_offset,
+							       delay, attack,
+							       match_line, do_replace,
+							       current_line,
+							       relative_offset,
+							       wave_samplerate,
+							       wave_buffer_size,
+							       wave_format,
+							       match_timestamp);
   }  
 }
 
