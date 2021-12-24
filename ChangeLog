@@ -1,3 +1,10 @@
+ags (3.14.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed restore AgsAudiorec filename entry from XML
+	* fixed ALSA and OSSv4 export thread
+	* fixed soundcard export missing start of AgsAudiorec
+
 ags (3.14.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
