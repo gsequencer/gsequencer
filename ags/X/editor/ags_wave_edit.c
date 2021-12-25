@@ -1450,6 +1450,7 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
   gboolean use_composite_editor;
   gdouble gui_scale_factor;
   double zoom, zoom_factor;
+  double zoom_correction;
   double x, y;
   double width, height;
   gboolean height_fits;
@@ -1506,8 +1507,10 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
   }
   
+  zoom_correction = 1.0 / 16;
+
   y = 0.0;
-  x = (((double) wave_edit->cursor_position_x) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)))) /  zoom_factor;
+  x = (((double) wave_edit->cursor_position_x) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)) /  zoom_factor;
 
   width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
   height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
@@ -1549,6 +1552,7 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
   
   gboolean use_composite_editor;
   double zoom, zoom_factor;
+  double zoom_correction;
   double x, y;
   double width, height;
 
@@ -1601,12 +1605,14 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
   }
   
-  /* get offset and dimensions */
+  /* get offset and dimensions */  
+  zoom_correction = 1.0 / 16;
+  
   if(wave_edit->selection_x0 < wave_edit->selection_x1){
-    x = (((double) wave_edit->selection_x0) - gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar))) / zoom_factor;
+    x = (((double) wave_edit->selection_x0) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)) / zoom_factor;
     width = ((double) wave_edit->selection_x1 - (double) wave_edit->selection_x0) / zoom_factor;
   }else{
-    x = (((double) wave_edit->selection_x1) - gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar))) / zoom_factor;
+    x = (((double) wave_edit->selection_x1) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)) / zoom_factor;
     width = ((double) wave_edit->selection_x0 - (double) wave_edit->selection_x1) / zoom_factor;
   }
 

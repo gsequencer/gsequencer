@@ -3163,17 +3163,15 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
       wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
 
       adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->hscrollbar));
-      
-      cursor_position = ((guint64) (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / gtk_adjustment_get_upper(adjustment) * map_width) + (16 * (guint64) ((double) (wave_edit->cursor_position_x - gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar))) / zoom_factor)));
 
-      position_x = (guint64) floorl(((long double) cursor_position / (long double) map_width) * (long double) sample_width);
-
+      position_x = (guint64) floorl((long double) wave_edit->cursor_position_x / (long double) map_width * (long double) sample_width);
+			 
       relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
       position_x = (floor(position_x / relative_offset) * relative_offset) + (buffer_size * (floor(position_x - floor(position_x / relative_offset) * relative_offset) / buffer_size));
       
+#ifdef AGS_DEBUG
       printf("pasting at position: [%u]\n", position_x);
-#ifdef DEBUG
 #endif
     }else{
       paste_from_position = FALSE;
@@ -4747,6 +4745,9 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
     AgsWindow *window;
     AgsNotebook *notebook;
+    AgsWaveEdit *focused_wave_edit;
+
+    GtkAdjustment *adjustment;
 
     AgsTimestamp *timestamp;
 
@@ -4761,7 +4762,10 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     guint64 relative_offset;
     guint64 x0_offset, x1_offset;
     double zoom, zoom_factor;
+    guint64 map_width;
+    guint64 sample_width;
     gdouble delay_factor;
+    gdouble absolute_delay;
     gint i;
 
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
@@ -4808,16 +4812,26 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 		 "buffer-size", &buffer_size,
 		 NULL);
     
+    focused_wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
+
+    if(!AGS_IS_WAVE_EDIT(focused_wave_edit)){
+      return;
+    }
+    
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(focused_wave_edit->hscrollbar));
+      
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-    
-    x0_offset = (x0 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
-    x1_offset = (x1 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
 
-    //TODO:JK: improve me
-    x0_offset = buffer_size * floor(x0_offset / buffer_size);
-    x1_offset = buffer_size * ceil(x1_offset / buffer_size);
+    map_width = (64.0) * (16.0 * 16.0 * 1200.0);
+    sample_width = (absolute_delay * buffer_size) * (16.0 * 16.0 * 1200.0);
+    
+    x0_offset = (guint64) floorl((long double) x0 / (long double) map_width * (long double) sample_width);
+    x1_offset = (guint64) floorl((long double) x1 / (long double) map_width * (long double) sample_width);
+
+//    g_message("x offset %d %d", x0_offset, x1_offset);
     
     timestamp = ags_timestamp_new();
 
@@ -4838,7 +4852,7 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 
       while(timestamp->timer.ags_offset.offset < (relative_offset * floor(x1 / relative_offset)) + relative_offset){
 	while((wave = ags_wave_find_near_timestamp(wave, i,
-							timestamp)) != NULL){
+						   timestamp)) != NULL){
 	  ags_wave_add_region_to_selection(wave->data,
 					   x0_offset,
 					   x1_offset,

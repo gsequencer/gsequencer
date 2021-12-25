@@ -1,3 +1,9 @@
+ags (3.14.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wave form editor cursor
+	* fixed wave form editor selection
+
 ags (3.14.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
