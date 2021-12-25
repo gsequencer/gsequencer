@@ -43,6 +43,15 @@ void ags_fx_synth_audio_finalize(GObject *gobject);
 void ags_fx_synth_audio_notify_audio_callback(GObject *gobject,
 					      GParamSpec *pspec,
 					      gpointer user_data);
+void ags_fx_synth_audio_notify_buffer_size_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    gpointer user_data);
+void ags_fx_synth_audio_notify_format_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       gpointer user_data);
+void ags_fx_synth_audio_notify_samplerate_callback(GObject *gobject,
+						   GParamSpec *pspec,
+						   gpointer user_data);
 
 void ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 						    guint audio_channels, guint audio_channels_old,
@@ -1100,6 +1109,15 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
   
   g_signal_connect(fx_synth_audio, "notify::audio",
 		   G_CALLBACK(ags_fx_synth_audio_notify_audio_callback), NULL);
+
+  g_signal_connect(fx_synth_audio, "notify::buffer-size",
+		   G_CALLBACK(ags_fx_synth_audio_notify_buffer_size_callback), NULL);
+
+  g_signal_connect(fx_synth_audio, "notify::format",
+		   G_CALLBACK(ags_fx_synth_audio_notify_format_callback), NULL);
+
+  g_signal_connect(fx_synth_audio, "notify::samplerate",
+		   G_CALLBACK(ags_fx_synth_audio_notify_samplerate_callback), NULL);
 
   AGS_RECALL(fx_synth_audio)->name = "ags-fx-synth";
   AGS_RECALL(fx_synth_audio)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -4262,9 +4280,206 @@ ags_fx_synth_audio_notify_audio_callback(GObject *gobject,
 }
 
 void
+ags_fx_synth_audio_notify_buffer_size_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       gpointer user_data)
+{
+  AgsFxSynthAudio *fx_synth_audio;
+
+  guint buffer_size;
+  guint i, j;
+  
+  GRecMutex *recall_mutex;
+  
+  fx_synth_audio = AGS_FX_SYNTH_AUDIO(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_synth_audio);
+
+  /* get buffer size */
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(fx_synth_audio,
+	       "buffer-size", &buffer_size,
+	       NULL);
+  
+  /* reallocate buffer - apply buffer size */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxSynthAudioScopeData *scope_data;
+
+    scope_data = fx_synth_audio->scope_data[i];
+    
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      for(j = 0; j < scope_data->audio_channels; j++){
+	AgsFxSynthAudioChannelData *channel_data;
+
+	channel_data = scope_data->channel_data[j];
+
+	channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
+
+	channel_data->hq_pitch_util.buffer_length = buffer_size;
+
+	channel_data->chorus_hq_pitch_util.buffer_length = buffer_size;
+
+	channel_data->chorus_linear_interpolate_util.buffer_length = buffer_size;
+	
+	channel_data->chorus_util.buffer_length = buffer_size;
+      }
+    }
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+void
+ags_fx_synth_audio_notify_format_callback(GObject *gobject,
+					  GParamSpec *pspec,
+					  gpointer user_data)
+{
+  AgsFxSynthAudio *fx_synth_audio;
+
+  guint format;
+  guint i, j;
+  
+  GRecMutex *recall_mutex;
+  
+  fx_synth_audio = AGS_FX_SYNTH_AUDIO(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_synth_audio);
+
+  format =  AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  g_object_get(fx_synth_audio,
+	       "format", &format,
+	       NULL);
+
+  /* reallocate buffer - apply buffer size */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxSynthAudioScopeData *scope_data;
+
+    scope_data = fx_synth_audio->scope_data[i];
+    
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      for(j = 0; j < scope_data->audio_channels; j++){
+	AgsFxSynthAudioChannelData *channel_data;
+
+	channel_data = scope_data->channel_data[j];
+
+	channel_data->hq_pitch_linear_interpolate_util.format = format;
+
+	ags_stream_free(channel_data->hq_pitch_util.destination);
+	
+	channel_data->hq_pitch_util.destination = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+								   format);
+	
+	ags_stream_free(channel_data->hq_pitch_util.low_mix_buffer);	
+	ags_stream_free(channel_data->hq_pitch_util.new_mix_buffer);
+	
+	channel_data->hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+								      format);
+	channel_data->hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+								      format);
+
+	channel_data->hq_pitch_util.format = format;
+
+	channel_data->chorus_hq_pitch_util.format = format;
+
+	ags_stream_free(channel_data->chorus_hq_pitch_util.low_mix_buffer);
+	ags_stream_free(channel_data->chorus_hq_pitch_util.new_mix_buffer);
+
+	channel_data->chorus_hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									     format);
+	channel_data->chorus_hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									     format);
+	
+	channel_data->chorus_linear_interpolate_util.format = format;
+
+	ags_stream_free(channel_data->chorus_util.destination);
+	ags_stream_free(channel_data->chorus_hq_pitch_util.destination);
+
+	channel_data->chorus_util.destination = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+								 format);
+
+	channel_data->chorus_hq_pitch_util.destination =
+	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
+									format);
+	
+	channel_data->chorus_util.format = format;
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+void
+ags_fx_synth_audio_notify_samplerate_callback(GObject *gobject,
+					      GParamSpec *pspec,
+					      gpointer user_data)
+{
+  AgsFxSynthAudio *fx_synth_audio;
+
+  guint samplerate;
+  guint i, j;
+  
+  GRecMutex *recall_mutex;
+  
+  fx_synth_audio = AGS_FX_SYNTH_AUDIO(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_synth_audio);
+
+  samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  g_object_get(fx_synth_audio,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  /* reallocate buffer - apply buffer size */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxSynthAudioScopeData *scope_data;
+
+    scope_data = fx_synth_audio->scope_data[i];
+    
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      for(j = 0; j < scope_data->audio_channels; j++){
+	AgsFxSynthAudioChannelData *channel_data;
+
+	channel_data = scope_data->channel_data[j];
+
+	channel_data->hq_pitch_linear_interpolate_util.samplerate = samplerate;
+
+	channel_data->hq_pitch_util.samplerate = samplerate;
+
+	channel_data->chorus_hq_pitch_util.samplerate = samplerate;
+
+	channel_data->chorus_linear_interpolate_util.samplerate = samplerate;
+	
+	channel_data->chorus_util.samplerate = samplerate;
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+void
 ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
-					      guint audio_channels, guint audio_channels_old,
-					      AgsFxSynthAudio *fx_synth_audio)
+					       guint audio_channels, guint audio_channels_old,
+					       AgsFxSynthAudio *fx_synth_audio)
 {
   guint input_pads;
   guint output_port_count, input_port_count;
@@ -4630,6 +4845,7 @@ ags_fx_synth_audio_get_synth_0_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -5138,6 +5354,7 @@ ags_fx_synth_audio_get_synth_0_sync_lfo_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -5216,6 +5433,7 @@ ags_fx_synth_audio_get_synth_1_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -5724,6 +5942,7 @@ ags_fx_synth_audio_get_synth_1_sync_lfo_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
@@ -6077,6 +6296,7 @@ ags_fx_synth_audio_get_chorus_lfo_oscillator_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_INTEGER |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;

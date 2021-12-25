@@ -1487,6 +1487,15 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
     machine = composite_editor->selected_machine;
 
     if(AGS_IS_AUDIOREC(machine)){
+      GtkAdjustment *adjustment;
+
+      GList *start_wave_edit;
+
+      gdouble lower, upper;
+      gdouble page_increment, step_increment;
+      gdouble page_size;
+      gdouble value;
+      
       ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						     AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE);
 
@@ -1498,6 +1507,32 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
       gtk_widget_show_all(composite_editor->wave_edit);
 
       gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+
+      start_wave_edit = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
+      
+      if(start_wave_edit != NULL){
+	adjustment = gtk_range_get_adjustment(AGS_WAVE_EDIT(start_wave_edit->data)->hscrollbar);
+	
+	g_object_get(adjustment,
+		     "lower", &lower,
+		     "upper", &upper,
+		     "page-increment", &page_increment,
+		     "step-increment", &step_increment,
+		     "page-size", &page_size,
+		     "value", &value,
+		     NULL);
+
+	g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->wave_edit->hscrollbar),
+		     "lower", lower,
+		     "upper", upper,
+		     "page-increment", page_increment,
+		     "step-increment", step_increment,
+		     "page-size", page_size,
+		     "value", value,
+		     NULL);
+
+	g_list_free(start_wave_edit);
+      }
     }
   }else{  
     gtk_widget_show_all((GtkWidget *) window->wave_window);

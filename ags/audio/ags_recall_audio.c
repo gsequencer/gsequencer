@@ -378,7 +378,7 @@ ags_recall_audio_automate(AgsRecall *recall)
     
     g_rec_mutex_lock(audio_mutex);
 
-    success = g_strv_contains(audio->automation_port, specifier);
+    success = (specifier != NULL && g_strv_contains(audio->automation_port, specifier)) ? TRUE: FALSE;
     
     g_rec_mutex_unlock(audio_mutex);
       
@@ -427,6 +427,8 @@ ags_recall_audio_automate(AgsRecall *recall)
 					 &value);
 
 	if(ret_x != G_MAXUINT){
+//	  g_message("automate -> %f", g_value_get_float(&value));
+	  
 	  ags_port_safe_write(port->data,
 			      &value);
 	}

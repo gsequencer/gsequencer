@@ -48,7 +48,11 @@ midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@
 
 if WITH_W32API
-LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu
+LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -Wl,-subsystem,windows
+
+gsequencer_LDFLAGS += -Wl,-subsystem,windows
+
+midi2xml_LDFLAGS += -Wl,-subsystem,windows
 endif
 
 # 

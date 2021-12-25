@@ -4585,6 +4585,9 @@ ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   ags_audiorec_open_filename(audiorec,
 			     str);
 
+  gtk_entry_set_text(audiorec->filename,
+		     str);
+  
   if(str != NULL){      
     xmlFree(str);
   }

@@ -1,3 +1,39 @@
+ags (3.14.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wave form editor cursor
+	* fixed wave form editor selection
+
+ags (3.14.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented alternative AgsWave insert from clipboard
+	* fixed wave form editor cursor position
+	* fixed restore AgsAudiorec filename entry from XML
+	* fixed ALSA and OSSv4 export thread
+	* fixed soundcard export missing start of AgsAudiorec
+
+ags (3.14.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation editor to apply lower properly
+	* fixed automation editor to respect integer and toggled ports
+
+ags (3.14.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing automation for fx effect processors
+
+ags (3.14.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_dial_get_value() missing return value
+
+ags (3.14.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing format and buffer size property of ags-fx-synth
+
 ags (3.14.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

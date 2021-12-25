@@ -468,7 +468,7 @@ ags_buffer_finalize(GObject *gobject)
   buffer = AGS_BUFFER(gobject);
 
   if(buffer->data != NULL){
-    free(buffer->data);
+    g_free(buffer->data);
   }
   
   /* call parent */
@@ -834,39 +834,39 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   
   switch(buffer->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-    {
-      buffer->data = (gint8 *) realloc(buffer->data,
+  {
+    buffer->data = (gint8 *) g_realloc(buffer->data,
 				       buffer_size * sizeof(gint8));
-      word_size = sizeof(gint8);
-    }
-    break;
+    word_size = sizeof(gint8);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-    {
-      buffer->data = (gint16 *) realloc(buffer->data,
+  {
+    buffer->data = (gint16 *) g_realloc(buffer->data,
 					buffer_size * sizeof(gint16));
-      word_size = sizeof(gint16);
-    }
-    break;
+    word_size = sizeof(gint16);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-    {
-      buffer->data = (gint32 *) realloc(buffer->data,
+  {
+    buffer->data = (gint32 *) g_realloc(buffer->data,
 					buffer_size * sizeof(gint32));
-      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(gint32);
-    }
-    break;
+    //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+    word_size = sizeof(gint32);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-    {
-      buffer->data = (gint32 *) realloc(buffer->data,
+  {
+    buffer->data = (gint32 *) g_realloc(buffer->data,
 					buffer_size * sizeof(gint32));
-      word_size = sizeof(gint32);
-    }
-    break;
+    word_size = sizeof(gint32);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-    {
-      buffer->data = (gint64 *) realloc(buffer->data,
+  {
+    buffer->data = (gint64 *) g_realloc(buffer->data,
 					buffer_size * sizeof(gint64));
-      word_size = sizeof(gint64);
+    word_size = sizeof(gint64);
     }
     break;
   default:
@@ -955,7 +955,7 @@ ags_buffer_set_format(AgsBuffer *buffer,
 					      buffer->data, 1, 0,
 					      buffer->buffer_size, copy_mode);
 
-  free(buffer->data);
+  g_free(buffer->data);
 
   buffer->data = data;
 

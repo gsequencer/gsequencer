@@ -21,6 +21,10 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/audio/alsa/ags_alsa_devout.h>
+
+#include <ags/audio/oss/ags_oss_devout.h>
+
 #include <ags/audio/wasapi/ags_wasapi_devout.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
@@ -476,6 +480,8 @@ ags_export_thread_run(AgsThread *thread)
   soundcard_buffer = NULL;
   
   if(AGS_IS_DEVOUT(soundcard) ||
+     AGS_IS_ALSA_DEVOUT(soundcard) ||
+     AGS_IS_OSS_DEVOUT(soundcard) ||
      AGS_IS_WASAPI_DEVOUT(soundcard)){
     soundcard_buffer = ags_soundcard_get_buffer(soundcard);
   }else if(AGS_IS_JACK_DEVOUT(soundcard) ||

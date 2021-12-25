@@ -2204,10 +2204,12 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
  
   x = ((double) a_x) - viewport_x;
 
-  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    lower = automation_edit->lower;
-    upper = automation_edit->upper;
+  lower = automation_edit->lower;
+  upper = automation_edit->upper;
 
+  a_y -= lower;
+  
+  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
     
     val = a_y;

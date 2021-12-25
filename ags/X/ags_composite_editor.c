@@ -1608,6 +1608,16 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
     automation_edit->flags |= AGS_AUTOMATION_EDIT_LOGARITHMIC;
   }
   
+  if(plugin_port != NULL &&
+     ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_INTEGER)){
+    automation_edit->flags |= AGS_AUTOMATION_EDIT_INTEGER;
+  }
+  
+  if(plugin_port != NULL &&
+     ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_TOGGLED)){
+    automation_edit->flags |= AGS_AUTOMATION_EDIT_TOGGLED;
+  }
+  
   gtk_box_pack_start((GtkBox *) AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
 		     (GtkWidget *) automation_edit,
 		     FALSE, FALSE,
@@ -3078,11 +3088,17 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
 
     gdouble bpm;
     guint samplerate;
+    guint buffer_size;
     guint64 relative_offset;
     guint64 position_x;
     gint64 first_x, last_x;
     double zoom, zoom_factor;
+    double zoom_correction;
+    guint64 map_width;
+    guint64 sample_width;
+    guint64 cursor_position;
     gdouble delay_factor;
+    gdouble absolute_delay;
     gboolean paste_from_position;
 
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
@@ -3101,12 +3117,15 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     soundcard = NULL;
 
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     
     g_object_get(machine->audio,
 		 "output-soundcard", &soundcard,
 		 "samplerate", &samplerate,
+		 "buffer-size", &buffer_size,
 		 NULL);
     
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
@@ -3114,7 +3133,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
-    if(buffer == NULL){
+    if(!AGS_IS_WAVE_EDIT(composite_editor->wave_edit->focused_edit) ||
+       buffer == NULL){
       if(soundcard != NULL){
 	g_object_unref(soundcard);
       }
@@ -3126,12 +3146,31 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     position_x = 0;
     
     if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
+      AgsWaveEdit *wave_edit;
+
+      GtkAdjustment *adjustment;
+
+      guint64 relative_offset;
+      
       last_x = 0;
       paste_from_position = TRUE;
 
-      position_x = 15.0 * delay_factor * AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x * samplerate / (16.0 * bpm);
+      zoom_correction = 1.0 / 16;
+
+      map_width = (64.0) * (16.0 * 16.0 * 1200.0);
+      sample_width = (absolute_delay * buffer_size) * (16.0 * 16.0 * 1200.0);
+
+      wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
+
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->hscrollbar));
+
+      position_x = (guint64) floorl((long double) wave_edit->cursor_position_x / (long double) map_width * (long double) sample_width);
+			 
+      relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+      position_x = (floor(position_x / relative_offset) * relative_offset) + (buffer_size * (floor(position_x - floor(position_x / relative_offset) * relative_offset) / buffer_size));
       
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       printf("pasting at position: [%u]\n", position_x);
 #endif
     }else{
@@ -4706,6 +4745,9 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
     AgsWindow *window;
     AgsNotebook *notebook;
+    AgsWaveEdit *focused_wave_edit;
+
+    GtkAdjustment *adjustment;
 
     AgsTimestamp *timestamp;
 
@@ -4720,7 +4762,10 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     guint64 relative_offset;
     guint64 x0_offset, x1_offset;
     double zoom, zoom_factor;
+    guint64 map_width;
+    guint64 sample_width;
     gdouble delay_factor;
+    gdouble absolute_delay;
     gint i;
 
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
@@ -4767,16 +4812,26 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 		 "buffer-size", &buffer_size,
 		 NULL);
     
+    focused_wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
+
+    if(!AGS_IS_WAVE_EDIT(focused_wave_edit)){
+      return;
+    }
+    
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(focused_wave_edit->hscrollbar));
+      
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-    
-    x0_offset = (x0 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
-    x1_offset = (x1 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
 
-    //TODO:JK: improve me
-    x0_offset = buffer_size * floor(x0_offset / buffer_size);
-    x1_offset = buffer_size * ceil(x1_offset / buffer_size);
+    map_width = (64.0) * (16.0 * 16.0 * 1200.0);
+    sample_width = (absolute_delay * buffer_size) * (16.0 * 16.0 * 1200.0);
+    
+    x0_offset = (guint64) floorl((long double) x0 / (long double) map_width * (long double) sample_width);
+    x1_offset = (guint64) floorl((long double) x1 / (long double) map_width * (long double) sample_width);
+
+//    g_message("x offset %d %d", x0_offset, x1_offset);
     
     timestamp = ags_timestamp_new();
 
@@ -4797,7 +4852,7 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 
       while(timestamp->timer.ags_offset.offset < (relative_offset * floor(x1 / relative_offset)) + relative_offset){
 	while((wave = ags_wave_find_near_timestamp(wave, i,
-							timestamp)) != NULL){
+						   timestamp)) != NULL){
 	  ags_wave_add_region_to_selection(wave->data,
 					   x0_offset,
 					   x1_offset,
