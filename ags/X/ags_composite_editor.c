@@ -4775,7 +4775,7 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 
     /* swap values if needed */
     if(x0 > x1){
-      guint tmp;
+      guint64 tmp;
 
       tmp = x0;
       
@@ -4830,7 +4830,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     x0_offset = (guint64) floorl((long double) x0 / (long double) map_width * (long double) sample_width);
     x1_offset = (guint64) floorl((long double) x1 / (long double) map_width * (long double) sample_width);
 
-//    g_message("x offset %d %d", x0_offset, x1_offset);
+    x0_offset = (guint64) (floor(x0_offset / buffer_size) * buffer_size);
+    x1_offset = (guint64) (floor(x1_offset / buffer_size) * buffer_size);
     
     timestamp = ags_timestamp_new();
 
