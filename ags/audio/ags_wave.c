@@ -3077,6 +3077,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
   
   guint64 timestamp_offset;
   guint64 first_x_val, x_val;
+  guint64 current_position;
+  guint current_attack;
+  guint64 current_exact_position;
   gsize clipboard_length;
   guint samplerate_val;
   guint buffer_size_val;
@@ -3133,6 +3136,8 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  continue;
 	}
 
+//	x_val = (guint64) (floor(x_val / relative_offset) * relative_offset) + (floor((x_val - (floor(x_val / relative_offset) * relative_offset)) / wave_buffer_size) * wave_buffer_size);
+	
 	xmlFree(x);
 	content = xmlNodeGetContent(node);
 	
@@ -3265,11 +3270,18 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	if(first_x_val == ~0){
 	  first_x_val = x_val;
 	}
-
+	
+	current_position = x_offset + (x_val - first_x_val);
+	current_attack = (current_position % relative_offset) % wave_buffer_size;
+	current_exact_position = current_position - current_attack;
+	
 	if(match_timestamp &&
-	   !((floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)) >= timestamp_offset &&
-	     (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)) < timestamp_offset + relative_offset)){
+	   !(current_exact_position >= timestamp_offset &&
+	     current_exact_position < timestamp_offset + relative_offset)){
 	  node = node->next;
+
+	  g_free(clipboard_cdata);
+	  g_free(clipboard_data);
 
 	  continue;
 	}
@@ -3277,9 +3289,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
 							ags_audio_buffer_util_format_from_soundcard(format_val));	
 
-	buffer = ags_wave_find_exact_point(wave,
-					   (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)),
-					   FALSE);
+	buffer = ags_wave_find_point(wave,
+				     current_exact_position,
+				     FALSE);
 
 	if(buffer == NULL){
 	  buffer = ags_buffer_new();
@@ -3289,7 +3301,7 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 		       "format", wave_format,
 		       NULL);  
 	      
-	  buffer->x = (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size));
+	  buffer->x = current_exact_position;
 	      
 //	  g_message("created %d", buffer->x);
 	      
@@ -3681,13 +3693,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	g_object_unref(timestamp);
 
 	if(!match_timestamp ||
-	   (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)) < timestamp_offset + relative_offset){
+	   x_val < timestamp_offset + relative_offset){
 	  guint copy_mode;
 	    
 	  /* find first */
-	  buffer = ags_wave_find_exact_point(wave,
-					     (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
-					     FALSE);
+	  buffer = ags_wave_find_point(wave,
+				       (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
+				       FALSE);
 
 	  if(buffer != NULL &&
 	     do_replace){
@@ -3785,7 +3797,6 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 				FALSE);
 	  }
 
-	  
 	  //	    g_message("insert - buffer->x = %lu", buffer->x);
 	  //	    g_message("%d %d", wave_format, format_val);
 	  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
@@ -3814,7 +3825,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  wave_buffer_size - attack, copy_mode);
 	    }
 
-	    g_free(target_data);
+	    free(target_data);
 	  }else{
 	    if(attack + frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -3826,8 +3837,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  wave_buffer_size - attack, copy_mode);
 	    }
 	  }
-
-#if 0	    
+	    
 	  /* find next */
 	  if(attack + frame_count > wave_buffer_size){
 	    buffer = ags_wave_find_point(wave,
@@ -3886,14 +3896,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  target_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 
-	      g_free(target_data);
+	      free(target_data);
 	    }else{
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  clipboard_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 	    }
 	  }
-#endif
 	}
       }
     }

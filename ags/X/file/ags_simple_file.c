@@ -11054,7 +11054,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_0_sync_attack_0));
     
     xmlNewProp(node,
-	       "synth-0-attack-0",
+	       "synth-0-sync-attack-0",
 	       str);
 
     g_free(str);    
@@ -11063,7 +11063,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_0_sync_phase_0));
     
     xmlNewProp(node,
-	       "synth-0-phase-0",
+	       "synth-0-sync-phase-0",
 	       str);
 
     g_free(str);    
@@ -11072,7 +11072,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_0_sync_attack_1));
     
     xmlNewProp(node,
-	       "synth-0-attack-1",
+	       "synth-0-sync-attack-1",
 	       str);
 
     g_free(str);    
@@ -11081,7 +11081,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_0_sync_phase_1));
     
     xmlNewProp(node,
-	       "synth-0-phase-1",
+	       "synth-0-sync-phase-1",
 	       str);
 
     g_free(str);    
@@ -11090,7 +11090,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_0_sync_attack_2));
     
     xmlNewProp(node,
-	       "synth-0-attack-2",
+	       "synth-0-sync-attack-2",
 	       str);
 
     g_free(str);    
@@ -11099,7 +11099,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_0_sync_phase_2));
     
     xmlNewProp(node,
-	       "synth-0-phase-2",
+	       "synth-0-sync-phase-2",
 	       str);
 
     g_free(str);    
@@ -11185,7 +11185,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_1_sync_attack_0));
     
     xmlNewProp(node,
-	       "synth-1-attack-0",
+	       "synth-1-sync-attack-0",
 	       str);
 
     g_free(str);    
@@ -11194,7 +11194,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_1_sync_phase_0));
     
     xmlNewProp(node,
-	       "synth-1-phase-0",
+	       "synth-1-sync-phase-0",
 	       str);
 
     g_free(str);    
@@ -11203,7 +11203,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_1_sync_attack_1));
     
     xmlNewProp(node,
-	       "synth-1-attack-1",
+	       "synth-1-sync-attack-1",
 	       str);
 
     g_free(str);    
@@ -11212,7 +11212,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_1_sync_phase_1));
     
     xmlNewProp(node,
-	       "synth-1-phase-1",
+	       "synth-1-sync-phase-1",
 	       str);
 
     g_free(str);    
@@ -11221,7 +11221,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_1_sync_attack_2));
     
     xmlNewProp(node,
-	       "synth-1-attack-2",
+	       "synth-1-sync-attack-2",
 	       str);
 
     g_free(str);    
@@ -11230,7 +11230,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 			  ags_dial_get_value(hybrid_synth->synth_1_sync_phase_2));
     
     xmlNewProp(node,
-	       "synth-1-phase-2",
+	       "synth-1-sync-phase-2",
 	       str);
 
     g_free(str);    

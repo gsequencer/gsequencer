@@ -2807,7 +2807,7 @@ ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
 	      }     
 		
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((double) position_x / (double) relative_offset);
+	      timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x / (double) relative_offset));
 		
 	      first_x = ags_composite_editor_paste_wave_all(composite_editor,
 							    machine,
@@ -2831,7 +2831,6 @@ ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
 						  paste_from_position,
 						  position_x,
 						  &last_x);
-		
 	    }
 	  }
 
@@ -3168,7 +3167,7 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
 			 
       relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
-      position_x = (floor(position_x / relative_offset) * relative_offset) + (buffer_size * (floor(position_x - floor(position_x / relative_offset) * relative_offset) / buffer_size));
+      position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
       
 #ifdef AGS_DEBUG
       printf("pasting at position: [%u]\n", position_x);

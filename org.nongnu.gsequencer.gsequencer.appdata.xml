@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.14.8" date="2021-12-26">
+      <description>
+	<p>
+	  Fixed wave form editor paste from clipboard.
+	</p>
+	<p>
+	  Fixed AgsHybridSynth XML write of sync attack and phase.
+	</p>
+      </description>
+    </release>
+
     <release version="3.14.5" date="2021-12-22">
       <description>
 	<p>
