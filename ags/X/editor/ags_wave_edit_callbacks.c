@@ -345,12 +345,15 @@ ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
+  //FIXME:JK: this won't work
+//  wave_edit->selection_x1 = (guint) (zoom_factor * event->x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
+
   /* region */
   x0 = (guint) wave_edit->selection_x0;
 
   y0 = ((gdouble) (allocation.height - wave_edit->selection_y0) / g_range) * c_range;
   
-  x1 = (guint) (zoom_factor * event->x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
+  x1 = (guint) wave_edit->selection_x1;
     
   y1 = (((allocation.height - event->y) + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar))) / g_range) * c_range;
     
@@ -530,11 +533,7 @@ ags_wave_edit_drawing_area_motion_notify_select_buffer(GtkWidget *editor,
 
   zoom_correction = 1.0 / 16;
   
-  if(zoom_factor * event->x + gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) >= 0.0){
-    wave_edit->selection_x1 = (guint) (zoom_factor * event->x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
-  }else{
-    wave_edit->selection_x1 = 0.0;
-  }
+  wave_edit->selection_x1 = (guint) (zoom_factor * event->x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
   
   if(event->y + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar)) >= 0.0){
     wave_edit->selection_y1 = (guint) event->y + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar));

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2016 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -328,7 +328,7 @@ ags_wave_test_is_buffer_selected()
   list = wave->selection;
   success = TRUE;
   
-  for(i = 0; i < AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT; i++){
+  for(i = 0; i < AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT && list != NULL; i++){
     if(list->prev != NULL){
       if(AGS_BUFFER(list->prev->data)->x > AGS_BUFFER(list->data)->x){
 	success = FALSE;

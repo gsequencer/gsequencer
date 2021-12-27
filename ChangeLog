@@ -1,3 +1,22 @@
+ags (3.14.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_free_all_selection()
+	* implemented ags_automation_free_all_selection()
+	* implemented ags_wave_free_all_selection()
+	* fixed corrupted selection list of AgsNotation, AgsAutomation and AgsWave
+
+ags (3.14.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wave form editor selection
+
+ags (3.14.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wave form editor paste from clipboard
+	* fixed AgsHybridSynth XML write of sync attack and phase
+
 ags (3.14.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

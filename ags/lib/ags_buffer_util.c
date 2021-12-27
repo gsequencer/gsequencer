@@ -102,22 +102,20 @@ ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
 
   i = 0;
   
-  if(buffer_length > 8){
-    limit = buffer_length - 8;
+  limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      cbuffer[0] = (guchar) (0xff & buffer[0]);
-      cbuffer[1] = (guchar) (0xff & buffer[1]);
-      cbuffer[2] = (guchar) (0xff & buffer[2]);
-      cbuffer[3] = (guchar) (0xff & buffer[3]);
-      cbuffer[4] = (guchar) (0xff & buffer[4]);
-      cbuffer[5] = (guchar) (0xff & buffer[5]);
-      cbuffer[6] = (guchar) (0xff & buffer[6]);
-      cbuffer[7] = (guchar) (0xff & buffer[7]);
+  for(; i < limit; i += 8){
+    cbuffer[0] = (guchar) (0xff & buffer[0]);
+    cbuffer[1] = (guchar) (0xff & buffer[1]);
+    cbuffer[2] = (guchar) (0xff & buffer[2]);
+    cbuffer[3] = (guchar) (0xff & buffer[3]);
+    cbuffer[4] = (guchar) (0xff & buffer[4]);
+    cbuffer[5] = (guchar) (0xff & buffer[5]);
+    cbuffer[6] = (guchar) (0xff & buffer[6]);
+    cbuffer[7] = (guchar) (0xff & buffer[7]);
 
-      buffer += 8;
-      cbuffer += 8;
-    }
+    buffer += 8;
+    cbuffer += 8;
   }
 
   for(; i < buffer_length; i++){
@@ -149,7 +147,7 @@ ags_buffer_util_s16_to_char_buffer(gint16 *buffer,
 
   guint limit;
   guint i;
-
+  
   if(buffer == NULL){
     return(NULL);
   }
@@ -158,40 +156,38 @@ ags_buffer_util_s16_to_char_buffer(gint16 *buffer,
     cbuffer = (guchar *) malloc((2 * buffer_length) * sizeof(guchar));
 
   i = 0;
-  
-  if(buffer_length > 8){
-    limit = buffer_length - 8;
 
-    for(; i < limit; i += 8){
-      cbuffer[0] = (guchar) ((0xff00 & buffer[0]) >> 8);
-      cbuffer[1] = (guchar) (0xff & buffer[0]);
+  limit = buffer_length - (buffer_length % 8);
 
-      cbuffer[2] = (guchar) ((0xff00 & buffer[1]) >> 8);
-      cbuffer[3] = (guchar) (0xff & buffer[1]);
+  for(; i < limit; i += 8){
+    cbuffer[0] = (guchar) ((0xff00 & buffer[0]) >> 8);
+    cbuffer[1] = (guchar) (0xff & buffer[0]);
 
-      cbuffer[4] = (guchar) ((0xff00 & buffer[2]) >> 8);
-      cbuffer[5] = (guchar) (0xff & buffer[2]);
+    cbuffer[2] = (guchar) ((0xff00 & buffer[1]) >> 8);
+    cbuffer[3] = (guchar) (0xff & buffer[1]);
 
-      cbuffer[6] = (guchar) ((0xff00 & buffer[3]) >> 8);
-      cbuffer[7] = (guchar) (0xff & buffer[3]);
+    cbuffer[4] = (guchar) ((0xff00 & buffer[2]) >> 8);
+    cbuffer[5] = (guchar) (0xff & buffer[2]);
 
-      cbuffer[8] = (guchar) ((0xff00 & buffer[4]) >> 8);
-      cbuffer[9] = (guchar) (0xff & buffer[4]);
+    cbuffer[6] = (guchar) ((0xff00 & buffer[3]) >> 8);
+    cbuffer[7] = (guchar) (0xff & buffer[3]);
+
+    cbuffer[8] = (guchar) ((0xff00 & buffer[4]) >> 8);
+    cbuffer[9] = (guchar) (0xff & buffer[4]);
       
-      cbuffer[10] = (guchar) ((0xff00 & buffer[5]) >> 8);
-      cbuffer[11] = (guchar) (0xff & buffer[5]);
+    cbuffer[10] = (guchar) ((0xff00 & buffer[5]) >> 8);
+    cbuffer[11] = (guchar) (0xff & buffer[5]);
 
-      cbuffer[12] = (guchar) ((0xff00 & buffer[6]) >> 8);
-      cbuffer[13] = (guchar) (0xff & buffer[6]);
+    cbuffer[12] = (guchar) ((0xff00 & buffer[6]) >> 8);
+    cbuffer[13] = (guchar) (0xff & buffer[6]);
 
-      cbuffer[14] = (guchar) ((0xff00 & buffer[7]) >> 8);
-      cbuffer[15] = (guchar) (0xff & buffer[7]);
+    cbuffer[14] = (guchar) ((0xff00 & buffer[7]) >> 8);
+    cbuffer[15] = (guchar) (0xff & buffer[7]);
       
-      buffer += 8;
-      cbuffer += (2 * 8);
-    }
+    buffer += 8;
+    cbuffer += (2 * 8);
   }
-
+  
   for(; i < buffer_length; i++){
     cbuffer[0] = (guchar) ((0xff00 & buffer[0]) >> 8);
     cbuffer[1] = (guchar) (0xff & buffer[0]);
@@ -232,53 +228,51 @@ ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
 
   i = 0;
   
-  if(buffer_length > 8){
-    limit = buffer_length - 8;
+  limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      cbuffer[0] = (guchar) ((0xff000000 & buffer[0]) >> 24);
-      cbuffer[1] = (guchar) ((0xff0000 & buffer[0]) >> 16);
-      cbuffer[2] = (guchar) ((0xff00 & buffer[0]) >> 8);
-      cbuffer[3] = (guchar) (0xff & buffer[0]);
+  for(; i < limit; i += 8){
+    cbuffer[0] = (guchar) ((0xff000000 & buffer[0]) >> 24);
+    cbuffer[1] = (guchar) ((0xff0000 & buffer[0]) >> 16);
+    cbuffer[2] = (guchar) ((0xff00 & buffer[0]) >> 8);
+    cbuffer[3] = (guchar) (0xff & buffer[0]);
       
-      cbuffer[4] = (guchar) ((0xff000000 & buffer[1]) >> 24);
-      cbuffer[5] = (guchar) ((0xff0000 & buffer[1]) >> 16);
-      cbuffer[6] = (guchar) ((0xff00 & buffer[1]) >> 8);
-      cbuffer[7] = (guchar) (0xff & buffer[1]);
+    cbuffer[4] = (guchar) ((0xff000000 & buffer[1]) >> 24);
+    cbuffer[5] = (guchar) ((0xff0000 & buffer[1]) >> 16);
+    cbuffer[6] = (guchar) ((0xff00 & buffer[1]) >> 8);
+    cbuffer[7] = (guchar) (0xff & buffer[1]);
 
-      cbuffer[8] = (guchar) ((0xff000000 & buffer[2]) >> 24);
-      cbuffer[9] = (guchar) ((0xff0000 & buffer[2]) >> 16);
-      cbuffer[10] = (guchar) ((0xff00 & buffer[2]) >> 8);
-      cbuffer[11] = (guchar) (0xff & buffer[2]);
+    cbuffer[8] = (guchar) ((0xff000000 & buffer[2]) >> 24);
+    cbuffer[9] = (guchar) ((0xff0000 & buffer[2]) >> 16);
+    cbuffer[10] = (guchar) ((0xff00 & buffer[2]) >> 8);
+    cbuffer[11] = (guchar) (0xff & buffer[2]);
 
-      cbuffer[12] = (guchar) ((0xff000000 & buffer[3]) >> 24);
-      cbuffer[13] = (guchar) ((0xff0000 & buffer[3]) >> 16);
-      cbuffer[14] = (guchar) ((0xff00 & buffer[3]) >> 8);
-      cbuffer[15] = (guchar) (0xff & buffer[3]);
+    cbuffer[12] = (guchar) ((0xff000000 & buffer[3]) >> 24);
+    cbuffer[13] = (guchar) ((0xff0000 & buffer[3]) >> 16);
+    cbuffer[14] = (guchar) ((0xff00 & buffer[3]) >> 8);
+    cbuffer[15] = (guchar) (0xff & buffer[3]);
 
-      cbuffer[16] = (guchar) ((0xff000000 & buffer[4]) >> 24);
-      cbuffer[17] = (guchar) ((0xff0000 & buffer[4]) >> 16);
-      cbuffer[18] = (guchar) ((0xff00 & buffer[4]) >> 8);
-      cbuffer[19] = (guchar) (0xff & buffer[4]);
+    cbuffer[16] = (guchar) ((0xff000000 & buffer[4]) >> 24);
+    cbuffer[17] = (guchar) ((0xff0000 & buffer[4]) >> 16);
+    cbuffer[18] = (guchar) ((0xff00 & buffer[4]) >> 8);
+    cbuffer[19] = (guchar) (0xff & buffer[4]);
 
-      cbuffer[20] = (guchar) ((0xff000000 & buffer[5]) >> 24);
-      cbuffer[21] = (guchar) ((0xff0000 & buffer[5]) >> 16);
-      cbuffer[22] = (guchar) ((0xff00 & buffer[5]) >> 8);
-      cbuffer[23] = (guchar) (0xff & buffer[5]);
+    cbuffer[20] = (guchar) ((0xff000000 & buffer[5]) >> 24);
+    cbuffer[21] = (guchar) ((0xff0000 & buffer[5]) >> 16);
+    cbuffer[22] = (guchar) ((0xff00 & buffer[5]) >> 8);
+    cbuffer[23] = (guchar) (0xff & buffer[5]);
 
-      cbuffer[24] = (guchar) ((0xff000000 & buffer[6]) >> 24);
-      cbuffer[25] = (guchar) ((0xff0000 & buffer[6]) >> 16);
-      cbuffer[26] = (guchar) ((0xff00 & buffer[6]) >> 8);
-      cbuffer[27] = (guchar) (0xff & buffer[6]);
+    cbuffer[24] = (guchar) ((0xff000000 & buffer[6]) >> 24);
+    cbuffer[25] = (guchar) ((0xff0000 & buffer[6]) >> 16);
+    cbuffer[26] = (guchar) ((0xff00 & buffer[6]) >> 8);
+    cbuffer[27] = (guchar) (0xff & buffer[6]);
 
-      cbuffer[28] = (guchar) ((0xff000000 & buffer[7]) >> 24);
-      cbuffer[29] = (guchar) ((0xff0000 & buffer[7]) >> 16);
-      cbuffer[30] = (guchar) ((0xff00 & buffer[7]) >> 8);
-      cbuffer[31] = (guchar) (0xff & buffer[7]);
+    cbuffer[28] = (guchar) ((0xff000000 & buffer[7]) >> 24);
+    cbuffer[29] = (guchar) ((0xff0000 & buffer[7]) >> 16);
+    cbuffer[30] = (guchar) ((0xff00 & buffer[7]) >> 8);
+    cbuffer[31] = (guchar) (0xff & buffer[7]);
 
-      buffer += 8;
-      cbuffer += (4 * 8);
-    }
+    buffer += 8;
+    cbuffer += (4 * 8);
   }
 
   for(; i < buffer_length; i++){
@@ -323,53 +317,51 @@ ags_buffer_util_s32_to_char_buffer(gint32 *buffer,
 
   i = 0;
   
-  if(buffer_length > 8){
-    limit = buffer_length - 8;
+  limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      cbuffer[0] = (guchar) ((0xff000000 & buffer[0]) >> 24);
-      cbuffer[1] = (guchar) ((0xff0000 & buffer[0]) >> 16);
-      cbuffer[2] = (guchar) ((0xff00 & buffer[0]) >> 8);
-      cbuffer[3] = (guchar) (0xff & buffer[0]);
+  for(; i < limit; i += 8){
+    cbuffer[0] = (guchar) ((0xff000000 & buffer[0]) >> 24);
+    cbuffer[1] = (guchar) ((0xff0000 & buffer[0]) >> 16);
+    cbuffer[2] = (guchar) ((0xff00 & buffer[0]) >> 8);
+    cbuffer[3] = (guchar) (0xff & buffer[0]);
       
-      cbuffer[4] = (guchar) ((0xff000000 & buffer[1]) >> 24);
-      cbuffer[5] = (guchar) ((0xff0000 & buffer[1]) >> 16);
-      cbuffer[6] = (guchar) ((0xff00 & buffer[1]) >> 8);
-      cbuffer[7] = (guchar) (0xff & buffer[1]);
+    cbuffer[4] = (guchar) ((0xff000000 & buffer[1]) >> 24);
+    cbuffer[5] = (guchar) ((0xff0000 & buffer[1]) >> 16);
+    cbuffer[6] = (guchar) ((0xff00 & buffer[1]) >> 8);
+    cbuffer[7] = (guchar) (0xff & buffer[1]);
 
-      cbuffer[8] = (guchar) ((0xff000000 & buffer[2]) >> 24);
-      cbuffer[9] = (guchar) ((0xff0000 & buffer[2]) >> 16);
-      cbuffer[10] = (guchar) ((0xff00 & buffer[2]) >> 8);
-      cbuffer[11] = (guchar) (0xff & buffer[2]);
+    cbuffer[8] = (guchar) ((0xff000000 & buffer[2]) >> 24);
+    cbuffer[9] = (guchar) ((0xff0000 & buffer[2]) >> 16);
+    cbuffer[10] = (guchar) ((0xff00 & buffer[2]) >> 8);
+    cbuffer[11] = (guchar) (0xff & buffer[2]);
 
-      cbuffer[12] = (guchar) ((0xff000000 & buffer[3]) >> 24);
-      cbuffer[13] = (guchar) ((0xff0000 & buffer[3]) >> 16);
-      cbuffer[14] = (guchar) ((0xff00 & buffer[3]) >> 8);
-      cbuffer[15] = (guchar) (0xff & buffer[3]);
+    cbuffer[12] = (guchar) ((0xff000000 & buffer[3]) >> 24);
+    cbuffer[13] = (guchar) ((0xff0000 & buffer[3]) >> 16);
+    cbuffer[14] = (guchar) ((0xff00 & buffer[3]) >> 8);
+    cbuffer[15] = (guchar) (0xff & buffer[3]);
 
-      cbuffer[16] = (guchar) ((0xff000000 & buffer[4]) >> 24);
-      cbuffer[17] = (guchar) ((0xff0000 & buffer[4]) >> 16);
-      cbuffer[18] = (guchar) ((0xff00 & buffer[4]) >> 8);
-      cbuffer[19] = (guchar) (0xff & buffer[4]);
+    cbuffer[16] = (guchar) ((0xff000000 & buffer[4]) >> 24);
+    cbuffer[17] = (guchar) ((0xff0000 & buffer[4]) >> 16);
+    cbuffer[18] = (guchar) ((0xff00 & buffer[4]) >> 8);
+    cbuffer[19] = (guchar) (0xff & buffer[4]);
 
-      cbuffer[20] = (guchar) ((0xff000000 & buffer[5]) >> 24);
-      cbuffer[21] = (guchar) ((0xff0000 & buffer[5]) >> 16);
-      cbuffer[22] = (guchar) ((0xff00 & buffer[5]) >> 8);
-      cbuffer[23] = (guchar) (0xff & buffer[5]);
+    cbuffer[20] = (guchar) ((0xff000000 & buffer[5]) >> 24);
+    cbuffer[21] = (guchar) ((0xff0000 & buffer[5]) >> 16);
+    cbuffer[22] = (guchar) ((0xff00 & buffer[5]) >> 8);
+    cbuffer[23] = (guchar) (0xff & buffer[5]);
 
-      cbuffer[24] = (guchar) ((0xff000000 & buffer[6]) >> 24);
-      cbuffer[25] = (guchar) ((0xff0000 & buffer[6]) >> 16);
-      cbuffer[26] = (guchar) ((0xff00 & buffer[6]) >> 8);
-      cbuffer[27] = (guchar) (0xff & buffer[6]);
+    cbuffer[24] = (guchar) ((0xff000000 & buffer[6]) >> 24);
+    cbuffer[25] = (guchar) ((0xff0000 & buffer[6]) >> 16);
+    cbuffer[26] = (guchar) ((0xff00 & buffer[6]) >> 8);
+    cbuffer[27] = (guchar) (0xff & buffer[6]);
 
-      cbuffer[28] = (guchar) ((0xff000000 & buffer[7]) >> 24);
-      cbuffer[29] = (guchar) ((0xff0000 & buffer[7]) >> 16);
-      cbuffer[30] = (guchar) ((0xff00 & buffer[7]) >> 8);
-      cbuffer[31] = (guchar) (0xff & buffer[7]);
+    cbuffer[28] = (guchar) ((0xff000000 & buffer[7]) >> 24);
+    cbuffer[29] = (guchar) ((0xff0000 & buffer[7]) >> 16);
+    cbuffer[30] = (guchar) ((0xff00 & buffer[7]) >> 8);
+    cbuffer[31] = (guchar) (0xff & buffer[7]);
       
-      buffer += 8;
-      cbuffer += (4 * 8);
-    }
+    buffer += 8;
+    cbuffer += (4 * 8);
   }
 
   for(; i < buffer_length; i++){
@@ -414,85 +406,83 @@ ags_buffer_util_s64_to_char_buffer(gint64 *buffer,
 
   i = 0;
   
-  if(buffer_length > 8){
-    limit = buffer_length - 8;
+  limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      cbuffer[0] = (guchar) ((0xff00000000000000 & buffer[0]) >> 56);
-      cbuffer[1] = (guchar) ((0xff000000000000 & buffer[0]) >> 48);
-      cbuffer[2] = (guchar) ((0xff0000000000 & buffer[0]) >> 40);
-      cbuffer[3] = (guchar) ((0xff00000000 & buffer[0]) >> 32);
-      cbuffer[4] = (guchar) ((0xff000000 & buffer[0]) >> 24);
-      cbuffer[5] = (guchar) ((0xff0000 & buffer[0]) >> 16);
-      cbuffer[6] = (guchar) ((0xff00 & buffer[0]) >> 8);
-      cbuffer[7] = (guchar) (0xff & buffer[0]);
+  for(; i < limit; i += 8){
+    cbuffer[0] = (guchar) ((0xff00000000000000 & buffer[0]) >> 56);
+    cbuffer[1] = (guchar) ((0xff000000000000 & buffer[0]) >> 48);
+    cbuffer[2] = (guchar) ((0xff0000000000 & buffer[0]) >> 40);
+    cbuffer[3] = (guchar) ((0xff00000000 & buffer[0]) >> 32);
+    cbuffer[4] = (guchar) ((0xff000000 & buffer[0]) >> 24);
+    cbuffer[5] = (guchar) ((0xff0000 & buffer[0]) >> 16);
+    cbuffer[6] = (guchar) ((0xff00 & buffer[0]) >> 8);
+    cbuffer[7] = (guchar) (0xff & buffer[0]);
 
-      cbuffer[8] = (guchar) ((0xff00000000000000 & buffer[1]) >> 56);
-      cbuffer[9] = (guchar) ((0xff000000000000 & buffer[1]) >> 48);
-      cbuffer[10] = (guchar) ((0xff0000000000 & buffer[1]) >> 40);
-      cbuffer[11] = (guchar) ((0xff00000000 & buffer[1]) >> 32);
-      cbuffer[12] = (guchar) ((0xff000000 & buffer[1]) >> 24);
-      cbuffer[13] = (guchar) ((0xff0000 & buffer[1]) >> 16);
-      cbuffer[14] = (guchar) ((0xff00 & buffer[1]) >> 8);
-      cbuffer[15] = (guchar) (0xff & buffer[1]);
+    cbuffer[8] = (guchar) ((0xff00000000000000 & buffer[1]) >> 56);
+    cbuffer[9] = (guchar) ((0xff000000000000 & buffer[1]) >> 48);
+    cbuffer[10] = (guchar) ((0xff0000000000 & buffer[1]) >> 40);
+    cbuffer[11] = (guchar) ((0xff00000000 & buffer[1]) >> 32);
+    cbuffer[12] = (guchar) ((0xff000000 & buffer[1]) >> 24);
+    cbuffer[13] = (guchar) ((0xff0000 & buffer[1]) >> 16);
+    cbuffer[14] = (guchar) ((0xff00 & buffer[1]) >> 8);
+    cbuffer[15] = (guchar) (0xff & buffer[1]);
 
-      cbuffer[16] = (guchar) ((0xff00000000000000 & buffer[2]) >> 56);
-      cbuffer[17] = (guchar) ((0xff000000000000 & buffer[2]) >> 48);
-      cbuffer[18] = (guchar) ((0xff0000000000 & buffer[2]) >> 40);
-      cbuffer[19] = (guchar) ((0xff00000000 & buffer[2]) >> 32);
-      cbuffer[20] = (guchar) ((0xff000000 & buffer[2]) >> 24);
-      cbuffer[21] = (guchar) ((0xff0000 & buffer[2]) >> 16);
-      cbuffer[22] = (guchar) ((0xff00 & buffer[2]) >> 8);
-      cbuffer[23] = (guchar) (0xff & buffer[2]);
+    cbuffer[16] = (guchar) ((0xff00000000000000 & buffer[2]) >> 56);
+    cbuffer[17] = (guchar) ((0xff000000000000 & buffer[2]) >> 48);
+    cbuffer[18] = (guchar) ((0xff0000000000 & buffer[2]) >> 40);
+    cbuffer[19] = (guchar) ((0xff00000000 & buffer[2]) >> 32);
+    cbuffer[20] = (guchar) ((0xff000000 & buffer[2]) >> 24);
+    cbuffer[21] = (guchar) ((0xff0000 & buffer[2]) >> 16);
+    cbuffer[22] = (guchar) ((0xff00 & buffer[2]) >> 8);
+    cbuffer[23] = (guchar) (0xff & buffer[2]);
 
-      cbuffer[24] = (guchar) ((0xff00000000000000 & buffer[3]) >> 56);
-      cbuffer[25] = (guchar) ((0xff000000000000 & buffer[3]) >> 48);
-      cbuffer[26] = (guchar) ((0xff0000000000 & buffer[3]) >> 40);
-      cbuffer[27] = (guchar) ((0xff00000000 & buffer[3]) >> 32);
-      cbuffer[28] = (guchar) ((0xff000000 & buffer[3]) >> 24);
-      cbuffer[29] = (guchar) ((0xff0000 & buffer[3]) >> 16);
-      cbuffer[30] = (guchar) ((0xff00 & buffer[3]) >> 8);
-      cbuffer[31] = (guchar) (0xff & buffer[3]);
+    cbuffer[24] = (guchar) ((0xff00000000000000 & buffer[3]) >> 56);
+    cbuffer[25] = (guchar) ((0xff000000000000 & buffer[3]) >> 48);
+    cbuffer[26] = (guchar) ((0xff0000000000 & buffer[3]) >> 40);
+    cbuffer[27] = (guchar) ((0xff00000000 & buffer[3]) >> 32);
+    cbuffer[28] = (guchar) ((0xff000000 & buffer[3]) >> 24);
+    cbuffer[29] = (guchar) ((0xff0000 & buffer[3]) >> 16);
+    cbuffer[30] = (guchar) ((0xff00 & buffer[3]) >> 8);
+    cbuffer[31] = (guchar) (0xff & buffer[3]);
 
-      cbuffer[32] = (guchar) ((0xff00000000000000 & buffer[4]) >> 56);
-      cbuffer[33] = (guchar) ((0xff000000000000 & buffer[4]) >> 48);
-      cbuffer[34] = (guchar) ((0xff0000000000 & buffer[4]) >> 40);
-      cbuffer[35] = (guchar) ((0xff00000000 & buffer[4]) >> 32);
-      cbuffer[36] = (guchar) ((0xff000000 & buffer[4]) >> 24);
-      cbuffer[37] = (guchar) ((0xff0000 & buffer[4]) >> 16);
-      cbuffer[38] = (guchar) ((0xff00 & buffer[4]) >> 8);
-      cbuffer[39] = (guchar) (0xff & buffer[4]);
+    cbuffer[32] = (guchar) ((0xff00000000000000 & buffer[4]) >> 56);
+    cbuffer[33] = (guchar) ((0xff000000000000 & buffer[4]) >> 48);
+    cbuffer[34] = (guchar) ((0xff0000000000 & buffer[4]) >> 40);
+    cbuffer[35] = (guchar) ((0xff00000000 & buffer[4]) >> 32);
+    cbuffer[36] = (guchar) ((0xff000000 & buffer[4]) >> 24);
+    cbuffer[37] = (guchar) ((0xff0000 & buffer[4]) >> 16);
+    cbuffer[38] = (guchar) ((0xff00 & buffer[4]) >> 8);
+    cbuffer[39] = (guchar) (0xff & buffer[4]);
       
-      cbuffer[40] = (guchar) ((0xff00000000000000 & buffer[5]) >> 56);
-      cbuffer[41] = (guchar) ((0xff000000000000 & buffer[5]) >> 48);
-      cbuffer[42] = (guchar) ((0xff0000000000 & buffer[5]) >> 40);
-      cbuffer[43] = (guchar) ((0xff00000000 & buffer[5]) >> 32);
-      cbuffer[44] = (guchar) ((0xff000000 & buffer[5]) >> 24);
-      cbuffer[45] = (guchar) ((0xff0000 & buffer[5]) >> 16);
-      cbuffer[46] = (guchar) ((0xff00 & buffer[5]) >> 8);
-      cbuffer[47] = (guchar) (0xff & buffer[5]);
+    cbuffer[40] = (guchar) ((0xff00000000000000 & buffer[5]) >> 56);
+    cbuffer[41] = (guchar) ((0xff000000000000 & buffer[5]) >> 48);
+    cbuffer[42] = (guchar) ((0xff0000000000 & buffer[5]) >> 40);
+    cbuffer[43] = (guchar) ((0xff00000000 & buffer[5]) >> 32);
+    cbuffer[44] = (guchar) ((0xff000000 & buffer[5]) >> 24);
+    cbuffer[45] = (guchar) ((0xff0000 & buffer[5]) >> 16);
+    cbuffer[46] = (guchar) ((0xff00 & buffer[5]) >> 8);
+    cbuffer[47] = (guchar) (0xff & buffer[5]);
 
-      cbuffer[48] = (guchar) ((0xff00000000000000 & buffer[6]) >> 56);
-      cbuffer[49] = (guchar) ((0xff000000000000 & buffer[6]) >> 48);
-      cbuffer[50] = (guchar) ((0xff0000000000 & buffer[6]) >> 40);
-      cbuffer[51] = (guchar) ((0xff00000000 & buffer[6]) >> 32);
-      cbuffer[52] = (guchar) ((0xff000000 & buffer[6]) >> 24);
-      cbuffer[53] = (guchar) ((0xff0000 & buffer[6]) >> 16);
-      cbuffer[54] = (guchar) ((0xff00 & buffer[6]) >> 8);
-      cbuffer[55] = (guchar) (0xff & buffer[6]);
+    cbuffer[48] = (guchar) ((0xff00000000000000 & buffer[6]) >> 56);
+    cbuffer[49] = (guchar) ((0xff000000000000 & buffer[6]) >> 48);
+    cbuffer[50] = (guchar) ((0xff0000000000 & buffer[6]) >> 40);
+    cbuffer[51] = (guchar) ((0xff00000000 & buffer[6]) >> 32);
+    cbuffer[52] = (guchar) ((0xff000000 & buffer[6]) >> 24);
+    cbuffer[53] = (guchar) ((0xff0000 & buffer[6]) >> 16);
+    cbuffer[54] = (guchar) ((0xff00 & buffer[6]) >> 8);
+    cbuffer[55] = (guchar) (0xff & buffer[6]);
 
-      cbuffer[56] = (guchar) ((0xff00000000000000 & buffer[7]) >> 56);
-      cbuffer[57] = (guchar) ((0xff000000000000 & buffer[7]) >> 48);
-      cbuffer[58] = (guchar) ((0xff0000000000 & buffer[7]) >> 40);
-      cbuffer[59] = (guchar) ((0xff00000000 & buffer[7]) >> 32);
-      cbuffer[60] = (guchar) ((0xff000000 & buffer[7]) >> 24);
-      cbuffer[61] = (guchar) ((0xff0000 & buffer[7]) >> 16);
-      cbuffer[62] = (guchar) ((0xff00 & buffer[7]) >> 8);
-      cbuffer[63] = (guchar) (0xff & buffer[7]);
+    cbuffer[56] = (guchar) ((0xff00000000000000 & buffer[7]) >> 56);
+    cbuffer[57] = (guchar) ((0xff000000000000 & buffer[7]) >> 48);
+    cbuffer[58] = (guchar) ((0xff0000000000 & buffer[7]) >> 40);
+    cbuffer[59] = (guchar) ((0xff00000000 & buffer[7]) >> 32);
+    cbuffer[60] = (guchar) ((0xff000000 & buffer[7]) >> 24);
+    cbuffer[61] = (guchar) ((0xff0000 & buffer[7]) >> 16);
+    cbuffer[62] = (guchar) ((0xff00 & buffer[7]) >> 8);
+    cbuffer[63] = (guchar) (0xff & buffer[7]);
 
-      buffer += 8;
-      cbuffer += (8 * 8);
-    }
+    buffer += 8;
+    cbuffer += (8 * 8);
   }
 
   for(; i < buffer_length; i++){
@@ -630,7 +620,7 @@ ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
   i = 0;
   
   if(buffer_size > 8){
-    limit = buffer_size - 8;
+    limit = buffer_size - (buffer_size % 8);
 
     for(; i < limit; i += 8){
       buffer[0] |= (0xff & cbuffer[0]);
@@ -688,41 +678,39 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
   buffer_size = (guint) (2 * floor(buffer_size / 2.0));
   
   i = 0;
-  
-  if(buffer_size / 2 > 8){
-    limit = (buffer_size / 2) - 8;
 
-    for(; i < limit; i += 8){
-      buffer[0] |= ((gint16) (0xff & cbuffer[0]) << 8);
-      buffer[0] |= ((gint16) 0xff & cbuffer[1]);
+  limit = (buffer_size / 2) - ((buffer_size / 2) % 8);
+
+  for(; i < limit; i += 8){
+    buffer[0] |= ((gint16) (0xff & cbuffer[0]) << 8);
+    buffer[0] |= ((gint16) 0xff & cbuffer[1]);
       
-      buffer[1] |= ((gint16) (0xff & cbuffer[2]) << 8);
-      buffer[1] |= ((gint16) 0xff & cbuffer[3]);
+    buffer[1] |= ((gint16) (0xff & cbuffer[2]) << 8);
+    buffer[1] |= ((gint16) 0xff & cbuffer[3]);
 
-      buffer[2] |= ((gint16) (0xff & cbuffer[4]) << 8);
-      buffer[2] |= ((gint16) 0xff & cbuffer[5]);
+    buffer[2] |= ((gint16) (0xff & cbuffer[4]) << 8);
+    buffer[2] |= ((gint16) 0xff & cbuffer[5]);
 
-      buffer[3] |= ((gint16) (0xff & cbuffer[6]) << 8);
-      buffer[3] |= ((gint16) 0xff & cbuffer[7]);
+    buffer[3] |= ((gint16) (0xff & cbuffer[6]) << 8);
+    buffer[3] |= ((gint16) 0xff & cbuffer[7]);
       
-      buffer[4] |= ((gint16) (0xff & cbuffer[8]) << 8);
-      buffer[4] |= ((gint16) 0xff & cbuffer[9]);
+    buffer[4] |= ((gint16) (0xff & cbuffer[8]) << 8);
+    buffer[4] |= ((gint16) 0xff & cbuffer[9]);
       
-      buffer[5] |= ((gint16) (0xff & cbuffer[10]) << 8);
-      buffer[5] |= ((gint16) 0xff & cbuffer[11]);
+    buffer[5] |= ((gint16) (0xff & cbuffer[10]) << 8);
+    buffer[5] |= ((gint16) 0xff & cbuffer[11]);
 
-      buffer[6] |= ((gint16) (0xff & cbuffer[12]) << 8);
-      buffer[6] |= ((gint16) 0xff & cbuffer[13]);
+    buffer[6] |= ((gint16) (0xff & cbuffer[12]) << 8);
+    buffer[6] |= ((gint16) 0xff & cbuffer[13]);
 
-      buffer[7] |= ((gint16) (0xff & cbuffer[14]) << 8);
-      buffer[7] |= ((gint16) 0xff & cbuffer[15]);
+    buffer[7] |= ((gint16) (0xff & cbuffer[14]) << 8);
+    buffer[7] |= ((gint16) 0xff & cbuffer[15]);
 
-      buffer += 8;
-      cbuffer += (2 * 8);
-    }
+    buffer += 8;
+    cbuffer += (2 * 8);
   }
-
-  for(; i < buffer_size / 2; i++){
+  
+  for(; i < buffer_size / 2; i++){    
     buffer[0] |= ((gint16) (0xff & cbuffer[0]) << 8);
     buffer[0] |= ((gint16) 0xff & cbuffer[1]);
       
@@ -765,53 +753,51 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
   
   i = 0;
   
-  if(buffer_size / 4 > 8){
-    limit = (buffer_size / 4) - 8;
+  limit = (buffer_size / 4) - ((buffer_size / 4) % 8);
 
-    for(; i < limit; i += 8){
-      buffer[0] |= ((0xff & cbuffer[0]) << 24);
-      buffer[0] |= ((0xff & cbuffer[1]) << 16);
-      buffer[0] |= ((0xff & cbuffer[2]) << 8);
-      buffer[0] |= (0xff & cbuffer[3]);
+  for(; i < limit; i += 8){
+    buffer[0] |= ((0xff & cbuffer[0]) << 24);
+    buffer[0] |= ((0xff & cbuffer[1]) << 16);
+    buffer[0] |= ((0xff & cbuffer[2]) << 8);
+    buffer[0] |= (0xff & cbuffer[3]);
       
-      buffer[1] |= ((0xff & cbuffer[4]) << 24);
-      buffer[1] |= ((0xff & cbuffer[5]) << 16);
-      buffer[1] |= ((0xff & cbuffer[6]) << 8);
-      buffer[1] |= (0xff & cbuffer[7]);
+    buffer[1] |= ((0xff & cbuffer[4]) << 24);
+    buffer[1] |= ((0xff & cbuffer[5]) << 16);
+    buffer[1] |= ((0xff & cbuffer[6]) << 8);
+    buffer[1] |= (0xff & cbuffer[7]);
       
-      buffer[2] |= ((0xff & cbuffer[8]) << 24);
-      buffer[2] |= ((0xff & cbuffer[9]) << 16);
-      buffer[2] |= ((0xff & cbuffer[10]) << 8);
-      buffer[2] |= (0xff & cbuffer[11]);
+    buffer[2] |= ((0xff & cbuffer[8]) << 24);
+    buffer[2] |= ((0xff & cbuffer[9]) << 16);
+    buffer[2] |= ((0xff & cbuffer[10]) << 8);
+    buffer[2] |= (0xff & cbuffer[11]);
 
-      buffer[3] |= ((0xff & cbuffer[12]) << 24);
-      buffer[3] |= ((0xff & cbuffer[13]) << 16);
-      buffer[3] |= ((0xff & cbuffer[14]) << 8);
-      buffer[3] |= (0xff & cbuffer[15]);
+    buffer[3] |= ((0xff & cbuffer[12]) << 24);
+    buffer[3] |= ((0xff & cbuffer[13]) << 16);
+    buffer[3] |= ((0xff & cbuffer[14]) << 8);
+    buffer[3] |= (0xff & cbuffer[15]);
 
-      buffer[4] |= ((0xff & cbuffer[16]) << 24);
-      buffer[4] |= ((0xff & cbuffer[17]) << 16);
-      buffer[4] |= ((0xff & cbuffer[18]) << 8);
-      buffer[4] |= (0xff & cbuffer[19]);
+    buffer[4] |= ((0xff & cbuffer[16]) << 24);
+    buffer[4] |= ((0xff & cbuffer[17]) << 16);
+    buffer[4] |= ((0xff & cbuffer[18]) << 8);
+    buffer[4] |= (0xff & cbuffer[19]);
 
-      buffer[5] |= ((0xff & cbuffer[20]) << 24);
-      buffer[5] |= ((0xff & cbuffer[21]) << 16);
-      buffer[5] |= ((0xff & cbuffer[22]) << 8);
-      buffer[5] |= (0xff & cbuffer[23]);
+    buffer[5] |= ((0xff & cbuffer[20]) << 24);
+    buffer[5] |= ((0xff & cbuffer[21]) << 16);
+    buffer[5] |= ((0xff & cbuffer[22]) << 8);
+    buffer[5] |= (0xff & cbuffer[23]);
 
-      buffer[6] |= ((0xff & cbuffer[24]) << 24);
-      buffer[6] |= ((0xff & cbuffer[25]) << 16);
-      buffer[6] |= ((0xff & cbuffer[26]) << 8);
-      buffer[6] |= (0xff & cbuffer[27]);
+    buffer[6] |= ((0xff & cbuffer[24]) << 24);
+    buffer[6] |= ((0xff & cbuffer[25]) << 16);
+    buffer[6] |= ((0xff & cbuffer[26]) << 8);
+    buffer[6] |= (0xff & cbuffer[27]);
 
-      buffer[7] |= ((0xff & cbuffer[28]) << 24);
-      buffer[7] |= ((0xff & cbuffer[29]) << 16);
-      buffer[7] |= ((0xff & cbuffer[30]) << 8);
-      buffer[7] |= (0xff & cbuffer[31]);
+    buffer[7] |= ((0xff & cbuffer[28]) << 24);
+    buffer[7] |= ((0xff & cbuffer[29]) << 16);
+    buffer[7] |= ((0xff & cbuffer[30]) << 8);
+    buffer[7] |= (0xff & cbuffer[31]);
       
-      buffer += 8;
-      cbuffer += (4 * 8);
-    }
+    buffer += 8;
+    cbuffer += (4 * 8);
   }
 
   for(; i < buffer_size / 4; i++){
@@ -859,53 +845,51 @@ ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
   
   i = 0;
   
-  if((buffer_size / 4) > 8){
-    limit = (buffer_size / 4) - 8;
+  limit = (buffer_size / 4) - ((buffer_size / 4) % 8);
 
-    for(; i < limit; i += 8){
-      buffer[0] |= ((0xff & cbuffer[0]) << 24);
-      buffer[0] |= ((0xff & cbuffer[1]) << 16);
-      buffer[0] |= ((0xff & cbuffer[2]) << 8);
-      buffer[0] |= (0xff & cbuffer[3]);
+  for(; i < limit; i += 8){
+    buffer[0] |= ((0xff & cbuffer[0]) << 24);
+    buffer[0] |= ((0xff & cbuffer[1]) << 16);
+    buffer[0] |= ((0xff & cbuffer[2]) << 8);
+    buffer[0] |= (0xff & cbuffer[3]);
       
-      buffer[1] |= ((0xff & cbuffer[4]) << 24);
-      buffer[1] |= ((0xff & cbuffer[5]) << 16);
-      buffer[1] |= ((0xff & cbuffer[6]) << 8);
-      buffer[1] |= (0xff & cbuffer[7]);
+    buffer[1] |= ((0xff & cbuffer[4]) << 24);
+    buffer[1] |= ((0xff & cbuffer[5]) << 16);
+    buffer[1] |= ((0xff & cbuffer[6]) << 8);
+    buffer[1] |= (0xff & cbuffer[7]);
       
-      buffer[2] |= ((0xff & cbuffer[8]) << 24);
-      buffer[2] |= ((0xff & cbuffer[9]) << 16);
-      buffer[2] |= ((0xff & cbuffer[10]) << 8);
-      buffer[2] |= (0xff & cbuffer[11]);
+    buffer[2] |= ((0xff & cbuffer[8]) << 24);
+    buffer[2] |= ((0xff & cbuffer[9]) << 16);
+    buffer[2] |= ((0xff & cbuffer[10]) << 8);
+    buffer[2] |= (0xff & cbuffer[11]);
 
-      buffer[3] |= ((0xff & cbuffer[12]) << 24);
-      buffer[3] |= ((0xff & cbuffer[13]) << 16);
-      buffer[3] |= ((0xff & cbuffer[14]) << 8);
-      buffer[3] |= (0xff & cbuffer[15]);
+    buffer[3] |= ((0xff & cbuffer[12]) << 24);
+    buffer[3] |= ((0xff & cbuffer[13]) << 16);
+    buffer[3] |= ((0xff & cbuffer[14]) << 8);
+    buffer[3] |= (0xff & cbuffer[15]);
 
-      buffer[4] |= ((0xff & cbuffer[16]) << 24);
-      buffer[4] |= ((0xff & cbuffer[17]) << 16);
-      buffer[4] |= ((0xff & cbuffer[18]) << 8);
-      buffer[4] |= (0xff & cbuffer[19]);
+    buffer[4] |= ((0xff & cbuffer[16]) << 24);
+    buffer[4] |= ((0xff & cbuffer[17]) << 16);
+    buffer[4] |= ((0xff & cbuffer[18]) << 8);
+    buffer[4] |= (0xff & cbuffer[19]);
 
-      buffer[5] |= ((0xff & cbuffer[20]) << 24);
-      buffer[5] |= ((0xff & cbuffer[21]) << 16);
-      buffer[5] |= ((0xff & cbuffer[22]) << 8);
-      buffer[5] |= (0xff & cbuffer[23]);
+    buffer[5] |= ((0xff & cbuffer[20]) << 24);
+    buffer[5] |= ((0xff & cbuffer[21]) << 16);
+    buffer[5] |= ((0xff & cbuffer[22]) << 8);
+    buffer[5] |= (0xff & cbuffer[23]);
 
-      buffer[6] |= ((0xff & cbuffer[24]) << 24);
-      buffer[6] |= ((0xff & cbuffer[25]) << 16);
-      buffer[6] |= ((0xff & cbuffer[26]) << 8);
-      buffer[6] |= (0xff & cbuffer[27]);
+    buffer[6] |= ((0xff & cbuffer[24]) << 24);
+    buffer[6] |= ((0xff & cbuffer[25]) << 16);
+    buffer[6] |= ((0xff & cbuffer[26]) << 8);
+    buffer[6] |= (0xff & cbuffer[27]);
 
-      buffer[7] |= ((0xff & cbuffer[28]) << 24);
-      buffer[7] |= ((0xff & cbuffer[29]) << 16);
-      buffer[7] |= ((0xff & cbuffer[30]) << 8);
-      buffer[7] |= (0xff & cbuffer[31]);
+    buffer[7] |= ((0xff & cbuffer[28]) << 24);
+    buffer[7] |= ((0xff & cbuffer[29]) << 16);
+    buffer[7] |= ((0xff & cbuffer[30]) << 8);
+    buffer[7] |= (0xff & cbuffer[31]);
 
-      buffer += 8;
-      cbuffer += (4 * 8);
-    }
+    buffer += 8;
+    cbuffer += (4 * 8);
   }
 
   for(; i < buffer_size / 4; i++){
@@ -953,85 +937,83 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
   
   i = 0;
   
-  if(buffer_size / 8 > 8){
-    limit = (buffer_size / 8) - 8;
+  limit = (buffer_size / 8) - ((buffer_size / 8) % 8);
 
-    for(; i < limit; i += 8){
-      buffer[0] |= ((gint64) (0xff & cbuffer[0]) << 56);
-      buffer[0] |= ((gint64) (0xff & cbuffer[1]) << 48);
-      buffer[0] |= ((gint64) (0xff & cbuffer[2]) << 40);
-      buffer[0] |= ((gint64) (0xff & cbuffer[3]) << 32);
-      buffer[0] |= ((gint64) (0xff & cbuffer[4]) << 24);
-      buffer[0] |= ((gint64) (0xff & cbuffer[5]) << 16);
-      buffer[0] |= ((gint64) (0xff & cbuffer[6]) << 8);
-      buffer[0] |= (gint64) (0xff & cbuffer[7]);
+  for(; i < limit; i += 8){
+    buffer[0] |= ((gint64) (0xff & cbuffer[0]) << 56);
+    buffer[0] |= ((gint64) (0xff & cbuffer[1]) << 48);
+    buffer[0] |= ((gint64) (0xff & cbuffer[2]) << 40);
+    buffer[0] |= ((gint64) (0xff & cbuffer[3]) << 32);
+    buffer[0] |= ((gint64) (0xff & cbuffer[4]) << 24);
+    buffer[0] |= ((gint64) (0xff & cbuffer[5]) << 16);
+    buffer[0] |= ((gint64) (0xff & cbuffer[6]) << 8);
+    buffer[0] |= (gint64) (0xff & cbuffer[7]);
       
-      buffer[1] |= ((gint64) (0xff & cbuffer[8]) << 56);
-      buffer[1] |= ((gint64) (0xff & cbuffer[9]) << 48);
-      buffer[1] |= ((gint64) (0xff & cbuffer[10]) << 40);
-      buffer[1] |= ((gint64) (0xff & cbuffer[11]) << 32);
-      buffer[1] |= ((gint64) (0xff & cbuffer[12]) << 24);
-      buffer[1] |= ((gint64) (0xff & cbuffer[13]) << 16);
-      buffer[1] |= ((gint64) (0xff & cbuffer[14]) << 8);
-      buffer[1] |= (gint64) (0xff & cbuffer[15]);
+    buffer[1] |= ((gint64) (0xff & cbuffer[8]) << 56);
+    buffer[1] |= ((gint64) (0xff & cbuffer[9]) << 48);
+    buffer[1] |= ((gint64) (0xff & cbuffer[10]) << 40);
+    buffer[1] |= ((gint64) (0xff & cbuffer[11]) << 32);
+    buffer[1] |= ((gint64) (0xff & cbuffer[12]) << 24);
+    buffer[1] |= ((gint64) (0xff & cbuffer[13]) << 16);
+    buffer[1] |= ((gint64) (0xff & cbuffer[14]) << 8);
+    buffer[1] |= (gint64) (0xff & cbuffer[15]);
       
-      buffer[2] |= ((gint64) (0xff & cbuffer[16]) << 56);
-      buffer[2] |= ((gint64) (0xff & cbuffer[17]) << 48);
-      buffer[2] |= ((gint64) (0xff & cbuffer[18]) << 40);
-      buffer[2] |= ((gint64) (0xff & cbuffer[19]) << 32);
-      buffer[2] |= ((gint64) (0xff & cbuffer[20]) << 24);
-      buffer[2] |= ((gint64) (0xff & cbuffer[21]) << 16);
-      buffer[2] |= ((gint64) (0xff & cbuffer[22]) << 8);
-      buffer[2] |= (gint64) (0xff & cbuffer[23]);
+    buffer[2] |= ((gint64) (0xff & cbuffer[16]) << 56);
+    buffer[2] |= ((gint64) (0xff & cbuffer[17]) << 48);
+    buffer[2] |= ((gint64) (0xff & cbuffer[18]) << 40);
+    buffer[2] |= ((gint64) (0xff & cbuffer[19]) << 32);
+    buffer[2] |= ((gint64) (0xff & cbuffer[20]) << 24);
+    buffer[2] |= ((gint64) (0xff & cbuffer[21]) << 16);
+    buffer[2] |= ((gint64) (0xff & cbuffer[22]) << 8);
+    buffer[2] |= (gint64) (0xff & cbuffer[23]);
       
-      buffer[3] |= ((gint64) (0xff & cbuffer[24]) << 56);
-      buffer[3] |= ((gint64) (0xff & cbuffer[25]) << 48);
-      buffer[3] |= ((gint64) (0xff & cbuffer[26]) << 40);
-      buffer[3] |= ((gint64) (0xff & cbuffer[27]) << 32);
-      buffer[3] |= ((gint64) (0xff & cbuffer[28]) << 24);
-      buffer[3] |= ((gint64) (0xff & cbuffer[29]) << 16);
-      buffer[3] |= ((gint64) (0xff & cbuffer[30]) << 8);
-      buffer[3] |= (gint64) (0xff & cbuffer[31]);
+    buffer[3] |= ((gint64) (0xff & cbuffer[24]) << 56);
+    buffer[3] |= ((gint64) (0xff & cbuffer[25]) << 48);
+    buffer[3] |= ((gint64) (0xff & cbuffer[26]) << 40);
+    buffer[3] |= ((gint64) (0xff & cbuffer[27]) << 32);
+    buffer[3] |= ((gint64) (0xff & cbuffer[28]) << 24);
+    buffer[3] |= ((gint64) (0xff & cbuffer[29]) << 16);
+    buffer[3] |= ((gint64) (0xff & cbuffer[30]) << 8);
+    buffer[3] |= (gint64) (0xff & cbuffer[31]);
       
-      buffer[4] |= ((gint64) (0xff & cbuffer[32]) << 56);
-      buffer[4] |= ((gint64) (0xff & cbuffer[33]) << 48);
-      buffer[4] |= ((gint64) (0xff & cbuffer[34]) << 40);
-      buffer[4] |= ((gint64) (0xff & cbuffer[35]) << 32);
-      buffer[4] |= ((gint64) (0xff & cbuffer[36]) << 24);
-      buffer[4] |= ((gint64) (0xff & cbuffer[37]) << 16);
-      buffer[4] |= ((gint64) (0xff & cbuffer[38]) << 8);
-      buffer[4] |= (gint64) (0xff & cbuffer[39]);
+    buffer[4] |= ((gint64) (0xff & cbuffer[32]) << 56);
+    buffer[4] |= ((gint64) (0xff & cbuffer[33]) << 48);
+    buffer[4] |= ((gint64) (0xff & cbuffer[34]) << 40);
+    buffer[4] |= ((gint64) (0xff & cbuffer[35]) << 32);
+    buffer[4] |= ((gint64) (0xff & cbuffer[36]) << 24);
+    buffer[4] |= ((gint64) (0xff & cbuffer[37]) << 16);
+    buffer[4] |= ((gint64) (0xff & cbuffer[38]) << 8);
+    buffer[4] |= (gint64) (0xff & cbuffer[39]);
       
-      buffer[5] |= ((gint64) (0xff & cbuffer[40]) << 56);
-      buffer[5] |= ((gint64) (0xff & cbuffer[41]) << 48);
-      buffer[5] |= ((gint64) (0xff & cbuffer[42]) << 40);
-      buffer[5] |= ((gint64) (0xff & cbuffer[43]) << 32);
-      buffer[5] |= ((gint64) (0xff & cbuffer[44]) << 24);
-      buffer[5] |= ((gint64) (0xff & cbuffer[45]) << 16);
-      buffer[5] |= ((gint64) (0xff & cbuffer[46]) << 8);
-      buffer[5] |= (gint64) (0xff & cbuffer[47]);
+    buffer[5] |= ((gint64) (0xff & cbuffer[40]) << 56);
+    buffer[5] |= ((gint64) (0xff & cbuffer[41]) << 48);
+    buffer[5] |= ((gint64) (0xff & cbuffer[42]) << 40);
+    buffer[5] |= ((gint64) (0xff & cbuffer[43]) << 32);
+    buffer[5] |= ((gint64) (0xff & cbuffer[44]) << 24);
+    buffer[5] |= ((gint64) (0xff & cbuffer[45]) << 16);
+    buffer[5] |= ((gint64) (0xff & cbuffer[46]) << 8);
+    buffer[5] |= (gint64) (0xff & cbuffer[47]);
       
-      buffer[6] |= ((gint64) (0xff & cbuffer[48]) << 56);
-      buffer[6] |= ((gint64) (0xff & cbuffer[49]) << 48);
-      buffer[6] |= ((gint64) (0xff & cbuffer[50]) << 32);
-      buffer[6] |= ((gint64) (0xff & cbuffer[52]) << 24);
-      buffer[6] |= ((gint64) (0xff & cbuffer[51]) << 16);
-      buffer[6] |= ((gint64) (0xff & cbuffer[52]) << 40);
-      buffer[6] |= ((gint64) (0xff & cbuffer[53]) << 8);
-      buffer[6] |= (gint64) (0xff & cbuffer[54]);
+    buffer[6] |= ((gint64) (0xff & cbuffer[48]) << 56);
+    buffer[6] |= ((gint64) (0xff & cbuffer[49]) << 48);
+    buffer[6] |= ((gint64) (0xff & cbuffer[50]) << 32);
+    buffer[6] |= ((gint64) (0xff & cbuffer[52]) << 24);
+    buffer[6] |= ((gint64) (0xff & cbuffer[51]) << 16);
+    buffer[6] |= ((gint64) (0xff & cbuffer[52]) << 40);
+    buffer[6] |= ((gint64) (0xff & cbuffer[53]) << 8);
+    buffer[6] |= (gint64) (0xff & cbuffer[54]);
       
-      buffer[7] |= ((gint64) (0xff & cbuffer[56]) << 56);
-      buffer[7] |= ((gint64) (0xff & cbuffer[57]) << 48);
-      buffer[7] |= ((gint64) (0xff & cbuffer[58]) << 40);
-      buffer[7] |= ((gint64) (0xff & cbuffer[59]) << 32);
-      buffer[7] |= ((gint64) (0xff & cbuffer[60]) << 24);
-      buffer[7] |= ((gint64) (0xff & cbuffer[61]) << 16);
-      buffer[7] |= ((gint64) (0xff & cbuffer[62]) << 8);
-      buffer[7] |= (gint64) (0xff & cbuffer[63]);
+    buffer[7] |= ((gint64) (0xff & cbuffer[56]) << 56);
+    buffer[7] |= ((gint64) (0xff & cbuffer[57]) << 48);
+    buffer[7] |= ((gint64) (0xff & cbuffer[58]) << 40);
+    buffer[7] |= ((gint64) (0xff & cbuffer[59]) << 32);
+    buffer[7] |= ((gint64) (0xff & cbuffer[60]) << 24);
+    buffer[7] |= ((gint64) (0xff & cbuffer[61]) << 16);
+    buffer[7] |= ((gint64) (0xff & cbuffer[62]) << 8);
+    buffer[7] |= (gint64) (0xff & cbuffer[63]);
       
-      buffer += 8;
-      cbuffer += (8 * 8);
-    }
+    buffer += 8;
+    cbuffer += (8 * 8);
   }
 
   for(; i < buffer_size / 8; i++){

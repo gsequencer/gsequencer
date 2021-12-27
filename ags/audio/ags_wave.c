@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1881,22 +1881,28 @@ ags_wave_add_buffer(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* insert sorted */
-  g_object_ref(buffer);
-  
   g_rec_mutex_lock(wave_mutex);
 
   if(use_selection_list){
-    wave->selection = g_list_insert_sorted(wave->selection,
-					   buffer,
-					   (GCompareFunc) ags_buffer_sort_func);
-    ags_buffer_set_flags(buffer,
-			 AGS_BUFFER_IS_SELECTED);
+    if(g_list_find(wave->selection, buffer) == NULL){
+      g_object_ref(buffer);
+  
+      wave->selection = g_list_insert_sorted(wave->selection,
+					     buffer,
+					     (GCompareFunc) ags_buffer_sort_func);
+      ags_buffer_set_flags(buffer,
+			   AGS_BUFFER_IS_SELECTED);
+    }
   }else{
-    wave->buffer = g_list_insert_sorted(wave->buffer,
-					buffer,
-					(GCompareFunc) ags_buffer_sort_func);
+    if(g_list_find(wave->buffer, buffer) == NULL){
+      g_object_ref(buffer);
+  
+      wave->buffer = g_list_insert_sorted(wave->buffer,
+					  buffer,
+					  (GCompareFunc) ags_buffer_sort_func);
+    }
   }
-
+  
   g_rec_mutex_unlock(wave_mutex);
 }
 
@@ -2428,6 +2434,24 @@ ags_wave_free_selection(AgsWave *wave)
   
   g_list_free_full(list_start,
 		   g_object_unref);
+}
+
+/**
+ * ags_wave_free_all_selection:
+ * @wave: the #GList-struct containing #AgsWave
+ *
+ * Clear all selection of @wave.
+ *
+ * Since: 3.14.10
+ */
+void
+ags_wave_free_all_selection(GList *wave)
+{
+  while(wave != NULL){
+    ags_wave_free_selection(wave->data);
+
+    wave = wave->next;
+  }
 }
 
 /**
@@ -3077,6 +3101,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
   
   guint64 timestamp_offset;
   guint64 first_x_val, x_val;
+  guint64 current_position;
+  guint current_attack;
+  guint64 current_exact_position;
   gsize clipboard_length;
   guint samplerate_val;
   guint buffer_size_val;
@@ -3095,6 +3122,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
   node = root_node->children;
 
   first_x_val = ~0;
+
+  //TODO:JK: improve me
+  x_offset = (guint64) (wave_buffer_size * floor(x_offset / wave_buffer_size));
   
   /* parse */
   while(node != NULL){
@@ -3133,6 +3163,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  continue;
 	}
 
+	//TODO:JK: improve me
+	x_val = (guint64) (wave_buffer_size * floor(x_val / wave_buffer_size));
+	
 	xmlFree(x);
 	content = xmlNodeGetContent(node);
 	
@@ -3266,10 +3299,17 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  first_x_val = x_val;
 	}
 
+	current_position = x_offset + (x_val - first_x_val);
+	current_attack = (current_position % relative_offset) % wave_buffer_size;
+	current_exact_position = current_position - current_attack;
+	
 	if(match_timestamp &&
-	   !((floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)) >= timestamp_offset &&
-	     (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)) < timestamp_offset + relative_offset)){
+	   !(current_exact_position >= timestamp_offset &&
+	     current_exact_position < timestamp_offset + relative_offset)){
 	  node = node->next;
+
+	  g_free(clipboard_cdata);
+	  g_free(clipboard_data);
 
 	  continue;
 	}
@@ -3277,9 +3317,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
 							ags_audio_buffer_util_format_from_soundcard(format_val));	
 
-	buffer = ags_wave_find_exact_point(wave,
-					   (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size)),
-					   FALSE);
+	buffer = ags_wave_find_point(wave,
+				     current_exact_position,
+				     FALSE);
 
 	if(buffer == NULL){
 	  buffer = ags_buffer_new();
@@ -3289,7 +3329,7 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 		       "format", wave_format,
 		       NULL);  
 	      
-	  buffer->x = (floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_offset + (x_val - first_x_val)) - floor((x_offset + (x_val - first_x_val)) / relative_offset) * relative_offset) / wave_buffer_size));
+	  buffer->x = current_exact_position;
 	      
 //	  g_message("created %d", buffer->x);
 	      
@@ -3681,13 +3721,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	g_object_unref(timestamp);
 
 	if(!match_timestamp ||
-	   (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)) < timestamp_offset + relative_offset){
+	   x_val < timestamp_offset + relative_offset){
 	  guint copy_mode;
 	    
 	  /* find first */
-	  buffer = ags_wave_find_exact_point(wave,
-					     (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
-					     FALSE);
+	  buffer = ags_wave_find_point(wave,
+				       (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
+				       FALSE);
 
 	  if(buffer != NULL &&
 	     do_replace){
@@ -3785,7 +3825,6 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 				FALSE);
 	  }
 
-	  
 	  //	    g_message("insert - buffer->x = %lu", buffer->x);
 	  //	    g_message("%d %d", wave_format, format_val);
 	  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
@@ -3814,7 +3853,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  wave_buffer_size - attack, copy_mode);
 	    }
 
-	    g_free(target_data);
+	    free(target_data);
 	  }else{
 	    if(attack + frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -3826,8 +3865,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  wave_buffer_size - attack, copy_mode);
 	    }
 	  }
-
-#if 0	    
+	    
 	  /* find next */
 	  if(attack + frame_count > wave_buffer_size){
 	    buffer = ags_wave_find_point(wave,
@@ -3886,14 +3924,13 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  target_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 
-	      g_free(target_data);
+	      free(target_data);
 	    }else{
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  clipboard_data, 1, wave_buffer_size - attack,
 							  attack, copy_mode);
 	    }
 	  }
-#endif
 	}
       }
     }

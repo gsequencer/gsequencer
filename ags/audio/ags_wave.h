@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -166,6 +166,7 @@ GList* ags_wave_find_region(AgsWave *wave,
 			    gboolean use_selection_list);
 
 void ags_wave_free_selection(AgsWave *wave);
+void ags_wave_free_all_selection(GList *wave);
 
 void ags_wave_add_region_to_selection(AgsWave *wave,
 				      guint64 x0, guint64 x1,

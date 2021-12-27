@@ -395,7 +395,7 @@ ags_notation_test_is_note_selected()
   list = notation->selection;
   success = TRUE;
   
-  for(i = 0; i < AGS_NOTATION_TEST_IS_NOTE_SELECTED_SELECTION_COUNT; i++){
+  for(i = 0; i < AGS_NOTATION_TEST_IS_NOTE_SELECTED_SELECTION_COUNT && list != NULL; i++){
     if(list->prev != NULL){
       if(!(AGS_NOTE(list->prev->data)->x[0] < AGS_NOTE(list->data)->x[0] ||
 	   (AGS_NOTE(list->prev->data)->x[0] == AGS_NOTE(list->data)->x[0] &&

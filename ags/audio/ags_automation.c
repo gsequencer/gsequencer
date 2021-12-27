@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2198,20 +2198,26 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* insert sorted */
-  g_object_ref(acceleration);
-  
   g_rec_mutex_lock(automation_mutex);
 
   if(use_selection_list){
-    automation->selection = g_list_insert_sorted(automation->selection,
-						 acceleration,
-						 (GCompareFunc) ags_acceleration_sort_func);
-    ags_acceleration_set_flags(acceleration,
-			       AGS_ACCELERATION_IS_SELECTED);
+    if(g_list_find(automation->selection, acceleration) == NULL){
+      g_object_ref(acceleration);
+      
+      automation->selection = g_list_insert_sorted(automation->selection,
+						   acceleration,
+						   (GCompareFunc) ags_acceleration_sort_func);
+      ags_acceleration_set_flags(acceleration,
+				 AGS_ACCELERATION_IS_SELECTED);
+    }
   }else{
-    automation->acceleration = g_list_insert_sorted(automation->acceleration,
-						    acceleration,
-						    (GCompareFunc) ags_acceleration_sort_func);
+    if(g_list_find(automation->acceleration, acceleration) == NULL){
+      g_object_ref(acceleration);
+  
+      automation->acceleration = g_list_insert_sorted(automation->acceleration,
+						      acceleration,
+						      (GCompareFunc) ags_acceleration_sort_func);
+    }
   }
 
   g_rec_mutex_unlock(automation_mutex);
@@ -2663,6 +2669,24 @@ ags_automation_free_selection(AgsAutomation *automation)
   
   g_list_free_full(list_start,
 		   g_object_unref);
+}
+
+/**
+ * ags_automation_free_all_selection:
+ * @automation: the #GList-struct containing #AgsAutomation
+ *
+ * Clear all selection of @automation.
+ *
+ * Since: 3.14.10
+ */
+void
+ags_automation_free_all_selection(GList *automation)
+{
+  while(automation != NULL){
+    ags_automation_free_selection(automation->data);
+
+    automation = automation->next;
+  }
 }
 
 /**

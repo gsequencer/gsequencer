@@ -1784,6 +1784,8 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 		 "notation", &start_notation,
 		 NULL);
 
+    ags_notation_free_all_selection(start_notation);
+
     /* select all matching channel selector */
     i = 0;
     
@@ -1801,7 +1803,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 
 	  continue;
 	}
-	
+
 	ags_notation_add_all_to_selection(AGS_NOTATION(notation->data));
 	
 	notation = notation->next;
@@ -1831,6 +1833,8 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
     g_object_get(machine->audio,
 		 "automation", &start_automation,
 		 NULL);
+
+    ags_automation_free_all_selection(start_automation);
 
      i = 0;
     
@@ -1865,7 +1869,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 
 	  continue;
 	}
-	
+
 	ags_automation_add_all_to_selection(AGS_AUTOMATION(automation->data));
 	
 	automation = automation->next;
@@ -1897,6 +1901,8 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 		 "wave", &start_wave,
 		 "samplerate", &samplerate,
 		 NULL);
+
+    ags_wave_free_all_selection(start_wave);
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
@@ -1987,7 +1993,7 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
       xmlNode *child;
 
       guint x_boundary;
-	  
+      
       ags_notation_insert_from_clipboard_extended(current_notation,
 						  notation_node,
 						  TRUE, position_x,
@@ -2807,7 +2813,7 @@ ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
 	      }     
 		
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((double) position_x / (double) relative_offset);
+	      timestamp->timer.ags_offset.offset = (guint64) (relative_offset * floor((double) position_x / (double) relative_offset));
 		
 	      first_x = ags_composite_editor_paste_wave_all(composite_editor,
 							    machine,
@@ -2831,7 +2837,6 @@ ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
 						  paste_from_position,
 						  position_x,
 						  &last_x);
-		
 	    }
 	  }
 
@@ -3168,7 +3173,7 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
 			 
       relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
-      position_x = (floor(position_x / relative_offset) * relative_offset) + (buffer_size * (floor(position_x - floor(position_x / relative_offset) * relative_offset) / buffer_size));
+      position_x = (guint64) (floor(position_x / buffer_size) * buffer_size);
       
 #ifdef AGS_DEBUG
       printf("pasting at position: [%u]\n", position_x);
@@ -3315,6 +3320,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &buffer_size, "UTF-8", TRUE);
+    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   (gchar *) buffer, buffer_size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -3385,6 +3391,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
           
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -3458,6 +3465,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -3558,6 +3566,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &buffer_size, "UTF-8", TRUE);
+    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   (gchar *) buffer, buffer_size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -3630,6 +3639,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -3706,6 +3716,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -4634,6 +4645,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     g_object_get(machine->audio,
 		 "notation", &start_notation,
 		 NULL);
+
+    ags_notation_free_all_selection(start_notation);
     
     while((i = ags_notebook_next_active_tab(composite_editor->notation_edit->channel_selector,
 					    i)) != -1){      
@@ -4700,6 +4713,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     g_object_get(machine->audio,
 		 "automation", &start_automation,
 		 NULL);
+
+    ags_automation_free_all_selection(start_automation);
 
     timestamp = ags_timestamp_new();
 
@@ -4776,7 +4791,7 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 
     /* swap values if needed */
     if(x0 > x1){
-      guint tmp;
+      guint64 tmp;
 
       tmp = x0;
       
@@ -4811,6 +4826,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 		 "samplerate", &samplerate,
 		 "buffer-size", &buffer_size,
 		 NULL);
+
+    ags_wave_free_all_selection(start_wave);
     
     focused_wave_edit = AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit);
 
@@ -4831,7 +4848,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     x0_offset = (guint64) floorl((long double) x0 / (long double) map_width * (long double) sample_width);
     x1_offset = (guint64) floorl((long double) x1 / (long double) map_width * (long double) sample_width);
 
-//    g_message("x offset %d %d", x0_offset, x1_offset);
+    x0_offset = (guint64) (floor(x0_offset / buffer_size) * buffer_size);
+    x1_offset = (guint64) (floor(x1_offset / buffer_size) * buffer_size);
     
     timestamp = ags_timestamp_new();
 
