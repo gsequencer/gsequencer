@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -169,6 +169,7 @@ GList* ags_notation_find_offset(AgsNotation *notation,
 				gboolean use_selection_list);
 
 void ags_notation_free_selection(AgsNotation *notation);
+void ags_notation_free_all_selection(GList *notation);
 
 void ags_notation_add_point_to_selection(AgsNotation *notation,
 					 guint x, guint y,

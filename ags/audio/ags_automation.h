@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -198,6 +198,7 @@ GList* ags_automation_find_region(AgsAutomation *automation,
 				  gboolean use_selection_list);
 
 void ags_automation_free_selection(AgsAutomation *automation);
+void ags_automation_free_all_selection(GList *automation);
 
 void ags_automation_add_point_to_selection(AgsAutomation *automation,
 					   guint x, gdouble y,

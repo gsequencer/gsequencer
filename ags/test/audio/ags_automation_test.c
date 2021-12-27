@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2016 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -442,7 +442,7 @@ ags_automation_test_is_acceleration_selected()
   list = automation->selection;
   success = TRUE;
   
-  for(i = 0; i < AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_SELECTION_COUNT; i++){
+  for(i = 0; i < AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_SELECTION_COUNT && list != NULL; i++){
     if(list->prev != NULL){
       if(AGS_ACCELERATION(list->prev->data)->x > AGS_ACCELERATION(list->data)->x){
 	success = FALSE;

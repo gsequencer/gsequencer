@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1260,8 +1260,6 @@ ags_notation_add_note(AgsNotation *notation,
   }
 
   /* insert sorted */
-  g_object_ref(note);
-
 #ifdef AGS_DEBUG
   g_message("add note[%d,%d|%d]", note->x[0], note->x[1], note->y);
 #endif
@@ -1269,17 +1267,25 @@ ags_notation_add_note(AgsNotation *notation,
   g_rec_mutex_lock(notation_mutex);
 
   if(use_selection_list){
-    notation->selection = g_list_insert_sorted(notation->selection,
-					       note,
-					       (GCompareFunc) ags_note_sort_func);
-    ags_note_set_flags(note,
-		       AGS_NOTE_IS_SELECTED);
-  }else{
-    notation->note = g_list_insert_sorted(notation->note,
-					  note,
-					  (GCompareFunc) ags_note_sort_func);
-  }
+    if(g_list_find(notation->selection, note) == NULL){
+      g_object_ref(note);
 
+      notation->selection = g_list_insert_sorted(notation->selection,
+						 note,
+						 (GCompareFunc) ags_note_sort_func);
+      ags_note_set_flags(note,
+			 AGS_NOTE_IS_SELECTED);
+    }
+  }else{
+    if(g_list_find(notation->note, note) == NULL){
+      g_object_ref(note);
+
+      notation->note = g_list_insert_sorted(notation->note,
+					    note,
+					    (GCompareFunc) ags_note_sort_func);
+    }
+  }
+  
   g_rec_mutex_unlock(notation_mutex);
 }
 
@@ -1913,6 +1919,24 @@ ags_notation_free_selection(AgsNotation *notation)
   
   g_list_free_full(list_start,
 		   g_object_unref);
+}
+
+/**
+ * ags_notation_free_all_selection:
+ * @notation: the #GList-struct containing #AgsNotation
+ *
+ * Clear all selection of @notation.
+ *
+ * Since: 3.14.10
+ */
+void
+ags_notation_free_all_selection(GList *notation)
+{
+  while(notation != NULL){
+    ags_notation_free_selection(notation->data);
+
+    notation = notation->next;
+  }
 }
 
 /**

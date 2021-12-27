@@ -1,3 +1,11 @@
+ags (3.14.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_free_all_selection()
+	* implemented ags_automation_free_all_selection()
+	* implemented ags_wave_free_all_selection()
+	* fixed corrupted selection list of AgsNotation, AgsAutomation and AgsWave
+
 ags (3.14.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

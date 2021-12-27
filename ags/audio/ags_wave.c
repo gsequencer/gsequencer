@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1881,22 +1881,28 @@ ags_wave_add_buffer(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* insert sorted */
-  g_object_ref(buffer);
-  
   g_rec_mutex_lock(wave_mutex);
 
   if(use_selection_list){
-    wave->selection = g_list_insert_sorted(wave->selection,
-					   buffer,
-					   (GCompareFunc) ags_buffer_sort_func);
-    ags_buffer_set_flags(buffer,
-			 AGS_BUFFER_IS_SELECTED);
+    if(g_list_find(wave->selection, buffer) == NULL){
+      g_object_ref(buffer);
+  
+      wave->selection = g_list_insert_sorted(wave->selection,
+					     buffer,
+					     (GCompareFunc) ags_buffer_sort_func);
+      ags_buffer_set_flags(buffer,
+			   AGS_BUFFER_IS_SELECTED);
+    }
   }else{
-    wave->buffer = g_list_insert_sorted(wave->buffer,
-					buffer,
-					(GCompareFunc) ags_buffer_sort_func);
+    if(g_list_find(wave->buffer, buffer) == NULL){
+      g_object_ref(buffer);
+  
+      wave->buffer = g_list_insert_sorted(wave->buffer,
+					  buffer,
+					  (GCompareFunc) ags_buffer_sort_func);
+    }
   }
-
+  
   g_rec_mutex_unlock(wave_mutex);
 }
 
@@ -2428,6 +2434,24 @@ ags_wave_free_selection(AgsWave *wave)
   
   g_list_free_full(list_start,
 		   g_object_unref);
+}
+
+/**
+ * ags_wave_free_all_selection:
+ * @wave: the #GList-struct containing #AgsWave
+ *
+ * Clear all selection of @wave.
+ *
+ * Since: 3.14.10
+ */
+void
+ags_wave_free_all_selection(GList *wave)
+{
+  while(wave != NULL){
+    ags_wave_free_selection(wave->data);
+
+    wave = wave->next;
+  }
 }
 
 /**
@@ -3098,6 +3122,9 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
   node = root_node->children;
 
   first_x_val = ~0;
+
+  //TODO:JK: improve me
+  x_offset = (guint64) (wave_buffer_size * floor(x_offset / wave_buffer_size));
   
   /* parse */
   while(node != NULL){
@@ -3136,7 +3163,8 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  continue;
 	}
 
-//	x_val = (guint64) (floor(x_val / relative_offset) * relative_offset) + (floor((x_val - (floor(x_val / relative_offset) * relative_offset)) / wave_buffer_size) * wave_buffer_size);
+	//TODO:JK: improve me
+	x_val = (guint64) (wave_buffer_size * floor(x_val / wave_buffer_size));
 	
 	xmlFree(x);
 	content = xmlNodeGetContent(node);
@@ -3270,7 +3298,7 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	if(first_x_val == ~0){
 	  first_x_val = x_val;
 	}
-	
+
 	current_position = x_offset + (x_val - first_x_val);
 	current_attack = (current_position % relative_offset) % wave_buffer_size;
 	current_exact_position = current_position - current_attack;
