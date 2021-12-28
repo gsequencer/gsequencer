@@ -26,7 +26,6 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
-#include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_mixer.h>
 
@@ -133,12 +132,13 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   GtkWidget *widget;
 
   /* volume indicator */
-  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type", AGS_TYPE_VINDICATOR,
-					       "plugin-name", "ags-fx-peak",
-					       "specifier", "./peak[0]",
-					       "control-port", "1/1",
-					       NULL);
+  line_member =
+    mixer_input_line->volume_indicator = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+									"widget-type", AGS_TYPE_VINDICATOR,
+									"plugin-name", "ags-fx-peak",
+									"specifier", "./peak[0]",
+									"control-port", "1/1",
+									NULL);
   line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
 			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
   ags_expander_add(AGS_LINE(mixer_input_line)->expander,
@@ -152,13 +152,14 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
 
   /* volume */
-  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type", GTK_TYPE_SCALE,
-					       "widget-orientation", GTK_ORIENTATION_VERTICAL,
-					       "plugin-name", "ags-fx-volume",
-					       "specifier", "./volume[0]",
-					       "control-port", "2/2",
-					       NULL);
+  line_member =
+    mixer_input_line->volume_control = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+								      "widget-type", GTK_TYPE_SCALE,
+								      "widget-orientation", GTK_ORIENTATION_VERTICAL,
+								      "plugin-name", "ags-fx-volume",
+								      "specifier", "./volume[0]",
+								      "control-port", "2/2",
+								      NULL);
   ags_expander_add(AGS_LINE(mixer_input_line)->expander,
 		   GTK_WIDGET(line_member),
 		   1, 0,
@@ -182,13 +183,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 void
 ags_mixer_input_line_finalize(GObject *gobject)
 {
-  AgsMixerInputLine *mixer_input_line;
-
-  mixer_input_line = (AgsMixerInputLine *) gobject;
-
-  g_hash_table_remove(ags_line_indicator_queue_draw,
-		      mixer_input_line);
-  
   /* call parent */
   G_OBJECT_CLASS(ags_mixer_input_line_parent_class)->finalize(gobject);
 }
