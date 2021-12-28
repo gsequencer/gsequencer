@@ -1103,7 +1103,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
     AgsChannel *start_channel;
     AgsChannel *channel, *next_channel;
     
-    GList *list, *start_list;
+    GList *list, *list_start;
 
     guint i;
 
@@ -1112,8 +1112,8 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 		 "input", &start_channel,
 		 NULL);
     
-    list =
-      start_list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
     
     /* check members */
     channel = start_channel;
@@ -1194,7 +1194,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       g_object_unref(channel);
     }
     
-    g_list_free(start_list);
+    g_list_free(list_start);
     
     return(TRUE);
   }else{

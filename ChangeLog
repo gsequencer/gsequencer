@@ -1,8 +1,3 @@
-ags (3.14.11)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed corrupted hash table containing destroyed widgets with AgsDrum and AgsMixer
-
 ags (3.14.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
