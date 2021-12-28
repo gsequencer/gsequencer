@@ -182,12 +182,12 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 void
 ags_mixer_input_line_finalize(GObject *gobject)
 {
-  AgsDrumInputLine *drum_input_line;
+  AgsMixerInputLine *mixer_input_line;
 
-  drum_input_line = (AgsDrumInputLine *) gobject;
+  mixer_input_line = (AgsMixerInputLine *) gobject;
 
   g_hash_table_remove(ags_line_indicator_queue_draw,
-		      drum_input_line);
+		      mixer_input_line);
   
   /* call parent */
   G_OBJECT_CLASS(ags_mixer_input_line_parent_class)->finalize(gobject);
