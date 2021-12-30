@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.14.10\n"
+"Project-Id-Version: gsequencer 3.14.11\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-12-27 18:24+0100\n"
+"POT-Creation-Date: 2021-12-30 20:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1420,11 +1420,6 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_audiorec.c:305 ags/X/machine/ags_ffplayer.c:376
-#: ags/X/machine/ags_pitch_sampler.c:324 ags/X/machine/ags_sf2_synth.c:267
-msgid "loading ...  "
-msgstr ""
-
 #: ags/X/machine/ags_desk.c:213
 msgid "left"
 msgstr ""
@@ -1518,6 +1513,11 @@ msgstr ""
 
 #: ags/X/machine/ags_equalizer10.c:462
 msgid "pressure"
+msgstr ""
+
+#: ags/X/machine/ags_ffplayer.c:376 ags/X/machine/ags_pitch_sampler.c:324
+#: ags/X/machine/ags_sf2_synth.c:267
+msgid "loading ...  "
 msgstr ""
 
 #: ags/X/machine/ags_ffplayer.c:433 ags/X/machine/ags_pitch_sampler.c:335

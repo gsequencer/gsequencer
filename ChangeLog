@@ -1,7 +1,8 @@
 ags (3.14.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* ???
+	* implemented AgsAudiorec:wave_loader_spinner field of GtkSpinner type to visualize wave loader progress
+	* fixed export window to stop AgsAudiorec after export completed
 
 ags (3.14.10)
 

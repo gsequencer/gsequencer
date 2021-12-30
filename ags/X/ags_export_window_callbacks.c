@@ -413,7 +413,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	
 	ags_machine_set_run_extended(machine,
 				     FALSE,
-				     FALSE, FALSE, TRUE, FALSE);
+				     FALSE, TRUE, FALSE, FALSE);
 	success = TRUE;
       }
 

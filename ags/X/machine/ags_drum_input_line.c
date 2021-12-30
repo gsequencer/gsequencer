@@ -31,7 +31,6 @@
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_finalize(GObject *gobject);
 
 void ags_drum_input_line_connect(AgsConnectable *connectable);
 void ags_drum_input_line_disconnect(AgsConnectable *connectable);
@@ -99,16 +98,10 @@ ags_drum_input_line_get_type()
 void
 ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
 {
-  GObjectClass *gobject;
   AgsLineClass *line;
 
   ags_drum_input_line_parent_class = g_type_class_peek_parent(drum_input_line);
 
-  /* GObjectClass */
-  gobject = (GObjectClass *) drum_input_line;
-
-  gobject->finalize = ags_drum_input_line_finalize;
-  
   /* AgsLineClass */
   line = AGS_LINE_CLASS(drum_input_line);
 
@@ -190,13 +183,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   //  g_object_set(G_OBJECT(line_member),
   //	       "port-data", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
   //	       NULL);
-}
-
-void
-ags_drum_input_line_finalize(GObject *gobject)
-{
-  /* call parent */
-  G_OBJECT_CLASS(ags_drum_input_line_parent_class)->finalize(gobject);
 }
 
 void

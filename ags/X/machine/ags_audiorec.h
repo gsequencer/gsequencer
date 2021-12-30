@@ -69,8 +69,8 @@ struct _AgsAudiorec
   AgsWaveLoader *wave_loader;
 
   gint position;
-  GtkLabel *loading;
-
+  GtkSpinner *wave_loader_spinner;  
+  
   GtkRadioButton *keep_data;
   GtkRadioButton *mix_data;
   GtkRadioButton *replace_data;

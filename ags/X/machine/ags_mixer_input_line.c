@@ -32,7 +32,6 @@
 void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
 void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line);
-void ags_mixer_input_line_finalize(GObject *gobject);
 
 void ags_mixer_input_line_connect(AgsConnectable *connectable);
 void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
@@ -99,15 +98,9 @@ ags_mixer_input_line_get_type()
 void
 ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line)
 {
-  GObjectClass *gobject;
   AgsLineClass *line;
 
   ags_mixer_input_line_parent_class = g_type_class_peek_parent(mixer_input_line);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) mixer_input_line;
-
-  gobject->finalize = ags_mixer_input_line_finalize;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(mixer_input_line);
@@ -178,13 +171,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 		      1.0);
   gtk_range_set_inverted(GTK_RANGE(widget),
 			 TRUE);
-}
-
-void
-ags_mixer_input_line_finalize(GObject *gobject)
-{
-  /* call parent */
-  G_OBJECT_CLASS(ags_mixer_input_line_parent_class)->finalize(gobject);
 }
 
 void
