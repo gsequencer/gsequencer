@@ -302,14 +302,14 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   audiorec->position = -1;
 
-  audiorec->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  audiorec->wave_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) audiorec->loading,
+		     (GtkWidget *) audiorec->wave_loader_spinner,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_no_show_all((GtkWidget *) audiorec->loading,
+  gtk_widget_set_no_show_all((GtkWidget *) audiorec->wave_loader_spinner,
 			     TRUE);
-  gtk_widget_hide((GtkWidget *) audiorec->loading);
+  gtk_widget_hide((GtkWidget *) audiorec->wave_loader_spinner);
   
   /* radio */
   radio_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -1041,39 +1041,15 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
 	audiorec->wave_loader = NULL;
 
 	audiorec->position = -1;
-	gtk_widget_hide((GtkWidget *) audiorec->loading);
+
+	gtk_spinner_stop(audiorec->wave_loader_spinner);
+	gtk_widget_hide((GtkWidget *) audiorec->wave_loader_spinner);
       }else{
 	if(audiorec->position == -1){
 	  audiorec->position = 0;
 
-	  gtk_widget_show((GtkWidget *) audiorec->loading);
-	}
-
-	switch(audiorec->position){
-	case 0:
-	  {
-	    audiorec->position = 1;
-	    
-	    gtk_label_set_label(audiorec->loading,
-				"loading ...  ");
-	  }
-	  break;
-	case 1:
-	  {
-	    audiorec->position = 2;
-
-	    gtk_label_set_label(audiorec->loading,
-				"loading  ... ");
-	  }
-	  break;
-	case 2:
-	  {
-	    audiorec->position = 0;
-
-	    gtk_label_set_label(audiorec->loading,
-				"loading   ...");
-	  }
-	  break;
+	  gtk_widget_show((GtkWidget *) audiorec->wave_loader_spinner);
+	  gtk_spinner_start(audiorec->wave_loader_spinner);
 	}
       }
     }

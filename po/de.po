@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-12-27 18:24+0100\n"
+"POT-Creation-Date: 2021-12-30 20:32+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -1432,11 +1432,6 @@ msgstr "Instrument"
 msgid "sequence"
 msgstr "Sequenz"
 
-#: ags/X/machine/ags_audiorec.c:305 ags/X/machine/ags_ffplayer.c:376
-#: ags/X/machine/ags_pitch_sampler.c:324 ags/X/machine/ags_sf2_synth.c:267
-msgid "loading ...  "
-msgstr "lade ... "
-
 #: ags/X/machine/ags_desk.c:213
 msgid "left"
 msgstr "links"
@@ -1531,6 +1526,11 @@ msgstr "14336Hz"
 #: ags/X/machine/ags_equalizer10.c:462
 msgid "pressure"
 msgstr "Druck"
+
+#: ags/X/machine/ags_ffplayer.c:376 ags/X/machine/ags_pitch_sampler.c:324
+#: ags/X/machine/ags_sf2_synth.c:267
+msgid "loading ...  "
+msgstr "lade ... "
 
 #: ags/X/machine/ags_ffplayer.c:433 ags/X/machine/ags_pitch_sampler.c:335
 msgid "synth generator"
