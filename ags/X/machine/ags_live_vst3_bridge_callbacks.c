@@ -254,9 +254,12 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
        !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
       GtkWidget *child_widget;
 
+      gchar *block_scope;
+
       child_widget = ags_bulk_member_get_widget(bulk_member->data);
 
-      if(g_hash_table_lookup(live_vst3_bridge->block_control, child_widget) == NULL){
+      if((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, child_widget)) == NULL ||
+	 !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI) == FALSE){
 	g_hash_table_insert(live_vst3_bridge->block_control,
 			    child_widget,
 			    AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI);
@@ -307,13 +310,16 @@ ags_live_vst3_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveVst3Bridge *l
 
   AgsVstParameterInfo *info;
   AgsVstParamID param_id;
+
+  gchar *block_scope;
   
   gint32 port_index;
   gdouble val;
   gdouble value_normalized;
 
   if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0 ||
-     g_hash_table_lookup(live_vst3_bridge->block_control, dial) != NULL){
+     ((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, dial)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE))){
     return;
   }
   
@@ -373,12 +379,15 @@ ags_live_vst3_bridge_scale_changed_callback(GtkWidget *scale, AgsLiveVst3Bridge 
   AgsVstParameterInfo *info;
   AgsVstParamID param_id;  
 
+  gchar *block_scope;
+
   gint32 port_index;
   gdouble val;
   gdouble value_normalized;
-
+  
   if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0 ||
-     g_hash_table_lookup(live_vst3_bridge->block_control, scale) != NULL){
+     ((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, scale)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE))){
     return;
   }
 
@@ -440,12 +449,15 @@ ags_live_vst3_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLiv
   AgsVstParameterInfo *info;
   AgsVstParamID param_id;  
 
+  gchar *block_scope;
+
   gint32 port_index;
   gdouble val;
   gdouble value_normalized;
 
   if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0 ||
-     g_hash_table_lookup(live_vst3_bridge->block_control, spin_button) != NULL){
+     ((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, spin_button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE))){
     return;
   }
 
@@ -504,13 +516,16 @@ ags_live_vst3_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsL
   AgsVstParameterInfo *info;
   AgsVstParamID param_id;  
 
+  gchar *block_scope;
+
   gboolean is_active;
   gint32 port_index;
   gdouble val;
   gdouble value_normalized;
 
   if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0 ||
-     g_hash_table_lookup(live_vst3_bridge->block_control, check_button) != NULL){
+     ((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, check_button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE))){
     return;
   }
 
@@ -567,13 +582,16 @@ ags_live_vst3_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, Ag
   AgsVstParameterInfo *info;
   AgsVstParamID param_id;  
 
+  gchar *block_scope;
+
   gboolean is_active;
   gint32 port_index;
   gdouble val;
   gdouble value_normalized;
 
   if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0 ||
-     g_hash_table_lookup(live_vst3_bridge->block_control, toggle_button) != NULL){
+     ((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, toggle_button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE))){
     return;
   }
 
@@ -629,12 +647,15 @@ ags_live_vst3_bridge_button_clicked_callback(GtkWidget *button, AgsLiveVst3Bridg
   AgsVstParameterInfo *info;
   AgsVstParamID param_id;  
 
+  gchar *block_scope;
+
   gint32 port_index;
   gdouble val;
   gdouble value_normalized;
 
   if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0 ||
-     g_hash_table_lookup(live_vst3_bridge->block_control, button) != NULL){
+     ((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE))){
     return;
   }
 
