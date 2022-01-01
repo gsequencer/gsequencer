@@ -92,14 +92,15 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
 
       view.layer.backgroundColor = [[NSColor yellowColor] CGColor];
 
-      [ns_window.contentView addSubview:view];
+      [ns_window setContentSize:view.frame.size];
+      [ns_window setContentView:view];
 
       NSRect rect;
 
       rect.size.width = width;
       rect.size.height = height;
 
-      [ns_window setFrame:rect display:YES];
+      [ns_window makeKeyAndOrderFront:ns_window];
 
       ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
 				  live_vst3_bridge->ns_view,
@@ -204,7 +205,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   gdouble value;
   
   GRecMutex *base_plugin_mutex;
-  
+
   if(live_vst3_bridge == NULL ||
      live_vst3_bridge->vst3_plugin == NULL ||
      (AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
@@ -263,7 +264,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 	g_hash_table_insert(live_vst3_bridge->block_control,
 			    child_widget,
 			    AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI);
-
+  
 	if(AGS_IS_DIAL(child_widget)){
 	  ags_dial_set_value((AgsDial *) child_widget,
 			     value);
