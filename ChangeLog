@@ -3,6 +3,13 @@ ags (3.15.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsHybridFMSynth
 
+ags (3.14.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 block controls either bridge or UI
+	* fixed Lv2 block controls either bridge or UI
+	* improved open files with GSequencer
+
 ags (3.14.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

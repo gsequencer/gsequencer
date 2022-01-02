@@ -378,6 +378,11 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
 			(GtkWidget *) item);
 
   gtk_widget_show_all((GtkWidget *) live_vst3_bridge->vst3_menu);
+
+  live_vst3_bridge->block_control = g_hash_table_new_full(g_direct_hash,
+							  g_direct_equal,
+							  NULL,
+							  NULL);
 }
 
 void
