@@ -95,12 +95,7 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
       [ns_window setContentSize:view.frame.size];
       [ns_window setContentView:view];
 
-      NSRect rect;
-
-      rect.size.width = width;
-      rect.size.height = height;
-
-      [ns_window makeKeyAndOrderFront:ns_window];
+      [ns_window makeKeyAndOrderFront:nil];
 
       ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
 				  live_vst3_bridge->ns_view,
