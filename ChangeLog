@@ -1,7 +1,8 @@
 ags (3.14.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed block controls either bridge or UI
+	* fixed VST3 block controls either bridge or UI
+	* fixed Lv2 block controls either bridge or UI
 
 ags (3.14.11)
 

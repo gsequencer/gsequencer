@@ -464,6 +464,11 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   live_lv2_bridge->ui_widget = NULL;
 
   live_lv2_bridge->lv2_window = NULL;
+
+  live_lv2_bridge->block_control = g_hash_table_new_full(g_direct_hash,
+							 g_direct_equal,
+							 NULL,
+							 NULL);
 }
 
 void
