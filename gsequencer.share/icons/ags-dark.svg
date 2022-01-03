@@ -26,14 +26,14 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:zoom="1.4121094"
-     inkscape:cx="82.85477"
-     inkscape:cy="254.93775"
+     inkscape:cx="78.605808"
+     inkscape:cy="256"
      inkscape:window-width="3840"
      inkscape:window-height="2112"
      inkscape:window-x="0"
      inkscape:window-y="28"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
+     inkscape:current-layer="layer2">
     <sodipodi:guide
        position="268.39281,131.00968"
        orientation="0,-1"
@@ -209,31 +209,9 @@
     </filter>
   </defs>
   <g
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="bg-dark"
-     style="display:inline">
-    <rect
-       style="fill:#000000;stroke-width:1.00013"
-       id="rect348"
-       width="515.17859"
-       height="513.84534"
-       x="-0.75449514"
-       y="-0.69621634" />
-  </g>
-  <g
-     inkscape:label="bg-light"
-     inkscape:groupmode="layer"
-     id="layer1"
-     style="display:none;opacity:1">
-    <rect
-       style="fill:#ffffff"
-       id="rect1033"
-       width="512.12164"
-       height="513.2804"
-       x="-0.26210234"
-       y="-0.093447439" />
-  </g>
+     id="layer1" />
   <g
      inkscape:groupmode="layer"
      id="layer4"
