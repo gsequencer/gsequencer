@@ -240,7 +240,7 @@ main(int argc, char **argv)
   if(getenv("GTK_THEME") == NULL){
     putenv(g_strdup("GTK_THEME=Blue-Submarine"));
   }
-
+  
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/lib/gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/libexec/gstreamer-1.0/gst-plugin-scanner", app_dir));
 
