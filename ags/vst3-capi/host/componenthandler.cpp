@@ -73,7 +73,7 @@ namespace Ags {
       this->componentHandlerMutex.lock();
 
       for(i = 0; i < this->handlerCount; i++){
-	if(!strncmp(this->handler[i].event_name, "performEdit", 10)){
+	if(!strncmp(this->handler[i].event_name, "performEdit", 12)){
 	  void *data;
 
 	  data = (void *) this->handler[i].data;
@@ -98,7 +98,7 @@ namespace Ags {
       this->componentHandlerMutex.lock();
       
       for(i = 0; i < this->handlerCount; i++){
-	if(!strncmp(this->handler[i].event_name, "endEdit", 10)){
+	if(!strncmp(this->handler[i].event_name, "endEdit", 8)){
 	  void *data;
 
 	  data = (void *) this->handler[i].data;
@@ -123,7 +123,7 @@ namespace Ags {
       this->componentHandlerMutex.lock();
 
       for(i = 0; i < this->handlerCount; i++){
-	if(!strncmp(this->handler[i].event_name, "restartComponent", 10)){
+	if(!strncmp(this->handler[i].event_name, "restartComponent", 18)){
 	  void *data;
 
 	  data = (void *) this->handler[i].data;
@@ -151,7 +151,7 @@ namespace Ags {
       if(!strncmp(event_name, "beginEdit", 10)){
       }else if(!strncmp(event_name, "performEdit", 12)){
       }else if(!strncmp(event_name, "endEdit", 8)){
-      }else if(!strncmp(event_name, "restartComponent", 8)){
+      }else if(!strncmp(event_name, "restartComponent", 18)){
       }else{
 	this->componentHandlerMutex.unlock();
 	

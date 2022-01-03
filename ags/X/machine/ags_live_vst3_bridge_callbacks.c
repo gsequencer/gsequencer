@@ -299,6 +299,14 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   return(0);
 }
 
+AgsVstTResult
+ags_live_vst3_bridge_restart_component_callback(AgsVstIComponentHandler *icomponent_handler, guint32 flags, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  if((AGS_VST_KPARAM_VALUES_CHANGED & (flags)) != 0){
+    ags_live_vst3_bridge_reload_port(live_vst3_bridge);
+  }
+}
+
 void
 ags_live_vst3_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveVst3Bridge *live_vst3_bridge)
 {
