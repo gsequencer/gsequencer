@@ -111,7 +111,6 @@ ags_test_init(int *argc, char ***argv,
   
   gchar *filename;
 
-  gboolean builtin_theme_disabled;
   guint i;
 
 #ifdef AGS_WITH_RT
@@ -132,7 +131,7 @@ ags_test_init(int *argc, char ***argv,
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 
-  base_dir = strdup(SRCDIR);
+  base_dir = strdup(AGS_SRC_DIR);
   printf("base dir %s\n", base_dir);
   
   /* set some environment variables */
@@ -182,8 +181,6 @@ ags_test_init(int *argc, char ***argv,
   textdomain(PACKAGE);
 
   /* parameters */
-  builtin_theme_disabled = FALSE;
-
   priority = ags_priority_get_instance();  
   ags_priority_load_defaults(priority);
   
@@ -237,10 +234,9 @@ ags_test_init(int *argc, char ***argv,
     if(!strncmp(argv[0][i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
-	     "--no-builtin-theme  disable built-in theme",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
       
@@ -256,8 +252,6 @@ ags_test_init(int *argc, char ***argv,
       printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(argv[0][i], "--no-builtin-theme", 19)){
-      builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[0][i], "--filename", 11)){
       filename = *argv[i + 1];
       i++;
@@ -266,52 +260,11 @@ ags_test_init(int *argc, char ***argv,
 
   uid = getuid();
   pw = getpwuid(uid);
-    
-  /* parse rc file */
-  if(!builtin_theme_disabled){
-    rc_filename = g_strdup_printf("%s/%s/ags.rc",
-				  pw->pw_dir,
-				  AGS_DEFAULT_DIRECTORY);
-
-    if(!g_file_test(rc_filename,
-		    G_FILE_TEST_IS_REGULAR)){
-      g_free(rc_filename);
-
-#ifdef AGS_RC_FILENAME
-      rc_filename = g_strdup(AGS_RC_FILENAME);
-#else
-      if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
-	rc_filename = g_strdup_printf("%s%s",
-				      DESTDIR,
-				      "/gsequencer/styles/ags.rc");
-      }else{
-	rc_filename = g_strdup(rc_filename);
-      }
-#endif
-    }
-  
-    gtk_rc_parse(rc_filename);
-    g_free(rc_filename);
-  }
   
   /**/
   LIBXML_TEST_VERSION;
 
   gtk_init(argc, argv);
-
-  if(!builtin_theme_disabled){
-    g_object_set(gtk_settings_get_default(),
-		 "gtk-theme-name", "Raleigh",
-		 NULL);
-    g_signal_handlers_block_matched(gtk_settings_get_default(),
-				    G_SIGNAL_MATCH_DETAIL,
-				    g_signal_lookup("set-property",
-						    GTK_TYPE_SETTINGS),
-				    g_quark_from_string("gtk-theme-name"),
-				    NULL,
-				    NULL,
-				    NULL);
-  }
   
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();

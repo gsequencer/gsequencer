@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,7 +140,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
       }
     }
 #else
-    filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/gsequencer-800x450.png");
+    filename = g_strdup_printf("%s%s", AGS_DATA_DIR, "/gsequencer/images/gsequencer-800x450.png");
 #endif
   }else{
     filename = g_strdup(filename);

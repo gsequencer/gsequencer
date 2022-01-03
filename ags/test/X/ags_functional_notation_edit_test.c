@@ -49,7 +49,7 @@ void ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *applicat
 
 void ags_functional_notation_edit_test_file_setup();
 
-#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_notation_edit_test.xml"
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags_functional_notation_edit_test.xml"
 #define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
 #define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
 

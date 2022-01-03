@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2021 Joel Kraehemann
+#Copyright (C) 2005-2022 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -15,7 +15,7 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 # what flags you want to pass to the C compiler & linker
 # AM_CPPFLAGS += -march=native -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
-CPPFLAGS =  @CPPFLAGS@ -include errno.h -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(datadir)\" -DDOCDIR=\"$(docdir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1
+CPPFLAGS =  @CPPFLAGS@ -include errno.h -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"$(datadir)\" -DAGS_DOC_DIR=\"$(docdir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1
 
 if WITH_W32API
 else
@@ -3439,6 +3439,7 @@ install-data-local:
 	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps
 	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps
 	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps
+	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps
 	mkdir -p $(DESTDIR)$(datadir)/gsequencer/images
 	mkdir -p $(DESTDIR)$(datadir)/gsequencer/styles
 	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
@@ -3452,6 +3453,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags-light.svg $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps/gsequencer.svg
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
@@ -3625,6 +3627,7 @@ endif
 	rm -f $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
 	rm -f $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
 	rm -f $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/scalable/apps/gsequencer.svg
 	rm -f $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
 	rm -f $(DESTDIR)$(datadir)/metainfo/org.nongnu.gsequencer.gsequencer.appdata.xml
 	rm -f $(DESTDIR)$(pkgconfigdir)/libags.pc

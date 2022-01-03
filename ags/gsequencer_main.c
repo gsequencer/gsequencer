@@ -425,7 +425,7 @@ main(int argc, char **argv)
 #else
       if((css_filename = getenv("AGS_CSS_FILENAME")) == NULL){
 	css_filename = g_strdup_printf("%s%s",
-				       DESTDIR,
+				       AGS_DATA_DIR,
 				       "/gsequencer/styles/ags.css");
       }else{
 	css_filename = g_strdup(css_filename);

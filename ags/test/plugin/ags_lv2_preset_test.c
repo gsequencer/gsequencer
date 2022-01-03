@@ -34,7 +34,7 @@ void ags_lv2_preset_test_parse_turtle();
 void ags_lv2_preset_test_find_preset_label();
 
 #define AGS_LV2_PRESET_TEST_PARSE_TURTLE_URI "<http://drobilla.net/plugins/mda/presets#EPiano-default>"
-#define AGS_LV2_PRESET_TEST_PARSE_TURTLE_TTL SRCDIR "/lv2.lib/mda/EPiano-presets.ttl"
+#define AGS_LV2_PRESET_TEST_PARSE_TURTLE_TTL AGS_SRC_DIR "/lv2.lib/mda/EPiano-presets.ttl"
 
 #define AGS_LV2_PRESET_TEST_FIND_PRESET_LABEL_DEFAULT "Default"
 #define AGS_LV2_PRESET_TEST_FIND_PRESET_LABEL_BRIGHT "Bright"

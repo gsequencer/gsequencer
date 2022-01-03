@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1763,7 +1763,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 	}
 #else
 	logo_filename = g_strdup_printf("%s/%s",
-					DESTDIR,
+					AGS_DATA_DIR,
 					"/gsequencer/images/ags.png");
 #endif
       }else{
