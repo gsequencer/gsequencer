@@ -82,7 +82,7 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
     
 //      NSUInteger masks = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskTexturedBackground;
       //    [ns_window setStyleMask:masks];
-      ns_window->styleMask |= NSWindowStyleMaskResizable;
+      ns_window.styleMask |= NSWindowStyleMaskResizable;
 
       gint32 width = ags_vst_view_rect_get_width(view_rect);
       gint32 height = ags_vst_view_rect_get_height(view_rect);
