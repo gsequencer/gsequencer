@@ -47,6 +47,9 @@ G_BEGIN_DECLS
 #define AGS_LIVE_LV2_BRIDGE_DEFAULT_VERSION "0.4.3"
 #define AGS_LIVE_LV2_BRIDGE_DEFAULT_BUILD_ID "CEST 13-05-2015 13:40"
 
+#define AGS_LIVE_LV2_BRIDGE_BLOCK_CONTROL_LV2UI "lv2ui"
+#define AGS_LIVE_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE "bridge"
+
 typedef struct _AgsLiveLv2Bridge AgsLiveLv2Bridge;
 typedef struct _AgsLiveLv2BridgeClass AgsLiveLv2BridgeClass;
 
@@ -117,6 +120,8 @@ struct _AgsLiveLv2Bridge
   GtkWidget *ui_widget;
 
   GtkWidget *lv2_window;
+
+  GHashTable *block_control;
 };
 
 struct _AgsLiveLv2BridgeClass

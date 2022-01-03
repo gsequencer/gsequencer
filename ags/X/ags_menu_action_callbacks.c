@@ -123,9 +123,7 @@ void
 ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
     AgsApplicationContext *application_context;
-#endif
     
     char *filename;
     gchar *str;
@@ -135,28 +133,23 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
     
     GError *error;
 
+    application_context = ags_application_context_get_instance();
+
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     error = NULL;
 
 #if defined(AGS_W32API)
-    application_context = ags_application_context_get_instance();
+    app_dir = g_path_get_dirname(application_context->argv[0]);
 
-    if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
-    }else{
-      app_dir = NULL;
-    }
-  
     if(g_path_is_absolute(app_dir)){
-      str = g_strdup_printf("%s\\gsequencer.exe --filename %s",
-			    app_dir,
+      str = g_strdup_printf("%s --filename %s",
+			    application_context->argv[0],
 			    filename);
     }else{
-      str = g_strdup_printf("%s\\%s\\gsequencer.exe --filename %s",
+      str = g_strdup_printf("%s\\%s --filename %s",
 			    g_get_current_dir(),
-			    app_dir,
+			    application_context->argv[0],
 			    filename);
     }
     
@@ -183,27 +176,22 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 		    &si,
 		    &pi);
     }
+
+    g_free(str);
 #else
 #if defined(AGS_OSXAPI)
-    application_context = ags_application_context_get_instance();
-
-    if(strlen(application_context->argv[0]) > strlen("GSequencer-bin")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("GSequencer-bin"));
-    }else{
-      app_dir = NULL;
-    }
+    app_dir = g_path_get_dirname(application_context->argv[0]);
   
     if(g_path_is_absolute(app_dir)){
-      str = g_strdup_printf("%s%s %s",
-			    app_dir,
-			    "GSequencer --filename",
+      str = g_strdup_printf("%s %s %s",
+			    application_context->argv[0],
+			    "--filename",
 			    filename);
     }else{
-      str = g_strdup_printf("%s/%s%s %s",
+      str = g_strdup_printf("%s/%s %s %s",
 			    g_get_current_dir(),
-			    app_dir,
-			    "GSequencer --filename",
+			    application_context->argv[0],
+			    "--filename",
 			    filename);
     }
     
@@ -217,8 +205,11 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
       g_error_free(error);
     }    
+
+    g_free(str);
 #else
-    str = g_strdup_printf("gsequencer --filename %s",
+    str = g_strdup_printf("%s --filename %s",
+			  application_context->argv[0],
 			  filename);
 
     g_spawn_command_line_async(str,
@@ -229,11 +220,12 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
       g_error_free(error);
     }
+
+    g_free(str);
 #endif    
 #endif    
     
     g_free(filename);
-    g_free(str);
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);

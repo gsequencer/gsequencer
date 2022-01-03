@@ -44,6 +44,9 @@ G_BEGIN_DECLS
 #define AGS_LIVE_VST3_BRIDGE_DEFAULT_VERSION "3.10.5"
 #define AGS_LIVE_VST3_BRIDGE_DEFAULT_BUILD_ID "Fri Aug 27 16:44:29 CEST 2021"
 
+#define AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI "vst3-ui"
+#define AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE "bridge"
+
 typedef struct _AgsLiveVst3Bridge AgsLiveVst3Bridge;
 typedef struct _AgsLiveVst3BridgeClass AgsLiveVst3BridgeClass;
 
@@ -107,6 +110,8 @@ struct _AgsLiveVst3Bridge
   gpointer ns_view;
   
   GtkMenu *vst3_menu;
+
+  GHashTable *block_control;
 };
 
 struct _AgsLiveVst3BridgeClass
