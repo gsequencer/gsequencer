@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,6 +49,8 @@ G_BEGIN_DECLS
 #define AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET "sheet"
 #define AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION "automation"
 #define AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE "wave"
+
+#define AGS_COMPOSITE_TOOLBAR_TOOL_PADDING (6)
 
 typedef struct _AgsCompositeToolbar AgsCompositeToolbar;
 typedef struct _AgsCompositeToolbarClass AgsCompositeToolbarClass;

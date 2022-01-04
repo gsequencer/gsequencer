@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_ladspa_browser_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -149,13 +151,13 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start(ladspa_browser->plugin,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(ladspa_browser->plugin,
 		     (GtkWidget *) ladspa_browser->filename,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->path = NULL;
 
@@ -192,13 +194,13 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start(ladspa_browser->plugin,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(ladspa_browser->plugin,
 		     (GtkWidget *) ladspa_browser->effect,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* description */
   ladspa_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -206,7 +208,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start((GtkBox *) ladspa_browser,
 		     (GtkWidget *) ladspa_browser->description,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->label =
     label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -216,7 +218,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start((GtkBox *) ladspa_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->maker = 
     label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -226,7 +228,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start((GtkBox *) ladspa_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->copyright = 
     label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -236,7 +238,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start((GtkBox *) ladspa_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
@@ -245,7 +247,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_pack_start((GtkBox *) ladspa_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   ladspa_browser->port_grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start((GtkBox *) ladspa_browser->description,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/X/ags_ladspa_browser_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -251,6 +253,10 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					"xalign", 0.0,
 					"label", str,
 					NULL);
+
+      gtk_widget_set_margin_end((GtkWidget *) label,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+  
       gtk_grid_attach(grid,
 		      (GtkWidget *) label,
 		      0, y,

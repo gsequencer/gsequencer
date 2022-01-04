@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_performance_preferences_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -138,21 +139,21 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->stream_auto_sense),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* super threaded - audio */
   performance_preferences->super_threaded_audio = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - audio"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded_audio),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* super threaded - channel */
   performance_preferences->super_threaded_channel = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - channel"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded_channel),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* thread-pool - max unused threads */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -166,7 +167,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   performance_preferences->thread_pool_max_unused_threads = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0,
 													     (gdouble) AGS_THREAD_POOL_DEFAULT_MAX_THREADS,
@@ -174,7 +175,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(performance_preferences->thread_pool_max_unused_threads),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   /* max precision */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -188,7 +189,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   performance_preferences->max_precision = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(performance_preferences->max_precision,
@@ -200,7 +201,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(performance_preferences->max_precision),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 }
 
 void

@@ -131,6 +131,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   line_member =
     drum_input_line->volume_indicator = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 								       "widget-type", AGS_TYPE_VINDICATOR,
+								       "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 								       "plugin-name", "ags-fx-peak",
 								       "specifier", "./peak[0]",
 								       "control-port", "1/1",
@@ -157,6 +158,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
     drum_input_line->volume_control = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 								     "widget-type", GTK_TYPE_SCALE,
 								     "widget-orientation", GTK_ORIENTATION_VERTICAL,
+								     "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 								     "plugin-name", "ags-fx-volume",
 								     "specifier", "./volume[0]",
 								     "control-port", "2/2",

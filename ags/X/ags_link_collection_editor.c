@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,6 +196,9 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_hexpand(label,
 			 TRUE);
   
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach((GtkGrid *) link_collection_editor,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -251,6 +254,9 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_hexpand(label,
 			 TRUE);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach((GtkGrid *) link_collection_editor,
 		  (GtkWidget *) label,
 		   0, 1,
@@ -274,6 +280,9 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_hexpand(label,
 			 TRUE);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach((GtkGrid *) link_collection_editor,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -296,6 +305,9 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 			 TRUE);
   gtk_widget_set_hexpand(label,
 			 TRUE);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach((GtkGrid *) link_collection_editor,
 		  (GtkWidget *) label,

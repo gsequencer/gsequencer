@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_osc_server_preferences.h>
 #include <ags/X/ags_osc_server_preferences_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -151,14 +152,14 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
   gtk_box_pack_start((GtkBox *) osc_server_preferences,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     2);
+		     0);
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start((GtkBox *) osc_server_preferences,
 		     (GtkWidget *) grid,
 		     FALSE, FALSE,
-		     2);
+		     0);
 
   /* auto-start */
   osc_server_preferences->auto_start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-start OSC server"));
@@ -236,6 +237,9 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, 4,
@@ -279,6 +283,9 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, 6,
@@ -308,6 +315,9 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -342,6 +352,9 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),

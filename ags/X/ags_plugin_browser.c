@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_plugin_browser_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
@@ -169,13 +170,13 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   plugin_browser->plugin_type = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) plugin_browser->plugin_type,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "lv2");

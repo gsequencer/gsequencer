@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,7 +142,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
   gtk_box_pack_start(GTK_BOX(link_editor),
 		     GTK_WIDGET(link_editor->combo),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(link_editor->combo),
@@ -158,7 +158,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
   gtk_box_pack_start(GTK_BOX(link_editor),
 		     GTK_WIDGET(link_editor->spin_button),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   link_editor->audio_file = NULL;
 

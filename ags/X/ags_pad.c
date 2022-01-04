@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -399,7 +399,10 @@ ags_pad_init(AgsPad *pad)
   pad->cols = 2;
 
   pad->expander_set = ags_expander_set_new(1, 1);
-  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, TRUE, TRUE, 0);
+  gtk_box_pack_start((GtkBox *) pad,
+		     (GtkWidget *) pad->expander_set,
+		     TRUE, TRUE,
+		     0);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
@@ -407,13 +410,22 @@ ags_pad_init(AgsPad *pad)
 
   pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G");
   gtk_toggle_button_set_active(pad->group, TRUE);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->group, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pad->group,
+		     FALSE, FALSE,
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label("M");
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->mute, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pad->mute,
+		     FALSE, FALSE,
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label("S");
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->solo, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pad->solo,
+		     FALSE, FALSE,
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   pad->play = NULL;
 }

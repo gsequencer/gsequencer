@@ -152,33 +152,33 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->home,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
   
   online_help_window->prev = (GtkButton *) gtk_button_new_from_icon_name("go-previous",
 									 GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->prev,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
   
   online_help_window->next = (GtkButton *) gtk_button_new_from_icon_name("go-next",
 									 GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->next,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
 
   label = (GtkLabel *) gtk_label_new(i18n("Place"));
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
   
   online_help_window->location = (GtkEntry *) gtk_entry_new();
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->location,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* webkit */
   start_filename = NULL;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_drum_input_pad_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_drum.h>
@@ -154,7 +155,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) drum_input_pad->open,
 		     TRUE, TRUE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* play */
   AGS_PAD(drum_input_pad)->play = 
@@ -165,7 +166,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) drum_input_pad->play,
 		     TRUE, TRUE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* bottom functions - edit */
   drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("edit"));

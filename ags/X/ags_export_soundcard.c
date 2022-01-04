@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_export_soundcard.h>
 #include <ags/X/ags_export_soundcard_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_export_window.h>
 
 #include <ags/config.h>
@@ -174,6 +175,9 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 			GTK_ALIGN_FILL);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -235,6 +239,9 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 			GTK_ALIGN_FILL);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -264,10 +271,14 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 			GTK_ALIGN_FILL);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
   gtk_widget_set_hexpand((GtkWidget *) label,
 			 TRUE);
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -293,13 +304,13 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) export_soundcard->filename,
 		     TRUE, TRUE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) export_soundcard->file_chooser_button,
 		     TRUE, TRUE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* output format */
   label = (GtkLabel *) gtk_label_new(i18n("output format"));
@@ -311,10 +322,14 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 			GTK_ALIGN_FILL);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
   gtk_widget_set_hexpand((GtkWidget *) label,
 			 TRUE);
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		   (GtkWidget *) label,

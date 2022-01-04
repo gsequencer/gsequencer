@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_server_preferences.h>
 #include <ags/X/ags_server_preferences_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -163,6 +164,9 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, 1,
@@ -186,6 +190,9 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -218,6 +225,9 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, 3,
@@ -248,6 +258,9 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),

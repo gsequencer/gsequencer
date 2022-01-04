@@ -1071,7 +1071,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       unique_id = ladspa_plugin->unique_id;
       
       g_rec_mutex_unlock(plugin_port_mutex);
-
+      
       /* add bulk member */
       plugin_name = g_strdup_printf("ladspa-%u",
 				    unique_id);
@@ -1081,6 +1081,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
@@ -1499,6 +1500,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
@@ -1996,10 +1998,11 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       control_port = g_strdup_printf("%u/%u",
 				     k + 1,
 				     port_count);
-
+      
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
@@ -2419,6 +2422,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,

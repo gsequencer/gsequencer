@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_input_editor.h>
 #include <ags/X/ags_input_editor_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
@@ -143,14 +144,14 @@ ags_input_editor_init(AgsInputEditor *input_editor)
   gtk_box_pack_start(GTK_BOX(input_editor),
 		     GTK_WIDGET(input_editor->soundcard),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* connect with line */
   input_editor->audio_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
   gtk_box_pack_start(GTK_BOX(input_editor),
 		     GTK_WIDGET(input_editor->audio_channel),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 }
 
 void

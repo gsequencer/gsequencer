@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -128,6 +128,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   line_member =
     mixer_input_line->volume_indicator = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 									"widget-type", AGS_TYPE_VINDICATOR,
+									"margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 									"plugin-name", "ags-fx-peak",
 									"specifier", "./peak[0]",
 									"control-port", "1/1",
@@ -149,6 +150,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
     mixer_input_line->volume_control = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 								      "widget-type", GTK_TYPE_SCALE,
 								      "widget-orientation", GTK_ORIENTATION_VERTICAL,
+								      "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 								      "plugin-name", "ags-fx-volume",
 								      "specifier", "./volume[0]",
 								      "control-port", "2/2",

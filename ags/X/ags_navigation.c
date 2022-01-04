@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -199,7 +199,7 @@ ags_navigation_init(AgsNavigation *navigation)
 		     FALSE, FALSE,
 		     0);
 
-  navigation->expander_image = gtk_image_new_from_icon_name("down",
+  navigation->expander_image = gtk_image_new_from_icon_name("pan-down",
 							    GTK_ICON_SIZE_LARGE_TOOLBAR);
   
   navigation->expander = (GtkToggleButton *) gtk_toggle_button_new();
@@ -207,7 +207,7 @@ ags_navigation_init(AgsNavigation *navigation)
 		      "ags-navigation-expander");
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->expander,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_container_add((GtkContainer *) navigation->expander,
 		    (GtkWidget *) navigation->expander_image);
   
@@ -215,14 +215,14 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox*) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 1000.0, 1.0);
   gtk_spin_button_set_value(navigation->bpm, 120.0);
   gtk_box_pack_start((GtkBox*) hbox,
 		     (GtkWidget *) navigation->bpm,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->current_bpm = 120.0;
 
@@ -233,7 +233,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->rewind,
 		     FALSE, FALSE,
-		     0);
+		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
 
   navigation->previous = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						    "image", (GtkWidget *) gtk_image_new_from_icon_name("media-seek-backward",
@@ -242,7 +242,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->previous,
 		     FALSE, FALSE,
-		     0);
+		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
 
   navigation->play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 						      "image", (GtkWidget *) gtk_image_new_from_icon_name("media-playback-start",
@@ -251,7 +251,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->play,
 		     FALSE, FALSE,
-		     0);
+		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
 
   navigation->stop = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						"image", (GtkWidget *) gtk_image_new_from_icon_name("media-playback-stop",
@@ -260,7 +260,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->stop,
 		     FALSE, FALSE,
-		     0);
+		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
 
   navigation->next = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						"image", (GtkWidget *) gtk_image_new_from_icon_name("media-seek-forward",
@@ -269,7 +269,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->next,
 		     FALSE, FALSE,
-		     0);
+		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
 
   navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							 "image", (GtkWidget *) gtk_image_new_from_icon_name("media-skip-forward",
@@ -278,38 +278,38 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->forward,
 		     FALSE, FALSE,
-		     0);
+		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
 
   navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("loop"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->loop,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   label = (GtkLabel *) gtk_label_new("position");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->position_time = (GtkLabel *) gtk_label_new("00:00.000");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->position_time,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->position_tact,
 		     FALSE, FALSE,
-		     2);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
 
   label = (GtkLabel *) gtk_label_new("duration");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->duration_time = (GtkLabel *) gtk_label_new(NULL);
   g_object_set(navigation->duration_time,
@@ -330,25 +330,25 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) navigation,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   label = (GtkLabel *) gtk_label_new(i18n("loop L"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->loop_left_tact,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   label = (GtkLabel *) gtk_label_new(i18n("loop R"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
   gtk_spin_button_set_value(navigation->loop_right_tact,
@@ -356,7 +356,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->loop_right_tact,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   navigation->scroll = NULL;
   /*
@@ -372,8 +372,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) navigation->exclude_sequencer,
 		     FALSE, FALSE,
-		     0);
-
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 }
 
 void
