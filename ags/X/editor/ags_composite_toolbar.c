@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1055,6 +1055,7 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->position,
 		 "label", i18n("Position"),
 		 "icon-name", "go-jump",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->position,
@@ -1072,6 +1073,7 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->edit,
 		 "label", i18n("Edit"),
 		 "icon-name", "document-edit",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->edit,
@@ -1089,6 +1091,7 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->clear,
 		 "label", i18n("Clear"),
 		 "icon-name", "edit-clear",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->clear,
@@ -1106,6 +1109,7 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->select,
 		 "label", i18n("Select"),
 		 "icon-name", "edit-select",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->select,
@@ -1240,6 +1244,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->invert,
 		 "label", i18n("Invert"),
 		 "icon-name", "object-flip-vertical",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->invert,
@@ -1258,6 +1263,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->copy,
 		 "label", i18n("Copy"),
 		 "icon-name", "edit-copy",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->copy,
@@ -1276,6 +1282,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->cut,
 		 "label", i18n("Cut"),
 		 "icon-name", "edit-cut",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->cut,
@@ -1294,6 +1301,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->paste,
 		 "label", i18n("Paste"),
 		 "icon-name", "edit-paste",
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->paste,
@@ -1450,6 +1458,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 								      NULL);
     g_object_set(composite_toolbar->menu_tool,
 		 "label", i18n("Tool"),
+		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_toolbar_insert((GtkToolbar *) composite_toolbar,
 		       (GtkWidget *) composite_toolbar->menu_tool,
@@ -1488,7 +1497,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_pack_start(box,
 		       (GtkWidget *) label,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
 
     composite_toolbar->selected_zoom = 2;
     composite_toolbar->zoom = ags_zoom_combo_box_new();
@@ -1497,7 +1506,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_pack_start(box,
 		       (GtkWidget *) composite_toolbar->zoom,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
 
     position++;
   }else if(composite_toolbar->zoom != NULL){
@@ -1525,7 +1534,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_pack_start(box,
 		       (GtkWidget *) label,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
 
     composite_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
     gtk_spin_button_set_digits(composite_toolbar->opacity, 4);
@@ -1533,7 +1542,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_pack_start(box,
 		       (GtkWidget *) composite_toolbar->opacity,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
 
     position++;
   }else if(composite_toolbar->opacity != NULL){
@@ -1565,7 +1574,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_pack_start(box,
 		       (GtkWidget *) label,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
     
     composite_toolbar->port = (GtkComboBox *) gtk_combo_box_new();
 
@@ -1598,7 +1607,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_pack_start(box,
 		       (GtkWidget *) composite_toolbar->port,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
 
     //TODO:JK: implement me
     

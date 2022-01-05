@@ -3,6 +3,19 @@ ags (3.15.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsHybridFMSynth
 
+ags (3.14.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* providing symbolic icons
+	* improved prefixing macros AGS_DOC_DIR, AGS_DATA_DIR and AGS_SRC_DIR
+	* improved make use of AGS_UI_PROVIDER_DEFAULT_PADDING and AGS_UI_PROVIDER_DEFAULT_MARGIN_END
+
+ags (3.14.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing shift piano
+	* minor improvements
+
 ags (3.14.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

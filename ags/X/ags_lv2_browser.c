@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_lv2_browser_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -158,13 +160,13 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_box_pack_start(lv2_browser->plugin,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   lv2_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(lv2_browser->plugin,
 		     (GtkWidget *) lv2_browser->filename,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   lv2_browser->path = NULL;
 
@@ -226,13 +228,13 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_box_pack_start(lv2_browser->plugin,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   lv2_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(lv2_browser->plugin,
 		     (GtkWidget *) lv2_browser->effect,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* description */
   lv2_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -251,7 +253,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_box_pack_start(lv2_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   g_free(str);
   
@@ -264,7 +266,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_box_pack_start(lv2_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   g_free(str);
 
@@ -277,7 +279,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_box_pack_start(lv2_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   g_free(str);
 
@@ -290,7 +292,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_box_pack_start(lv2_browser->description,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   g_free(str);
   

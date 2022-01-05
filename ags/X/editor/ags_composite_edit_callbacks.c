@@ -36,7 +36,7 @@ ags_composite_edit_vscrollbar_changed(GtkAdjustment *adjustment,
   gdouble upper, lower;
   gdouble page_size;
   gdouble step_increment, page_increment;
-
+  
   g_object_get(adjustment,
 	       "upper", &upper,
 	       "lower", &lower,

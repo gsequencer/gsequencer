@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_soundcard_editor.h>
 #include <ags/X/ags_soundcard_editor_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_audio_preferences.h>
 
 #include <ags/config.h>
@@ -166,6 +167,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		   GTK_WIDGET(label),
 		   0, y0,
@@ -229,6 +233,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, y0,
@@ -270,13 +277,13 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_box_pack_start((GtkBox *) soundcard_editor->port_hbox,
 		     (GtkWidget *) soundcard_editor->add_port,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   soundcard_editor->remove_port = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) soundcard_editor->port_hbox,
 		     (GtkWidget *) soundcard_editor->remove_port,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   y0++;
   
@@ -290,6 +297,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -335,6 +345,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, y0,
@@ -367,6 +380,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, y0,
@@ -397,6 +413,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -429,6 +448,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -491,6 +513,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, y0,
@@ -544,6 +569,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_widget_set_halign((GtkWidget *) soundcard_editor->wasapi_share_mode_label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) soundcard_editor->wasapi_share_mode_label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(soundcard_editor->wasapi_share_mode_label),
 		  0, y0,
@@ -579,6 +607,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) soundcard_editor->wasapi_buffer_size_label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) soundcard_editor->wasapi_buffer_size_label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(soundcard_editor->wasapi_buffer_size_label),

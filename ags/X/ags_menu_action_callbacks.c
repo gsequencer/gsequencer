@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,9 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_machine_util.h>
 #include <ags/X/ags_online_help_window.h>
+
+#include <ags/X/editor/ags_composite_edit.h>
+#include <ags/X/editor/ags_composite_edit_callbacks.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -1403,16 +1406,24 @@ ags_menu_action_notation_callback(GtkWidget *menu_item, gpointer data)
        AGS_IS_LIVE_VST3_BRIDGE(machine)
 #endif
        ){
+      AgsCompositeEdit *composite_edit, *prev_composite_edit;
+      
       ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						     AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION);
-    
-      composite_editor->selected_edit = composite_editor->notation_edit;
+
+      prev_composite_edit = composite_editor->selected_edit;
+      
+      composite_edit = 
+	composite_editor->selected_edit = composite_editor->notation_edit;
       
       gtk_widget_show_all(composite_editor->notation_edit);
       gtk_widget_hide(composite_editor->sheet_edit);
       gtk_widget_hide(composite_editor->automation_edit);
       gtk_widget_hide(composite_editor->wave_edit);
-
+      
+      /* shift piano */
+      composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
+      
       gtk_widget_show(composite_editor->machine_selector->shift_piano);
     }
   }
@@ -1434,6 +1445,7 @@ ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data)
   
   if(use_composite_editor){
     AgsCompositeEditor *composite_editor;
+    AgsCompositeEdit *composite_edit, *prev_composite_edit;
     AgsMachine *machine;
 
     composite_editor = window->composite_editor;
@@ -1442,13 +1454,19 @@ ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data)
     
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
+
+    prev_composite_edit = composite_editor->selected_edit;      
     
-    composite_editor->selected_edit = composite_editor->automation_edit;
+    composite_edit = 
+      composite_editor->selected_edit = composite_editor->automation_edit;
     
     gtk_widget_hide(composite_editor->notation_edit);
     gtk_widget_hide(composite_editor->sheet_edit);
     gtk_widget_show_all(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
+    
+    /* shift piano */
+    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
 
     gtk_widget_hide(composite_editor->machine_selector->shift_piano);
   }else{  
@@ -1472,9 +1490,14 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
   
   if(use_composite_editor){
     AgsCompositeEditor *composite_editor;
+    AgsCompositeEdit *composite_edit, *prev_composite_edit;
     AgsMachine *machine;
 
     composite_editor = window->composite_editor;
+
+    prev_composite_edit = composite_editor->selected_edit;      
+    
+    composite_edit = composite_editor->wave_edit;
 
     machine = composite_editor->selected_machine;
 
@@ -1498,6 +1521,9 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
       gtk_widget_hide(composite_editor->automation_edit);
       gtk_widget_show_all(composite_editor->wave_edit);
 
+      /* shift piano */
+      composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+      
       gtk_widget_hide(composite_editor->machine_selector->shift_piano);
 
       start_wave_edit = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
@@ -1737,7 +1763,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 	}
 #else
 	logo_filename = g_strdup_printf("%s/%s",
-					DESTDIR,
+					AGS_DATA_DIR,
 					"/gsequencer/images/ags.png");
 #endif
       }else{

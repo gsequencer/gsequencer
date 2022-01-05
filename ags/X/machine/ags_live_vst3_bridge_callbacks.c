@@ -82,7 +82,7 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
     
 //      NSUInteger masks = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskTexturedBackground;
       //    [ns_window setStyleMask:masks];
-      ns_window->styleMask |= NSWindowStyleMaskResizable;
+      ns_window.styleMask |= NSWindowStyleMaskResizable;
 
       gint32 width = ags_vst_view_rect_get_width(view_rect);
       gint32 height = ags_vst_view_rect_get_height(view_rect);
@@ -257,10 +257,12 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 
       if((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, child_widget)) == NULL ||
 	 !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI) == FALSE){
-	g_hash_table_insert(live_vst3_bridge->block_control,
-			    child_widget,
-			    AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI);
-  
+	if(block_scope == NULL){
+	  g_hash_table_insert(live_vst3_bridge->block_control,
+			      child_widget,
+			      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI);
+	}
+	
 	if(AGS_IS_DIAL(child_widget)){
 	  ags_dial_set_value((AgsDial *) child_widget,
 			     value);
@@ -278,9 +280,11 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 	  gtk_button_clicked((GtkButton *) child_widget);
 	}
 
-	g_hash_table_insert(live_vst3_bridge->block_control,
-			    child_widget,
-			    NULL);
+	if(block_scope == NULL){
+	  g_hash_table_insert(live_vst3_bridge->block_control,
+			      child_widget,
+			      NULL);
+	}
       }
       
       break;
@@ -297,6 +301,14 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   g_free(specifier);
   
   return(0);
+}
+
+AgsVstTResult
+ags_live_vst3_bridge_restart_component_callback(AgsVstIComponentHandler *icomponent_handler, guint32 flags, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  if((AGS_VST_KPARAM_VALUES_CHANGED & (flags)) != 0){
+    ags_live_vst3_bridge_reload_port(live_vst3_bridge);
+  }
 }
 
 void
@@ -342,10 +354,12 @@ ags_live_vst3_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveVst3Bridge *l
 									param_id,
 									val);
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      dial,
-		      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			dial,
+			AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
+  
   if(live_vst3_bridge->iedit_controller_host_editing != NULL){
     ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
 							       param_id);
@@ -360,10 +374,12 @@ ags_live_vst3_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveVst3Bridge *l
 							     param_id);
   }
 
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      dial,
-		      NULL);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			dial,
+			NULL);
+  }
+  
   ags_vst_parameter_info_free(info);
 }
 
@@ -411,10 +427,12 @@ ags_live_vst3_bridge_scale_changed_callback(GtkWidget *scale, AgsLiveVst3Bridge 
 									param_id,
 									val);
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      scale,
-		      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			scale,
+			AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
+  
   if(live_vst3_bridge->iedit_controller_host_editing != NULL){
     ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
 							       param_id);
@@ -429,10 +447,12 @@ ags_live_vst3_bridge_scale_changed_callback(GtkWidget *scale, AgsLiveVst3Bridge 
 							     param_id);
   }
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      scale,
-		      NULL);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			scale,
+			NULL);
+  }
+  
   ags_vst_parameter_info_free(info);
 }
 
@@ -480,10 +500,12 @@ ags_live_vst3_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLiv
 									param_id,
 									val);
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      spin_button,
-		      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			spin_button,
+			AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
+  
   if(live_vst3_bridge->iedit_controller_host_editing != NULL){
     ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
 							       param_id);
@@ -498,10 +520,12 @@ ags_live_vst3_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLiv
 							     param_id);
   }
     
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      spin_button,
-		      NULL);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			spin_button,
+			NULL);
+  }
+  
   ags_vst_parameter_info_free(info);
 }
 
@@ -546,10 +570,12 @@ ags_live_vst3_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsL
 									param_id,
 									val);
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      check_button,
-		      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			check_button,
+			AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
+  
   if(live_vst3_bridge->iedit_controller_host_editing != NULL){
     ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
 							       param_id);
@@ -564,10 +590,12 @@ ags_live_vst3_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsL
 							     param_id);
   }
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      check_button,
-		      NULL);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			check_button,
+			NULL);
+  }
+  
   ags_vst_parameter_info_free(info);
 }
 
@@ -611,10 +639,12 @@ ags_live_vst3_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, Ag
 									param_id,
 									val);
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      toggle_button,
-		      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			toggle_button,
+			AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
+  
   if(live_vst3_bridge->iedit_controller_host_editing != NULL){
     ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
 							       param_id);
@@ -629,10 +659,12 @@ ags_live_vst3_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, Ag
 							     param_id);
   }
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      toggle_button,
-		      NULL);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			toggle_button,
+			NULL);
+  }
+  
   ags_vst_parameter_info_free(info);
 }
 
@@ -674,10 +706,12 @@ ags_live_vst3_bridge_button_clicked_callback(GtkWidget *button, AgsLiveVst3Bridg
 									param_id,
 									val);
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      button,
-		      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			button,
+			AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
+  
   if(live_vst3_bridge->iedit_controller_host_editing != NULL){
     ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
 							       param_id);
@@ -692,9 +726,11 @@ ags_live_vst3_bridge_button_clicked_callback(GtkWidget *button, AgsLiveVst3Bridg
 							     param_id);
   }
   
-  g_hash_table_insert(live_vst3_bridge->block_control,
-		      button,
-		      NULL);
-
+  if(block_scope == NULL){
+    g_hash_table_insert(live_vst3_bridge->block_control,
+			button,
+			NULL);
+  }
+  
   ags_vst_parameter_info_free(info);
 }

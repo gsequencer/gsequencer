@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,6 +146,9 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, 0,
@@ -171,6 +174,9 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		   GTK_WIDGET(label),
 		   0, 1,
@@ -195,6 +201,9 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		   GTK_WIDGET(label),

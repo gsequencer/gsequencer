@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/X/ags_quit_dialog.h>
 #include <ags/X/ags_quit_dialog_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 
@@ -141,7 +143,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) quit_dialog->accept_all,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
   
@@ -149,7 +151,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) quit_dialog->question,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   quit_dialog->nth_wave_export_machine = 0;
 

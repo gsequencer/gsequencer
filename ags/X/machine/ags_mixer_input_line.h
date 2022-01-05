@@ -30,6 +30,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_line.h>
+#include <ags/X/ags_line_member.h>
 
 G_BEGIN_DECLS
 
@@ -46,6 +47,9 @@ typedef struct _AgsMixerInputLineClass AgsMixerInputLineClass;
 struct _AgsMixerInputLine
 {
   AgsLine line;
+
+  AgsLineMember *volume_indicator;
+  AgsLineMember *volume_control;
 };
 
 struct _AgsMixerInputLineClass

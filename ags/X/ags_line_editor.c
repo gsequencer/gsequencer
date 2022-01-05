@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_line_editor_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 #include <ags/i18n.h>
 

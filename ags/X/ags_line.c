@@ -574,14 +574,14 @@ ags_line_init(AgsLine *line)
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->label),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("group"));
   gtk_toggle_button_set_active(line->group, TRUE);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->group),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   line->expander = ags_expander_new(1,
 				    1);
@@ -1366,6 +1366,7 @@ ags_line_add_ladspa_plugin(AgsLine *line,
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
@@ -2060,6 +2061,7 @@ ags_line_add_lv2_plugin(AgsLine *line,
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
@@ -2666,6 +2668,7 @@ ags_line_add_vst3_plugin(AgsLine *line,
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 						   "play-container", play_container,
 						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,

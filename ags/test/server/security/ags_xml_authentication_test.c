@@ -51,7 +51,7 @@ void ags_xml_authentication_test_find_user_uuid();
 #define AGS_XML_AUTHENTICATION_TEST_IS_SESSION_ACTIVE_DEFAULT_LOGIN "ags-test-user"
 #define AGS_XML_AUTHENTICATION_TEST_IS_SESSION_ACTIVE_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
 
-#define AGS_XML_AUTHENTICATION_TEST_OPEN_FILENAME SRCDIR "/" "ags_authentication_test.xml"
+#define AGS_XML_AUTHENTICATION_TEST_OPEN_FILENAME AGS_SRC_DIR "/" "ags_authentication_test.xml"
 
 AgsServerApplicationContext *server_application_context;
 

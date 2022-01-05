@@ -240,7 +240,7 @@ main(int argc, char **argv)
   if(getenv("GTK_THEME") == NULL){
     putenv(g_strdup("GTK_THEME=Blue-Submarine"));
   }
-
+  
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/lib/gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/libexec/gstreamer-1.0/gst-plugin-scanner", app_dir));
 
@@ -425,7 +425,7 @@ main(int argc, char **argv)
 #else
       if((css_filename = getenv("AGS_CSS_FILENAME")) == NULL){
 	css_filename = g_strdup_printf("%s%s",
-				       DESTDIR,
+				       AGS_DATA_DIR,
 				       "/gsequencer/styles/ags.css");
       }else{
 	css_filename = g_strdup(css_filename);

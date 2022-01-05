@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_midi_dialog.h>
 #include <ags/X/ags_midi_dialog_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/i18n.h>
@@ -205,7 +206,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) label,
   		     FALSE, FALSE,
-  		     0);
+  		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   midi_dialog->midi_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 15.0, 1.0);
   gtk_box_pack_start(hbox,
@@ -258,6 +259,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		   0, 0,
@@ -292,6 +296,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
   
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		   0, 1,
@@ -319,6 +326,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -353,6 +363,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -401,6 +414,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   gtk_widget_set_vexpand((GtkWidget *) label,
 			 TRUE);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,

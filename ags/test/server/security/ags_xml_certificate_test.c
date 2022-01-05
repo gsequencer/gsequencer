@@ -79,7 +79,7 @@ void ags_xml_certificate_test_open_filename();
 #define AGS_XML_CERTIFICATE_TEST_GET_PRIVATE_KEY_FILE_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
 #define AGS_XML_CERTIFICATE_TEST_GET_PRIVATE_KEY_FILE_DEFAULT_CERT_UUID "ags-test-cert-uuid"
 
-#define AGS_XML_CERTIFICATE_TEST_OPEN_FILENAME SRCDIR "/" "ags_certificate_test.xml"
+#define AGS_XML_CERTIFICATE_TEST_OPEN_FILENAME AGS_SRC_DIR "/" "ags_certificate_test.xml"
 
 AgsServerApplicationContext *server_application_context;
 

@@ -252,7 +252,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -262,7 +262,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* machine type */
   track_collection_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
