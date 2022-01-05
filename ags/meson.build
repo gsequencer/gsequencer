@@ -29,9 +29,9 @@ define_int_template = '-D@0@=@1@'
 define_str_template = '-D@0@="@1@"'
 # TODO: this is needed only by plugin
 
-add_project_arguments(define_str_template.format('DESTDIR', gsequencer_datadir),
+add_project_arguments(define_str_template.format('AGS_DATA_DIR', gsequencer_datadir),
                       language:'c')
-add_project_arguments(define_str_template.format('DOCDIR', gsequencer_docdir),
+add_project_arguments(define_str_template.format('AGS_DOC_DIR', gsequencer_docdir),
                       language:'c')
 add_project_arguments(define_str_template.format('PACKAGE',
                                              'gsequencer'),
