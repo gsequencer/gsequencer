@@ -18,6 +18,15 @@
  */
 
 #include <ags/audio/ags_noise_util.h>
+
+#include <ags/audio/ags_audio_buffer_util.h>
+
+#if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#include <Accelerate/Accelerate.h>
+#endif
+
+#include <stdlib.h>
+
 /**
  * SECTION:ags_noise_util
  * @short_description: noise util
@@ -554,7 +563,201 @@ ags_noise_util_set_frequency(AgsNoiseUtil *noise_util,
 void
 ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  guint mode;
+  gdouble volume;
+  gdouble frequency;
+  guint i, i_stop;
+  
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
+  destination = noise_util->destination;
+  destination_stride = noise_util->destination_stride;
+
+  source = noise_util->source;
+  source_stride = noise_util->source_stride;
+
+  buffer_length = noise_util->buffer_length;
+  samplerate = noise_util->samplerate;
+
+  mode = noise_util->mode;
+
+  volume = noise_util->volume;
+
+  frequency = noise_util->frequency;
+
+  i = 0;
+  i_stop = buffer_length - (buffer_length % 8);
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  for(; i < i_stop;){
+    switch(mode){
+    case AGS_NOISE_UTIL_WHITE_NOISE:
+    {
+      ags_v8double v_buffer;
+      ags_v8double v_rand;
+
+      v_buffer = (ags_v8double) {
+	(gdouble) *(source),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride)
+      };
+
+      source += source_stride;
+
+      v_rand = (ags_v8double) {      
+	(gdouble) rand(),
+	(gdouble) rand(),
+	(gdouble) rand(),
+	(gdouble) rand(),
+	(gdouble) rand(),
+	(gdouble) rand(),
+	(gdouble) rand(),
+	(gdouble) rand()
+      };
+
+      v_rand *= (1.0 / (gdouble) RAND_MAX);      
+      v_rand *= volume;
+      
+      v_buffer += v_rand();
+      
+      *(destination) = (gint8) v_buffer[0];
+      *(destination += destination_stride) = (gint8) v_buffer[1];
+      *(destination += destination_stride) = (gint8) v_buffer[2];
+      *(destination += destination_stride) = (gint8) v_buffer[3];
+      *(destination += destination_stride) = (gint8) v_buffer[4];
+      *(destination += destination_stride) = (gint8) v_buffer[5];
+      *(destination += destination_stride) = (gint8) v_buffer[6];
+      *(destination += destination_stride) = (gint8) v_buffer[7];
+      
+      destination += destination_stride;
+      i += 8;
+    }
+    break;
+    case AGS_NOISE_UTIL_PINK_NOISE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
+  for(; i < i_stop;){
+    switch(mode){
+    case AGS_NOISE_UTIL_WHITE_NOISE:
+    {
+      double ret_v_buffer[8];
+      double ret_v_rand[8];
+      double ret_ret_v_rand[8];
+
+      double v_buffer[] = {
+	(double) *(source),
+	(double) *(source += volume_util->source_stride),
+	(double) *(source += volume_util->source_stride),
+	(double) *(source += volume_util->source_stride),
+	(double) *(source += volume_util->source_stride),
+	(double) *(source += volume_util->source_stride),
+	(double) *(source += volume_util->source_stride),
+	(double) *(source += volume_util->source_stride)};
+      
+      double v_rand[] = {
+	(double) rand(),
+	(double) rand(),
+	(double) rand(),
+	(double) rand(),
+	(double) rand(),
+	(double) rand(),
+	(double) rand(),
+	(double) rand()};
+
+      double v_rand_max[] = {1.0 / (double) RAND_MAX};
+      double v_volume[] = {(double) volume};
+
+      source += source_stride;
+
+      vDSP_vmulD(v_rand, 1, v_rand_max, 0, ret_v_rand, 1, 8);
+      vDSP_vmulD(ret_v_rand, 1, v_volume, 0, ret_ret_v_rand, 1, 8);
+
+      vDSP_vaddD(v_source, 1, ret_ret_v_rand, 1, ret_v_buffer, 1, 8);
+
+      *(destination) = (gint8) ret_v_buffer[0];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[1];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[2];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[3];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[4];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[5];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[6];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[7];
+
+      destination += destination_stride;
+      i += 8;
+    }
+    break;
+    case AGS_NOISE_UTIL_PINK_NOISE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    }
+  }
+#else
+  for(; i < i_stop;){
+    switch(mode){
+    case AGS_NOISE_UTIL_WHITE_NOISE:
+    {
+      *(destination) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + source[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+
+      destination += destination_stride;
+      source += source_stride;
+      i += 8;
+    }
+    break;
+    case AGS_NOISE_UTIL_PINK_NOISE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    }
+  }
+#endif  
+  
+  switch(mode){
+  case AGS_NOISE_UTIL_WHITE_NOISE:
+  {
+    for(; i < buffer_length; i++){
+      destination[0] = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + source[0];
+
+      destination += destination_stride;
+      source += source_stride;
+    }
+  }
+  break;
+  case AGS_NOISE_UTIL_PINK_NOISE:
+  {
+    //TODO:JK: implement me
+  }
+  break;
+  }
 }
 
 /**
@@ -568,6 +771,12 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_s16(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -582,6 +791,12 @@ ags_noise_util_compute_s16(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_s24(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -596,6 +811,12 @@ ags_noise_util_compute_s24(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_s32(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -610,6 +831,12 @@ ags_noise_util_compute_s32(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_s64(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -624,6 +851,12 @@ ags_noise_util_compute_s64(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_float(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -638,6 +871,12 @@ ags_noise_util_compute_float(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_double(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -652,6 +891,12 @@ ags_noise_util_compute_double(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute_complex(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -666,6 +911,11 @@ ags_noise_util_compute_complex(AgsNoiseUtil *noise_util)
 void
 ags_noise_util_compute(AgsNoiseUtil *noise_util)
 {
+  if(noise_util == NULL ||
+     noise_util->destination == NULL ||
+     noise_util->source == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
-
