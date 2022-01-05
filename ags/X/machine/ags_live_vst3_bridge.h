@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,7 +102,8 @@ struct _AgsLiveVst3Bridge
 
   AgsVstComponentHandler *icomponent_handler;
 
-  int peform_edit_handler;
+  int perform_edit_handler;
+  int restart_component_handler;
   
   AgsVstIPlugView *iplug_view;
 
