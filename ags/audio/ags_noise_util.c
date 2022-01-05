@@ -17,6 +17,32 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* pink_sh.cpp
+ *
+ * A sample-and-hold pink noise generator.
+ *
+ * (c) 2002 Nathaniel Virgo
+ *
+ * Part of the Computer Music Toolkit - a library of LADSPA plugins. 
+ * The Computer Music Toolkit is Copyright (C) 2000-2002 
+ * Richard W.E. Furse.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public Licence as
+ * published by the Free Software Foundation; either version 2 of the
+ * Licence, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
 #include <ags/audio/ags_noise_util.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -26,6 +52,7 @@
 #endif
 
 #include <stdlib.h>
+#include <math.h>
 
 /**
  * SECTION:ags_noise_util
@@ -78,6 +105,8 @@ ags_noise_util_alloc()
 
   ptr->destination = NULL;
   ptr->destination_stride = 1;
+
+  ptr->noise = NULL;
   
   ptr->buffer_length = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -88,6 +117,9 @@ ags_noise_util_alloc()
   ptr->volume = 0.0;
 
   ptr->frequency = AGS_NOISE_UTIL_DEFAULT_FREQUENCY;
+
+  ptr->frame_count = 0;
+  ptr->offset = 0;
 
   return(ptr);
 }
@@ -126,6 +158,9 @@ ags_noise_util_copy(AgsNoiseUtil *ptr)
 
   new_ptr->frequency = ptr->frequency;
 
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+  
   return(new_ptr);
 }
 
@@ -145,9 +180,6 @@ ags_noise_util_free(AgsNoiseUtil *ptr)
   if(ptr->destination != ptr->source){
     g_free(ptr->source);
   }
-
-  g_free(ptr->low_mix_buffer);
-  g_free(ptr->new_mix_buffer);
   
   g_free(ptr);
 }
@@ -553,6 +585,86 @@ ags_noise_util_set_frequency(AgsNoiseUtil *noise_util,
 }
 
 /**
+ * ags_noise_util_get_frame_count:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * 
+ * Get frame count of @noise_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 3.15.0
+ */
+guint
+ags_noise_util_get_frame_count(AgsNoiseUtil *noise_util)
+{
+  if(noise_util == NULL){
+    return(0);
+  }
+
+  return(noise_util->frame_count);
+}
+
+/**
+ * ags_noise_util_set_frame_count:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @noise_util.
+ *
+ * Since: 3.15.0
+ */
+void
+ags_noise_util_set_frame_count(AgsNoiseUtil *noise_util,
+			       guint frame_count)
+{
+  if(noise_util == NULL){
+    return;
+  }
+
+  noise_util->frame_count = frame_count;
+}
+
+/**
+ * ags_noise_util_get_offset:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * 
+ * Get offset of @noise_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 3.15.0
+ */
+guint
+ags_noise_util_get_offset(AgsNoiseUtil *noise_util)
+{
+  if(noise_util == NULL){
+    return(0);
+  }
+
+  return(noise_util->offset);
+}
+
+/**
+ * ags_noise_util_set_offset:
+ * @noise_util: the #AgsNoiseUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @noise_util.
+ *
+ * Since: 3.15.0
+ */
+void
+ags_noise_util_set_offset(AgsNoiseUtil *noise_util,
+			  guint offset)
+{
+  if(noise_util == NULL){
+    return;
+  }
+
+  noise_util->offset = offset;
+}
+
+/**
  * ags_noise_util_compute_s8:
  * @noise_util: the #AgsNoiseUtil-struct
  * 
@@ -564,14 +676,25 @@ void
 ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 {
   gint8 *destination, *source;
-
+  gint8 *noise;
+  gdouble current_noise[8];
+  
   guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   guint mode;
   gdouble volume;
-  gdouble frequency;
+  gdouble frequency;    
   guint i, i_stop;
+  gdouble last_value;
+  guint counter;
+  guint remain;
+  guint jump_samples;
+  guint j;
+  guint k;
+    
+  const int n_generators = 8 * sizeof(guint);
+  const gdouble scale = 127.0;
   
   if(noise_util == NULL ||
      noise_util->destination == NULL ||
@@ -585,6 +708,8 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
   source = noise_util->source;
   source_stride = noise_util->source_stride;
 
+  noise = noise_util->noise;
+
   buffer_length = noise_util->buffer_length;
   samplerate = noise_util->samplerate;
 
@@ -596,12 +721,18 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 
   i = 0;
   i_stop = buffer_length - (buffer_length % 8);
+
+  memset(current_noise, 0, 8 * sizeof(gdouble));
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
-  for(; i < i_stop;){
-    switch(mode){
-    case AGS_NOISE_UTIL_WHITE_NOISE:
-    {
+  switch(mode){
+  case AGS_NOISE_UTIL_WHITE_NOISE:
+  {
+    gdouble factor;
+
+    factor = volume * 2.0 / (gdouble) RAND_MAX;
+    
+    for(; i < i_stop;){
       ags_v8double v_buffer;
       ags_v8double v_rand;
 
@@ -629,10 +760,14 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 	(gdouble) rand()
       };
 
-      v_rand *= (1.0 / (gdouble) RAND_MAX);      
+      v_rand /= (gdouble) RAND_MAX;
+      v_rand *= 2.0;
       v_rand *= volume;
+      v_rand -= volume;
       
-      v_buffer += v_rand();
+      v_rand *= scale;
+      
+      v_buffer += v_rand;
       
       *(destination) = (gint8) v_buffer[0];
       *(destination += destination_stride) = (gint8) v_buffer[1];
@@ -646,32 +781,116 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
       destination += destination_stride;
       i += 8;
     }
-    break;
-    case AGS_NOISE_UTIL_PINK_NOISE:
-    {
-      //TODO:JK: implement me
-    }
-    break;
+  }
+  break;
+  case AGS_NOISE_UTIL_PINK_NOISE:
+  {
+    frequency = (frequency <= (gdouble) samplerate) ? frequency : (gdouble) samplerate;
+  
+    /* compute noise */
+    AGS_NOISE_UTIL_RESET(current_noise, (&last_value));
+
+    j = 0;
+    
+    counter = 0;
+    remain = buffer_length;
+    
+    for(; i < i_stop;){
+      ags_v8double v_buffer;
+      ags_v8double v_noise;
+
+      gint position;
+
+      v_buffer = (ags_v8double) {
+	(gdouble) *(source),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride),
+	(gdouble) *(source += source_stride)
+      };
+
+      source += source_stride;
+
+      /* pink noise */
+      for(k = 0; k < 8; k++){
+	if(frequency > 0.0){
+	  if(remain != 0){
+	    jump_samples = (remain < counter) ? remain : counter;
+	  
+	    if(j < jump_samples){
+	      current_noise[k] = scale * (last_value / n_generators);
+	      j++;
+	    }
+
+	    if(j == jump_samples){
+	      counter -= jump_samples;
+	      remain -= jump_samples;
+
+	      if(counter == 0){
+		AGS_NOISE_UTIL_GET_VALUE((&last_value), current_noise, (&counter), (&last_value));
+	      
+		counter = (guint) floor(samplerate / frequency);
+	      }
+	    }                  
+	  }
+	}else{
+	  current_noise[k] = scale * (last_value / n_generators);
+	}
+      }
+      
+      v_noise = (ags_v8double) {
+	(gdouble) *(current_noise),
+	(gdouble) *(current_noise + 1),
+	(gdouble) *(current_noise + 2),
+	(gdouble) *(current_noise + 3),
+	(gdouble) *(current_noise + 4),
+	(gdouble) *(current_noise + 5),
+	(gdouble) *(current_noise + 6),
+	(gdouble) *(current_noise + 7)
+      };
+      
+      v_buffer += v_noise;
+      
+      *(destination) = (gint8) v_buffer[0];
+      *(destination += destination_stride) = (gint8) v_buffer[1];
+      *(destination += destination_stride) = (gint8) v_buffer[2];
+      *(destination += destination_stride) = (gint8) v_buffer[3];
+      *(destination += destination_stride) = (gint8) v_buffer[4];
+      *(destination += destination_stride) = (gint8) v_buffer[5];
+      *(destination += destination_stride) = (gint8) v_buffer[6];
+      *(destination += destination_stride) = (gint8) v_buffer[7];
+      
+      destination += destination_stride;
+      i += 8;
     }
   }
-#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
-  for(; i < i_stop;){
-    switch(mode){
-    case AGS_NOISE_UTIL_WHITE_NOISE:
-    {
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  switch(mode){
+  case AGS_NOISE_UTIL_WHITE_NOISE:
+  {
+    gdouble noise[8 * sizeof(guint)];
+    gdouble factor;
+
+    factor = volume * 2.0 / (gdouble) RAND_MAX;
+    
+    for(; i < i_stop;){
       double ret_v_buffer[8];
       double ret_v_rand[8];
-      double ret_ret_v_rand[8];
-
+      double tmp0_v_rand[8];
+      
       double v_buffer[] = {
 	(double) *(source),
-	(double) *(source += volume_util->source_stride),
-	(double) *(source += volume_util->source_stride),
-	(double) *(source += volume_util->source_stride),
-	(double) *(source += volume_util->source_stride),
-	(double) *(source += volume_util->source_stride),
-	(double) *(source += volume_util->source_stride),
-	(double) *(source += volume_util->source_stride)};
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride)};      
       
       double v_rand[] = {
 	(double) rand(),
@@ -683,15 +902,15 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 	(double) rand(),
 	(double) rand()};
 
-      double v_rand_max[] = {1.0 / (double) RAND_MAX};
+      double v_factor[] = { volume * 2.0 / (double) RAND_MAX};
       double v_volume[] = {(double) volume};
 
       source += source_stride;
 
-      vDSP_vmulD(v_rand, 1, v_rand_max, 0, ret_v_rand, 1, 8);
-      vDSP_vmulD(ret_v_rand, 1, v_volume, 0, ret_ret_v_rand, 1, 8);
+      vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
+      vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gint8) ret_v_buffer[0];
       *(destination += destination_stride) = (gint8) ret_v_buffer[1];
@@ -705,48 +924,171 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
       destination += destination_stride;
       i += 8;
     }
-    break;
-    case AGS_NOISE_UTIL_PINK_NOISE:
-    {
-      //TODO:JK: implement me
-    }
-    break;
+  }    
+  break;
+  case AGS_NOISE_UTIL_PINK_NOISE:
+  {
+    double current_noise[8];
+    
+    frequency = (frequency <= (gdouble) samplerate) ? frequency : (gdouble) samplerate;
+  
+    /* compute noise */
+    AGS_NOISE_UTIL_RESET(current_noise, &last_value);
+
+    j = 0;
+    
+    counter = 0;
+    remain = buffer_length;
+    
+    for(; i < i_stop;){
+      double ret_v_buffer[8];
+      
+      double v_buffer[] = {
+	(double) *(source),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride),
+	(double) *(source += source_stride)};
+
+      source += source_stride;
+
+      /* pink noise */
+      for(k = 0; k < 8; k++){
+	if(frequency > 0.0){
+	  if(remain != 0){
+	    jump_samples = (remain < counter) ? remain : counter;
+	  
+	    if(j < jump_samples){
+	      current_noise[k] = scale * (last_value / n_generators);
+	      j++;
+	    }
+
+	    if(j == jump_samples){
+	      counter -= jump_samples;
+	      remain -= jump_samples;
+
+	      if(counter == 0){
+		AGS_NOISE_UTIL_GET_VALUE((&last_value), current_noise, (&counter), (&last_value));
+	      
+		counter = (guint) floor(samplerate / frequency);
+	      }
+	    }                  
+	  }
+	}else{
+	  current_noise[k] = scale * (last_value / n_generators);
+	}
+      }
+
+      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      
+      *(destination) = (gint8) ret_v_buffer[0];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[1];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[2];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[3];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[4];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[5];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[6];
+      *(destination += destination_stride) = (gint8) ret_v_buffer[7];
+
+      destination += destination_stride;
+      i += 8;
     }
   }
+  }
 #else
-  for(; i < i_stop;){
-    switch(mode){
-    case AGS_NOISE_UTIL_WHITE_NOISE:
-    {
-      *(destination) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + source[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
-      *(destination += destination_stride) = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + (source += source_stride)[0];
+  switch(mode){
+  case AGS_NOISE_UTIL_WHITE_NOISE:
+  {
+    gdouble factor;
+
+    factor = volume * 2.0 / (gdouble) RAND_MAX;
+    
+    for(; i < i_stop;){
+      *(destination) = ((gdouble) rand() * factor - volume) + source[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
+      *(destination += destination_stride) = ((gdouble) rand() * factor - volume) + (source += source_stride)[0];
 
       destination += destination_stride;
       source += source_stride;
       i += 8;
     }
-    break;
-    case AGS_NOISE_UTIL_PINK_NOISE:
-    {
-      //TODO:JK: implement me
-    }
-    break;
+  }
+  break;
+  case AGS_NOISE_UTIL_PINK_NOISE:
+  {
+    frequency = (frequency <= (gdouble) samplerate) ? frequency : (gdouble) samplerate;
+  
+    /* compute noise */
+    AGS_NOISE_UTIL_RESET(current_noise, &last_value);
+
+    j = 0;
+    
+    counter = 0;
+    remain = buffer_length;
+    
+    for(; i < i_stop;){
+      /* pink noise */
+      for(k = 0; k < 8; k++){
+	if(frequency > 0.0){
+	  if(remain != 0){
+	    jump_samples = (remain < counter) ? remain : counter;
+	  
+	    if(j < jump_samples){
+	      current_noise[k] = scale * (last_value / n_generators);
+	      j++;
+	    }
+
+	    if(j == jump_samples){
+	      counter -= jump_samples;
+	      remain -= jump_samples;
+
+	      if(counter == 0){
+		AGS_NOISE_UTIL_GET_VALUE((&last_value), current_noise, (&counter), (&last_value));
+	      
+		counter = (guint) floor(samplerate / frequency);
+	      }
+	    }                  
+	  }
+	}else{
+	  current_noise[k] = scale * (last_value / n_generators);
+	}
+      }
+
+      *(destination) = current_noise[0] + source[0];
+      *(destination += destination_stride) = current_noise[1] + (source += source_stride)[0];
+      *(destination += destination_stride) = current_noise[2] + (source += source_stride)[0];
+      *(destination += destination_stride) = current_noise[3] + (source += source_stride)[0];
+      *(destination += destination_stride) = current_noise[4] + (source += source_stride)[0];
+      *(destination += destination_stride) = current_noise[5] + (source += source_stride)[0];
+      *(destination += destination_stride) = current_noise[6] + (source += source_stride)[0];
+      *(destination += destination_stride) = current_noise[7] + (source += source_stride)[0];
+
+      destination += destination_stride;
+      source += source_stride;
+      i += 8;
     }
   }
-#endif  
+  }
+#endif
   
   switch(mode){
   case AGS_NOISE_UTIL_WHITE_NOISE:
   {
-    for(; i < buffer_length; i++){
-      destination[0] = (volume * ((gdouble) rand() / (gdouble) RAND_MAX)) + source[0];
+    gdouble factor;
 
+    factor = volume * 2.0 / (gdouble) RAND_MAX;
+    
+    for(; i < buffer_length; i++){
+      destination[0] = ((gdouble) rand() * factor - volume) + source[0];
+      
       destination += destination_stride;
       source += source_stride;
     }
@@ -754,9 +1096,35 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
   break;
   case AGS_NOISE_UTIL_PINK_NOISE:
   {
-    //TODO:JK: implement me
+    for(; i < buffer_length; i++){
+      /* pink noise */
+      if(frequency > 0.0){
+	if(remain != 0){
+	  jump_samples = (remain < counter) ? remain : counter;
+	  
+	  if(j < jump_samples){
+	    current_noise[i % 8] = scale * (last_value / n_generators);
+	    j++;
+	  }
+
+	  if(j == jump_samples){
+	    counter -= jump_samples;
+	    remain -= jump_samples;
+
+	    if(counter == 0){
+	      AGS_NOISE_UTIL_GET_VALUE((&last_value), current_noise, (&counter), (&last_value));
+	      
+	      counter = (guint) floor(samplerate / frequency);
+	    }
+	  }                  
+	}
+      }else{
+	current_noise[i % 8] = scale * (last_value / n_generators);
+      }
+
+      *(destination) = current_noise[0] + source[0];
+    }
   }
-  break;
   }
 }
 

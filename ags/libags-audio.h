@@ -90,6 +90,7 @@
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
+#include <ags/audio/ags_noise_util.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_peak_util.h>
