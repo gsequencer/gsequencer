@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -317,6 +317,8 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 
   GList *list_bulk_member, *list_bulk_member_start;
 
+  gchar *block_scope;
+
   gfloat val;
   
   lv2_bridge = (AgsLv2Bridge *) controller;
@@ -344,36 +346,47 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 
   while(list_bulk_member != NULL){
     if(port_index == AGS_BULK_MEMBER(list_bulk_member->data)->port_index){
-      lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
-
       child_widget = gtk_bin_get_child(GTK_BIN(AGS_BULK_MEMBER(list_bulk_member->data)));
 
-      val = ((float *) buffer)[0];
+      if((block_scope = g_hash_table_lookup(lv2_bridge->block_control, child_widget)) == NULL ||
+	 !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_LV2UI) == FALSE){
+	if(block_scope == NULL){
+	  g_hash_table_insert(lv2_bridge->block_control,
+			      child_widget,
+			      AGS_LV2_BRIDGE_BLOCK_CONTROL_LV2UI);
+	}
+	
+	val = ((float *) buffer)[0];
 
-      if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
-	val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
-					      val,
-					      TRUE);
-      }
+	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+						val,
+						TRUE);
+	}
       
-      if(AGS_IS_DIAL(child_widget)){
-	ags_dial_set_value((AgsDial *) child_widget,
-			   val);	
-      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-	gtk_spin_button_set_value((GtkSpinButton *) child_widget,
-				  val);
-      }else if(GTK_IS_SCALE(child_widget)){
-	gtk_range_set_value((GtkRange *) child_widget,
-			    val);
-      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-				     ((val != 0.0) ? TRUE: FALSE));
-      }else if(GTK_IS_BUTTON(child_widget)){
-	gtk_button_clicked((GtkButton *) child_widget);
-      }
+	if(AGS_IS_DIAL(child_widget)){
+	  ags_dial_set_value((AgsDial *) child_widget,
+			     val);	
+	}else if(GTK_IS_SPIN_BUTTON(child_widget)){
+	  gtk_spin_button_set_value((GtkSpinButton *) child_widget,
+				    val);
+	}else if(GTK_IS_SCALE(child_widget)){
+	  gtk_range_set_value((GtkRange *) child_widget,
+			      val);
+	}else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				       ((val != 0.0) ? TRUE: FALSE));
+	}else if(GTK_IS_BUTTON(child_widget)){
+	  gtk_button_clicked((GtkButton *) child_widget);
+	}
 	      
-      lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
-      
+	if(block_scope == NULL){
+	  g_hash_table_insert(lv2_bridge->block_control,
+			      child_widget,
+			      NULL);
+	}
+      }      
+
       break;
     }
 
@@ -677,10 +690,14 @@ ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge)
   AgsBulkMember *bulk_member;
   GtkAdjustment *adjustment;
 
+  gchar *block_scope;
+
   uint32_t port_index;
   float val;
 
   if((AGS_LV2_BRIDGE_NO_UPDATE & (lv2_bridge->flags)) != 0 ||
+     ((block_scope = g_hash_table_lookup(lv2_bridge->block_control, dial)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE)) ||
      lv2_bridge->ui_handle == NULL){
     return;
   }
@@ -700,17 +717,25 @@ ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge)
     val = (gfloat) ags_conversion_convert(bulk_member->conversion,
 					  val,
 					  FALSE);
-  }
+  }  
   
-  lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			dial,
+			AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
 
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
 					&val);
-  
-  lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
+
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			dial,
+			NULL);
+  }
 }
 
 void
@@ -719,10 +744,14 @@ ags_lv2_bridge_scale_changed_callback(GtkWidget *scale, AgsLv2Bridge *lv2_bridge
   AgsBulkMember *bulk_member;
   GtkAdjustment *adjustment;
 
+  gchar *block_scope;
+
   uint32_t port_index;
   float val;
 
   if((AGS_LV2_BRIDGE_NO_UPDATE & (lv2_bridge->flags)) != 0 ||
+     ((block_scope = g_hash_table_lookup(lv2_bridge->block_control, scale)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE)) ||
      lv2_bridge->ui_handle == NULL){
     return;
   }
@@ -744,7 +773,11 @@ ags_lv2_bridge_scale_changed_callback(GtkWidget *scale, AgsLv2Bridge *lv2_bridge
 					  FALSE);
   }
 
-  lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			scale,
+			AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
 
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
@@ -752,7 +785,11 @@ ags_lv2_bridge_scale_changed_callback(GtkWidget *scale, AgsLv2Bridge *lv2_bridge
 					0,
 					&val);
   
-  lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			scale,
+			NULL);
+  }
 }
 
 void
@@ -761,10 +798,14 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
   AgsBulkMember *bulk_member;
   GtkAdjustment *adjustment;
 
+  gchar *block_scope;
+
   uint32_t port_index;
   float val;
 
   if((AGS_LV2_BRIDGE_NO_UPDATE & (lv2_bridge->flags)) != 0 ||
+     ((block_scope = g_hash_table_lookup(lv2_bridge->block_control, spin_button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE)) ||
      lv2_bridge->ui_handle == NULL){
     return;
   }
@@ -786,7 +827,11 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
 					  FALSE);
   }
 
-  lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			spin_button,
+			AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
 
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
@@ -794,7 +839,11 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
 					0,
 					&val);
   
-  lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			spin_button,
+			NULL);
+  }
 }
 
 void
@@ -802,11 +851,15 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
 {
   AgsBulkMember *bulk_member;
 
+  gchar *block_scope;
+
   gboolean is_active;
   uint32_t port_index;
   float val;
 
   if((AGS_LV2_BRIDGE_NO_UPDATE & (lv2_bridge->flags)) != 0 ||
+     ((block_scope = g_hash_table_lookup(lv2_bridge->block_control, check_button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE)) ||
      lv2_bridge->ui_handle == NULL){
     return;
   }
@@ -825,7 +878,11 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
 					  FALSE);
   }
 
-  lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			check_button,
+			AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
 
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
@@ -833,7 +890,11 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
 					0,
 					&val);
   
-  lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			check_button,
+			NULL);
+  }
 }
 
 void
@@ -841,11 +902,15 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
 {
   AgsBulkMember *bulk_member;
 
+  gchar *block_scope;
+
   gboolean is_active;
   uint32_t port_index;
   float val;
 
   if((AGS_LV2_BRIDGE_NO_UPDATE & (lv2_bridge->flags)) != 0 ||
+     ((block_scope = g_hash_table_lookup(lv2_bridge->block_control, toggle_button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE)) ||
      lv2_bridge->ui_handle == NULL){
     return;
   }
@@ -863,8 +928,12 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
 					  val,
 					  FALSE);
   }
-
-  lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
+  
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			toggle_button,
+			AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
 
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
@@ -872,7 +941,11 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
 					0,
 					&val);
   
-  lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			toggle_button,
+			NULL);
+  }
 }
 
 void
@@ -880,10 +953,14 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
 {
   AgsBulkMember *bulk_member;
 
+  gchar *block_scope;
+
   uint32_t port_index;
   float val;
 
   if((AGS_LV2_BRIDGE_NO_UPDATE & (lv2_bridge->flags)) != 0 ||
+     ((block_scope = g_hash_table_lookup(lv2_bridge->block_control, button)) != NULL &&
+      !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE)) ||
      lv2_bridge->ui_handle == NULL){
     return;
   }
@@ -900,7 +977,11 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
 					  FALSE);
   }
 
-  lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			button,
+			AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE);
+  }
 
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
@@ -908,5 +989,9 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
 					0,
 					&val);
   
-  lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
+  if(block_scope == NULL){
+    g_hash_table_insert(lv2_bridge->block_control,
+			button,
+			NULL);
+  }
 }

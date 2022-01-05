@@ -42,7 +42,7 @@ foreach interactive_test : interactive_tests
 endforeach
 
 #TODO: move this to environment variables
-srcdir_def = '-DSRCDIR="@0@"'.format(meson.source_root())
+srcdir_def = '-DAGS_SRC_DIR="@0@"'.format(meson.source_root())
 
 common_test_dependencies = [
   common_dependencies,

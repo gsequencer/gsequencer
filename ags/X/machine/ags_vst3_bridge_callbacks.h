@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,7 +35,19 @@ G_BEGIN_DECLS
 
 void ags_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsVst3Bridge *vst3_bridge);
 
+void ags_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsVst3Bridge *vst3_bridge);
+
 void ags_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsVst3Bridge *vst3_bridge);
+
+AgsVstTResult ags_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsVst3Bridge *vst3_bridge);
+AgsVstTResult ags_vst3_bridge_restart_component_callback(AgsVstIComponentHandler *icomponent_handler, guint32 flags, AgsVst3Bridge *vst3_bridge);
+
+void ags_vst3_bridge_dial_changed_callback(GtkWidget *dial, AgsVst3Bridge *vst3_bridge);
+void ags_vst3_bridge_scale_changed_callback(GtkWidget *scale, AgsVst3Bridge *vst3_bridge);
+void ags_vst3_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsVst3Bridge *vst3_bridge);
+void ags_vst3_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsVst3Bridge *vst3_bridge);
+void ags_vst3_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsVst3Bridge *vst3_bridge);
+void ags_vst3_bridge_button_clicked_callback(GtkWidget *button, AgsVst3Bridge *vst3_bridge);
 
 G_END_DECLS
 

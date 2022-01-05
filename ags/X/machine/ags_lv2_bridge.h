@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,6 +46,9 @@ G_BEGIN_DECLS
 
 #define AGS_LV2_BRIDGE_DEFAULT_VERSION "0.4.3"
 #define AGS_LV2_BRIDGE_DEFAULT_BUILD_ID "CEST 13-05-2015 13:40"
+
+#define AGS_LV2_BRIDGE_BLOCK_CONTROL_LV2UI "lv2ui"
+#define AGS_LV2_BRIDGE_BLOCK_CONTROL_BRIDGE "bridge"
 
 typedef struct _AgsLv2Bridge AgsLv2Bridge;
 typedef struct _AgsLv2BridgeClass AgsLv2BridgeClass;
@@ -117,6 +120,8 @@ struct _AgsLv2Bridge
   GtkWidget *ui_widget;
 
   GtkWidget *lv2_window;
+
+  GHashTable *block_control;
 };
 
 struct _AgsLv2BridgeClass

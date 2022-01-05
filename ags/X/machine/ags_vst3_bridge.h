@@ -44,6 +44,9 @@ G_BEGIN_DECLS
 #define AGS_VST3_BRIDGE_DEFAULT_VERSION "3.10.5"
 #define AGS_VST3_BRIDGE_DEFAULT_BUILD_ID "Fri Aug 27 16:44:29 CEST 2021"
 
+#define AGS_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI "vst3-ui"
+#define AGS_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE "bridge"
+
 typedef struct _AgsVst3Bridge AgsVst3Bridge;
 typedef struct _AgsVst3BridgeClass AgsVst3BridgeClass;
 
@@ -91,6 +94,24 @@ struct _AgsVst3Bridge
   GtkBox *vbox;
   
   GtkComboBox *program;  
+
+  AgsVstIComponent *icomponent;
+  AgsVstIEditController *iedit_controller;
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
+
+  AgsVstComponentHandler *icomponent_handler;
+
+  int perform_edit_handler;
+  int restart_component_handler;
+  
+  AgsVstIPlugView *iplug_view;
+
+  gpointer ns_window;
+  gpointer ns_view;
+  
+  GtkMenu *vst3_menu;
+
+  GHashTable *block_control;
 };
 
 struct _AgsVst3BridgeClass
@@ -108,6 +129,7 @@ void ags_vst3_bridge_output_map_recall(AgsVst3Bridge *vst3_bridge,
 				       guint output_pad_start);
 
 void ags_vst3_bridge_load(AgsVst3Bridge *vst3_bridge);
+void ags_vst3_bridge_reload_port(AgsVst3Bridge *vst3_bridge);
 
 AgsVst3Bridge* ags_vst3_bridge_new(GObject *soundcard,
 				   gchar *filename,

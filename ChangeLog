@@ -1,3 +1,10 @@
+ags (3.14.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented UI for AgsVst3Bridge
+	* fixed missing update of prefixed macros in build files
+	* improved block scope of AgsLv2Bridge
+
 ags (3.14.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

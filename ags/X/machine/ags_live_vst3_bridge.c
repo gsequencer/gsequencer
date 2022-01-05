@@ -607,6 +607,8 @@ ags_live_vst3_bridge_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_live_vst3_bridge_program_changed_callback),
 		      live_vst3_bridge,
 		      NULL);
+
+  //TODO:JK: implement me
 }
 
 void
@@ -1058,8 +1060,8 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   ags_vst_funknown_query_interface(component_handler,
 				   ags_vst_icomponent_handler_get_iid(), &(live_vst3_bridge->icomponent_handler));
 
-  ags_vst_component_handler_connect_handler(component_handler, "performEdit", ags_live_vst3_bridge_perform_edit_callback, live_vst3_bridge);
-  ags_vst_component_handler_connect_handler(component_handler, "restartComponent", ags_live_vst3_bridge_restart_component_callback, live_vst3_bridge);
+  live_vst3_bridge->perform_edit_handler = ags_vst_component_handler_connect_handler(component_handler, "performEdit", ags_live_vst3_bridge_perform_edit_callback, live_vst3_bridge);
+  live_vst3_bridge->restart_component_handler = ags_vst_component_handler_connect_handler(component_handler, "restartComponent", ags_live_vst3_bridge_restart_component_callback, live_vst3_bridge);
   
   ags_vst_iedit_controller_set_component_handler(live_vst3_bridge->iedit_controller,
 						 live_vst3_bridge->icomponent_handler);
