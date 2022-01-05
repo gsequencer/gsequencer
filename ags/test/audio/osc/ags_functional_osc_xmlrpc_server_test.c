@@ -137,9 +137,9 @@ void ags_functional_osc_xmlrpc_server_test_websocket_error_callback(SoupWebsocke
 
 #define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_METER_PACKET_COUNT (16 * 30)
 
-#define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_AUTHENTICATION_FILENAME SRCDIR "/" "ags_functional_osc_xmlrpc_server_test_authentication.xml"
-#define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_PASSWORD_STORE_FILENAME SRCDIR "/" "ags_functional_osc_xmlrpc_server_test_password_store.xml"
-#define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_COOKIE_FILENAME SRCDIR "/" "ags_functional_osc_xmlrpc_server_test_cookie"
+#define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_AUTHENTICATION_FILENAME AGS_SRC_DIR "/" "ags_functional_osc_xmlrpc_server_test_authentication.xml"
+#define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_PASSWORD_STORE_FILENAME AGS_SRC_DIR "/" "ags_functional_osc_xmlrpc_server_test_password_store.xml"
+#define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_COOKIE_FILENAME AGS_SRC_DIR "/" "ags_functional_osc_xmlrpc_server_test_cookie"
 
 #define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_AUTHENTICATE_LOGIN "ags-test-login"
 #define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_AUTHENTICATE_PASSWORD "ags-test-password"

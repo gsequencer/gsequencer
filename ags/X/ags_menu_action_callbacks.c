@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,9 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_machine_util.h>
 #include <ags/X/ags_online_help_window.h>
+
+#include <ags/X/editor/ags_composite_edit.h>
+#include <ags/X/editor/ags_composite_edit_callbacks.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -123,9 +126,7 @@ void
 ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
     AgsApplicationContext *application_context;
-#endif
     
     char *filename;
     gchar *str;
@@ -135,28 +136,23 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
     
     GError *error;
 
+    application_context = ags_application_context_get_instance();
+
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     error = NULL;
 
 #if defined(AGS_W32API)
-    application_context = ags_application_context_get_instance();
+    app_dir = g_path_get_dirname(application_context->argv[0]);
 
-    if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
-    }else{
-      app_dir = NULL;
-    }
-  
     if(g_path_is_absolute(app_dir)){
-      str = g_strdup_printf("%s\\gsequencer.exe --filename %s",
-			    app_dir,
+      str = g_strdup_printf("%s --filename %s",
+			    application_context->argv[0],
 			    filename);
     }else{
-      str = g_strdup_printf("%s\\%s\\gsequencer.exe --filename %s",
+      str = g_strdup_printf("%s\\%s --filename %s",
 			    g_get_current_dir(),
-			    app_dir,
+			    application_context->argv[0],
 			    filename);
     }
     
@@ -183,27 +179,22 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 		    &si,
 		    &pi);
     }
+
+    g_free(str);
 #else
 #if defined(AGS_OSXAPI)
-    application_context = ags_application_context_get_instance();
-
-    if(strlen(application_context->argv[0]) > strlen("GSequencer-bin")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("GSequencer-bin"));
-    }else{
-      app_dir = NULL;
-    }
+    app_dir = g_path_get_dirname(application_context->argv[0]);
   
     if(g_path_is_absolute(app_dir)){
-      str = g_strdup_printf("%s%s %s",
-			    app_dir,
-			    "GSequencer --filename",
+      str = g_strdup_printf("%s %s %s",
+			    application_context->argv[0],
+			    "--filename",
 			    filename);
     }else{
-      str = g_strdup_printf("%s/%s%s %s",
+      str = g_strdup_printf("%s/%s %s %s",
 			    g_get_current_dir(),
-			    app_dir,
-			    "GSequencer --filename",
+			    application_context->argv[0],
+			    "--filename",
 			    filename);
     }
     
@@ -217,8 +208,11 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
       g_error_free(error);
     }    
+
+    g_free(str);
 #else
-    str = g_strdup_printf("gsequencer --filename %s",
+    str = g_strdup_printf("%s --filename %s",
+			  application_context->argv[0],
 			  filename);
 
     g_spawn_command_line_async(str,
@@ -229,11 +223,12 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
       g_error_free(error);
     }
+
+    g_free(str);
 #endif    
 #endif    
     
     g_free(filename);
-    g_free(str);
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
@@ -1411,16 +1406,24 @@ ags_menu_action_notation_callback(GtkWidget *menu_item, gpointer data)
        AGS_IS_LIVE_VST3_BRIDGE(machine)
 #endif
        ){
+      AgsCompositeEdit *composite_edit, *prev_composite_edit;
+      
       ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						     AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION);
-    
-      composite_editor->selected_edit = composite_editor->notation_edit;
+
+      prev_composite_edit = composite_editor->selected_edit;
+      
+      composite_edit = 
+	composite_editor->selected_edit = composite_editor->notation_edit;
       
       gtk_widget_show_all(composite_editor->notation_edit);
       gtk_widget_hide(composite_editor->sheet_edit);
       gtk_widget_hide(composite_editor->automation_edit);
       gtk_widget_hide(composite_editor->wave_edit);
-
+      
+      /* shift piano */
+      composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
+      
       gtk_widget_show(composite_editor->machine_selector->shift_piano);
     }
   }
@@ -1442,6 +1445,7 @@ ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data)
   
   if(use_composite_editor){
     AgsCompositeEditor *composite_editor;
+    AgsCompositeEdit *composite_edit, *prev_composite_edit;
     AgsMachine *machine;
 
     composite_editor = window->composite_editor;
@@ -1450,13 +1454,19 @@ ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data)
     
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
+
+    prev_composite_edit = composite_editor->selected_edit;      
     
-    composite_editor->selected_edit = composite_editor->automation_edit;
+    composite_edit = 
+      composite_editor->selected_edit = composite_editor->automation_edit;
     
     gtk_widget_hide(composite_editor->notation_edit);
     gtk_widget_hide(composite_editor->sheet_edit);
     gtk_widget_show_all(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
+    
+    /* shift piano */
+    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
 
     gtk_widget_hide(composite_editor->machine_selector->shift_piano);
   }else{  
@@ -1480,9 +1490,14 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
   
   if(use_composite_editor){
     AgsCompositeEditor *composite_editor;
+    AgsCompositeEdit *composite_edit, *prev_composite_edit;
     AgsMachine *machine;
 
     composite_editor = window->composite_editor;
+
+    prev_composite_edit = composite_editor->selected_edit;      
+    
+    composite_edit = composite_editor->wave_edit;
 
     machine = composite_editor->selected_machine;
 
@@ -1506,6 +1521,9 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
       gtk_widget_hide(composite_editor->automation_edit);
       gtk_widget_show_all(composite_editor->wave_edit);
 
+      /* shift piano */
+      composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+      
       gtk_widget_hide(composite_editor->machine_selector->shift_piano);
 
       start_wave_edit = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
@@ -1745,7 +1763,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 	}
 #else
 	logo_filename = g_strdup_printf("%s/%s",
-					DESTDIR,
+					AGS_DATA_DIR,
 					"/gsequencer/images/ags.png");
 #endif
       }else{

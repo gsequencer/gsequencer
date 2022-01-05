@@ -1,3 +1,23 @@
+ags (3.14.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* providing symbolic icons
+	* improved prefixing macros AGS_DOC_DIR, AGS_DATA_DIR and AGS_SRC_DIR
+	* improved make use of AGS_UI_PROVIDER_DEFAULT_PADDING and AGS_UI_PROVIDER_DEFAULT_MARGIN_END
+
+ags (3.14.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing shift piano
+	* minor improvements
+
+ags (3.14.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 block controls either bridge or UI
+	* fixed Lv2 block controls either bridge or UI
+	* improved open files with GSequencer
+
 ags (3.14.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

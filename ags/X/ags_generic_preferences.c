@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -159,7 +160,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_pack_start(hbox,
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   generic_preferences->segmentation = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_combo_box_set_model(generic_preferences->segmentation,
@@ -169,7 +170,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) generic_preferences->segmentation,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* engine mode */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -183,7 +184,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   generic_preferences->engine_mode = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
@@ -196,14 +197,14 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) generic_preferences->engine_mode,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* rt-safe */
   generic_preferences->rt_safe = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("rt-safe"));
   gtk_box_pack_start((GtkBox *) generic_preferences,
 		     (GtkWidget *) generic_preferences->rt_safe,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* GUI scale factor */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -217,7 +218,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   generic_preferences->gui_scale = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(generic_preferences->gui_scale,
@@ -232,7 +233,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) generic_preferences->gui_scale,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 }
 
 static void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_line_member_editor.h>
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
@@ -136,7 +137,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
   gtk_box_pack_start((GtkBox *) line_member_editor,
 		     (GtkWidget *) line_member_editor->line_member,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
@@ -150,14 +151,14 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) line_member_editor->add,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   line_member_editor->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
 									   GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) line_member_editor->remove,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   line_member_editor->plugin_browser = NULL;
 }

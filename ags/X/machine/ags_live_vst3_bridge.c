@@ -378,6 +378,11 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
 			(GtkWidget *) item);
 
   gtk_widget_show_all((GtkWidget *) live_vst3_bridge->vst3_menu);
+
+  live_vst3_bridge->block_control = g_hash_table_new_full(g_direct_hash,
+							  g_direct_equal,
+							  NULL,
+							  NULL);
 }
 
 void
@@ -969,6 +974,10 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   AgsVstTResult val;
   
   GValue *value;
+
+  if(!AGS_IS_LIVE_VST3_BRIDGE(live_vst3_bridge)){
+    return;
+  }
   
   /* load plugin */
   vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
@@ -1050,6 +1059,7 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
 				   ags_vst_icomponent_handler_get_iid(), &(live_vst3_bridge->icomponent_handler));
 
   ags_vst_component_handler_connect_handler(component_handler, "performEdit", ags_live_vst3_bridge_perform_edit_callback, live_vst3_bridge);
+  ags_vst_component_handler_connect_handler(component_handler, "restartComponent", ags_live_vst3_bridge_restart_component_callback, live_vst3_bridge);
   
   ags_vst_iedit_controller_set_component_handler(live_vst3_bridge->iedit_controller,
 						 live_vst3_bridge->icomponent_handler);
@@ -1177,6 +1187,147 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   }
   
   live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_vst3_bridge_reload_port(AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsVst3Plugin *vst3_plugin;
+  AgsPluginPort *plugin_port;
+
+  GList *start_bulk_member, *bulk_member;
+  
+  guint i;
+  gint32 parameter_count;
+
+  GRecMutex *base_plugin_mutex;
+
+  if(!AGS_IS_LIVE_VST3_BRIDGE(live_vst3_bridge)){
+    return;
+  }
+
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
+
+  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->grid);
+
+  parameter_count = ags_vst_iedit_controller_get_parameter_count(live_vst3_bridge->iedit_controller);
+
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;  
+
+  for(i = 0; i < parameter_count; i++){
+    AgsVstParameterInfo *info;
+    AgsVstParamID param_id;
+    
+    gchar *specifier;
+    
+    guint flags;
+    gdouble current_normalized_value;
+    gdouble value;
+    
+    info = ags_vst_parameter_info_alloc();
+    
+    ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+						i, info);
+
+    flags = ags_vst_parameter_info_get_flags(info);
+
+    if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+      ags_vst_parameter_info_free(info);
+      
+      continue;
+    }
+
+    param_id = ags_vst_parameter_info_get_param_id(info);
+
+    g_rec_mutex_lock(base_plugin_mutex);
+  
+    plugin_port = g_hash_table_lookup(vst3_plugin->plugin_port,
+				      GINT_TO_POINTER(param_id));  
+
+    g_rec_mutex_unlock(base_plugin_mutex);
+
+    if(plugin_port == NULL){
+      ags_vst_parameter_info_free(info);
+      
+      continue;
+    }
+
+    specifier = NULL;
+    
+    g_object_get(plugin_port,
+		 "port-name", &specifier,
+		 NULL);
+    
+    if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+      ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+								 param_id);
+    }
+
+    current_normalized_value = ags_vst_iedit_controller_get_param_normalized(live_vst3_bridge->iedit_controller,
+									     param_id);
+
+    value = ags_vst_iedit_controller_normalized_param_to_plain(live_vst3_bridge->iedit_controller,
+							       param_id,
+							       current_normalized_value);
+
+    bulk_member = start_bulk_member;
+  
+    while(bulk_member != NULL){
+      if(AGS_IS_BULK_MEMBER(bulk_member->data) &&
+	 !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
+	GtkWidget *child_widget;
+
+	gchar *block_scope;
+
+	child_widget = ags_bulk_member_get_widget(bulk_member->data);
+
+	if((block_scope = g_hash_table_lookup(live_vst3_bridge->block_control, child_widget)) == NULL ||
+	   !g_strcmp0(block_scope, AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI) == FALSE){
+	  g_hash_table_insert(live_vst3_bridge->block_control,
+			      child_widget,
+			      AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI);
+  
+	  if(AGS_IS_DIAL(child_widget)){
+	    ags_dial_set_value((AgsDial *) child_widget,
+			       value);
+	  }else if(GTK_IS_SCALE(child_widget)){
+	    gtk_range_set_value((GtkRange *) child_widget,
+				value);
+	  }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	    gboolean active;
+
+	    active = (value != 0.0) ? TRUE: FALSE;
+	
+	    gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					 active);
+	  }else if(GTK_IS_BUTTON(child_widget)){
+	    gtk_button_clicked((GtkButton *) child_widget);
+	  }
+
+	  g_hash_table_insert(live_vst3_bridge->block_control,
+			      child_widget,
+			      NULL);
+	}
+      
+	break;
+      }
+    
+      bulk_member = bulk_member->next;
+    }
+
+    if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+      ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+    }
+    
+    ags_vst_parameter_info_free(info);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  g_list_free(start_bulk_member);  
 }
 
 /**

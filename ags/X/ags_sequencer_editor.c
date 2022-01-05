@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_sequencer_editor.h>
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/X/ags_midi_preferences.h>
@@ -155,6 +156,9 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
 		  0, 0,
@@ -188,7 +192,7 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
 			   0);
   
-  /* sound card */
+  /* MIDI card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("MIDI card"),
 				    "xalign", 0.0,
@@ -198,6 +202,9 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -238,13 +245,13 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
 		     (GtkWidget *) sequencer_editor->add_jack,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
 		     (GtkWidget *) sequencer_editor->remove_jack,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   /*  */
   sequencer_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));

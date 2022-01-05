@@ -1174,6 +1174,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
     
+    composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
+    
     gtk_widget_show(composite_editor->machine_selector->shift_piano);
   }else if(AGS_IS_PANEL(machine) ||
 	   AGS_IS_MIXER(machine) ||
@@ -1215,6 +1217,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_hide(composite_editor->sheet_edit);
     gtk_widget_show_all(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
+    
+    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
     
     gtk_widget_hide(composite_editor->machine_selector->shift_piano);
   }else if(AGS_IS_AUDIOREC(machine)){
@@ -1271,6 +1275,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_show_all(composite_editor->wave_edit->edit_control);
     gtk_widget_show_all(composite_editor->wave_edit->edit);
     
+    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+    
     gtk_widget_hide(composite_editor->machine_selector->shift_piano);
   }else if(machine == NULL){
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
@@ -1282,6 +1288,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_hide(composite_editor->sheet_edit);
     gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
+    
+    composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
     
     gtk_widget_show(composite_editor->machine_selector->shift_piano);
   }

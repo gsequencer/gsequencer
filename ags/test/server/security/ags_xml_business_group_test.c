@@ -56,7 +56,7 @@ void ags_xml_business_group_test_open_filename();
 #define AGS_XML_BUSINESS_GROUP_TEST_GET_USER_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
 #define AGS_XML_BUSINESS_GROUP_TEST_GET_USER_DEFAULT_GROUP_UUID "ags-test-group-uuid"
 
-#define AGS_XML_BUSINESS_GROUP_TEST_OPEN_FILENAME SRCDIR "/" "ags_business_group_test.xml"
+#define AGS_XML_BUSINESS_GROUP_TEST_OPEN_FILENAME AGS_SRC_DIR "/" "ags_business_group_test.xml"
 
 AgsServerApplicationContext *server_application_context;
 

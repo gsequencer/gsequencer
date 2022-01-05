@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,8 @@ G_BEGIN_DECLS
 #define AGS_NAVIGATION_DEFAULT_TACT_STEP (1.0)
 #define AGS_NAVIGATION_SEEK_STEPS (1.0)
 #define AGS_NAVIGATION_REWIND_STEPS (4.0)
+
+#define AGS_NAVIGATION_MEDIA_CONTROL_PADDING (6)
 
 typedef struct _AgsNavigation AgsNavigation;
 typedef struct _AgsNavigationClass AgsNavigationClass;

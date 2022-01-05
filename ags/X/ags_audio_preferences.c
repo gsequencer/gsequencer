@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_soundcard_editor.h>
@@ -187,10 +188,15 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     audio_preferences->stop_jack = NULL;
   }else{
     label = (GtkLabel *) gtk_label_new(i18n("JACK driver"));
+    
     gtk_widget_set_halign((GtkWidget *) label,
 			  GTK_ALIGN_FILL);
     gtk_widget_set_valign((GtkWidget *) label,
 			  GTK_ALIGN_FILL);
+
+    gtk_widget_set_margin_end((GtkWidget *) label,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+    
     gtk_grid_attach(grid,
 		    (GtkWidget *) label,
 		    0, 7,
@@ -207,10 +213,15 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		    1, 1);
   
     label = (GtkLabel *) gtk_label_new(i18n("JACK server"));
+
     gtk_widget_set_halign((GtkWidget *) label,
 			  GTK_ALIGN_FILL);
     gtk_widget_set_valign((GtkWidget *) label,
 			  GTK_ALIGN_FILL);
+
+    gtk_widget_set_margin_end((GtkWidget *) label,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
     gtk_grid_attach(grid,
 		    (GtkWidget *) label,
 		    0, 8,
@@ -218,10 +229,12 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
     hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				  0);
+    
     gtk_widget_set_halign((GtkWidget *) hbox,
 			  GTK_ALIGN_FILL);
     gtk_widget_set_valign((GtkWidget *) hbox,
 			  GTK_ALIGN_FILL);
+    
     gtk_grid_attach(grid,
 		    (GtkWidget *) hbox,
 		    1, 8,
@@ -231,13 +244,13 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     gtk_box_pack_start(hbox,
 		       (GtkWidget *) audio_preferences->start_jack,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
 
     audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label(i18n("stop"));
     gtk_box_pack_start(hbox,
 		       (GtkWidget *) audio_preferences->stop_jack,
 		       FALSE, FALSE,
-		       0);
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
   
     /* set default insensitive */
     gtk_widget_set_sensitive((GtkWidget *) audio_preferences->jack_driver,

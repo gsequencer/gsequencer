@@ -49,7 +49,7 @@ void ags_functional_audio_config_test_file_setup();
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_SAMPLERATE (48000)
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_SAMPLERATE (44100)
 
-#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_audio_config_test.xml"
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags_functional_audio_config_test.xml"
 
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \

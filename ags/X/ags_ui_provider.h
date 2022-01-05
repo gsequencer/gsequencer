@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,8 +39,10 @@ G_BEGIN_DECLS
 #define AGS_IS_UI_PROVIDER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_UI_PROVIDER))
 #define AGS_UI_PROVIDER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_UI_PROVIDER, AgsUiProviderInterface))
 
-#define AGS_UI_PROVIDER_DEFAULT_TIMEOUT (1.0 / 30.0)
-  
+#define AGS_UI_PROVIDER_DEFAULT_TIMEOUT (1.0 / 25.0)
+#define AGS_UI_PROVIDER_DEFAULT_PADDING (6)
+#define AGS_UI_PROVIDER_DEFAULT_MARGIN_END (6)
+
 typedef struct _AgsUiProvider AgsUiProvider;
 typedef struct _AgsUiProviderInterface AgsUiProviderInterface;
 

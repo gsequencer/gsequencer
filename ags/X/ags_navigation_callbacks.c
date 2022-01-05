@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,18 +44,18 @@ ags_navigation_expander_callback(GtkWidget *widget,
 	       "icon-name", &icon_name,
 	       NULL);
   
-  if(!g_strcmp0("down",
+  if(!g_strcmp0("pan-down",
 		icon_name)){
     gtk_widget_hide(widget);
 
     g_object_set(image,
-		 "icon-name", "up",
+		 "icon-name", "pan-end",
 		 NULL);
   }else{
     gtk_widget_show_all(widget);
 
     g_object_set(image,
-		 "icon-name", "down",
+		 "icon-name", "pan-down",
 		 NULL);
   }
 }

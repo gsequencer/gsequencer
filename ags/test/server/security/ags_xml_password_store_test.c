@@ -54,7 +54,7 @@ void ags_xml_password_store_test_find_login();
 #define AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_PASSWORD "ags-test-password"
 #define AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_SALT "ags-puts-salt-in-pizza"
 
-#define AGS_XML_PASSWORD_STORE_TEST_OPEN_FILENAME SRCDIR "/" "ags_password_store_test.xml"
+#define AGS_XML_PASSWORD_STORE_TEST_OPEN_FILENAME AGS_SRC_DIR "/" "ags_password_store_test.xml"
 
 AgsServerApplicationContext *server_application_context;
 

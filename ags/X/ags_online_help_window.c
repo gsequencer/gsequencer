@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -152,33 +152,33 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->home,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
   
   online_help_window->prev = (GtkButton *) gtk_button_new_from_icon_name("go-previous",
 									 GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->prev,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
   
   online_help_window->next = (GtkButton *) gtk_button_new_from_icon_name("go-next",
 									 GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->next,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
 
   label = (GtkLabel *) gtk_label_new(i18n("Place"));
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
-		     0);  
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
   
   online_help_window->location = (GtkEntry *) gtk_entry_new();
   gtk_box_pack_start((GtkBox *) navigation_hbox,
 		     (GtkWidget *) online_help_window->location,
 		     FALSE, FALSE,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
   /* webkit */
   start_filename = NULL;
@@ -226,10 +226,10 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 #else
 #if defined(AGS_WITH_SINGLE_DOCDIR)
     start_filename = g_strdup_printf("file://%s/user-manual/index.html",
-				     DOCDIR);
+				     AGS_DOC_DIR);
 #else
     start_filename = g_strdup_printf("file://%s/doc/gsequencer-doc/html/index.html",
-				     DESTDIR);
+				     AGS_DATA_DIR);
 #endif
 #endif
   }
@@ -359,7 +359,7 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
     g_free(app_dir);
 #else  
-    pdf_filename = g_strdup_printf("%s%s", DOCDIR, "/pdf/user-manual.pdf");
+    pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual.pdf");
 #endif
   }
 #endif

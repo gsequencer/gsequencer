@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,7 @@
 
 #include <ags/X/export/ags_machine_collection_entry.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -193,6 +194,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
   gtk_widget_set_halign((GtkWidget *) machine_collection_entry->label,
 			GTK_ALIGN_FILL);
 
+  gtk_widget_set_margin_end((GtkWidget *) machine_collection_entry->label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
+
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
 		  (GtkWidget *) machine_collection_entry->label,
 		  0, 1,
@@ -210,6 +214,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
+
+  gtk_widget_set_margin_end((GtkWidget *) label,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
 		  (GtkWidget *) label,
