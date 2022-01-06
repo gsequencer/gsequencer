@@ -33,6 +33,7 @@
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
 #include <ags/X/machine/ags_hybrid_synth.h>
+#include <ags/X/machine/ags_fm_hybrid_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
@@ -622,6 +623,56 @@ ags_machine_util_new_hybrid_synth()
   gtk_widget_show_all((GtkWidget *) hybrid_synth);
 
   return((GtkWidget *) hybrid_synth);  
+}
+
+/**
+ * ags_machine_util_new_fm_hybrid_synth:
+ * 
+ * Create #AgsFMHybridSynth.
+ * 
+ * returns: the newly instantiated #AgsFMHybridSynth
+ * 
+ * Since: 3.15.0
+ */
+GtkWidget*
+ags_machine_util_new_fm_hybrid_synth()
+{
+  AgsWindow *window;
+  AgsFMHybridSynth *fm_hybrid_synth;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create fm_hybrid_synth */
+  fm_hybrid_synth = ags_fm_hybrid_synth_new(G_OBJECT(default_soundcard));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) fm_hybrid_synth,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(fm_hybrid_synth));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(fm_hybrid_synth)->audio,
+			       1, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(fm_hybrid_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(fm_hybrid_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show_all((GtkWidget *) fm_hybrid_synth);
+
+  return((GtkWidget *) fm_hybrid_synth);  
 }
 
 /**
@@ -1673,6 +1724,10 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				"AgsHybridSynth",
 				16)){
     machine = ags_machine_util_new_hybrid_synth();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsFMHybridSynth",
+				16)){
+    machine = ags_machine_util_new_fm_hybrid_synth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsFFPlayer",
 				11)){
