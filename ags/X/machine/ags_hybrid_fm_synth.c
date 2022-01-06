@@ -1135,8 +1135,6 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 		  5, 2,
 		  1, 1);
   
-  //TODO:JK: implement me
-  
   /* grid */
   misc_grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) vbox,

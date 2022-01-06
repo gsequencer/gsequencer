@@ -1,3 +1,9 @@
+ags (3.15.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFxFMSynthAudio missing OSC 3 port
+	* fixed some bugs in ags_noise_util.c
+
 ags (3.15.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
