@@ -29,6 +29,7 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_noise_util.h>
 #include <ags/audio/ags_hq_pitch_util.h>
 #include <ags/audio/ags_chorus_util.h>
 #include <ags/audio/ags_fluid_iir_filter_util.h>
@@ -161,6 +162,8 @@ struct _AgsFxSynthAudioChannelData
   AgsSynthUtil synth_0;
   AgsSynthUtil synth_1;
 
+  AgsNoiseUtil noise_util;
+  
   AgsHQPitchUtil hq_pitch_util;
   AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
   

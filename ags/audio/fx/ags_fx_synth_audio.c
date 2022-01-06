@@ -1353,7 +1353,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						       "port-value-is-pointer", FALSE,
 						       "port-value-type", G_TYPE_FLOAT,
 						       "port-value-size", sizeof(gfloat),
-						       "port-value-length", 2,
+						       "port-value-length", 1,
 						       NULL);
   
   fx_synth_audio->synth_0_sync_attack_2->port_value.ags_port_float = (gfloat) 0.0;
@@ -1373,7 +1373,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 2,
+						      "port-value-length", 1,
 						      NULL);
   
   fx_synth_audio->synth_0_sync_phase_2->port_value.ags_port_float = (gfloat) 0.0;
@@ -1393,7 +1393,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 2,
+							     "port-value-length", 1,
 							     NULL);
   
   fx_synth_audio->synth_0_sync_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
@@ -1413,7 +1413,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 							    "port-value-is-pointer", FALSE,
 							    "port-value-type", G_TYPE_FLOAT,
 							    "port-value-size", sizeof(gfloat),
-							    "port-value-length", 2,
+							    "port-value-length", 1,
 							    NULL);
   
   fx_synth_audio->synth_0_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
@@ -1654,7 +1654,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						       "port-value-is-pointer", FALSE,
 						       "port-value-type", G_TYPE_FLOAT,
 						       "port-value-size", sizeof(gfloat),
-						       "port-value-length", 2,
+						       "port-value-length", 1,
 						       NULL);
   
   fx_synth_audio->synth_1_sync_attack_2->port_value.ags_port_float = (gfloat) 0.0;
@@ -1674,7 +1674,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 2,
+						      "port-value-length", 1,
 						      NULL);
   
   fx_synth_audio->synth_1_sync_phase_2->port_value.ags_port_float = (gfloat) 0.0;
@@ -1694,7 +1694,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 2,
+							     "port-value-length", 1,
 							     NULL);
   
   fx_synth_audio->synth_1_sync_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
@@ -1714,7 +1714,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 							    "port-value-is-pointer", FALSE,
 							    "port-value-type", G_TYPE_FLOAT,
 							    "port-value-size", sizeof(gfloat),
-							    "port-value-length", 2,
+							    "port-value-length", 1,
 							    NULL);
   
   fx_synth_audio->synth_1_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
@@ -1734,7 +1734,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						   "port-value-is-pointer", FALSE,
 						   "port-value-type", G_TYPE_FLOAT,
 						   "port-value-size", sizeof(gfloat),
-						   "port-value-length", 2,
+						   "port-value-length", 1,
 						   NULL);
   
   fx_synth_audio->sequencer_enabled->port_value.ags_port_float = (gfloat) FALSE;
@@ -1754,7 +1754,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_FLOAT,
 						"port-value-size", sizeof(gfloat),
-						"port-value-length", 2,
+						"port-value-length", 1,
 						NULL);
   
   fx_synth_audio->sequencer_sign->port_value.ags_port_float = (gfloat) 0.0;
@@ -1774,7 +1774,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_FLOAT,
 					      "port-value-size", sizeof(gfloat),
-					      "port-value-length", 2,
+					      "port-value-length", 1,
 					      NULL);
   
   fx_synth_audio->pitch_tuning->port_value.ags_port_float = (gfloat) 0.0;
@@ -1794,7 +1794,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_FLOAT,
 					    "port-value-size", sizeof(gfloat),
-					    "port-value-length", 2,
+					    "port-value-length", 1,
 					    NULL);
   
   fx_synth_audio->noise_gain->port_value.ags_port_float = (gfloat) 0.0;
@@ -1814,7 +1814,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_FLOAT,
 						"port-value-size", sizeof(gfloat),
-						"port-value-length", 2,
+						"port-value-length", 1,
 						NULL);
   
   fx_synth_audio->chorus_enabled->port_value.ags_port_float = (gfloat) TRUE;
@@ -1834,7 +1834,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						     "port-value-is-pointer", FALSE,
 						     "port-value-type", G_TYPE_FLOAT,
 						     "port-value-size", sizeof(gfloat),
-						     "port-value-length", 2,
+						     "port-value-length", 1,
 						     NULL);
   
   fx_synth_audio->chorus_input_volume->port_value.ags_port_float = (gfloat) 1.0;
@@ -1854,7 +1854,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 2,
+						      "port-value-length", 1,
 						      NULL);
   
   fx_synth_audio->chorus_output_volume->port_value.ags_port_float = (gfloat) 1.0;
@@ -1874,7 +1874,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						       "port-value-is-pointer", FALSE,
 						       "port-value-type", G_TYPE_FLOAT,
 						       "port-value-size", sizeof(gfloat),
-						       "port-value-length", 2,
+						       "port-value-length", 1,
 						       NULL);
   
   fx_synth_audio->chorus_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
@@ -1894,7 +1894,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 2,
+						      "port-value-length", 1,
 						      NULL);
   
   fx_synth_audio->chorus_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
@@ -1914,7 +1914,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_FLOAT,
 					      "port-value-size", sizeof(gfloat),
-					      "port-value-length", 2,
+					      "port-value-length", 1,
 					      NULL);
   
   fx_synth_audio->chorus_depth->port_value.ags_port_float = (gfloat) 0.0;
@@ -1934,7 +1934,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_FLOAT,
 					    "port-value-size", sizeof(gfloat),
-					    "port-value-length", 2,
+					    "port-value-length", 1,
 					    NULL);
   
   fx_synth_audio->chorus_mix->port_value.ags_port_float = (gfloat) 0.5;
@@ -1954,7 +1954,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_FLOAT,
 					      "port-value-size", sizeof(gfloat),
-					      "port-value-length", 2,
+					      "port-value-length", 1,
 					      NULL);
   
   fx_synth_audio->chorus_delay->port_value.ags_port_float = (gfloat) 0.0;
@@ -1974,7 +1974,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						  "port-value-is-pointer", FALSE,
 						  "port-value-type", G_TYPE_FLOAT,
 						  "port-value-size", sizeof(gfloat),
-						  "port-value-length", 2,
+						  "port-value-length", 1,
 						  NULL);
   
   fx_synth_audio->low_pass_enabled->port_value.ags_port_float = (gfloat) FALSE;
@@ -1994,7 +1994,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_FLOAT,
 						"port-value-size", sizeof(gfloat),
-						"port-value-length", 2,
+						"port-value-length", 1,
 						NULL);
   
   fx_synth_audio->low_pass_q_lin->port_value.ags_port_float = (gfloat) 0.0;
@@ -2014,7 +2014,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 2,
+						      "port-value-length", 1,
 						      NULL);
   
   fx_synth_audio->low_pass_filter_gain->port_value.ags_port_float = (gfloat) 0.0;
@@ -2034,7 +2034,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						   "port-value-is-pointer", FALSE,
 						   "port-value-type", G_TYPE_FLOAT,
 						   "port-value-size", sizeof(gfloat),
-						   "port-value-length", 2,
+						   "port-value-length", 1,
 						   NULL);
   
   fx_synth_audio->high_pass_enabled->port_value.ags_port_float = (gfloat) FALSE;
@@ -2054,7 +2054,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						 "port-value-is-pointer", FALSE,
 						 "port-value-type", G_TYPE_FLOAT,
 						 "port-value-size", sizeof(gfloat),
-						 "port-value-length", 2,
+						 "port-value-length", 1,
 						 NULL);
   
   fx_synth_audio->high_pass_q_lin->port_value.ags_port_float = (gfloat) 0.0;
@@ -2074,7 +2074,7 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 						       "port-value-is-pointer", FALSE,
 						       "port-value-type", G_TYPE_FLOAT,
 						       "port-value-size", sizeof(gfloat),
-						       "port-value-length", 2,
+						       "port-value-length", 1,
 						       NULL);
   
   fx_synth_audio->high_pass_filter_gain->port_value.ags_port_float = (gfloat) 0.0;
@@ -4319,6 +4319,8 @@ ags_fx_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
 	channel_data = scope_data->channel_data[j];
 
+	channel_data->noise_util.buffer_length = buffer_size;
+
 	channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
 
 	channel_data->hq_pitch_util.buffer_length = buffer_size;
@@ -4672,6 +4674,19 @@ ags_fx_synth_audio_channel_data_alloc()
   g_rec_mutex_init(&(channel_data->strct_mutex));
 
   channel_data->parent = NULL;
+
+  /* noise util */
+  channel_data->noise_util.source = NULL;
+  channel_data->noise_util.source_stride = 1;
+  
+  channel_data->noise_util.destination = NULL;
+  channel_data->noise_util.destination_stride = 1;
+ 
+  channel_data->noise_util.buffer_length = 0;
+  channel_data->noise_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->noise_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->noise_util.volume = 0.0;
 
   /* HQ pitch util */
   channel_data->hq_pitch_linear_interpolate_util.source = NULL;

@@ -888,6 +888,24 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       g_value_unset(&value);
     }
 
+    /* noise volume */    
+    g_object_get(fx_synth_audio,
+		 "noise-gain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      channel_data->noise_util.volume = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
     /* pitch base key */
     channel_data->hq_pitch_util.base_key = (gdouble) midi_note - 48.0;
     
@@ -1675,8 +1693,21 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       break;
       }
     }
-    
-    //TODO:JK: implement me
+
+    if(channel_data->noise_util.volume != 0.0){
+      channel_data->noise_util.source = source->stream_current->data;
+
+      channel_data->noise_util.destination = source->stream_current->data;
+
+      channel_data->noise_util.samplerate = samplerate;
+      channel_data->noise_util.buffer_length = buffer_size;
+      channel_data->noise_util.format = format;
+
+      channel_data->noise_util.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
+      channel_data->noise_util.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
+      
+      ags_noise_util_compute(&(channel_data->noise_util));
+    }
 
     if(channel_data->hq_pitch_util.tuning != 0.0){
       channel_data->hq_pitch_util.source = source->stream_current->data;
