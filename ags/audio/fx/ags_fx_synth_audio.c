@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,9 +92,9 @@ static AgsPluginPort* ags_fx_synth_audio_get_synth_1_sync_lfo_frequency_plugin_p
 static AgsPluginPort* ags_fx_synth_audio_get_sequencer_enabled_plugin_port();
 static AgsPluginPort* ags_fx_synth_audio_get_sequencer_sign_plugin_port();
 
-static AgsPluginPort* ags_fx_synth_audio_get_pitch_tuning_plugin_port();
-
 static AgsPluginPort* ags_fx_synth_audio_get_noise_gain_plugin_port();
+
+static AgsPluginPort* ags_fx_synth_audio_get_pitch_tuning_plugin_port();
 
 static AgsPluginPort* ags_fx_synth_audio_get_chorus_enabled_plugin_port();
 static AgsPluginPort* ags_fx_synth_audio_get_chorus_input_volume_plugin_port();
@@ -160,8 +160,8 @@ const gchar* ags_fx_synth_audio_specifier[] = {
   "./synth-1-sync-lfo-frequency[0]",
   "./sequencer-enabled[0]",
   "./sequencer-sign[0]",
-  "./pitch-tuning[0]",
   "./noise-gain[0]",
+  "./pitch-tuning[0]",
   "./chorus-enabled[0]",
   "./chorus-input-volume[0]",
   "./chorus-output-volume[0]",
@@ -236,8 +236,8 @@ enum{
   PROP_SYNTH_0_OSCILLATOR,
   PROP_SYNTH_0_OCTAVE,
   PROP_SYNTH_0_KEY,
-  PROP_SYNTH_0_VOLUME,
   PROP_SYNTH_0_PHASE,
+  PROP_SYNTH_0_VOLUME,
   PROP_SYNTH_0_SYNC_ENABLED,
   PROP_SYNTH_0_SYNC_RELATIVE_ATTACK_FACTOR,
   PROP_SYNTH_0_SYNC_ATTACK_0,
@@ -251,8 +251,8 @@ enum{
   PROP_SYNTH_1_OSCILLATOR,
   PROP_SYNTH_1_OCTAVE,
   PROP_SYNTH_1_KEY,
-  PROP_SYNTH_1_VOLUME,
   PROP_SYNTH_1_PHASE,
+  PROP_SYNTH_1_VOLUME,
   PROP_SYNTH_1_SYNC_ENABLED,
   PROP_SYNTH_1_SYNC_RELATIVE_ATTACK_FACTOR,
   PROP_SYNTH_1_SYNC_ATTACK_0,
@@ -265,8 +265,8 @@ enum{
   PROP_SYNTH_1_SYNC_LFO_FREQUENCY,
   PROP_SEQUENCER_ENABLED,
   PROP_SEQUENCER_SIGN,
-  PROP_PITCH_TUNING,
   PROP_NOISE_GAIN,
+  PROP_PITCH_TUNING,
   PROP_CHORUS_ENABLED,
   PROP_CHORUS_INPUT_VOLUME,
   PROP_CHORUS_OUTPUT_VOLUME,
@@ -846,22 +846,6 @@ ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxSynthAudio:pitch-tuning:
-   *
-   * The pitch tuning.
-   * 
-   * Since: 3.14.0
-   */
-  param_spec = g_param_spec_object("pitch-tuning",
-				   i18n_pspec("pitch tuning of recall"),
-				   i18n_pspec("The pitch tuning"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PITCH_TUNING,
-				  param_spec);
-
-  /**
    * AgsFxSynthAudio:noise-gain:
    *
    * The noise gain.
@@ -875,6 +859,22 @@ ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOISE_GAIN,
+				  param_spec);
+
+  /**
+   * AgsFxSynthAudio:pitch-tuning:
+   *
+   * The pitch tuning.
+   * 
+   * Since: 3.14.0
+   */
+  param_spec = g_param_spec_object("pitch-tuning",
+				   i18n_pspec("pitch tuning of recall"),
+				   i18n_pspec("The pitch tuning"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PITCH_TUNING,
 				  param_spec);
 
   /**
@@ -1766,31 +1766,11 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
   ags_recall_add_port((AgsRecall *) fx_synth_audio,
 		      fx_synth_audio->sequencer_sign);
 
-  /* pitch tuning */
-  fx_synth_audio->pitch_tuning = g_object_new(AGS_TYPE_PORT,
-					      "plugin-name", ags_fx_synth_audio_plugin_name,
-					      "specifier", ags_fx_synth_audio_specifier[32],
-					      "control-port", ags_fx_synth_audio_control_port[32],
-					      "port-value-is-pointer", FALSE,
-					      "port-value-type", G_TYPE_FLOAT,
-					      "port-value-size", sizeof(gfloat),
-					      "port-value-length", 1,
-					      NULL);
-  
-  fx_synth_audio->pitch_tuning->port_value.ags_port_float = (gfloat) 0.0;
-
-  g_object_set(fx_synth_audio->pitch_tuning,
-	       "plugin-port", ags_fx_synth_audio_get_pitch_tuning_plugin_port(),
-	       NULL);
-
-  ags_recall_add_port((AgsRecall *) fx_synth_audio,
-		      fx_synth_audio->pitch_tuning);
-
   /* noise gain */
   fx_synth_audio->noise_gain = g_object_new(AGS_TYPE_PORT,
 					    "plugin-name", ags_fx_synth_audio_plugin_name,
-					    "specifier", ags_fx_synth_audio_specifier[33],
-					    "control-port", ags_fx_synth_audio_control_port[33],
+					    "specifier", ags_fx_synth_audio_specifier[32],
+					    "control-port", ags_fx_synth_audio_control_port[32],
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_FLOAT,
 					    "port-value-size", sizeof(gfloat),
@@ -1805,6 +1785,26 @@ ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio)
 
   ags_recall_add_port((AgsRecall *) fx_synth_audio,
 		      fx_synth_audio->noise_gain);
+
+  /* pitch tuning */
+  fx_synth_audio->pitch_tuning = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_fx_synth_audio_plugin_name,
+					      "specifier", ags_fx_synth_audio_specifier[33],
+					      "control-port", ags_fx_synth_audio_control_port[33],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_FLOAT,
+					      "port-value-size", sizeof(gfloat),
+					      "port-value-length", 1,
+					      NULL);
+  
+  fx_synth_audio->pitch_tuning->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_synth_audio->pitch_tuning,
+	       "plugin-port", ags_fx_synth_audio_get_pitch_tuning_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_synth_audio,
+		      fx_synth_audio->pitch_tuning);
 
   /* chorus enabled */
   fx_synth_audio->chorus_enabled = g_object_new(AGS_TYPE_PORT,
@@ -2980,33 +2980,6 @@ ags_fx_synth_audio_set_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
-  case PROP_PITCH_TUNING:
-  {
-    AgsPort *port;
-
-    port = (AgsPort *) g_value_get_object(value);
-
-    g_rec_mutex_lock(recall_mutex);
-
-    if(port == fx_synth_audio->pitch_tuning){
-      g_rec_mutex_unlock(recall_mutex);	
-
-      return;
-    }
-
-    if(fx_synth_audio->pitch_tuning != NULL){
-      g_object_unref(G_OBJECT(fx_synth_audio->pitch_tuning));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_synth_audio->pitch_tuning = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
   case PROP_NOISE_GAIN:
   {
     AgsPort *port;
@@ -3030,6 +3003,33 @@ ags_fx_synth_audio_set_property(GObject *gobject,
     }
 
     fx_synth_audio->noise_gain = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TUNING:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_synth_audio->pitch_tuning){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_synth_audio->pitch_tuning != NULL){
+      g_object_unref(G_OBJECT(fx_synth_audio->pitch_tuning));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_synth_audio->pitch_tuning = port;
       
     g_rec_mutex_unlock(recall_mutex);	
   }
@@ -3722,20 +3722,20 @@ ags_fx_synth_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
-  case PROP_PITCH_TUNING:
-  {
-    g_rec_mutex_lock(recall_mutex);
-
-    g_value_set_object(value, fx_synth_audio->pitch_tuning);
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
   case PROP_NOISE_GAIN:
   {
     g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, fx_synth_audio->noise_gain);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TUNING:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_synth_audio->pitch_tuning);
       
     g_rec_mutex_unlock(recall_mutex);	
   }
@@ -4088,6 +4088,8 @@ ags_fx_synth_audio_dispose(GObject *gobject)
 
     fx_synth_audio->synth_1_sync_lfo_frequency = NULL;
   }
+
+  //TODO:JK: implement me
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_synth_audio_parent_class)->dispose(gobject);
@@ -4250,6 +4252,8 @@ ags_fx_synth_audio_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(fx_synth_audio->synth_1_sync_lfo_frequency));
   }
 
+  //TODO:JK: implement me
+  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_synth_audio_parent_class)->finalize(gobject);
 }
@@ -4686,6 +4690,10 @@ ags_fx_synth_audio_channel_data_alloc()
   channel_data->noise_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   channel_data->noise_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
+  channel_data->noise_util.mode = AGS_NOISE_UTIL_WHITE_NOISE;
+
+  channel_data->noise_util.frequency = AGS_NOISE_UTIL_DEFAULT_FREQUENCY;
+  
   channel_data->noise_util.volume = 0.0;
 
   /* HQ pitch util */
@@ -6102,45 +6110,6 @@ ags_fx_synth_audio_get_sequencer_sign_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_synth_audio_get_pitch_tuning_plugin_port()
-{
-  static AgsPluginPort *plugin_port = NULL;
-
-  static GMutex mutex;
-
-  g_mutex_lock(&mutex);
-  
-  if(plugin_port == NULL){
-    plugin_port = ags_plugin_port_new();
-    g_object_ref(plugin_port);
-    
-    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
-			   AGS_PLUGIN_PORT_CONTROL);
-
-    plugin_port->port_index = 0;
-
-    /* range */
-    g_value_init(plugin_port->default_value,
-		 G_TYPE_FLOAT);
-    g_value_init(plugin_port->lower_value,
-		 G_TYPE_FLOAT);
-    g_value_init(plugin_port->upper_value,
-		 G_TYPE_FLOAT);
-
-    g_value_set_float(plugin_port->default_value,
-		      0.0);
-    g_value_set_float(plugin_port->lower_value,
-		      -1200.0);
-    g_value_set_float(plugin_port->upper_value,
-		      1200.0);
-  }
-
-  g_mutex_unlock(&mutex);
-    
-  return(plugin_port);
-}
-
-static AgsPluginPort*
 ags_fx_synth_audio_get_noise_gain_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
@@ -6172,6 +6141,45 @@ ags_fx_synth_audio_get_noise_gain_plugin_port()
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
 		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_synth_audio_get_pitch_tuning_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -1200.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1200.0);
   }
 
   g_mutex_unlock(&mutex);

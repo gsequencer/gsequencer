@@ -29,6 +29,7 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_fm_synth_util.h>
+#include <ags/audio/ags_noise_util.h>
 #include <ags/audio/ags_hq_pitch_util.h>
 #include <ags/audio/ags_chorus_util.h>
 #include <ags/audio/ags_fluid_iir_filter_util.h>
@@ -43,6 +44,8 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_FM_SYNTH_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FX_FM_SYNTH_AUDIO))
 #define AGS_IS_FX_FM_SYNTH_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_FM_SYNTH_AUDIO))
 #define AGS_FX_FM_SYNTH_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_FM_SYNTH_AUDIO, AgsFxFMSynthAudioClass))
+
+#define AGS_FX_FM_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE (65536)
 
 typedef struct _AgsFxFMSynthAudio AgsFxFMSynthAudio;
 typedef struct _AgsFxFMSynthAudioScopeData AgsFxFMSynthAudioScopeData;
@@ -154,6 +157,8 @@ struct _AgsFxFMSynthAudioChannelData
   AgsFMSynthUtil synth_1;
   AgsFMSynthUtil synth_2;
 
+  AgsNoiseUtil noise_util;
+
   AgsHQPitchUtil hq_pitch_util;
   AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
   
@@ -177,6 +182,15 @@ struct _AgsFxFMSynthAudioInputData
 };
 
 GType ags_fx_fm_synth_audio_get_type();
+
+AgsFxFMSynthAudioScopeData* ags_fx_fm_synth_audio_scope_data_alloc();
+void ags_fx_fm_synth_audio_scope_data_free(AgsFxFMSynthAudioScopeData *scope_data);
+
+AgsFxFMSynthAudioChannelData* ags_fx_fm_synth_audio_channel_data_alloc();
+void ags_fx_fm_synth_audio_channel_data_free(AgsFxFMSynthAudioChannelData *channel_data);
+
+AgsFxFMSynthAudioInputData* ags_fx_fm_synth_audio_input_data_alloc();
+void ags_fx_fm_synth_audio_input_data_free(AgsFxFMSynthAudioInputData *input_data);
 
 /* instantiate */
 AgsFxFMSynthAudio* ags_fx_fm_synth_audio_new(AgsAudio *audio);
