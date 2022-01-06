@@ -63,9 +63,9 @@ ags_fx_fm_synth_recycling_get_type()
     };
 
     ags_type_fx_fm_synth_recycling = g_type_register_static(AGS_TYPE_FX_NOTATION_RECYCLING,
-							 "AgsFxFMSynthRecycling",
-							 &ags_fx_fm_synth_recycling_info,
-							 0);
+							    "AgsFxFMSynthRecycling",
+							    &ags_fx_fm_synth_recycling_info,
+							    0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_fm_synth_recycling);
   }

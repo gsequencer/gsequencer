@@ -1,3 +1,11 @@
+ags (3.15.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsHybridFMSynth
+	* implemented ags-fx-fm-synth
+	* implemented noise in ags-fx-synth
+	* implemented AgsNoiseUtil
+
 ags (3.14.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

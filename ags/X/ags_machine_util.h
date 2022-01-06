@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,7 @@ GtkWidget* ags_machine_util_new_fm_synth();
 GtkWidget* ags_machine_util_new_syncsynth();
 GtkWidget* ags_machine_util_new_fm_syncsynth();
 GtkWidget* ags_machine_util_new_hybrid_synth();
+GtkWidget* ags_machine_util_new_hybrid_fm_synth();
 GtkWidget* ags_machine_util_new_ffplayer();
 GtkWidget* ags_machine_util_new_sf2_synth();
 GtkWidget* ags_machine_util_new_pitch_sampler();

@@ -48,6 +48,7 @@
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
 #include <ags/X/machine/ags_hybrid_synth.h>
+#include <ags/X/machine/ags_hybrid_fm_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
@@ -688,10 +689,29 @@ ags_menu_action_add_hybrid_synth_callback(GtkWidget *menu_item, gpointer data)
   
   application_context = ags_application_context_get_instance();
 
-  /* create hybrid_synth */
+  /* create hybrid synth */
   hybrid_synth = (AgsHybridSynth *) ags_machine_util_new_hybrid_synth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(hybrid_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_menu_action_add_hybrid_fm_synth_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsHybridFMSynth *hybrid_fm_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create FM hybrid synth */
+  hybrid_fm_synth = (AgsHybridFMSynth *) ags_machine_util_new_hybrid_fm_synth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(hybrid_fm_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 }

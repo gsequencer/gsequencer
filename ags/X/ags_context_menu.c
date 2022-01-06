@@ -204,6 +204,9 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Hybrid Synth"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Hybrid FM Synth"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
 #ifdef AGS_WITH_LIBINSTPATCH
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("FPlayer"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
@@ -390,6 +393,10 @@ ags_context_menu_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT (list2->data), "activate",
 		   G_CALLBACK (ags_menu_action_add_hybrid_synth_callback), (gpointer) context_menu);
+  list2 = list2->next;
+
+  g_signal_connect(G_OBJECT (list2->data), "activate",
+		   G_CALLBACK (ags_menu_action_add_hybrid_fm_synth_callback), (gpointer) context_menu);
   list2 = list2->next;
 
 #ifdef AGS_WITH_LIBINSTPATCH

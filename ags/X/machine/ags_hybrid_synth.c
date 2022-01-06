@@ -58,7 +58,7 @@ void ags_hybrid_synth_output_map_recall(AgsHybridSynth *hybrid_synth,
 
 /**
  * SECTION:ags_hybrid_synth
- * @short_description: hybrid_synth
+ * @short_description: hybrid synth
  * @title: AgsHybridSynth
  * @section_id:
  * @include: ags/X/machine/ags_hybrid_synth.h
