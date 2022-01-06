@@ -1172,7 +1172,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
 
     channel_data->synth_0.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
     channel_data->synth_0.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
-    
+
     switch(channel_data->synth_0.synth_oscillator_mode){
     case AGS_SYNTH_OSCILLATOR_SIN:
     {

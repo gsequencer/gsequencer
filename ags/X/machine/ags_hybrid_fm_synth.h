@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_FM_HYBRID_SYNTH_H__
-#define __AGS_FM_HYBRID_SYNTH_H__
+#ifndef __AGS_HYBRID_FM_SYNTH_H__
+#define __AGS_HYBRID_FM_SYNTH_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -34,17 +34,17 @@
 
 G_BEGIN_DECLS
 
-#define AGS_TYPE_FM_HYBRID_SYNTH                (ags_fm_hybrid_synth_get_type())
-#define AGS_FM_HYBRID_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FM_HYBRID_SYNTH, AgsFMHybridSynth))
-#define AGS_FM_HYBRID_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FM_HYBRID_SYNTH, AgsFMHybridSynthClass))
-#define AGS_IS_FM_HYBRID_SYNTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_FM_HYBRID_SYNTH))
-#define AGS_IS_FM_HYBRID_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_FM_HYBRID_SYNTH))
-#define AGS_FM_HYBRID_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_FM_HYBRID_SYNTH, AgsFMHybridSynthClass))
+#define AGS_TYPE_HYBRID_FM_SYNTH                (ags_hybrid_fm_synth_get_type())
+#define AGS_HYBRID_FM_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HYBRID_FM_SYNTH, AgsHybridFMSynth))
+#define AGS_HYBRID_FM_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HYBRID_FM_SYNTH, AgsHybridFMSynthClass))
+#define AGS_IS_HYBRID_FM_SYNTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_HYBRID_FM_SYNTH))
+#define AGS_IS_HYBRID_FM_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_HYBRID_FM_SYNTH))
+#define AGS_HYBRID_FM_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_HYBRID_FM_SYNTH, AgsHybridFMSynthClass))
 
-typedef struct _AgsFMHybridSynth AgsFMHybridSynth;
-typedef struct _AgsFMHybridSynthClass AgsFMHybridSynthClass;
+typedef struct _AgsHybridFMSynth AgsHybridFMSynth;
+typedef struct _AgsHybridFMSynthClass AgsHybridFMSynthClass;
 
-struct _AgsFMHybridSynth
+struct _AgsHybridFMSynth
 {
   AgsMachine machine;
 
@@ -143,15 +143,15 @@ struct _AgsFMHybridSynth
   AgsDial *chorus_delay;
 };
 
-struct _AgsFMHybridSynthClass
+struct _AgsHybridFMSynthClass
 {
   AgsMachineClass machine;
 };
 
-GType ags_fm_hybrid_synth_get_type(void);
+GType ags_hybrid_fm_synth_get_type(void);
 
-AgsFMHybridSynth* ags_fm_hybrid_synth_new(GObject *soundcard);
+AgsHybridFMSynth* ags_hybrid_fm_synth_new(GObject *soundcard);
 
 G_END_DECLS
 
-#endif /*__AGS_FM_HYBRID_SYNTH_H__*/
+#endif /*__AGS_HYBRID_FM_SYNTH_H__*/

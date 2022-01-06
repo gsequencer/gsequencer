@@ -2824,8 +2824,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_equalizer10.h \
 	ags/X/machine/ags_equalizer10_callbacks.h \
-	ags/X/machine/ags_fm_hybrid_synth_callbacks.h \
-	ags/X/machine/ags_fm_hybrid_synth.h \
+	ags/X/machine/ags_hybrid_fm_synth_callbacks.h \
+	ags/X/machine/ags_hybrid_fm_synth.h \
 	ags/X/machine/ags_fm_oscillator_callbacks.h \
 	ags/X/machine/ags_fm_oscillator.h \
 	ags/X/machine/ags_fm_syncsynth.h \
@@ -2951,8 +2951,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_equalizer10.c \
 	ags/X/machine/ags_equalizer10_callbacks.c \
-	ags/X/machine/ags_fm_hybrid_synth.c \
-	ags/X/machine/ags_fm_hybrid_synth_callbacks.c \
+	ags/X/machine/ags_hybrid_fm_synth.c \
+	ags/X/machine/ags_hybrid_fm_synth_callbacks.c \
 	ags/X/machine/ags_fm_oscillator_callbacks.c \
 	ags/X/machine/ags_fm_oscillator.c \
 	ags/X/machine/ags_fm_syncsynth.c \

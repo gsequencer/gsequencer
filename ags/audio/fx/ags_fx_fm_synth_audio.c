@@ -462,15 +462,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec); 
 
   /**
-   * AgsFxFMSynthAudio:synth-0-oscillator:
+   * AgsFxFMSynthAudio:synth-1-oscillator:
    *
-   * The synth-0 oscillator.
+   * The synth-1 oscillator.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-oscillator",
-				   i18n_pspec("synth-0 oscillator of recall"),
-				   i18n_pspec("The synth-0's oscillator"),
+  param_spec = g_param_spec_object("synth-1-oscillator",
+				   i18n_pspec("synth-1 oscillator of recall"),
+				   i18n_pspec("The synth-1's oscillator"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -478,15 +478,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-octave:
+   * AgsFxFMSynthAudio:synth-1-octave:
    *
-   * The synth-0 octave.
+   * The synth-1 octave.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-octave",
-				   i18n_pspec("synth-0 octave of recall"),
-				   i18n_pspec("The synth-0's octave"),
+  param_spec = g_param_spec_object("synth-1-octave",
+				   i18n_pspec("synth-1 octave of recall"),
+				   i18n_pspec("The synth-1's octave"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -494,15 +494,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-key:
+   * AgsFxFMSynthAudio:synth-1-key:
    *
-   * The synth-0 key.
+   * The synth-1 key.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-key",
-				   i18n_pspec("synth-0 key of recall"),
-				   i18n_pspec("The synth-0's key"),
+  param_spec = g_param_spec_object("synth-1-key",
+				   i18n_pspec("synth-1 key of recall"),
+				   i18n_pspec("The synth-1's key"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -510,15 +510,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-phase:
+   * AgsFxFMSynthAudio:synth-1-phase:
    *
-   * The synth-0 phase.
+   * The synth-1 phase.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-phase",
-				   i18n_pspec("synth-0 phase of recall"),
-				   i18n_pspec("The synth-0's phase"),
+  param_spec = g_param_spec_object("synth-1-phase",
+				   i18n_pspec("synth-1 phase of recall"),
+				   i18n_pspec("The synth-1's phase"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -526,15 +526,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-volume:
+   * AgsFxFMSynthAudio:synth-1-volume:
    *
-   * The synth-0 volume.
+   * The synth-1 volume.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-volume",
-				   i18n_pspec("synth-0 volume of recall"),
-				   i18n_pspec("The synth-0's volume"),
+  param_spec = g_param_spec_object("synth-1-volume",
+				   i18n_pspec("synth-1 volume of recall"),
+				   i18n_pspec("The synth-1's volume"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -542,15 +542,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-oscillator:
+   * AgsFxFMSynthAudio:synth-1-lfo-oscillator:
    *
-   * The synth-0 lfo-oscillator.
+   * The synth-1 lfo-oscillator.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-oscillator",
-				   i18n_pspec("synth-0 LFO oscillator of recall"),
-				   i18n_pspec("The synth-0's LFO oscillator"),
+  param_spec = g_param_spec_object("synth-1-lfo-oscillator",
+				   i18n_pspec("synth-1 LFO oscillator of recall"),
+				   i18n_pspec("The synth-1's LFO oscillator"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -558,15 +558,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-frequency:
+   * AgsFxFMSynthAudio:synth-1-lfo-frequency:
    *
-   * The synth-0 LFO frequency.
+   * The synth-1 LFO frequency.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-frequency",
-				   i18n_pspec("synth-0 LFO frequency of recall"),
-				   i18n_pspec("The synth-0's LFO frequency"),
+  param_spec = g_param_spec_object("synth-1-lfo-frequency",
+				   i18n_pspec("synth-1 LFO frequency of recall"),
+				   i18n_pspec("The synth-1's LFO frequency"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -574,15 +574,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-depth:
+   * AgsFxFMSynthAudio:synth-1-lfo-depth:
    *
-   * The synth-0 LFO depth.
+   * The synth-1 LFO depth.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-depth",
-				   i18n_pspec("synth-0 LFO depth of recall"),
-				   i18n_pspec("The synth-0's LFO depth"),
+  param_spec = g_param_spec_object("synth-1-lfo-depth",
+				   i18n_pspec("synth-1 LFO depth of recall"),
+				   i18n_pspec("The synth-1's LFO depth"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -590,15 +590,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-tuning:
+   * AgsFxFMSynthAudio:synth-1-lfo-tuning:
    *
-   * The synth-0 LFO tuning.
+   * The synth-1 LFO tuning.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-tuning",
-				   i18n_pspec("synth-0 LFO tuning of recall"),
-				   i18n_pspec("The synth-0's LFO tuning"),
+  param_spec = g_param_spec_object("synth-1-lfo-tuning",
+				   i18n_pspec("synth-1 LFO tuning of recall"),
+				   i18n_pspec("The synth-1's LFO tuning"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -606,15 +606,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-oscillator:
+   * AgsFxFMSynthAudio:synth-2-oscillator:
    *
-   * The synth-0 oscillator.
+   * The synth-2 oscillator.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-oscillator",
-				   i18n_pspec("synth-0 oscillator of recall"),
-				   i18n_pspec("The synth-0's oscillator"),
+  param_spec = g_param_spec_object("synth-2-oscillator",
+				   i18n_pspec("synth-2 oscillator of recall"),
+				   i18n_pspec("The synth-2's oscillator"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -622,15 +622,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-octave:
+   * AgsFxFMSynthAudio:synth-2-octave:
    *
-   * The synth-0 octave.
+   * The synth-2 octave.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-octave",
-				   i18n_pspec("synth-0 octave of recall"),
-				   i18n_pspec("The synth-0's octave"),
+  param_spec = g_param_spec_object("synth-2-octave",
+				   i18n_pspec("synth-2 octave of recall"),
+				   i18n_pspec("The synth-2's octave"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -638,15 +638,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-key:
+   * AgsFxFMSynthAudio:synth-2-key:
    *
-   * The synth-0 key.
+   * The synth-2 key.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-key",
-				   i18n_pspec("synth-0 key of recall"),
-				   i18n_pspec("The synth-0's key"),
+  param_spec = g_param_spec_object("synth-2-key",
+				   i18n_pspec("synth-2 key of recall"),
+				   i18n_pspec("The synth-2's key"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -654,15 +654,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-phase:
+   * AgsFxFMSynthAudio:synth-2-phase:
    *
-   * The synth-0 phase.
+   * The synth-2 phase.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-phase",
-				   i18n_pspec("synth-0 phase of recall"),
-				   i18n_pspec("The synth-0's phase"),
+  param_spec = g_param_spec_object("synth-2-phase",
+				   i18n_pspec("synth-2 phase of recall"),
+				   i18n_pspec("The synth-2's phase"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -670,15 +670,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-volume:
+   * AgsFxFMSynthAudio:synth-2-volume:
    *
-   * The synth-0 volume.
+   * The synth-2 volume.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-volume",
-				   i18n_pspec("synth-0 volume of recall"),
-				   i18n_pspec("The synth-0's volume"),
+  param_spec = g_param_spec_object("synth-2-volume",
+				   i18n_pspec("synth-2 volume of recall"),
+				   i18n_pspec("The synth-2's volume"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -686,15 +686,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-oscillator:
+   * AgsFxFMSynthAudio:synth-2-lfo-oscillator:
    *
-   * The synth-0 lfo-oscillator.
+   * The synth-2 lfo-oscillator.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-oscillator",
-				   i18n_pspec("synth-0 LFO oscillator of recall"),
-				   i18n_pspec("The synth-0's LFO oscillator"),
+  param_spec = g_param_spec_object("synth-2-lfo-oscillator",
+				   i18n_pspec("synth-2 LFO oscillator of recall"),
+				   i18n_pspec("The synth-2's LFO oscillator"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -702,15 +702,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-frequency:
+   * AgsFxFMSynthAudio:synth-2-lfo-frequency:
    *
-   * The synth-0 LFO frequency.
+   * The synth-2 LFO frequency.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-frequency",
-				   i18n_pspec("synth-0 LFO frequency of recall"),
-				   i18n_pspec("The synth-0's LFO frequency"),
+  param_spec = g_param_spec_object("synth-2-lfo-frequency",
+				   i18n_pspec("synth-2 LFO frequency of recall"),
+				   i18n_pspec("The synth-2's LFO frequency"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -718,15 +718,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-depth:
+   * AgsFxFMSynthAudio:synth-2-lfo-depth:
    *
-   * The synth-0 LFO depth.
+   * The synth-2 LFO depth.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-depth",
-				   i18n_pspec("synth-0 LFO depth of recall"),
-				   i18n_pspec("The synth-0's LFO depth"),
+  param_spec = g_param_spec_object("synth-2-lfo-depth",
+				   i18n_pspec("synth-2 LFO depth of recall"),
+				   i18n_pspec("The synth-2's LFO depth"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -734,15 +734,15 @@ ags_fx_fm_synth_audio_class_init(AgsFxFMSynthAudioClass *fx_fm_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxFMSynthAudio:synth-0-lfo-tuning:
+   * AgsFxFMSynthAudio:synth-2-lfo-tuning:
    *
-   * The synth-0 LFO tuning.
+   * The synth-2 LFO tuning.
    * 
    * Since: 3.15.0
    */
-  param_spec = g_param_spec_object("synth-0-lfo-tuning",
-				   i18n_pspec("synth-0 LFO tuning of recall"),
-				   i18n_pspec("The synth-0's LFO tuning"),
+  param_spec = g_param_spec_object("synth-2-lfo-tuning",
+				   i18n_pspec("synth-2 LFO tuning of recall"),
+				   i18n_pspec("The synth-2's LFO tuning"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -1192,7 +1192,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 							  "port-value-length", 1,
 							  NULL);
   
-  fx_fm_synth_audio->synth_0_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
+  fx_fm_synth_audio->synth_0_lfo_frequency->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_fm_synth_audio->synth_0_lfo_frequency,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_0_lfo_frequency_plugin_port(),
@@ -1212,7 +1212,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 						      "port-value-length", 1,
 						      NULL);
   
-  fx_fm_synth_audio->synth_0_lfo_depth->port_value.ags_port_float = (gfloat) 1.0;
+  fx_fm_synth_audio->synth_0_lfo_depth->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_fm_synth_audio->synth_0_lfo_depth,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_0_lfo_depth_plugin_port(),
@@ -1232,7 +1232,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 						       "port-value-length", 1,
 						       NULL);
   
-  fx_fm_synth_audio->synth_0_lfo_tuning->port_value.ags_port_float = (gfloat) 0.0;
+  fx_fm_synth_audio->synth_0_lfo_tuning->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
 
   g_object_set(fx_fm_synth_audio->synth_0_lfo_tuning,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_0_lfo_tuning_plugin_port(),
@@ -1372,7 +1372,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 							  "port-value-length", 1,
 							  NULL);
   
-  fx_fm_synth_audio->synth_1_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
+  fx_fm_synth_audio->synth_1_lfo_frequency->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_fm_synth_audio->synth_1_lfo_frequency,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_1_lfo_frequency_plugin_port(),
@@ -1392,7 +1392,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 						      "port-value-length", 1,
 						      NULL);
   
-  fx_fm_synth_audio->synth_1_lfo_depth->port_value.ags_port_float = (gfloat) 1.0;
+  fx_fm_synth_audio->synth_1_lfo_depth->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_fm_synth_audio->synth_1_lfo_depth,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_1_lfo_depth_plugin_port(),
@@ -1412,7 +1412,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 						       "port-value-length", 1,
 						       NULL);
   
-  fx_fm_synth_audio->synth_1_lfo_tuning->port_value.ags_port_float = (gfloat) 0.0;
+  fx_fm_synth_audio->synth_1_lfo_tuning->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
 
   g_object_set(fx_fm_synth_audio->synth_1_lfo_tuning,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_1_lfo_tuning_plugin_port(),
@@ -1532,7 +1532,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 							  "port-value-length", 1,
 							  NULL);
   
-  fx_fm_synth_audio->synth_2_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
+  fx_fm_synth_audio->synth_2_lfo_frequency->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_fm_synth_audio->synth_2_lfo_frequency,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_2_lfo_frequency_plugin_port(),
@@ -1552,7 +1552,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 						      "port-value-length", 1,
 						      NULL);
   
-  fx_fm_synth_audio->synth_2_lfo_depth->port_value.ags_port_float = (gfloat) 1.0;
+  fx_fm_synth_audio->synth_2_lfo_depth->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_fm_synth_audio->synth_2_lfo_depth,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_2_lfo_depth_plugin_port(),
@@ -1572,7 +1572,7 @@ ags_fx_fm_synth_audio_init(AgsFxFMSynthAudio *fx_fm_synth_audio)
 						       "port-value-length", 1,
 						       NULL);
   
-  fx_fm_synth_audio->synth_2_lfo_tuning->port_value.ags_port_float = (gfloat) 0.0;
+  fx_fm_synth_audio->synth_2_lfo_tuning->port_value.ags_port_float = (gfloat) AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
 
   g_object_set(fx_fm_synth_audio->synth_2_lfo_tuning,
 	       "plugin-port", ags_fx_fm_synth_audio_get_synth_2_lfo_tuning_plugin_port(),
@@ -3710,6 +3710,12 @@ ags_fx_fm_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
 	channel_data = scope_data->channel_data[j];
 
+	channel_data->synth_0.buffer_length = buffer_size;
+
+	channel_data->synth_1.buffer_length = buffer_size;
+
+	channel_data->synth_2.buffer_length = buffer_size;
+
 	channel_data->noise_util.buffer_length = buffer_size;
 
 	channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
@@ -3766,6 +3772,12 @@ ags_fx_fm_synth_audio_notify_format_callback(GObject *gobject,
 	AgsFxFMSynthAudioChannelData *channel_data;
 
 	channel_data = scope_data->channel_data[j];
+
+	channel_data->synth_0.format = format;
+
+	channel_data->synth_1.format = format;
+
+	channel_data->synth_2.format = format;
 
 	channel_data->hq_pitch_linear_interpolate_util.format = format;
 
@@ -3853,6 +3865,12 @@ ags_fx_fm_synth_audio_notify_samplerate_callback(GObject *gobject,
 
 	channel_data = scope_data->channel_data[j];
 
+	channel_data->synth_0.samplerate = samplerate;
+
+	channel_data->synth_1.samplerate = samplerate;
+
+	channel_data->synth_2.samplerate = samplerate;
+
 	channel_data->hq_pitch_linear_interpolate_util.samplerate = samplerate;
 
 	channel_data->hq_pitch_util.samplerate = samplerate;
@@ -3934,6 +3952,18 @@ ags_fx_fm_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_fm_synth_audio_channel_data_alloc();
 
+	  channel_data->synth_0.buffer_length = buffer_size;
+	  channel_data->synth_0.format = format;
+	  channel_data->synth_0.samplerate = samplerate;
+	  
+	  channel_data->synth_1.buffer_length = buffer_size;
+	  channel_data->synth_1.format = format;
+	  channel_data->synth_1.samplerate = samplerate;
+	  
+	  channel_data->synth_2.buffer_length = buffer_size;
+	  channel_data->synth_2.format = format;
+	  channel_data->synth_2.samplerate = samplerate;
+	  
 	  channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
 	  channel_data->hq_pitch_linear_interpolate_util.format = format;
 	  channel_data->hq_pitch_linear_interpolate_util.samplerate = samplerate;
@@ -4066,6 +4096,60 @@ ags_fx_fm_synth_audio_channel_data_alloc()
 
   channel_data->parent = NULL;
 
+  /* synth 0 */
+  channel_data->synth_0.source = NULL;
+  channel_data->synth_0.source_stride = 1;
+ 
+  channel_data->synth_0.buffer_length = 0;
+  channel_data->synth_0.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->synth_0.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->synth_0.frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
+  channel_data->synth_0.phase = 0.0;
+  channel_data->synth_0.volume = 0.333;
+
+  channel_data->synth_0.lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+  channel_data->synth_0.lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
+  channel_data->synth_0.lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+  channel_data->synth_0.tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
+  
+  /* synth 1 */
+  channel_data->synth_1.source = NULL;
+  channel_data->synth_1.source_stride = 1;
+ 
+  channel_data->synth_1.buffer_length = 0;
+  channel_data->synth_1.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->synth_1.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->synth_1.frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
+  channel_data->synth_1.phase = 0.0;
+  channel_data->synth_1.volume = 0.333;
+
+  channel_data->synth_1.lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+  channel_data->synth_1.lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
+  channel_data->synth_1.lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+  channel_data->synth_1.tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
+  
+  /* synth 2 */
+  channel_data->synth_2.source = NULL;
+  channel_data->synth_2.source_stride = 1;
+ 
+  channel_data->synth_2.buffer_length = 0;
+  channel_data->synth_2.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  channel_data->synth_2.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->synth_2.frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
+  channel_data->synth_2.phase = 0.0;
+  channel_data->synth_2.volume = 0.333;
+
+  channel_data->synth_2.lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+  channel_data->synth_2.lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
+  channel_data->synth_2.lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+  channel_data->synth_2.tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
+  
   /* noise util */
   channel_data->noise_util.source = NULL;
   channel_data->noise_util.source_stride = 1;
@@ -4425,7 +4509,7 @@ ags_fx_fm_synth_audio_get_synth_0_volume_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -4503,11 +4587,11 @@ ags_fx_fm_synth_audio_get_synth_0_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.01);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
-		      12.0);
+		      16.0);
   }
 
   g_mutex_unlock(&mutex);
@@ -4542,7 +4626,7 @@ ags_fx_fm_synth_audio_get_synth_0_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -4777,7 +4861,7 @@ ags_fx_fm_synth_audio_get_synth_1_volume_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -4855,11 +4939,11 @@ ags_fx_fm_synth_audio_get_synth_1_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.01);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
-		      12.0);
+		      16.0);
   }
 
   g_mutex_unlock(&mutex);
@@ -4894,7 +4978,7 @@ ags_fx_fm_synth_audio_get_synth_1_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -4933,7 +5017,7 @@ ags_fx_fm_synth_audio_get_synth_1_lfo_tuning_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_TUNING);
     g_value_set_float(plugin_port->lower_value,
 		      -1200.0);
     g_value_set_float(plugin_port->upper_value,
@@ -5129,7 +5213,7 @@ ags_fx_fm_synth_audio_get_synth_2_volume_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -5207,11 +5291,11 @@ ags_fx_fm_synth_audio_get_synth_2_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.01);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
-		      12.0);
+		      16.0);
   }
 
   g_mutex_unlock(&mutex);
@@ -5246,7 +5330,7 @@ ags_fx_fm_synth_audio_get_synth_2_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -5285,7 +5369,7 @@ ags_fx_fm_synth_audio_get_synth_2_lfo_tuning_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      AGS_FM_SYNTH_UTIL_DEFAULT_TUNING);
     g_value_set_float(plugin_port->lower_value,
 		      -1200.0);
     g_value_set_float(plugin_port->upper_value,
@@ -5717,7 +5801,7 @@ ags_fx_fm_synth_audio_get_chorus_mix_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      0.5);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,

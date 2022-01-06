@@ -63,9 +63,9 @@ ags_fx_fm_synth_channel_processor_get_type()
     };
 
     ags_type_fx_fm_synth_channel_processor = g_type_register_static(AGS_TYPE_FX_NOTATION_CHANNEL_PROCESSOR,
-								 "AgsFxFMSynthChannelProcessor",
-								 &ags_fx_fm_synth_channel_processor_info,
-								 0);
+								    "AgsFxFMSynthChannelProcessor",
+								    &ags_fx_fm_synth_channel_processor_info,
+								    0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_fm_synth_channel_processor);
   }

@@ -35,6 +35,7 @@
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
 #include <ags/X/machine/ags_hybrid_synth.h>
+#include <ags/X/machine/ags_hybrid_fm_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
@@ -618,6 +619,9 @@ ags_window_standard_machine_counter_alloc()
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_HYBRID_SYNTH, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_HYBRID_FM_SYNTH, 0));
 
 #ifdef AGS_WITH_LIBINSTPATCH
   machine_counter = g_list_prepend(machine_counter,
