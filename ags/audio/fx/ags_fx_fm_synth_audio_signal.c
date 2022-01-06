@@ -1276,7 +1276,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     }
     break;
     }
-    
+
     if(channel_data->noise_util.volume != 0.0){
       channel_data->noise_util.source = source->stream_current->data;
 
@@ -1293,7 +1293,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
       
       ags_noise_util_compute(&(channel_data->noise_util));
     }
-
+    
     if(channel_data->hq_pitch_util.tuning != 0.0){
       channel_data->hq_pitch_util.source = source->stream_current->data;
 

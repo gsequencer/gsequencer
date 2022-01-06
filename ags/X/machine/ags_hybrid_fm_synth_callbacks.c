@@ -68,7 +68,7 @@ ags_hybrid_fm_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsHybri
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -119,7 +119,7 @@ ags_hybrid_fm_synth_synth_0_octave_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -170,7 +170,7 @@ ags_hybrid_fm_synth_synth_0_key_callback(AgsDial *dial, AgsHybridFMSynth *hybrid
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -221,7 +221,7 @@ ags_hybrid_fm_synth_synth_0_phase_callback(AgsDial *dial, AgsHybridFMSynth *hybr
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -272,7 +272,7 @@ ags_hybrid_fm_synth_synth_0_volume_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -323,7 +323,7 @@ ags_hybrid_fm_synth_synth_0_lfo_oscillator_callback(GtkComboBox *combo_box, AgsH
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -374,7 +374,7 @@ ags_hybrid_fm_synth_synth_0_lfo_frequency_callback(GtkSpinButton *spin_button, A
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -425,7 +425,7 @@ ags_hybrid_fm_synth_synth_0_lfo_depth_callback(AgsDial *dial, AgsHybridFMSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -476,7 +476,7 @@ ags_hybrid_fm_synth_synth_0_lfo_tuning_callback(AgsDial *dial, AgsHybridFMSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -527,7 +527,7 @@ ags_hybrid_fm_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsHybri
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -578,7 +578,7 @@ ags_hybrid_fm_synth_synth_1_octave_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -629,7 +629,7 @@ ags_hybrid_fm_synth_synth_1_key_callback(AgsDial *dial, AgsHybridFMSynth *hybrid
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -680,7 +680,7 @@ ags_hybrid_fm_synth_synth_1_phase_callback(AgsDial *dial, AgsHybridFMSynth *hybr
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -731,7 +731,7 @@ ags_hybrid_fm_synth_synth_1_volume_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -782,7 +782,7 @@ ags_hybrid_fm_synth_synth_1_lfo_oscillator_callback(GtkComboBox *combo_box, AgsH
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -833,7 +833,7 @@ ags_hybrid_fm_synth_synth_1_lfo_frequency_callback(GtkSpinButton *spin_button, A
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -884,7 +884,7 @@ ags_hybrid_fm_synth_synth_1_lfo_depth_callback(AgsDial *dial, AgsHybridFMSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -935,7 +935,7 @@ ags_hybrid_fm_synth_synth_1_lfo_tuning_callback(AgsDial *dial, AgsHybridFMSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -986,7 +986,7 @@ ags_hybrid_fm_synth_synth_2_oscillator_callback(GtkComboBox *combo_box, AgsHybri
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1037,7 +1037,7 @@ ags_hybrid_fm_synth_synth_2_octave_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1088,7 +1088,7 @@ ags_hybrid_fm_synth_synth_2_key_callback(AgsDial *dial, AgsHybridFMSynth *hybrid
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1139,7 +1139,7 @@ ags_hybrid_fm_synth_synth_2_phase_callback(AgsDial *dial, AgsHybridFMSynth *hybr
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1190,7 +1190,7 @@ ags_hybrid_fm_synth_synth_2_volume_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1241,7 +1241,7 @@ ags_hybrid_fm_synth_synth_2_lfo_oscillator_callback(GtkComboBox *combo_box, AgsH
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1292,7 +1292,7 @@ ags_hybrid_fm_synth_synth_2_lfo_frequency_callback(GtkSpinButton *spin_button, A
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1343,7 +1343,7 @@ ags_hybrid_fm_synth_synth_2_lfo_depth_callback(AgsDial *dial, AgsHybridFMSynth *
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1394,7 +1394,7 @@ ags_hybrid_fm_synth_synth_2_lfo_tuning_callback(AgsDial *dial, AgsHybridFMSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1445,7 +1445,7 @@ ags_hybrid_fm_synth_sequencer_enabled_callback(GtkButton *button, AgsHybridFMSyn
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1496,7 +1496,7 @@ ags_hybrid_fm_synth_sequencer_sign_callback(GtkComboBox *combo_box, AgsHybridFMS
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1547,7 +1547,7 @@ ags_hybrid_fm_synth_pitch_tuning_callback(AgsDial *dial, AgsHybridFMSynth *hybri
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1598,7 +1598,7 @@ ags_hybrid_fm_synth_noise_gain_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1649,7 +1649,7 @@ ags_hybrid_fm_synth_low_pass_enabled_callback(GtkButton *button, AgsHybridFMSynt
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1700,7 +1700,7 @@ ags_hybrid_fm_synth_low_pass_q_lin_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1751,7 +1751,7 @@ ags_hybrid_fm_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsHybridFMSynt
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1802,7 +1802,7 @@ ags_hybrid_fm_synth_high_pass_enabled_callback(GtkButton *button, AgsHybridFMSyn
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1853,7 +1853,7 @@ ags_hybrid_fm_synth_high_pass_q_lin_callback(AgsDial *dial, AgsHybridFMSynth *hy
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1904,7 +1904,7 @@ ags_hybrid_fm_synth_high_pass_filter_gain_callback(AgsDial *dial, AgsHybridFMSyn
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -1955,7 +1955,7 @@ ags_hybrid_fm_synth_chorus_enabled_callback(GtkButton *button, AgsHybridFMSynth 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2006,7 +2006,7 @@ ags_hybrid_fm_synth_chorus_input_volume_callback(AgsDial *dial, AgsHybridFMSynth
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2057,7 +2057,7 @@ ags_hybrid_fm_synth_chorus_output_volume_callback(AgsDial *dial, AgsHybridFMSynt
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2114,7 +2114,7 @@ ags_hybrid_fm_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, Ag
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2165,7 +2165,7 @@ ags_hybrid_fm_synth_chorus_depth_callback(AgsDial *dial, AgsHybridFMSynth *hybri
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2216,7 +2216,7 @@ ags_hybrid_fm_synth_chorus_mix_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -2267,7 +2267,7 @@ ags_hybrid_fm_synth_chorus_delay_callback(AgsDial *dial, AgsHybridFMSynth *hybri
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_FM_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
