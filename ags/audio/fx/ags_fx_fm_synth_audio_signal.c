@@ -1173,7 +1173,89 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     channel_data->synth_0.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
     channel_data->synth_0.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
     
-    //TODO:JK: implement me
+    switch(channel_data->synth_0.synth_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+    {
+      ags_fm_synth_util_compute_sin(&(channel_data->synth_0));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+    {
+      ags_fm_synth_util_compute_sawtooth(&(channel_data->synth_0));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+    {
+      ags_fm_synth_util_compute_triangle(&(channel_data->synth_0));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+    {
+      ags_fm_synth_util_compute_square(&(channel_data->synth_0));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+    {
+      ags_fm_synth_util_compute_impulse(&(channel_data->synth_0));
+    }
+    break;
+    }
+    
+    switch(channel_data->synth_1.synth_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+    {
+      ags_fm_synth_util_compute_sin(&(channel_data->synth_1));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+    {
+      ags_fm_synth_util_compute_sawtooth(&(channel_data->synth_1));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+    {
+      ags_fm_synth_util_compute_triangle(&(channel_data->synth_1));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+    {
+      ags_fm_synth_util_compute_square(&(channel_data->synth_1));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+    {
+      ags_fm_synth_util_compute_impulse(&(channel_data->synth_1));
+    }
+    break;
+    }
+    
+    switch(channel_data->synth_2.synth_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+    {
+      ags_fm_synth_util_compute_sin(&(channel_data->synth_2));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+    {
+      ags_fm_synth_util_compute_sawtooth(&(channel_data->synth_2));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+    {
+      ags_fm_synth_util_compute_triangle(&(channel_data->synth_2));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+    {
+      ags_fm_synth_util_compute_square(&(channel_data->synth_2));
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+    {
+      ags_fm_synth_util_compute_impulse(&(channel_data->synth_2));
+    }
+    break;
+    }
     
     if(channel_data->noise_util.volume != 0.0){
       channel_data->noise_util.source = source->stream_current->data;
@@ -1183,6 +1265,8 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
       channel_data->noise_util.samplerate = samplerate;
       channel_data->noise_util.buffer_length = buffer_size;
       channel_data->noise_util.format = format;
+
+      channel_data->noise_util.frequency = exp2((midi_note - 48.0) / 12.0) * 440.0;
 
       channel_data->noise_util.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
       channel_data->noise_util.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
