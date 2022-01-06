@@ -506,7 +506,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 				    10.0);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   AGS_FM_SYNTH_UTIL_DEFAULT_TUNING);
 
   ags_dial_set_radius(hybrid_fm_synth->synth_0_lfo_tuning,
 		      12);
@@ -540,7 +540,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH);
 
   ags_dial_set_radius(hybrid_fm_synth->synth_0_lfo_depth,
 		      12);
@@ -800,7 +800,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 				    10.0);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   AGS_FM_SYNTH_UTIL_DEFAULT_TUNING);
 
   ags_dial_set_radius(hybrid_fm_synth->synth_1_lfo_tuning,
 		      12);
@@ -834,7 +834,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH);
 
   ags_dial_set_radius(hybrid_fm_synth->synth_1_lfo_depth,
 		      12);
@@ -1091,7 +1091,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 				    10.0);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   AGS_FM_SYNTH_UTIL_DEFAULT_TUNING);
 
   ags_dial_set_radius(hybrid_fm_synth->synth_2_lfo_tuning,
 		      12);
@@ -1125,7 +1125,7 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH);
 
   ags_dial_set_radius(hybrid_fm_synth->synth_2_lfo_depth,
 		      12);

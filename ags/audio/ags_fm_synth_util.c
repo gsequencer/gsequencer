@@ -7993,6 +7993,7 @@ ags_fm_synth_util_compute_triangle_s8(AgsFMSynthUtil *fm_synth_util)
       v_triangle = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -8371,6 +8372,7 @@ ags_fm_synth_util_compute_triangle_s16(AgsFMSynthUtil *fm_synth_util)
       v_triangle = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -8749,6 +8751,7 @@ ags_fm_synth_util_compute_triangle_s24(AgsFMSynthUtil *fm_synth_util)
       v_triangle = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -9126,6 +9129,7 @@ ags_fm_synth_util_compute_triangle_s32(AgsFMSynthUtil *fm_synth_util)
       v_triangle = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -9504,6 +9508,7 @@ ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util)
       v_triangle = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -11527,6 +11532,7 @@ ags_fm_synth_util_compute_square_s8(AgsFMSynthUtil *fm_synth_util)
       v_square = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -11906,6 +11912,7 @@ ags_fm_synth_util_compute_square_s16(AgsFMSynthUtil *fm_synth_util)
       v_square = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -12284,6 +12291,7 @@ ags_fm_synth_util_compute_square_s24(AgsFMSynthUtil *fm_synth_util)
       v_square = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -12662,6 +12670,7 @@ ags_fm_synth_util_compute_square_s32(AgsFMSynthUtil *fm_synth_util)
       v_square = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -13040,6 +13049,7 @@ ags_fm_synth_util_compute_square_s64(AgsFMSynthUtil *fm_synth_util)
       v_square = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -15200,6 +15210,7 @@ ags_fm_synth_util_compute_impulse_s8(AgsFMSynthUtil *fm_synth_util)
       v_impulse = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -15578,6 +15589,7 @@ ags_fm_synth_util_compute_impulse_s16(AgsFMSynthUtil *fm_synth_util)
       v_impulse = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -15956,6 +15968,7 @@ ags_fm_synth_util_compute_impulse_s24(AgsFMSynthUtil *fm_synth_util)
       v_impulse = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -16334,6 +16347,7 @@ ags_fm_synth_util_compute_impulse_s32(AgsFMSynthUtil *fm_synth_util)
       v_impulse = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -16712,6 +16726,7 @@ ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util)
       v_impulse = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     }
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
