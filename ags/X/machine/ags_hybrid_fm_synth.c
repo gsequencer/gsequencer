@@ -496,14 +496,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   adjustment = ags_dial_get_adjustment(hybrid_fm_synth->synth_0_lfo_tuning);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1200.0);
   gtk_adjustment_set_upper(adjustment,
-			   1.0);
+			   1200.0);
 
   gtk_adjustment_set_step_increment(adjustment,
-				    0.01);
+				    1.0);
   gtk_adjustment_set_page_increment(adjustment,
-				    0.1);
+				    10.0);
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);
@@ -790,14 +790,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   adjustment = ags_dial_get_adjustment(hybrid_fm_synth->synth_1_lfo_tuning);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1200.0);
   gtk_adjustment_set_upper(adjustment,
-			   1.0);
+			   1200.0);
 
   gtk_adjustment_set_step_increment(adjustment,
-				    0.01);
+				    1.0);
   gtk_adjustment_set_page_increment(adjustment,
-				    0.1);
+				    10.0);
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);
@@ -1081,14 +1081,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   adjustment = ags_dial_get_adjustment(hybrid_fm_synth->synth_2_lfo_tuning);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   -1200.0);
   gtk_adjustment_set_upper(adjustment,
-			   1.0);
+			   1200.0);
 
   gtk_adjustment_set_step_increment(adjustment,
-				    0.01);
+				    1.0);
   gtk_adjustment_set_page_increment(adjustment,
-				    0.1);
+				    10.0);
 
   gtk_adjustment_set_value(adjustment,
 			   0.0);

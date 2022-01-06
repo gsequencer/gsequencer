@@ -28,6 +28,8 @@
 #include <ags/X/machine/ags_fm_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
+#include <ags/X/machine/ags_hybrid_synth.h>
+#include <ags/X/machine/ags_hybrid_fm_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
@@ -208,6 +210,8 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	 AGS_IS_MATRIX(list->data)  ||
 	 AGS_IS_SYNCSYNTH(list->data) ||
 	 AGS_IS_FM_SYNCSYNTH(list->data) ||
+	 AGS_IS_HYBRID_SYNTH(list->data) ||
+	 AGS_IS_HYBRID_FM_SYNTH(list->data) ||
 #ifdef AGS_WITH_LIBINSTPATCH
 	 AGS_IS_FFPLAYER(list->data) ||
 	 AGS_IS_SF2_SYNTH(list->data) ||
