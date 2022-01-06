@@ -1201,6 +1201,16 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     break;
     }
     
+    channel_data->synth_1.source = source->stream_current->data;
+    channel_data->synth_1.source_stride = 1;
+
+    channel_data->synth_1.buffer_length = buffer_size;
+    channel_data->synth_1.format = format;
+    channel_data->synth_1.samplerate = samplerate;
+
+    channel_data->synth_1.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
+    channel_data->synth_1.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
+
     switch(channel_data->synth_1.synth_oscillator_mode){
     case AGS_SYNTH_OSCILLATOR_SIN:
     {
@@ -1229,6 +1239,16 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     break;
     }
     
+    channel_data->synth_2.source = source->stream_current->data;
+    channel_data->synth_2.source_stride = 1;
+
+    channel_data->synth_2.buffer_length = buffer_size;
+    channel_data->synth_2.format = format;
+    channel_data->synth_2.samplerate = samplerate;
+
+    channel_data->synth_2.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
+    channel_data->synth_2.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
+
     switch(channel_data->synth_2.synth_oscillator_mode){
     case AGS_SYNTH_OSCILLATOR_SIN:
     {
