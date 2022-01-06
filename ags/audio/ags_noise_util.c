@@ -933,7 +933,7 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gint8) ret_v_buffer[0];
       *(destination += destination_stride) = (gint8) ret_v_buffer[1];
@@ -1005,7 +1005,7 @@ ags_noise_util_compute_s8(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gint8) ret_v_buffer[0];
       *(destination += destination_stride) = (gint8) ret_v_buffer[1];
@@ -1402,7 +1402,7 @@ ags_noise_util_compute_s16(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gint16) ret_v_buffer[0];
       *(destination += destination_stride) = (gint16) ret_v_buffer[1];
@@ -1474,7 +1474,7 @@ ags_noise_util_compute_s16(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gint16) ret_v_buffer[0];
       *(destination += destination_stride) = (gint16) ret_v_buffer[1];
@@ -1871,7 +1871,7 @@ ags_noise_util_compute_s24(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gint32) ret_v_buffer[0];
       *(destination += destination_stride) = (gint32) ret_v_buffer[1];
@@ -1943,7 +1943,7 @@ ags_noise_util_compute_s24(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gint32) ret_v_buffer[0];
       *(destination += destination_stride) = (gint32) ret_v_buffer[1];
@@ -2340,7 +2340,7 @@ ags_noise_util_compute_s32(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gint32) ret_v_buffer[0];
       *(destination += destination_stride) = (gint32) ret_v_buffer[1];
@@ -2412,7 +2412,7 @@ ags_noise_util_compute_s32(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gint32) ret_v_buffer[0];
       *(destination += destination_stride) = (gint32) ret_v_buffer[1];
@@ -2809,7 +2809,7 @@ ags_noise_util_compute_s64(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gint64) ret_v_buffer[0];
       *(destination += destination_stride) = (gint64) ret_v_buffer[1];
@@ -2881,7 +2881,7 @@ ags_noise_util_compute_s64(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gint64) ret_v_buffer[0];
       *(destination += destination_stride) = (gint64) ret_v_buffer[1];
@@ -3275,7 +3275,7 @@ ags_noise_util_compute_float(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gfloat) ret_v_buffer[0];
       *(destination += destination_stride) = (gfloat) ret_v_buffer[1];
@@ -3347,7 +3347,7 @@ ags_noise_util_compute_float(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gfloat) ret_v_buffer[0];
       *(destination += destination_stride) = (gfloat) ret_v_buffer[1];
@@ -3741,7 +3741,7 @@ ags_noise_util_compute_double(AgsNoiseUtil *noise_util)
       vDSP_vmulD(v_factor, 0, v_rand, 1, tmp0_v_rand, 1, 8);
       vDSP_vsubD(v_volume, 0, tmp0_v_rand, 1, ret_v_rand, 1, 8);
 
-      vDSP_vaddD(v_source, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, ret_v_rand, 1, ret_v_buffer, 1, 8);
 
       *(destination) = (gdouble) ret_v_buffer[0];
       *(destination += destination_stride) = (gdouble) ret_v_buffer[1];
@@ -3813,7 +3813,7 @@ ags_noise_util_compute_double(AgsNoiseUtil *noise_util)
 	}
       }
 
-      vDSP_vaddD(v_source, 1, current_noise, 1, ret_v_buffer, 1, 8);
+      vDSP_vaddD(v_buffer, 1, current_noise, 1, ret_v_buffer, 1, 8);
       
       *(destination) = (gdouble) ret_v_buffer[0];
       *(destination += destination_stride) = (gdouble) ret_v_buffer[1];

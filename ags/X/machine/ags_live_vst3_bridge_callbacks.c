@@ -20,7 +20,6 @@
 #include <ags/X/machine/ags_live_vst3_bridge_callbacks.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
