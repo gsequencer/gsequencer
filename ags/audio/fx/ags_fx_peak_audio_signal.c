@@ -181,6 +181,53 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						  ags_audio_buffer_util_format_from_soundcard(format));
 
+  if(fx_peak_channel != NULL){
+    gboolean peak_reseted;
+    
+    fx_peak_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
+    
+    g_rec_mutex_lock(fx_peak_channel_mutex);
+
+    peak_reseted = fx_peak_channel->peak_reseted;
+    
+    g_rec_mutex_unlock(fx_peak_channel_mutex);
+
+    if(!peak_reseted){
+      AgsPort *port;
+    
+      port = NULL;
+
+      g_object_get(fx_peak_channel,
+		   "peak", &port,
+		   NULL);
+      
+      if(port != NULL){
+	GValue value = {0,};
+	
+	g_value_init(&value, G_TYPE_FLOAT);
+
+	g_value_set_float(&value, 0.0);
+      
+	ags_port_safe_write(port, &value);
+
+	g_value_unset(&value);
+	
+	g_object_unref(port);
+      }
+
+      g_rec_mutex_lock(fx_peak_channel_mutex);
+      
+      ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,
+					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+      fx_peak_channel->peak_reseted = TRUE;
+    
+      g_rec_mutex_unlock(fx_peak_channel_mutex);
+    }
+
+    
+  }
+  
   if(fx_peak_channel != NULL &&
      source != NULL &&
      source->stream_current != NULL &&
