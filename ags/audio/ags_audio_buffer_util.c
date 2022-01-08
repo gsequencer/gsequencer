@@ -3065,6 +3065,8 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
 			   (double) buffer[(current_channel += channels)],
 			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
       v_factor[0] = 1.0 / ((double) G_MAXUINT8) * pressure_factor;
       
       vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
@@ -3117,7 +3119,7 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;
@@ -3373,6 +3375,8 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
 			   (double) buffer[(current_channel += channels)],
 			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
       v_factor[0] = 1.0 / ((double) G_MAXUINT16) * pressure_factor;
       
       vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
@@ -3425,7 +3429,7 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;
@@ -3681,6 +3685,8 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
 			   (double) buffer[(current_channel += channels)],
 			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
       v_factor[0] = 1.0 / ((double) 0xffffffff) * pressure_factor;
       
       vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
@@ -3733,7 +3739,7 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;
@@ -3989,6 +3995,8 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
 			   (double) buffer[(current_channel += channels)],
 			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
       v_factor[0] = 1.0 / ((double) G_MAXUINT32) * pressure_factor;
       
       vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
@@ -4041,7 +4049,7 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;
@@ -4297,6 +4305,8 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
 			   (double) buffer[(current_channel += channels)],
 			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
       v_factor[0] = 1.0 / ((double) G_MAXUINT64) * pressure_factor;
       
       vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
@@ -4349,7 +4359,7 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;
@@ -4589,20 +4599,27 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
     for(; i < limit; i += 8){
       gboolean v_zero[8];
       double v_result[8];
+      double ret_v_buffer[8];
+      
+      double v_factor[] = { 0.5 * pressure_factor };
       
       static const double v_one[] = { 1.0 };
 
       current_channel = 0;
 
-      double ret_v_buffer[] = {(double) buffer[0],
-			       (double) buffer[(current_channel = channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)]};
+      double v_buffer[] = {(double) buffer[0],
+			   (double) buffer[(current_channel = channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+      
       if(ret_v_buffer[0] == 0.0){
 	ret_v_buffer[0] = 1.0;
 
@@ -4651,7 +4668,7 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;
@@ -4890,22 +4907,28 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 
     for(; i < limit; i += 8){
       gboolean v_zero[8];
+      double ret_v_buffer[8];
       double v_result[8];
-      double v_factor[1];
+      
+      double v_factor[] = { 0.5 * pressure_factor };
       
       static const double v_one[] = { 1.0 };
 
       current_channel = 0;
 
-      double ret_v_buffer[] = {(double) buffer[0],
-			       (double) buffer[(current_channel = channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)],
-			       (double) buffer[(current_channel += channels)]};
+      double v_buffer[] = {(double) buffer[0],
+			   (double) buffer[(current_channel = channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)],
+			   (double) buffer[(current_channel += channels)]};
 
+      memset(v_zero, 0, 8 * sizeof(gboolean));
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+      
       if(ret_v_buffer[0] == 0.0){
 	ret_v_buffer[0] = 1.0;
 
@@ -4954,7 +4977,7 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 	v_zero[7] = TRUE;
       }
 
-      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+      vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
       if(v_zero[0]){
 	v_result[0] = 0.0;

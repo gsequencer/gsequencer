@@ -721,7 +721,7 @@ ags_peak_util_compute_s8(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;
@@ -1034,7 +1034,7 @@ ags_peak_util_compute_s16(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;
@@ -1347,7 +1347,7 @@ ags_peak_util_compute_s24(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;
@@ -1660,7 +1660,7 @@ ags_peak_util_compute_s32(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;
@@ -1973,7 +1973,7 @@ ags_peak_util_compute_s64(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;
@@ -2286,7 +2286,7 @@ ags_peak_util_compute_float(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;
@@ -2599,7 +2599,7 @@ ags_peak_util_compute_double(AgsPeakUtil *peak_util)
       v_zero[7] = TRUE;
     }
 
-    vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+    vDSP_vdivD(ret_v_buffer, 1, v_one, 0, v_result, 1, 8);
 
     if(v_zero[0]){
       v_result[0] = 0.0;

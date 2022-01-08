@@ -176,28 +176,6 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   guint audio_buffer_util_format;
   guint copy_mode;
   
-  gboolean synth_0_sync_enabled;
-  gdouble synth_0_sync_relative_attack_factor;
-  gdouble synth_0_sync_attack_0;
-  gdouble synth_0_sync_phase_0;
-  gdouble synth_0_sync_attack_1;
-  gdouble synth_0_sync_phase_1;
-  gdouble synth_0_sync_attack_2;
-  gdouble synth_0_sync_phase_2;
-  guint synth_0_sync_lfo_oscillator;
-  gdouble synth_0_sync_lfo_frequency;
-  
-  gboolean synth_1_sync_enabled;
-  gdouble synth_1_sync_relative_attack_factor;
-  gdouble synth_1_sync_attack_0;
-  gdouble synth_1_sync_phase_0;
-  gdouble synth_1_sync_attack_1;
-  gdouble synth_1_sync_phase_1;
-  gdouble synth_1_sync_attack_2;
-  gdouble synth_1_sync_phase_2;
-  guint synth_1_sync_lfo_oscillator;
-  gdouble synth_1_sync_lfo_frequency;
-  
   gboolean sequencer_enabled;
   gint sequencer_sign;
   
@@ -229,38 +207,6 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
-  synth_0_sync_enabled = FALSE;
-
-  synth_0_sync_relative_attack_factor = 1.0;
-
-  synth_0_sync_attack_0 = 0.0;
-  synth_0_sync_phase_0 = 0.0;
-
-  synth_0_sync_attack_1 = 0.0;
-  synth_0_sync_phase_1 = 0.0;
-
-  synth_0_sync_attack_2 = 0.0;
-  synth_0_sync_phase_2 = 0.0;
-
-  synth_0_sync_lfo_oscillator = AGS_SYNTH_OSCILLATOR_SIN;
-  synth_0_sync_lfo_frequency = 10.0;
-
-  synth_1_sync_enabled = FALSE;
-
-  synth_1_sync_relative_attack_factor = 1.0;
-
-  synth_1_sync_attack_0 = 0.0;
-  synth_1_sync_phase_0 = 0.0;
-
-  synth_1_sync_attack_1 = 0.0;
-  synth_1_sync_phase_1 = 0.0;
-
-  synth_1_sync_attack_2 = 0.0;
-  synth_1_sync_phase_2 = 0.0;
-
-  synth_1_sync_lfo_oscillator = AGS_SYNTH_OSCILLATOR_SIN;
-  synth_1_sync_lfo_frequency = 10.0;
-
   sequencer_enabled = FALSE;
   sequencer_sign = 0;
 

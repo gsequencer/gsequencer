@@ -21,6 +21,9 @@
 
 #include <ags/X/ags_ui_provider.h>
 
+#include <ags/X/editor/ags_composite_edit.h>
+#include <ags/X/editor/ags_automation_edit.h>
+
 void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_set_property(GObject *gobject,
@@ -42,6 +45,9 @@ void ags_scrolled_automation_edit_box_get_preferred_height(GtkWidget *widget,
 							   gint *minimum_height,
 							   gint *natural_height);
 
+gboolean ags_scrolled_automation_edit_box_configure_event(GtkWidget *widget, GdkEventConfigure *event,
+							  AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
+  
 /**
  * SECTION:ags_scrolled_automation_edit_box
  * @short_description: scrolled automation_edit box widget
@@ -216,6 +222,19 @@ ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_aut
   gtk_container_add(scrolled_automation_edit_box->viewport,
 		    scrolled_automation_edit_box->automation_edit_box);
 #endif
+
+  gtk_widget_set_events((GtkWidget *) scrolled_automation_edit_box,
+			GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK);
+
+  g_signal_connect_after((GObject *) scrolled_automation_edit_box, "configure_event",
+			 G_CALLBACK(ags_scrolled_automation_edit_box_configure_event), (gpointer) scrolled_automation_edit_box);
 }
 
 void
@@ -367,6 +386,55 @@ ags_scrolled_automation_edit_box_get_preferred_height(GtkWidget *widget,
 {
   minimal_height[0] =
     natural_height[0] = 1;
+}
+
+gboolean
+ags_scrolled_automation_edit_box_configure_event(GtkWidget *widget, GdkEventConfigure *event,
+						 AgsScrolledAutomationEditBox *scrolled_automation_edit_box)
+{
+  AgsCompositeEdit *composite_edit;
+  GtkAdjustment *vadjustment, *hadjustment;
+ 
+  GList *start_list, *list;
+  
+  gdouble vscrollbar_value, hscrollbar_value;
+  gdouble vnew_upper, vold_upper;
+  gdouble hnew_upper, hold_upper;
+
+  composite_edit = gtk_widget_get_ancestor((GtkWidget *) scrolled_automation_edit_box,
+					   AGS_TYPE_COMPOSITE_EDIT);
+  
+  vadjustment = gtk_range_get_adjustment(composite_edit->vscrollbar);
+  hadjustment = gtk_range_get_adjustment(composite_edit->hscrollbar);
+  
+  vscrollbar_value = gtk_adjustment_get_value(vadjustment);
+  hscrollbar_value = gtk_adjustment_get_value(hadjustment);
+  
+  vold_upper = gtk_adjustment_get_upper(vadjustment);
+  hold_upper = gtk_adjustment_get_upper(hadjustment);
+  
+  list = 
+    start_list = gtk_container_get_children((GtkContainer *) gtk_bin_get_child(scrolled_automation_edit_box->viewport));
+
+  while(list != NULL){
+    ags_automation_edit_reset_vscrollbar(AGS_AUTOMATION_EDIT(list->data));
+    ags_automation_edit_reset_hscrollbar(AGS_AUTOMATION_EDIT(list->data));
+
+    list = list->next;
+  }
+  
+  vnew_upper = gtk_adjustment_get_upper(vadjustment);
+  hnew_upper = gtk_adjustment_get_upper(hadjustment);
+  
+  gtk_range_set_value((GtkRange *) composite_edit->vscrollbar,
+		      vscrollbar_value * (1.0 / (vold_upper / vnew_upper)));
+  
+  gtk_range_set_value((GtkRange *) composite_edit->hscrollbar,
+		      hscrollbar_value * (1.0 / (hold_upper / hnew_upper)));
+  
+  g_list_free(start_list);
+  
+  return(FALSE);
 }
 
 /**

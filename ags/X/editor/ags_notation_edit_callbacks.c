@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -93,9 +93,33 @@ ags_notation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsNotatio
 gboolean
 ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNotationEdit *notation_edit)
 {
+  GtkAdjustment *vadjustment, *hadjustment;
+  
+  gdouble vscrollbar_value, hscrollbar_value;
+  gdouble vnew_upper, vold_upper;
+  gdouble hnew_upper, hold_upper;
+
+  vadjustment = gtk_range_get_adjustment((GtkRange *) notation_edit->vscrollbar);
+  hadjustment = gtk_range_get_adjustment((GtkRange *) notation_edit->hscrollbar);
+  
+  vscrollbar_value = gtk_range_get_value((GtkRange *) notation_edit->vscrollbar);
+  hscrollbar_value = gtk_range_get_value((GtkRange *) notation_edit->hscrollbar);
+  
+  vold_upper = gtk_adjustment_get_upper(vadjustment);
+  hold_upper = gtk_adjustment_get_upper(hadjustment);
+  
   ags_notation_edit_reset_vscrollbar(notation_edit);
   ags_notation_edit_reset_hscrollbar(notation_edit);
-
+  
+  vnew_upper = gtk_adjustment_get_upper(vadjustment);
+  hnew_upper = gtk_adjustment_get_upper(hadjustment);
+  
+  gtk_range_set_value((GtkRange *) notation_edit->vscrollbar,
+		      vscrollbar_value * (1.0 / (vold_upper / vnew_upper)));
+  
+  gtk_range_set_value((GtkRange *) notation_edit->hscrollbar,
+		      hscrollbar_value * (1.0 / (hold_upper / hnew_upper)));
+  
   gtk_widget_queue_draw(notation_edit->drawing_area);
 
   return(FALSE);

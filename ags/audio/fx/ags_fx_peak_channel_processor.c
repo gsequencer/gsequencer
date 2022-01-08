@@ -196,8 +196,10 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
 				      22000.0,
 				      1.0);
 
-    ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,
-				       buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+    if(!peak_reseted){
+      ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,
+					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+    }
     
     g_rec_mutex_unlock(fx_peak_channel_mutex);
 

@@ -1136,7 +1136,7 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -1171,7 +1171,8 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    
+    v_sine *= scale;
     v_sine *= volume;
 
     v_buffer += v_sine;
@@ -1191,7 +1192,7 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -1218,8 +1219,9 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint8) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint8) ret_v_buffer[1];
@@ -1238,14 +1240,14 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1253,7 +1255,7 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1285,7 +1287,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -1320,7 +1322,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    v_sine *= scale;
     v_sine *= volume;
 
     v_buffer += v_sine;
@@ -1340,7 +1342,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -1367,8 +1369,9 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint16) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint16) ret_v_buffer[1];
@@ -1387,14 +1390,14 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1402,7 +1405,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1434,7 +1437,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -1469,7 +1472,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    v_sine *= scale;
     v_sine *= volume;
 
     v_buffer += v_sine;
@@ -1489,7 +1492,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -1516,8 +1519,9 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -1536,14 +1540,14 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1551,7 +1555,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1583,7 +1587,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -1618,7 +1622,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    v_sine *= scale;
     v_sine *= volume;
 
     v_buffer += v_sine;
@@ -1638,7 +1642,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -1665,8 +1669,9 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -1685,14 +1690,14 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1700,7 +1705,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1732,7 +1737,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -1767,7 +1772,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    v_sine *= scale;
     v_sine *= volume;
 
     v_buffer += v_sine;
@@ -1787,7 +1792,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -1814,8 +1819,9 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint64) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint64) ret_v_buffer[1];
@@ -1834,14 +1840,14 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1849,7 +1855,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) (scale * sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -1934,7 +1940,7 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -1961,8 +1967,8 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gfloat) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gfloat) ret_v_buffer[1];
@@ -2081,7 +2087,7 @@ ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -2108,8 +2114,8 @@ ags_synth_util_compute_sin_double(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gdouble) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gdouble) ret_v_buffer[1];
@@ -2641,7 +2647,7 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   samplerate = (gdouble) synth_util->samplerate;
   freq_period = synth_util->samplerate / synth_util->frequency;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -2676,7 +2682,8 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    
+    v_sawtooth *= scale;
     v_sawtooth *= volume;
 
     v_buffer += v_sawtooth;
@@ -2696,7 +2703,7 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -2719,12 +2726,14 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0),
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint8) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint8) ret_v_buffer[1];
@@ -2743,14 +2752,14 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -2758,7 +2767,7 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint8) ((gint16) source[0] + (gint16) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -2797,7 +2806,7 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   samplerate = (gdouble) synth_util->samplerate;
   freq_period = synth_util->samplerate / synth_util->frequency;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -2833,6 +2842,7 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_sawtooth *= scale;
     v_sawtooth *= volume;
 
     v_buffer += v_sawtooth;
@@ -2852,7 +2862,7 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -2875,12 +2885,14 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0),
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint16) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint16) ret_v_buffer[1];
@@ -2899,14 +2911,14 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint16) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -2914,7 +2926,7 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint16) ((gint32) source[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -2953,7 +2965,7 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   samplerate = (gdouble) synth_util->samplerate;
   freq_period = synth_util->samplerate / synth_util->frequency;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -2989,6 +3001,7 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_sawtooth *= scale;
     v_sawtooth *= volume;
 
     v_buffer += v_sawtooth;
@@ -3008,7 +3021,7 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -3031,12 +3044,14 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0),
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -3055,14 +3070,14 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint32) scale * (tmp_source += synth_util->source_stride)[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -3070,7 +3085,7 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint32) source[0] + (gint32) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -3109,7 +3124,7 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   samplerate = (gdouble) synth_util->samplerate;
   freq_period = synth_util->samplerate / synth_util->frequency;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -3145,6 +3160,7 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_sawtooth *= scale;
     v_sawtooth *= volume;
 
     v_buffer += v_sawtooth;
@@ -3164,7 +3180,7 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -3187,12 +3203,14 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0),
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -3211,14 +3229,14 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -3226,7 +3244,7 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint64) source[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -3265,7 +3283,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   samplerate = (gdouble) synth_util->samplerate;
   freq_period = synth_util->samplerate / synth_util->frequency;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -3301,6 +3319,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_sawtooth *= scale;
     v_sawtooth *= volume;
 
     v_buffer += v_sawtooth;
@@ -3320,7 +3339,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -3343,12 +3362,14 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0),
       ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint64) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint64) ret_v_buffer[1];
@@ -3367,14 +3388,14 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + (i++)) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -3382,7 +3403,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint64) ((gint64) source[0] + (gint64) ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * ((fmod(((gdouble) (synth_util->offset + i) + synth_util->phase), freq_period) * 2.0 * freq / samplerate) - 1.0) * volume);
 
     source += synth_util->source_stride;
     i++;
@@ -3474,7 +3495,7 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -3628,7 +3649,7 @@ ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -4216,7 +4237,7 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -4250,6 +4271,7 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
     };
 
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -4271,7 +4293,7 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -4293,10 +4315,13 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint8) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint8) ret_v_buffer[1];
@@ -4315,35 +4340,35 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;    
     i++;
   }
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint8) ((gint16) source[0] + (gint16) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -4379,7 +4404,7 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -4412,7 +4437,7 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
     };
-
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -4434,7 +4459,7 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -4456,10 +4481,13 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint16) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint16) ret_v_buffer[1];
@@ -4478,35 +4506,35 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;    
     i++;
   }
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint16) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -4542,7 +4570,7 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -4575,7 +4603,7 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
     };
-
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -4597,7 +4625,7 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -4619,10 +4647,13 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -4641,35 +4672,35 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;    
     i++;
   }
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint32) source[0] + (gint32) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -4705,7 +4736,7 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -4738,7 +4769,7 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
     };
-
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -4760,7 +4791,7 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -4782,10 +4813,13 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -4804,35 +4838,35 @@ ags_synth_util_compute_triangle_s32(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;    
     i++;
   }
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -4868,7 +4902,7 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -4901,7 +4935,7 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
     };
-
+    v_triangle *= scale;
     v_triangle *= volume;
 
     v_buffer += v_triangle;
@@ -4923,7 +4957,7 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -4945,10 +4979,13 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint64) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint64) ret_v_buffer[1];
@@ -4967,35 +5004,35 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;
     i++;
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
     source += synth_util->source_stride;    
     i++;
   }
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint64) ((gint64) source[0] + (gint64) (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * (((((synth_util->offset + i) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -5031,7 +5068,7 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -5086,7 +5123,7 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -5108,10 +5145,11 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gfloat) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gfloat) ret_v_buffer[1];
@@ -5194,7 +5232,7 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
 
   freq = synth_util->frequency;
   samplerate = (gdouble) synth_util->samplerate;
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
 
@@ -5249,7 +5287,7 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -5271,10 +5309,11 @@ ags_synth_util_compute_triangle_double(AgsSynthUtil *synth_util)
       (((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0)),
       (((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * freq / samplerate)) / 2.0) * 2.0) - 1.0))};
+    
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gdouble) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gdouble) ret_v_buffer[1];
@@ -5841,7 +5880,7 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -5877,6 +5916,7 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -5896,7 +5936,7 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -5919,12 +5959,14 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint8) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint8) ret_v_buffer[1];
@@ -5943,14 +5985,14 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint8) ((gint16) (tmp_source += synth_util->source_stride)[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -5958,7 +6000,7 @@ ags_synth_util_compute_square_s8(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint8) ((gint16) source[0] + (gint16) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    source[0] = (gint8) ((gint16) source[0] + (gint16) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -5990,7 +6032,7 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -6025,7 +6067,8 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
     };
 
     i++;
-
+    
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -6045,7 +6088,7 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -6068,12 +6111,13 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
-    double v_volume[] = {(double) volume};
+    double v_scale[] = {(double) scale};
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint16) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint16) ret_v_buffer[1];
@@ -6092,14 +6136,14 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint16) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6107,7 +6151,7 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint16) ((gint32) source[0] + (gint32) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    source[0] = (gint16) ((gint32) source[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6139,7 +6183,7 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -6175,6 +6219,7 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -6194,7 +6239,7 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -6217,12 +6262,13 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
-    double v_volume[] = {(double) volume};
+    double v_scale[] = {(double) scale};
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -6241,14 +6287,14 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint32) (tmp_source += synth_util->source_stride)[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6256,7 +6302,7 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint32) source[0] + (gint32) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    source[0] = (gint32) ((gint32) source[0] + (gint32) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6288,7 +6334,7 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -6324,6 +6370,7 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -6343,7 +6390,7 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -6366,12 +6413,13 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
-    double v_volume[] = {(double) volume};
+    double v_scale[] = {(double) scale};
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -6390,14 +6438,14 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint32) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6405,7 +6453,7 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint32) ((gint64) source[0] + (gint64) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    source[0] = (gint32) ((gint64) source[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6437,7 +6485,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -6473,6 +6521,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_square *= scale;
     v_square *= volume;
 
     v_buffer += v_square;
@@ -6492,7 +6541,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -6515,12 +6564,13 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
-    double v_volume[] = {(double) volume};
+    double v_scale[] = {(double) scale};
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint64) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint64) ret_v_buffer[1];
@@ -6539,14 +6589,14 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
   for(; i < i_stop;){
     tmp_source = source;
 
-    (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
-    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    *(source += synth_util->source_stride) = (gint64) ((gint64) (tmp_source += synth_util->source_stride)[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6554,7 +6604,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
 #endif
 
   for(; i < synth_util->buffer_length;){
-    source[0] = (gint64) ((gint64) source[0] + (gint64) ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
+    source[0] = (gint64) ((gint64) source[0] + (gint64) scale * ((sin((gdouble) ((synth_util->offset + i) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0 ? 1.0: -1.0) * volume));
 
     source += synth_util->source_stride;
     i++;
@@ -6641,7 +6691,7 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -6668,8 +6718,8 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gfloat) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gfloat) ret_v_buffer[1];
@@ -6788,7 +6838,7 @@ ags_synth_util_compute_square_double(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -6815,8 +6865,8 @@ ags_synth_util_compute_square_double(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_square, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_square, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gdouble) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gdouble) ret_v_buffer[1];
@@ -7373,7 +7423,7 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -7428,8 +7478,8 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
-
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
+    
     tmp_source = source;
 
     double v_buffer[] = {
@@ -7451,12 +7501,15 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume,
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume};
 
+    double v_scale[] = {(double) scale};
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint8) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint8) ret_v_buffer[1];
@@ -7522,7 +7575,7 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -7577,7 +7630,7 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -7600,12 +7653,14 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume,
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume};
 
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint16) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint16) ret_v_buffer[1];
@@ -7671,7 +7726,7 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -7726,7 +7781,7 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -7749,12 +7804,14 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume,
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume};
 
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -7820,7 +7877,7 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -7875,7 +7932,7 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -7898,12 +7955,14 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume,
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume};
 
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint32) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[1];
@@ -7969,7 +8028,7 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
 
   source = synth_util->source;
 
-  volume = scale * synth_util->volume;
+  volume = synth_util->volume;
   
   i = 0;
   
@@ -8024,7 +8083,7 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -8047,12 +8106,14 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume,
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume};
 
+    double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gint64) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gint64) ret_v_buffer[1];
@@ -8171,7 +8232,7 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -8198,8 +8259,8 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gfloat) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gfloat) ret_v_buffer[1];
@@ -8318,7 +8379,7 @@ ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
   
   for(; i < i_stop;){
-    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+    double ret_v_buffer[8], tmp0_ret_v_buffer[8], tmp1_ret_v_buffer[8];
 
     tmp_source = source;
 
@@ -8345,8 +8406,8 @@ ags_synth_util_compute_impulse_double(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gdouble) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gdouble) ret_v_buffer[1];
