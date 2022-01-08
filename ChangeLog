@@ -1,3 +1,11 @@
+ags (3.15.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed configure event of editors
+	* fixed ags-fx-peak clear buffer
+	* fixed ags_audio_buffer_util_peak*() on macOS
+	* fixed ags_peak_util_compute*() on macOS
+
 ags (3.15.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
