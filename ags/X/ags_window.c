@@ -195,8 +195,9 @@ ags_window_init(AgsWindow *window)
   GtkWidget *scrolled_window;
 
   AgsApplicationContext *application_context;
-  
-  gchar *str;
+
+  gchar *app_icon;
+  gchar *window_title;
 
   gboolean use_composite_editor;
   
@@ -210,18 +211,22 @@ ags_window_init(AgsWindow *window)
 		   G_CALLBACK(ags_window_setup_completed_callback), window);
 
 #if defined(AGS_WINDOW_APP_ICON)
-  str = g_strdup(AGS_WINDOW_APP_ICON);
+  app_icon = g_strdup(AGS_WINDOW_APP_ICON);
 #else
-  str = g_strdup_printf("%s%s",
-			AGS_DATA_DIR,
-			"/icons/hicolor/128x128/apps/gsequencer.png");
+  if((app_icon = getenv("AGS_WINDOW_APP_ICON")) != NULL){
+    app_icon = g_strdup(app_icon);
+  }else{
+    app_icon = g_strdup_printf("%s%s",
+			       AGS_DATA_DIR,
+			       "/icons/hicolor/128x128/apps/gsequencer.png");
+  }
 #endif
   
   error = NULL;  
   g_object_set(G_OBJECT(window),
-  	       "icon", gdk_pixbuf_new_from_file(str, &error),
+  	       "icon", gdk_pixbuf_new_from_file(app_icon, &error),
   	       NULL);
-  g_free(str);
+  g_free(app_icon);
 
   if(error != NULL){
     g_error_free(error);
@@ -232,13 +237,13 @@ ags_window_init(AgsWindow *window)
 
   window->name = g_strdup("unnamed");
 
-  str = g_strconcat("GSequencer - ",
-		    window->name,
-		    NULL);
+  window_title = g_strconcat("GSequencer - ",
+			     window->name,
+			     NULL);
   gtk_window_set_title((GtkWindow *) window,
-		       str);
+		       window_title);
 
-  g_free(str);
+  g_free(window_title);
 
   /* vbox */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
