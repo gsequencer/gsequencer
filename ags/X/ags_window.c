@@ -209,9 +209,13 @@ ags_window_init(AgsWindow *window)
   g_signal_connect(application_context, "setup-completed",
 		   G_CALLBACK(ags_window_setup_completed_callback), window);
 
+#if defined(AGS_WINDOW_APP_ICON)
+  str = g_strdup(AGS_WINDOW_APP_ICON);
+#else
   str = g_strdup_printf("%s%s",
 			AGS_DATA_DIR,
 			"/icons/hicolor/128x128/apps/gsequencer.png");
+#endif
   
   error = NULL;  
   g_object_set(G_OBJECT(window),
