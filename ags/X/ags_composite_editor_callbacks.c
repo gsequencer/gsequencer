@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,12 +19,18 @@
 
 #include <ags/X/ags_composite_editor_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
+
+#include <ags/X/editor/ags_composite_edit.h>
+#include <ags/X/editor/ags_composite_edit_callbacks.h>
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 #include <ags/X/editor/ags_vautomation_edit_box.h>
 #include <ags/X/editor/ags_automation_edit.h>
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 #include <ags/X/editor/ags_vwave_edit_box.h>
 #include <ags/X/editor/ags_wave_edit.h>
+
+#include <ags/X/machine/ags_audiorec.h>
 
 void
 ags_composite_editor_edit_viewport_vadjustment_changed_callback(GtkAdjustment *adjustment,
@@ -206,12 +212,33 @@ void
 ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine, 
 						    guint audio_channels, guint audio_channels_old,
 						    AgsCompositeEditor *composite_editor)
-{
+{  
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+  
+  guint output_pads, input_pads;
   guint i;
+  guint j;
+
+  application_context = ags_application_context_get_instance();
+
+  output_pads = 0;
+  input_pads = 0;
+  
+  g_object_get(machine->audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
   
   if(audio_channels > audio_channels_old){
     GList *tab;
-    
+
+    gdouble gui_scale_factor;
+
+    /* scale factor */
+    gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+      
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(composite_editor->notation_edit->channel_selector,
 			      i);
@@ -220,11 +247,154 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
 				   TRUE);
     }
+
+    for(i = audio_channels_old; i < audio_channels; i++){
+      ags_notebook_insert_tab(composite_editor->wave_edit->channel_selector,
+			      i);
+
+      tab = composite_editor->wave_edit->channel_selector->tab;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+				   TRUE);
+    }
+
+    if(composite_editor->automation_edit->focused_edit != NULL){
+      if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_OUTPUT)){
+	for(i = 0; i < output_pads; i++){
+	  for(j = audio_channels_old; j < audio_channels; j++){
+	    ags_notebook_insert_tab(composite_editor->automation_edit->channel_selector,
+				    output_pads * audio_channels_old + i * (audio_channels - audio_channels_old) + j);
+
+	    tab = composite_editor->automation_edit->channel_selector->tab;
+	    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+					 TRUE);
+	  }
+	}
+      }else if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_INPUT)){
+	for(i = 0; i < input_pads; i++){
+	  for(j = audio_channels_old; j < audio_channels; j++){
+	    ags_notebook_insert_tab(composite_editor->automation_edit->channel_selector,
+				    input_pads * audio_channels_old + i * (audio_channels - audio_channels_old) + j);
+
+	    tab = composite_editor->automation_edit->channel_selector->tab;
+	    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+					 TRUE);
+	  }
+	}	
+      }
+    }
+    
+    if(AGS_IS_AUDIOREC(machine)){
+      for(i = 0; i < input_pads; i++){
+	for(j = audio_channels_old; j < audio_channels; j++){
+	  AgsWaveEdit *wave_edit;
+	  AgsLevel *level;
+	  
+	  /* level */
+	  level = ags_level_new();
+	  g_object_set(level,
+		       "level-width", (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_WIDTH),
+		       "level-height", (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT),
+		       NULL);
+	  gtk_box_pack_start(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
+			     GTK_WIDGET(level),
+			     FALSE, TRUE,
+			     AGS_WAVE_EDIT_DEFAULT_PADDING);
+
+	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
+				GTK_WIDGET(level),
+				i * audio_channels + j);
+	
+	  gtk_widget_show(GTK_WIDGET(level));
+
+	  /* wave edit */
+	  wave_edit = ags_wave_edit_new(i * audio_channels + j);
+	  gtk_box_pack_start(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
+			     GTK_WIDGET(wave_edit),
+			     FALSE, FALSE,
+			     AGS_WAVE_EDIT_DEFAULT_PADDING);
+
+	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
+				GTK_WIDGET(wave_edit),
+				i * audio_channels + j);	
+	
+	  ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
+	  gtk_widget_show(GTK_WIDGET(wave_edit));
+
+	  g_signal_connect(gtk_range_get_adjustment((GtkRange *) wave_edit->hscrollbar), "changed",
+			   G_CALLBACK(ags_composite_editor_wave_edit_hadjustment_changed_callback), (gpointer) composite_editor);
+      
+	  g_signal_connect(gtk_range_get_adjustment(wave_edit->hscrollbar), "changed",
+			   G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_editor->wave_edit);
+      
+	  g_signal_connect((GObject *) wave_edit->hscrollbar, "value-changed",
+			   G_CALLBACK(ags_composite_editor_wave_edit_hscrollbar_value_changed), (gpointer) composite_editor);      
+	}
+      }
+    }
   }else{
     /* shrink notebook */
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(composite_editor->notation_edit->channel_selector,
 			      audio_channels);
+    }
+
+    if(composite_editor->automation_edit->focused_edit != NULL){
+      if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_OUTPUT)){
+	for(i = 0; i < output_pads; i++){
+	  for(j = audio_channels_old; j < audio_channels; j++){
+	    ags_notebook_remove_tab(composite_editor->wave_edit->channel_selector,
+				    output_pads * audio_channels);
+	  }
+	}
+      }else if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_INPUT)){
+	for(i = 0; i < input_pads; i++){
+	  for(j = audio_channels_old; j < audio_channels; j++){
+	    ags_notebook_remove_tab(composite_editor->wave_edit->channel_selector,
+				    output_pads * audio_channels);
+	  }
+	}	
+      }
+    }
+    
+    if(AGS_IS_AUDIOREC(machine)){      
+      for(i = audio_channels; i < audio_channels_old; i++){
+	ags_notebook_remove_tab(composite_editor->wave_edit->channel_selector,
+				audio_channels);
+      }
+      
+      list = 
+	start_list = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box));
+      
+      for(i = 0; i < input_pads && list != NULL; i++){
+	for(j = 0; j < audio_channels && list != NULL; j++){
+	  list = list->next;
+	}
+
+	for(; j < audio_channels_old && list != NULL; j++){
+	  gtk_widget_destroy(list->data);
+	  
+	  list = list->next;
+	}
+      }
+
+      g_list_free(start_list);
+
+      list = 
+	start_list = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
+      
+      for(i = 0; i < input_pads && list != NULL; i++){
+	for(j = 0; j < audio_channels && list != NULL; j++){
+	  list = list->next;
+	}
+
+	for(; j < audio_channels_old && list != NULL; j++){
+	  gtk_widget_destroy(list->data);
+	  
+	  list = list->next;
+	}
+      }
+      
+      g_list_free(start_list);      
     }
   }
 }
@@ -236,14 +406,74 @@ ags_composite_editor_resize_pads_callback(AgsMachine *machine, GType channel_typ
 {
   AgsAudio *audio;
 
+  guint audio_channels;
+  guint i;
+  guint j;
+  
   audio = machine->audio;
 
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
+  if(composite_editor->automation_edit->focused_edit != NULL){
+    GList *tab;
+
+    if(pads > pads_old){
+      if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_OUTPUT) &&
+	 g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+	for(i = pads_old; i < pads; i++){
+	  for(j = 0; j < audio_channels; j++){
+	    ags_notebook_insert_tab(composite_editor->automation_edit->channel_selector,
+				    (pads_old * audio_channels) + ((i - pads_old) * audio_channels) + j);
+
+	    tab = composite_editor->automation_edit->channel_selector->tab;
+	    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+					 TRUE);
+	  }
+	}
+      }else if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_INPUT) &&
+	       g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+	for(i = pads_old; i < pads; i++){
+	  for(j = 0; j < audio_channels; j++){
+	    ags_notebook_insert_tab(composite_editor->automation_edit->channel_selector,
+				    (pads_old * audio_channels) + ((i - pads_old) * audio_channels) + j);
+
+	    tab = composite_editor->automation_edit->channel_selector->tab;
+	    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+					 TRUE);
+	  }
+	}	
+      }
+    }else{
+      if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_OUTPUT) &&
+	 g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+	for(i = pads; i < pads_old; i++){
+	  for(j = 0; j < audio_channels; j++){
+	    ags_notebook_remove_tab(composite_editor->automation_edit->channel_selector,
+				    pads * audio_channels);
+	  }
+	}
+      }else if(g_type_is_a(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_TYPE_INPUT) &&
+	       g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+	for(i = pads; i < pads_old; i++){
+	  for(j = 0; j < audio_channels; j++){
+	    ags_notebook_remove_tab(composite_editor->automation_edit->channel_selector,
+				    pads * audio_channels);
+	  }
+	}	
+      }
+    }
+  }
+  
   /* verify pads */
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
     if(!g_type_is_a(channel_type,
 		    AGS_TYPE_INPUT)){
       return;
-    }    
+    }
   }else{
     if(!g_type_is_a(channel_type,
 		    AGS_TYPE_OUTPUT)){

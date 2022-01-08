@@ -1,3 +1,9 @@
+ags (3.15.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsCompositeEditor AgsMachine::resize-audio-channels() and AgsMachine::resize-pads() to destroy or create AgsWaveEdit
+	* improved AgsCompositeEditor::machine-changed() restore automation ports
+
 ags (3.15.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -963,6 +963,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   GList *start_list, *list;
 
   gdouble gui_scale_factor;
+  gboolean piano_shown;
+  gboolean level_shown;
   guint length;
   guint audio_channels;
   guint input_lines;
@@ -1009,6 +1011,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     ags_notebook_remove_tab(composite_editor->automation_edit->channel_selector,
 			    0);
   }
+
+  composite_editor->automation_edit->focused_edit = NULL;
   
   /* wave edit notebook - remove tabs */
   length = g_list_length(composite_editor->wave_edit->channel_selector->tab);
@@ -1141,6 +1145,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   }
 
   g_list_free(start_list);
+
+  piano_shown = FALSE;
+  level_shown = FALSE;
   
   if(AGS_IS_DRUM(machine) ||
      AGS_IS_MATRIX(machine) ||
@@ -1163,6 +1170,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_LIVE_VST3_BRIDGE(machine)
 #endif
      ){
+    piano_shown = TRUE;
+    
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION);
     
@@ -1179,51 +1188,12 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
     
     gtk_widget_show(composite_editor->machine_selector->shift_piano);
-  }else if(AGS_IS_PANEL(machine) ||
-	   AGS_IS_MIXER(machine) ||
-	   AGS_IS_SPECTROMETER(machine) ||
-	   AGS_IS_EQUALIZER10(machine) ||
-	   AGS_IS_LADSPA_BRIDGE(machine) ||
-	   AGS_IS_DESK(machine) ||
-	   (AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
-#if defined(AGS_WITH_VST3)
-	   || (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
-#endif
-    ){
-    GList *start_automation_port, *automation_port;
+  }
+
+
+  if(AGS_IS_AUDIOREC(machine)){
+    level_shown = TRUE;
     
-    ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
-						   AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
-    
-    composite_editor->selected_edit = composite_editor->automation_edit;
-
-    composite_editor->automation_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
-						      AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
-
-    start_automation_port = g_list_copy(machine->enabled_automation_port);
-
-    automation_port =
-      start_automation_port = g_list_reverse(start_automation_port);
-
-    while(automation_port != NULL){
-      ags_composite_editor_add_automation_port(composite_editor,
-					       AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type,
-					       AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name);
-
-      automation_port = automation_port->next;
-    }
-
-    g_list_free(start_automation_port);
-
-    gtk_widget_hide(composite_editor->notation_edit);
-    gtk_widget_hide(composite_editor->sheet_edit);
-    gtk_widget_show_all(composite_editor->automation_edit);
-    gtk_widget_hide(composite_editor->wave_edit);
-    
-    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
-    
-    gtk_widget_hide(composite_editor->machine_selector->shift_piano);
-  }else if(AGS_IS_AUDIOREC(machine)){
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE);
 
@@ -1280,7 +1250,81 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
     
     gtk_widget_hide(composite_editor->machine_selector->shift_piano);
-  }else if(machine == NULL){
+  }
+  
+  if(AGS_IS_PANEL(machine) ||
+     AGS_IS_MIXER(machine) ||
+     AGS_IS_SPECTROMETER(machine) ||
+     AGS_IS_EQUALIZER10(machine) ||
+     AGS_IS_LADSPA_BRIDGE(machine) ||
+     AGS_IS_DESK(machine) ||
+     (AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
+#if defined(AGS_WITH_VST3)
+     || (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
+#endif
+     || AGS_IS_DRUM(machine) ||
+     AGS_IS_MATRIX(machine) ||
+     AGS_IS_SYNCSYNTH(machine) ||
+     AGS_IS_FM_SYNCSYNTH(machine) ||
+     AGS_IS_HYBRID_SYNTH(machine) ||
+     AGS_IS_HYBRID_FM_SYNTH(machine) ||
+#ifdef AGS_WITH_LIBINSTPATCH
+     AGS_IS_FFPLAYER(machine) ||
+     AGS_IS_SF2_SYNTH(machine) ||
+#endif
+     AGS_IS_PITCH_SAMPLER(machine) ||
+     AGS_IS_SFZ_SYNTH(machine) ||
+     AGS_IS_DSSI_BRIDGE(machine) ||
+     AGS_IS_LIVE_DSSI_BRIDGE(machine) ||
+     (AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0) ||
+     AGS_IS_LIVE_LV2_BRIDGE(machine)
+#if defined(AGS_WITH_VST3)
+     || (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0) ||
+     AGS_IS_LIVE_VST3_BRIDGE(machine)
+#endif
+     || AGS_IS_AUDIOREC(machine)){
+    GList *start_automation_port, *automation_port;
+    
+    if(!piano_shown &&
+       !level_shown){
+      ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
+						     AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
+    
+      composite_editor->selected_edit = composite_editor->automation_edit;
+    }
+    
+    composite_editor->automation_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
+						      AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
+
+    start_automation_port = g_list_copy(machine->enabled_automation_port);
+
+    automation_port =
+      start_automation_port = g_list_reverse(start_automation_port);
+
+    while(automation_port != NULL){
+      ags_composite_editor_add_automation_port(composite_editor,
+					       AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type,
+					       AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name);
+
+      automation_port = automation_port->next;
+    }
+
+    g_list_free(start_automation_port);
+
+    if(!piano_shown &&
+       !level_shown){
+      gtk_widget_hide(composite_editor->notation_edit);
+      gtk_widget_hide(composite_editor->sheet_edit);
+      gtk_widget_show_all(composite_editor->automation_edit);
+      gtk_widget_hide(composite_editor->wave_edit);
+    
+      composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+    
+      gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+    }
+  }
+  
+  if(machine == NULL){
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION);
 

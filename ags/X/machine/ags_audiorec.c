@@ -695,10 +695,6 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec,
 
   guint output_pads;
 
-  if(audiorec->mapped_output_pad > output_pad_start){
-    return;
-  }
-
   audio = AGS_MACHINE(audiorec)->audio;
   
   /* get some fields */
@@ -721,10 +717,6 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
   guint input_pads;
   guint audio_channels;
   gint position;
-
-  if(audiorec->mapped_input_pad > input_pad_start){
-    return;
-  }
 
   audio = AGS_MACHINE(audiorec)->audio;
 
