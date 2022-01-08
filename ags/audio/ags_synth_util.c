@@ -1215,6 +1215,7 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
@@ -1365,6 +1366,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
@@ -1515,6 +1517,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
@@ -1665,6 +1668,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
@@ -1815,6 +1819,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
