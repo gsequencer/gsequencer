@@ -8106,7 +8106,7 @@ ags_fm_synth_util_compute_triangle_s8(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -8485,7 +8485,7 @@ ags_fm_synth_util_compute_triangle_s16(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
 
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -8864,7 +8864,7 @@ ags_fm_synth_util_compute_triangle_s24(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -9242,7 +9242,7 @@ ags_fm_synth_util_compute_triangle_s32(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -9621,7 +9621,7 @@ ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_triangle, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -15323,7 +15323,7 @@ ags_fm_synth_util_compute_impulse_s8(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -15702,7 +15702,7 @@ ags_fm_synth_util_compute_impulse_s16(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -16081,7 +16081,7 @@ ags_fm_synth_util_compute_impulse_s24(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -16460,7 +16460,7 @@ ags_fm_synth_util_compute_impulse_s32(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -16839,7 +16839,7 @@ ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util)
     double v_scale[] = {(double) scale};
     double v_volume[] = {(double) volume};
     
-    vDSP_vmulD(v_impulse, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_impulse, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
