@@ -1220,7 +1220,7 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1371,7 +1371,7 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1522,7 +1522,7 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1673,7 +1673,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1824,7 +1824,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
