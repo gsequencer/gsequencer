@@ -882,14 +882,14 @@ ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };
     }
     break;
@@ -992,14 +992,14 @@ ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1092,14 +1092,14 @@ ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1155,7 +1155,7 @@ ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint8) ((gint16) (source)[0] + (gint16) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint8) ((gint16) (source)[0] + (gint16) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1263,14 +1263,14 @@ ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };
     }
     break;
@@ -1373,14 +1373,14 @@ ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1472,14 +1472,14 @@ ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint16) ((gint32) (tmp_source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint16) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1534,7 +1534,7 @@ ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint16) ((gint32) (source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint16) ((gint32) (source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1642,14 +1642,14 @@ ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };
     }
     break;
@@ -1752,14 +1752,14 @@ ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1850,14 +1850,14 @@ ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint32) ((gint32) (tmp_source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint32) (tmp_source += fm_synth_util->source_stride)[0] + (gint32) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -1912,7 +1912,7 @@ ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint32) ((gint32) (source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint32) ((gint32) (source)[0] + (gint32) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2020,14 +2020,14 @@ ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };
     }
     break;
@@ -2130,14 +2130,14 @@ ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2228,14 +2228,14 @@ ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint32) ((gint64) (tmp_source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint32) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2290,7 +2290,7 @@ ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint32) ((gint64) (source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint32) ((gint64) (source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2398,14 +2398,14 @@ ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };    
     }
     break;
@@ -2508,14 +2508,14 @@ ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2606,14 +2606,14 @@ ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
-      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint64) ((gint64) (tmp_source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
+      *(source += fm_synth_util->source_stride) = (gint64) ((gint64) (tmp_source += fm_synth_util->source_stride)[0] + (gint64) (sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2668,7 +2668,7 @@ ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gint64) ((gint64) (source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * scale * volume);
+      (*source) = (gint64) ((gint64) (source)[0] + (gint64) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * scale * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2774,14 +2774,14 @@ ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };
     }
     break;
@@ -2883,14 +2883,14 @@ ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -2979,14 +2979,14 @@ ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gfloat) ((tmp_source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
+      (*source) = (gfloat) ((tmp_source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gfloat) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -3042,7 +3042,7 @@ ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gfloat) ((source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
+      (*source) = (gfloat) ((source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -3148,14 +3148,14 @@ ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       v_sine = (ags_v8double) {
-	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
-	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)
       };
     }
     break;
@@ -3257,14 +3257,14 @@ ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
-      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate;
+      v_sine[0] = sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[1] = sin((gdouble) ((offset + (i + 1)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[2] = sin((gdouble) ((offset + (i + 2)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[3] = sin((gdouble) ((offset + (i + 3)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[4] = sin((gdouble) ((offset + (i + 4)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[5] = sin((gdouble) ((offset + (i + 5)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[6] = sin((gdouble) ((offset + (i + 6)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
+      v_sine[7] = sin((gdouble) ((offset + (i + 7)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -3353,14 +3353,14 @@ ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gdouble) ((tmp_source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
-      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
+      (*source) = (gdouble) ((tmp_source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 1) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 1) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 2) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 2) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 3) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 3) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 4) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 4) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 5) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 5) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 6) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 6) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
+      *(source += fm_synth_util->source_stride) = (gdouble) ((tmp_source += fm_synth_util->source_stride)[0] + (sin((gdouble) ((offset + i + 7) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i + 7) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -3416,7 +3416,7 @@ ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util)
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      (*source) = (gdouble) ((source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
+      (*source) = (gdouble) ((source)[0] + (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume);
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
@@ -3496,7 +3496,7 @@ ags_fm_synth_util_compute_sin_complex(AgsFMSynthUtil *fm_synth_util)
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
       ags_complex_set(source,
-		      (ags_complex_get(source) + (sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume)));
+		      (ags_complex_get(source) + (sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((((int) ceil(offset + i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth) / (gdouble) samplerate)) * volume)));
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:

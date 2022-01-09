@@ -7468,6 +7468,7 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -7619,6 +7620,7 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -7770,6 +7772,7 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -7921,6 +7924,7 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -8072,6 +8076,7 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
