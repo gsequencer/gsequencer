@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.15.6" date="2022-01-09">
+      <description>
+	<p>
+	  Fixed synths.
+	</p>
+      </description>
+    </release>
+
     <release version="3.15.4" date="2022-01-08">
       <description>
 	<p>
