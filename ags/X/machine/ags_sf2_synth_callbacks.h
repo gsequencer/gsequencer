@@ -39,6 +39,16 @@ void ags_sf2_synth_destroy_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
 
+void ags_sf2_synth_bank_tree_view_callback(GtkTreeView *tree_view,
+					   GtkTreePath *path,
+					   GtkTreeViewColumn *column,
+					   AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_program_tree_view_callback(GtkTreeView *tree_view,
+					      GtkTreePath *path,
+					      GtkTreeViewColumn *column,
+					      AgsSF2Synth *sf2_synth);
+
 G_END_DECLS
 
 #endif /*__AGS_SF2_SYNTH_CALLBACKS_H__ */

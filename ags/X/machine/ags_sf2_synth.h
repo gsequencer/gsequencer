@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,16 +82,33 @@ struct _AgsSF2Synth
   GtkEntry *filename;
   GtkButton *open;
 
-  gint position;
-  GtkLabel *loading;
-
   AgsSF2Loader *sf2_loader;
+
+  gint position;
+  GtkSpinner *sf2_loader_spinner;  
 
   GtkTreeView *bank_tree_view;
   GtkTreeView *program_tree_view;
 
-  GtkSpinButton *lower;
-  
+  AgsDial *synth_octave;
+  AgsDial *synth_key;
+
+  AgsDial *synth_volume;
+
+  AgsDial *pitch_tuning;
+
+  GtkCheckButton *chorus_enabled;
+
+  AgsDial *chorus_input_volume;
+  AgsDial *chorus_output_volume;
+
+  GtkComboBox *chorus_lfo_oscillator;  
+  GtkSpinButton *chorus_lfo_frequency;
+
+  AgsDial *chorus_depth;
+  AgsDial *chorus_mix;
+  AgsDial *chorus_delay;
+    
   GtkWidget *open_dialog;
 };
 
