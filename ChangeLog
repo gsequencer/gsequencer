@@ -1,3 +1,13 @@
+ags (3.15.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed the synths
+
+ags (3.15.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved allow to define AGS_WINDOW_APP_ICON as macro
+
 ags (3.15.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

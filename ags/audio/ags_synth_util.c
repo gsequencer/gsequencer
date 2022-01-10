@@ -1215,11 +1215,12 @@ ags_synth_util_compute_sin_s8(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1365,11 +1366,12 @@ ags_synth_util_compute_sin_s16(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1515,11 +1517,12 @@ ags_synth_util_compute_sin_s24(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1665,11 +1668,12 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -1815,11 +1819,12 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate),
       sin((double) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (double) synth_util->samplerate)};
 
+    double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
     i++;
     
-    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sine, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -2731,7 +2736,7 @@ ags_synth_util_compute_sawtooth_s8(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -2890,7 +2895,7 @@ ags_synth_util_compute_sawtooth_s16(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -3049,7 +3054,7 @@ ags_synth_util_compute_sawtooth_s24(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -3208,7 +3213,7 @@ ags_synth_util_compute_sawtooth_s32(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -3367,7 +3372,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_scale, 0, tmp0_ret_v_buffer, 1, 8);
     vDSP_vmulD(tmp0_ret_v_buffer, 1, v_volume, 0, tmp1_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp1_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -3522,8 +3527,8 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gfloat) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gfloat) ret_v_buffer[1];
@@ -3676,8 +3681,8 @@ ags_synth_util_compute_sawtooth_double(AgsSynthUtil *synth_util)
 
     i++;
     
-    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
-    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    vDSP_vmulD(v_sawtooth, 1, v_volume, 0, tmp0_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp0_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
     *(source) = (gdouble) ret_v_buffer[0];
     *(source += synth_util->source_stride) = (gdouble) ret_v_buffer[1];
@@ -6111,6 +6116,7 @@ ags_synth_util_compute_square_s16(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
+    double v_volume[] = {(double) volume};
     double v_scale[] = {(double) scale};
 
     i++;
@@ -6262,6 +6268,7 @@ ags_synth_util_compute_square_s24(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
+    double v_volume[] = {(double) volume};
     double v_scale[] = {(double) scale};
 
     i++;
@@ -6413,6 +6420,7 @@ ags_synth_util_compute_square_s32(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
+    double v_volume[] = {(double) volume};
     double v_scale[] = {(double) scale};
 
     i++;
@@ -6564,6 +6572,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume,
       ((sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= 0.0) ? 1.0: -1.0) * volume};
 
+    double v_volume[] = {(double) volume};
     double v_scale[] = {(double) scale};
 
     i++;
@@ -7459,6 +7468,7 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -7501,7 +7511,6 @@ ags_synth_util_compute_impulse_s8(AgsSynthUtil *synth_util)
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume,
       (sin((gdouble) ((synth_util->offset + (i++)) + synth_util->phase) * 2.0 * M_PI * synth_util->frequency / (gdouble) synth_util->samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * volume};
 
-    double v_scale[] = {(double) scale};
     double v_scale[] = {(double) scale};    
     double v_volume[] = {(double) volume};
 
@@ -7611,6 +7620,7 @@ ags_synth_util_compute_impulse_s16(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -7762,6 +7772,7 @@ ags_synth_util_compute_impulse_s24(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -7913,6 +7924,7 @@ ags_synth_util_compute_impulse_s32(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;
@@ -8064,6 +8076,7 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
 
     i++;
 
+    v_impulse *= scale;
     v_impulse *= volume;
 
     v_buffer += v_impulse;

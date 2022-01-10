@@ -3832,6 +3832,7 @@ ags_fx_fm_synth_audio_notify_format_callback(GObject *gobject,
 
 	ags_stream_free(channel_data->chorus_util.destination);
 	ags_stream_free(channel_data->chorus_hq_pitch_util.destination);
+	ags_stream_free(channel_data->chorus_util.pitch_mix_buffer_history);
 
 	channel_data->chorus_util.destination = ags_stream_alloc(AGS_FX_FM_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 								 format);
@@ -3839,7 +3840,13 @@ ags_fx_fm_synth_audio_notify_format_callback(GObject *gobject,
 	channel_data->chorus_hq_pitch_util.destination =
 	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_FM_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 									format);
+
 	
+	channel_data->chorus_util.pitch_mix_buffer_history = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH,
+									      format);
+	  
+	channel_data->chorus_util.history_buffer_length = AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH;
+	  
 	channel_data->chorus_util.format = format;
       }
     }
@@ -4023,6 +4030,11 @@ ags_fx_fm_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data->chorus_hq_pitch_util.destination =
 	    channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_FM_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 									  format);
+
+	  channel_data->chorus_util.pitch_mix_buffer_history = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH,
+										format);
+	  
+	  channel_data->chorus_util.history_buffer_length = AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH;	  
 	  
 	  channel_data->chorus_util.buffer_length = buffer_size;
 	  channel_data->chorus_util.format = format;
@@ -4257,11 +4269,28 @@ ags_fx_fm_synth_audio_channel_data_alloc()
   channel_data->chorus_util.destination = NULL;
   channel_data->chorus_util.destination_stride = 1;
 
+  channel_data->chorus_util.pitch_mix_buffer = NULL;
+
+  channel_data->chorus_util.pitch_mix_buffer_history = NULL;
+  channel_data->chorus_util.history_buffer_length = 0;
+  
   channel_data->chorus_util.buffer_length = 0;
   channel_data->chorus_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   channel_data->chorus_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
-  channel_data->chorus_util.pitch_mix_buffer = NULL;
+  channel_data->chorus_util.offset = 0;
+  
+  channel_data->chorus_util.base_key = 0.0;
+
+  channel_data->chorus_util.input_volume = 1.0;
+  channel_data->chorus_util.output_volume = 1.0;
+
+  channel_data->chorus_util.lfo_oscillator = AGS_CHORUS_UTIL_DEFAULT_LFO_OSCILLATOR;
+  channel_data->chorus_util.lfo_frequency = AGS_CHORUS_UTIL_DEFAULT_LFO_FREQUENCY;
+
+  channel_data->chorus_util.depth = AGS_CHORUS_UTIL_DEFAULT_DEPTH;
+  channel_data->chorus_util.mix = AGS_CHORUS_UTIL_DEFAULT_MIX;
+  channel_data->chorus_util.delay = AGS_CHORUS_UTIL_DEFAULT_DELAY;
 
   channel_data->chorus_util.hq_pitch_util = &(channel_data->chorus_hq_pitch_util);
 
