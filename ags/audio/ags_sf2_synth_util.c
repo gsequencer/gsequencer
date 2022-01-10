@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,10 +97,38 @@ AgsSF2SynthUtil*
 ags_sf2_synth_util_alloc()
 {
   AgsSF2SynthUtil *ptr;
+
+  guint i;
   
   ptr = (AgsSF2SynthUtil *) g_new(AgsSF2SynthUtil,
 				  1);
 
+  ptr->sf2_file = NULL;
+
+  ptr->sf2_sample_count = 0;
+  ptr->sf2_sample = (AgsIpatchSample **) g_malloc(128 * sizeof(AgsIpatchSample*));
+  ptr->sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
+  
+  ptr->sf2_orig_buffer_length = (gpointer *) g_malloc(128 * sizeof(guint));
+  ptr->sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
+
+  ptr->sf2_resampled_buffer_length = (gpointer *) g_malloc(128 * sizeof(guint));
+  ptr->sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
+
+  for(i = 0; i < 128; i++){
+    ptr->sf2_sample[i] = NULL;
+
+    ptr->sf2_note_range[i] = (gint *) g_malloc(2 * sizeof(gint));
+    ptr->sf2_note_range[i][0] = -1;
+    ptr->sf2_note_range[i][1] = -1;
+    
+    ptr->sf2_orig_buffer_length[i] = 0;
+    ptr->sf2_orig_buffer[i] = NULL;
+
+    ptr->sf2_resampled_buffer_length[i] = 0;
+    ptr->sf2_resampled_buffer[i] = NULL;
+  }
+  
   ptr->ipatch_sample = NULL;
 
   ptr->source = NULL;
@@ -1095,6 +1123,14 @@ ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
   sf2_synth_util->generic_pitch_util = generic_pitch_util;
 }
 
+/**
+ * ags_sf2_synth_util_read_ipatch_sample:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ *
+ * Read ipatch sample of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
 void
 ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util)
 {
@@ -1188,6 +1224,298 @@ ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util)
 
     ags_resample_util_compute(resample_util);
   }
+}
+
+/**
+ * ags_sf2_synth_util_load_midi_locale:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @bank: the bank
+ * @program: the program
+ * 
+ * Load midi locale of @sf2_synth_util.
+ *
+ * Since: 3.16.0
+ */
+void
+ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
+				    gint bank,
+				    gint program)
+{
+  IpatchSF2 *sf2;
+  IpatchSF2Preset *sf2_preset;
+  IpatchSF2Inst *sf2_instrument;
+  IpatchItem *pzone;
+  IpatchItem *izone;
+
+  IpatchList *pzone_list;
+  IpatchList *izone_list;
+
+  IpatchIter pzone_iter;
+  IpatchIter izone_iter;
+
+  guint i;
+  
+  GError *error;
+
+  if(sf2_synth_util == NULL ||
+     !AGS_IS_AUDIO_CONTAINER(sf2_synth_util->audio_container)||
+     !AGS_IS_IPATCH(sf2_synth_util->audio_container->sound_container)){
+    return;
+  }
+
+  error = NULL;
+  sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) AGS_IPATCH(sf2_synth_util->audio_container->sound_container)->handle->file,
+						    IPATCH_TYPE_SF2,
+						    &error);
+
+  if(error != NULL){
+    g_error_free(error);
+  }
+
+  for(i = 0; i < sf2_synth_util->sf2_sample_count && i < 128; i++){
+  }
+  
+  sf2_preset = ipatch_sf2_find_preset(sf2,
+				      NULL,
+				      bank,
+				      program,
+				      NULL);
+
+  if(sf2_preset == NULL){
+    return;
+  }
+  
+  pzone_list = ipatch_sf2_preset_get_zones(preset);
+
+  i = 0;
+  
+  if(pzone_list != NULL){
+    ipatch_list_init_iter(pzone_list, &pzone_iter);
+
+    if(ipatch_iter_first(&pzone_iter) != NULL){
+      do{
+	IpatchSF2Sample *sf2_sample;
+	IpatchSF2Sample *current;
+	IpatchSF2Sample *lower;
+	IpatchSF2Sample *higher;
+	
+	IpatchRange *note_range;
+
+	gint current_root_note;
+	gint lower_root_note;
+	gint higher_root_note;
+	gboolean success;
+	
+	pzone = ipatch_iter_get(&pzone_iter);
+
+	note_range = NULL;
+	g_object_get(pzone,
+		     "note-range", &note_range,
+		     NULL);
+
+	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(pzone);
+
+	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
+
+	sf2_sample = NULL;
+	
+	current = NULL;
+	lower = NULL;
+	higher = NULL;
+
+	current_root_note = -1;
+	lower_root_note = -1;
+	higher_root_note = -1;
+		
+	success = FALSE;
+	
+	if(izone_list != NULL){
+	  ipatch_list_init_iter(izone_list, &izone_iter);
+
+	  if(ipatch_iter_first(&izone_iter) != NULL){
+	    do{
+	      gint root_note;
+	    
+	      izone = ipatch_iter_get(&izone_iter);
+
+	      sf2_sample = ipatch_sf2_izone_get_sample(izone);
+
+	      if(IPATCH_IS_SF2_SAMPLE(sf2_sample)){
+		g_object_get(sf2_sample,
+			     "root-note", &root_note,
+			     NULL);
+
+		if(root_note >= note_range->low &&
+		   root_note <= note_range->high){		
+		  success = TRUE;
+
+		  current = sf2_sample;
+//		  g_object_ref(sf2_sample);
+		  
+		  i++;
+
+		  break;
+		}
+
+		/* lower */
+		if(root_note > note_range->low){
+		  if(lower == NULL ||
+		     root_note > lower_root_note){
+		    if(lower != NULL){
+		      g_object_unref(lower);
+		    }
+		    
+		    lower = sf2_sample;
+		    g_object_ref(sf2_sample);
+
+		    lower_root_note = root_note;
+		  }
+		}
+
+		/* higher */
+		if(root_note < note_range->high){
+		  if(higher == NULL ||
+		     root_note < higher_root_note){
+		    if(higher != NULL){
+		      g_object_unref(higher);
+		    }
+		    
+		    higher = sf2_sample;
+		    g_object_ref(sf2_sample);
+
+		    higher_root_note = root_note;
+		  }
+		}
+	      }	      
+
+	      if(sf2_sample != NULL){
+		g_object_unref(sf2_sample);
+	      }
+	    }while(ipatch_iter_next(&izone_iter) != NULL && !success);
+
+	    if(!success && lower != NULL){
+	      success = TRUE;
+
+	      sf2_sample = lower;
+	      	    
+	      i++;
+	    }
+
+	    if(!success && higher != NULL){
+	      success = TRUE;
+	      
+	      sf2_sample = higher;
+	    
+	      i++;
+	    }
+	    
+	    if(success && sf2_sample != NULL){
+	      IpatchSampleData *sample_data;
+
+	      gpointer buffer;
+
+	      guint sample_frame_count;
+	      guint sample_format;
+	      guint format;
+	      guint orig_samplerate;
+
+	      if(sf2_synth_util->sf2_sample[i] != NULL){
+		g_object_unref(sf2_synth_util->sf2_sample[i]);
+	      }
+	      
+	      sf2_synth_util->sf2_sample[i] = sf2_sample;
+	      g_object_ref(sf2_sample);
+
+	      sf2_synth_util->sf2_note_range[i][0] = note_range->low;
+	      sf2_synth_util->sf2_note_range[i][1] = note_range->high;
+
+	      sample_data = ags_sf2_sample_get_data(sf2_sample);
+
+	      sample_frame_count = 0;
+
+	      format = AGS_SOUNDCARD_DOUBLE;
+	      sample_format = ipatch_sample_get_format(sf2_sample);
+		
+	      g_object_get(ipatch_sample->sample,
+			   "sample-size", &sample_frame_count,
+			   "sample-rate", &orig_samplerate,
+			   NULL);
+
+	      ags_stream_free(sf2_synth_util->sf2_orig_buffer[i]);
+		
+	      ags_stream_free(sf2_synth_util->sf2_resampled_buffer[i]);
+		
+	      sf2_synth_util->sf2_orig_buffer_length[i] = sample_frame_count;
+	      buffer =
+		sf2_synth_util->sf2_orig_buffer[i] = ags_stream_alloc(sample_frame_count,
+								      format);
+		
+	      sf2_synth_util->sf2_resampled_buffer_length[i] = 0;
+	      sf2_synth_util->sf2_resampled_buffer[i] = NULL;
+		
+	      error = NULL;
+	      ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
+					   0,
+					   frame_count,
+					   buffer,
+					   IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
+					   IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
+					   &error);
+		
+	      if(sf2_synth_util->samplerate != orig_samplerate){
+		AgsResampleUtil *resample_util;
+
+		resample_util = sf2_synth_util->resample_util;
+
+		sf2_synth_util->sf2_resampled_buffer_length[i] = floor(sf2_synth_util->samplerate / orig_samplerate) * sample_frame_count;
+		sf2_synth_util->sf2_resampled_buffer[i] = ags_stream_alloc(sf2_synth_util->sf2_resampled_buffer_length[i],
+									   format);
+		  
+		resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
+		resample_util->destination_stride = 1;
+		  
+		resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
+		resample_util->source_stride = 1;
+
+		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
+		resample_util->format = AGS_SOUNDCARD_DOUBLE;
+		resample_util->samplerate = orig_samplerate;
+
+		resample_util->target_samplerate = sf2_synth_util->samplerate;
+
+		ags_resample_util_compute(resample_util);
+	      }
+	    }
+	  }
+	}
+
+	if(!success){
+	  if(sf2_synth_util->sf2_sample[i] != NULL){
+	    g_object_unref(sf2_synth_util->sf2_sample[i]);
+
+	    sf2_synth_util->sf2_sample[i] = NULL;
+	  }
+	  
+	  sf2_synth_util->sf2_note_range[i][0] = -1;
+	  sf2_synth_util->sf2_note_range[i][1] = -1;
+	}
+	
+	if(current != NULL){
+	  g_object_unref(current);
+	}
+
+	if(lower != NULL){
+	  g_object_unref(lower);
+	}
+
+	if(higher != NULL){
+	  g_object_unref(higher);
+	}
+      }while(ipatch_iter_next(&pzone_iter) != NULL);
+    }
+  }
+
+  sf2_synth_util->sf2_sample_count = i;
 }
 
 /**
