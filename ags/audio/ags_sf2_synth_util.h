@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,6 +56,13 @@ typedef struct _AgsSF2SynthUtil AgsSF2SynthUtil;
 
 struct _AgsSF2SynthUtil
 {
+  AgsIpatchSample **sf2_sample;
+
+  guint sf2_sample_count;
+
+  gpointer *sf2_orig_buffer;
+  gpointer *sf2_resampled_buffer;  
+  
   AgsIpatchSample *ipatch_sample;
   
   gpointer source;
