@@ -75,8 +75,8 @@ struct _AgsSF2Synth
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *notation_play_container;
-  AgsRecallContainer *notation_recall_container;
+  AgsRecallContainer *sf2_synth_play_container;
+  AgsRecallContainer *sf2_synth_recall_container;
 
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
@@ -90,6 +90,7 @@ struct _AgsSF2Synth
   GtkButton *open;
 
   AgsSF2Loader *sf2_loader;
+  AgsSF2MidiLocaleLoader *sf2_midi_locale_loader;
 
   gint load_bank;
   gint load_program;

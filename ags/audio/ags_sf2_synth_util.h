@@ -37,6 +37,10 @@ G_BEGIN_DECLS
 #define AGS_TYPE_SF2_SYNTH_UTIL         (ags_sf2_synth_util_get_type())
 #define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
 
+typedef enum{
+  AGS_SF2_SYNTH_UTIL_FX_ENGINE   = 1,
+}AgsSF2SynthUtilFlags;
+
 /**
  * AgsSF2SynthUtilLoopMode:
  * @AGS_SF2_SYNTH_UTIL_LOOP_NONE: loop none
@@ -57,6 +61,8 @@ typedef struct _AgsSF2SynthUtil AgsSF2SynthUtil;
 
 struct _AgsSF2SynthUtil
 {
+  guint flags;
+  
   AgsAudioContainer *sf2_file;
   
   guint sf2_sample_count;

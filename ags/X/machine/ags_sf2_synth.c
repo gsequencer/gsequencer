@@ -215,8 +215,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->playback_play_container = ags_recall_container_new();
   sf2_synth->playback_recall_container = ags_recall_container_new();
 
-  sf2_synth->notation_play_container = ags_recall_container_new();
-  sf2_synth->notation_recall_container = ags_recall_container_new();
+  sf2_synth->sf2_synth_play_container = ags_recall_container_new();
+  sf2_synth->sf2_synth_recall_container = ags_recall_container_new();
 
   sf2_synth->envelope_play_container = ags_recall_container_new();
   sf2_synth->envelope_recall_container = ags_recall_container_new();
@@ -1073,9 +1073,9 @@ ags_sf2_synth_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-notation */
+  /* ags-fx-sf2-synth */
   start_recall = ags_fx_factory_create(audio,
-				       sf2_synth->notation_play_container, sf2_synth->notation_recall_container,
+				       sf2_synth->sf2_synth_play_container, sf2_synth->sf2_synth_recall_container,
 				       "ags-fx-sf2-synth",
 				       NULL,
 				       NULL,
@@ -1178,9 +1178,9 @@ ags_sf2_synth_input_map_recall(AgsSF2Synth *sf2_synth,
 	g_list_free_full(start_recall,
 			 (GDestroyNotify) g_object_unref);
 
-	/* ags-fx-notation */
+	/* ags-fx-sf2-synth */
 	start_recall = ags_fx_factory_create(audio,
-					     sf2_synth->notation_play_container, sf2_synth->notation_recall_container,
+					     sf2_synth->sf2_synth_play_container, sf2_synth->sf2_synth_recall_container,
 					     "ags-fx-sf2-synth",
 					     NULL,
 					     NULL,
@@ -1349,6 +1349,15 @@ ags_sf2_synth_open_filename(AgsSF2Synth *sf2_synth,
   ags_sf2_loader_start(sf2_loader);
 }
 
+/**
+ * ags_sf2_synth_load_bank:
+ * @sf2_synth: the #AgsSF2Synth
+ * @bank: the bank
+ * 
+ * Load bank of @sf2_synth.
+ * 
+ * Since: 3.4.0
+ */
 void
 ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 			gint bank)
@@ -1478,20 +1487,37 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
   }
 }
 
+/**
+ * ags_sf2_synth_load_midi_locale:
+ * @sf2_synth: the #AgsSF2Synth
+ * @bank: the bank
+ * @program: the program
+ * 
+ * Load bank and program of @sf2_synth.
+ * 
+ * Since: 3.4.0
+ */
 void
 ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 			       gint bank,
 			       gint program)
 {
   AgsIpatch *ipatch;
-
+  AgsFxSF2SynthAudio *fx_sf2_synth_audio;
+  
   IpatchSF2 *sf2;
   IpatchSF2Preset *sf2_preset;  
 
+  guint i;
+  guint j;
+  guint k;
+  
   GError *error;
   
   ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
+  fx_sf2_synth_audio = NULL;
+  
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
 						    IPATCH_TYPE_SF2,
@@ -1507,11 +1533,44 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 				      program,
 				      NULL);
   
-  if(sf2_preset != NULL){    
+  if(sf2_synth->audio_container != NULL &&
+     sf2_preset != NULL){
+    fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
+    
     sf2_synth->bank = bank;
     sf2_synth->program = program;
 
-    //TODO:JK: implement me
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      AgsFxSF2SynthAudioScopeData *scope_data;
+      
+      scope_data = fx_sf2_synth_audio->scope_data[i];
+
+      if(scope_data != NULL){
+	for(j = 0; j < scope_data->audio_channels; j++){
+	  AgsFxSF2SynthAudioChannelData *channel_data;
+
+	  channel_data = scope_data->channel_data[j];
+	  
+	  if(channel_data != NULL){
+	    AgsSF2MidiLocaleLoader *sf2_midi_locale_loader;
+	  
+	    sf2_midi_locale_loader =
+	      sf2_synth->sf2_midi_locale_loader = ags_sf2_midi_locale_loader_new(AGS_MACHINE(sf2_synth)->audio,
+										 sf2_synth->audio_container->filename,
+										 bank,
+										 program);
+      
+	    sf2_midi_locale_loader->synth = &(channel_data->synth);
+      
+	    ags_sf2_midi_locale_loader_start(sf2_midi_locale_loader);
+	  }
+	}
+      }
+    }
+    
+    if(fx_sf2_synth_audio != NULL){
+      g_object_unref(fx_sf2_synth_audio);
+    }
   }
 }
 
