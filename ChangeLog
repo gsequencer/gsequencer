@@ -4,6 +4,7 @@ ags (3.16.0)
 	* TODO:JK: implemented AgsSF2Synth
 	* implemented ags-fx-sf2-synth
 	* added configure flag to turn on setting environment variables related to packaging w32 exe
+	* implemented AgsAudiorecInputLine struct fixes double mapped recalls
 
 ags (3.15.6)
 

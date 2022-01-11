@@ -41,19 +41,25 @@ G_BEGIN_DECLS
 #define AGS_IS_AUDIOREC_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIOREC))
 #define AGS_AUDIOREC_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUDIOREC, AgsAudiorecClass))
 
+#define AGS_AUDIOREC_INPUT_LINE(ptr) ((AgsAudiorecInputLine *)(ptr))
+
 typedef struct _AgsAudiorec AgsAudiorec;
+typedef struct _AgsAudiorecInputLine AgsAudiorecInputLine;
 typedef struct _AgsAudiorecClass AgsAudiorecClass;
 
 struct _AgsAudiorec
 {
   AgsMachine machine;
 
+  guint mapped_output_audio_channel;
+  guint mapped_input_audio_channel;
+
   guint mapped_output_pad;
   guint mapped_input_pad;
 
   gchar *name;
   gchar *xml_type;
-
+  
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
@@ -75,9 +81,21 @@ struct _AgsAudiorec
   GtkRadioButton *mix_data;
   GtkRadioButton *replace_data;
 
+  GList *input_line;
+
   GtkBox *hindicator_vbox;
 
   GtkFileChooserDialog *open_dialog;
+};
+
+struct _AgsAudiorecInputLine
+{
+  guint pad;
+  guint audio_channel;
+
+  guint line;
+  
+  gboolean mapped_recall;
 };
 
 struct _AgsAudiorecClass
@@ -86,6 +104,11 @@ struct _AgsAudiorecClass
 };
 
 GType ags_audiorec_get_type(void);
+
+gint ags_audiorec_input_line_sort_func(gconstpointer a,
+				       gconstpointer b);
+
+AgsAudiorecInputLine* ags_audiorec_input_line_alloc();
 
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);
