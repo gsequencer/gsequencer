@@ -344,6 +344,8 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		     0);
   
   /* frame - hindicator */
+  audiorec->input_line = NULL;
+
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) frame,
@@ -491,7 +493,6 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
   AgsApplicationContext *application_context;
 
   gdouble gui_scale_factor;
-  guint input_pads;
   guint i;
   guint j;
   
@@ -500,35 +501,72 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
   audiorec = AGS_AUDIOREC(machine);
   
   /* reset existing input line */
-  for(i = 0; i < machine->input_pads; i++){
-    for(j = 0; j < audio_channels; j++){
-      if(j < audio_channels_old){
-	AgsAudiorecInputLine* input_line;
+  if(audio_channels_old < audio_channels){
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	if(j < audio_channels_old){
+	  AgsAudiorecInputLine* input_line;
 
-	input_line = g_list_nth_data(audiorec->input_line,
-				     (i * audio_channels_old) + j);
+	  input_line = g_list_nth_data(audiorec->input_line,
+				       (i * audio_channels_old) + j);
 
-	input_line->line = (i * audio_channels) + j;
+	  if(input_line != NULL){
+	    input_line->line = (i * audio_channels) + j;
+	  }
+	}
+      }
+    }
+  }else{
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels_old; j++){
+	if(j >= audio_channels){
+	  AgsAudiorecInputLine* input_line;
+
+	  input_line = g_list_nth_data(audiorec->input_line,
+				       i * audio_channels);
+
+	  if(input_line->audio_channel >= audio_channels){
+	    audiorec->input_line = g_list_remove(audiorec->input_line,
+						 input_line);
+	    
+	    g_free(input_line);
+	  }
+	}
       }
     }
   }
-
+  
   /* insert new input line */
-  for(i = 0; i < machine->input_pads; i++){
-    for(j = 0; j < audio_channels; j++){
-      if(j > audio_channels_old){
-	AgsAudiorecInputLine* input_line;
+  if(audio_channels_old < audio_channels){
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	if(j >= audio_channels_old){
+	  AgsAudiorecInputLine* input_line;
 
-	input_line = ags_audiorec_input_line_alloc();
+	  gboolean success;
+	
+	  input_line = g_list_nth_data(audiorec->input_line,
+				       (i * audio_channels_old) + j);
 
-	input_line->pad = i;
-	input_line->audio_channel = j;
-
-	input_line->line = (i * machine->audio_channels) + j;
-
-	audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
-						    input_line,
-						    (GCompareFunc) ags_audiorec_input_line_sort_func);
+	  success = FALSE;
+	
+	  if(input_line == NULL){	
+	    input_line = ags_audiorec_input_line_alloc();
+	  }else{
+	    success = TRUE;
+	  }
+	
+	  input_line->pad = i;
+	  input_line->audio_channel = j;
+	
+	  input_line->line = (i * machine->audio_channels) + j;
+	
+	  if(!success){
+	    audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
+							input_line,
+							(GCompareFunc) ags_audiorec_input_line_sort_func);
+	  }
+	}
       }
     }
   }
@@ -603,33 +641,53 @@ ags_audiorec_resize_pads(AgsMachine *machine,
   application_context = ags_application_context_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
-
-  audiorec_input_line = 
-    start_audiorec_input_line = audiorec->input_line;
-
-  for(i = 0; i < pads; i++){
-    for(j = 0; j < machine->audio_channels; j++){
-      if(i > pads_old){
-	AgsAudiorecInputLine* input_line;
-
-	input_line = ags_audiorec_input_line_alloc();
-
-	input_line->pad = i;
-	input_line->audio_channel = j;
-
-	input_line->line = (i * machine->audio_channels) + j;
-
-	audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
-						    input_line,
-						    (GCompareFunc) ags_audiorec_input_line_sort_func);
-      }
-    }
-  }
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    audiorec_input_line = 
+      start_audiorec_input_line = audiorec->input_line;
+
+    if(pads_old < pads){
+      for(i = 0; i < pads; i++){
+	for(j = 0; j < machine->audio_channels; j++){
+	  if(i >= pads_old){
+	    AgsAudiorecInputLine* input_line;
+
+	    input_line = ags_audiorec_input_line_alloc();
+
+	    input_line->pad = i;
+	    input_line->audio_channel = j;
+
+	    input_line->line = (i * machine->audio_channels) + j;
+
+	    audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
+							input_line,
+							(GCompareFunc) ags_audiorec_input_line_sort_func);
+	  }
+	}
+      }
+    }else{
+      for(i = 0; i < pads_old; i++){
+	for(j = 0; j < machine->audio_channels; j++){
+	  if(i >= pads){
+	    AgsAudiorecInputLine* input_line;
+
+	    input_line = g_list_nth_data(audiorec->input_line,
+					 pads * machine->audio_channels);
+
+	    if(input_line->pad >= pads){
+	      audiorec->input_line = g_list_remove(audiorec->input_line,
+						   input_line);
+	    
+	      g_free(input_line);
+	    }
+	  }
+	}
+      }
+    }
+    
     if(pads > pads_old){
       /* depending on destination */
       ags_audiorec_input_map_recall(audiorec,
@@ -793,16 +851,11 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
   
   audio = AGS_MACHINE(audiorec)->audio;
 
-  position = 0;
-
-  input_pads = 0;
-  audio_channels = 0;
-    
   /* get some fields */
-  g_object_get(audio,
-	       "input-pads", &input_pads,
-	       "audio-channels", &audio_channels,
-	       NULL);
+  input_pads = AGS_MACHINE(audiorec)->input_pads;
+  audio_channels = AGS_MACHINE(audiorec)->audio_channels;    
+
+  position = 0;
 
   for(i = 0; i < input_pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -811,7 +864,12 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
       input_line = g_list_nth_data(audiorec->input_line,
 				   (i * audio_channels) + j);
 
-      if(input_line->mapped_recall == FALSE){
+      g_message("check - 0x%x", input_line);
+      
+      if(input_line != NULL &&
+	 input_line->mapped_recall == FALSE){
+	g_message(" +++ map");
+	
 	/* ags-fx-playback */
 	start_recall = ags_fx_factory_create(audio,
 					     audiorec->playback_play_container, audiorec->playback_recall_container,
@@ -859,6 +917,9 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 	/* unref */
 	g_list_free_full(start_recall,
 			 (GDestroyNotify) g_object_unref);
+
+	/* now input line is mapped */
+	input_line->mapped_recall = TRUE;	
       }
     }
   }

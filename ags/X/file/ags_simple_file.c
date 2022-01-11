@@ -39,6 +39,8 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 
+#include <ags/config.h>
+
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_equalizer10.h>
@@ -62,6 +64,7 @@
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_sf2_synth.h>
 #endif
 
 #include <ags/X/machine/ags_pitch_sampler.h>
@@ -78,8 +81,6 @@
 #include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_live_vst3_bridge.h>
 #endif
-
-#include <ags/config.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
@@ -152,6 +153,7 @@ void ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xml
 void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer);
+void ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSF2Synth *sf2_synth);
 #endif
 void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudiorec *audiorec);
 void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDssiBridge *dssi_bridge);
@@ -5214,6 +5216,181 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
     xmlFree(base_note);
   }
 }
+
+void
+ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSF2Synth *sf2_synth)
+{
+  xmlChar *str;
+
+  /* synth */
+  str = xmlGetProp(node,
+		   "synth-octave");
+
+  if(str != NULL){
+    gdouble octave;
+
+    octave = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(sf2_synth->synth_octave,
+		       octave);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-key");
+
+  if(str != NULL){
+    gdouble key;
+
+    key = g_ascii_strtod(str,
+			 NULL);
+
+    ags_dial_set_value(sf2_synth->synth_key,
+		       key);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "synth-volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(sf2_synth->synth_volume,
+		       volume);
+      
+    xmlFree(str);
+  }
+  
+  /* effects */
+  str = xmlGetProp(node,
+		   "pitch-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			    NULL);
+
+    ags_dial_set_value(sf2_synth->pitch_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+
+  /* chorus */
+  str = xmlGetProp(node,
+		   "chorus-input-volume");
+
+  if(str != NULL){
+    gdouble input_volume;
+
+    input_volume = g_ascii_strtod(str,
+				  NULL);
+
+    ags_dial_set_value(sf2_synth->chorus_input_volume,
+		       input_volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-output-volume");
+
+  if(str != NULL){
+    gdouble output_volume;
+
+    output_volume = g_ascii_strtod(str,
+				   NULL);
+
+    ags_dial_set_value(sf2_synth->chorus_output_volume,
+		       output_volume);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-lfo-oscillator");
+
+  if(str != NULL){
+    guint lfo_oscillator;
+
+    lfo_oscillator = g_ascii_strtoll(str,
+				     NULL,
+				     10);
+
+    gtk_combo_box_set_active(sf2_synth->chorus_lfo_oscillator,
+			     lfo_oscillator);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-lfo-frequency");
+
+  if(str != NULL){
+    gdouble lfo_frequency;
+
+    lfo_frequency = g_ascii_strtod(str,
+				   NULL);
+
+    gtk_spin_button_set_value(sf2_synth->chorus_lfo_frequency,
+			      lfo_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-depth");
+
+  if(str != NULL){
+    gdouble depth;
+
+    depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->chorus_depth,
+		       depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-mix");
+
+  if(str != NULL){
+    gdouble mix;
+
+    mix = g_ascii_strtod(str,
+			 NULL);
+
+    ags_dial_set_value(sf2_synth->chorus_mix,
+		       mix);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "chorus-delay");
+
+  if(str != NULL){
+    gdouble delay;
+
+    delay = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->chorus_delay,
+		       delay);
+      
+    xmlFree(str);
+  }
+}
 #endif
   
 void
@@ -6240,6 +6417,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
+  }else if(AGS_IS_SF2_SYNTH(machine)){
+    ags_simple_file_read_sf2_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSF2Synth *) machine);
 #endif
   }else if(AGS_IS_AUDIOREC(machine)){
     ags_simple_file_read_audiorec_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsAudiorec *) machine);
@@ -12654,6 +12833,111 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);
+  }else if(AGS_IS_SF2_SYNTH(machine)){
+    AgsSF2Synth *sf2_synth;
+
+    sf2_synth = (AgsSF2Synth *) machine;
+
+    /* synth */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->synth_octave));
+    
+    xmlNewProp(node,
+	       "synth-octave",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->synth_key));
+    
+    xmlNewProp(node,
+	       "synth-key",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->synth_volume));
+    
+    xmlNewProp(node,
+	       "synth-volume",
+	       str);
+
+    g_free(str);    
+
+    /* effects */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->pitch_tuning));
+    
+    xmlNewProp(node,
+	       "pitch-tuning",
+	       str);
+
+    g_free(str);    
+
+    /* chorus */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->chorus_input_volume));
+    
+    xmlNewProp(node,
+	       "chorus-input-volume",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->chorus_output_volume));
+    
+    xmlNewProp(node,
+	       "chorus-output-volume",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%d", gtk_combo_box_get_active(sf2_synth->chorus_lfo_oscillator));
+    
+    xmlNewProp(node,
+	       "chorus-lfo-oscillator",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_spin_button_get_value(sf2_synth->chorus_lfo_frequency));
+    
+    xmlNewProp(node,
+	       "chorus-lfo-frequency",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->chorus_depth));
+    
+    xmlNewProp(node,
+	       "chorus-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->chorus_mix));
+    
+    xmlNewProp(node,
+	       "chorus-mix",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->chorus_delay));
+    
+    xmlNewProp(node,
+	       "chorus-delay",
+	       str);
+
+    g_free(str);    
 #endif
   }else if(AGS_IS_AUDIOREC(machine)){
     AgsAudiorec *audiorec;
