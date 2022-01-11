@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -821,14 +821,9 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec,
 
   audio = AGS_MACHINE(audiorec)->audio;
   
-  output_pads = 0;
-  audio_channels = 0;
-
   /* get some fields */
-  g_object_get(audio,
-	       "output-pads", &output_pads,
-	       "audio-channels", &audio_channels,
-	       NULL);
+  output_pads = AGS_MACHINE(audiorec)->output_pads;
+  audio_channels = AGS_MACHINE(audiorec)->audio_channels;    
   
   audiorec->mapped_output_audio_channel = audio_channels;
   audiorec->mapped_output_pad = output_pads;
@@ -864,12 +859,8 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
       input_line = g_list_nth_data(audiorec->input_line,
 				   (i * audio_channels) + j);
 
-      g_message("check - 0x%x", input_line);
-      
       if(input_line != NULL &&
 	 input_line->mapped_recall == FALSE){
-	g_message(" +++ map");
-	
 	/* ags-fx-playback */
 	start_recall = ags_fx_factory_create(audio,
 					     audiorec->playback_play_container, audiorec->playback_recall_container,

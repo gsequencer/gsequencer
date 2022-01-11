@@ -41,16 +41,16 @@ G_BEGIN_DECLS
 #define AGS_IS_SF2_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SF2_SYNTH))
 #define AGS_SF2_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SF2_SYNTH, AgsSF2SynthClass))
 
-#define AGS_SF2_SYNTH_BASE_NOTE_MAX (72.0)
-#define AGS_SF2_SYNTH_BASE_NOTE_MIN (-72.0)
-
 #define AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST (256)
 #define AGS_SF2_SYNTH_BANK_WIDTH_REQUEST (256)
   
 #define AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST (256)
 #define AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST (512)
 
+#define AGS_SF2_SYNTH_INPUT_LINE(ptr) ((AgsSF2SynthInputLine *)(ptr))
+
 typedef struct _AgsSF2Synth AgsSF2Synth;
+typedef struct _AgsSF2SynthInputLine AgsSF2SynthInputLine;
 typedef struct _AgsSF2SynthClass AgsSF2SynthClass;
 
 typedef enum{
@@ -65,6 +65,9 @@ struct _AgsSF2Synth
 
   gchar *name;
   gchar *xml_type;
+
+  guint mapped_output_audio_channel;
+  guint mapped_input_audio_channel;
 
   guint mapped_input_pad;
   guint mapped_output_pad;
@@ -118,6 +121,8 @@ struct _AgsSF2Synth
   AgsDial *chorus_depth;
   AgsDial *chorus_mix;
   AgsDial *chorus_delay;
+
+  GList *input_line;
     
   GtkWidget *open_dialog;
 };
@@ -127,7 +132,22 @@ struct _AgsSF2SynthClass
   AgsMachineClass machine;
 };
 
+struct _AgsSF2SynthInputLine
+{
+  guint pad;
+  guint audio_channel;
+
+  guint line;
+  
+  gboolean mapped_recall;
+};
+
 GType ags_sf2_synth_get_type(void);
+
+gint ags_sf2_synth_input_line_sort_func(gconstpointer a,
+				       gconstpointer b);
+
+AgsSF2SynthInputLine* ags_sf2_synth_input_line_alloc();
 
 void ags_sf2_synth_open_filename(AgsSF2Synth *sf2_synth,
 				 gchar *filename);

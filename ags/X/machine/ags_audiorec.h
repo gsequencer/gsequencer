@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,6 +88,11 @@ struct _AgsAudiorec
   GtkFileChooserDialog *open_dialog;
 };
 
+struct _AgsAudiorecClass
+{
+  AgsMachineClass machine;
+};
+
 struct _AgsAudiorecInputLine
 {
   guint pad;
@@ -96,11 +101,6 @@ struct _AgsAudiorecInputLine
   guint line;
   
   gboolean mapped_recall;
-};
-
-struct _AgsAudiorecClass
-{
-  AgsMachineClass machine;
 };
 
 GType ags_audiorec_get_type(void);
