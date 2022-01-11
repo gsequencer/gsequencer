@@ -738,9 +738,16 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 
     template->hq_pitch_util->destination = template->im_buffer;
 
+    template->hq_pitch_util->samplerate = samplerate;
+    template->hq_pitch_util->buffer_length = buffer_length;
+    template->hq_pitch_util->format = format;
+
     template->volume_util->source = template->im_buffer;
     
     template->volume_util->destination = template->im_buffer;
+
+    template->volume_util->buffer_length = buffer_length;
+    template->volume_util->format = format;
     
     template->source = ags_stream_alloc(buffer_length,
 					format);
