@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_generic_pitch_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_ipatch.h>
@@ -86,6 +88,7 @@ struct _AgsSF2SynthUtil
   guint buffer_length;
   guint format;
   guint samplerate;
+  guint orig_samplerate;
   
   gchar *preset;
   gchar *instrument;
@@ -97,7 +100,6 @@ struct _AgsSF2SynthUtil
   gint midi_key;
   
   gdouble note;
-
   gdouble volume;
 
   guint frame_count;
@@ -111,6 +113,7 @@ struct _AgsSF2SynthUtil
   AgsResampleUtil *resample_util;
   AgsGenericPitchUtil *generic_pitch_util;
   AgsHQPitchUtil *hq_pitch_util;
+  AgsVolumeUtil *volume_util;
 };
 
 GType ags_sf2_synth_util_get_type(void);
