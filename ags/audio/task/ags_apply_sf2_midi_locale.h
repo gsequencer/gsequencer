@@ -26,7 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_sf2_midi_locale_generator.h>
+#include <ags/audio/ags_sf2_synth_util.h>
 
 G_BEGIN_DECLS
 

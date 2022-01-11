@@ -173,6 +173,8 @@ ags_sf2_synth_util_alloc()
 
   ptr->hq_pitch_util = ags_hq_pitch_util_alloc();
 
+  ptr->volume_util = ags_volume_util_alloc();
+
   return(ptr);
 }
 
@@ -237,6 +239,8 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
   new_ptr->generic_pitch_util = ags_generic_pitch_util_copy(ptr->generic_pitch_util);
   
   new_ptr->hq_pitch_util = ags_hq_pitch_util_copy(ptr->hq_pitch_util);
+
+  new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
 
   return(new_ptr);
 }
@@ -1588,8 +1592,8 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 
 	nth_sample = i;
       }else{
-	if(sf2_synth_util->sf2_note_range[i]->lower <= midi_key &&
-	   sf2_synth_util->sf2_note_range[i]->higher >= midi_key){
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
 	  current_sf2_sample = sf2_synth_util->sf2_sample[i];
 	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
@@ -1716,7 +1720,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     note += (gdouble) (midi_key - root_note);
     
     ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				   (gdouble) rote_note - 48.0);
+				   (gdouble) root_note - 48.0);
     
     ags_hq_pitch_util_set_tuning(hq_pitch_util,
 				 100.0 * note);

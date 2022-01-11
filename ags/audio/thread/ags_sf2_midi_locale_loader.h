@@ -26,6 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_sf2_synth_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
 

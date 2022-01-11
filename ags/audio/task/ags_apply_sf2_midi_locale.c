@@ -22,9 +22,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_sf2_midi_locale_generator.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_sf2_midi_locale_util.h>
 
 #include <math.h>
 
@@ -246,8 +244,8 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   AgsResampleUtil *synth_resample_util;
   AgsHQPitchUtil *template_hq_pitch_util;
   AgsHQPitchUtil *synth_hq_pitch_util;
-  AgsHQPitchUtil *template_hq_pitch_linear_interpolate_util;
-  AgsHQPitchUtil *synth_hq_pitch_linear_interpolate_util;
+  AgsLinearInterpolateUtil *template_hq_pitch_linear_interpolate_util;
+  AgsLinearInterpolateUtil *synth_hq_pitch_linear_interpolate_util;
 
   apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(task);
 
@@ -362,8 +360,6 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth_hq_pitch_linear_interpolate_util->format = template_hq_pitch_linear_interpolate_util->format;
   synth_hq_pitch_linear_interpolate_util->samplerate = template_hq_pitch_linear_interpolate_util->samplerate;
 
-  synth_hq_pitch_linear_interpolate_util->audio_buffer_util_format = template_hq_pitch_linear_interpolate_util->audio_buffer_util_format;
-
   synth_hq_pitch_linear_interpolate_util->factor = template_hq_pitch_linear_interpolate_util->factor;
 }
 
@@ -379,8 +375,8 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
  * Since: 3.16.0
  */
 AgsApplySF2MidiLocale*
-ags_apply_sf2_midi_locale_new(AgsSF2MidiLocaleUtil *template,
-			      AgsSF2MidiLocaleUtil *synth)
+ags_apply_sf2_midi_locale_new(AgsSF2SynthUtil *template,
+			      AgsSF2SynthUtil *synth)
 {
   AgsApplySF2MidiLocale *apply_sf2_midi_locale;
 

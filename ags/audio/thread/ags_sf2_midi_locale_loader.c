@@ -702,10 +702,10 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 
     sf2_midi_locale_loader->template = ags_sf2_synth_util_alloc();
 
-    sf2_midi_locale_loader->template->audio_container = sf2_midi_locale_loader->audio_container;
+    sf2_midi_locale_loader->template->sf2_file = sf2_midi_locale_loader->audio_container;
 
-    if(sf2_midi_locale_loader->template->audio_container != NULL){
-      g_object_ref(sf2_midi_locale_loader->template->audio_container);
+    if(sf2_midi_locale_loader->template->sf2_file != NULL){
+      g_object_ref(sf2_midi_locale_loader->template->sf2_file);
     }
     
     ags_sf2_synth_util_load_midi_locale(sf2_midi_locale_loader->template,
