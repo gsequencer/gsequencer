@@ -2,7 +2,8 @@ ags (3.16.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsSF2Synth
-	* TODO:JK: implemented ags-fx-sf2-synth
+	* implemented ags-fx-sf2-synth
+	* added configure flag to turn on setting environment variables related to packaging w32 exe
 
 ags (3.15.6)
 

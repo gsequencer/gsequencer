@@ -1258,13 +1258,13 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
   GError *error;
 
   if(sf2_synth_util == NULL ||
-     !AGS_IS_AUDIO_CONTAINER(sf2_synth_util->audio_container)||
-     !AGS_IS_IPATCH(sf2_synth_util->audio_container->sound_container)){
+     !AGS_IS_AUDIO_CONTAINER(sf2_synth_util->sf2_file)||
+     !AGS_IS_IPATCH(sf2_synth_util->sf2_file->sound_container)){
     return;
   }
 
   error = NULL;
-  sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) AGS_IPATCH(sf2_synth_util->audio_container->sound_container)->handle->file,
+  sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) AGS_IPATCH(sf2_synth_util->sf2_file->sound_container)->handle->file,
 						    IPATCH_TYPE_SF2,
 						    &error);
 
@@ -1285,7 +1285,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
     return;
   }
   
-  pzone_list = ipatch_sf2_preset_get_zones(preset);
+  pzone_list = ipatch_sf2_preset_get_zones(sf2_preset);
 
   i = 0;
   
@@ -1429,14 +1429,14 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      sf2_synth_util->sf2_note_range[i][0] = note_range->low;
 	      sf2_synth_util->sf2_note_range[i][1] = note_range->high;
 
-	      sample_data = ags_sf2_sample_get_data(sf2_sample);
+	      sample_data = ipatch_sf2_sample_get_data(sf2_sample);
 
 	      sample_frame_count = 0;
 
 	      format = AGS_SOUNDCARD_DOUBLE;
 	      sample_format = ipatch_sample_get_format(sf2_sample);
 		
-	      g_object_get(ipatch_sample->sample,
+	      g_object_get(sf2_sample,
 			   "sample-size", &sample_frame_count,
 			   "sample-rate", &orig_samplerate,
 			   NULL);
@@ -1456,7 +1456,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      error = NULL;
 	      ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
 					   0,
-					   frame_count,
+					   sample_frame_count,
 					   buffer,
 					   IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
 					   IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
