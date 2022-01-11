@@ -122,7 +122,7 @@ struct _AgsMachine
   guint samplerate;
   guint buffer_size;
   guint format;
-    
+  
   guint bank_0;
   guint bank_1;
 

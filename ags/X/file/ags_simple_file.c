@@ -5220,8 +5220,38 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 void
 ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSF2Synth *sf2_synth)
 {
+  xmlChar *filename;
+  xmlChar *bank, *program;
   xmlChar *str;
 
+  filename = xmlGetProp(node,
+			"filename");
+
+  bank = xmlGetProp(node,
+		    "bank");
+
+  program = xmlGetProp(node,
+		       "program");
+
+  if(bank != NULL){
+    sf2_synth->load_bank = (gint) g_ascii_strtoll(bank,
+						  NULL,
+						  10);
+  }
+
+  if(bank != NULL &&
+     program != NULL){
+    sf2_synth->load_program = (gint) g_ascii_strtoll(program,
+						     NULL,
+						     10);
+  }
+
+  gtk_entry_set_text(sf2_synth->filename,
+		     filename);
+  
+  ags_sf2_synth_open_filename(sf2_synth,
+			      filename);
+  
   /* synth */
   str = xmlGetProp(node,
 		   "synth-octave");
@@ -5389,6 +5419,18 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 		       delay);
       
     xmlFree(str);
+  }
+  
+  if(filename != NULL){
+    xmlFree(filename);
+  }
+
+  if(bank != NULL){
+    xmlFree(bank);
+  }
+
+  if(program != NULL){
+    xmlFree(program);
   }
 }
 #endif
@@ -12836,8 +12878,34 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_SF2_SYNTH(machine)){
     AgsSF2Synth *sf2_synth;
 
+    gint bank, program;
+    
     sf2_synth = (AgsSF2Synth *) machine;
 
+    if(sf2_synth->audio_container != NULL){
+      xmlNewProp(node,
+		 "filename",
+		 sf2_synth->audio_container->filename);
+
+      str = g_strdup_printf("%d",
+			    sf2_synth->bank);
+    
+      xmlNewProp(node,
+		 "bank",
+		 str);
+
+      g_free(str);
+
+      str = g_strdup_printf("%d",
+			    sf2_synth->program);
+    
+      xmlNewProp(node,
+		 "program",
+		 str);
+
+      g_free(str);
+    }
+    
     /* synth */
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sf2_synth->synth_octave));

@@ -53,6 +53,10 @@ G_BEGIN_DECLS
 typedef struct _AgsSF2Synth AgsSF2Synth;
 typedef struct _AgsSF2SynthClass AgsSF2SynthClass;
 
+typedef enum{
+  AGS_SF2_SYNTH_NO_LOAD          = 1,
+}AgsSF2SynthFlags;
+
 struct _AgsSF2Synth
 {
   AgsMachine machine;
@@ -84,9 +88,15 @@ struct _AgsSF2Synth
 
   AgsSF2Loader *sf2_loader;
 
+  gint load_bank;
+  gint load_program;
+
   gint position;
   GtkSpinner *sf2_loader_spinner;  
 
+  gint bank;
+  gint program;
+  
   GtkTreeView *bank_tree_view;
   GtkTreeView *program_tree_view;
 

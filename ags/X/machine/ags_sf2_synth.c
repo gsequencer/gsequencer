@@ -266,6 +266,11 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		     FALSE, FALSE,
 		     0);
 
+  sf2_synth->sf2_loader = NULL;
+
+  sf2_synth->load_bank = -1;
+  sf2_synth->load_program = -1;
+  
   sf2_synth->position = -1;
 
   sf2_synth->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
@@ -278,6 +283,9 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
 
   /* preset - bank and program */
+  sf2_synth->bank = -1;
+  sf2_synth->program = -1;
+  
   sf2_preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					   0);
   gtk_box_pack_start(sf2_hbox,
@@ -1279,33 +1287,12 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 			       gint bank,
 			       gint program)
 {
-  AgsChannel *start_input;
-  AgsChannel *input, *next_input;
   AgsIpatch *ipatch;
 
   IpatchSF2 *sf2;
-  IpatchSF2Preset *sf2_preset;
-  IpatchSF2Inst *sf2_instrument;
-  IpatchSF2Sample *sf2_sample;
-  IpatchItem *pzone;
-  IpatchItem *izone;
-  IpatchList *pzone_list;
-  IpatchList *izone_list;
-  
-  IpatchIter pzone_iter, izone_iter;
+  IpatchSF2Preset *sf2_preset;  
 
-  guint audio_channels;
-  
   GError *error;
-
-  start_input = NULL;
-
-  audio_channels = 0;
-  
-  g_object_get(AGS_MACHINE(sf2_synth)->audio,
-	       "input", &start_input,
-	       "audio-channels", &audio_channels,
-	       NULL);
   
   ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
@@ -1324,97 +1311,11 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 				      program,
 				      NULL);
   
-  if(sf2_preset != NULL){
-    pzone_list = ipatch_sf2_preset_get_zones(sf2_preset);
+  if(sf2_preset != NULL){    
+    sf2_synth->bank = bank;
+    sf2_synth->program = program;
 
-    ipatch_list_init_iter(pzone_list, &pzone_iter);
-    
-    if(ipatch_iter_first(&pzone_iter) != NULL){      
-      do{
-	IpatchRange *note_range;
-
-	guint i, j;
-	
-	pzone = ipatch_iter_get(&pzone_iter);
-
-	g_object_get(pzone,
-		     "note-range", &note_range,
-		     NULL);
-	
-	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst((IpatchSF2PZone *) ipatch_iter_get(&pzone_iter));
-	
-	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
-
-	i = 0;
-	
-	if(izone_list != NULL){
-	  ipatch_list_init_iter(izone_list, &izone_iter);
-
-	  if(ipatch_iter_first(&izone_iter) != NULL){      
-	    do{
-	      gdouble *buffer;
-	      
-	      guint frame_count;
-	      guint loop_start, loop_end;
-	      
-	      izone = ipatch_iter_get(&izone_iter);
-
-	      sf2_sample = ipatch_sf2_izone_get_sample((IpatchSF2IZone *) izone);
-
-	      g_object_get(sf2_sample,
-			   "sample-size", &frame_count,
-			   "loop-start", &loop_start,
-			   "loop-end", &loop_end,
-			   NULL);
-
-	      buffer = (gdouble *) g_malloc(frame_count * sizeof(gdouble));
-	      
-	      error = NULL;
-	      ipatch_sample_read_transform(IPATCH_SAMPLE(sf2_sample),
-					   0,
-					   frame_count,
-					   buffer,
-					   IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
-					   IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					   &error);
-
-	      if(error != NULL){
-		g_error_free(error);
-	      }
-
-	      input = ags_channel_pad_nth(start_input,
-					  note_range->low + i);
-
-	      for(j = 0; j < audio_channels; j++){
-		AgsAudioSignal *audio_signal;
-
-		
-		//TODO:JK: implement me
-		
-		/* iterate */
-		next_input = ags_channel_next(input);
-
-		if(input != NULL){
-		  g_object_unref(input);
-		}
-		
-		input = next_input;
-	      }
-	      
-	      if(input != NULL){
-		g_object_unref(input);
-	      }
-
-	      i++;
-	    }while(ipatch_iter_next(&izone_iter) != NULL);
-	  }
-	}
-      }while(ipatch_iter_next(&pzone_iter) != NULL);
-    }
-  }
-
-  if(start_input != NULL){
-    g_object_unref(start_input);
+    //TODO:JK: implement me
   }
 }
 
@@ -1516,6 +1417,71 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	  }
 	}
 
+	if(sf2_synth->load_bank >= 0){
+	  GtkTreeModel *model;
+	  
+	  GtkTreeIter tree_iter;
+	  
+	  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
+
+	  if(model != NULL &&
+	     gtk_tree_model_get_iter_first(model, &tree_iter)){
+	    do{
+	      gint current_bank;
+
+	      current_bank = 0;
+	      
+	      gtk_tree_model_get(model,
+				 &tree_iter,
+				 0, &current_bank,
+				 -1);
+
+	      if(current_bank == sf2_synth->load_bank){
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+					 gtk_tree_model_get_path(model,
+								 &tree_iter),
+					 NULL,
+					 FALSE);
+		
+		break;
+	      }
+	    }while(gtk_tree_model_iter_next(model, &tree_iter));
+	  }
+	}
+
+	if(sf2_synth->load_bank >= 0 &&
+	   sf2_synth->load_program >= 0){
+	  GtkTreeModel *model;
+
+	  GtkTreeIter tree_iter;
+	  
+	  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view)));
+
+	  if(model != NULL &&
+	     gtk_tree_model_get_iter_first(model, &tree_iter)){
+	    do{
+	      gint current_program;
+
+	      current_program = 0;
+	      
+	      gtk_tree_model_get(model,
+				 &tree_iter,
+				 1, &current_program,
+				 -1);
+
+	      if(current_program == sf2_synth->load_program){
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->program_tree_view),
+					 gtk_tree_model_get_path(model,
+								 &tree_iter),
+					 NULL,
+					 FALSE);
+		
+		break;
+	      }
+	    }while(gtk_tree_model_iter_next(model, &tree_iter));
+	  }
+	}
+	
 	/* cleanup */	
 	g_object_run_dispose((GObject *) sf2_synth->sf2_loader);
 	g_object_unref(sf2_synth->sf2_loader);
