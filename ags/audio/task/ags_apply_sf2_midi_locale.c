@@ -238,11 +238,64 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
 {
   AgsApplySF2MidiLocale *apply_sf2_midi_locale;
   
+  AgsSF2SynthUtil *template;
+  AgsSF2SynthUtil *synth;
+
   apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(task);
 
   g_return_if_fail(apply_sf2_midi_locale->template != NULL);
   g_return_if_fail(apply_sf2_midi_locale->synth != NULL);
 
+  template = apply_sf2_midi_locale->template;
+  synth = apply_sf2_midi_locale->synth;
+
+  /* synth */
+  synth->sf2_file = template->sf2_file;
+
+  synth->sf2_sample_count = template->sf2_sample_count;
+  synth->sf2_sample = template->sf2_sample;
+  synth->sf2_note_range = template->sf2_note_range;
+  
+  synth->sf2_orig_buffer_length = template->sf2_orig_buffer_length;
+  synth->sf2_orig_buffer = template->sf2_orig_buffer;
+
+  synth->sf2_resampled_buffer_length = template->sf2_resampled_buffer_length;
+  synth->sf2_resampled_buffer = template->sf2_resampled_buffer;
+
+  synth->ipatch_sample = template->ipatch_sample;
+
+  synth->source = template->source;
+  synth->source_stride = template->source_stride;
+
+  synth->sample_buffer = template->sample_buffer;
+  synth->im_buffer = template->im_buffer;
+  
+  synth->buffer_length = template->buffer_length;
+  synth->format = template->format;
+  synth->samplerate = template->samplerate;
+
+  synth->preset = template->preset;
+  synth->instrument = template->instrument;
+  synth->sample = template->sample;
+
+  synth->bank = template->bank;
+  synth->program = template->program;
+
+  synth->midi_key = template->midi_key;
+
+  synth->note = template->note;
+
+  synth->volume = template->volume;
+
+  synth->frame_count = template->frame_count;
+  synth->offset = template->offset;
+
+  synth->loop_mode = template->loop_mode;
+
+  synth->loop_start = template->loop_start;
+  synth->loop_end = template->loop_end;
+
+  /* resample util */
   //TODO:JK: implement me
 }
 
