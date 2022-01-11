@@ -1447,7 +1447,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		
 	      sf2_synth_util->sf2_orig_buffer_length[i] = sample_frame_count;
 	      buffer =
-		sf2_synth_util->sf2_orig_buffer[i] = ags_stream_alloc(sample_frame_count,
+		sf2_synth_util->sf2_orig_buffer[i] = ags_stream_alloc(sf2_synth_util->sf2_orig_buffer_length[i],
 								      format);
 		
 	      sf2_synth_util->sf2_resampled_buffer_length[i] = 0;

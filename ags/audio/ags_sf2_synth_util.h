@@ -104,6 +104,7 @@ struct _AgsSF2SynthUtil
 
   AgsResampleUtil *resample_util;
   AgsGenericPitchUtil *generic_pitch_util;
+  AgsHQPitchUtil *hq_pitch_util;
 };
 
 GType ags_sf2_synth_util_get_type(void);

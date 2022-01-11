@@ -933,11 +933,10 @@ ags_sf2_loader_start(AgsSF2Loader *sf2_loader)
     return;
   }
   
-  sf2_loader->thread = g_thread_new("Advanced Gtk+ Sequencer - SFZ loader",
+  sf2_loader->thread = g_thread_new("Advanced Gtk+ Sequencer - SF2 loader",
 				    ags_sf2_loader_run,
 				    sf2_loader);
 }
-
 
 /**
  * ags_sf2_loader_new:

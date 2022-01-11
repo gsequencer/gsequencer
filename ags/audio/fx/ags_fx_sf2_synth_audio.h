@@ -100,7 +100,10 @@ struct _AgsFxSF2SynthAudioChannelData
   gpointer parent;
 
   AgsSF2SynthUtil synth;
-
+  AgsResampleUtil synth_resample_util;
+  AgsHQPitchUtil synth_hq_pitch_util;
+  AgsLinearInterpolateUtil synth_hq_pitch_linear_interpolate_util;
+  
   AgsHQPitchUtil hq_pitch_util;
   AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
   
