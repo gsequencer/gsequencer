@@ -229,6 +229,8 @@ ags_apply_sf2_midi_locale_finalize(GObject *gobject)
 
   apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(gobject);
 
+  //TODO:JK: implement me
+
   /* call parent */
   G_OBJECT_CLASS(ags_apply_sf2_midi_locale_parent_class)->finalize(gobject);
 }
@@ -240,6 +242,12 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   
   AgsSF2SynthUtil *template;
   AgsSF2SynthUtil *synth;
+  AgsResampleUtil *template_resample_util;
+  AgsResampleUtil *synth_resample_util;
+  AgsHQPitchUtil *template_hq_pitch_util;
+  AgsHQPitchUtil *synth_hq_pitch_util;
+  AgsHQPitchUtil *template_hq_pitch_linear_interpolate_util;
+  AgsHQPitchUtil *synth_hq_pitch_linear_interpolate_util;
 
   apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(task);
 
@@ -296,7 +304,67 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth->loop_end = template->loop_end;
 
   /* resample util */
-  //TODO:JK: implement me
+  template_resample_util = template->resample_util;
+  synth_resample_util = synth->resample_util;
+
+  synth_resample_util->secret_rabbit.src_ratio = template_resample_util->secret_rabbit.src_ratio;
+
+  synth_resample_util->secret_rabbit.input_frames = template_resample_util->secret_rabbit.input_frames;
+  synth_resample_util->secret_rabbit.data_in = template_resample_util->secret_rabbit.data_in;
+
+  synth_resample_util->secret_rabbit.output_frames = template_resample_util->secret_rabbit.output_frames;
+  synth_resample_util->secret_rabbit.data_out = template_resample_util->secret_rabbit.data_out;
+
+  synth_resample_util->source = template_resample_util->source;
+  synth_resample_util->source_stride = template_resample_util->source_stride;
+
+  synth_resample_util->destination = template_resample_util->destination;
+  synth_resample_util->destination_stride = template_resample_util->destination_stride;
+
+  synth_resample_util->buffer_length = template_resample_util->buffer_length;
+  synth_resample_util->format = template_resample_util->format;
+  synth_resample_util->samplerate = template_resample_util->samplerate;
+
+  synth_resample_util->audio_buffer_util_format = template_resample_util->audio_buffer_util_format;
+  synth_resample_util->target_samplerate = template_resample_util->target_samplerate;
+
+  /* HQ pitch util */
+  template_hq_pitch_util = template->hq_pitch_util;
+  synth_hq_pitch_util = synth->hq_pitch_util;
+
+  synth_hq_pitch_util->source = template_hq_pitch_util->source;
+  synth_hq_pitch_util->source_stride = template_hq_pitch_util->source_stride;
+
+  synth_hq_pitch_util->destination = template_hq_pitch_util->destination;
+  synth_hq_pitch_util->destination_stride = template_hq_pitch_util->destination_stride;
+  
+  synth_hq_pitch_util->low_mix_buffer = template_hq_pitch_util->low_mix_buffer;
+  synth_hq_pitch_util->new_mix_buffer = template_hq_pitch_util->new_mix_buffer;
+
+  synth_hq_pitch_util->buffer_length = template_hq_pitch_util->buffer_length;
+  synth_hq_pitch_util->format = template_hq_pitch_util->format;
+  synth_hq_pitch_util->samplerate = template_hq_pitch_util->samplerate;
+
+  synth_hq_pitch_util->base_key = template_hq_pitch_util->base_key;
+  synth_hq_pitch_util->tuning = template_hq_pitch_util->tuning;
+
+  /*  */
+  template_hq_pitch_linear_interpolate_util = template_hq_pitch_util->linear_interpolate_util;
+  synth_hq_pitch_linear_interpolate_util = synth_hq_pitch_util->linear_interpolate_util;
+
+  synth_hq_pitch_linear_interpolate_util->source = template_hq_pitch_linear_interpolate_util->source;
+  synth_hq_pitch_linear_interpolate_util->source_stride = template_hq_pitch_linear_interpolate_util->source_stride;
+
+  synth_hq_pitch_linear_interpolate_util->destination = template_hq_pitch_linear_interpolate_util->destination;
+  synth_hq_pitch_linear_interpolate_util->destination_stride = template_hq_pitch_linear_interpolate_util->destination_stride;
+  
+  synth_hq_pitch_linear_interpolate_util->buffer_length = template_hq_pitch_linear_interpolate_util->buffer_length;
+  synth_hq_pitch_linear_interpolate_util->format = template_hq_pitch_linear_interpolate_util->format;
+  synth_hq_pitch_linear_interpolate_util->samplerate = template_hq_pitch_linear_interpolate_util->samplerate;
+
+  synth_hq_pitch_linear_interpolate_util->audio_buffer_util_format = template_hq_pitch_linear_interpolate_util->audio_buffer_util_format;
+
+  synth_hq_pitch_linear_interpolate_util->factor = template_hq_pitch_linear_interpolate_util->factor;
 }
 
 /**
