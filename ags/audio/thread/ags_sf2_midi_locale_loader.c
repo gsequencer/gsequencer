@@ -639,6 +639,10 @@ ags_sf2_midi_locale_loader_run(void *ptr)
   AgsSF2MidiLocaleLoader *sf2_midi_locale_loader;
 
   GObject *output_soundcard;
+
+  guint samplerate;
+  guint buffer_length;
+  guint format;
   
   GRecMutex *audio_container_manager_mutex;
 
@@ -650,6 +654,17 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  if(output_soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			      NULL,
+			      &samplerate,
+			      &buffer_length,
+			      &format);
+  }
+  
   audio_container_manager = ags_audio_container_manager_get_instance();
 
   /* get audio container manager mutex */
@@ -695,24 +710,50 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     AgsTaskLauncher *task_launcher;
     
     AgsApplicationContext *application_context;
+
+    AgsSF2SynthUtil *template;
     
     application_context = ags_application_context_get_instance();
 
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
-    sf2_midi_locale_loader->template = ags_sf2_synth_util_alloc();
+    template =
+      sf2_midi_locale_loader->template = ags_sf2_synth_util_alloc();
 
-    sf2_midi_locale_loader->template->sf2_file = sf2_midi_locale_loader->audio_container;
-
-    if(sf2_midi_locale_loader->template->sf2_file != NULL){
-      g_object_ref(sf2_midi_locale_loader->template->sf2_file);
-    }
+    template->flags |= AGS_SF2_SYNTH_UTIL_FX_ENGINE;
     
-    ags_sf2_synth_util_load_midi_locale(sf2_midi_locale_loader->template,
+    template->sf2_file = sf2_midi_locale_loader->audio_container;
+
+    if(template->sf2_file != NULL){
+      g_object_ref(template->sf2_file);
+    }
+
+    template->sample_buffer = ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_DOUBLE);
+
+    template->hq_pitch_util->source = template->sample_buffer;
+    
+    template->im_buffer = ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_DOUBLE);
+
+    template->hq_pitch_util->destination = template->im_buffer;
+
+    template->volume_util->source = template->im_buffer;
+    
+    template->volume_util->destination = template->im_buffer;
+    
+    template->source = ags_stream_alloc(buffer_length,
+					format);
+
+    template->samplerate = samplerate;
+    template->buffer_length = buffer_length;
+    template->format = format;
+
+    ags_sf2_synth_util_load_midi_locale(template,
 					sf2_midi_locale_loader->bank,
 					sf2_midi_locale_loader->program);
     
-    apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(sf2_midi_locale_loader->template,
+    apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(template,
 							  sf2_midi_locale_loader->synth);
     
     ags_task_launcher_add_task(task_launcher,

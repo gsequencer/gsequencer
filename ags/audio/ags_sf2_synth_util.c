@@ -1538,6 +1538,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     AgsVolumeUtil *volume_util;    
     
     gpointer sample_buffer;
+    gpointer im_buffer;
     gint8 *source;
     
     guint buffer_length;
@@ -1574,6 +1575,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     source = sf2_synth_util->source;
     
     sample_buffer = sf2_synth_util->sample_buffer;
+    im_buffer = sf2_synth_util->im_buffer;
     
     buffer_length = sf2_synth_util->buffer_length;
     samplerate = sf2_synth_util->samplerate;
@@ -1732,6 +1734,14 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 			       volume);
 
     ags_volume_util_compute(volume_util);
+
+    /* to source */
+    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8,
+						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(source, 1, 0,
+						im_buffer, 1, 0,
+						buffer_length, copy_mode);
   }else{
     AgsGenericPitchUtil *generic_pitch_util;
   
