@@ -170,6 +170,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
+  gdouble octave;
+  gdouble key;
   guint format;
   guint samplerate;
   guint audio_buffer_util_format;
@@ -249,22 +251,19 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     midi_note = (y - audio_start_mapping + midi_start_mapping);
   }
 
+  octave = 0.0;
+  key = 0.0;
+    
   if(fx_sf2_synth_audio != NULL){
     AgsPort *port;
 
     AgsFxSF2SynthAudioChannelData *channel_data;
-
-    gdouble octave;
-    gdouble key;
     
     GValue value = {0,};
 
     channel_data = fx_sf2_synth_audio->scope_data[sound_scope]->channel_data[audio_channel];
     
     /* synth octave */
-    octave = 0.0;
-    key = 0.0;
-    
     g_object_get(fx_sf2_synth_audio,
 		 "synth-octave", &port,
 		 NULL);
@@ -522,6 +521,9 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     channel_data->synth.format = format;
     channel_data->synth.samplerate = samplerate;
 
+    channel_data->synth.midi_key = midi_note;
+    channel_data->synth.note = (octave * 12.0) + key;
+    
     channel_data->synth.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
     channel_data->synth.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
 

@@ -1396,6 +1396,8 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
     ipatch_list_init_iter(ipatch_list, &preset_iter);
     
     if(ipatch_iter_first(&preset_iter) != NULL){
+      GtkTreeModel *model;
+      
       GList *start_list_bank, *list_bank;
       GList *start_list_program, *list_program;
       GList *start_list_name, *list_name;
@@ -1476,9 +1478,20 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 	list_name = list_name->next;
       }
       
-      ags_sf2_synth_load_midi_locale(sf2_synth,
-				     bank,
-				     GPOINTER_TO_INT(start_list_program->data));
+      model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
+
+       if(model != NULL &&
+	  gtk_tree_model_get_iter_first(model, &tree_iter)){
+	 gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+				  gtk_tree_model_get_path(model,
+							  &tree_iter),
+				  NULL,
+				  FALSE);
+       }
+       
+       ags_sf2_synth_load_midi_locale(sf2_synth,
+				      bank,
+				      GPOINTER_TO_INT(start_list_program->data));
 
       g_list_free(start_list_bank);
       g_list_free(start_list_program);
@@ -1604,6 +1617,8 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	
 	IpatchIter preset_iter;
 
+	gint bank;
+	
 	GError *error;
 	
 	/* reassign audio container */
@@ -1668,8 +1683,7 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	      list = list->next;
 	    }
 
-	    ags_sf2_synth_load_bank(sf2_synth,
-				    GPOINTER_TO_INT(start_list->data));
+	    bank = GPOINTER_TO_INT(start_list->data);
 
 	    g_list_free(start_list);
 	  }
@@ -1700,6 +1714,9 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 								 &tree_iter),
 					 NULL,
 					 FALSE);
+	    
+		ags_sf2_synth_load_bank(sf2_synth,
+					current_bank);
 		
 		break;
 	      }
@@ -1718,12 +1735,15 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	  if(model != NULL &&
 	     gtk_tree_model_get_iter_first(model, &tree_iter)){
 	    do{
+	      gint current_bank;
 	      gint current_program;
 
+	      current_bank = 0;
 	      current_program = 0;
 	      
 	      gtk_tree_model_get(model,
 				 &tree_iter,
+				 0, &current_bank,
 				 1, &current_program,
 				 -1);
 
@@ -1734,6 +1754,9 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 					 NULL,
 					 FALSE);
 		
+		ags_sf2_synth_load_midi_locale(sf2_synth,
+					       current_bank,
+					       current_program);
 		break;
 	      }
 	    }while(gtk_tree_model_iter_next(model, &tree_iter));

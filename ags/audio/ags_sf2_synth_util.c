@@ -1253,12 +1253,18 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
   
   GError *error;
 
+  GRecMutex *audio_container_mutex;
+  
   if(sf2_synth_util == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sf2_synth_util->sf2_file) ||
      !AGS_IS_IPATCH(sf2_synth_util->sf2_file->sound_container)){
     return;
   }
 
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_synth_util->sf2_file);
+
+  g_rec_mutex_lock(&audio_container_mutex);
+  
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) AGS_IPATCH(sf2_synth_util->sf2_file->sound_container)->handle->file,
 						    IPATCH_TYPE_SF2,
@@ -1286,10 +1292,12 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 				      bank,
 				      program,
 				      NULL);
-
+  
   //  g_message("sf2 preset 0x%x", sf2_preset);
 
   if(sf2_preset == NULL){
+    g_rec_mutex_unlock(&audio_container_mutex);
+    
     return;
   }
   
@@ -1519,6 +1527,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
     }
   }
 
+  g_rec_mutex_unlock(&audio_container_mutex);
+  
   sf2_synth_util->sf2_sample_count = i;
 }
 
