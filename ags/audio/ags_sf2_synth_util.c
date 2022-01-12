@@ -1263,7 +1263,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
   audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_synth_util->sf2_file);
 
-  g_rec_mutex_lock(&audio_container_mutex);
+  g_rec_mutex_lock(audio_container_mutex);
   
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) AGS_IPATCH(sf2_synth_util->sf2_file->sound_container)->handle->file,
@@ -1296,7 +1296,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
   //  g_message("sf2 preset 0x%x", sf2_preset);
 
   if(sf2_preset == NULL){
-    g_rec_mutex_unlock(&audio_container_mutex);
+    g_rec_mutex_unlock(audio_container_mutex);
     
     return;
   }
@@ -1527,7 +1527,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
     }
   }
 
-  g_rec_mutex_unlock(&audio_container_mutex);
+  g_rec_mutex_unlock(audio_container_mutex);
   
   sf2_synth_util->sf2_sample_count = i;
 }
@@ -1644,6 +1644,9 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+    ags_audio_buffer_util_clear_buffer(sample_buffer, 1,
+				       buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
     pong_copy = FALSE;
 

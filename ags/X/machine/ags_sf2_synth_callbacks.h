@@ -49,6 +49,25 @@ void ags_sf2_synth_program_tree_view_callback(GtkTreeView *tree_view,
 					      GtkTreeViewColumn *column,
 					      AgsSF2Synth *sf2_synth);
 
+void ags_sf2_synth_synth_octave_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_synth_key_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_synth_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_pitch_tuning_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_chorus_enabled_callback(GtkButton *button, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_chorus_input_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_chorus_output_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_chorus_lfo_oscillator_callback(GtkComboBox *combo_box, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_chorus_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_chorus_mix_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_chorus_delay_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
 G_END_DECLS
 
 #endif /*__AGS_SF2_SYNTH_CALLBACKS_H__ */

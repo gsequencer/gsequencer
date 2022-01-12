@@ -454,7 +454,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 						   "port-value-length", 1,
 						   NULL);
   
-  fx_sf2_synth_audio->synth_volume->port_value.ags_port_float = (gfloat) 0.333;
+  fx_sf2_synth_audio->synth_volume->port_value.ags_port_float = (gfloat) 0.5;
 
   g_object_set(fx_sf2_synth_audio->synth_volume,
 	       "plugin-port", ags_fx_sf2_synth_audio_get_synth_volume_plugin_port(),
@@ -1626,7 +1626,7 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->synth.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   channel_data->synth.note = 0.0;
-  channel_data->synth.volume = 0.333;
+  channel_data->synth.volume = 0.5;
 
   channel_data->synth.resample_util = &(channel_data->synth_resample_util);
   
@@ -1687,7 +1687,7 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->synth_volume_util.buffer_length = 0;
   channel_data->synth_volume_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
-  channel_data->synth_volume_util.volume = 0.333;
+  channel_data->synth_volume_util.volume = 0.5;
   
   /* HQ pitch util */
   channel_data->hq_pitch_linear_interpolate_util.source = NULL;

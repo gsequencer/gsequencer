@@ -312,7 +312,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_port_safe_read(port,
 			 &value);
 
-      channel_data->synth.volume = (gdouble) g_value_get_float(&value);
+      channel_data->synth.volume =
+	channel_data->synth_volume_util.volume = (gdouble) g_value_get_float(&value);
       
       g_object_unref(port);
     }

@@ -813,8 +813,42 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) sf2_synth->program_tree_view, "row-activated",
 		   G_CALLBACK(ags_sf2_synth_program_tree_view_callback), (gpointer) sf2_synth);
+
+  g_signal_connect_after(sf2_synth->synth_octave, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_synth_octave_callback), sf2_synth);
   
-  //TODO:JK: implement me
+  g_signal_connect_after(sf2_synth->synth_key, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_synth_key_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->synth_volume, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_synth_volume_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->pitch_tuning, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_pitch_tuning_callback), sf2_synth);
+
+  //  g_signal_connect_after(sf2_synth->chorus_enabled, "clicked",
+//			 G_CALLBACK(ags_sf2_synth_chorus_enabled_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_input_volume, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_input_volume_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_output_volume, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_output_volume_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_lfo_oscillator, "changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_lfo_oscillator_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_lfo_frequency_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_depth, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_depth_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_mix, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_mix_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->chorus_delay, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_chorus_delay_callback), sf2_synth);
 }
 
 void
@@ -1373,11 +1407,17 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
   IpatchIter preset_iter;
 
   GError *error;
+  
+  GRecMutex *audio_container_mutex;
 
   program_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view)));
 
   gtk_list_store_clear(program_list_store);
 
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_synth->audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+  
   ipatch = sf2_synth->audio_container->sound_container;
 
   error = NULL;
@@ -1498,6 +1538,8 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
       g_list_free(start_list_name);
     }
   }
+  
+  g_rec_mutex_unlock(audio_container_mutex);
 }
 
 /**
@@ -1527,10 +1569,16 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
   
   GError *error;
   
+  GRecMutex *audio_container_mutex;
+
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sf2_synth->audio_container);
+  
+  g_rec_mutex_lock(audio_container_mutex);
+
   ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
   fx_sf2_synth_audio = NULL;
-  
+
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
 						    IPATCH_TYPE_SF2,
@@ -1588,6 +1636,8 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
       g_object_unref(fx_sf2_synth_audio);
     }
   }
+  
+  g_rec_mutex_unlock(audio_container_mutex);
 }
 
 /**
