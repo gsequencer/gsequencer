@@ -256,6 +256,8 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth = apply_sf2_midi_locale->synth;
 
   /* synth */
+  synth->flags = template->flags;
+
   synth->sf2_file = template->sf2_file;
 
   synth->sf2_sample_count = template->sf2_sample_count;

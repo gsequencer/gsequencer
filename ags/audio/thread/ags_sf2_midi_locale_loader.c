@@ -674,7 +674,7 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 
   sf2_midi_locale_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
 											     sf2_midi_locale_loader->filename);
-  
+
   if(sf2_midi_locale_loader->audio_container == NULL){
     sf2_midi_locale_loader->audio_container = ags_audio_container_new(sf2_midi_locale_loader->filename,
 								      NULL,
@@ -738,16 +738,22 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 
     template->hq_pitch_util->destination = template->im_buffer;
 
+    template->hq_pitch_util->low_mix_buffer = ags_stream_alloc(buffer_length,
+							       AGS_SOUNDCARD_DOUBLE);
+    
+    template->hq_pitch_util->new_mix_buffer = ags_stream_alloc(buffer_length,
+							       AGS_SOUNDCARD_DOUBLE);
+    
     template->hq_pitch_util->samplerate = samplerate;
     template->hq_pitch_util->buffer_length = buffer_length;
-    template->hq_pitch_util->format = format;
+    template->hq_pitch_util->format = AGS_SOUNDCARD_DOUBLE;
 
     template->volume_util->source = template->im_buffer;
     
     template->volume_util->destination = template->im_buffer;
 
     template->volume_util->buffer_length = buffer_length;
-    template->volume_util->format = format;
+    template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
     
     template->source = ags_stream_alloc(buffer_length,
 					format);

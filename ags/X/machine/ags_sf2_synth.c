@@ -1532,7 +1532,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 				      bank,
 				      program,
 				      NULL);
-  
+
   if(sf2_synth->audio_container != NULL &&
      sf2_preset != NULL){
     fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
@@ -1559,6 +1559,9 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 										 sf2_synth->audio_container->filename,
 										 bank,
 										 program);
+	    
+	    ags_sf2_midi_locale_loader_set_flags(sf2_midi_locale_loader,
+						 AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE);
       
 	    sf2_midi_locale_loader->synth = &(channel_data->synth);
       

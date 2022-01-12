@@ -30,6 +30,7 @@
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_sf2_synth_util.h>
 #include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_chorus_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
@@ -103,6 +104,7 @@ struct _AgsFxSF2SynthAudioChannelData
   AgsResampleUtil synth_resample_util;
   AgsHQPitchUtil synth_hq_pitch_util;
   AgsLinearInterpolateUtil synth_hq_pitch_linear_interpolate_util;
+  AgsVolumeUtil synth_volume_util;
   
   AgsHQPitchUtil hq_pitch_util;
   AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;

@@ -172,7 +172,6 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   gint midi_note;
   guint format;
   guint samplerate;
-  guint copy_mode_out;
   guint audio_buffer_util_format;
   guint copy_mode;
   
@@ -262,12 +261,12 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     channel_data = fx_sf2_synth_audio->scope_data[sound_scope]->channel_data[audio_channel];
     
-    /* synth-0 octave */
+    /* synth octave */
     octave = 0.0;
     key = 0.0;
     
     g_object_get(fx_sf2_synth_audio,
-		 "synth-0-octave", &port,
+		 "synth-octave", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -283,9 +282,9 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     g_value_unset(&value);
     
-    /* synth-0 key */    
+    /* synth key */    
     g_object_get(fx_sf2_synth_audio,
-		 "synth-0-key", &port,
+		 "synth-key", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -303,9 +302,9 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     channel_data->synth.note = (octave * 12.0) + key;
 
-    /* synth-0 volume */    
+    /* synth volume */    
     g_object_get(fx_sf2_synth_audio,
-		 "synth-0-volume", &port,
+		 "synth-volume", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -489,9 +488,6 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     }
   }
 
-  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
-
   if(midi_note >= 0 &&
      midi_note < 128){
     AgsFxSF2SynthAudioScopeData *scope_data;
@@ -517,6 +513,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       g_rec_mutex_unlock(fx_sf2_synth_audio_mutex);
     }
 
+    channel_data->synth.flags |= AGS_SF2_SYNTH_UTIL_FX_ENGINE;
+    
     channel_data->synth.source = source->stream_current->data;
     channel_data->synth.source_stride = 1;
 
@@ -528,7 +526,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     channel_data->synth.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
 
     ags_sf2_synth_util_compute(&(channel_data->synth));
-      
+
     if(channel_data->hq_pitch_util.tuning != 0.0){
       channel_data->hq_pitch_util.source = source->stream_current->data;
 

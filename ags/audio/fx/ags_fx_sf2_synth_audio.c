@@ -1628,6 +1628,8 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->synth.note = 0.0;
   channel_data->synth.volume = 0.333;
 
+  channel_data->synth.resample_util = &(channel_data->synth_resample_util);
+  
   channel_data->synth_resample_util.destination = NULL;
   channel_data->synth_resample_util.destination_stride = 1;
 
@@ -1641,6 +1643,8 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->synth_resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
 
   channel_data->synth_resample_util.target_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  channel_data->synth.hq_pitch_util = &(channel_data->synth_hq_pitch_util);
   
   channel_data->synth_hq_pitch_util.destination = NULL;
   channel_data->synth_hq_pitch_util.destination_stride = 1;
@@ -1657,6 +1661,8 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
 
   channel_data->synth_hq_pitch_util.base_key = 0.0;
   channel_data->synth_hq_pitch_util.tuning = 0.0;
+
+  channel_data->synth.hq_pitch_util->linear_interpolate_util = &(channel_data->synth_hq_pitch_linear_interpolate_util);
   
   channel_data->synth_hq_pitch_linear_interpolate_util.source = NULL;
   channel_data->synth_hq_pitch_linear_interpolate_util.source_stride = 1;
@@ -1670,6 +1676,19 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
 
   channel_data->synth_hq_pitch_linear_interpolate_util.factor = 1.0;
 
+  channel_data->synth.volume_util = &(channel_data->synth_volume_util);
+
+  channel_data->synth_volume_util.destination = NULL;
+  channel_data->synth_volume_util.destination_stride = 1;
+
+  channel_data->synth_volume_util.source = NULL;
+  channel_data->synth_volume_util.source_stride = 1;
+  
+  channel_data->synth_volume_util.buffer_length = 0;
+  channel_data->synth_volume_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  channel_data->synth_volume_util.volume = 0.333;
+  
   /* HQ pitch util */
   channel_data->hq_pitch_linear_interpolate_util.source = NULL;
   channel_data->hq_pitch_linear_interpolate_util.source_stride = 1;

@@ -1254,7 +1254,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
   GError *error;
 
   if(sf2_synth_util == NULL ||
-     !AGS_IS_AUDIO_CONTAINER(sf2_synth_util->sf2_file)||
+     !AGS_IS_AUDIO_CONTAINER(sf2_synth_util->sf2_file) ||
      !AGS_IS_IPATCH(sf2_synth_util->sf2_file->sound_container)){
     return;
   }
@@ -1269,6 +1269,16 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
   }
 
   for(i = 0; i < sf2_synth_util->sf2_sample_count && i < 128; i++){
+    if(sf2_synth_util->sf2_sample[i] != NULL){
+      g_object_unref(sf2_synth_util->sf2_sample[i]);
+
+      sf2_synth_util->sf2_sample[i] = NULL;
+    }
+
+    sf2_synth_util->sf2_note_range[i][0] = -1;
+    sf2_synth_util->sf2_note_range[i][1] = -1;
+    
+    //TODO:JK: implement me
   }
   
   sf2_preset = ipatch_sf2_find_preset(sf2,
@@ -1276,6 +1286,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 				      bank,
 				      program,
 				      NULL);
+
+  //  g_message("sf2 preset 0x%x", sf2_preset);
 
   if(sf2_preset == NULL){
     return;
@@ -1346,7 +1358,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		  success = TRUE;
 
 		  current = sf2_sample;
-//		  g_object_ref(sf2_sample);
+		  //		  g_object_ref(sf2_sample);
 		  
 		  i++;
 
@@ -1414,10 +1426,6 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      guint sample_format;
 	      guint format;
 	      guint orig_samplerate;
-
-	      if(sf2_synth_util->sf2_sample[i] != NULL){
-		g_object_unref(sf2_synth_util->sf2_sample[i]);
-	      }
 	      
 	      sf2_synth_util->sf2_sample[i] = sf2_sample;
 	      g_object_ref(sf2_sample);
@@ -1621,7 +1629,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -2156,7 +2164,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -2167,22 +2175,25 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
       guint frame_count;
       gboolean set_pong_copy;
-      
+
       frame_count = buffer_length;
 
       set_pong_copy = FALSE;
       
-      if(position >= loop_start &&
-	 loop_end - loop_start < frame_count){
-	frame_count = loop_end - loop_start;
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_NONE){
+	if(position >= loop_start &&
+	   loop_end - loop_start < frame_count){
+	  frame_count = loop_end - loop_start;
+	}
       }
-
+      
       if(offset + buffer_length < i + frame_count){
 	frame_count = (offset + buffer_length) - i;
       }
 
       if(!pong_copy){
-	if(loop_end < position + frame_count){
+	if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_NONE &&
+	   loop_end < position + frame_count){
 	  frame_count = loop_end - position;
 
 	  if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
@@ -2234,11 +2245,12 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
       i += frame_count;
       
       if(!pong_copy){
-	if(position == loop_end){
+	if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_NONE &&
+	   position >= loop_end){
 	  position = loop_start;
 	}
       }else{
-	if(position == loop_start){
+	if(position <= loop_start){
 	  pong_copy = FALSE;
 	}
       }
@@ -2691,7 +2703,7 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -3226,7 +3238,7 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -3761,7 +3773,7 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -4296,7 +4308,7 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -4831,7 +4843,7 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
@@ -5366,7 +5378,7 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
     orig_samplerate = samplerate;
     
     g_object_get(current_sf2_sample,
-		 "samplerate", &orig_samplerate,
+		 "sample-rate", &orig_samplerate,
 		 NULL);
     
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
