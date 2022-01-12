@@ -5298,22 +5298,6 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
     xmlFree(str);
   }
   
-  /* effects */
-  str = xmlGetProp(node,
-		   "pitch-tuning");
-
-  if(str != NULL){
-    gdouble tuning;
-
-    tuning = g_ascii_strtod(str,
-			    NULL);
-
-    ags_dial_set_value(sf2_synth->pitch_tuning,
-		       tuning);
-      
-    xmlFree(str);
-  }
-
   /* chorus */
   str = xmlGetProp(node,
 		   "chorus-input-volume");
@@ -12930,16 +12914,6 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "synth-volume",
-	       str);
-
-    g_free(str);    
-
-    /* effects */
-    str = g_strdup_printf("%lf",
-			  ags_dial_get_value(sf2_synth->pitch_tuning));
-    
-    xmlNewProp(node,
-	       "pitch-tuning",
 	       str);
 
     g_free(str);    

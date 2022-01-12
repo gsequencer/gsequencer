@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,6 @@ void ags_sf2_synth_synth_octave_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_synth_key_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_synth_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
-
-void ags_sf2_synth_pitch_tuning_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_chorus_enabled_callback(GtkButton *button, AgsSF2Synth *sf2_synth);
 

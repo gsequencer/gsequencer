@@ -58,10 +58,10 @@ struct _AgsFxSF2SynthAudio
   
   AgsPort *synth_octave;
   AgsPort *synth_key;
-
-  AgsPort *synth_volume;
   
-  AgsPort *pitch_tuning;
+  AgsPort *synth_pitch_type;
+
+  AgsPort *synth_volume;  
   
   AgsPort *chorus_enabled;
   
@@ -105,10 +105,7 @@ struct _AgsFxSF2SynthAudioChannelData
   AgsHQPitchUtil synth_hq_pitch_util;
   AgsLinearInterpolateUtil synth_hq_pitch_linear_interpolate_util;
   AgsVolumeUtil synth_volume_util;
-  
-  AgsHQPitchUtil hq_pitch_util;
-  AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
-  
+    
   AgsChorusUtil chorus_util;
   AgsHQPitchUtil chorus_hq_pitch_util;
   AgsLinearInterpolateUtil chorus_linear_interpolate_util;

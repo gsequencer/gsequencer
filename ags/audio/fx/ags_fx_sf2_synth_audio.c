@@ -55,9 +55,8 @@ void ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_synth_octave_plugin_port();
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_synth_key_plugin_port();
+static AgsPluginPort* ags_fx_sf2_synth_audio_get_synth_pitch_type_plugin_port();
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_synth_volume_plugin_port();
-
-static AgsPluginPort* ags_fx_sf2_synth_audio_get_pitch_tuning_plugin_port();
 
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_chorus_enabled_plugin_port();
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_chorus_input_volume_plugin_port();
@@ -85,8 +84,8 @@ const gchar *ags_fx_sf2_synth_audio_plugin_name = "ags-fx-sf2-synth";
 const gchar* ags_fx_sf2_synth_audio_specifier[] = {
   "./synth-octave[0]",
   "./synth-key[0]",
+  "./synth-pitch-type[0]",
   "./synth-volume[0]",
-  "./pitch-tuning[0]",
   "./chorus-enabled[0]",
   "./chorus-input-volume[0]",
   "./chorus-output-volume[0]",
@@ -118,8 +117,8 @@ enum{
   PROP_0,
   PROP_SYNTH_OCTAVE,
   PROP_SYNTH_KEY,
+  PROP_SYNTH_PITCH_TYPE,
   PROP_SYNTH_VOLUME,
-  PROP_PITCH_TUNING,
   PROP_CHORUS_ENABLED,
   PROP_CHORUS_INPUT_VOLUME,
   PROP_CHORUS_OUTPUT_VOLUME,
@@ -230,19 +229,19 @@ ags_fx_sf2_synth_audio_class_init(AgsFxSF2SynthAudioClass *fx_sf2_synth_audio)
 				  param_spec);
 
   /**
-   * AgsFxSF2SynthAudio:pitch-tuning:
+   * AgsFxSF2SynthAudio:synth-pitch-type:
    *
-   * The pitch tuning.
+   * The synth's pitch type.
    * 
    * Since: 3.16.0
    */
-  param_spec = g_param_spec_object("pitch-tuning",
-				   i18n_pspec("pitch tuning of recall"),
-				   i18n_pspec("The pitch tuning"),
+  param_spec = g_param_spec_object("synth-pitch-type",
+				   i18n_pspec("pitch type of synth"),
+				   i18n_pspec("The pitch type"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PITCH_TUNING,
+				  PROP_SYNTH_PITCH_TYPE,
 				  param_spec);
 
   /**
@@ -441,6 +440,28 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
 		      fx_sf2_synth_audio->synth_key);
 
+  /* synth pitch type */
+  position++;
+  
+  fx_sf2_synth_audio->synth_pitch_type = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						      "specifier", ags_fx_sf2_synth_audio_specifier[position],
+						      "control-port", ags_fx_sf2_synth_audio_control_port[position],
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_FLOAT,
+						      "port-value-size", sizeof(gfloat),
+						      "port-value-length", 1,
+						      NULL);
+  
+  fx_sf2_synth_audio->synth_pitch_type->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_sf2_synth_audio->synth_pitch_type,
+	       "plugin-port", ags_fx_sf2_synth_audio_get_synth_pitch_type_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
+		      fx_sf2_synth_audio->synth_pitch_type);
+
   /* synth volume */
   position++;
   
@@ -462,27 +483,6 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 
   ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
 		      fx_sf2_synth_audio->synth_volume);
-  /* pitch tuning */
-  position++;
-  
-  fx_sf2_synth_audio->pitch_tuning = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						 "specifier", ags_fx_sf2_synth_audio_specifier[position],
-						 "control-port", ags_fx_sf2_synth_audio_control_port[position],
-						 "port-value-is-pointer", FALSE,
-						 "port-value-type", G_TYPE_FLOAT,
-						 "port-value-size", sizeof(gfloat),
-						 "port-value-length", 1,
-						 NULL);
-  
-  fx_sf2_synth_audio->pitch_tuning->port_value.ags_port_float = (gfloat) 0.0;
-
-  g_object_set(fx_sf2_synth_audio->pitch_tuning,
-	       "plugin-port", ags_fx_sf2_synth_audio_get_pitch_tuning_plugin_port(),
-	       NULL);
-
-  ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
-		      fx_sf2_synth_audio->pitch_tuning);
 
   /* chorus enabled */
   position++;
@@ -771,7 +771,7 @@ ags_fx_sf2_synth_audio_set_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
-  case PROP_PITCH_TUNING:
+  case PROP_SYNTH_PITCH_TYPE:
   {
     AgsPort *port;
 
@@ -779,21 +779,21 @@ ags_fx_sf2_synth_audio_set_property(GObject *gobject,
 
     g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->pitch_tuning){
+    if(port == fx_sf2_synth_audio->synth_pitch_type){
       g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
 
-    if(fx_sf2_synth_audio->pitch_tuning != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->pitch_tuning));
+    if(fx_sf2_synth_audio->synth_pitch_type != NULL){
+      g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_pitch_type));
     }
       
     if(port != NULL){
       g_object_ref(G_OBJECT(port));
     }
 
-    fx_sf2_synth_audio->pitch_tuning = port;
+    fx_sf2_synth_audio->synth_pitch_type = port;
       
     g_rec_mutex_unlock(recall_mutex);	
   }
@@ -1063,11 +1063,11 @@ ags_fx_sf2_synth_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
-  case PROP_PITCH_TUNING:
+  case PROP_SYNTH_PITCH_TYPE:
   {
     g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->pitch_tuning);
+    g_value_set_object(value, fx_sf2_synth_audio->synth_pitch_type);
       
     g_rec_mutex_unlock(recall_mutex);	
   }
@@ -1243,10 +1243,6 @@ ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
 	channel_data->synth.buffer_length = buffer_size;
 
-	channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
-
-	channel_data->hq_pitch_util.buffer_length = buffer_size;
-
 	channel_data->chorus_hq_pitch_util.buffer_length = buffer_size;
 
 	channel_data->chorus_linear_interpolate_util.buffer_length = buffer_size;
@@ -1299,23 +1295,6 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	channel_data->synth.format = format;
-
-	channel_data->hq_pitch_linear_interpolate_util.format = format;
-
-	ags_stream_free(channel_data->hq_pitch_util.destination);
-	
-	channel_data->hq_pitch_util.destination = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-								   format);
-	
-	ags_stream_free(channel_data->hq_pitch_util.low_mix_buffer);	
-	ags_stream_free(channel_data->hq_pitch_util.new_mix_buffer);
-	
-	channel_data->hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-								      format);
-	channel_data->hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-								      format);
-
-	channel_data->hq_pitch_util.format = format;
 
 	channel_data->chorus_hq_pitch_util.format = format;
 
@@ -1394,10 +1373,6 @@ ags_fx_sf2_synth_audio_notify_samplerate_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	channel_data->synth.samplerate = samplerate;
-
-	channel_data->hq_pitch_linear_interpolate_util.samplerate = samplerate;
-
-	channel_data->hq_pitch_util.samplerate = samplerate;
 
 	channel_data->chorus_hq_pitch_util.samplerate = samplerate;
 
@@ -1479,23 +1454,7 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  channel_data->synth.buffer_length = buffer_size;
 	  channel_data->synth.format = format;
 	  channel_data->synth.samplerate = samplerate;
-	  
-	  channel_data->hq_pitch_linear_interpolate_util.buffer_length = buffer_size;
-	  channel_data->hq_pitch_linear_interpolate_util.format = format;
-	  channel_data->hq_pitch_linear_interpolate_util.samplerate = samplerate;
-
-	  channel_data->hq_pitch_util.destination = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-								     format);
-
-	  channel_data->hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-									format);
-	  channel_data->hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-									format);
-
-	  channel_data->hq_pitch_util.buffer_length = buffer_size;
-	  channel_data->hq_pitch_util.format = format;
-	  channel_data->hq_pitch_util.samplerate = samplerate;
-	  
+	  	  
 	  channel_data->chorus_hq_pitch_util.buffer_length = buffer_size;
 	  channel_data->chorus_hq_pitch_util.format = format;
 	  channel_data->chorus_hq_pitch_util.samplerate = samplerate;
@@ -1689,37 +1648,6 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
 
   channel_data->synth_volume_util.volume = 0.5;
   
-  /* HQ pitch util */
-  channel_data->hq_pitch_linear_interpolate_util.source = NULL;
-  channel_data->hq_pitch_linear_interpolate_util.source_stride = 1;
-	  
-  channel_data->hq_pitch_linear_interpolate_util.destination = NULL;
-  channel_data->hq_pitch_linear_interpolate_util.destination_stride = 1;
-	  
-  channel_data->hq_pitch_linear_interpolate_util.buffer_length = 0;
-  channel_data->hq_pitch_linear_interpolate_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  channel_data->hq_pitch_linear_interpolate_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  channel_data->hq_pitch_linear_interpolate_util.factor = 1.0;
-
-  channel_data->hq_pitch_util.source = NULL;
-  channel_data->hq_pitch_util.source_stride = 1;
-	  
-  channel_data->hq_pitch_util.destination = NULL;
-  channel_data->hq_pitch_util.destination_stride = 1;
-  
-  channel_data->hq_pitch_util.low_mix_buffer = NULL;
-  channel_data->hq_pitch_util.new_mix_buffer = NULL;
-
-  channel_data->hq_pitch_util.buffer_length = 0;
-  channel_data->hq_pitch_util.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  channel_data->hq_pitch_util.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-  channel_data->hq_pitch_util.base_key = 0.0;
-  channel_data->hq_pitch_util.tuning = 0.0;
-
-  channel_data->hq_pitch_util.linear_interpolate_util = &(channel_data->hq_pitch_linear_interpolate_util);    
-
   /* chorus util */
   channel_data->chorus_linear_interpolate_util.source = NULL;
   channel_data->chorus_linear_interpolate_util.source_stride = 1;
@@ -1976,7 +1904,7 @@ ags_fx_sf2_synth_audio_get_synth_volume_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_sf2_synth_audio_get_pitch_tuning_plugin_port()
+ags_fx_sf2_synth_audio_get_synth_pitch_type_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -2004,9 +1932,9 @@ ags_fx_sf2_synth_audio_get_pitch_tuning_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      -1200.0);
+		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      1200.0);
+		      0.0);
   }
 
   g_mutex_unlock(&mutex);

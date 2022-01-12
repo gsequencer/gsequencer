@@ -109,8 +109,6 @@ struct _AgsSF2Synth
 
   AgsDial *synth_volume;
 
-  AgsDial *pitch_tuning;
-
   GtkCheckButton *chorus_enabled;
 
   AgsDial *chorus_input_volume;

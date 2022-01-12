@@ -313,58 +313,6 @@ ags_sf2_synth_synth_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
 }
 
 void
-ags_sf2_synth_pitch_tuning_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
-{
-  AgsAudio *audio;
-  
-  GList *start_play, *start_recall, *recall;
-
-  gdouble pitch_tuning;
-
-  audio = AGS_MACHINE(sf2_synth)->audio;
-
-  pitch_tuning = ags_dial_get_value(dial);
-  
-  start_play = ags_audio_get_play(audio);
-  start_recall = ags_audio_get_recall(audio);
-    
-  recall =
-    start_recall = g_list_concat(start_play, start_recall);
-
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SF2_SYNTH_AUDIO)) != NULL){
-    AgsPort *port;
-
-    port = NULL;
-      
-    g_object_get(recall->data,
-		 "pitch-tuning", &port,
-		 NULL);
-
-    if(port != NULL){
-      GValue value = G_VALUE_INIT;
-
-      g_value_init(&value,
-		   G_TYPE_FLOAT);
-
-      g_value_set_float(&value,
-			(gfloat) pitch_tuning);
-
-      ags_port_safe_write(port,
-			  &value);
-
-      g_object_unref(port);
-    }
-    
-    /* iterate */
-    recall = recall->next;
-  }
-
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
-}
-
-
-void
 ags_sf2_synth_chorus_enabled_callback(GtkButton *button, AgsSF2Synth *sf2_synth)
 {
   AgsAudio *audio;

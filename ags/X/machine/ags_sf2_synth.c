@@ -140,6 +140,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkBox *sf2_hbox;
   GtkBox *sf2_file_hbox;
   GtkBox *sf2_preset_hbox;
+  GtkBox *effect_vbox;
   GtkGrid *synth_grid;
   GtkGrid *chorus_grid;
   GtkBox *hbox;
@@ -384,9 +385,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_tree_view_set_model(sf2_program_tree_view,
 			  GTK_TREE_MODEL(sf2_program));
 
+  /* effect control */
+  effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				       0);
+  gtk_container_add((GtkContainer *) sf2_hbox,
+		    (GtkWidget *) effect_vbox);
 
+  /*  */
   synth_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(sf2_hbox,
+  gtk_box_pack_start(effect_vbox,
 		     (GtkWidget *) synth_grid,
 		     FALSE, FALSE,
 		     0);
@@ -496,43 +503,9 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  3, 0,
 		  1, 1);
 
-  /* pitch */
-  label = (GtkLabel *) gtk_label_new(i18n("pitch tuning"));
-  gtk_label_set_xalign(label,
-		       0.0);
-  gtk_grid_attach(synth_grid,
-		  (GtkWidget *) label,
-		  4, 0,
-		  1, 1);
-
-  sf2_synth->pitch_tuning = (AgsDial *) ags_dial_new();
-
-  adjustment = ags_dial_get_adjustment(sf2_synth->pitch_tuning);
-
-  gtk_adjustment_set_lower(adjustment,
-			   -1200.0);
-  gtk_adjustment_set_upper(adjustment,
-			   1200.0);
-
-  gtk_adjustment_set_step_increment(adjustment,
-				    1.0);
-  gtk_adjustment_set_page_increment(adjustment,
-				    10.0);
-
-  gtk_adjustment_set_value(adjustment,
-			   0.0);
-
-  ags_dial_set_radius(sf2_synth->pitch_tuning,
-		      12);
-  
-  gtk_grid_attach(synth_grid,
-		  (GtkWidget *) sf2_synth->pitch_tuning,
-		  5, 0,
-		  1, 1);
-
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(sf2_hbox,
+  gtk_box_pack_start(effect_vbox,
 		     (GtkWidget *) chorus_grid,
 		     FALSE, FALSE,
 		     0);
@@ -822,9 +795,6 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(sf2_synth->synth_volume, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_synth_volume_callback), sf2_synth);
-
-  g_signal_connect_after(sf2_synth->pitch_tuning, "value-changed",
-			 G_CALLBACK(ags_sf2_synth_pitch_tuning_callback), sf2_synth);
 
   //  g_signal_connect_after(sf2_synth->chorus_enabled, "clicked",
 //			 G_CALLBACK(ags_sf2_synth_chorus_enabled_callback), sf2_synth);

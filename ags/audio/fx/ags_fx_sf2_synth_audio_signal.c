@@ -320,27 +320,6 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     g_value_unset(&value);
 
-    /* pitch base key */
-    channel_data->hq_pitch_util.base_key = (gdouble) midi_note - 48.0;
-    
-    /* pitch tuning */    
-    g_object_get(fx_sf2_synth_audio,
-		 "pitch-tuning", &port,
-		 NULL);
-
-    g_value_init(&value, G_TYPE_FLOAT);
-    
-    if(port != NULL){      
-      ags_port_safe_read(port,
-			 &value);
-
-      channel_data->hq_pitch_util.tuning = (gdouble) g_value_get_float(&value);
-      
-      g_object_unref(port);
-    }
-
-    g_value_unset(&value);
-
     /* chorus enabled */    
     g_object_get(fx_sf2_synth_audio,
 		 "chorus-enabled", &port,
@@ -528,25 +507,11 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     channel_data->synth.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
     channel_data->synth.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
 
+    ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+				       buffer_size, audio_buffer_util_format);
+
     ags_sf2_synth_util_compute(&(channel_data->synth));
 
-    if(channel_data->hq_pitch_util.tuning != 0.0){
-      channel_data->hq_pitch_util.source = source->stream_current->data;
-
-      channel_data->hq_pitch_util.samplerate = samplerate;
-      channel_data->hq_pitch_util.buffer_length = buffer_size;
-      channel_data->hq_pitch_util.format = format;
-      
-      ags_hq_pitch_util_pitch(&(channel_data->hq_pitch_util));
-
-      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
-					 buffer_size, audio_buffer_util_format);
-
-      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
-						  channel_data->hq_pitch_util.destination, 1, 0,
-						  buffer_size, copy_mode);
-    }
-    
     if(channel_data->chorus_util.depth != 0.0 && chorus_enabled){
       channel_data->chorus_util.source = source->stream_current->data;
 
@@ -557,7 +522,7 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       channel_data->chorus_util.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
 
       channel_data->chorus_util.base_key = (gdouble) midi_note - 48.0;
-      
+
       ags_chorus_util_compute(&(channel_data->chorus_util));
 
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,

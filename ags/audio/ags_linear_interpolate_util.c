@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_linear_interpolate_util.h>
 
+#include <math.h>
+
 /**
  * SECTION:ags_linear_interpolate_util
  * @short_description: util functions to linear interpolate
@@ -537,14 +539,14 @@ ags_linear_interpolate_util_pitch_s8(AgsLinearInterpolateUtil *linear_interpolat
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -607,14 +609,14 @@ ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpola
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -677,14 +679,14 @@ ags_linear_interpolate_util_pitch_s24(AgsLinearInterpolateUtil *linear_interpola
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -747,14 +749,14 @@ ags_linear_interpolate_util_pitch_s32(AgsLinearInterpolateUtil *linear_interpola
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -817,14 +819,14 @@ ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_interpola
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -887,14 +889,14 @@ ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpo
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -957,14 +959,14 @@ ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interp
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = source[(guint) floor(i / factor) * source_stride];
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = source[(guint) floor((double) i / factor) * source_stride];
       }else{
 	z = source[(buffer_length - 1) * source_stride];
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor((double) i / factor) + 1) * source_stride];
       }else{
 	mix_z = source[(buffer_length - 1) * source_stride];
       }
@@ -1027,14 +1029,14 @@ ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_inter
 	j = 0;
       }
 
-      if((guint) floor(i / factor) < buffer_length){
-	z = ags_complex_get(source + ((guint) floor(i / factor) * source_stride));
+      if((guint) floor((double) i / factor) < buffer_length){
+	z = ags_complex_get(source + ((guint) floor((double) i / factor) * source_stride));
       }else{
 	z = ags_complex_get(source + ((buffer_length - 1) * source_stride));
       }
     
-      if((guint) floor(i / factor) + 1 < buffer_length){
-	mix_z = ags_complex_get(source + (((guint) floor(i / factor) + 1) * source_stride));
+      if((guint) floor((double) i / factor) + 1 < buffer_length){
+	mix_z = ags_complex_get(source + (((guint) floor((double) i / factor) + 1) * source_stride));
       }else{
 	mix_z = ags_complex_get(source + ((buffer_length - 1) * source_stride));
       }
@@ -1152,14 +1154,14 @@ ags_linear_interpolate_util_fill_s8(gint8 *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1210,14 +1212,14 @@ ags_linear_interpolate_util_fill_s16(gint16 *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1268,14 +1270,14 @@ ags_linear_interpolate_util_fill_s24(gint32 *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1326,14 +1328,14 @@ ags_linear_interpolate_util_fill_s32(gint32 *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1384,14 +1386,14 @@ ags_linear_interpolate_util_fill_s64(gint64 *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1442,14 +1444,14 @@ ags_linear_interpolate_util_fill_float(gfloat *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1500,14 +1502,14 @@ ags_linear_interpolate_util_fill_double(gdouble *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = source[(guint) floor(i / factor)];
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = source[(guint) floor((double) i / factor)];
     }else{
       z = source[buffer_length - 1];
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = source[(guint) floor(i / factor) + 1];
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = source[(guint) floor((double) i / factor) + 1];
     }else{
       mix_z = source[buffer_length - 1];
     }
@@ -1558,14 +1560,14 @@ ags_linear_interpolate_util_fill_complex(AgsComplex *destination,
       j = 0;
     }
 
-    if((guint) floor(i / factor) < buffer_length){
-      z = ags_complex_get(source + ((guint) floor(i / factor)));
+    if((guint) floor((double) i / factor) < buffer_length){
+      z = ags_complex_get(source + ((guint) floor((double) i / factor)));
     }else{
       z = ags_complex_get(source + (buffer_length - 1));
     }
     
-    if((guint) floor(i / factor) + 1 < buffer_length){
-      mix_z = ags_complex_get(source + ((guint) floor(i / factor) + 1));
+    if((guint) floor((double) i / factor) + 1 < buffer_length){
+      mix_z = ags_complex_get(source + ((guint) floor((double) i / factor) + 1));
     }else{
       mix_z = ags_complex_get(source + (buffer_length - 1));
     }
