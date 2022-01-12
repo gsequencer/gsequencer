@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.15.6],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.16.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -62,6 +62,11 @@ AC_ARG_ENABLE(w32api, [AS_HELP_STRING([--enable-w32api],
                                       [enable w32 API (default is no)])],
               [],
               [enable_w32api=no])
+
+AC_ARG_ENABLE(w32-exe-env, [AS_HELP_STRING([--enable-w32-exe-env],
+                     	                    [enable w32 exe environment (default is no)])],
+              [],
+              [enable_w32_exe_env=no])
 
 AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
                                       [enable OS X API (default is no)])],
@@ -272,6 +277,12 @@ AS_IF([test "x$enable_w32api" != xno],
       [AC_MSG_NOTICE([w32api disabled])])
 AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
 
+AS_IF([test "x$enable_w32_exe_env" != xno],
+      [AC_DEFINE([AGS_W32_EXE_ENV], [1], [w32 exe environment enabled])
+      AC_MSG_NOTICE([w32 exe environment enabled])],
+      [AC_MSG_NOTICE([w32 exe environment disabled])])
+AM_CONDITIONAL([WITH_W32_EXE_ENV], [test "x$enable_w32_exe_env" == xyes])
+
 AS_IF([test "x$enable_osxapi" != xno],
       [AC_DEFINE([AGS_OSXAPI], [1], [OS X api enabled])
       AC_SUBST(OSXAPI_CFLAGS)
@@ -293,7 +304,6 @@ AS_IF([test "x$enable_osx_dmg_env" != xno],
       AC_MSG_NOTICE([OS X DMG environment enabled])],
       [AC_MSG_NOTICE([OS X DMG environment disabled])])
 AM_CONDITIONAL([WITH_OSX_DMG_ENV], [test "x$enable_osx_dmg_env" == xyes])
-
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)

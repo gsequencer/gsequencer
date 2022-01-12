@@ -1284,9 +1284,11 @@ libags_audio_thread_h_sources = \
 if WITH_LIBINSTPATCH
 libags_audio_thread_h_sources += \
        $(deprecated_libags_audio_thread_h_sources) \
+       ags/audio/thread/ags_sf2_midi_locale_loader.h \
        ags/audio/thread/ags_sf2_loader.h
 else
 EXTRA_DIST += \
+       ags/audio/thread/ags_sf2_midi_locale_loader.h \
        ags/audio/thread/ags_sf2_loader.h
 endif
 
@@ -1306,9 +1308,11 @@ libags_audio_thread_c_sources = \
 if WITH_LIBINSTPATCH
 libags_audio_thread_c_sources += \
        $(deprecated_libags_audio_thread_c_sources) \
+       ags/audio/thread/ags_sf2_midi_locale_loader.c \
        ags/audio/thread/ags_sf2_loader.c
 else
 EXTRA_DIST +=  \
+       ags/audio/thread/ags_sf2_midi_locale_loader.c \
        ags/audio/thread/ags_sf2_loader.c
 endif
 
@@ -2034,6 +2038,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_fm_synth_recycling.h \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_sf2_synth_audio.h \
+	ags/audio/fx/ags_fx_sf2_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_sf2_synth_channel.h \
+	ags/audio/fx/ags_fx_sf2_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_sf2_synth_recycling.h \
+	ags/audio/fx/ags_fx_sf2_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_ladspa_audio.h \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
 	ags/audio/fx/ags_fx_ladspa_channel.h \
@@ -2171,6 +2181,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_fm_synth_recycling.c \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_sf2_synth_audio.c \
+	ags/audio/fx/ags_fx_sf2_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_sf2_synth_channel.c \
+	ags/audio/fx/ags_fx_sf2_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_sf2_synth_recycling.c \
+	ags/audio/fx/ags_fx_sf2_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_ladspa_audio.c \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
 	ags/audio/fx/ags_fx_ladspa_channel.c \
@@ -2268,11 +2284,13 @@ libags_audio_task_h_sources = \
 
 if WITH_LIBINSTPATCH
 libags_audio_task_h_sources += \
+	ags/audio/task/ags_apply_sf2_midi_locale.h \
 	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h
 else
 EXTRA_DIST += \
+	ags/audio/task/ags_apply_sf2_midi_locale.h \
 	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h
@@ -2346,11 +2364,13 @@ libags_audio_task_c_sources = \
 
 if WITH_LIBINSTPATCH
 libags_audio_task_c_sources += \
+	ags/audio/task/ags_apply_sf2_midi_locale.c \
 	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c
 else
 EXTRA_DIST += \
+	ags/audio/task/ags_apply_sf2_midi_locale.c \
 	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c

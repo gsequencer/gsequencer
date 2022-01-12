@@ -190,6 +190,7 @@ main(int argc, char **argv)
 //  mtrace();
   
 #if defined (AGS_W32API)
+#if defined(AGS_W32_EXE_ENV)
   app_dir = NULL;
 
   if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
@@ -217,6 +218,7 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s\\libexec\\gstreamer-1.0\\gst-plugin-scanner.exe", app_dir));
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
+#endif
 #else
 #if defined(AGS_OSX_DMG_ENV)
   uid = getuid();

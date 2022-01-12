@@ -1,3 +1,15 @@
+ags (3.16.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsSF2Synth
+	* implemented ags-fx-sf2-synth
+	* implemented AgsApplySF2MidiLocale task
+	* implemented AgsSF2MidiLocaleLoader worker thread
+	* implemented ags_sf2_synth_util_load_midi_locale()
+	* implemented AgsAudiorecInputLine struct fixes double mapped recalls
+	* implemented AgsSF2SynthInputLine struct fixes double mapped recalls
+	* added configure flag to turn on setting environment variables related to packaging w32 exe
+
 ags (3.15.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

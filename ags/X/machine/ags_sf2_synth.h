@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,17 +41,21 @@ G_BEGIN_DECLS
 #define AGS_IS_SF2_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SF2_SYNTH))
 #define AGS_SF2_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SF2_SYNTH, AgsSF2SynthClass))
 
-#define AGS_SF2_SYNTH_BASE_NOTE_MAX (72.0)
-#define AGS_SF2_SYNTH_BASE_NOTE_MIN (-72.0)
-
 #define AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST (256)
 #define AGS_SF2_SYNTH_BANK_WIDTH_REQUEST (256)
   
 #define AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST (256)
 #define AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST (512)
 
+#define AGS_SF2_SYNTH_INPUT_LINE(ptr) ((AgsSF2SynthInputLine *)(ptr))
+
 typedef struct _AgsSF2Synth AgsSF2Synth;
+typedef struct _AgsSF2SynthInputLine AgsSF2SynthInputLine;
 typedef struct _AgsSF2SynthClass AgsSF2SynthClass;
+
+typedef enum{
+  AGS_SF2_SYNTH_NO_LOAD          = 1,
+}AgsSF2SynthFlags;
 
 struct _AgsSF2Synth
 {
@@ -62,14 +66,17 @@ struct _AgsSF2Synth
   gchar *name;
   gchar *xml_type;
 
+  guint mapped_output_audio_channel;
+  guint mapped_input_audio_channel;
+
   guint mapped_input_pad;
   guint mapped_output_pad;
 
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *notation_play_container;
-  AgsRecallContainer *notation_recall_container;
+  AgsRecallContainer *sf2_synth_play_container;
+  AgsRecallContainer *sf2_synth_recall_container;
 
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
@@ -82,16 +89,40 @@ struct _AgsSF2Synth
   GtkEntry *filename;
   GtkButton *open;
 
-  gint position;
-  GtkLabel *loading;
-
   AgsSF2Loader *sf2_loader;
+  AgsSF2MidiLocaleLoader *sf2_midi_locale_loader;
 
+  gint load_bank;
+  gint load_program;
+
+  gint position;
+  GtkSpinner *sf2_loader_spinner;  
+
+  gint bank;
+  gint program;
+  
   GtkTreeView *bank_tree_view;
   GtkTreeView *program_tree_view;
 
-  GtkSpinButton *lower;
-  
+  AgsDial *synth_octave;
+  AgsDial *synth_key;
+
+  AgsDial *synth_volume;
+
+  GtkCheckButton *chorus_enabled;
+
+  AgsDial *chorus_input_volume;
+  AgsDial *chorus_output_volume;
+
+  GtkComboBox *chorus_lfo_oscillator;  
+  GtkSpinButton *chorus_lfo_frequency;
+
+  AgsDial *chorus_depth;
+  AgsDial *chorus_mix;
+  AgsDial *chorus_delay;
+
+  GList *input_line;
+    
   GtkWidget *open_dialog;
 };
 
@@ -100,7 +131,22 @@ struct _AgsSF2SynthClass
   AgsMachineClass machine;
 };
 
+struct _AgsSF2SynthInputLine
+{
+  guint pad;
+  guint audio_channel;
+
+  guint line;
+  
+  gboolean mapped_recall;
+};
+
 GType ags_sf2_synth_get_type(void);
+
+gint ags_sf2_synth_input_line_sort_func(gconstpointer a,
+				       gconstpointer b);
+
+AgsSF2SynthInputLine* ags_sf2_synth_input_line_alloc();
 
 void ags_sf2_synth_open_filename(AgsSF2Synth *sf2_synth,
 				 gchar *filename);

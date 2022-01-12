@@ -3491,20 +3491,20 @@ ags_fx_fm_synth_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
-  case PROP_PITCH_TUNING:
-  {
-    g_rec_mutex_lock(recall_mutex);
-
-    g_value_set_object(value, fx_fm_synth_audio->pitch_tuning);
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
   case PROP_NOISE_GAIN:
   {
     g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, fx_fm_synth_audio->noise_gain);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_PITCH_TUNING:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_fm_synth_audio->pitch_tuning);
       
     g_rec_mutex_unlock(recall_mutex);	
   }

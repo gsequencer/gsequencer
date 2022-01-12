@@ -1691,8 +1691,6 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 		  (GtkWidget *) hybrid_synth->chorus_delay,
 		  5, 2,
 		  1, 1);
-
-  //TODO:JK: implement me
 }
 
 void

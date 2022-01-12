@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -229,6 +229,9 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 			 G_CALLBACK(ags_audiorec_resize_pads), NULL);
   
   /* mapped IO */
+  audiorec->mapped_output_audio_channel = 0;
+  audiorec->mapped_input_audio_channel = 0;
+
   audiorec->mapped_input_pad = 0;
   audiorec->mapped_output_pad = 0;
 
@@ -341,6 +344,8 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		     0);
   
   /* frame - hindicator */
+  audiorec->input_line = NULL;
+
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) frame,
@@ -487,13 +492,85 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 
   AgsApplicationContext *application_context;
 
-  gdouble gui_scale_factor;  
+  gdouble gui_scale_factor;
   guint i;
-    
+  guint j;
+  
   application_context = ags_application_context_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
+  
+  /* reset existing input line */
+  if(audio_channels_old < audio_channels){
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	if(j < audio_channels_old){
+	  AgsAudiorecInputLine* input_line;
 
+	  input_line = g_list_nth_data(audiorec->input_line,
+				       (i * audio_channels_old) + j);
+
+	  if(input_line != NULL){
+	    input_line->line = (i * audio_channels) + j;
+	  }
+	}
+      }
+    }
+  }else{
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels_old; j++){
+	if(j >= audio_channels){
+	  AgsAudiorecInputLine* input_line;
+
+	  input_line = g_list_nth_data(audiorec->input_line,
+				       i * audio_channels);
+
+	  if(input_line->audio_channel >= audio_channels){
+	    audiorec->input_line = g_list_remove(audiorec->input_line,
+						 input_line);
+	    
+	    g_free(input_line);
+	  }
+	}
+      }
+    }
+  }
+  
+  /* insert new input line */
+  if(audio_channels_old < audio_channels){
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	if(j >= audio_channels_old){
+	  AgsAudiorecInputLine* input_line;
+
+	  gboolean success;
+	
+	  input_line = g_list_nth_data(audiorec->input_line,
+				       (i * audio_channels_old) + j);
+
+	  success = FALSE;
+	
+	  if(input_line == NULL){	
+	    input_line = ags_audiorec_input_line_alloc();
+	  }else{
+	    success = TRUE;
+	  }
+	
+	  input_line->pad = i;
+	  input_line->audio_channel = j;
+	
+	  input_line->line = (i * machine->audio_channels) + j;
+	
+	  if(!success){
+	    audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
+							input_line,
+							(GCompareFunc) ags_audiorec_input_line_sort_func);
+	  }
+	}
+      }
+    }
+  }
+  
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
       
@@ -555,6 +632,10 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 
   AgsApplicationContext *application_context;
 
+  GList *start_audiorec_input_line, *audiorec_input_line;
+
+  guint i;
+  guint j;
   gdouble gui_scale_factor;  
   
   application_context = ags_application_context_get_instance();
@@ -565,6 +646,48 @@ ags_audiorec_resize_pads(AgsMachine *machine,
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    audiorec_input_line = 
+      start_audiorec_input_line = audiorec->input_line;
+
+    if(pads_old < pads){
+      for(i = 0; i < pads; i++){
+	for(j = 0; j < machine->audio_channels; j++){
+	  if(i >= pads_old){
+	    AgsAudiorecInputLine* input_line;
+
+	    input_line = ags_audiorec_input_line_alloc();
+
+	    input_line->pad = i;
+	    input_line->audio_channel = j;
+
+	    input_line->line = (i * machine->audio_channels) + j;
+
+	    audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
+							input_line,
+							(GCompareFunc) ags_audiorec_input_line_sort_func);
+	  }
+	}
+      }
+    }else{
+      for(i = 0; i < pads_old; i++){
+	for(j = 0; j < machine->audio_channels; j++){
+	  if(i >= pads){
+	    AgsAudiorecInputLine* input_line;
+
+	    input_line = g_list_nth_data(audiorec->input_line,
+					 pads * machine->audio_channels);
+
+	    if(input_line->pad >= pads){
+	      audiorec->input_line = g_list_remove(audiorec->input_line,
+						   input_line);
+	    
+	      g_free(input_line);
+	    }
+	  }
+	}
+      }
+    }
+    
     if(pads > pads_old){
       /* depending on destination */
       ags_audiorec_input_map_recall(audiorec,
@@ -694,14 +817,15 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec,
   AgsAudio *audio;
 
   guint output_pads;
+  guint audio_channels;
 
   audio = AGS_MACHINE(audiorec)->audio;
   
   /* get some fields */
-  g_object_get(audio,
-	       "output-pads", &output_pads,
-	       NULL);
+  output_pads = AGS_MACHINE(audiorec)->output_pads;
+  audio_channels = AGS_MACHINE(audiorec)->audio_channels;    
   
+  audiorec->mapped_output_audio_channel = audio_channels;
   audiorec->mapped_output_pad = output_pads;
 }
 
@@ -717,71 +841,150 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
   guint input_pads;
   guint audio_channels;
   gint position;
-
+  guint i;
+  guint j;
+  
   audio = AGS_MACHINE(audiorec)->audio;
+
+  /* get some fields */
+  input_pads = AGS_MACHINE(audiorec)->input_pads;
+  audio_channels = AGS_MACHINE(audiorec)->audio_channels;    
 
   position = 0;
 
-  input_pads = 0;
-  audio_channels = 0;
-    
-  /* get some fields */
-  g_object_get(audio,
-	       "input-pads", &input_pads,
-	       "audio-channels", &audio_channels,
-	       NULL);
+  for(i = 0; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsAudiorecInputLine* input_line;
 
-  /* ags-fx-playback */
-  start_recall = ags_fx_factory_create(audio,
-				       audiorec->playback_play_container, audiorec->playback_recall_container,
-				       "ags-fx-playback",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
-				       0);
+      input_line = g_list_nth_data(audiorec->input_line,
+				   (i * audio_channels) + j);
 
-  /* unref */
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+      if(input_line != NULL &&
+	 input_line->mapped_recall == FALSE){
+	/* ags-fx-playback */
+	start_recall = ags_fx_factory_create(audio,
+					     audiorec->playback_play_container, audiorec->playback_recall_container,
+					     "ags-fx-playback",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+					     0);
 
-  /* ags-fx-peak */
-  start_recall = ags_fx_factory_create(audio,
-				       audiorec->peak_play_container, audiorec->peak_recall_container,
-				       "ags-fx-peak",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
-				       0);
+	/* unref */
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* unref */
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	/* ags-fx-peak */
+	start_recall = ags_fx_factory_create(audio,
+					     audiorec->peak_play_container, audiorec->peak_recall_container,
+					     "ags-fx-peak",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+					     0);
 
-  /* ags-fx-buffer */
-  start_recall = ags_fx_factory_create(audio,
-				       audiorec->buffer_play_container, audiorec->buffer_recall_container,
-				       "ags-fx-buffer",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
-				       0);
+	/* unref */
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* unref */
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	/* ags-fx-buffer */
+	start_recall = ags_fx_factory_create(audio,
+					     audiorec->buffer_play_container, audiorec->buffer_recall_container,
+					     "ags-fx-buffer",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+					     0);
+
+	/* unref */
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
+
+	/* now input line is mapped */
+	input_line->mapped_recall = TRUE;	
+      }
+    }
+  }
   
+  audiorec->mapped_input_audio_channel = audio_channels;
   audiorec->mapped_input_pad = input_pads;
 }
 
+/**
+ * ags_audiorec_input_line_sort_func:
+ * @a: the #AgsAudiorecInputLine-struct
+ * @b: another #AgsAudiorecInputLine-struct
+ * 
+ * Sort audiorec input line.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 3.16.0
+ */
+gint
+ags_audiorec_input_line_sort_func(gconstpointer a,
+				  gconstpointer b)
+{  
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+
+  if(AGS_AUDIOREC_INPUT_LINE(a)->line == AGS_AUDIOREC_INPUT_LINE(b)->line){
+    return(0);
+  }
+
+  if(AGS_AUDIOREC_INPUT_LINE(a)->line < AGS_AUDIOREC_INPUT_LINE(b)->line){
+    return(-1);
+  }else{
+    return(1);
+  }
+}
+
+/**
+ * ags_audiorec_input_line_alloc:
+ * 
+ * Allocate #AgsAudiorecInputLine-struct.
+ * 
+ * Returns: the newly allocated struct
+ * 
+ * Since: 3.16.0
+ */
+AgsAudiorecInputLine*
+ags_audiorec_input_line_alloc()
+{
+  AgsAudiorecInputLine *ptr;
+
+  ptr = (AgsAudiorecInputLine *) g_new(AgsAudiorecInputLine,
+				       1);
+
+  ptr->pad = 0;
+  ptr->audio_channel = 0;
+
+  ptr->line = 0;
+
+  ptr->mapped_recall = FALSE;
+  
+  return(ptr);
+}
+
+/**
+ * ags_audiorec_open_filename:
+ * @audiorec: the #AgsAudiorec
+ * @filename: the filename
+ * 
+ * Open @filename of @audiorec.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audiorec_open_filename(AgsAudiorec *audiorec,
 			   gchar *filename)

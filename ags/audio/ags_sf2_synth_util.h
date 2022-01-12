@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,10 @@
 
 #include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_generic_pitch_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_volume_util.h>
 
+#include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
 
@@ -35,6 +38,10 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_SF2_SYNTH_UTIL         (ags_sf2_synth_util_get_type())
 #define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
+
+typedef enum{
+  AGS_SF2_SYNTH_UTIL_FX_ENGINE   = 1,
+}AgsSF2SynthUtilFlags;
 
 /**
  * AgsSF2SynthUtilLoopMode:
@@ -56,6 +63,20 @@ typedef struct _AgsSF2SynthUtil AgsSF2SynthUtil;
 
 struct _AgsSF2SynthUtil
 {
+  guint flags;
+  
+  AgsAudioContainer *sf2_file;
+  
+  guint sf2_sample_count;
+  IpatchSample **sf2_sample;
+  gint **sf2_note_range;
+
+  guint *sf2_orig_buffer_length;
+  gpointer *sf2_orig_buffer;
+  
+  guint *sf2_resampled_buffer_length;
+  gpointer *sf2_resampled_buffer;  
+
   AgsIpatchSample *ipatch_sample;
   
   gpointer source;
@@ -67,6 +88,7 @@ struct _AgsSF2SynthUtil
   guint buffer_length;
   guint format;
   guint samplerate;
+  guint orig_samplerate;
   
   gchar *preset;
   gchar *instrument;
@@ -78,7 +100,6 @@ struct _AgsSF2SynthUtil
   gint midi_key;
   
   gdouble note;
-
   gdouble volume;
 
   guint frame_count;
@@ -91,6 +112,8 @@ struct _AgsSF2SynthUtil
 
   AgsResampleUtil *resample_util;
   AgsGenericPitchUtil *generic_pitch_util;
+  AgsHQPitchUtil *hq_pitch_util;
+  AgsVolumeUtil *volume_util;
 };
 
 GType ags_sf2_synth_util_get_type(void);
@@ -101,6 +124,10 @@ AgsSF2SynthUtil* ags_sf2_synth_util_alloc();
 
 gpointer ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr);
 void ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr);
+
+AgsAudioContainer* ags_sf2_synth_util_get_sf2_file(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_sf2_file(AgsSF2SynthUtil *sf2_synth_util,
+				     AgsAudioContainer *sf2_file);
 
 AgsIpatchSample* ags_sf2_synth_util_get_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util,
@@ -187,6 +214,10 @@ void ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
 					       AgsGenericPitchUtil *generic_pitch_util);
 
 void ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
+
+void ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
+					 gint bank,
+					 gint program);
 
 void ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util);
