@@ -1413,7 +1413,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      success = TRUE;
 
 	      sf2_sample = lower;
-	      	    
+//	      g_object_ref(sf2_sample);
+	      
 	      i++;
 	    }
 
@@ -1421,6 +1422,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      success = TRUE;
 	      
 	      sf2_sample = higher;
+//	      g_object_ref(sf2_sample);
 	    
 	      i++;
 	    }

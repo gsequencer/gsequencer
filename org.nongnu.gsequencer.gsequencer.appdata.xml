@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.16.1" date="2022-01-13">
+      <description>
+	<p>
+	  Implemented AgsSF2Synth.
+	</p>
+	<p>
+	  Minor improvements.
+	</p>
+      </description>
+    </release>
+
     <release version="3.16.0" date="2022-01-12">
       <description>
 	<p>

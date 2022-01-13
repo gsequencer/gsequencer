@@ -854,7 +854,7 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 
   for(i = 0; i < input_pads; i++){
     for(j = 0; j < audio_channels; j++){
-      AgsAudiorecInputLine* input_line;
+      AgsAudiorecInputLine *input_line;
 
       input_line = g_list_nth_data(audiorec->input_line,
 				   (i * audio_channels) + j);

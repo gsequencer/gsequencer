@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -513,6 +513,8 @@ ags_machine_init(AgsMachine *machine)
 
   machine->input = NULL;
   machine->selected_input_pad = NULL;
+
+  machine->machine_input_line = NULL;
   
   machine->bridge = NULL;
 
@@ -1331,6 +1333,63 @@ ags_machine_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_machine_input_line_sort_func:
+ * @a: the #AgsMachineInputLine-struct
+ * @b: another #AgsMachineInputLine-struct
+ * 
+ * Sort machine input line.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 3.16.0
+ */
+gint
+ags_machine_input_line_sort_func(gconstpointer a,
+				  gconstpointer b)
+{  
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+
+  if(AGS_MACHINE_INPUT_LINE(a)->line == AGS_MACHINE_INPUT_LINE(b)->line){
+    return(0);
+  }
+
+  if(AGS_MACHINE_INPUT_LINE(a)->line < AGS_MACHINE_INPUT_LINE(b)->line){
+    return(-1);
+  }else{
+    return(1);
+  }
+}
+
+/**
+ * ags_machine_input_line_alloc:
+ * 
+ * Allocate #AgsMachineInputLine-struct.
+ * 
+ * Returns: the newly allocated struct
+ * 
+ * Since: 3.16.0
+ */
+AgsMachineInputLine*
+ags_machine_input_line_alloc()
+{
+  AgsMachineInputLine *ptr;
+
+  ptr = (AgsMachineInputLine *) g_new(AgsMachineInputLine,
+				      1);
+
+  ptr->pad = 0;
+  ptr->audio_channel = 0;
+
+  ptr->line = 0;
+
+  ptr->mapped_recall = FALSE;
+  
+  return(ptr);
+}
+
+/**
  * ags_machine_reset_pattern_envelope:
  * @machine: the #AgsMachine
  * 
@@ -1781,9 +1840,81 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   GList *list_input_pad_next, *list_input_pad_next_start;
 
   guint i;
+  guint j;
 
   audio = machine->audio;
 
+  /* reset existing input line */
+  if(audio_channels_old < audio_channels){
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	if(j < audio_channels_old){
+	  AgsMachineInputLine* input_line;
+
+	  input_line = g_list_nth_data(machine->machine_input_line,
+				       (i * audio_channels_old) + j);
+
+	  if(input_line != NULL){
+	    input_line->line = (i * audio_channels) + j;
+	  }
+	}
+      }
+    }
+  }else{
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels_old; j++){
+	if(j >= audio_channels){
+	  AgsMachineInputLine* input_line;
+
+	  input_line = g_list_nth_data(machine->machine_input_line,
+				       i * audio_channels);
+
+	  if(input_line->audio_channel >= audio_channels){
+	    machine->machine_input_line = g_list_remove(machine->machine_input_line,
+							input_line);
+	    
+	    g_free(input_line);
+	  }
+	}
+      }
+    }
+  }
+  
+  /* insert new input line */
+  if(audio_channels_old < audio_channels){
+    for(i = 0; i < machine->input_pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	if(j >= audio_channels_old){
+	  AgsMachineInputLine* input_line;
+
+	  gboolean success;
+	
+	  input_line = g_list_nth_data(machine->machine_input_line,
+				       (i * audio_channels_old) + j);
+
+	  success = FALSE;
+	
+	  if(input_line == NULL){	
+	    input_line = ags_machine_input_line_alloc();
+	  }else{
+	    success = TRUE;
+	  }
+	
+	  input_line->pad = i;
+	  input_line->audio_channel = j;
+	
+	  input_line->line = (i * machine->audio_channels) + j;
+	
+	  if(!success){
+	    machine->machine_input_line = g_list_insert_sorted(machine->machine_input_line,
+							       input_line,
+							       (GCompareFunc) ags_machine_input_line_sort_func);
+	  }
+	}
+      }
+    }
+  }
+  
   list_output_pad =
     list_output_pad_start = NULL;
 
@@ -2112,9 +2243,51 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
   guint audio_audio_channels;
   guint audio_input_pads, audio_output_pads;
   guint i;
+  guint j;
 
   audio = machine->audio;
 
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads_old < pads){
+      for(i = 0; i < pads; i++){
+	for(j = 0; j < machine->audio_channels; j++){
+	  if(i >= pads_old){
+	    AgsMachineInputLine* input_line;
+
+	    input_line = ags_machine_input_line_alloc();
+
+	    input_line->pad = i;
+	    input_line->audio_channel = j;
+
+	    input_line->line = (i * machine->audio_channels) + j;
+
+	    machine->machine_input_line = g_list_insert_sorted(machine->machine_input_line,
+							       input_line,
+							       (GCompareFunc) ags_machine_input_line_sort_func);
+	  }
+	}
+      }
+    }else{
+      for(i = 0; i < pads_old; i++){
+	for(j = 0; j < machine->audio_channels; j++){
+	  if(i >= pads){
+	    AgsMachineInputLine* input_line;
+
+	    input_line = g_list_nth_data(machine->machine_input_line,
+					 pads * machine->audio_channels);
+
+	    if(input_line->pad >= pads){
+	      machine->machine_input_line = g_list_remove(machine->machine_input_line,
+							  input_line);
+	    
+	      g_free(input_line);
+	    }
+	  }
+	}
+      }
+    }
+  }
+  
   audio_channels = machine->audio_channels;
   
   if(pads_old < pads){

@@ -1487,16 +1487,21 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 	list_program = list_program->next;
 	list_name = list_name->next;
       }
-      
-      model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
+
+      model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view)));
 
        if(model != NULL &&
 	  gtk_tree_model_get_iter_first(model, &tree_iter)){
-	 gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+	 gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->program_tree_view),
 				  gtk_tree_model_get_path(model,
 							  &tree_iter),
 				  NULL,
 				  FALSE);
+
+	 gtk_tree_view_row_activated(GTK_TREE_VIEW(sf2_synth->program_tree_view),
+				     gtk_tree_model_get_path(model,
+							     &tree_iter),
+				     NULL);
        }
        
        ags_sf2_synth_load_midi_locale(sf2_synth,
@@ -1741,6 +1746,26 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 		break;
 	      }
 	    }while(gtk_tree_model_iter_next(model, &tree_iter));
+	  }
+	}else{
+	  GtkTreeModel *model;
+
+	  GtkTreeIter tree_iter;
+
+	  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
+
+	  if(model != NULL &&
+	     gtk_tree_model_get_iter_first(model, &tree_iter)){
+	    gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+				     gtk_tree_model_get_path(model,
+							     &tree_iter),
+				     NULL,
+				     FALSE);
+
+	    gtk_tree_view_row_activated(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+					gtk_tree_model_get_path(model,
+								&tree_iter),
+					NULL);
 	  }
 	}
 

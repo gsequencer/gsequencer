@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1111,10 +1111,8 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
   gint position;
   guint input_pads;
   guint audio_channels;
-
-  if(ffplayer->mapped_input_pad > input_pad_start){
-    return;
-  }
+  guint i;
+  guint j;
 
   audio = AGS_MACHINE(ffplayer)->audio;
 
@@ -1129,89 +1127,104 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
-  /* ags-fx-playback */
-  start_recall = ags_fx_factory_create(audio,
-				       ffplayer->playback_play_container, ffplayer->playback_recall_container,
-				       "ags-fx-playback",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+  for(i = 0; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsMachineInputLine *input_line;
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+      input_line = g_list_nth_data(AGS_MACHINE(ffplayer)->machine_input_line,
+				   (i * audio_channels) + j);
 
-  /* ags-fx-notation */
-  start_recall = ags_fx_factory_create(audio,
-				       ffplayer->notation_play_container, ffplayer->notation_recall_container,
-				       "ags-fx-notation",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+      if(input_line != NULL &&
+	 input_line->mapped_recall == FALSE){
+	/* ags-fx-playback */
+	start_recall = ags_fx_factory_create(audio,
+					     ffplayer->playback_play_container, ffplayer->playback_recall_container,
+					     "ags-fx-playback",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-two-pass-aliase */
-  start_recall = ags_fx_factory_create(audio,
-				       ffplayer->two_pass_aliase_play_container, ffplayer->two_pass_aliase_recall_container,
-				       "ags-fx-two-pass-aliase",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+	/* ags-fx-notation */
+	start_recall = ags_fx_factory_create(audio,
+					     ffplayer->notation_play_container, ffplayer->notation_recall_container,
+					     "ags-fx-notation",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-volume */
-  start_recall = ags_fx_factory_create(audio,
-				       ffplayer->volume_play_container, ffplayer->volume_recall_container,
-				       "ags-fx-volume",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+	/* ags-fx-two-pass-aliase */
+	start_recall = ags_fx_factory_create(audio,
+					     ffplayer->two_pass_aliase_play_container, ffplayer->two_pass_aliase_recall_container,
+					     "ags-fx-two-pass-aliase",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-envelope */
-  start_recall = ags_fx_factory_create(audio,
-				       ffplayer->envelope_play_container, ffplayer->envelope_recall_container,
-				       "ags-fx-envelope",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+	/* ags-fx-volume */
+	start_recall = ags_fx_factory_create(audio,
+					     ffplayer->volume_play_container, ffplayer->volume_recall_container,
+					     "ags-fx-volume",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
+
+	/* ags-fx-envelope */
+	start_recall = ags_fx_factory_create(audio,
+					     ffplayer->envelope_play_container, ffplayer->envelope_recall_container,
+					     "ags-fx-envelope",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
   
-  /* ags-fx-buffer */
-  start_recall = ags_fx_factory_create(audio,
-				       ffplayer->buffer_play_container, ffplayer->buffer_recall_container,
-				       "ags-fx-buffer",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+	/* ags-fx-buffer */
+	start_recall = ags_fx_factory_create(audio,
+					     ffplayer->buffer_play_container, ffplayer->buffer_recall_container,
+					     "ags-fx-buffer",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+  
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	/* now input line is mapped */
+	input_line->mapped_recall = TRUE;	
+      }
+    }
+  }
 
   ffplayer->mapped_input_pad = input_pads;
 }

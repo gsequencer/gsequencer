@@ -1,3 +1,8 @@
+ags (3.16.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMachineInputLine struct fixes double mapped recalls
+
 ags (3.16.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

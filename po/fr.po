@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-01-12 20:59+0100\n"
+"POT-Creation-Date: 2022-01-13 20:39+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -178,7 +178,7 @@ msgid "Save as"
 msgstr "Mémoriser comme"
 
 #: ags/X/ags_context_menu.c:146 ags/X/ags_export_window.c:376
-#: ags/X/ags_machine.c:3677 ags/X/ags_menu_bar.c:143
+#: ags/X/ags_machine.c:3850 ags/X/ags_menu_bar.c:143
 msgid "export"
 msgstr "exporter"
 
@@ -285,7 +285,7 @@ msgstr "Forme d'onde"
 msgid "Preferences"
 msgstr "Préréglage"
 
-#: ags/X/ags_context_menu.c:266 ags/X/ags_machine.c:3716
+#: ags/X/ags_context_menu.c:266 ags/X/ags_machine.c:3889
 #: ags/X/ags_menu_bar.c:263
 msgid "import"
 msgstr "importer"
@@ -490,102 +490,102 @@ msgstr "m-Box"
 msgid "Ports"
 msgstr "Porte"
 
-#: ags/X/ags_machine.c:2960 ags/X/machine/ags_audiorec_callbacks.c:64
+#: ags/X/ags_machine.c:3133 ags/X/machine/ags_audiorec_callbacks.c:64
 #: ags/X/machine/ags_pitch_sampler_callbacks.c:65
 msgid "Open audio files"
 msgstr "Ouvrir d'audio fichier"
 
-#: ags/X/ags_machine.c:2968
+#: ags/X/ags_machine.c:3141
 msgid "open in new channel"
 msgstr "ouvrir dans un nouveau canal"
 
-#: ags/X/ags_machine.c:2978
+#: ags/X/ags_machine.c:3151
 msgid "overwrite existing links"
 msgstr "écraser exister liens"
 
-#: ags/X/ags_machine.c:3487 ags/X/editor/ags_pattern_envelope.c:656
+#: ags/X/ags_machine.c:3660 ags/X/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr "bouger là-haut"
 
-#: ags/X/ags_machine.c:3490 ags/X/editor/ags_pattern_envelope.c:663
+#: ags/X/ags_machine.c:3663 ags/X/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr "bouger en bas"
 
-#: ags/X/ags_machine.c:3493
+#: ags/X/ags_machine.c:3666
 msgid "hide"
 msgstr "cacher"
 
-#: ags/X/ags_machine.c:3496
+#: ags/X/ags_machine.c:3669
 msgid "show"
 msgstr "montrer"
 
-#: ags/X/ags_machine.c:3499
+#: ags/X/ags_machine.c:3672
 msgid "destroy"
 msgstr "détruire"
 
-#: ags/X/ags_machine.c:3502 ags/X/ags_machine_callbacks.c:396
+#: ags/X/ags_machine.c:3675 ags/X/ags_machine_callbacks.c:396
 msgid "rename"
 msgstr "renommer"
 
-#: ags/X/ags_machine.c:3505 ags/X/ags_machine_callbacks.c:458
+#: ags/X/ags_machine.c:3678 ags/X/ags_machine_callbacks.c:458
 msgid "rename audio"
 msgstr "renommer l'audio"
 
-#: ags/X/ags_machine.c:3508 ags/X/ags_machine_callbacks.c:539
+#: ags/X/ags_machine.c:3681 ags/X/ags_machine_callbacks.c:539
 msgid "reposition audio"
 msgstr "repositionner l'audio"
 
-#: ags/X/ags_machine.c:3511 ags/X/ags_machine_editor.c:203
+#: ags/X/ags_machine.c:3684 ags/X/ags_machine_editor.c:203
 msgid "properties"
 msgstr "propriétés"
 
-#: ags/X/ags_machine.c:3514
+#: ags/X/ags_machine.c:3687
 msgid "sticky controls"
 msgstr "engluer éléments de contrôle"
 
-#: ags/X/ags_machine.c:3580 ags/X/editor/ags_automation_meta.c:590
+#: ags/X/ags_machine.c:3753 ags/X/editor/ags_automation_meta.c:590
 #: ags/X/editor/ags_notation_meta.c:486 ags/X/editor/ags_pattern_envelope.c:225
 #: ags/X/machine/ags_drum_input_pad.c:172
 msgid "edit"
 msgstr "édition"
 
-#: ags/X/ags_machine.c:3591
+#: ags/X/ags_machine.c:3764
 msgid "copy pattern"
 msgstr "copier le dessin"
 
-#: ags/X/ags_machine.c:3601
+#: ags/X/ags_machine.c:3774
 msgid "paste pattern"
 msgstr "coller le dessin"
 
-#: ags/X/ags_machine.c:3611
+#: ags/X/ags_machine.c:3784
 msgid "envelope"
 msgstr "envelope"
 
-#: ags/X/ags_machine.c:3638
+#: ags/X/ags_machine.c:3811
 msgid "connection"
 msgstr "connexion"
 
-#: ags/X/ags_machine.c:3649
+#: ags/X/ags_machine.c:3822
 msgid "audio connection"
 msgstr "connexion du audio"
 
-#: ags/X/ags_machine.c:3659
+#: ags/X/ags_machine.c:3832
 msgid "MIDI dialog"
 msgstr "MIDI interactif"
 
-#: ags/X/ags_machine.c:3688
+#: ags/X/ags_machine.c:3861
 msgid "MIDI export"
 msgstr "MIDI exporter"
 
-#: ags/X/ags_machine.c:3698
+#: ags/X/ags_machine.c:3871
 msgid "Audio export"
 msgstr "Audio exporter"
 
-#: ags/X/ags_machine.c:3727
+#: ags/X/ags_machine.c:3900
 msgid "MIDI import"
 msgstr "MIDI importer"
 
-#: ags/X/ags_machine.c:3737
+#: ags/X/ags_machine.c:3910
 msgid "Audio import"
 msgstr "Audio importer"
 
