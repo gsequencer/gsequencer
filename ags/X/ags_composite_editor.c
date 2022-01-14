@@ -370,7 +370,8 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   gtk_widget_set_halign((GtkWidget *) composite_editor->machine_selector,
 			GTK_ALIGN_START);
   
-  composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
+  composite_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
+						AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
   composite_editor->machine_selector->edit = (AGS_MACHINE_SELECTOR_EDIT_NOTATION |
 					      AGS_MACHINE_SELECTOR_EDIT_AUTOMATION |
 					      AGS_MACHINE_SELECTOR_EDIT_WAVE);
@@ -956,11 +957,14 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine)
 {
   AgsMachine *old_machine;
+  AgsMachineSelector *machine_selector;
+  GtkMenuItem *menu_item;  
   
   AgsApplicationContext *application_context;
 
   GList *tab;
   GList *start_list, *list;
+  GList *start_popup_children;
 
   gdouble gui_scale_factor;
   gboolean piano_shown;
@@ -1148,6 +1152,10 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
   piano_shown = FALSE;
   level_shown = FALSE;
+
+  machine_selector = composite_editor->machine_selector;
+  
+  start_popup_children = gtk_container_get_children((GtkContainer *) machine_selector->popup);
   
   if(AGS_IS_DRUM(machine) ||
      AGS_IS_MATRIX(machine) ||
@@ -1185,11 +1193,39 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
     
-    composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
+    composite_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
+						  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
     
     gtk_widget_show(composite_editor->machine_selector->shift_piano);
-  }
 
+    menu_item = g_list_nth_data(start_popup_children,
+				3);
+
+    machine_selector->flags |= AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING;
+
+    if(ags_audio_test_behaviour_flags(machine->audio,
+				      AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+      gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item,
+				     TRUE);
+    }else{
+      gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item,
+				     FALSE);
+    }
+
+    machine_selector->flags &= (~AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING);
+
+    gtk_widget_show(menu_item);
+  }else{    
+    composite_editor->machine_selector->flags &= (~(AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
+						    AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING));
+    
+    gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+
+    menu_item = g_list_nth_data(start_popup_children,
+				3);
+
+    gtk_widget_hide(menu_item);
+  }
 
   if(AGS_IS_AUDIOREC(machine)){
     level_shown = TRUE;
@@ -1246,10 +1282,6 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
     gtk_widget_show_all(composite_editor->wave_edit->edit_control);
     gtk_widget_show_all(composite_editor->wave_edit->edit);
-    
-    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
-    
-    gtk_widget_hide(composite_editor->machine_selector->shift_piano);
   }
   
   if(AGS_IS_PANEL(machine) ||
@@ -1317,10 +1349,6 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       gtk_widget_hide(composite_editor->sheet_edit);
       gtk_widget_show_all(composite_editor->automation_edit);
       gtk_widget_hide(composite_editor->wave_edit);
-    
-      composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
-    
-      gtk_widget_hide(composite_editor->machine_selector->shift_piano);
     }
   }
   
@@ -1335,9 +1363,15 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
     
-    composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
+    composite_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
+						  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
     
     gtk_widget_show(composite_editor->machine_selector->shift_piano);
+
+    menu_item = g_list_nth_data(start_popup_children,
+				3);
+
+    gtk_widget_show(menu_item);
   }
   
   gtk_widget_queue_resize((GtkWidget *) AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano);
@@ -1375,6 +1409,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     g_signal_connect_after(machine, "resize-pads",
 			   G_CALLBACK(ags_composite_editor_resize_pads_callback), composite_editor);
   }  
+
+  g_list_free(start_popup_children);
 }
 
 /**

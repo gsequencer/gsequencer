@@ -36,8 +36,8 @@ AgsFxNotationAudioSignal AgsConnectable
 AgsFxDssiAudioSignal AgsConnectable
 AgsFxFMSynthAudioSignal AgsConnectable
 AgsFxLv2AudioSignal AgsConnectable
+AgsFxSF2SynthAudioSignal AgsConnectable
 AgsFxSynthAudioSignal AgsConnectable
-AgsFxVst3AudioSignal AgsConnectable
 AgsFxEnvelopeAudioSignal AgsConnectable
 AgsFxEq10AudioSignal AgsConnectable
 AgsFxHighPassAudioSignal AgsConnectable
@@ -76,8 +76,8 @@ AgsFxNotationChannel AgsConnectable
 AgsFxDssiChannel AgsConnectable
 AgsFxFMSynthChannel AgsConnectable
 AgsFxLv2Channel AgsConnectable
+AgsFxSF2SynthChannel AgsConnectable
 AgsFxSynthChannel AgsConnectable
-AgsFxVst3Channel AgsConnectable
 AgsFxEnvelopeChannel AgsConnectable
 AgsFxEq10Channel AgsConnectable
 AgsFxHighPassChannel AgsConnectable
@@ -118,8 +118,8 @@ AgsFxNotationChannelProcessor AgsConnectable
 AgsFxDssiChannelProcessor AgsConnectable
 AgsFxFMSynthChannelProcessor AgsConnectable
 AgsFxLv2ChannelProcessor AgsConnectable
+AgsFxSF2SynthChannelProcessor AgsConnectable
 AgsFxSynthChannelProcessor AgsConnectable
-AgsFxVst3ChannelProcessor AgsConnectable
 AgsFxEnvelopeChannelProcessor AgsConnectable
 AgsFxEq10ChannelProcessor AgsConnectable
 AgsFxHighPassChannelProcessor AgsConnectable
@@ -157,8 +157,8 @@ AgsFxNotationRecycling AgsConnectable
 AgsFxDssiRecycling AgsConnectable
 AgsFxFMSynthRecycling AgsConnectable
 AgsFxLv2Recycling AgsConnectable
+AgsFxSF2SynthRecycling AgsConnectable
 AgsFxSynthRecycling AgsConnectable
-AgsFxVst3Recycling AgsConnectable
 AgsFxEnvelopeRecycling AgsConnectable
 AgsFxEq10Recycling AgsConnectable
 AgsFxHighPassRecycling AgsConnectable
@@ -191,8 +191,8 @@ AgsFxNotationAudio AgsConnectable
 AgsFxDssiAudio AgsConnectable
 AgsFxFMSynthAudio AgsConnectable
 AgsFxLv2Audio AgsConnectable
+AgsFxSF2SynthAudio AgsConnectable
 AgsFxSynthAudio AgsConnectable
-AgsFxVst3Audio AgsConnectable
 AgsFxEnvelopeAudio AgsConnectable
 AgsFxEq10Audio AgsConnectable
 AgsFxHighPassAudio AgsConnectable
@@ -225,8 +225,8 @@ AgsFxNotationAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxDssiAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxFMSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxLv2AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxSF2SynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
-AgsFxVst3AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxEnvelopeAudioProcessor AgsConnectable
 AgsFxEq10AudioProcessor AgsConnectable
 AgsFxHighPassAudioProcessor AgsConnectable
