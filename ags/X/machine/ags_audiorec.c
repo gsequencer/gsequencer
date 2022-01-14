@@ -344,8 +344,6 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		     0);
   
   /* frame - hindicator */
-  audiorec->input_line = NULL;
-
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) frame,
@@ -500,77 +498,6 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 
   audiorec = AGS_AUDIOREC(machine);
   
-  /* reset existing input line */
-  if(audio_channels_old < audio_channels){
-    for(i = 0; i < machine->input_pads; i++){
-      for(j = 0; j < audio_channels; j++){
-	if(j < audio_channels_old){
-	  AgsAudiorecInputLine* input_line;
-
-	  input_line = g_list_nth_data(audiorec->input_line,
-				       (i * audio_channels_old) + j);
-
-	  if(input_line != NULL){
-	    input_line->line = (i * audio_channels) + j;
-	  }
-	}
-      }
-    }
-  }else{
-    for(i = 0; i < machine->input_pads; i++){
-      for(j = 0; j < audio_channels_old; j++){
-	if(j >= audio_channels){
-	  AgsAudiorecInputLine* input_line;
-
-	  input_line = g_list_nth_data(audiorec->input_line,
-				       i * audio_channels);
-
-	  if(input_line->audio_channel >= audio_channels){
-	    audiorec->input_line = g_list_remove(audiorec->input_line,
-						 input_line);
-	    
-	    g_free(input_line);
-	  }
-	}
-      }
-    }
-  }
-  
-  /* insert new input line */
-  if(audio_channels_old < audio_channels){
-    for(i = 0; i < machine->input_pads; i++){
-      for(j = 0; j < audio_channels; j++){
-	if(j >= audio_channels_old){
-	  AgsAudiorecInputLine* input_line;
-
-	  gboolean success;
-	
-	  input_line = g_list_nth_data(audiorec->input_line,
-				       (i * audio_channels_old) + j);
-
-	  success = FALSE;
-	
-	  if(input_line == NULL){	
-	    input_line = ags_audiorec_input_line_alloc();
-	  }else{
-	    success = TRUE;
-	  }
-	
-	  input_line->pad = i;
-	  input_line->audio_channel = j;
-	
-	  input_line->line = (i * machine->audio_channels) + j;
-	
-	  if(!success){
-	    audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
-							input_line,
-							(GCompareFunc) ags_audiorec_input_line_sort_func);
-	  }
-	}
-      }
-    }
-  }
-  
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
       
@@ -632,8 +559,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 
   AgsApplicationContext *application_context;
 
-  GList *start_audiorec_input_line, *audiorec_input_line;
-
   guint i;
   guint j;
   gdouble gui_scale_factor;  
@@ -646,48 +571,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-    audiorec_input_line = 
-      start_audiorec_input_line = audiorec->input_line;
-
-    if(pads_old < pads){
-      for(i = 0; i < pads; i++){
-	for(j = 0; j < machine->audio_channels; j++){
-	  if(i >= pads_old){
-	    AgsAudiorecInputLine* input_line;
-
-	    input_line = ags_audiorec_input_line_alloc();
-
-	    input_line->pad = i;
-	    input_line->audio_channel = j;
-
-	    input_line->line = (i * machine->audio_channels) + j;
-
-	    audiorec->input_line = g_list_insert_sorted(audiorec->input_line,
-							input_line,
-							(GCompareFunc) ags_audiorec_input_line_sort_func);
-	  }
-	}
-      }
-    }else{
-      for(i = 0; i < pads_old; i++){
-	for(j = 0; j < machine->audio_channels; j++){
-	  if(i >= pads){
-	    AgsAudiorecInputLine* input_line;
-
-	    input_line = g_list_nth_data(audiorec->input_line,
-					 pads * machine->audio_channels);
-
-	    if(input_line->pad >= pads){
-	      audiorec->input_line = g_list_remove(audiorec->input_line,
-						   input_line);
-	    
-	      g_free(input_line);
-	    }
-	  }
-	}
-      }
-    }
-    
     if(pads > pads_old){
       /* depending on destination */
       ags_audiorec_input_map_recall(audiorec,
@@ -854,9 +737,9 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 
   for(i = 0; i < input_pads; i++){
     for(j = 0; j < audio_channels; j++){
-      AgsAudiorecInputLine *input_line;
+      AgsMachineInputLine *input_line;
 
-      input_line = g_list_nth_data(audiorec->input_line,
+      input_line = g_list_nth_data(AGS_MACHINE(audiorec)->machine_input_line,
 				   (i * audio_channels) + j);
 
       if(input_line != NULL &&
@@ -917,63 +800,6 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
   
   audiorec->mapped_input_audio_channel = audio_channels;
   audiorec->mapped_input_pad = input_pads;
-}
-
-/**
- * ags_audiorec_input_line_sort_func:
- * @a: the #AgsAudiorecInputLine-struct
- * @b: another #AgsAudiorecInputLine-struct
- * 
- * Sort audiorec input line.
- * 
- * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
- *
- * Since: 3.16.0
- */
-gint
-ags_audiorec_input_line_sort_func(gconstpointer a,
-				  gconstpointer b)
-{  
-  if(a == NULL || b == NULL){
-    return(0);
-  }
-
-  if(AGS_AUDIOREC_INPUT_LINE(a)->line == AGS_AUDIOREC_INPUT_LINE(b)->line){
-    return(0);
-  }
-
-  if(AGS_AUDIOREC_INPUT_LINE(a)->line < AGS_AUDIOREC_INPUT_LINE(b)->line){
-    return(-1);
-  }else{
-    return(1);
-  }
-}
-
-/**
- * ags_audiorec_input_line_alloc:
- * 
- * Allocate #AgsAudiorecInputLine-struct.
- * 
- * Returns: the newly allocated struct
- * 
- * Since: 3.16.0
- */
-AgsAudiorecInputLine*
-ags_audiorec_input_line_alloc()
-{
-  AgsAudiorecInputLine *ptr;
-
-  ptr = (AgsAudiorecInputLine *) g_new(AgsAudiorecInputLine,
-				       1);
-
-  ptr->pad = 0;
-  ptr->audio_channel = 0;
-
-  ptr->line = 0;
-
-  ptr->mapped_recall = FALSE;
-  
-  return(ptr);
 }
 
 /**

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-01-13 20:39+0100\n"
+"POT-Creation-Date: 2022-01-14 05:06+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -64,7 +64,7 @@ msgid "line"
 msgstr "Line"
 
 #: ags/X/ags_automation_editor.c:554 ags/X/ags_connection_editor.c:471
-#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:349
+#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:347
 msgid "input"
 msgstr "Eingang"
 

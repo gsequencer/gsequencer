@@ -81,8 +81,6 @@ struct _AgsAudiorec
   GtkRadioButton *mix_data;
   GtkRadioButton *replace_data;
 
-  GList *input_line;
-
   GtkBox *hindicator_vbox;
 
   GtkFileChooserDialog *open_dialog;
@@ -104,11 +102,6 @@ struct _AgsAudiorecInputLine
 };
 
 GType ags_audiorec_get_type(void);
-
-gint ags_audiorec_input_line_sort_func(gconstpointer a,
-				       gconstpointer b);
-
-AgsAudiorecInputLine* ags_audiorec_input_line_alloc();
 
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);

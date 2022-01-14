@@ -1,3 +1,8 @@
+ags (3.16.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_sf2_synth_util_load_midi_locale() load sample near midi key
+
 ags (3.16.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

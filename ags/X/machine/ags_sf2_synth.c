@@ -725,9 +725,6 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  5, 2,
 		  1, 1);
 
-  /* input line */
-  sf2_synth->input_line = NULL;
-
   /* dialog */
   sf2_synth->open_dialog = NULL;
 
@@ -752,9 +749,6 @@ ags_sf2_synth_finalize(GObject *gobject)
 
   g_hash_table_remove(ags_sf2_synth_sf2_loader_completed,
 		      gobject);
-
-  g_list_free_full(sf2_synth->input_line,
-		   (GDestroyNotify) g_free);
   
   /* call parent */
   G_OBJECT_CLASS(ags_sf2_synth_parent_class)->finalize(gobject);
@@ -868,77 +862,6 @@ ags_sf2_synth_resize_audio_channels(AgsMachine *machine,
 
   sf2_synth = (AgsSF2Synth *) machine;
 
-  /* reset existing input line */
-  if(audio_channels_old < audio_channels){
-    for(i = 0; i < machine->input_pads; i++){
-      for(j = 0; j < audio_channels; j++){
-	if(j < audio_channels_old){
-	  AgsSF2SynthInputLine* input_line;
-
-	  input_line = g_list_nth_data(sf2_synth->input_line,
-				       (i * audio_channels_old) + j);
-
-	  if(input_line != NULL){
-	    input_line->line = (i * audio_channels) + j;
-	  }
-	}
-      }
-    }
-  }else{
-    for(i = 0; i < machine->input_pads; i++){
-      for(j = 0; j < audio_channels_old; j++){
-	if(j >= audio_channels){
-	  AgsSF2SynthInputLine* input_line;
-
-	  input_line = g_list_nth_data(sf2_synth->input_line,
-				       i * audio_channels);
-
-	  if(input_line->audio_channel >= audio_channels){
-	    sf2_synth->input_line = g_list_remove(sf2_synth->input_line,
-						  input_line);
-	    
-	    g_free(input_line);
-	  }
-	}
-      }
-    }
-  }
-  
-  /* insert new input line */
-  if(audio_channels_old < audio_channels){
-    for(i = 0; i < machine->input_pads; i++){
-      for(j = 0; j < audio_channels; j++){
-	if(j >= audio_channels_old){
-	  AgsSF2SynthInputLine* input_line;
-
-	  gboolean success;
-	
-	  input_line = g_list_nth_data(sf2_synth->input_line,
-				       (i * audio_channels_old) + j);
-
-	  success = FALSE;
-	
-	  if(input_line == NULL){	
-	    input_line = ags_sf2_synth_input_line_alloc();
-	  }else{
-	    success = TRUE;
-	  }
-	
-	  input_line->pad = i;
-	  input_line->audio_channel = j;
-	
-	  input_line->line = (i * machine->audio_channels) + j;
-	
-	  if(!success){
-	    sf2_synth->input_line = g_list_insert_sorted(sf2_synth->input_line,
-							 input_line,
-							 (GCompareFunc) ags_sf2_synth_input_line_sort_func);
-	  }
-	}
-      }
-    }
-  }
-
   if(audio_channels > audio_channels_old){    
     /* recall */
     if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -960,8 +883,6 @@ ags_sf2_synth_resize_pads(AgsMachine *machine, GType channel_type,
 {
   AgsSF2Synth *sf2_synth;
 
-  GList *start_sf2_synth_input_line, *sf2_synth_input_line;
-
   guint i;
   guint j;
   gboolean grow;
@@ -975,48 +896,6 @@ ags_sf2_synth_resize_pads(AgsMachine *machine, GType channel_type,
   }
   
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-    sf2_synth_input_line = 
-      start_sf2_synth_input_line = sf2_synth->input_line;
-
-    if(grow){
-      for(i = 0; i < pads; i++){
-	for(j = 0; j < machine->audio_channels; j++){
-	  if(i >= pads_old){
-	    AgsSF2SynthInputLine* input_line;
-
-	    input_line = ags_sf2_synth_input_line_alloc();
-
-	    input_line->pad = i;
-	    input_line->audio_channel = j;
-
-	    input_line->line = (i * machine->audio_channels) + j;
-
-	    sf2_synth->input_line = g_list_insert_sorted(sf2_synth->input_line,
-							 input_line,
-							 (GCompareFunc) ags_sf2_synth_input_line_sort_func);
-	  }
-	}
-      }
-    }else{
-      for(i = 0; i < pads_old; i++){
-	for(j = 0; j < machine->audio_channels; j++){
-	  if(i >= pads){
-	    AgsSF2SynthInputLine* input_line;
-
-	    input_line = g_list_nth_data(sf2_synth->input_line,
-					 pads * machine->audio_channels);
-
-	    if(input_line->pad >= pads){
-	      sf2_synth->input_line = g_list_remove(sf2_synth->input_line,
-						    input_line);
-	    
-	      g_free(input_line);
-	    }
-	  }
-	}
-      }
-    }
-
     if(grow){
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	/* depending on destination */
@@ -1161,9 +1040,9 @@ ags_sf2_synth_input_map_recall(AgsSF2Synth *sf2_synth,
 
   for(i = 0; i < input_pads; i++){
     for(j = 0; j < audio_channels; j++){
-      AgsSF2SynthInputLine* input_line;
+      AgsMachineInputLine* input_line;
 
-      input_line = g_list_nth_data(sf2_synth->input_line,
+      input_line = g_list_nth_data(AGS_MACHINE(sf2_synth)->machine_input_line,
 				   (i * audio_channels) + j);
 
       if(input_line != NULL &&
@@ -1265,63 +1144,6 @@ ags_sf2_synth_int_compare_func(gconstpointer a,
   }else{
     return(1);
   }
-}
-
-/**
- * ags_sf2_synth_input_line_sort_func:
- * @a: the #AgsSF2SynthInputLine-struct
- * @b: another #AgsSF2SynthInputLine-struct
- * 
- * Sort SF2 synth input line.
- * 
- * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
- *
- * Since: 3.16.0
- */
-gint
-ags_sf2_synth_input_line_sort_func(gconstpointer a,
-				   gconstpointer b)
-{  
-  if(a == NULL || b == NULL){
-    return(0);
-  }
-
-  if(AGS_SF2_SYNTH_INPUT_LINE(a)->line == AGS_SF2_SYNTH_INPUT_LINE(b)->line){
-    return(0);
-  }
-
-  if(AGS_SF2_SYNTH_INPUT_LINE(a)->line < AGS_SF2_SYNTH_INPUT_LINE(b)->line){
-    return(-1);
-  }else{
-    return(1);
-  }
-}
-
-/**
- * ags_sf2_synth_input_line_alloc:
- * 
- * Allocate #AgsSF2SynthInputLine-struct.
- * 
- * Returns: the newly allocated struct
- * 
- * Since: 3.16.0
- */
-AgsSF2SynthInputLine*
-ags_sf2_synth_input_line_alloc()
-{
-  AgsSF2SynthInputLine *ptr;
-
-  ptr = (AgsSF2SynthInputLine *) g_new(AgsSF2SynthInputLine,
-				       1);
-
-  ptr->pad = 0;
-  ptr->audio_channel = 0;
-
-  ptr->line = 0;
-
-  ptr->mapped_recall = FALSE;
-  
-  return(ptr);
 }
 
 /**
