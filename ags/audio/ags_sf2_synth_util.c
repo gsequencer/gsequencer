@@ -1374,7 +1374,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		}
 
 		/* lower */
-		if(root_note > note_range->low){
+		if(root_note < note_range->low){
 		  if(lower == NULL ||
 		     root_note > lower_root_note){
 		    if(lower != NULL){
@@ -1389,7 +1389,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		}
 
 		/* higher */
-		if(root_note < note_range->high){
+		if(root_note > note_range->high){
 		  if(higher == NULL ||
 		     root_note < higher_root_note){
 		    if(higher != NULL){
@@ -1623,6 +1623,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	}
 
 	if(!success){
+	  g_message("no sample found");
+	  
 	  if(sf2_synth_util->sf2_sample[i] != NULL){
 	    g_object_unref(sf2_synth_util->sf2_sample[i]);
 
@@ -1747,6 +1749,10 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
       }
     }
 
+    if(current_sf2_sample == NULL){
+      return;
+    }
+    
     note = sf2_synth_util->note;
     
     volume = sf2_synth_util->volume;
@@ -2869,6 +2875,10 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
       }
     }
 
+    if(current_sf2_sample == NULL){
+      return;
+    }
+
     note = sf2_synth_util->note;
     
     volume = sf2_synth_util->volume;
@@ -3428,6 +3438,10 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 	  break;
 	}
       }
+    }
+
+    if(current_sf2_sample == NULL){
+      return;
     }
 
     note = sf2_synth_util->note;
@@ -3991,6 +4005,10 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
       }
     }
 
+    if(current_sf2_sample == NULL){
+      return;
+    }
+
     note = sf2_synth_util->note;
     
     volume = sf2_synth_util->volume;
@@ -4550,6 +4568,10 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 	  break;
 	}
       }
+    }
+
+    if(current_sf2_sample == NULL){
+      return;
     }
 
     note = sf2_synth_util->note;
@@ -5113,6 +5135,10 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
       }
     }
 
+    if(current_sf2_sample == NULL){
+      return;
+    }
+
     note = sf2_synth_util->note;
     
     volume = sf2_synth_util->volume;
@@ -5672,6 +5698,10 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 	  break;
 	}
       }
+    }
+
+    if(current_sf2_sample == NULL){
+      return;
     }
 
     note = sf2_synth_util->note;
