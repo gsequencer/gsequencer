@@ -61,7 +61,7 @@ MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--module=libgsequencer --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html --extra-dir=$(top_srcdir)/docs/reference/libags-audio/libags-audio-html --extra-dir=$(top_srcdir)/docs/reference/libags-gui/libags-gui-html
+FIXXREF_OPTIONS=--module=libgsequencer --module-dir=./libgsequencer-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html --extra-dir=$(top_srcdir)/docs/reference/libags-audio/libags-audio-html --extra-dir=$(top_srcdir)/docs/reference/libags-gui/libags-gui-html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h

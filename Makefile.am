@@ -3608,10 +3608,10 @@ else
 	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(datadir)/doc/libags-audio-doc/osc-server/
 endif
 if ENABLE_GTK_DOC
-	install -c -p -m 644 $(top_builddir)/docs/reference/libags/html/* $(DESTDIR)$(LIBAGS_API_DIR)
-	install -c -p -m 644 $(top_builddir)/docs/reference/libags-audio/html/* $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
-	install -c -p -m 644 $(top_builddir)/docs/reference/libags-gui/html/* $(DESTDIR)$(LIBAGS_GUI_API_DIR)
-	install -c -p -m 644 $(top_builddir)/docs/reference/libgsequencer/html/* $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags/libags-html/* $(DESTDIR)$(LIBAGS_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)$(LIBAGS_GUI_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
 endif
 
 install-pdf-mkdir:

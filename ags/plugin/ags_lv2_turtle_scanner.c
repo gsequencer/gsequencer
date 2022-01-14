@@ -811,7 +811,7 @@ ags_lv2_turtle_scanner_load_read_prefix_id(AgsLv2TurtleScanner *lv2_turtle_scann
 
       iriref = ags_turtle_read_iriref(rdf_iriref_str,
 				      &(buffer[buffer_length]));
-
+      
       /* pname */
       rdf_pname_ns_str = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
 									      buffer, buffer_length,
@@ -1581,7 +1581,7 @@ ags_lv2_turtle_scanner_load_read_subject(AgsLv2TurtleScanner *lv2_turtle_scanner
     
       if(pname == NULL){
 	pname = ags_turtle_read_pname_ns(iri_str,
-					 &(buffer[buffer_length]));
+					 &(buffer[buffer_length]));	
       }
 
       if(pname != NULL){
@@ -1844,7 +1844,7 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 				      &(buffer[buffer_length]));
 
       path = g_path_get_dirname(cache_turtle->turtle_filename);
-      
+
       if(lv2_turtle_scanner->current_subject_iriref != NULL){
 	g_hash_table_insert(manifest_cache_turtle->plugin_filename,
 			    g_strdup(lv2_turtle_scanner->current_subject_iriref), g_strdup_printf("%s%c%.*s",
@@ -1940,7 +1940,7 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 	    is_plugin = TRUE;
 	  }else{
 	    gchar *prefix_id;
-      
+	    
 	    prefix_id = g_strdup_printf("%s%s",
 					prefix_id_lv2_core,
 					"plugin");
@@ -2244,6 +2244,7 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
 
   lv2_cache_turtle = ags_lv2_cache_turtle_alloc(parent,
 						g_strdup(turtle_filename));
+  
   lv2_turtle_scanner->cache_turtle = g_list_prepend(lv2_turtle_scanner->cache_turtle,
 						    lv2_cache_turtle);
 
@@ -2380,6 +2381,7 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
 
   lv2_cache_turtle = ags_lv2_cache_turtle_alloc(NULL,
 						g_strdup(manifest_filename));
+
   lv2_turtle_scanner->cache_turtle = g_list_prepend(lv2_turtle_scanner->cache_turtle,
 						    lv2_cache_turtle);
   

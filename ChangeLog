@@ -1,3 +1,11 @@
+ags (3.16.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing Lv2 plugins
+	* updated gtk-doc XML and automake files
+	* disabled warp scrollbars
+	* minor improvements
+
 ags (3.16.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

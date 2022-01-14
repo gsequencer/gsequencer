@@ -24,6 +24,7 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fluid_util.h>
 #include <ags/audio/ags_fluid_pitch_util.h>
+#include <ags/audio/ags_fluid_iir_filter_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
@@ -1367,8 +1368,9 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
 		  current = sf2_sample;
 		  g_object_ref(sf2_sample);
-		  
-		  break;
+
+		  goto ags_sf2_synth_util_load_midi_locale_LOOP_END;
+//		  break;
 		}
 
 		/* lower */
@@ -1407,6 +1409,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      }
 	    }while(ipatch_iter_next(&izone_iter) != NULL && !success);
 
+	  ags_sf2_synth_util_load_midi_locale_LOOP_END:
+	    
 	    if(!success && lower != NULL){
 	      success = TRUE;
 
@@ -2471,7 +2475,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 						       sample_buffer,
 						       buffer_length,
 						       phase_incr);
-      
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
