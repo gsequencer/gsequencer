@@ -1357,6 +1357,10 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
 	      sf2_sample = ipatch_sf2_izone_get_sample(izone);
 
+	      if(sf2_sample != NULL){
+		g_object_ref(sf2_sample);
+	      }
+
 	      if(IPATCH_IS_SF2_SAMPLE(sf2_sample)){
 		g_object_get(sf2_sample,
 			     "root-note", &root_note,
@@ -1403,10 +1407,6 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		  }
 		}
 	      }	      
-
-	      if(sf2_sample != NULL){
-		g_object_unref(sf2_sample);
-	      }
 	    }while(ipatch_iter_next(&izone_iter) != NULL && !success);
 
 	  ags_sf2_synth_util_load_midi_locale_LOOP_END:
@@ -1622,19 +1622,6 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	  }
 	}
 
-	if(!success){
-	  g_message("no sample found");
-	  
-	  if(sf2_synth_util->sf2_sample[i] != NULL){
-	    g_object_unref(sf2_synth_util->sf2_sample[i]);
-
-	    sf2_synth_util->sf2_sample[i] = NULL;
-	  }
-	  
-	  sf2_synth_util->sf2_note_range[i][0] = -1;
-	  sf2_synth_util->sf2_note_range[i][1] = -1;
-	}
-	
 	if(current != NULL){
 	  g_object_unref(current);
 	}
@@ -1878,7 +1865,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -1897,13 +1884,13 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -2472,7 +2459,8 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter resonant_iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -2491,13 +2479,34 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
 
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+#if 1
+      resonant_iir_filter.filter_type = AGS_FLUID_IIR_LOWPASS;
+      resonant_iir_filter.flags = 0;
+
+      resonant_iir_filter.hist1 = 0;
+      resonant_iir_filter.hist2 = 0;
+      resonant_iir_filter.last_fres = -1.0;
+      resonant_iir_filter.q_lin = 0;
+      resonant_iir_filter.filter_startup = 1;
+      resonant_iir_filter.fres = 2400.0;
+      
+      ags_fluid_iir_filter_util_calc(&resonant_iir_filter,
+				     samplerate,
+				     100.0, //do some LFO
+				     0);
+      ags_fluid_iir_filter_util_apply_double(&resonant_iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);      
+#endif
+      
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -3066,7 +3075,7 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -3085,13 +3094,13 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -3660,7 +3669,7 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -3679,13 +3688,13 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -4254,7 +4263,7 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -4273,13 +4282,13 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -4848,7 +4857,7 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -4867,13 +4876,13 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -5442,7 +5451,7 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -5461,13 +5470,13 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);
@@ -6036,7 +6045,7 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
-      AgsFluidIIRFilter iir_filter;
+      AgsFluidIIRFilter custom_resonant_iir_filter;
       
       gdouble root_pitch_hz;
       gdouble phase_incr;
@@ -6055,13 +6064,13 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
-      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
-      ags_fluid_iir_filter_util_calc(&iir_filter,
+      custom_resonant_iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&custom_resonant_iir_filter,
 				     samplerate,
 				     0.0,
 				     0);
       
-      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+      ags_fluid_iir_filter_util_apply_double(&custom_resonant_iir_filter,
 					     im_buffer,
 					     im_buffer,
 					     buffer_length);

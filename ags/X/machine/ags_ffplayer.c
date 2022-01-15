@@ -1381,7 +1381,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   if(audio_container == NULL){
     return;
   }
-  
+
   audio = AGS_MACHINE(ffplayer)->audio;
 
   start_input = NULL;
@@ -1530,27 +1530,36 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 			 ffplayer) != NULL){
     if(ffplayer->sf2_loader != NULL){
       if(ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+	gchar *load_preset, *load_instrument;
+
+	load_preset = ffplayer->load_preset;
+	load_instrument = ffplayer->load_instrument;
+	
 	/* reassign audio container */
-	ffplayer->audio_container = ffplayer->sf2_loader->audio_container;
-	ffplayer->sf2_loader->audio_container = NULL;
+	if(load_preset != NULL){
+	  ffplayer->audio_container = ffplayer->sf2_loader->audio_container;
+	  ffplayer->sf2_loader->audio_container = NULL;
 
-	/* clear preset and instrument */
-	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
-	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
+	  ffplayer->load_preset = NULL;
 
-	/* level select */
-	if(ffplayer->audio_container->sound_container != NULL){	  
-	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
-	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
-    
+	  /* clear preset and instrument */
+	  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
+	  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));    
+
 	  ags_ffplayer_load_preset(ffplayer);
+	}
+	
+	/* level select */
+	if(ffplayer->audio_container->sound_container != NULL){
+//	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
+//	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
 
-	  if(ffplayer->load_preset != NULL){
+	  if(load_preset != NULL){
 	    GtkTreeModel *model;
 	    GtkTreeIter iter;
 
 	    gchar *value;
-
+	    
 	    /* preset */
 	    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
 
@@ -1560,22 +1569,24 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 				   0, &value,
 				   -1);
 
-		if(!g_strcmp0(ffplayer->load_preset,
+		if(!g_strcmp0(load_preset,
 			      value)){
 		  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
 						&iter);
+		  ags_ffplayer_load_instrument(ffplayer);
+
 		  break;
 		}
 	      }while(gtk_tree_model_iter_next(model,
 					      &iter));
 	    }
 
-	    g_free(ffplayer->load_preset);
+	    g_free(load_preset);
 
-	    ffplayer->load_preset = NULL;
+	    return(TRUE);
 	  }
 
-	  if(ffplayer->load_instrument != NULL){
+	  if(load_instrument != NULL){
 	    GtkTreeModel *model;
 	    GtkTreeIter iter;
 
@@ -1590,25 +1601,37 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 				   0, &value,
 				   -1);
 
-		if(!g_strcmp0(ffplayer->load_instrument,
+		if(!g_strcmp0(load_instrument,
 			      value)){
 		  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
 						&iter);
+		  
 		  break;
 		}
 	      }while(gtk_tree_model_iter_next(model,
 					      &iter));
 	    }
-
-	    g_free(ffplayer->load_instrument);
-
-	    ffplayer->load_instrument = NULL;
 	  }
+
+	  g_free(load_instrument);
+
+	  ffplayer->load_instrument = NULL;
+
+	  /* cleanup */	
+	  g_object_run_dispose((GObject *) ffplayer->sf2_loader);
+//	g_object_unref(ffplayer->sf2_loader);
+
+	  ffplayer->sf2_loader = NULL;
+
+	  ffplayer->position = -1;
+	  gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+	  return(TRUE);
 	}
 
 	/* cleanup */	
 	g_object_run_dispose((GObject *) ffplayer->sf2_loader);
-	g_object_unref(ffplayer->sf2_loader);
+//	g_object_unref(ffplayer->sf2_loader);
 
 	ffplayer->sf2_loader = NULL;
 
@@ -1648,7 +1671,7 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	  }
 	  break;
 	}
-      }
+      }      
     }
     
     return(TRUE);

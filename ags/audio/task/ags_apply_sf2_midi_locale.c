@@ -259,7 +259,11 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth->flags = template->flags;
 
   synth->sf2_file = template->sf2_file;
-
+  
+  if(synth->sf2_file != NULL){
+    g_object_ref(synth->sf2_file);
+  }
+  
   synth->sf2_sample_count = template->sf2_sample_count;
   synth->sf2_sample = template->sf2_sample;
   synth->sf2_note_range = template->sf2_note_range;
@@ -271,6 +275,10 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth->sf2_resampled_buffer = template->sf2_resampled_buffer;
 
   synth->ipatch_sample = template->ipatch_sample;
+  
+  if(synth->ipatch_sample != NULL){
+    g_object_ref(synth->ipatch_sample);
+  }
 
   synth->source = template->source;
   synth->source_stride = template->source_stride;

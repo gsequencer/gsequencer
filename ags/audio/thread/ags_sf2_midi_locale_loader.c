@@ -673,7 +673,8 @@ ags_sf2_midi_locale_loader_run(void *ptr)
   g_rec_mutex_lock(audio_container_manager_mutex);
 
   sf2_midi_locale_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
-											     sf2_midi_locale_loader->filename);
+											     sf2_midi_locale_loader->filename);  
+  g_object_ref(sf2_midi_locale_loader->audio_container);
 
   if(sf2_midi_locale_loader->audio_container == NULL){
     sf2_midi_locale_loader->audio_container = ags_audio_container_new(sf2_midi_locale_loader->filename,
@@ -682,6 +683,8 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 								      NULL,
 								      output_soundcard,
 								      -1);
+    g_object_ref(sf2_midi_locale_loader->audio_container);
+    
     ags_audio_container_open(sf2_midi_locale_loader->audio_container);
   
     ags_audio_container_manager_add_audio_container(audio_container_manager,

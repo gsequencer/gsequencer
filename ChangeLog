@@ -1,3 +1,8 @@
+ags (3.16.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer restore from XML
+
 ags (3.16.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

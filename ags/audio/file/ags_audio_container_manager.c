@@ -287,7 +287,7 @@ ags_audio_container_manager_remove_audio_container(AgsAudioContainerManager *aud
  * 
  * Find audio container by @filename.
  *
- * Returns: (transfer none): the matching #AgsAudioContainer if found, otherwise %NULL
+ * Returns: (transfer full): the matching #AgsAudioContainer if found, otherwise %NULL
  * 
  * Since: 3.4.0
  */
@@ -339,6 +339,10 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
     list = list->next;
   }
 
+  if(audio_container != NULL){
+    g_object_ref(audio_container);
+  }
+  
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
   

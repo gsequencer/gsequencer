@@ -476,6 +476,8 @@ ags_ipatch_sample_finalize(GObject *gobject)
 
   if(ipatch_sample->sample != NULL){
     g_object_unref(ipatch_sample->sample);
+
+    ipatch_sample->sample = NULL;
   }
   
   /* call parent */  

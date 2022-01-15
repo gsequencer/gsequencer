@@ -465,6 +465,8 @@ ags_sf2_loader_finalize(GObject *gobject)
   /* destroy object mutex */
   if(sf2_loader->audio != NULL){
     g_object_unref(sf2_loader->audio);
+
+    sf2_loader->audio = NULL;
   }
 
   g_free(sf2_loader->filename);
@@ -473,6 +475,8 @@ ags_sf2_loader_finalize(GObject *gobject)
 
   if(sf2_loader->audio_container != NULL){
     g_object_unref(sf2_loader->audio_container);
+
+    sf2_loader->audio_container = NULL;
   }
   
   /* call parent */
@@ -608,6 +612,8 @@ ags_sf2_loader_run(void *ptr)
 							  NULL,
 							  output_soundcard,
 							  -1);
+    g_object_ref(sf2_loader->audio_container);
+    
     ags_audio_container_open(sf2_loader->audio_container);
   
     ags_audio_container_manager_add_audio_container(audio_container_manager,

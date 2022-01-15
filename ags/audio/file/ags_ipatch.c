@@ -828,6 +828,10 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
 
   ipatch->reader = reader;
 
+  if(ipatch->reader != NULL){
+    g_object_ref(ipatch->reader);
+  }
+  
   g_rec_mutex_unlock(ipatch_mutex);
 
   return(retval);
@@ -1313,29 +1317,32 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
     g_rec_mutex_unlock(ipatch_mutex);
   
 #ifdef AGS_WITH_LIBINSTPATCH
-    ipatch_list = ipatch_dls2_inst_get_regions(ipatch_dls2_reader->instrument);
+    if(ipatch_dls2_reader->instrument != NULL){
+      ipatch_list = ipatch_dls2_inst_get_regions(ipatch_dls2_reader->instrument);
 
-    if(ipatch_list != NULL){
-      ipatch_list_init_iter(ipatch_list, &sample_iter);
-      ipatch_iter_first(&sample_iter);
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &sample_iter);
+	ipatch_iter_first(&sample_iter);
 
-      i_stop = ipatch_iter_count(&sample_iter);
+	i_stop = ipatch_iter_count(&sample_iter);
     
-      for(i  = 0; i < i_stop; i++){
-	AgsIpatchSample *ipatch_sample;
+	for(i  = 0; i < i_stop; i++){
+	  AgsIpatchSample *ipatch_sample;
 
-	ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+	  ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
-	ipatch_sample = ags_ipatch_sample_new();
-	g_object_set(ipatch_sample,
-		     "sample", ipatch_item,
-		     NULL);
+	  ipatch_sample = ags_ipatch_sample_new();
+	  g_object_ref(ipatch_sample);
+	  g_object_set(ipatch_sample,
+		       "sample", ipatch_item,
+		       NULL);
 
-	sound_resource = g_list_prepend(sound_resource,
-					ipatch_sample);
+	  sound_resource = g_list_prepend(sound_resource,
+					  ipatch_sample);
 	
-	/* iterate */
-	ipatch_iter_next(&sample_iter);
+	  /* iterate */
+	  ipatch_iter_next(&sample_iter);
+	}
       }
     }
 #endif
@@ -1348,31 +1355,34 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
 
     g_rec_mutex_unlock(ipatch_mutex);
-  
+
 #ifdef AGS_WITH_LIBINSTPATCH
-    ipatch_list = ipatch_sf2_inst_get_zones(ipatch_sf2_reader->instrument);
+    if(ipatch_sf2_reader->instrument != NULL){
+      ipatch_list = ipatch_sf2_inst_get_zones(ipatch_sf2_reader->instrument);
 
-    if(ipatch_list != NULL){
-      ipatch_list_init_iter(ipatch_list, &sample_iter);
-      ipatch_iter_first(&sample_iter);
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &sample_iter);
+	ipatch_iter_first(&sample_iter);
 
-      i_stop = ipatch_iter_count(&sample_iter);
+	i_stop = ipatch_iter_count(&sample_iter);
     
-      for(i  = 0; i < i_stop; i++){
-	AgsIpatchSample *ipatch_sample;
+	for(i  = 0; i < i_stop; i++){
+	  AgsIpatchSample *ipatch_sample;
 
-	ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+	  ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
 
-	ipatch_sample = ags_ipatch_sample_new();
-	g_object_set(ipatch_sample,
-		     "sample", ipatch_item,
-		     NULL);
+	  ipatch_sample = ags_ipatch_sample_new();
+	  g_object_ref(ipatch_sample);
+	  g_object_set(ipatch_sample,
+		       "sample", ipatch_item,
+		       NULL);
 
-	sound_resource = g_list_prepend(sound_resource,
-					ipatch_sample);
+	  sound_resource = g_list_prepend(sound_resource,
+					  ipatch_sample);
 	
-	/* iterate */
-	ipatch_iter_next(&sample_iter);
+	  /* iterate */
+	  ipatch_iter_next(&sample_iter);
+	}
       }
     }
 #endif
@@ -1387,29 +1397,32 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
     g_rec_mutex_unlock(ipatch_mutex);
   
 #ifdef AGS_WITH_LIBINSTPATCH
-    ipatch_list = ipatch_dls2_inst_get_regions(ipatch_gig_reader->instrument);
+    if(ipatch_gig_reader->instrument != NULL){
+      ipatch_list = ipatch_dls2_inst_get_regions(ipatch_gig_reader->instrument);
 
-    if(ipatch_list != NULL){
-      ipatch_list_init_iter(ipatch_list, &sample_iter);
-      ipatch_iter_first(&sample_iter);
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &sample_iter);
+	ipatch_iter_first(&sample_iter);
 
-      i_stop = ipatch_iter_count(&sample_iter);
+	i_stop = ipatch_iter_count(&sample_iter);
     
-      for(i  = 0; i < i_stop; i++){
-	AgsIpatchSample *ipatch_sample;
+	for(i  = 0; i < i_stop; i++){
+	  AgsIpatchSample *ipatch_sample;
 
-	ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+	  ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
-	ipatch_sample = ags_ipatch_sample_new();
-	g_object_set(ipatch_sample,
-		     "sample", ipatch_item,
-		     NULL);
+	  ipatch_sample = ags_ipatch_sample_new();
+	  g_object_ref(ipatch_sample);
+	  g_object_set(ipatch_sample,
+		       "sample", ipatch_item,
+		       NULL);
 
-	sound_resource = g_list_prepend(sound_resource,
-					ipatch_sample);
+	  sound_resource = g_list_prepend(sound_resource,
+					  ipatch_sample);
 	
-	/* iterate */
-	ipatch_iter_next(&sample_iter);
+	  /* iterate */
+	  ipatch_iter_next(&sample_iter);
+	}
       }
     }
 #endif
