@@ -1878,6 +1878,8 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -1895,6 +1897,17 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -2459,6 +2472,8 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -2476,6 +2491,17 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
 
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+      
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -3040,6 +3066,8 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -3057,6 +3085,17 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -3621,6 +3660,8 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -3638,6 +3679,17 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -4202,6 +4254,8 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -4219,6 +4273,17 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -4783,6 +4848,8 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -4800,6 +4867,17 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -5364,6 +5442,8 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -5381,6 +5461,17 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     
@@ -5945,6 +6036,8 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 						  sample_buffer, 1, 0,
 						  buffer_length, copy_mode);
     }else{
+      AgsFluidIIRFilter iir_filter;
+      
       gdouble root_pitch_hz;
       gdouble phase_incr;
       guint fluid_interp_method;
@@ -5962,6 +6055,17 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 						       buffer_length,
 						       phase_incr);
       
+      iir_filter.filter_type = AGS_FLUID_IIR_DISABLED;
+      ags_fluid_iir_filter_util_calc(&iir_filter,
+				     samplerate,
+				     0.0,
+				     0);
+      
+      ags_fluid_iir_filter_util_apply_double(&iir_filter,
+					     im_buffer,
+					     im_buffer,
+					     buffer_length);
+
 //      ags_hq_pitch_util_pitch(hq_pitch_util);
     }
     

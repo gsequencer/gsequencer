@@ -4546,11 +4546,11 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
     }
     
     /* stop animation */
-    if(xorg_application_context->loader_completed){
-      ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
+    xorg_application_context->loader_completed = TRUE;
+
+    ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
       
-      return(FALSE);
-    }
+    return(FALSE);
   }
 
   start_time = g_get_monotonic_time();
@@ -5219,14 +5219,6 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
   }
 #endif
 
-  if(!initial_load &&
-     xorg_application_context->ladspa_loader == NULL &&
-     xorg_application_context->dssi_loader == NULL &&
-     xorg_application_context->lv2_loader == NULL &&
-     xorg_application_context->vst3_loader == NULL){
-    xorg_application_context->loader_completed = TRUE;
-  }
-  
   return(TRUE);
 }
 

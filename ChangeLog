@@ -1,3 +1,8 @@
+ags (3.16.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added fluid custom filter to AgsSF2SynthUtil
+
 ags (3.16.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
