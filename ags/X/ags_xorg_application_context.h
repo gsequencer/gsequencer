@@ -123,6 +123,7 @@ struct _AgsXorgApplicationContext
   
   gboolean setup_ready;
   gboolean loader_ready;
+  gboolean loader_completed;
   
   gboolean ladspa_loading;
   gboolean dssi_loading;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -956,7 +956,7 @@ ags_lv2_manager_quick_scan_default_directory(AgsLv2Manager *lv2_manager)
     AgsLv2CacheTurtle *current;
 
     current = AGS_LV2_CACHE_TURTLE(lv2_cache_turtle->data);
-    
+
     if(g_str_has_suffix(current->turtle_filename,
 			"manifest.ttl")){
       GList *start_list, *list;
@@ -977,7 +977,7 @@ ags_lv2_manager_quick_scan_default_directory(AgsLv2Manager *lv2_manager)
 
 	effect = g_hash_table_lookup(current->plugin_effect,
 				     list->data);
-
+	
 	is_instrument = FALSE;
 
 	if(g_hash_table_contains(current->is_instrument,

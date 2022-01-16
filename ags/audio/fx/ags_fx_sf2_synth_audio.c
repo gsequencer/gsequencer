@@ -1315,6 +1315,7 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
 	channel_data->chorus_util.destination = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 								 format);
 
+	channel_data->chorus_util.pitch_mix_max_buffer_length = AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE;
 	channel_data->chorus_hq_pitch_util.destination =
 	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 									format);
@@ -1577,6 +1578,35 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->parent = NULL;
 
   /* synth 0 */
+  channel_data->synth.sf2_sample_count = 0;
+  channel_data->synth.sf2_sample = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*));
+  channel_data->synth.sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
+
+  channel_data->synth.sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
+  
+  channel_data->synth.sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
+
+  for(i = 0; i < 128; i++){
+    channel_data->synth.sf2_sample[i] = NULL;
+
+    channel_data->synth.sf2_note_range[i] = (gint *) g_malloc(2 * sizeof(gint));
+    
+    channel_data->synth.sf2_note_range[i][0] = -1;
+    channel_data->synth.sf2_note_range[i][1] = -1;
+
+    channel_data->synth.sf2_loop_mode[i] = AGS_SF2_SYNTH_UTIL_LOOP_STANDARD;
+    channel_data->synth.sf2_loop_start[i] = 0;
+    channel_data->synth.sf2_loop_end[i] = 0;
+
+    channel_data->synth.sf2_orig_buffer_length[i] = 0;
+    channel_data->synth.sf2_orig_buffer[i] = NULL;
+
+    channel_data->synth.sf2_resampled_buffer_length[i] = 0;
+    channel_data->synth.sf2_resampled_buffer[i] = NULL;
+  }
+
+  channel_data->synth.ipatch_sample = NULL;
+
   channel_data->synth.source = NULL;
   channel_data->synth.source_stride = 1;
  
@@ -1588,7 +1618,15 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->synth.volume = 0.5;
 
   channel_data->synth.resample_util = &(channel_data->synth_resample_util);
-  
+
+  channel_data->synth_resample_util.secret_rabbit.src_ratio = 1.0;
+
+  channel_data->synth_resample_util.secret_rabbit.input_frames = 0;
+  channel_data->synth_resample_util.secret_rabbit.output_frames = 0;  
+
+  channel_data->synth_resample_util.secret_rabbit.data_in = NULL;
+  channel_data->synth_resample_util.secret_rabbit.data_out = NULL;
+
   channel_data->synth_resample_util.destination = NULL;
   channel_data->synth_resample_util.destination_stride = 1;
 

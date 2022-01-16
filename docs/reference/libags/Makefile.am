@@ -61,7 +61,7 @@ MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--module=libags --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-doc/api
+FIXXREF_OPTIONS=--module=libags --module-dir=./libags-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-doc/api
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h

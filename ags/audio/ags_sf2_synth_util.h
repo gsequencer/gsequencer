@@ -71,10 +71,14 @@ struct _AgsSF2SynthUtil
   IpatchSample **sf2_sample;
   gint **sf2_note_range;
 
-  guint *sf2_orig_buffer_length;
+  gint sf2_loop_mode[128];
+  gint sf2_loop_start[128];
+  gint sf2_loop_end[128];
+
+  guint sf2_orig_buffer_length[128];
   gpointer *sf2_orig_buffer;
   
-  guint *sf2_resampled_buffer_length;
+  guint sf2_resampled_buffer_length[128];
   gpointer *sf2_resampled_buffer;  
 
   AgsIpatchSample *ipatch_sample;

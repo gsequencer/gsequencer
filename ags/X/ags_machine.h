@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,12 +39,15 @@ G_BEGIN_DECLS
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
+#define AGS_MACHINE_INPUT_LINE(ptr) ((AgsMachineInputLine *)(ptr))
+
 #define AGS_MACHINE_AUTOMATION_PORT(ptr) ((AgsMachineAutomationPort *)(ptr))
 
 #define AGS_MACHINE_DEFAULT_VERSION "2.1.60"
 #define AGS_MACHINE_DEFAULT_BUILD_ID "Wed Feb 20 18:38:17 UTC 2019"
 
 typedef struct _AgsMachine AgsMachine;
+typedef struct _AgsMachineInputLine AgsMachineInputLine;
 typedef struct _AgsMachineClass AgsMachineClass;
 typedef struct _AgsMachineAutomationPort AgsMachineAutomationPort;
 
@@ -152,6 +155,8 @@ struct _AgsMachine
   
   GtkWidget *selected_input_pad;
 
+  GList *machine_input_line;
+  
   GtkContainer *bridge;
 
   GList *port;
@@ -172,6 +177,16 @@ struct _AgsMachine
   GtkDialog *wave_export_dialog;
   GtkDialog *midi_import_dialog;
   GtkDialog *wave_import_dialog;
+};
+
+struct _AgsMachineInputLine
+{
+  guint pad;
+  guint audio_channel;
+
+  guint line;
+  
+  gboolean mapped_recall;
 };
 
 struct _AgsMachineClass
@@ -205,6 +220,11 @@ struct _AgsMachineAutomationPort
 };
 
 GType ags_machine_get_type(void);
+
+gint ags_machine_input_line_sort_func(gconstpointer a,
+				      gconstpointer b);
+
+AgsMachineInputLine* ags_machine_input_line_alloc();
 
 void ags_machine_reset_pattern_envelope(AgsMachine *machine);
 

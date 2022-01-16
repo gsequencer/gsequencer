@@ -2351,7 +2351,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 				      10);
 
     ags_audio_set_audio_channels(gobject->audio,
-				 audio_channels, 0);
+				 audio_channels, gobject->audio->audio_channels);
 
     wait_audio_channel = TRUE;
     
@@ -2368,7 +2368,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
     ags_audio_set_pads(gobject->audio,
 		       AGS_TYPE_INPUT,
-		       input_pads, 0);
+		       input_pads, gobject->audio->input_pads);
     wait_input = TRUE;
 
     xmlFree(str);
@@ -2384,7 +2384,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     
     ags_audio_set_pads(gobject->audio,
 		       AGS_TYPE_OUTPUT,
-		       output_pads, 0);
+		       output_pads, gobject->audio->output_pads);
     wait_output = TRUE;
 
     xmlFree(str);
@@ -5090,13 +5090,13 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 			      g_ascii_strtod(key_count,
 					     NULL));
   }
-  
+    
   ffplayer->load_preset = g_strdup(preset);
   ffplayer->load_instrument = g_strdup(instrument);
-    
+
   ags_ffplayer_open_filename(ffplayer,
 			     filename);
-
+  
   /* aliase */
   str = xmlGetProp(node,
 		   "enable-aliase");
@@ -5187,7 +5187,7 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
       
     xmlFree(str);
   }
-  
+
   if(filename != NULL){
     xmlFree(filename);
   }

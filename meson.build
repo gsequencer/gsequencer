@@ -9,7 +9,7 @@ project('gsequencer', 'c', 'cpp',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
         meson_version: '>=0.53.0',
-        version: '3.16.0')
+        version: '3.16.6')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -109,6 +109,11 @@ install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequ
              install_dir: join_paths(get_option('datadir'),
                                      'icons', 'hicolor', '128x128', 'apps'),
 	     rename: 'gsequencer.png')
+
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'ags-light.svg'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'icons', 'hicolor', 'scalable', 'apps'),
+	     rename: 'gsequencer.svg')
 
 install_data(join_paths(meson.source_root(), 'org.nongnu.gsequencer.gsequencer.appdata.xml'),
              install_dir: join_paths(get_option('datadir'),

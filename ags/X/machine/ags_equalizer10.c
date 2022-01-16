@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -864,10 +864,8 @@ ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
   gint position;
   guint input_pads;
   guint audio_channels;
-
-  if(equalizer10->mapped_input_pad > input_pad_start){
-    return;
-  }
+  guint i;
+  guint j;
 
   audio = AGS_MACHINE(equalizer10)->audio;
 
@@ -882,20 +880,35 @@ ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
 	       "audio-channels", &audio_channels,
 	       NULL);
 
-  /* add to machine */
-  start_recall = ags_fx_factory_create(audio,
-				       equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
-				       "ags-fx-eq10",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
-  
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  for(i = 0; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsMachineInputLine *input_line;
 
+      input_line = g_list_nth_data(AGS_MACHINE(equalizer10)->machine_input_line,
+				   (i * audio_channels) + j);
+
+      if(input_line != NULL &&
+	 input_line->mapped_recall == FALSE){
+	/* add to machine */
+	start_recall = ags_fx_factory_create(audio,
+					     equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
+					     "ags-fx-eq10",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+  
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
+
+	/* now input line is mapped */
+	input_line->mapped_recall = TRUE;	
+      }
+    }
+  }
+  
   equalizer10->mapped_input_pad = input_pads;
 }
 

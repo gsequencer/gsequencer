@@ -123,7 +123,8 @@ ags_setup(int argc, char **argv)
 
 int
 main(int argc, char **argv)
-{  
+{
+  GtkSettings *settings;
   GtkCssProvider *css_provider;
   
   AgsConfig *config;
@@ -182,6 +183,20 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
+  settings = gtk_settings_get_default();
+
+  g_object_set(settings,
+	       "gtk-primary-button-warps-slider", FALSE,
+	       NULL);
+  g_signal_handlers_block_matched(settings,
+				  G_SIGNAL_MATCH_DETAIL,
+				  g_signal_lookup("set-property",
+						  GTK_TYPE_SETTINGS),
+				  g_quark_from_string("gtk-primary-button-warps-slider"),
+				  NULL,
+				  NULL,
+				  NULL);
+  
   config = NULL;
   
   priority = ags_priority_get_instance();  

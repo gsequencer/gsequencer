@@ -1990,6 +1990,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   
   if(list != NULL){
     ipatch_sample = list->data;
+    g_object_ref(ipatch_sample);
   }
 
   midi_key = (gint) floor(note) + 69;
@@ -2007,7 +2008,12 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 		 NULL);
 
     if(current_midi_key == midi_key){
+      if(ipatch_sample != NULL){
+	g_object_unref(ipatch_sample);
+      }
+      
       ipatch_sample = list->data;
+      g_object_ref(ipatch_sample);
       
       matching_midi_key = current_midi_key;
 
@@ -2015,7 +2021,12 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     }
 
     if(matching_midi_key == -1){
+      if(ipatch_sample != NULL){
+	g_object_unref(ipatch_sample);
+      }
+      
       ipatch_sample = list->data;
+      g_object_ref(ipatch_sample);
       
       matching_midi_key = current_midi_key;
       
@@ -2201,6 +2212,10 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   g_free(filename);
   
   ags_stream_free(buffer);
+
+  if(ipatch_sample != NULL){
+    g_object_unref(ipatch_sample);
+  }      
 }
 
 /**
@@ -2294,6 +2309,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 					      NULL,
 					      output_soundcard,
 					      -1);
+    g_object_ref(audio_container);
+    
     ags_audio_container_open(audio_container);
 
     ags_audio_container_manager_add_audio_container(audio_container_manager,

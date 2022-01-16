@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -664,6 +664,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   xorg_application_context->setup_ready = FALSE;
   xorg_application_context->loader_ready = FALSE;
+  xorg_application_context->loader_completed = FALSE;
 
   xorg_application_context->ladspa_loading = FALSE;
   xorg_application_context->dssi_loading = FALSE;
@@ -4487,6 +4488,13 @@ ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_applic
   return(TRUE);
 }
 
+gint
+ags_xorg_application_context_compare_strv(gconstpointer a,
+					  gconstpointer b)
+{
+  return(g_strcmp0(((gchar **) a)[1], ((gchar **) b)[1]));
+}
+
 gboolean
 ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_application_context)
 {
@@ -4538,10 +4546,10 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
     }
     
     /* stop animation */
-    if(xorg_application_context->setup_ready){
-      ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
-    }
-    
+    xorg_application_context->loader_completed = TRUE;
+
+    ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
+      
     return(FALSE);
   }
 
@@ -4941,6 +4949,161 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
     initial_load = FALSE;
   }
 
+  if(xorg_application_context->lv2_loading &&
+     xorg_application_context->lv2_loader == NULL){
+    GDir *dir;
+
+    GList *start_lv2_cache_turtle, *lv2_cache_turtle;
+
+    GList *start_plugin;
+    GList *start_instrument;
+  
+    gchar **quick_scan_plugin_filename;
+    gchar **quick_scan_plugin_effect;
+  
+    gchar **quick_scan_instrument_filename;
+    gchar **quick_scan_instrument_effect;  
+
+    gchar **lv2_path;
+    gchar *path, *plugin_path;
+    gchar *str;
+
+    GError *error;
+
+    /* read plugins */
+    lv2_cache_turtle =
+      start_lv2_cache_turtle = g_list_reverse(g_list_copy(lv2_turtle_scanner->cache_turtle));
+
+    start_plugin = NULL;
+    start_instrument = NULL; 
+  
+    quick_scan_plugin_filename = NULL;
+    quick_scan_plugin_effect = NULL;
+
+    quick_scan_instrument_filename = NULL;
+    quick_scan_instrument_effect = NULL;
+
+    while(lv2_cache_turtle != NULL){
+      AgsLv2CacheTurtle *current;
+
+      current = AGS_LV2_CACHE_TURTLE(lv2_cache_turtle->data);
+
+      if(g_str_has_suffix(current->turtle_filename,
+			  "manifest.ttl")){
+	GList *start_list, *list;
+      
+	list =
+	  start_list = g_hash_table_get_keys(current->plugin_filename);
+      
+	while(list != NULL){
+	  gchar **strv;
+	
+	  gchar *filename;
+	  gchar *effect;
+
+	  gboolean is_instrument;
+
+	  filename = g_hash_table_lookup(current->plugin_filename,
+					 list->data);
+
+	  effect = g_hash_table_lookup(current->plugin_effect,
+				       list->data);
+	
+	  is_instrument = FALSE;
+
+	  if(g_hash_table_contains(current->is_instrument,
+				   list->data)){
+	    is_instrument = TRUE;
+	  }
+
+	  strv = g_malloc(3 * sizeof(gchar *));	
+	
+	  strv[0] = g_strdup(filename);
+	  strv[1] = g_strdup(effect);
+	  strv[2] = NULL;
+	
+	  if(!is_instrument){
+	    start_plugin = g_list_insert_sorted(start_plugin,
+						strv,
+						(GCompareFunc) ags_xorg_application_context_compare_strv);
+	  }else{
+	    start_instrument = g_list_insert_sorted(start_instrument,
+						    strv,
+						    (GCompareFunc) ags_xorg_application_context_compare_strv);
+	  }
+	
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+    
+      lv2_cache_turtle = lv2_cache_turtle->next;
+    }
+
+    g_list_free(start_lv2_cache_turtle);
+
+    if(start_plugin != NULL){
+      GList *plugin;
+    
+      guint length;
+      guint i;
+
+      plugin = start_plugin;
+    
+      length = g_list_length(start_plugin);
+    
+      quick_scan_plugin_filename = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+      quick_scan_plugin_effect = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+
+      for(i = 0; i < length; i++){
+	quick_scan_plugin_filename[i] = ((gchar **) plugin->data)[0];
+	quick_scan_plugin_effect[i] = ((gchar **) plugin->data)[1];
+      
+	plugin = plugin->next;
+      }
+    
+      quick_scan_plugin_filename[i] = NULL;
+      quick_scan_plugin_effect[i] = NULL;
+    }
+  
+    if(start_instrument != NULL){
+      GList *instrument;
+    
+      guint length;
+      guint i;
+
+      instrument = start_instrument;
+    
+      length = g_list_length(start_instrument);
+    
+      quick_scan_instrument_filename = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+      quick_scan_instrument_effect = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+
+      for(i = 0; i < length; i++){
+	quick_scan_instrument_filename[i] = ((gchar **) instrument->data)[0];
+	quick_scan_instrument_effect[i] = ((gchar **) instrument->data)[1];
+
+	instrument = instrument->next;
+      }
+    
+      quick_scan_instrument_filename[i] = NULL;
+      quick_scan_instrument_effect[i] = NULL;
+    }
+
+    lv2_manager->quick_scan_plugin_filename = quick_scan_plugin_filename;
+    lv2_manager->quick_scan_plugin_effect = quick_scan_plugin_effect;
+
+    lv2_manager->quick_scan_instrument_filename = quick_scan_instrument_filename;
+    lv2_manager->quick_scan_instrument_effect = quick_scan_instrument_effect;
+  
+    g_list_free_full(start_plugin,
+		     g_free);
+
+    g_list_free_full(start_instrument,
+		     g_free);
+  }
+  
   /* load vst3 */
 #if defined(AGS_WITH_VST3)
   current_time = g_get_monotonic_time();
@@ -5055,7 +5218,7 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
     initial_load = FALSE;
   }
 #endif
-  
+
   return(TRUE);
 }
 

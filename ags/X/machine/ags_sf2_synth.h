@@ -120,8 +120,6 @@ struct _AgsSF2Synth
   AgsDial *chorus_depth;
   AgsDial *chorus_mix;
   AgsDial *chorus_delay;
-
-  GList *input_line;
     
   GtkWidget *open_dialog;
 };
@@ -142,11 +140,6 @@ struct _AgsSF2SynthInputLine
 };
 
 GType ags_sf2_synth_get_type(void);
-
-gint ags_sf2_synth_input_line_sort_func(gconstpointer a,
-				       gconstpointer b);
-
-AgsSF2SynthInputLine* ags_sf2_synth_input_line_alloc();
 
 void ags_sf2_synth_open_filename(AgsSF2Synth *sf2_synth,
 				 gchar *filename);

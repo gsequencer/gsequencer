@@ -76,6 +76,7 @@ ags_chorus_util_alloc()
   ptr->destination_stride = 1;
 
   ptr->pitch_mix_buffer = NULL;    
+  ptr->pitch_mix_max_buffer_length = 0;
 
   ptr->pitch_mix_buffer_history = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH,
 						   AGS_SOUNDCARD_DEFAULT_FORMAT);
@@ -129,9 +130,10 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->pitch_mix_buffer = NULL;
+  new_ptr->pitch_mix_max_buffer_length = ptr->pitch_mix_max_buffer_length;
 
-  if(ptr->buffer_length > 0){
-    new_ptr->pitch_mix_buffer = ags_stream_alloc(ptr->buffer_length,
+  if(ptr->pitch_mix_max_buffer_length > 0){
+    new_ptr->pitch_mix_buffer = ags_stream_alloc(ptr->pitch_mix_max_buffer_length,
 						 ptr->format);    
   }
   
@@ -165,13 +167,13 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
 void
 ags_chorus_util_free(AgsChorusUtil *ptr)
 {
-  g_free(ptr->destination);
+  ags_stream_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
-    g_free(ptr->source);
+    ags_stream_free(ptr->source);
   }
 
-  g_free(ptr->pitch_mix_buffer);
+  ags_stream_free(ptr->pitch_mix_buffer);
   
   g_free(ptr);
 }
@@ -874,6 +876,10 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
+  
   pitch_mix_buffer = (gint8 *) chorus_util->pitch_mix_buffer;
 
   ags_hq_pitch_util_set_destination(hq_pitch_util,
@@ -1054,6 +1060,10 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   pitch_freq_period = samplerate / pitch_freq;
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
 
   pitch_mix_buffer = (gint16 *) chorus_util->pitch_mix_buffer;
 
@@ -1236,6 +1246,10 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
+
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
   ags_hq_pitch_util_set_destination(hq_pitch_util,
@@ -1416,6 +1430,10 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   pitch_freq_period = samplerate / pitch_freq;
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
 
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
@@ -1598,6 +1616,10 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
+
   pitch_mix_buffer = (gint64 *) chorus_util->pitch_mix_buffer;
 
   ags_hq_pitch_util_set_destination(hq_pitch_util,
@@ -1778,6 +1800,10 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   pitch_freq_period = samplerate / pitch_freq;
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
 
   pitch_mix_buffer = (gfloat *) chorus_util->pitch_mix_buffer;
 
@@ -1960,6 +1986,10 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
 
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
+
   pitch_mix_buffer = (gdouble *) chorus_util->pitch_mix_buffer;
 
   ags_hq_pitch_util_set_destination(hq_pitch_util,
@@ -2140,6 +2170,10 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   pitch_freq_period = samplerate / pitch_freq;
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+
+  if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
+    pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
+  }
 
   pitch_mix_buffer = (AgsComplex *) chorus_util->pitch_mix_buffer;
 

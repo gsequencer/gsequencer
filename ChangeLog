@@ -1,3 +1,44 @@
+ags (3.16.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leaks
+	* fixed AgsChorusUtil max buffer length
+
+ags (3.16.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSF2Synth missing program
+	* fixed AgsSF2Synth missing resample
+	* FIXME:JK: see ags_sf2_synth_util.c
+
+ags (3.16.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer restore from XML
+
+ags (3.16.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added fluid custom filter to AgsSF2SynthUtil
+
+ags (3.16.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing Lv2 plugins
+	* updated gtk-doc XML and automake files
+	* disabled warp scrollbars
+	* minor improvements
+
+ags (3.16.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_sf2_synth_util_load_midi_locale() load sample near midi key
+
+ags (3.16.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMachineInputLine struct fixes double mapped recalls
+
 ags (3.16.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -5856,7 +5897,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2021 Joël Krähemann
+Copyright (C) 2005-2022 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
