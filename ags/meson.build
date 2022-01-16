@@ -2080,7 +2080,19 @@ libags_audio_audio_wasapi_headers = [
   'audio/wasapi/ags_wasapi_devout.h',
 ]
 
-libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_alsa_headers + libags_audio_audio_oss_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
+libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers
+
+libags_audio_headers += libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_alsa_headers + libags_audio_audio_oss_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_pulse_headers
+
+libags_audio_headers += libags_audio_audio_file_headers
+
+libags_audio_headers += libags_audio_audio_midi_headers
+
+libags_audio_headers += libags_audio_audio_osc_headers
+
+libags_audio_headers += libags_audio_audio_fx_headers + libags_audio_audio_recall_headers
+
+libags_audio_headers += libags_audio_audio_task_headers
 
 if get_option('vst3')
   libags_vst_host_headers = [

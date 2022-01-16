@@ -654,7 +654,7 @@ ags_resample_util_compute_s16(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(gint16));
   
   ags_audio_buffer_util_copy_float_to_s16(destination, resample_util->destination_stride,
 					  secret_rabbit->data_out, 1,
@@ -699,7 +699,7 @@ ags_resample_util_compute_s24(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(gint32));
   
   ags_audio_buffer_util_copy_float_to_s24(destination, resample_util->destination_stride,
 					  secret_rabbit->data_out, 1,
@@ -744,7 +744,7 @@ ags_resample_util_compute_s32(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(gint32));
   
   ags_audio_buffer_util_copy_float_to_s32(destination, resample_util->destination_stride,
 					  secret_rabbit->data_out, 1,
@@ -789,7 +789,7 @@ ags_resample_util_compute_s64(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(gint64));
   
   ags_audio_buffer_util_copy_float_to_s64(destination, resample_util->destination_stride,
 					  secret_rabbit->data_out, 1,
@@ -834,7 +834,7 @@ ags_resample_util_compute_float(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(gfloat));
   
   ags_audio_buffer_util_copy_float_to_float(destination, resample_util->destination_stride,
 					    secret_rabbit->data_out, 1,
@@ -879,7 +879,7 @@ ags_resample_util_compute_double(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(gdouble));
   
   ags_audio_buffer_util_copy_float_to_double(destination, resample_util->destination_stride,
 					     secret_rabbit->data_out, 1,
@@ -924,7 +924,7 @@ ags_resample_util_compute_complex(AgsResampleUtil *resample_util)
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
-  memset(destination, 0, resample_util->buffer_length * sizeof(gint8));
+  memset(destination, 0, resample_util->buffer_length * sizeof(AgsComplex));
   
   ags_audio_buffer_util_copy_float_to_complex(destination, resample_util->destination_stride,
 					      secret_rabbit->data_out, 1,

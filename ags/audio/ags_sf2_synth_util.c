@@ -1284,8 +1284,6 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
     sf2_synth_util->sf2_note_range[i][0] = -1;
     sf2_synth_util->sf2_note_range[i][1] = -1;
-    
-    //TODO:JK: implement me
   }
   
   sf2_preset = ipatch_sf2_find_preset(sf2,
@@ -1294,7 +1292,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 				      program,
 				      NULL);
   
-  //  g_message("sf2 preset 0x%x", sf2_preset);
+  g_message("sf2 preset 0x%x %d %d", sf2_preset, bank, program);
 
   if(sf2_preset == NULL){
     g_rec_mutex_unlock(audio_container_mutex);
@@ -1606,6 +1604,22 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
 		resample_util->source_stride = 1;
 
+		if(resample_util->secret_rabbit.data_in != NULL){
+		  g_free(resample_util->secret_rabbit.data_in);
+		}
+
+		if(resample_util->secret_rabbit.data_out != NULL){
+		  g_free(resample_util->secret_rabbit.data_out);
+		}
+		
+		resample_util->secret_rabbit.input_frames = sample_frame_count;
+
+		resample_util->secret_rabbit.data_in = g_malloc(sample_frame_count * sizeof(gfloat));
+
+		resample_util->secret_rabbit.output_frames = sf2_synth_util->sf2_resampled_buffer_length[i];
+
+		resample_util->secret_rabbit.data_out = g_malloc(sf2_synth_util->sf2_resampled_buffer_length[i] * sizeof(gfloat));
+		
 		resample_util->buffer_length = sf2_synth_util->sf2_orig_buffer_length[i];
 		resample_util->format = AGS_SOUNDCARD_DOUBLE;
 		resample_util->samplerate = orig_samplerate;
@@ -1723,6 +1737,11 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -2317,6 +2336,11 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -2933,6 +2957,11 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -3527,6 +3556,11 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -4121,6 +4155,11 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -4715,6 +4754,11 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -5309,6 +5353,11 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
@@ -5903,6 +5952,11 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
 	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
 	nth_sample = i;
+
+	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
+	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){
+	  break;
+	}
       }else{
 	if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	   sf2_synth_util->sf2_note_range[i][1] >= midi_key){

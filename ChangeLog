@@ -1,3 +1,9 @@
+ags (3.16.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSF2Synth missing program
+	* fixed AgsSF2Synth missing resample
+
 ags (3.16.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

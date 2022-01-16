@@ -1257,27 +1257,27 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 					  &current_bank,
 					  &current_program);
 
-	if(g_list_find(start_list_program, GINT_TO_POINTER(current_program)) == NULL){
-	  current_name = ipatch_sf2_preset_get_name((IpatchSF2Preset *) ipatch_item);
+	if(current_bank == bank){	    
+	  if(g_list_find(start_list_program, GINT_TO_POINTER(current_program)) == NULL){
+	    current_name = ipatch_sf2_preset_get_name((IpatchSF2Preset *) ipatch_item);
 	  
-	  start_list_program = g_list_insert_sorted(start_list_program,
-						    GINT_TO_POINTER(current_program),
-						    ags_sf2_synth_int_compare_func);
+	    start_list_program = g_list_insert_sorted(start_list_program,
+						      GINT_TO_POINTER(current_program),
+						      ags_sf2_synth_int_compare_func);
 
-	  start_list_bank = g_list_insert(start_list_bank,
-					  GINT_TO_POINTER(current_bank),
-					  g_list_index(start_list_program,
-						       GINT_TO_POINTER(current_program)));
+	    start_list_bank = g_list_insert(start_list_bank,
+					    GINT_TO_POINTER(current_bank),
+					    g_list_index(start_list_program,
+							 GINT_TO_POINTER(current_program)));
 
-	  start_list_name = g_list_insert(start_list_name,
-					  current_name,
-					  g_list_index(start_list_program,
-						       GINT_TO_POINTER(current_program)));
-	  i++;
-	  
-	  if(current_bank == bank){	    
+	    start_list_name = g_list_insert(start_list_name,
+					    current_name,
+					    g_list_index(start_list_program,
+							 GINT_TO_POINTER(current_program)));
 	    j++;	    
 	  }
+	  
+	  i++;	  
 	}
       }while(ipatch_iter_next(&preset_iter) != NULL);
 
