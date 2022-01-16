@@ -654,6 +654,7 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   

@@ -112,10 +112,8 @@ ags_sf2_synth_util_alloc()
   ptr->sf2_sample = (AgsIpatchSample **) g_malloc(128 * sizeof(AgsIpatchSample*));
   ptr->sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
   
-  ptr->sf2_orig_buffer_length = (gpointer *) g_malloc(128 * sizeof(guint));
   ptr->sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
 
-  ptr->sf2_resampled_buffer_length = (gpointer *) g_malloc(128 * sizeof(guint));
   ptr->sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
 
   for(i = 0; i < 128; i++){
@@ -130,6 +128,11 @@ ags_sf2_synth_util_alloc()
 
     ptr->sf2_resampled_buffer_length[i] = 0;
     ptr->sf2_resampled_buffer[i] = NULL;
+
+    ptr->sf2_loop_mode[i] = AGS_SF2_SYNTH_UTIL_LOOP_STANDARD;
+
+    ptr->sf2_loop_start[i] = 0;
+    ptr->sf2_loop_end[i] = 0;
   }
   
   ptr->ipatch_sample = NULL;
@@ -1284,7 +1287,22 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
     sf2_synth_util->sf2_note_range[i][0] = -1;
     sf2_synth_util->sf2_note_range[i][1] = -1;
+
+    sf2_synth_util->sf2_loop_start[i] = 0;
+    sf2_synth_util->sf2_loop_end[i] = 0;
+
+    ags_stream_free(sf2_synth_util->sf2_orig_buffer[i]);
+		
+    ags_stream_free(sf2_synth_util->sf2_resampled_buffer[i]);
+
+    sf2_synth_util->sf2_orig_buffer_length[i] = 0;
+    sf2_synth_util->sf2_orig_buffer[i] = NULL;
+
+    sf2_synth_util->sf2_resampled_buffer_length[i] = 0;
+    sf2_synth_util->sf2_resampled_buffer[i] = NULL;
   }
+
+  sf2_synth_util->sf2_sample_count = 0;
   
   sf2_preset = ipatch_sf2_find_preset(sf2,
 				      NULL,
@@ -1292,8 +1310,6 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 				      program,
 				      NULL);
   
-  g_message("sf2 preset 0x%x %d %d", sf2_preset, bank, program);
-
   if(sf2_preset == NULL){
     g_rec_mutex_unlock(audio_container_mutex);
     
@@ -1433,6 +1449,9 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      guint sample_format;
 	      guint format;
 	      guint orig_samplerate;
+	      gint loop_start, loop_end;
+	      guint audio_channels;
+	      guint channel;
 	      guint copy_mode;
 	      
 	      sf2_synth_util->sf2_sample[i] = sf2_sample;
@@ -1448,133 +1467,138 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      format = AGS_SOUNDCARD_DOUBLE;
 	      sample_format = ipatch_sample_get_format(sf2_sample);
 
+	      sample_frame_count = 0;
+	      orig_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+	      
+	      loop_start = 0;
+	      loop_end = 0;
+	      
+	      channel = 0;
+	      
 	      g_object_get(sf2_sample,
 			   "sample-size", &sample_frame_count,
 			   "sample-rate", &orig_samplerate,
+			   "loop-start", &loop_start,
+			   "loop-end", &loop_end,
+			   "channel", &channel,
 			   NULL);
+
+	      sf2_synth_util->sf2_loop_start[i] = loop_start;
+	      sf2_synth_util->sf2_loop_end[i] = loop_end;
 
 	      cache = NULL;
 	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							      AGS_AUDIO_BUFFER_UTIL_S16);
+
+	      audio_channels = 1;
+
+	      if(channel == IPATCH_SF2_SAMPLE_CHANNEL_LEFT ||
+		 channel == IPATCH_SF2_SAMPLE_CHANNEL_RIGHT){
+		audio_channels = 2;
+	      }
 	      
 	      switch(sample_format){
 	      case IPATCH_SAMPLE_8BIT:
 	      {
-		cache = ags_stream_alloc(sample_frame_count,
+		cache = ags_stream_alloc(audio_channels * sample_frame_count,
 					 AGS_SOUNDCARD_SIGNED_8_BIT);
 
 		copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 								AGS_AUDIO_BUFFER_UTIL_S8);
 
 		error = NULL;
-		ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
-					     0,
-					     sample_frame_count,
-					     cache,
-					     IPATCH_SAMPLE_8BIT | IPATCH_SAMPLE_MONO,
-					     IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					     &error);
+		ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+				   0,
+				   audio_channels * sample_frame_count,
+				   cache,
+				   &error);
 	      }
 	      break;
 	      case IPATCH_SAMPLE_16BIT:
 	      {
-		cache = ags_stream_alloc(sample_frame_count,
+		cache = ags_stream_alloc(audio_channels * sample_frame_count,
 					 AGS_SOUNDCARD_SIGNED_16_BIT);
 
 		copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 								AGS_AUDIO_BUFFER_UTIL_S16);
 
 		error = NULL;
-		ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
-					     0,
-					     sample_frame_count,
-					     cache,
-					     IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO,
-					     IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					     &error);
+		ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+				   0,
+				   audio_channels * sample_frame_count,
+				   cache,
+				   &error);
 	      }
 	      break;
 	      case IPATCH_SAMPLE_24BIT:
 	      {
-		cache = ags_stream_alloc(sample_frame_count,
+		cache = ags_stream_alloc(audio_channels * sample_frame_count,
 					 AGS_SOUNDCARD_SIGNED_24_BIT);
 
 		copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 								AGS_AUDIO_BUFFER_UTIL_S24);
 
 		error = NULL;
-		ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
-					     0,
-					     sample_frame_count,
-					     cache,
-					     IPATCH_SAMPLE_24BIT | IPATCH_SAMPLE_MONO,
-					     IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					     &error);
+		ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+				   0,
+				   audio_channels * sample_frame_count,
+				   cache,
+				   &error);
 	      }
 	      break;
 	      case IPATCH_SAMPLE_32BIT:
 	      {
-		cache = ags_stream_alloc(sample_frame_count,
+		cache = ags_stream_alloc(audio_channels * sample_frame_count,
 					 AGS_SOUNDCARD_SIGNED_32_BIT);
 
 		copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 								AGS_AUDIO_BUFFER_UTIL_S32);
 
 		error = NULL;
-		ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
-					     0,
-					     sample_frame_count,
-					     cache,
-					     IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
-					     IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					     &error);
+		ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+				   0,
+				   audio_channels * sample_frame_count,
+				   cache,
+				   &error);
 	      }
 	      break;
 	      case IPATCH_SAMPLE_FLOAT:
 	      {
-		cache = ags_stream_alloc(sample_frame_count,
+		cache = ags_stream_alloc(audio_channels * sample_frame_count,
 					 AGS_SOUNDCARD_FLOAT);
 
 		copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 								AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
 		error = NULL;
-		ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
-					     0,
-					     sample_frame_count,
-					     cache,
-					     IPATCH_SAMPLE_FLOAT | IPATCH_SAMPLE_MONO,
-					     IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					     &error);
+		ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+				   0,
+				   audio_channels * sample_frame_count,
+				   cache,
+				   &error);
 	      }
 	      break;
 	      case IPATCH_SAMPLE_DOUBLE:
 	      {
-		cache = ags_stream_alloc(sample_frame_count,
+		cache = ags_stream_alloc(audio_channels * sample_frame_count,
 					 AGS_SOUNDCARD_DOUBLE);
 
 		copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 								AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
 		error = NULL;
-		ipatch_sample_read_transform(IPATCH_SAMPLE(sample_data),
-					     0,
-					     sample_frame_count,
-					     cache,
-					     IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
-					     IPATCH_SAMPLE_MAP_CHANNEL(0, 0),
-					     &error);
+		ipatch_sample_read(IPATCH_SAMPLE(sample_data),
+				   0,
+				   audio_channels * sample_frame_count,
+				   cache,
+				   &error);
 	      }
 	      break;
 	      case IPATCH_SAMPLE_REAL24BIT:
 	      default:
 		g_warning("unknown format");
 	      }
-	      
-	      ags_stream_free(sf2_synth_util->sf2_orig_buffer[i]);
-		
-	      ags_stream_free(sf2_synth_util->sf2_resampled_buffer[i]);
-		
+	      		
 	      sf2_synth_util->sf2_orig_buffer_length[i] = sample_frame_count;
 	      buffer =
 		sf2_synth_util->sf2_orig_buffer[i] = ags_stream_alloc(sf2_synth_util->sf2_orig_buffer_length[i],
@@ -1584,7 +1608,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      sf2_synth_util->sf2_resampled_buffer[i] = NULL;
 		
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
-							  cache, 1, 0,
+							  cache, audio_channels, 0,
 							  sample_frame_count, copy_mode);
 
 	      ags_stream_free(cache);
@@ -1598,6 +1622,9 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		sf2_synth_util->sf2_resampled_buffer[i] = ags_stream_alloc(sf2_synth_util->sf2_resampled_buffer_length[i],
 									   format);
 		  
+		sf2_synth_util->sf2_loop_start[i] = floor(sf2_synth_util->samplerate / orig_samplerate) * loop_start;
+		sf2_synth_util->sf2_loop_end[i] = floor(sf2_synth_util->samplerate / orig_samplerate) * loop_end;
+		
 		resample_util->destination = sf2_synth_util->sf2_resampled_buffer[i];
 		resample_util->destination_stride = 1;
 		  
@@ -1611,6 +1638,8 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		if(resample_util->secret_rabbit.data_out != NULL){
 		  g_free(resample_util->secret_rabbit.data_out);
 		}
+		
+		resample_util->secret_rabbit.src_ratio = sf2_synth_util->samplerate / orig_samplerate;
 		
 		resample_util->secret_rabbit.input_frames = sample_frame_count;
 
@@ -1782,10 +1811,10 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
-
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
+    
     /* fill buffer */
     orig_samplerate = samplerate;
     
@@ -2381,9 +2410,9 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;
@@ -3002,9 +3031,9 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;
@@ -3601,9 +3630,9 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;
@@ -4200,9 +4229,9 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;
@@ -4799,9 +4828,9 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;
@@ -5398,9 +5427,9 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;
@@ -5997,9 +6026,9 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
     frame_count = sf2_synth_util->frame_count;
     offset = sf2_synth_util->offset;
 
-    loop_mode = sf2_synth_util->loop_mode;
-    loop_start = sf2_synth_util->loop_start;
-    loop_end = sf2_synth_util->loop_end;
+    loop_mode = sf2_synth_util->sf2_loop_mode[i];
+    loop_start = sf2_synth_util->sf2_loop_start[i];
+    loop_end = sf2_synth_util->sf2_loop_end[i];
 
     /* fill buffer */
     orig_samplerate = samplerate;

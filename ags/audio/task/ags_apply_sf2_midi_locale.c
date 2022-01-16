@@ -247,6 +247,8 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   AgsLinearInterpolateUtil *template_hq_pitch_linear_interpolate_util;
   AgsLinearInterpolateUtil *synth_hq_pitch_linear_interpolate_util;
 
+  guint i;
+  
   apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(task);
 
   g_return_if_fail(apply_sf2_midi_locale->template != NULL);
@@ -265,15 +267,31 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   }
   
   synth->sf2_sample_count = template->sf2_sample_count;
-  synth->sf2_sample = template->sf2_sample;
-  synth->sf2_note_range = template->sf2_note_range;
+  template->sf2_sample_count = 0;
   
-  synth->sf2_orig_buffer_length = template->sf2_orig_buffer_length;
+  synth->sf2_sample = template->sf2_sample;
+  template->sf2_sample = NULL;
+  
+  synth->sf2_note_range = template->sf2_note_range;
+  template->sf2_note_range = NULL;
+  
   synth->sf2_orig_buffer = template->sf2_orig_buffer;
-
-  synth->sf2_resampled_buffer_length = template->sf2_resampled_buffer_length;
+  template->sf2_orig_buffer = NULL;
+  
   synth->sf2_resampled_buffer = template->sf2_resampled_buffer;
+  template->sf2_resampled_buffer = NULL;
+  
+  for(i = 0; i < 128; i++){
+    synth->sf2_orig_buffer_length[i] = template->sf2_orig_buffer_length[i];
+    
+    synth->sf2_resampled_buffer_length[i] = template->sf2_resampled_buffer_length[i];
 
+    synth->sf2_loop_mode[i] = template->sf2_loop_mode[i];
+
+    synth->sf2_loop_start[i] = template->sf2_loop_start[i];
+    synth->sf2_loop_end[i] = template->sf2_loop_end[i];
+  }
+  
   synth->ipatch_sample = template->ipatch_sample;
   
   if(synth->ipatch_sample != NULL){

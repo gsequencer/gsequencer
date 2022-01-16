@@ -1578,14 +1578,11 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
 
   /* synth 0 */
   channel_data->synth.sf2_sample_count = 0;
-
   channel_data->synth.sf2_sample = (IpatchSample **) g_malloc(128 * sizeof(IpatchSample*));
   channel_data->synth.sf2_note_range = (gint **) g_malloc(128 * sizeof(gint*));
 
-  channel_data->synth.sf2_orig_buffer_length = (guint *) g_malloc(128 * sizeof(guint));
   channel_data->synth.sf2_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
   
-  channel_data->synth.sf2_resampled_buffer_length = (guint *) g_malloc(128 * sizeof(guint));
   channel_data->synth.sf2_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
 
   for(i = 0; i < 128; i++){
@@ -1595,6 +1592,10 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
     
     channel_data->synth.sf2_note_range[i][0] = -1;
     channel_data->synth.sf2_note_range[i][1] = -1;
+
+    channel_data->synth.sf2_loop_mode[i] = AGS_SF2_SYNTH_UTIL_LOOP_STANDARD;
+    channel_data->synth.sf2_loop_start[i] = 0;
+    channel_data->synth.sf2_loop_end[i] = 0;
 
     channel_data->synth.sf2_orig_buffer_length[i] = 0;
     channel_data->synth.sf2_orig_buffer[i] = NULL;
@@ -1616,6 +1617,8 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   channel_data->synth.volume = 0.5;
 
   channel_data->synth.resample_util = &(channel_data->synth_resample_util);
+
+  channel_data->synth_resample_util.secret_rabbit.src_ratio = 1.0;
 
   channel_data->synth_resample_util.secret_rabbit.input_frames = 0;
   channel_data->synth_resample_util.secret_rabbit.output_frames = 0;  
