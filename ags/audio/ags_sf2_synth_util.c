@@ -1452,6 +1452,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      gint loop_start, loop_end;
 	      guint audio_channels;
 	      guint channel;
+	      int sf2_sample_format;
 	      guint copy_mode;
 	      
 	      sf2_synth_util->sf2_sample[i] = sf2_sample;
@@ -1490,11 +1491,14 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							      AGS_AUDIO_BUFFER_UTIL_S16);
 
-	      audio_channels = 1;
+	      sf2_sample_format = ipatch_sample_get_format(sf2_sample);
+	      
+	      audio_channels = IPATCH_SAMPLE_FORMAT_GET_CHANNEL_COUNT(sf2_sample_format);
 
 	      if(channel == IPATCH_SF2_SAMPLE_CHANNEL_LEFT ||
 		 channel == IPATCH_SF2_SAMPLE_CHANNEL_RIGHT){
-		audio_channels = 2;
+		//FIXME:JK: actually should be 2 especially if the data is interleaved
+		audio_channels = 1;
 	      }
 	      
 	      switch(sample_format){

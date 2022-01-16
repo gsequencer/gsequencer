@@ -3,6 +3,7 @@ ags (3.16.6)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsSF2Synth missing program
 	* fixed AgsSF2Synth missing resample
+	* FIXME:JK: see ags_sf2_synth_util.c
 
 ags (3.16.5)
 
