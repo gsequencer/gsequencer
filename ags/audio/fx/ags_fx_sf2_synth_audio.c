@@ -1315,6 +1315,7 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
 	channel_data->chorus_util.destination = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 								 format);
 
+	channel_data->chorus_util.pitch_mix_max_buffer_length = AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE;
 	channel_data->chorus_hq_pitch_util.destination =
 	  channel_data->chorus_util.pitch_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
 									format);

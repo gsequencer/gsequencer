@@ -271,9 +271,21 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   
   synth->sf2_sample = template->sf2_sample;
   template->sf2_sample = NULL;
+
+  g_free(synth->sf2_note_range);
   
   synth->sf2_note_range = template->sf2_note_range;
   template->sf2_note_range = NULL;
+
+  if(synth->sf2_orig_buffer != NULL){
+    for(i = 0; i < 128; i++){
+      ags_stream_free(synth->sf2_orig_buffer[i]);
+      ags_stream_free(synth->sf2_resampled_buffer[i]);
+    }
+  }
+
+  g_free(synth->sf2_orig_buffer);
+  g_free(synth->sf2_resampled_buffer);
   
   synth->sf2_orig_buffer = template->sf2_orig_buffer;
   template->sf2_orig_buffer = NULL;
@@ -298,19 +310,33 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
     g_object_ref(synth->ipatch_sample);
   }
 
-  synth->source = template->source;
+  ags_stream_free(synth->source);
+  
   synth->source_stride = template->source_stride;
+  synth->source = template->source;
+  template->source = NULL;  
+
+  ags_stream_free(synth->sample_buffer);
 
   synth->sample_buffer = template->sample_buffer;
+  template->sample_buffer = NULL;
+  
+  ags_stream_free(synth->im_buffer);
+
   synth->im_buffer = template->im_buffer;
+  template->im_buffer = NULL;
   
   synth->buffer_length = template->buffer_length;
   synth->format = template->format;
   synth->samplerate = template->samplerate;
 
-  synth->preset = template->preset;
-  synth->instrument = template->instrument;
-  synth->sample = template->sample;
+  g_free(synth->preset);
+  g_free(synth->instrument);
+  g_free(synth->sample);
+  
+  synth->preset = g_strdup(template->preset);
+  synth->instrument = g_strdup(template->instrument);
+  synth->sample = g_strdup(template->sample);
 
   synth->bank = template->bank;
   synth->program = template->program;
@@ -335,18 +361,25 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
 
   synth_resample_util->secret_rabbit.src_ratio = template_resample_util->secret_rabbit.src_ratio;
 
+  g_free(template_resample_util->secret_rabbit.data_in);
+  g_free(template_resample_util->secret_rabbit.data_out);
+  
   synth_resample_util->secret_rabbit.input_frames = template_resample_util->secret_rabbit.input_frames;
   synth_resample_util->secret_rabbit.data_in = template_resample_util->secret_rabbit.data_in;
-
+  template_resample_util->secret_rabbit.data_in = NULL;
+  
   synth_resample_util->secret_rabbit.output_frames = template_resample_util->secret_rabbit.output_frames;
   synth_resample_util->secret_rabbit.data_out = template_resample_util->secret_rabbit.data_out;
-
-  synth_resample_util->source = template_resample_util->source;
+  template_resample_util->secret_rabbit.data_out = NULL;
+  
   synth_resample_util->source_stride = template_resample_util->source_stride;
-
-  synth_resample_util->destination = template_resample_util->destination;
+  synth_resample_util->source = template_resample_util->source;
+  template_resample_util->source = NULL;
+  
   synth_resample_util->destination_stride = template_resample_util->destination_stride;
-
+  synth_resample_util->destination = template_resample_util->destination;
+  template_resample_util->destination = NULL;
+  
   synth_resample_util->buffer_length = template_resample_util->buffer_length;
   synth_resample_util->format = template_resample_util->format;
   synth_resample_util->samplerate = template_resample_util->samplerate;
@@ -358,15 +391,20 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   template_hq_pitch_util = template->hq_pitch_util;
   synth_hq_pitch_util = synth->hq_pitch_util;
 
-  synth_hq_pitch_util->source = template_hq_pitch_util->source;
   synth_hq_pitch_util->source_stride = template_hq_pitch_util->source_stride;
-
-  synth_hq_pitch_util->destination = template_hq_pitch_util->destination;
+  synth_hq_pitch_util->source = template_hq_pitch_util->source;
+  template_hq_pitch_util->source = NULL;
+  
   synth_hq_pitch_util->destination_stride = template_hq_pitch_util->destination_stride;
+  synth_hq_pitch_util->destination = template_hq_pitch_util->destination;
+  template_hq_pitch_util->destination = NULL;
   
   synth_hq_pitch_util->low_mix_buffer = template_hq_pitch_util->low_mix_buffer;
+  template_hq_pitch_util->low_mix_buffer = NULL;
+  
   synth_hq_pitch_util->new_mix_buffer = template_hq_pitch_util->new_mix_buffer;
-
+  template_hq_pitch_util->new_mix_buffer = NULL;
+  
   synth_hq_pitch_util->buffer_length = template_hq_pitch_util->buffer_length;
   synth_hq_pitch_util->format = template_hq_pitch_util->format;
   synth_hq_pitch_util->samplerate = template_hq_pitch_util->samplerate;
@@ -378,11 +416,13 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   template_hq_pitch_linear_interpolate_util = template_hq_pitch_util->linear_interpolate_util;
   synth_hq_pitch_linear_interpolate_util = synth_hq_pitch_util->linear_interpolate_util;
 
-  synth_hq_pitch_linear_interpolate_util->source = template_hq_pitch_linear_interpolate_util->source;
   synth_hq_pitch_linear_interpolate_util->source_stride = template_hq_pitch_linear_interpolate_util->source_stride;
-
-  synth_hq_pitch_linear_interpolate_util->destination = template_hq_pitch_linear_interpolate_util->destination;
+  synth_hq_pitch_linear_interpolate_util->source = template_hq_pitch_linear_interpolate_util->source;
+  template_hq_pitch_linear_interpolate_util->source = NULL;
+  
   synth_hq_pitch_linear_interpolate_util->destination_stride = template_hq_pitch_linear_interpolate_util->destination_stride;
+  synth_hq_pitch_linear_interpolate_util->destination = template_hq_pitch_linear_interpolate_util->destination;
+  template_hq_pitch_linear_interpolate_util->destination = NULL;
   
   synth_hq_pitch_linear_interpolate_util->buffer_length = template_hq_pitch_linear_interpolate_util->buffer_length;
   synth_hq_pitch_linear_interpolate_util->format = template_hq_pitch_linear_interpolate_util->format;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,7 +56,8 @@ struct _AgsChorusUtil
   guint destination_stride;
 
   gpointer pitch_mix_buffer;
-
+  guint pitch_mix_max_buffer_length;
+  
   gpointer pitch_mix_buffer_history;
   guint history_buffer_length;
   
