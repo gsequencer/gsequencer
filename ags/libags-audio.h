@@ -20,6 +20,11 @@
 #ifndef __LIBAGS_AUDIO_H__
 #define __LIBAGS_AUDIO_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+
 #include <ags/ags_api_config.h>
 
 /* plugin */
@@ -155,10 +160,10 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
-#ifdef AGS_WITH_GSTREAMER
+#if defined(AGS_WITH_GSTREAMER)
 #include <ags/audio/file/ags_gstreamer_file.h>
 #endif
-#ifdef AGS_WITH_LIBINSTPATCH
+#if defined(AGS_WITH_LIBINSTPATCH)
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
 #include <ags/audio/file/ags_ipatch_dls2_reader.h>
@@ -243,7 +248,7 @@
 #include <ags/audio/pulse/ags_pulse_server.h>
 
 /* audio gstreamer */
-#ifdef AGS_WITH_GSTREAMER
+#if defined(AGS_WITH_GSTREAMER)
 #include <ags/audio/gstreamer/ags_gstreamer_client.h>
 #include <ags/audio/gstreamer/ags_gstreamer_devout.h>
 #include <ags/audio/gstreamer/ags_gstreamer_devin.h>

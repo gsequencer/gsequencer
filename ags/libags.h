@@ -20,6 +20,9 @@
 #ifndef __LIBAGS_H__
 #define __LIBAGS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <ags/ags_api_config.h>
 
 #include <ags/util/ags_destroy_util.h>
