@@ -1924,6 +1924,13 @@ ags_fx_sf2_synth_audio_channel_data_free(AgsFxSF2SynthAudioChannelData *channel_
   if(channel_data == NULL){
     return;
   }
+
+  ags_stream_free(channel_data->chorus_hq_pitch_util.low_mix_buffer);
+  ags_stream_free(channel_data->chorus_hq_pitch_util.new_mix_buffer);
+
+  ags_stream_free(channel_data->chorus_util.destination);
+  ags_stream_free(channel_data->chorus_hq_pitch_util.destination);
+  ags_stream_free(channel_data->chorus_util.pitch_mix_buffer_history);
   
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     ags_fx_sf2_synth_audio_input_data_free(channel_data->input_data[i]);
