@@ -2,6 +2,7 @@ ags (3.16.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed memory leaks
+	* fixed reference leaks
 	* fixed AgsChorusUtil max buffer length
 
 ags (3.16.6)
