@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,7 +47,7 @@ void ags_functional_loop_003_xml_test_file_setup();
 #define AGS_FUNCTIONAL_LOOP_003_XML_TEST_FILE_SETUP_PLAYBACK_COUNT (1)
 #define AGS_FUNCTIONAL_LOOP_003_XML_TEST_FILE_SETUP_PLAYBACK_DURATION (120)
 
-#define AGS_FUNCTIONAL_LOOP_003_XML_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags/test/X/examples/ags-loop-000.xml"
+#define AGS_FUNCTIONAL_LOOP_003_XML_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags/test/X/examples/ags-loop-003.xml"
 
 #define AGS_FUNCTIONAL_LOOP_003_XML_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \

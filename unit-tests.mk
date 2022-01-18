@@ -207,6 +207,12 @@ check_PROGRAMS += \
 	ags_fx_envelope_channel_test \
 	ags_fx_envelope_channel_processor_test \
 	ags_fx_envelope_recycling_test \
+	ags_fx_fm_synth_audio_test \
+	ags_fx_fm_synth_audio_processor_test \
+	ags_fx_fm_synth_audio_signal_test \
+	ags_fx_fm_synth_channel_test \
+	ags_fx_fm_synth_channel_processor_test \
+	ags_fx_fm_synth_recycling_test \
 	ags_fx_ladspa_audio_test \
 	ags_fx_ladspa_audio_processor_test \
 	ags_fx_ladspa_audio_signal_test \
@@ -243,6 +249,12 @@ check_PROGRAMS += \
 	ags_fx_playback_channel_test \
 	ags_fx_playback_channel_processor_test \
 	ags_fx_playback_recycling_test \
+	ags_fx_synth_audio_test \
+	ags_fx_synth_audio_processor_test \
+	ags_fx_synth_audio_signal_test \
+	ags_fx_synth_channel_test \
+	ags_fx_synth_channel_processor_test \
+	ags_fx_synth_recycling_test \
 	ags_fx_volume_audio_test \
 	ags_fx_volume_audio_processor_test \
 	ags_fx_volume_audio_signal_test \
@@ -1431,6 +1443,42 @@ ags_fx_envelope_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND
 ags_fx_envelope_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_fx_envelope_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
+# fx FM synth audio unit test
+ags_fx_fm_synth_audio_test_SOURCES = ags/test/audio/fx/ags_fx_fm_synth_audio_test.c
+ags_fx_fm_synth_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_fm_synth_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_fm_synth_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx FM synth audio processor unit test
+ags_fx_fm_synth_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_fm_synth_audio_processor_test.c
+ags_fx_fm_synth_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_fm_synth_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_fm_synth_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx FM synth channel unit test
+ags_fx_fm_synth_channel_test_SOURCES = ags/test/audio/fx/ags_fx_fm_synth_channel_test.c
+ags_fx_fm_synth_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_fm_synth_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_fm_synth_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx FM synth channel processor unit test
+ags_fx_fm_synth_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_fm_synth_channel_processor_test.c
+ags_fx_fm_synth_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_fm_synth_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_fm_synth_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx FM synth recycling unit test
+ags_fx_fm_synth_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_fm_synth_recycling_test.c
+ags_fx_fm_synth_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_fm_synth_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_fm_synth_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx FM synth audio signal unit test
+ags_fx_fm_synth_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_fm_synth_audio_signal_test.c
+ags_fx_fm_synth_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_fm_synth_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_fm_synth_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
 # fx ladspa audio unit test
 ags_fx_ladspa_audio_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_audio_test.c
 ags_fx_ladspa_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
@@ -1646,6 +1694,42 @@ ags_fx_playback_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_playback_au
 ags_fx_playback_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_fx_playback_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_fx_playback_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx synth audio unit test
+ags_fx_synth_audio_test_SOURCES = ags/test/audio/fx/ags_fx_synth_audio_test.c
+ags_fx_synth_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_synth_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_synth_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx synth audio processor unit test
+ags_fx_synth_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_synth_audio_processor_test.c
+ags_fx_synth_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_synth_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_synth_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx synth channel unit test
+ags_fx_synth_channel_test_SOURCES = ags/test/audio/fx/ags_fx_synth_channel_test.c
+ags_fx_synth_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_synth_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_synth_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx synth channel processor unit test
+ags_fx_synth_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_synth_channel_processor_test.c
+ags_fx_synth_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_synth_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_synth_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx synth recycling unit test
+ags_fx_synth_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_synth_recycling_test.c
+ags_fx_synth_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_synth_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_synth_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx synth audio signal unit test
+ags_fx_synth_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_synth_audio_signal_test.c
+ags_fx_synth_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_synth_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_synth_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # fx volume audio unit test
 ags_fx_volume_audio_test_SOURCES = ags/test/audio/fx/ags_fx_volume_audio_test.c

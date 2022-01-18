@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,6 +84,11 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
+extern struct timespec ags_functional_automation_editor_workflow_test_default_timeout = {
+  59,
+  0,
+};
+
 void ags_functional_automation_editor_workflow_test_add_test()
 {
   /* add the tests to the suite */
@@ -126,9 +131,14 @@ ags_functional_automation_editor_workflow_test_init_suite()
   
   GdkEvent *delete_event;
 
+  xorg_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &(xorg_application_context->window));
+
   ags_test_enter();
     
-  xorg_application_context = ags_application_context;
   window = AGS_WINDOW(xorg_application_context->window);
 
   edit_menu = window->menu_bar->edit;
@@ -148,6 +158,7 @@ ags_functional_automation_editor_workflow_test_init_suite()
   ags_functional_test_util_file_default_automation_window_resize();
   ags_functional_test_util_file_default_automation_editor_resize();
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -156,7 +167,8 @@ ags_functional_automation_editor_workflow_test_init_suite()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
-
+#endif
+  
   ags_functional_test_util_reaction_time_long();
   
   return(0);
@@ -274,6 +286,7 @@ ags_functional_automation_editor_workflow_test_panel()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -282,6 +295,7 @@ ags_functional_automation_editor_workflow_test_panel()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 
 void
@@ -387,6 +401,7 @@ ags_functional_automation_editor_workflow_test_mixer()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -395,6 +410,7 @@ ags_functional_automation_editor_workflow_test_mixer()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 
 void
@@ -499,6 +515,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -507,6 +524,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 
 void
@@ -611,6 +629,7 @@ ags_functional_automation_editor_workflow_test_drum()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -619,6 +638,7 @@ ags_functional_automation_editor_workflow_test_drum()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 
 void
@@ -723,6 +743,7 @@ ags_functional_automation_editor_workflow_test_matrix()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -731,6 +752,7 @@ ags_functional_automation_editor_workflow_test_matrix()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 
 void
@@ -835,6 +857,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -843,6 +866,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -948,6 +972,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
 
+#if 0
   /* close automation window */
   ags_test_enter();
 
@@ -956,6 +981,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
 		   (GdkEvent *) delete_event);
   
   ags_test_leave();
+#endif
 }
 #endif
 
