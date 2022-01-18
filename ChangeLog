@@ -1,8 +1,14 @@
 ags (3.16.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer loader timeout
 	* fixed memory leaks
+	* fixed reference leaks
 	* fixed AgsChorusUtil max buffer length
+	* extended functional machine add and destroy test to use the new instruments AgsHybridSynth, AgsHybridFMSynth and AgsHybridSF2Synth
+	* minor improvements
+	* added ags-fx-synth unit tests
+	* added ags-fx-fm-synth unit tests
 
 ags (3.16.6)
 

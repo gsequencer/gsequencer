@@ -1157,7 +1157,89 @@ ags_fx_sf2_synth_audio_dispose(GObject *gobject)
   
   fx_sf2_synth_audio = AGS_FX_SF2_SYNTH_AUDIO(gobject);
 
-  //TODO:JK: implement me
+  /* synth octave */
+  if(fx_sf2_synth_audio->synth_octave != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_octave));
+
+    fx_sf2_synth_audio->synth_octave = NULL;
+  }
+
+  /* synth key */
+  if(fx_sf2_synth_audio->synth_key != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_key));
+
+    fx_sf2_synth_audio->synth_key = NULL;
+  }
+
+  /* synth pitch type */
+  if(fx_sf2_synth_audio->synth_pitch_type != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_pitch_type));
+
+    fx_sf2_synth_audio->synth_pitch_type = NULL;
+  }
+
+  /* synth volume */
+  if(fx_sf2_synth_audio->synth_volume != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_volume));
+
+    fx_sf2_synth_audio->synth_volume = NULL;
+  }
+
+  /* chorus enabled */
+  if(fx_sf2_synth_audio->chorus_enabled != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_enabled));
+
+    fx_sf2_synth_audio->chorus_enabled = NULL;
+  }
+
+  /* chorus input volume */
+  if(fx_sf2_synth_audio->chorus_input_volume != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_input_volume));
+
+    fx_sf2_synth_audio->chorus_input_volume = NULL;
+  }
+
+  /* chorus output volume */
+  if(fx_sf2_synth_audio->chorus_output_volume != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_output_volume));
+
+    fx_sf2_synth_audio->chorus_output_volume = NULL;
+  }
+
+  /* chorus lfo oscillator */
+  if(fx_sf2_synth_audio->chorus_lfo_oscillator != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_oscillator));
+
+    fx_sf2_synth_audio->chorus_lfo_oscillator = NULL;
+  }
+
+  /* chorus lfo frequency */
+  if(fx_sf2_synth_audio->chorus_lfo_frequency != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_frequency));
+
+    fx_sf2_synth_audio->chorus_lfo_frequency = NULL;
+  }
+
+  /* chorus depth */
+  if(fx_sf2_synth_audio->chorus_depth != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_depth));
+
+    fx_sf2_synth_audio->chorus_depth = NULL;
+  }
+
+  /* chorus mix */
+  if(fx_sf2_synth_audio->chorus_mix != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_mix));
+
+    fx_sf2_synth_audio->chorus_mix = NULL;
+  }
+
+  /* chorus delay */
+  if(fx_sf2_synth_audio->chorus_delay != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_delay));
+
+    fx_sf2_synth_audio->chorus_delay = NULL;
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_sf2_synth_audio_parent_class)->dispose(gobject);
@@ -1167,10 +1249,79 @@ void
 ags_fx_sf2_synth_audio_finalize(GObject *gobject)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
+
+  guint i;
   
   fx_sf2_synth_audio = AGS_FX_SF2_SYNTH_AUDIO(gobject);
 
-  //TODO:JK: implement me
+  /* synth octave */
+  if(fx_sf2_synth_audio->synth_octave != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_octave));
+  }
+
+  /* synth key */
+  if(fx_sf2_synth_audio->synth_key != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_key));
+  }
+
+  /* synth pitch type */
+  if(fx_sf2_synth_audio->synth_pitch_type != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_pitch_type));
+  }
+
+  /* synth volume */
+  if(fx_sf2_synth_audio->synth_volume != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_volume));
+  }
+
+  /* chorus enabled */
+  if(fx_sf2_synth_audio->chorus_enabled != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_enabled));
+  }
+
+  /* chorus input volume */
+  if(fx_sf2_synth_audio->chorus_input_volume != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_input_volume));
+  }
+
+  /* chorus output volume */
+  if(fx_sf2_synth_audio->chorus_output_volume != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_output_volume));
+  }
+
+  /* chorus lfo oscillator */
+  if(fx_sf2_synth_audio->chorus_lfo_oscillator != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_oscillator));
+  }
+
+  /* chorus lfo frequency */
+  if(fx_sf2_synth_audio->chorus_lfo_frequency != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_frequency));
+  }
+
+  /* chorus depth */
+  if(fx_sf2_synth_audio->chorus_depth != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_depth));
+  }
+
+  /* chorus mix */
+  if(fx_sf2_synth_audio->chorus_mix != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_mix));
+  }
+
+  /* chorus delay */
+  if(fx_sf2_synth_audio->chorus_delay != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_delay));
+  }
+  
+  /* scope data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      ags_fx_sf2_synth_audio_scope_data_free(fx_sf2_synth_audio->scope_data[i]);
+    }
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_sf2_synth_audio_parent_class)->finalize(gobject);
@@ -1773,6 +1924,13 @@ ags_fx_sf2_synth_audio_channel_data_free(AgsFxSF2SynthAudioChannelData *channel_
   if(channel_data == NULL){
     return;
   }
+
+  ags_stream_free(channel_data->chorus_hq_pitch_util.low_mix_buffer);
+  ags_stream_free(channel_data->chorus_hq_pitch_util.new_mix_buffer);
+
+  ags_stream_free(channel_data->chorus_util.destination);
+  ags_stream_free(channel_data->chorus_hq_pitch_util.destination);
+  ags_stream_free(channel_data->chorus_util.pitch_mix_buffer_history);
   
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     ags_fx_sf2_synth_audio_input_data_free(channel_data->input_data[i]);

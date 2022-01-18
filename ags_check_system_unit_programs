@@ -257,6 +257,12 @@
 ./ags_check_system_fx_playback_channel_test
 ./ags_check_system_fx_playback_channel_processor_test
 ./ags_check_system_fx_playback_recycling_test
+./ags_check_system_fx_synth_audio_test
+./ags_check_system_fx_synth_audio_processor_test
+./ags_check_system_fx_synth_audio_signal_test
+./ags_check_system_fx_synth_channel_test
+./ags_check_system_fx_synth_channel_processor_test
+./ags_check_system_fx_synth_recycling_test
 ./ags_check_system_fx_volume_audio_test
 ./ags_check_system_fx_volume_audio_processor_test
 ./ags_check_system_fx_volume_audio_signal_test

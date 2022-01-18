@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,17 +29,17 @@
 
 #include <math.h>
 
-int ags_fx_dssi_channel_test_init_suite();
-int ags_fx_dssi_channel_test_clean_suite();
+int ags_fx_fm_synth_recycling_test_init_suite();
+int ags_fx_fm_synth_recycling_test_clean_suite();
 
-void ags_fx_dssi_channel_test_new();
+void ags_fx_fm_synth_recycling_test_new();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_fx_dssi_channel_test_init_suite()
+ags_fx_fm_synth_recycling_test_init_suite()
 { 
   return(0);
 }
@@ -49,24 +49,24 @@ ags_fx_dssi_channel_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_fx_dssi_channel_test_clean_suite()
+ags_fx_fm_synth_recycling_test_clean_suite()
 {  
   return(0);
 }
 
 void
-ags_fx_dssi_channel_test_new()
+ags_fx_fm_synth_recycling_test_new()
 {
-  AgsChannel *channel;
-  AgsFxDssiChannel *fx_dssi_channel;
+  AgsRecycling *recycling;
+  AgsFxFMSynthRecycling *fx_fm_synth_recycling;
 
-  channel = g_object_new(AGS_TYPE_CHANNEL,
+  recycling = g_object_new(AGS_TYPE_RECYCLING,
 			 NULL);
   
-  fx_dssi_channel = ags_fx_dssi_channel_new(channel);
+  fx_fm_synth_recycling = ags_fx_fm_synth_recycling_new(recycling);
 
-  CU_ASSERT(fx_dssi_channel != NULL);
-  CU_ASSERT(AGS_RECALL_CHANNEL(fx_dssi_channel)->source == channel);
+  CU_ASSERT(fx_fm_synth_recycling != NULL);
+  CU_ASSERT(AGS_RECALL_RECYCLING(fx_fm_synth_recycling)->source == recycling);
 }
 
 int
@@ -88,7 +88,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFxDssiChannelTest", ags_fx_dssi_channel_test_init_suite, ags_fx_dssi_channel_test_clean_suite);
+  pSuite = CU_add_suite("AgsFxFMSynthRecyclingTest", ags_fx_fm_synth_recycling_test_init_suite, ags_fx_fm_synth_recycling_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -97,7 +97,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxDssiChannel new", ags_fx_dssi_channel_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxFMSynthRecycling new", ags_fx_fm_synth_recycling_test_new) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

@@ -241,8 +241,9 @@ main(int argc, char **argv)
   putenv("LANG=C");
 
   putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
   putenv("LV2_PATH=\"\"");
-  putenv("LV2_PATH=\"\"");
+  putenv("VST3_PATH=\"\"");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){

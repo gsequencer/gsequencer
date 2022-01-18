@@ -1170,7 +1170,12 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
     list = gtk_container_get_children(gtk_dialog_get_action_area(dialog));
 
   while(list != NULL){
-    if(!g_ascii_strncasecmp("_ok", gtk_button_get_label(list->data), 4)){
+    gchar *str;
+
+    str = gtk_button_get_label(list->data);
+    
+    if(str != NULL &&
+       !g_ascii_strncasecmp("_ok", str, 4)){
       ok_button = list->data;
       
       break;

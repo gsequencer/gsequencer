@@ -48,8 +48,11 @@ void ags_functional_machine_add_and_destroy_test_drum();
 void ags_functional_machine_add_and_destroy_test_matrix();
 void ags_functional_machine_add_and_destroy_test_synth();
 void ags_functional_machine_add_and_destroy_test_fm_synth();
+void ags_functional_machine_add_and_destroy_test_hybrid_synth();
+void ags_functional_machine_add_and_destroy_test_hybrid_fm_synth();
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_add_and_destroy_test_ffplayer();
+void ags_functional_machine_add_and_destroy_test_sf2_synth();
 #endif
 void ags_functional_machine_add_and_destroy_test_syncsynth();
 void ags_functional_machine_add_and_destroy_test_fm_syncsynth();
@@ -99,10 +102,13 @@ ags_functional_machine_add_and_destroy_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth", ags_functional_machine_add_and_destroy_test_synth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFMSynth", ags_functional_machine_add_and_destroy_test_fm_synth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSyncsynth", ags_functional_machine_add_and_destroy_test_syncsynth) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFMSyncsynth", ags_functional_machine_add_and_destroy_test_fm_syncsynth) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFMSyncsynth", ags_functional_machine_add_and_destroy_test_fm_syncsynth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsHybridSynth", ags_functional_machine_add_and_destroy_test_hybrid_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsHybridFMSynth", ags_functional_machine_add_and_destroy_test_hybrid_fm_synth) == NULL)
 #ifdef AGS_WITH_LIBINSTPATCH
      ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSF2Synth", ags_functional_machine_add_and_destroy_test_sf2_synth) == NULL)
 #endif
      || (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsPitchSampler", ags_functional_machine_add_and_destroy_test_pitch_sampler) == NULL) ||
       (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsAudiorec", ags_functional_machine_add_and_destroy_test_audiorec) == NULL)
@@ -316,6 +322,41 @@ ags_functional_machine_add_and_destroy_test_fm_syncsynth()
   CU_ASSERT(success == TRUE);
 }
 
+
+void
+ags_functional_machine_add_and_destroy_test_hybrid_synth()
+{
+  gboolean success;
+
+  /* add synth */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Hybrid Synth");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy synth */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_functional_machine_add_and_destroy_test_hybrid_fm_synth()
+{
+  gboolean success;
+
+  /* add synth */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Hybrid FM Synth");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy synth */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
 void
 ags_functional_machine_add_and_destroy_test_ffplayer()
 {
@@ -333,6 +374,22 @@ ags_functional_machine_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 }
 
+void
+ags_functional_machine_add_and_destroy_test_sf2_synth()
+{
+  gboolean success;
+
+  /* add fplayer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "SF2 Synth");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy fplayer */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
 
 void
 ags_functional_machine_add_and_destroy_test_pitch_sampler()

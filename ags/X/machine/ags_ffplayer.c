@@ -1550,7 +1550,8 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	}
 	
 	/* level select */
-	if(ffplayer->audio_container->sound_container != NULL){
+	if(ffplayer->audio_container != NULL &&
+	   ffplayer->audio_container->sound_container != NULL){
 //	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
 //	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
 

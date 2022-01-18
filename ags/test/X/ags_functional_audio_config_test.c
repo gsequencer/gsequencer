@@ -81,6 +81,11 @@ volatile gboolean is_available;
 
 AgsApplicationContext *application_context;
 
+extern struct timespec ags_functional_audio_config_test_default_timeout = {
+  59,
+  0,
+};
+
 void
 ags_functional_audio_config_test_add_test()
 {
@@ -136,13 +141,11 @@ ags_functional_audio_config_test_file_setup()
     usleep(500000);
   }
 
-  usleep(500000);  
+  xorg_application_context = application_context;
 
-  ags_test_enter();
-
-  xorg_application_context = ags_application_context_get_instance();
-
-  ags_test_leave();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_audio_config_test_default_timeout,
+						      &(xorg_application_context->window));
 
   /* shrink buffer size */
   success = ags_functional_test_util_preferences_open();

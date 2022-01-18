@@ -416,6 +416,7 @@ AC_DEFINE([HAVE_GLIB_2_62], [0], [GLib 2.62 available])
 AC_DEFINE([HAVE_GLIB_2_68], [0], [GLib 2.68 available])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
+# AM_CONDITIONAL([HAVE_INTROSPECTION], [test "xno" == xyes])
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
 AC_SUBST(GIO_CFLAGS)
