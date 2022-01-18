@@ -346,8 +346,11 @@
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_synth_input_line_callbacks.h>
 #include <ags/X/machine/ags_synth_input_pad.h>
+
+#if defined(AGS_WITH_VST3)
 #include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_vst3_bridge_callbacks.h>
+#endif
 
 #include <ags/X/osc/controller/ags_ui_osc_renew_controller.h>
 
