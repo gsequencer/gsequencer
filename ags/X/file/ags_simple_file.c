@@ -8265,6 +8265,44 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		}
 	      }
 
+	      if(is_lv2_plugin){
+		AgsLv2Plugin *plugin;
+
+		plugin = ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
+								       filename, effect);
+
+		if(plugin == NULL){
+		  effect_list_child = effect_list_child->next;
+		  
+		  continue;
+		}
+#if defined(AGS_WITH_VST3)
+	      }else if(is_vst3_plugin){
+		AgsVst3Plugin *plugin;
+
+		plugin = ags_vst3_manager_find_vst3_plugin_with_fallback(ags_vst3_manager_get_instance(),
+									 filename, effect);
+
+
+		if(plugin == NULL){
+		  effect_list_child = effect_list_child->next;
+		  
+		  continue;
+		}
+#endif
+	      }else{
+		AgsLadspaPlugin *plugin;
+		
+		plugin = ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
+									     filename, effect);
+
+		if(plugin == NULL){
+		  effect_list_child = effect_list_child->next;
+		  
+		  continue;
+		}
+	      }
+	      
 	      if(filename != NULL &&
 		 strlen(filename) > 0 &&
 		 effect != NULL &&
@@ -8297,7 +8335,9 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 
 		    if(!g_file_test(manifest_filename,
 				    G_FILE_TEST_EXISTS)){
-		      return;
+		      effect_list_child = effect_list_child->next;
+		      
+		      continue;
 		    }
 
 		    g_message("new turtle [Manifest] - %s", manifest_filename);
@@ -8484,7 +8524,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 	      }
 	    }
 	  }
-
+	  
 	  effect_list_child = effect_list_child->next;
 	}
 
