@@ -2616,6 +2616,8 @@ ags_audio_buffer_util_test_copy_s32_to_s8()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S8_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2623,7 +2625,7 @@ ags_audio_buffer_util_test_copy_s32_to_s8()
 				    AGS_SOUNDCARD_SIGNED_8_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S8_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32) (scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
@@ -2648,6 +2650,8 @@ ags_audio_buffer_util_test_copy_s32_to_s16()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S16_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2655,7 +2659,7 @@ ags_audio_buffer_util_test_copy_s32_to_s16()
 				     AGS_SOUNDCARD_SIGNED_16_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S16_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32) (scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
@@ -2680,6 +2684,8 @@ ags_audio_buffer_util_test_copy_s32_to_s24()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S24_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2687,7 +2693,7 @@ ags_audio_buffer_util_test_copy_s32_to_s24()
 				     AGS_SOUNDCARD_SIGNED_24_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S24_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32) (scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
@@ -2711,6 +2717,8 @@ ags_audio_buffer_util_test_copy_s32_to_s32()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S32_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2718,7 +2726,7 @@ ags_audio_buffer_util_test_copy_s32_to_s32()
 				     AGS_SOUNDCARD_SIGNED_32_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S32_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32) (scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
@@ -2743,6 +2751,8 @@ ags_audio_buffer_util_test_copy_s32_to_s64()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S64_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2750,7 +2760,7 @@ ags_audio_buffer_util_test_copy_s32_to_s64()
 				     AGS_SOUNDCARD_SIGNED_64_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_S64_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32) (scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
@@ -2775,6 +2785,8 @@ ags_audio_buffer_util_test_copy_s32_to_float()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_FLOAT_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2782,7 +2794,7 @@ ags_audio_buffer_util_test_copy_s32_to_float()
 				       AGS_SOUNDCARD_FLOAT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_FLOAT_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32)(scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
@@ -2807,6 +2819,8 @@ ags_audio_buffer_util_test_copy_s32_to_double()
 
   guint orig_xcross_count, xcross_count;
   guint i;
+
+  static const gdouble scale = 214748363.0;
   
   s32_buffer = ags_stream_alloc(AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_DOUBLE_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -2814,7 +2828,7 @@ ags_audio_buffer_util_test_copy_s32_to_double()
 					AGS_SOUNDCARD_DOUBLE);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S32_TO_DOUBLE_BUFFER_SIZE; i++){
-    s32_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s32_buffer[i] = (gint32)(scale * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE));
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s32(s32_buffer,
