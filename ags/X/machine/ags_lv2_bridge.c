@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -443,6 +443,11 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   lv2_bridge->ui_widget = NULL;
 
   lv2_bridge->lv2_window = NULL;
+
+  lv2_bridge->block_control = g_hash_table_new_full(g_direct_hash,
+						    g_direct_equal,
+						    NULL,
+						    NULL);
 }
 
 void

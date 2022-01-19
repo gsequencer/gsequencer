@@ -50,6 +50,7 @@ installcheck_programs = \
 	ags_check_system_functional_drum_test \
 	ags_check_system_functional_matrix_test \
 	ags_check_system_functional_synth_test \
+	ags_check_system_functional_hybrid_synth_test \
 	ags_check_system_functional_ffplayer_test \
 	ags_check_system_functional_notation_edit_test \
 	ags_check_system_functional_audio_config_test \
@@ -191,6 +192,13 @@ ags_check_system_functional_synth_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(
 ags_check_system_functional_synth_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_synth_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
+# functional hybrid synth test
+ags_check_system_functional_hybrid_synth_test_SOURCES = ags/test/X/machine/ags_functional_hybrid_synth_test.c
+ags_check_system_functional_hybrid_synth_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_hybrid_synth_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_hybrid_synth_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_hybrid_synth_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
 # functional ffplayer test
 ags_check_system_functional_ffplayer_test_SOURCES = ags/test/X/machine/ags_functional_ffplayer_test.c
 ags_check_system_functional_ffplayer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
@@ -312,6 +320,7 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_drum_test
 	./ags_check_system_functional_matrix_test
 	./ags_check_system_functional_synth_test
+	./ags_check_system_functional_hybrid_synth_test
 	./ags_check_system_functional_ffplayer_test
 	./ags_check_system_functional_notation_edit_test
 	./ags_check_system_functional_audio_config_test

@@ -9,6 +9,7 @@ ags (3.16.7)
 	* minor improvements
 	* added ags-fx-synth unit tests
 	* added ags-fx-fm-synth unit tests
+	* added ags_functional_hybrid_synth_test.c
 
 ags (3.16.6)
 
