@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.16.7" date="2022-01-19">
+      <description>
+	<p>
+	  Improved restore from XML notify about failure of instantiating machines eg. missing lugins.
+	</p>
+      </description>
+    </release>
+
     <release version="3.16.5" date="2022-01-15">
       <description>
 	<p>

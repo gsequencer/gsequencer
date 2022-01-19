@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-01-16 11:04+0100\n"
+"POT-Creation-Date: 2022-01-19 07:09+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -1138,7 +1138,7 @@ msgstr "dessin"
 
 #: ags/X/editor/ags_envelope_editor.c:167
 #: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:316
-#: ags/X/machine/ags_live_lv2_bridge.c:1317 ags/X/machine/ags_lv2_bridge.c:1391
+#: ags/X/machine/ags_live_lv2_bridge.c:1317 ags/X/machine/ags_lv2_bridge.c:1396
 #: ags/X/machine/ags_sf2_synth.c:373
 msgid "preset"
 msgstr "préposition"
@@ -1483,7 +1483,7 @@ msgid "channel: "
 msgstr "canal: "
 
 #: ags/X/machine/ags_dssi_bridge.c:307 ags/X/machine/ags_live_dssi_bridge.c:310
-#: ags/X/machine/ags_live_lv2_bridge.c:1237 ags/X/machine/ags_lv2_bridge.c:1311
+#: ags/X/machine/ags_live_lv2_bridge.c:1237 ags/X/machine/ags_lv2_bridge.c:1316
 #: ags/X/machine/ags_sf2_synth.c:366
 msgid "program"
 msgstr "programme"

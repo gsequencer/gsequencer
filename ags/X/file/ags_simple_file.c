@@ -1997,8 +1997,11 @@ ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 	}
 	
 	ags_simple_file_read_machine(simple_file, child, &current);
-	list = g_list_prepend(list, current);
 
+	if(current != NULL){
+	  list = g_list_prepend(list, current);
+	}
+	
 	i++;
       }
     }
@@ -2167,10 +2170,51 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     if(type_name != NULL){
       gobject = ags_machine_util_new_by_type_name(type_name,
 						  filename, effect);
-      
+    }    
+
+    *machine = gobject;
+    
+    /* add to sound provider */
+    if(gobject != NULL){
+      /* ref audio */
+      g_object_ref(gobject->audio);
+
+      start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+      g_list_foreach(start_list,
+		     (GFunc) g_object_unref,
+		     NULL);
+
+      g_object_ref(gobject->audio);
+      start_list = g_list_append(start_list,
+				 gobject->audio);
+    
+      ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				   start_list);
+
+      /* AgsAudio */
+      ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
+    }else{
+      GtkDialog *failed_dialog;
+
+      failed_dialog = gtk_message_dialog_new(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+					     GTK_DIALOG_DESTROY_WITH_PARENT,
+					     GTK_MESSAGE_ERROR,
+					     GTK_BUTTONS_OK,
+					     "failed to instantiate machine %s\nplugin - \nfilename: %s\neffect: %s\n",
+					     type_name,
+					     filename,
+					     effect);
+
+      gtk_widget_show_all(failed_dialog);
+
+      g_signal_connect(failed_dialog, "response",
+		       G_CALLBACK(gtk_widget_destroy), NULL);
+    }
+
+    if(type_name != NULL){
       xmlFree(type_name);
     }
-    
+
     if(filename != NULL){
       xmlFree(filename);
     }
@@ -2178,28 +2222,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     if(effect != NULL){
       xmlFree(effect);
     }
-
-    *machine = gobject;
-
-    /* ref audio */
-    g_object_ref(gobject->audio);
-
-    /* add to sound provider */
-    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-    g_list_foreach(start_list,
-		   (GFunc) g_object_unref,
-		   NULL);
-
-    g_object_ref(gobject->audio);
-    start_list = g_list_append(start_list,
-			       gobject->audio);
     
-    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-				 start_list);
-    
-    /* AgsAudio */
-    ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
-
     ags_xorg_application_context_task_timeout((AgsXorgApplicationContext *) application_context);
 
     ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
