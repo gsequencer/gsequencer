@@ -1,3 +1,8 @@
+ags (3.16.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSimpleFile proper plugin failure while reading
+
 ags (3.16.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

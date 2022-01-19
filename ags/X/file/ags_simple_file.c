@@ -7296,71 +7296,108 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		}
 	      }
 	      
+	      if(is_lv2_plugin){
+		AgsLv2Plugin *plugin;
+		AgsTurtle *manifest;
+		AgsTurtleManager *turtle_manager;
+    
+		gchar *path;
+		gchar *manifest_filename;
+
+		turtle_manager = ags_turtle_manager_get_instance();
+    
+		path = g_path_get_dirname(filename);
+
+		manifest_filename = g_strdup_printf("%s%c%s",
+						    path,
+						    G_DIR_SEPARATOR,
+						    "manifest.ttl");
+
+		manifest = ags_turtle_manager_find(turtle_manager,
+						   manifest_filename);
+
+		if(manifest == NULL){
+		  AgsLv2TurtleParser *lv2_turtle_parser;
+	
+		  AgsTurtle **turtle;
+
+		  guint n_turtle;
+
+		  if(!g_file_test(manifest_filename,
+				  G_FILE_TEST_EXISTS)){
+		    effect_list_child = effect_list_child->next;
+		      
+		    continue;
+		  }
+
+		  g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+		  manifest = ags_turtle_new(manifest_filename);
+		  ags_turtle_load(manifest,
+				  NULL);
+		  ags_turtle_manager_add(turtle_manager,
+					 (GObject *) manifest);
+
+		  lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+		  n_turtle = 1;
+		  turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+		  turtle[0] = manifest;
+		  turtle[1] = NULL;
+	
+		  ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+					      turtle, n_turtle);
+    
+		  g_object_run_dispose(lv2_turtle_parser);
+		  g_object_unref(lv2_turtle_parser);
+	
+		  g_object_unref(manifest);
+	
+		  free(turtle);
+		}
+    
+		g_free(manifest_filename);
+
+		plugin = ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
+								       filename, effect);
+
+		if(plugin == NULL){
+		  effect_list_child = effect_list_child->next;
+		  
+		  continue;
+		}
+#if defined(AGS_WITH_VST3)
+	      }else if(is_vst3_plugin){
+		AgsVst3Plugin *plugin;
+
+		plugin = ags_vst3_manager_find_vst3_plugin_with_fallback(ags_vst3_manager_get_instance(),
+									 filename, effect);
+
+
+		if(plugin == NULL){
+		  effect_list_child = effect_list_child->next;
+		  
+		  continue;
+		}
+#endif
+	      }else{
+		AgsLadspaPlugin *plugin;
+		
+		plugin = ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
+									     filename, effect);
+
+		if(plugin == NULL){
+		  effect_list_child = effect_list_child->next;
+		  
+		  continue;
+		}
+	      }
+
 	      if(filename != NULL &&
 		 strlen(filename) > 0 &&
 		 effect != NULL &&
 		 strlen(effect) > 0){
-		if(is_lv2_plugin){
-		  AgsTurtle *manifest;
-		  AgsTurtleManager *turtle_manager;
-    
-		  gchar *path;
-		  gchar *manifest_filename;
-
-		  turtle_manager = ags_turtle_manager_get_instance();
-    
-		  path = g_path_get_dirname(filename);
-
-		  manifest_filename = g_strdup_printf("%s%c%s",
-						      path,
-						      G_DIR_SEPARATOR,
-						      "manifest.ttl");
-
-		  manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
-								   manifest_filename);
-
-		  if(manifest == NULL){
-		    AgsLv2TurtleParser *lv2_turtle_parser;
-	
-		    AgsTurtle **turtle;
-
-		    guint n_turtle;
-
-		    if(!g_file_test(manifest_filename,
-				    G_FILE_TEST_EXISTS)){
-		      return;
-		    }
-
-		    g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-		    manifest = ags_turtle_new(manifest_filename);
-		    ags_turtle_load(manifest,
-				    NULL);
-		    ags_turtle_manager_add(turtle_manager,
-					   (GObject *) manifest);
-
-		    lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-		    n_turtle = 1;
-		    turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-		    turtle[0] = manifest;
-		    turtle[1] = NULL;
-	
-		    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-						turtle, n_turtle);
-    
-		    g_object_run_dispose((GObject *) lv2_turtle_parser);
-		    g_object_unref(lv2_turtle_parser);
-	
-		    g_object_unref(manifest);
-	
-		    free(turtle);
-		  }
-    
-		  g_free(manifest_filename);
-		}
-
 		if(g_list_find_custom(mapped_filename,
 				      filename,
 				      (GCompareFunc) g_strcmp0) == NULL ||
