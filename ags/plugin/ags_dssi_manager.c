@@ -495,7 +495,10 @@ ags_dssi_manager_find_dssi_plugin_with_fallback(AgsDssiManager *dssi_manager,
 
   if(!AGS_DSSI_MANAGER(dssi_manager) ||
      filename == NULL ||
-     effect == NULL){
+     strlen(filename) <= 0 ||
+     strrchr(filename, "/") == NULL ||
+     effect == NULL ||
+     strlen(effect) <= 0){
     return(NULL);
   }
   

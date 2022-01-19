@@ -518,7 +518,10 @@ ags_vst3_manager_find_vst3_plugin_with_fallback(AgsVst3Manager *vst3_manager,
 
   if(!AGS_VST3_MANAGER(vst3_manager) ||
      filename == NULL ||
-     effect == NULL){
+     strlen(filename) <= 0 ||
+     strrchr(filename, "/") == NULL ||
+     effect == NULL ||
+     strlen(effect) <= 0){
     return(NULL);
   }
   

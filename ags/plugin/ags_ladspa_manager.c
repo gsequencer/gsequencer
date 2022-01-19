@@ -499,7 +499,10 @@ ags_ladspa_manager_find_ladspa_plugin_with_fallback(AgsLadspaManager *ladspa_man
 
   if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
      filename == NULL ||
-     effect == NULL){
+     strlen(filename) <= 0 ||
+     strrchr(filename, "/") == NULL ||
+     effect == NULL ||
+     strlen(effect) <= 0){
     return(NULL);
   }
   
