@@ -1,5 +1,5 @@
 name: C/C++ meson test CI
-65;6602;1c
+
 on: [push]
 
 jobs:
@@ -18,4 +18,4 @@ jobs:
     - name: ninja
       run: cd build && ninja
     - name: meson test
-      run: cd build && xvfb-run --server-args=\"-screen 0 1920x1080x24\" -a meson test -t 1000
+      run: cd build && xvfb-run --server-args="-screen 0 1920x1080x24" -a meson test -t 1000
