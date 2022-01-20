@@ -1300,7 +1300,10 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
     dssi_plugin =
       fx_dssi_audio->dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
 								     filename, effect);
-    g_object_ref(dssi_plugin);
+
+    if(dssi_plugin != NULL){
+      g_object_ref(dssi_plugin);
+    }
   }    
   
   g_rec_mutex_unlock(recall_mutex);

@@ -2,6 +2,7 @@ ags (3.16.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsSimpleFile proper plugin failure while reading
+	* fixed ref-count ags-fx-ladspa, ags-fx-dssi, ags-fx-lv2 and ags-fx-vst3
 
 ags (3.16.7)
 

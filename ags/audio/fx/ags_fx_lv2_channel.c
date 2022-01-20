@@ -161,10 +161,14 @@ ags_fx_lv2_channel_finalize(GObject *gobject)
   
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     ags_fx_lv2_channel_input_data_free(fx_lv2_channel->input_data[i]);
+
+    fx_lv2_channel->input_data[i] = NULL;
   }
   
   if(fx_lv2_channel->lv2_plugin != NULL){
     g_object_unref(fx_lv2_channel->lv2_plugin);
+
+    fx_lv2_channel->lv2_plugin = NULL;
   }
   
   if(fx_lv2_channel->lv2_port != NULL){
@@ -173,6 +177,8 @@ ags_fx_lv2_channel_finalize(GObject *gobject)
     }
 
     g_free(fx_lv2_channel->lv2_port);
+
+    fx_lv2_channel->lv2_port = NULL;
   }
 
   /* call parent */
@@ -474,6 +480,10 @@ ags_fx_lv2_channel_load_plugin(AgsFxLv2Channel *fx_lv2_channel)
     lv2_plugin =
       fx_lv2_channel->lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
 								   filename, effect);
+
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+    }
   }    
   
   g_rec_mutex_unlock(recall_mutex);
