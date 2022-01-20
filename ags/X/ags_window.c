@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -233,6 +233,8 @@ ags_window_init(AgsWindow *window)
   }
     
   /* window name and title */
+  window->no_config = FALSE;
+  
   window->filename = NULL;
 
   window->name = g_strdup("unnamed");
@@ -837,9 +839,9 @@ ags_window_load_file_timeout(AgsWindow *window)
 			 window) != NULL){
     if(window->filename != NULL){
       AgsSimpleFile *simple_file;
-      
-      gchar *str;
 
+      gchar *str;
+      
       GError *error;
 
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
@@ -873,6 +875,7 @@ ags_window_load_file_timeout(AgsWindow *window)
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						   "filename", window->filename,
+						   "no-config", window->no_config,
 						   NULL);
       
       error = NULL;

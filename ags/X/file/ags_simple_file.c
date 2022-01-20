@@ -300,6 +300,7 @@ enum{
   PROP_AUDIO_FORMAT,
   PROP_AUDIO_ENCODING,
   PROP_XML_DOC,
+  PROP_NO_CONFIG,
 };
 
 enum{
@@ -442,6 +443,22 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_XML_DOC,
+				  param_spec);
+
+  /**
+   * AgsSimpleFile:no-config:
+   *
+   * The no config option.
+   *
+   * Since: 3.16.9
+   */
+  param_spec = g_param_spec_boolean("no-config",
+				    "no config",
+				    "The no config option",
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NO_CONFIG,
 				  param_spec);
 
   /* AgsSimpleFileClass */
@@ -633,6 +650,8 @@ ags_simple_file_init(AgsSimpleFile *simple_file)
   simple_file->id_ref = NULL;
   simple_file->lookup = NULL;
   simple_file->launch = NULL;
+
+  simple_file->no_config = FALSE;
 }
 
 void
@@ -699,6 +718,11 @@ ags_simple_file_set_property(GObject *gobject,
     simple_file->doc = doc;
   }
   break;
+  case PROP_NO_CONFIG:
+  {
+    simple_file->no_config = g_value_get_boolean(value);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -739,6 +763,11 @@ ags_simple_file_get_property(GObject *gobject,
   case PROP_XML_DOC:
   {
     g_value_set_pointer(value, simple_file->doc);
+  }
+  break;
+  case PROP_NO_CONFIG:
+  {
+    g_value_set_boolean(value, simple_file->no_config);
   }
   break;
   default:
@@ -1375,6 +1404,12 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   guint buffer_size;
   gdouble frequency;
   gdouble gui_scale_factor;
+
+  if(simple_file->no_config){
+    g_message("no config");
+    
+    return;
+  }
   
   config = *ags_config;
   config->version = xmlGetProp(node,

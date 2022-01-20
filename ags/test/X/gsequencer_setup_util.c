@@ -108,9 +108,11 @@ ags_test_init(int *argc, char ***argv,
 {
   AgsConfig *config;
   AgsPriority *priority;
+  GtkSettings *settings;
   
   gchar *filename;
 
+  gboolean no_config;
   guint i;
 
 #ifdef AGS_WITH_RT
@@ -141,7 +143,7 @@ ags_test_init(int *argc, char ***argv,
 		      NULL);
   str = malloc(PATH_MAX * sizeof(gchar));
   sprintf(str,
-	  "AGS_RC_FILENAME=%s/ags.rc",
+	  "AGS_CSS_FILENAME=%s/ags.css",
 	  data_dir);
   putenv(str);
 
@@ -151,7 +153,7 @@ ags_test_init(int *argc, char ***argv,
 		      NULL);
   str = malloc(PATH_MAX * sizeof(gchar));
   sprintf(str,
-	  "AGS_ANIMATION_FILENAME=%s/ags_supermoon-800x450.png",
+	  "AGS_ANIMATION_FILENAME=%s/gsequencer-800x450.png",
 	  data_dir);
   putenv(str);
 
@@ -229,7 +231,8 @@ ags_test_init(int *argc, char ***argv,
   
   /* parse command line parameter */
   filename = NULL;
-
+  no_config = FALSE;
+  
   for(i = 0; i < argc[0]; i++){
     if(!strncmp(argv[0][i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
@@ -253,7 +256,10 @@ ags_test_init(int *argc, char ***argv,
 
       exit(0);
     }else if(!strncmp(argv[0][i], "--filename", 11)){
-      filename = *argv[i + 1];
+      filename = g_strdup(*argv[i + 1]);
+      i++;
+    }else if(!strncmp(argv[0][i], "--no-config", 12)){
+      no_config = TRUE;
       i++;
     }
   }
@@ -264,12 +270,31 @@ ags_test_init(int *argc, char ***argv,
   /**/
   LIBXML_TEST_VERSION;
 
+#if defined(AGS_WITH_GSTREAMER)
+  gst_init (&argc, &argv);
+#endif
+
   gtk_init(argc, argv);
   
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
   
+  settings = gtk_settings_get_default();
+
+  g_object_set(settings,
+	       "gtk-primary-button-warps-slider", FALSE,
+	       NULL);
+  g_signal_handlers_block_matched(settings,
+				  G_SIGNAL_MATCH_DETAIL,
+				  g_signal_lookup("set-property",
+						  GTK_TYPE_SETTINGS),
+				  g_quark_from_string("gtk-primary-button-warps-slider"),
+				  NULL,
+				  NULL,
+				  NULL);
+  
+
   /* setup */
   wdir = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
@@ -368,6 +393,7 @@ ags_test_setup(int argc, char **argv)
   
   uid_t uid;
 
+  gboolean no_config;
   guint i;
   
   /* check filename */
@@ -376,6 +402,23 @@ ags_test_setup(int argc, char **argv)
 
   ags_log_add_message(log,
 		      "Welcome to Advanced Gtk+ Sequencer");
+
+  no_config = FALSE;
+
+  for(i = 0; i < argc; i++){
+    if(!strncmp(argv[i], "--help", 7)){
+      i++;
+    }else if(!strncmp(argv[i], "--version", 10)){
+      i++;
+    }else if(!strncmp(argv[i], "--filename", 11)){
+      filename = g_strdup(*argv[i + 1]);
+      i++;
+    }else if(!strncmp(argv[i], "--no-config", 12)){
+      no_config = TRUE;
+      i++;
+    }
+  }
+
   
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--filename", 11)){
@@ -394,6 +437,7 @@ ags_test_setup(int argc, char **argv)
       simple_file = ags_simple_file_new();
       g_object_set(simple_file,
 		   "filename", filename,
+		   "no-config", no_config,
 		   NULL);
       ags_simple_file_open(simple_file,
 			   NULL);

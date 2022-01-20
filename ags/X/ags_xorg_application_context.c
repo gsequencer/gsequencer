@@ -2643,7 +2643,8 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   gchar *filename;
   gchar *str;
   
-  gdouble gui_scale_factor;  
+  gdouble gui_scale_factor;
+  gboolean no_config;
   guint i;
 
   static const guint staging_program[] = {
@@ -2655,13 +2656,21 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* check filename */
   filename = NULL;
 
-  for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
+  no_config = FALSE;
+  
+  for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc;){
     if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11) &&
        i + 1 < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc &&
        AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1] != NULL){      
       filename = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1];
+
+      i += 2;
+    }else if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--no-config", 12)){
+      no_config = TRUE;
       
-      break;
+      i++;
+    }else{
+      i++;
     }
   }
   
@@ -2814,6 +2823,8 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsWindow */
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
 				      NULL);
+
+  window->no_config = no_config;
   
   xorg_application_context->window = (GtkWidget *) window;
 

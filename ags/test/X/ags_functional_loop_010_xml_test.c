@@ -79,6 +79,11 @@ volatile gboolean is_available;
 
 AgsApplicationContext *application_context;
 
+struct timespec ags_functional_loop_010_xml_test_default_timeout = {
+  300,
+  0,
+};
+
 void
 ags_functional_loop_010_xml_test_add_test()
 {
@@ -141,13 +146,13 @@ ags_functional_loop_010_xml_test_file_setup()
 
   usleep(500000);  
 
+  xorg_application_context = application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_loop_010_xml_test_default_timeout,
+						      &(xorg_application_context->window));
+
   ags_functional_test_util_file_default_window_resize();  
-
-  ags_test_enter();
-
-  xorg_application_context = ags_application_context_get_instance();
-
-  ags_test_leave();
   
   /* get buttons */
   ags_test_enter();
@@ -195,6 +200,7 @@ int
 main(int argc, char **argv)
 {
   char **new_argv;
+  gchar *str;
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -217,12 +223,23 @@ main(int argc, char **argv)
   memcpy(new_argv, argv, argc * sizeof(char **));
   new_argv[argc] = "--filename";
   new_argv[argc + 1] = AGS_FUNCTIONAL_LOOP_010_XML_TEST_FILE_SETUP_FILENAME;
-  new_argv[argc + 2] = NULL;
-  argc += 2;
+  new_argv[argc + 2] = "--no-config";
+  new_argv[argc + 3] = NULL;
+  argc += 3;
   
+#if defined(AGS_TEST_CONFIG)
   ags_test_init(&argc, &new_argv,
-		AGS_FUNCTIONAL_LOOP_010_XML_TEST_CONFIG);
-
+		AGS_TEST_CONFIG);
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_test_init(&argc, &new_argv,
+		  str);
+  }else{
+    ags_test_init(&argc, &new_argv,
+		  AGS_FUNCTIONAL_LOOP_010_XML_TEST_CONFIG);
+  }
+#endif
+  
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_loop_010_xml_test_add_test, &is_available);
 
