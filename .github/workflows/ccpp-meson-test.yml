@@ -18,4 +18,4 @@ jobs:
     - name: ninja
       run: cd build && ninja
     - name: meson test
-      run: cd build && meson test
+      run: cd build && meson test -t 1000
