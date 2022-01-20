@@ -1390,7 +1390,10 @@ ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio)
     lv2_plugin =
       fx_lv2_audio->lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
 								 filename, effect);
-    g_object_ref(lv2_plugin);
+
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+    }
   }    
   
   g_rec_mutex_unlock(recall_mutex);

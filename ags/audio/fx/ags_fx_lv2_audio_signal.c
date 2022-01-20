@@ -257,6 +257,10 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
   
   g_rec_mutex_unlock(fx_lv2_channel_mutex);
 
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return;
+  }
+  
   /* process data */
   source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
@@ -300,9 +304,12 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
 						  buffer_size, copy_mode_in);
     }
 
-    run(input_data->lv2_handle[0],
-	(uint32_t) (fx_lv2_channel->output_port_count * buffer_size));
-
+    if(input_data->lv2_handle != NULL &&
+       input_data->lv2_handle[0] != NULL){
+      run(input_data->lv2_handle[0],
+	  (uint32_t) (fx_lv2_channel->output_port_count * buffer_size));
+    }
+    
     if(input_data->output != NULL &&
        fx_lv2_channel->output_port_count >= 1 &&
        source->stream_current != NULL){

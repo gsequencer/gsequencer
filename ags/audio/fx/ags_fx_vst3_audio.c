@@ -323,6 +323,10 @@ ags_fx_vst3_audio_notify_buffer_size_callback(GObject *gobject,
       AGS_FX_VST3_AUDIO(gobject)->vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
 										  AGS_RECALL(gobject)->filename,
 										  AGS_RECALL(gobject)->effect);
+
+    if(vst3_plugin != NULL){
+      g_object_ref(vst3_plugin);
+    }
   }
   
   g_rec_mutex_unlock(recall_mutex);
@@ -464,6 +468,10 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
       AGS_FX_VST3_AUDIO(gobject)->vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
 										  AGS_RECALL(gobject)->filename,
 										  AGS_RECALL(gobject)->effect);
+
+    if(vst3_plugin != NULL){
+      g_object_ref(vst3_plugin);
+    }
   }
 
   g_rec_mutex_unlock(recall_mutex);
@@ -620,6 +628,10 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
       AGS_FX_VST3_AUDIO(fx_vst3_audio)->vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
 											AGS_RECALL(fx_vst3_audio)->filename,
 											AGS_RECALL(fx_vst3_audio)->effect);
+
+    if(vst3_plugin != NULL){
+      g_object_ref(vst3_plugin);
+    }
   }
 
   g_rec_mutex_unlock(recall_mutex);
@@ -1418,7 +1430,10 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
     vst3_plugin =
       fx_vst3_audio->vst3_plugin = ags_vst3_manager_find_vst3_plugin(vst3_manager,
 								     filename, effect);
-    g_object_ref(vst3_plugin);
+
+    if(vst3_plugin != NULL){
+      g_object_ref(vst3_plugin);
+    }
   }    
   
   g_rec_mutex_unlock(recall_mutex);
@@ -1539,6 +1554,10 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
       AGS_FX_VST3_AUDIO(fx_vst3_audio)->vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
 											AGS_RECALL(fx_vst3_audio)->filename,
 											AGS_RECALL(fx_vst3_audio)->effect);
+
+    if(vst3_plugin != NULL){
+      g_object_ref(vst3_plugin);
+    }
   }
 
   g_rec_mutex_unlock(recall_mutex);

@@ -7364,6 +7364,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
 		if(plugin == NULL){
 		  effect_list_child = effect_list_child->next;
+
+		  if(filename != NULL &&
+		     strlen(filename) > 0){
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  }
 		  
 		  continue;
 		}
@@ -7378,6 +7383,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		if(plugin == NULL){
 		  effect_list_child = effect_list_child->next;
 		  
+		  if(filename != NULL &&
+		     strlen(filename) > 0){
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  }
+		  
 		  continue;
 		}
 #endif
@@ -7389,6 +7399,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
 		if(plugin == NULL){
 		  effect_list_child = effect_list_child->next;
+		  
+		  if(filename != NULL &&
+		     strlen(filename) > 0){
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  }
 		  
 		  continue;
 		}
@@ -8371,6 +8386,11 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		if(plugin == NULL){
 		  effect_list_child = effect_list_child->next;
 		  
+		  if(filename != NULL &&
+		     strlen(filename) > 0){
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  }
+		  
 		  continue;
 		}
 #if defined(AGS_WITH_VST3)
@@ -8384,6 +8404,11 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		if(plugin == NULL){
 		  effect_list_child = effect_list_child->next;
 		  
+		  if(filename != NULL &&
+		     strlen(filename) > 0){
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  }
+		  
 		  continue;
 		}
 #endif
@@ -8395,6 +8420,11 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 
 		if(plugin == NULL){
 		  effect_list_child = effect_list_child->next;
+		  
+		  if(filename != NULL &&
+		     strlen(filename) > 0){
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  }
 		  
 		  continue;
 		}

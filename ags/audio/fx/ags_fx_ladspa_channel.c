@@ -471,6 +471,10 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
     ladspa_plugin =
       fx_ladspa_channel->ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
 									       filename, effect);
+
+    if(ladspa_plugin != NULL){
+      g_object_ref(ladspa_plugin);
+    }
   }    
   
   g_rec_mutex_unlock(recall_mutex);
