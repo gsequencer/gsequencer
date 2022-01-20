@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -499,8 +499,16 @@ main(int argc, char **argv)
     
   g_free(css_filename);
 
+  config = ags_config_get_instance();
+
+  if((str = getenv("AGS_CONFIG")) != NULL){
+    ags_config_load_from_data(config,
+			      str, strlen(str));      
+  }
+  
   /* setup */
   if(!has_file){
+    
 #ifdef AGS_W32API
   app_dir = NULL;
 
@@ -545,11 +553,12 @@ main(int argc, char **argv)
   g_free(wdir);
 #endif
 
-    config = ags_config_get_instance();
-
-    ags_config_load_from_file(config,
-			      config_filename);
-
+    if((str = getenv("AGS_CONFIG")) != NULL){
+    }else{
+      ags_config_load_from_file(config,
+				config_filename);
+    }
+    
     g_free(config_filename);
   }
 

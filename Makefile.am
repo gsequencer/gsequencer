@@ -115,6 +115,8 @@ EXTRA_DIST = config.rpath \
 	ags_check_system_valgrind_unit_programs \
 	ags_check_system_functional_programs \
 	ags_check_system_valgrind_functional_programs \
+	ags-alsa.conf \
+	ags-oss.conf \
 	ags_authentication_test.xml \
 	ags_business_group_test.xml \
 	ags_certificate_test.xml \
@@ -3489,10 +3491,10 @@ libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
 gsequencer.1: gsequencer.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/gsequencer.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 --xinclude -o $(top_builddir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/gsequencer.1.xml
 
 midi2xml.1: midi2xml.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/midi2xml.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 --xinclude -o $(top_builddir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop

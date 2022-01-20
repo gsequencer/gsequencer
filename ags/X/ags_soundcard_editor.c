@@ -1305,8 +1305,11 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   /*  */
   device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard));
   
-  card_id = NULL;
-  card_name = NULL;
+  card_id = 
+    card_id_start = NULL;
+
+  card_name = 
+    card_name_start = NULL;
 
   ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
 			   &card_id_start, &card_name_start);
