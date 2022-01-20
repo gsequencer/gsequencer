@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,6 +82,11 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
+struct timespec ags_functional_notation_editor_workflow_test_default_timeout = {
+  300,
+  0,
+};
+
 void ags_functional_notation_editor_workflow_test_add_test()
 {
   /* add the tests to the suite */
@@ -114,12 +119,7 @@ void ags_functional_notation_editor_workflow_test_add_test()
  */
 int
 ags_functional_notation_editor_workflow_test_init_suite()
-{
-  /* window and editor size */
-  ags_functional_test_util_file_default_window_resize();
-
-  ags_functional_test_util_file_default_editor_resize();
- 
+{ 
   return(0);
 }
 
@@ -143,6 +143,8 @@ ags_functional_notation_editor_workflow_test_drum()
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
   
+  AgsFunctionalTestUtilContainerTest container_test;
+  
   GList *list_start, *list;
 
   gchar *machine_str;
@@ -151,6 +153,15 @@ ags_functional_notation_editor_workflow_test_drum()
   gboolean success;
 
   xorg_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &(xorg_application_context->window));
+
+  /* window and editor size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_file_default_editor_resize();
 
   nth_machine = 0;
 
@@ -163,6 +174,13 @@ ags_functional_notation_editor_workflow_test_drum()
   ags_functional_test_util_idle();
 
   /* get machine */
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -236,6 +254,8 @@ ags_functional_notation_editor_workflow_test_matrix()
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
+
+  AgsFunctionalTestUtilContainerTest container_test;
   
   GList *list_start, *list;
 
@@ -257,6 +277,13 @@ ags_functional_notation_editor_workflow_test_matrix()
   ags_functional_test_util_idle();
 
   /* get machine */
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = 2;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -331,6 +358,8 @@ ags_functional_notation_editor_workflow_test_ffplayer()
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
+
+  AgsFunctionalTestUtilContainerTest container_test;
     
   GList *list_start, *list;
 
@@ -352,6 +381,13 @@ ags_functional_notation_editor_workflow_test_ffplayer()
   ags_functional_test_util_idle();
 
   /* get machine */
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = 3;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -429,6 +465,12 @@ ags_functional_notation_editor_workflow_test_edit_all()
    */
 
   nth_machine = 0;
+
+  /* select index */
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
+  
+  CU_ASSERT(success == TRUE);
   
   /* set zoom */
   success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
@@ -438,12 +480,6 @@ ags_functional_notation_editor_workflow_test_edit_all()
   /* edit tool */
   success = ags_functional_test_util_notation_toolbar_edit_click();
 
-  CU_ASSERT(success == TRUE);
-
-  /* select index */
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
-  
   CU_ASSERT(success == TRUE);
 
   /* add drum kick pattern 2/4 */
@@ -477,12 +513,12 @@ ags_functional_notation_editor_workflow_test_edit_all()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_notation_toolbar_edit_click();
+  /* set zoom */
+  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
 
   CU_ASSERT(success == TRUE);
 
-  /* set zoom */
-  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
+  success = ags_functional_test_util_notation_toolbar_edit_click();
 
   CU_ASSERT(success == TRUE);
 
@@ -522,12 +558,12 @@ ags_functional_notation_editor_workflow_test_edit_all()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_notation_toolbar_edit_click();
+  /* set zoom */
+  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
 
   CU_ASSERT(success == TRUE);
 
-  /* set zoom */
-  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+  success = ags_functional_test_util_notation_toolbar_edit_click();
 
   CU_ASSERT(success == TRUE);
 
@@ -554,7 +590,9 @@ ags_functional_notation_editor_workflow_test_fill_all()
 
 int
 main(int argc, char **argv)
-{  
+{
+  gchar *str;
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -572,8 +610,19 @@ main(int argc, char **argv)
   g_atomic_int_set(&is_available,
 		   FALSE);
   
+#if defined(AGS_TEST_CONFIG)
   ags_test_init(&argc, &argv,
-		AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG);
+		AGS_TEST_CONFIG);
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_test_init(&argc, &argv,
+		  str);
+  }else{
+    ags_test_init(&argc, &argv,
+		  AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG);
+  }
+#endif
+    
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_notation_editor_workflow_test_add_test, &is_available);
 

@@ -85,7 +85,7 @@ volatile gboolean is_available;
 extern AgsApplicationContext *ags_application_context;
 
 extern struct timespec ags_functional_automation_editor_workflow_test_default_timeout = {
-  59,
+  300,
   0,
 };
 
@@ -987,7 +987,9 @@ ags_functional_automation_editor_workflow_test_ffplayer()
 
 int
 main(int argc, char **argv)
-{  
+{
+  gchar *str;
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -1005,8 +1007,19 @@ main(int argc, char **argv)
   g_atomic_int_set(&is_available,
 		   FALSE);
   
+#if defined(AGS_TEST_CONFIG)
   ags_test_init(&argc, &argv,
-		AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG);
+		AGS_TEST_CONFIG);
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_test_init(&argc, &argv,
+		  str);
+  }else{
+    ags_test_init(&argc, &argv,
+		  AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG);
+  }
+#endif
+    
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_automation_editor_workflow_test_add_test, &is_available);
   
