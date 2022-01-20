@@ -157,6 +157,7 @@ main(int argc, char **argv)
   gchar *str;
   
   gboolean has_file;
+  gboolean no_config;
   int result;
 
 #ifdef AGS_WITH_RT
@@ -348,14 +349,17 @@ main(int argc, char **argv)
   /* parse command line parameter */
   filename = NULL;
   has_file = FALSE;
+
+  no_config = FALSE;
   
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
+	     "--no-config         disable config from file"
 	     "--no-builtin-theme  disable built-in theme",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
@@ -384,6 +388,9 @@ main(int argc, char **argv)
 		     G_FILE_TEST_IS_REGULAR)){
 	has_file = TRUE;
       }
+    }else if(!strncmp(argv[i], "--no-config", 12)){
+      no_config = TRUE;
+      i++;
     }
   }
 

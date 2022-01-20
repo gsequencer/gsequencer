@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,8 +81,8 @@ volatile gboolean is_available;
 
 AgsApplicationContext *application_context;
 
-extern struct timespec ags_functional_audio_config_test_default_timeout = {
-  59,
+struct timespec ags_functional_audio_config_test_default_timeout = {
+  300,
   0,
 };
 
@@ -232,6 +232,7 @@ int
 main(int argc, char **argv)
 {
   char **new_argv;
+  gchar *str;
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -257,9 +258,19 @@ main(int argc, char **argv)
   new_argv[argc + 2] = NULL;
   argc += 2;
   
+#if defined(AGS_TEST_CONFIG)
   ags_test_init(&argc, &new_argv,
-		AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG);
-
+		AGS_TEST_CONFIG);
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_test_init(&argc, &new_argv,
+		  str);
+  }else{
+    ags_test_init(&argc, &new_argv,
+		  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG);
+  }
+#endif
+  
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_audio_config_test_add_test, &is_available);
 

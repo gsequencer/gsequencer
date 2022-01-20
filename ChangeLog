@@ -1,3 +1,9 @@
+ags (3.16.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved command line argument --no-config
+	* improved unit tests make use of AGS_TEST_CONFIG and --no-config
+
 ags (3.16.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

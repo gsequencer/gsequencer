@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,6 +70,8 @@ struct _AgsWindow
 
   guint flags;
 
+  gboolean no_config;
+  
   gchar *filename;
   
   char *name;
