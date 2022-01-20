@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.16.8" date="2022-01-20">
+      <description>
+	<p>
+	  Fixed proper failure of missing plugins during reading of AgsSimpleFile.
+	</p>
+	<p>
+	  Fixed ref-count of plugin in ags-fx-ladspa, ags-fx-dssi, ags-fx-lv2 and ags-fx-vst3.
+	</p>
+      </description>
+    </release>
+
     <release version="3.16.7" date="2022-01-19">
       <description>
 	<p>

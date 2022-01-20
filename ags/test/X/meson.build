@@ -74,7 +74,7 @@ foreach interactive_test : interactive_tests
     interactive_test = '_'.join(tmp)
   endif
 
-  executable(
+  interactive_test_bin = executable(
     interactive_test,
     source,
     c_args: [compiler_flags, srcdir_def],
@@ -89,4 +89,6 @@ foreach interactive_test : interactive_tests
       libgsequencer_test,
       ]
     )
+
+  test(interactive_test, interactive_test_bin, is_parallel : false)
 endforeach
