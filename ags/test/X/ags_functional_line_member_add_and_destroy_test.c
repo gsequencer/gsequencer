@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,10 +90,14 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
+struct timespec ags_functional_line_member_add_and_destroy_test_default_timeout = {
+  300,
+  0,
+};
+
 void
 ags_functional_line_member_add_and_destroy_test_add_test()
 {
-
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsPanel", ags_functional_line_member_add_and_destroy_test_panel) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMixer", ags_functional_line_member_add_and_destroy_test_mixer) == NULL) ||
@@ -127,6 +131,14 @@ ags_functional_line_member_add_and_destroy_test_add_test()
 int
 ags_functional_line_member_add_and_destroy_test_init_suite()
 {
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_line_member_add_and_destroy_test_default_timeout,
+						      &(xorg_application_context->window));
+
   return(0);
 }
 
@@ -1398,6 +1410,8 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 int
 main(int argc, char **argv)
 {
+  gchar *str;
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -1415,8 +1429,19 @@ main(int argc, char **argv)
   g_atomic_int_set(&is_available,
 		   FALSE);
   
+#if defined(AGS_TEST_CONFIG)
   ags_test_init(&argc, &argv,
-		AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG);
+		AGS_TEST_CONFIG);
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_test_init(&argc, &argv,
+		  str);
+  }else{
+    ags_test_init(&argc, &argv,
+		  AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG);
+  }
+#endif
+  
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_line_member_add_and_destroy_test_add_test, &is_available);
 

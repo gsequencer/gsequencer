@@ -1,18 +1,19 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- Copyright (C) 2005-2018 Joël Krähemann -->
+<!-- Copyright (C) 2005-2022 Joël Krähemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
 <!-- without any warranty. -->
 
-<refentry id="gsequencer">
+<refentry xmlns:xi="http://www.w3.org/2001/XInclude"
+	  id="gsequencer">
 
   <refentryinfo>
-    <date>2020-01-08</date>
+    <date>2022-01-20</date>
     <copyright>
-      <year>2020</year>
+      <year>2022</year>
       <holder>Joël Krähemann</holder>
     </copyright>
     <legalnotice>
@@ -45,6 +46,7 @@
       <arg>--version</arg>
       <arg>--no-builtin-theme</arg>
       <arg>--filename <replaceable>file</replaceable></arg>
+      <arg>--no-config</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   
@@ -62,6 +64,9 @@
     the ability to export to WAV, FLAC and OGG audio files. It can run on various
     soundcard backends including ALSA, OSS4, JACK Audio Connection Kit, Pulseaudio
     Core-Audio, Audio-Unit and WASAPI.
+  </para>
+  <para>
+    The binary looks for a configuration file in $HOME/.gsequencer/ags.conf.
   </para>
   <para>&hellip;</para>
   </refsect1>
@@ -89,6 +94,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><option>--no-config</option></term>
+        <listitem>
+          <para>Don't read config from file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><option>--help</option></term>
         <listitem>
           <para>Show summary of options.</para>
@@ -106,7 +117,13 @@
   <refsect1 id="envs">
     <title>ENVIRONMENT VARIABLES</title>
     <para>The program interprets following environment variables if set.</para>
-    <variablelist>
+    <variablelist>      
+      <varlistentry>
+        <term>OSS_MIXERDEV</term>
+        <listitem>
+          <para>the OSSv4 mixer device</para>
+        </listitem>
+      </varlistentry>
       <varlistentry>
         <term>LADSPA_PATH</term>
         <listitem>
@@ -155,9 +172,38 @@
           <para>The application's style sheet</para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term>AGS_CONFIG</term>
+        <listitem>
+          <para>The config to read from environment instead of $HOME/.gsequencer/ags.conf</para>
+        </listitem>
+      </varlistentry>
     </variablelist>
   </refsect1>
 
+  <refsect1 id="alsa-conf">
+    <title>ALSA example configuration file</title>
+    <para>
+      This example configuration file is using ALSA backend to play to &quot;hw:CARD=PCH,DEV=0&quot;
+      and capture from &quot;hw:CARD=CODEC,DEV=0&quot; device.
+    </para>
+
+    <programlisting>
+<xi:include href="ags-alsa.conf" parse="text" />
+    </programlisting>
+  </refsect1>
+
+  <refsect1 id="oss-conf">
+    <title>OSSv4 example configuration file</title>
+    <para>
+      This example configuration file is using ALSA backend to play to &quot;/dev/dsp&quot; device.
+    </para>
+
+    <programlisting>
+<xi:include href="ags-oss.conf" parse="text" />
+    </programlisting>
+  </refsect1>
+  
   <refsect1>
     <title>BUGS</title>
     <para>

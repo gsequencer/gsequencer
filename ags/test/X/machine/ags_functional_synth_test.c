@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,6 +82,11 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
+struct timespec ags_functional_synth_test_default_timeout = {
+  300,
+  0,
+};
+
 void
 ags_functional_synth_test_add_test()
 {
@@ -133,11 +138,19 @@ ags_functional_synth_test_resize_pads()
   
   AgsSynth *synth;
 
+  AgsFunctionalTestUtilContainerTest container_test;
+
   GList *list_start, *list;
 
   guint nth_machine;
   guint resize_tab;
   gboolean success;
+  
+  xorg_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_synth_test_default_timeout,
+						      &(xorg_application_context->window));
 
   /* add synth */
   success = ags_functional_test_util_add_machine(NULL,
@@ -146,9 +159,14 @@ ags_functional_synth_test_resize_pads()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  ags_test_enter();
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = 1;
   
-  xorg_application_context = ags_application_context_get_instance();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_synth_test_default_timeout,
+						      &container_test);
+
+  ags_test_enter();
 
   /* retrieve synth */
   nth_machine = 0;
@@ -214,11 +232,15 @@ ags_functional_synth_test_resize_audio_channels()
   
   AgsSynth *synth;
 
+  AgsFunctionalTestUtilContainerTest container_test;
+
   GList *list_start, *list;
 
   guint nth_machine;
   guint resize_tab;
   gboolean success;
+  
+  xorg_application_context = ags_application_context;
 
   /* add synth */
   success = ags_functional_test_util_add_machine(NULL,
@@ -227,9 +249,14 @@ ags_functional_synth_test_resize_audio_channels()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  ags_test_enter();
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = 2;
   
-  xorg_application_context = ags_application_context_get_instance();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_synth_test_default_timeout,
+						      &container_test);
+
+  ags_test_enter();
 
   /* retrieve synth */
   nth_machine = 0;
@@ -285,6 +312,8 @@ ags_functional_synth_test_resize_audio_channels()
 int
 main(int argc, char **argv)
 {
+  gchar *str;
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -302,8 +331,19 @@ main(int argc, char **argv)
   g_atomic_int_set(&is_available,
 		   FALSE);
   
+#if defined(AGS_TEST_CONFIG)
   ags_test_init(&argc, &argv,
-		AGS_FUNCTIONAL_SYNTH_TEST_CONFIG);
+		AGS_TEST_CONFIG);
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_test_init(&argc, &argv,
+		  str);
+  }else{
+    ags_test_init(&argc, &argv,
+		  AGS_FUNCTIONAL_SYNTH_TEST_CONFIG);
+  }
+#endif
+    
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_synth_test_add_test, &is_available);
 

@@ -256,7 +256,7 @@ ags_test_init(int *argc, char ***argv,
 
       exit(0);
     }else if(!strncmp(argv[0][i], "--filename", 11)){
-      filename = g_strdup(*argv[i + 1]);
+      filename = g_strdup(argv[0][i + 1]);
       i++;
     }else if(!strncmp(argv[0][i], "--no-config", 12)){
       no_config = TRUE;
