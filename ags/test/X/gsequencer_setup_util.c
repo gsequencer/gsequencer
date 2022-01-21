@@ -121,12 +121,15 @@ ags_test_init(int *argc, char ***argv,
 #endif
   struct passwd *pw;
 
+  char **gst_argv;
   gchar *wdir, *config_file;
   gchar *rc_filename;
   gchar *base_dir;
   gchar *str, *data_dir;
   gchar path[PATH_MAX];
 
+  int gst_argc;
+  
   uint32_t size = sizeof(path);
   uid_t uid;
   int result;
@@ -271,7 +274,10 @@ ags_test_init(int *argc, char ***argv,
   LIBXML_TEST_VERSION;
 
 #if defined(AGS_WITH_GSTREAMER)
-  gst_init(argc, argv);
+  gst_argc = 0;
+  gst_argv = NULL;
+  
+  gst_init(&gst_argc, &gst_argv);
 #endif
 
   gtk_init(argc, argv);
