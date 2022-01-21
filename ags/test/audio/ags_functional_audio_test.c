@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,12 +91,27 @@ ags_functional_audio_test_init_suite()
 {
   AgsConfig *config;
 
+  gchar *str;
+  
   ags_priority_load_defaults(ags_priority_get_instance());  
 
   config = ags_config_get_instance();
+
+#if defined(AGS_TEST_CONFIG)
   ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_AUDIO_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_AUDIO_TEST_CONFIG));
+			    AGS_TEST_CONFIG,
+			    strlen(AGS_TEST_CONFIG));
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_config_load_from_data(config,
+			      str,
+			      strlen(str));
+  }else{
+    ags_config_load_from_data(config,
+			      AGS_FUNCTIONAL_AUDIO_TEST_CONFIG,
+			      strlen(AGS_FUNCTIONAL_AUDIO_TEST_CONFIG));
+  }
+#endif
 
   audio_application_context = (AgsApplicationContext *) ags_audio_application_context_new();
   g_object_ref(audio_application_context);
@@ -873,6 +888,7 @@ main(int argc, char **argv)
   putenv("LADSPA_PATH=\"\"");
   putenv("DSSI_PATH=\"\"");
   putenv("LV2_PATH=\"\"");
+  putenv("VST3_PATH=\"\"");
 
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){

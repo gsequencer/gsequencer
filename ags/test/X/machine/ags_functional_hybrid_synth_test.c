@@ -250,7 +250,7 @@ ags_functional_hybrid_synth_test_resize_audio_channels()
 
   /*  */
   container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
-  container_test.count = 2;
+  container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
 						      &ags_functional_hybrid_synth_test_default_timeout,

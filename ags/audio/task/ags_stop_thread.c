@@ -31,12 +31,12 @@ void ags_stop_thread_launch(AgsTask *task);
 
 /**
  * SECTION:ags_stop_thread
- * @short_description: stop sound config
+ * @short_description: stop all threads
  * @title: AgsStopThread
  * @section_id:
  * @include: ags/audio/task/ags_stop_thread.h
  *
- * The #AgsStopThread task stop the specified sound config.
+ * The #AgsStopThread task stops all threads.
  */
 
 static gpointer ags_stop_thread_parent_class = NULL;
