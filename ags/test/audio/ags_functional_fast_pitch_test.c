@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,6 +112,7 @@ ags_functional_fast_pitch_test_add_thread(gpointer data)
   putenv("LADSPA_PATH=\"\"");
   putenv("DSSI_PATH=\"\"");
   putenv("LV2_PATH=\"\"");
+  putenv("VST3_PATH=\"\"");
 
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -157,6 +158,8 @@ ags_functional_fast_pitch_test_init_suite()
 
   GList *start_list;
 
+  gchar *str;
+
   guint i;
   
   GError *error;
@@ -164,9 +167,22 @@ ags_functional_fast_pitch_test_init_suite()
   ags_priority_load_defaults(ags_priority_get_instance());  
   
   config = ags_config_get_instance();
+
+#if defined(AGS_TEST_CONFIG)
   ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_FAST_PITCH_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_FAST_PITCH_TEST_CONFIG));
+			    AGS_TEST_CONFIG,
+			    strlen(AGS_TEST_CONFIG));
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    ags_config_load_from_data(config,
+			      str,
+			      strlen(str));
+  }else{
+    ags_config_load_from_data(config,
+			      AGS_FUNCTIONAL_FAST_PITCH_TEST_CONFIG,
+			      strlen(AGS_FUNCTIONAL_FAST_PITCH_TEST_CONFIG));
+  }
+#endif
 
   /* audio application context */
   audio_application_context = (AgsApplicationContext *) ags_audio_application_context_new();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -839,6 +839,7 @@ main(int argc, char **argv)
   putenv("LADSPA_PATH=\"\"");
   putenv("DSSI_PATH=\"\"");
   putenv("LV2_PATH=\"\"");
+  putenv("VST3_PATH=\"\"");
   
   ags_priority_load_defaults(ags_priority_get_instance());  
 
