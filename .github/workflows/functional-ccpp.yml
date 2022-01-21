@@ -6,7 +6,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 300
+
     steps:
     - uses: actions/checkout@v1
     - name: Set and install dependencies
