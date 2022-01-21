@@ -531,6 +531,7 @@
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_stop_sequencer.h>
 #include <ags/audio/task/ags_stop_soundcard.h>
+#include <ags/audio/task/ags_stop_thread.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>

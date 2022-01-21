@@ -274,8 +274,11 @@ ags_test_init(int *argc, char ***argv,
   LIBXML_TEST_VERSION;
 
 #if defined(AGS_WITH_GSTREAMER)
-  gst_argc = 0;
-  gst_argv = NULL;
+  gst_argc = 1;
+  gst_argv = (char **) g_malloc(2 * sizeof(char *));
+
+  gst_argv[0] = g_strdup(argv[0][0]);
+  gst_argv[1] = NULL;
   
   gst_init(&gst_argc, &gst_argv);
 #endif

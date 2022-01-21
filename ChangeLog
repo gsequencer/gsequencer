@@ -1,3 +1,9 @@
+ags (3.16.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsStopThread
+	* fixed call to gst_init()
+
 ags (3.16.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

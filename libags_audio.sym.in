@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2021 Joël Krähemann
+# Copyright (C) 2005-2022 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -2643,6 +2643,8 @@ ags_move_note_set_selection
 ags_move_note_new
 ags_remove_soundcard_get_type
 ags_remove_soundcard_new
+ags_stop_thread_get_type
+ags_stop_thread_new
 ags_output_get_type
 ags_output_find_first_input_recycling
 ags_output_find_last_input_recycling

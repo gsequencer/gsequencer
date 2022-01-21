@@ -4236,10 +4236,21 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   AgsJackServer *jack_server;
 
+  AgsTaskLauncher *task_launcher;
+  AgsStopThread *stop_thread;
+  
   GList *core_audio_client;
   GList *jack_client;
   GList *start_list, *list;
 
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  stop_thread = ags_stop_thread_new();
+  ags_task_launcher_add_task(task_launcher,
+			     stop_thread);
+
+  g_usleep(2 * G_USEC_PER_SEC);
+  
   /* free managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
   g_object_unref(ladspa_manager);
