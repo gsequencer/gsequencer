@@ -189,7 +189,7 @@
     </para>
 
     <programlisting>
-<xi:include href="ags-alsa.conf" parse="text" />
+<xi:include href="conf/ags-alsa.conf" parse="text" />
     </programlisting>
   </refsect1>
 
@@ -200,7 +200,7 @@
     </para>
 
     <programlisting>
-<xi:include href="ags-oss.conf" parse="text" />
+<xi:include href="conf/ags-oss.conf" parse="text" />
     </programlisting>
   </refsect1>
   
