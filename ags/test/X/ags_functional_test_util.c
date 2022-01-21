@@ -37,7 +37,7 @@
 #include <X11/extensions/XTest.h>
 
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
-#define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
+#define AGS_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (750000)
 #else
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (1000000)
@@ -228,8 +228,6 @@ ags_functional_test_util_do_run(int argc, char **argv,
   ags_log_add_message(log,
 		      "Welcome to Advanced Gtk+ Sequencer - Test");
 
-  ags_functional_test_util_add_test(add_test, is_available);
-  
   /* application context */
   mutex = ags_test_get_driver_mutex();
   g_rec_mutex_lock(mutex);
@@ -251,6 +249,8 @@ ags_functional_test_util_do_run(int argc, char **argv,
   ags_application_context_prepare(application_context);
 
   ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+
+  ags_functional_test_util_add_test(add_test, is_available);  
   
   /* gtk main */
   gtk_main();

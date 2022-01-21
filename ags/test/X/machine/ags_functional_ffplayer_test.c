@@ -150,6 +150,12 @@ ags_functional_ffplayer_test_open_sf2()
   
   xorg_application_context = ags_application_context;
 
+  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(xorg_application_context))){
+    usleep(500000);
+  }
+
+  usleep(500000);  
+
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_ffplayer_test_default_timeout,
 						      &(xorg_application_context->window));
