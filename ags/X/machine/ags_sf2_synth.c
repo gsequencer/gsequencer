@@ -1477,6 +1477,21 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	gtk_list_store_clear(bank_list_store);
 	gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view))));
 
+	if(sf2_synth->audio_container == NULL ||
+	   sf2_synth->audio_container->sound_container == NULL){
+	  g_object_run_dispose((GObject *) sf2_synth->sf2_loader);
+	  g_object_unref(sf2_synth->sf2_loader);
+
+	  sf2_synth->sf2_loader = NULL;
+
+	  sf2_synth->position = -1;
+
+	  gtk_spinner_stop(sf2_synth->sf2_loader_spinner);
+	  gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
+	  
+	  return(TRUE);
+	}
+	
 	ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
 	error = NULL;
