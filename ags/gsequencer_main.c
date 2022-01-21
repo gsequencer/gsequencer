@@ -150,12 +150,14 @@ main(int argc, char **argv)
   uid_t uid;
 #endif
   
+  char **gst_argv;  
   gchar *wdir;
   gchar *config_filename;
   gchar *priority_filename;
   gchar *css_filename;
   gchar *str;
   
+  int gst_argc;
   gboolean has_file;
   gboolean no_config;
   int result;
@@ -177,7 +179,10 @@ main(int argc, char **argv)
   //ao_initialize();
 
 #if defined(AGS_WITH_GSTREAMER)
-  gst_init (&argc, &argv);
+  gst_argc = 0;
+  gst_argv = NULL;
+  
+  gst_init(&gst_argc, &gst_argv);
 #endif
   
   //  gdk_threads_enter();
