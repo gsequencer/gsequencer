@@ -1615,6 +1615,19 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	/* reassign audio container */
 	pitch_sampler->audio_container = pitch_sampler->sfz_loader->audio_container;
 	pitch_sampler->sfz_loader->audio_container = NULL;
+
+	if(pitch_sampler->audio_container == NULL ||
+	   pitch_sampler->audio_container->sound_container == NULL){
+	  g_object_run_dispose((GObject *) pitch_sampler->sfz_loader);
+	  g_object_unref(pitch_sampler->sfz_loader);
+
+	  pitch_sampler->sfz_loader = NULL;
+
+	  pitch_sampler->position = -1;
+	  gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
+    
+	  return(TRUE);
+	}
 	
 	g_object_get(pitch_sampler->audio_container->sound_container,
 		     "sample", &start_list,
