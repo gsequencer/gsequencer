@@ -1546,6 +1546,19 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
 	  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));    
 
+	  if(ffplayer->audio_container == NULL ||
+	     ffplayer->audio_container->sound_container == NULL){
+	    g_object_run_dispose((GObject *) ffplayer->sf2_loader);
+	    g_object_unref(ffplayer->sf2_loader);
+
+	    ffplayer->sf2_loader = NULL;
+
+	    ffplayer->position = -1;
+	    gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+	    return(TRUE);
+	  }
+	  
 	  ags_ffplayer_load_preset(ffplayer);
 	}
 	
@@ -1620,7 +1633,7 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 
 	  /* cleanup */	
 	  g_object_run_dispose((GObject *) ffplayer->sf2_loader);
-//	g_object_unref(ffplayer->sf2_loader);
+	  g_object_unref(ffplayer->sf2_loader);
 
 	  ffplayer->sf2_loader = NULL;
 
@@ -1632,13 +1645,12 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 
 	/* cleanup */	
 	g_object_run_dispose((GObject *) ffplayer->sf2_loader);
-//	g_object_unref(ffplayer->sf2_loader);
+	g_object_unref(ffplayer->sf2_loader);
 
 	ffplayer->sf2_loader = NULL;
 
 	ffplayer->position = -1;
 	gtk_widget_hide((GtkWidget *) ffplayer->loading);
-
       }else{
 	if(ffplayer->position == -1){
 	  ffplayer->position = 0;
