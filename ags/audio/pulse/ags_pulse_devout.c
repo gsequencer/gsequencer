@@ -465,7 +465,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
 GQuark
 ags_pulse_devout_error_quark()
 {
-  return(g_quark_from_static_string("ags-pulse_devout-error-quark"));
+  return(g_quark_from_static_string("ags-pulse-devout-error-quark"));
 }
 
 void
@@ -1438,26 +1438,46 @@ ags_pulse_devout_set_device(AgsSoundcard *soundcard,
 
   /* apply name to port */
   pcm_channels = pulse_devout->pcm_channels;
-  
-  pulse_port_start = 
-    pulse_port = g_list_copy(pulse_devout->pulse_port);
 
   g_rec_mutex_unlock(pulse_devout_mutex);
-  
-  for(i = 0; i < pcm_channels; i++){
-    str = g_strdup_printf("ags-soundcard%d-%04d",
-			  nth_card,
-			  i);
+
+  if(pcm_channels > 0){
+    g_rec_mutex_lock(pulse_devout_mutex);
     
-    g_object_set(pulse_port->data,
-		 "port-name", str,
-		 NULL);
-    g_free(str);
+    pulse_port_start = 
+      pulse_port = g_list_copy(pulse_devout->pulse_port);
 
-    pulse_port = pulse_port->next;
+    pulse_devout->port_name = (gchar **) malloc((pcm_channels + 1) * sizeof(gchar *));
+
+    g_rec_mutex_unlock(pulse_devout_mutex);
+  
+    for(i = 0; i < pcm_channels; i++){
+      str = g_strdup_printf("ags-soundcard%d-%04d",
+			    nth_card,
+			    i);
+
+      g_rec_mutex_lock(pulse_devout_mutex);
+    
+      pulse_devout->port_name[i] = g_strdup(str);
+
+      g_rec_mutex_unlock(pulse_devout_mutex);
+    
+      g_object_set(pulse_port->data,
+		   "port-name", str,
+		   NULL);
+      g_free(str);
+
+      pulse_port = pulse_port->next;
+    }
+
+    g_rec_mutex_lock(pulse_devout_mutex);
+
+    pulse_devout->port_name[i] = NULL;
+
+    g_rec_mutex_unlock(pulse_devout_mutex);
+  
+    g_list_free(pulse_port_start);
   }
-
-  g_list_free(pulse_port_start);
 }
 
 gchar*
