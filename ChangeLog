@@ -1,8 +1,9 @@
 ags (3.16.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed AgsSynthUtil wrong iteration
-	* fixed AgsFMSynthUtil wrong iteration
+	* fixed AgsSynthUtil missing increment during iteration
+	* fixed AgsFMSynthUtil missing increment during iteration
+	* fixed AgsEnvelopeUtil missing increment during iteration
 
 ags (3.16.12)
 
