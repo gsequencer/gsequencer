@@ -2823,7 +2823,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsWindow */
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
 				      NULL);
-
+  
   window->no_config = no_config;
   
   xorg_application_context->window = (GtkWidget *) window;
@@ -2905,6 +2905,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 #endif
 
   guint i, j;
+  gboolean no_config;
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
@@ -2952,7 +2953,24 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   
   /* check filename */
   filename = NULL;
+  no_config = FALSE;
 
+  for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc;){
+    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11) &&
+       i + 1 < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc &&
+       AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1] != NULL){      
+      filename = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1];
+
+      i += 2;
+    }else if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--no-config", 12)){
+      no_config = TRUE;
+      
+      i++;
+    }else{
+      i++;
+    }
+  }
+  
   for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
     if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11) &&
        i + 1 < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc &&
@@ -3008,41 +3026,55 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       ags_simple_file_open(simple_file,
 			   NULL);
 
-      str = g_strdup_printf("* Read config from file: %s", filename);
-      ags_log_add_message(log,
-			  str);
+      if(!no_config){
+	str = g_strdup_printf("* Read config from file: %s", filename);
+	ags_log_add_message(log,
+			    str);
 
-      xpath = BAD_CAST "/ags-simple-file/ags-sf-config";
+	xpath = BAD_CAST "/ags-simple-file/ags-sf-config";
 
-      /* Create xpath evaluation context */
-      xpath_context = xmlXPathNewContext(simple_file->doc);
+	/* Create xpath evaluation context */
+	xpath_context = xmlXPathNewContext(simple_file->doc);
 
-      if(xpath_context == NULL) {
-	g_warning("Error: unable to create new XPath context");
+	if(xpath_context == NULL) {
+	  g_warning("Error: unable to create new XPath context");
 
-	goto ags_xorg_application_context_setup_RESTORE_LOCALE;
-      }
-
-      /* Evaluate xpath expression */
-      xpath_object = xmlXPathEval(xpath, xpath_context);
-
-      if(xpath_object == NULL) {
-	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
-
-	xmlXPathFreeContext(xpath_context); 
-
-	goto ags_xorg_application_context_setup_RESTORE_LOCALE;
-      }
-
-      node = xpath_object->nodesetval->nodeTab;
-      
-      for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
-	if(node[j]->type == XML_ELEMENT_NODE){
-	  ags_config_clear(config);
-	  ags_simple_file_read_config(simple_file, node[j], &config);
-	  	  
-	  break;
+	  goto ags_xorg_application_context_setup_RESTORE_LOCALE;
 	}
+
+	/* Evaluate xpath expression */
+	xpath_object = xmlXPathEval(xpath, xpath_context);
+
+	if(xpath_object == NULL) {
+	  g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
+
+	  xmlXPathFreeContext(xpath_context); 
+
+	  goto ags_xorg_application_context_setup_RESTORE_LOCALE;
+	}
+
+	node = xpath_object->nodesetval->nodeTab;
+      
+	for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
+	  if(node[j]->type == XML_ELEMENT_NODE){
+	    ags_config_clear(config);
+	    ags_simple_file_read_config(simple_file, node[j], &config);
+	  	  
+	    break;
+	  }
+	}
+      }else{
+	gchar *str;
+	
+#if defined(AGS_TEST_CONFIG)
+#else
+	if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+	}else{
+	  g_message("no config defaults");
+	  
+	  ags_config_load_defaults(config);
+	}
+#endif	
       }
       
     ags_xorg_application_context_setup_RESTORE_LOCALE:

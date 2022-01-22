@@ -236,7 +236,7 @@ ags_test_init(int *argc, char ***argv,
   filename = NULL;
   no_config = FALSE;
   
-  for(i = 0; i < argc[0]; i++){
+  for(i = 0; i < argc[0];){
     if(!strncmp(argv[0][i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
@@ -260,9 +260,11 @@ ags_test_init(int *argc, char ***argv,
       exit(0);
     }else if(!strncmp(argv[0][i], "--filename", 11)){
       filename = g_strdup(argv[0][i + 1]);
-      i++;
+      i += 2;
     }else if(!strncmp(argv[0][i], "--no-config", 12)){
       no_config = TRUE;
+      i++;
+    }else{
       i++;
     }
   }
@@ -315,15 +317,29 @@ ags_test_init(int *argc, char ***argv,
 
   config = ags_config_get_instance();
 
-  if(conf_str != NULL){
+#if defined(AGS_TEST_CONFIG)
+  g_message("AGS_TEST_CONFIG:\n %s", AGS_TEST_CONFIG);
+      
+  ags_config_load_from_data(config,
+			    AGS_TEST_CONFIG, strlen(AGS_TEST_CONFIG));
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    g_message("AGS_TEST_CONFIG:\n %s", str);
+    
     ags_config_load_from_data(config,
-			      conf_str,
-			      strlen(conf_str));
+			      str, strlen(str));
   }else{
-    ags_config_load_from_file(config,
-			      config_file);
+    if(conf_str != NULL){
+      ags_config_load_from_data(config,
+				conf_str,
+				strlen(conf_str));
+    }else{
+      ags_config_load_from_file(config,
+				config_file);
+    }
   }
-  
+#endif
+
   g_free(wdir);
   g_free(config_file);  
 }
@@ -399,6 +415,7 @@ ags_test_setup(int argc, char **argv)
 
   gchar *blacklist_filename;
   gchar *filename;
+  gchar *str;
   
   uid_t uid;
 
@@ -414,85 +431,102 @@ ags_test_setup(int argc, char **argv)
 
   no_config = FALSE;
 
-  for(i = 0; i < argc; i++){
+  for(i = 0; i < argc;){
     if(!strncmp(argv[i], "--help", 7)){
       i++;
     }else if(!strncmp(argv[i], "--version", 10)){
       i++;
     }else if(!strncmp(argv[i], "--filename", 11)){
       filename = g_strdup(*argv[i + 1]);
-      i++;
+      i += 2;
     }else if(!strncmp(argv[i], "--no-config", 12)){
       no_config = TRUE;
       i++;
+    }else{
+      i++;
     }
   }
-
-  
-  for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--filename", 11)){
-      AgsSimpleFile *simple_file;
-
-      xmlXPathContext *xpath_context; 
-      xmlXPathObject *xpath_object;
-      xmlNode **node;
-
-      xmlChar *xpath;
+	
+#if defined(AGS_TEST_CONFIG)
+  g_message("AGS_TEST_CONFIG:\n %s", AGS_TEST_CONFIG);
       
-      gchar *buffer;
-      guint buffer_length;
+  ags_config_load_from_data(ags_config_get_instance(),
+			    AGS_TEST_CONFIG, strlen(AGS_TEST_CONFIG));
+#else
+  if((str = getenv("AGS_TEST_CONFIG")) != NULL){
+    g_message("AGS_TEST_CONFIG:\n %s", str);
+    
+    ags_config_load_from_data(ags_config_get_instance(),
+			      str, strlen(str));
+  }
+#endif
+
+  if(!no_config){
+    for(i = 0; i < argc; i++){
+      if(!strncmp(argv[i], "--filename", 11)){
+	AgsSimpleFile *simple_file;
+
+	xmlXPathContext *xpath_context; 
+	xmlXPathObject *xpath_object;
+	xmlNode **node;
+
+	xmlChar *xpath;
       
-      filename = argv[i + 1];
-      simple_file = ags_simple_file_new();
-      g_object_set(simple_file,
-		   "filename", filename,
-		   "no-config", no_config,
-		   NULL);
-      ags_simple_file_open(simple_file,
-			   NULL);
+	gchar *buffer;
+	guint buffer_length;
+      
+	filename = argv[i + 1];
+	simple_file = ags_simple_file_new();
+	g_object_set(simple_file,
+		     "filename", filename,
+		     "no-config", no_config,
+		     NULL);
+	ags_simple_file_open(simple_file,
+			     NULL);
 
-      xpath = "/ags-simple-file/ags-sf-config";
+	xpath = "/ags-simple-file/ags-sf-config";
 
-      /* Create xpath evaluation context */
-      xpath_context = xmlXPathNewContext(simple_file->doc);
+	/* Create xpath evaluation context */
+	xpath_context = xmlXPathNewContext(simple_file->doc);
 
-      if(xpath_context == NULL) {
-	g_warning("Error: unable to create new XPath context");
+	if(xpath_context == NULL) {
+	  g_warning("Error: unable to create new XPath context");
 
-	break;
-      }
-
-      /* Evaluate xpath expression */
-      xpath_object = xmlXPathEval(xpath, xpath_context);
-
-      if(xpath_object == NULL) {
-	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
-	xmlXPathFreeContext(xpath_context); 
-
-	break;
-      }
-
-      node = xpath_object->nodesetval->nodeTab;
-  
-      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-	if(node[i]->type == XML_ELEMENT_NODE){
-	  buffer = xmlNodeGetContent(node[i]);
-	  buffer_length = strlen(buffer);
-	  
 	  break;
 	}
-      }
+
+	/* Evaluate xpath expression */
+	xpath_object = xmlXPathEval(xpath, xpath_context);
+
+	if(xpath_object == NULL) {
+	  g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
+	  xmlXPathFreeContext(xpath_context); 
+
+	  break;
+	}
+
+	node = xpath_object->nodesetval->nodeTab;
+  
+	for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	  if(node[i]->type == XML_ELEMENT_NODE){
+	    buffer = xmlNodeGetContent(node[i]);
+	    buffer_length = strlen(buffer);
+	  
+	    break;
+	  }
+	}
       
-      if(buffer != NULL){
-	//	ags_config_clear(ags_config_get_instance());
-	ags_config_load_from_data(ags_config_get_instance(),
-				  buffer, buffer_length);
-      }
+	if(buffer != NULL){
+	  //	ags_config_clear(ags_config_get_instance());
+	  ags_config_load_from_data(ags_config_get_instance(),
+				    buffer, buffer_length);
+	}
       
-      break;
+	break;
+      }
     }
   }
-
+  
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 

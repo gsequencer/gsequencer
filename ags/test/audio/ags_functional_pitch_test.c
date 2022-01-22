@@ -153,6 +153,7 @@ int
 ags_functional_pitch_test_init_suite()
 {
   AgsChannel *channel, *link;
+  AgsPlaybackDomain *playback_domain;
   
   AgsConfig *config;
 
@@ -163,6 +164,10 @@ ags_functional_pitch_test_init_suite()
   guint i;
   
   GError *error;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
 
   ags_priority_load_defaults(ags_priority_get_instance());  
   
@@ -215,16 +220,17 @@ ags_functional_pitch_test_init_suite()
 		     AGS_TYPE_INPUT,
 		     1, 0);
 
-  /* ags-play */
-  ags_recall_factory_create(output_panel,
-			    NULL, NULL,
-			    "ags-play-master",
-			    0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-playback */
+  ags_fx_factory_create(output_panel,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
 
   ags_connectable_connect(AGS_CONNECTABLE(output_panel));
 
@@ -238,7 +244,7 @@ ags_functional_pitch_test_init_suite()
   ags_audio_set_flags(wave_player, (AGS_AUDIO_SYNC |
 				    AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				    AGS_AUDIO_INPUT_HAS_RECYCLING));
-  ags_audio_set_ability_flags(wave_player, (AGS_SOUND_ABILITY_WAVE));
+  ags_audio_set_ability_flags(wave_player, (AGS_SOUND_ABILITY_NOTATION));
   
   ags_audio_set_audio_channels(wave_player,
 			       AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS, 0);
@@ -253,21 +259,57 @@ ags_functional_pitch_test_init_suite()
   channel = wave_player->output;
 
   for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
-    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
+    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
 
     channel = channel->next;
   }
   
+  g_object_get(wave_player,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  if(playback_domain != NULL){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      AgsThread *audio_thread;
+      
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
+      
+      if(audio_thread != NULL){
+	ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread, TRUE);
+	ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
+					     staging_program,
+					     1);
+
+	g_object_unref(audio_thread);
+      }
+    }
+    
+    g_object_unref(playback_domain);
+  }
+
   /* ags-play-wave */
-  ags_recall_factory_create(wave_player,
-			    NULL, NULL,
-			    "ags-play-wave",
-			    0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  ags_fx_factory_create(wave_player,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
+  ags_fx_factory_create(wave_player,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-buffer",
+			NULL,
+			NULL,
+			0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
 
   ags_connectable_connect(AGS_CONNECTABLE(wave_player));
 
@@ -488,7 +530,7 @@ ags_functional_pitch_test_pitch_up()
     /* start audio and soundcard task */
     task = NULL;    
     start_audio = ags_start_audio_new(wave_player,
-				      AGS_SOUND_SCOPE_WAVE);
+				      AGS_SOUND_SCOPE_NOTATION);
     task = g_list_prepend(task,
 			  start_audio);
     
@@ -504,7 +546,7 @@ ags_functional_pitch_test_pitch_up()
     
     /* create cancel task */
     cancel_audio = ags_cancel_audio_new(wave_player,
-					AGS_SOUND_SCOPE_WAVE);
+					AGS_SOUND_SCOPE_NOTATION);
     
     /* append AgsCancelAudio */
     ags_task_launcher_add_task(task_launcher,
@@ -634,7 +676,7 @@ ags_functional_pitch_test_pitch_down()
     /* start audio and soundcard task */
     task = NULL;    
     start_audio = ags_start_audio_new(wave_player,
-				      AGS_SOUND_SCOPE_WAVE);
+				      AGS_SOUND_SCOPE_NOTATION);
     task = g_list_prepend(task,
 			  start_audio);
     
@@ -650,7 +692,7 @@ ags_functional_pitch_test_pitch_down()
 
     /* create cancel task */
     cancel_audio = ags_cancel_audio_new(wave_player,
-					AGS_SOUND_SCOPE_WAVE);
+					AGS_SOUND_SCOPE_NOTATION);
     
     /* append AgsCancelAudio */
     ags_task_launcher_add_task(task_launcher,

@@ -2284,37 +2284,41 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   config = ags_config_get_instance();
   
   /* find soundcard */
-  soundcard = NULL;
-  device = xmlGetProp(node,
-		      "soundcard-device");
-
   start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  if(device != NULL){
-    list = start_list;
+  soundcard = NULL;
+  if(!(simple_file->no_config)){
+    device = xmlGetProp(node,
+			"soundcard-device");
+
+    if(device != NULL){
+      list = start_list;
     
-    for(i = 0; list != NULL; i++){
-      str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+      for(i = 0; list != NULL; i++){
+	str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
       
-      if(str != NULL){
-	if(!g_ascii_strcasecmp(str,
-			       device)){
-	  soundcard = list->data;
+	if(str != NULL){
+	  if(!g_ascii_strcasecmp(str,
+				 device)){
+	    soundcard = list->data;
 	  
-	  break;
+	    break;
+	  }
 	}
+
+	/* iterate soundcard */
+	list = list->next;
       }
 
-      /* iterate soundcard */
-      list = list->next;
+      xmlFree(device);
     }
-
-    xmlFree(device);
   }
   
   if(soundcard == NULL &&
      start_list != NULL){
     soundcard = start_list->data;
+
+//    g_message("soundcard fallback %s", G_OBJECT_TYPE_NAME(soundcard));
   }
 
   g_list_free_full(start_list,
@@ -7190,32 +7194,38 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   soundcard = NULL;
-  device = xmlGetProp(node,
-		      "soundcard-device");  
-  if(device != NULL){
-    list = start_list;
+
+  if(!(simple_file->no_config)){
+    device = xmlGetProp(node,
+			"soundcard-device");
     
-    for(i = 0; list != NULL; i++){
-      str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+    if(device != NULL){
+      list = start_list;
+    
+      for(i = 0; list != NULL; i++){
+	str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
       
-      if(str != NULL &&
-	 !g_ascii_strcasecmp(str,
-			     device)){
-	soundcard = list->data;
+	if(str != NULL &&
+	   !g_ascii_strcasecmp(str,
+			       device)){
+	  soundcard = list->data;
 	
-	break;
+	  break;
+	}
+
+	/* iterate soundcard */
+	list = list->next;
       }
 
-      /* iterate soundcard */
-      list = list->next;
+      xmlFree(device);
     }
-
-    xmlFree(device);
   }
   
   if(soundcard == NULL &&
      start_list != NULL){
     soundcard = start_list->data;
+
+//    g_message("soundcard fallback %s", G_OBJECT_TYPE_NAME(soundcard));
   }
 
   g_list_free_full(start_list,
