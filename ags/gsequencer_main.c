@@ -248,8 +248,9 @@ main(int argc, char **argv)
   uid = getuid();
   pw = getpwuid(uid);
 
-  app_dir = app_dir = g_strndup(argv[0],
-				strlen(argv[0]) - strlen("Contents/MacOS/gsequencer"));
+  gchar *dirname = g_path_get_dirname(argv[0]);
+  
+  app_dir = g_strdup_printf("%s/../..", dirname);
   
   putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s/Contents/Resources/lib/gio/modules", app_dir));
 
