@@ -531,7 +531,11 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
 						  channel_data->chorus_util.destination, 1, 0,
 						  buffer_size, copy_mode);
+
+      channel_data->chorus_util.source = NULL;
     }
+
+    channel_data->synth.source = NULL;
   }
   
   /* unref */

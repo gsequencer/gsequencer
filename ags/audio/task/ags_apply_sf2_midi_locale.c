@@ -313,7 +313,7 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
     g_object_ref(synth->ipatch_sample);
   }
 
-  //  ags_stream_free(synth->source);
+  ags_stream_free(synth->source);
   
   synth->source_stride = template->source_stride;
   synth->source = template->source;

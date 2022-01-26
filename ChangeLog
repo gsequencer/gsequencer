@@ -4,6 +4,7 @@ ags (3.16.13)
 	* fixed AgsSynthUtil missing increment during iteration
 	* fixed AgsFMSynthUtil missing increment during iteration
 	* fixed AgsEnvelopeUtil missing increment during iteration
+	* minor improvements
 
 ags (3.16.12)
 
