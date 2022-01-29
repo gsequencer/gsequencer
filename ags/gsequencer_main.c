@@ -49,6 +49,10 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <Foundation/Foundation.h>
+#endif
+
 #define _GNU_SOURCE
 #include <locale.h>
 
@@ -210,7 +214,7 @@ main(int argc, char **argv)
   uid = getuid();
   pw = getpwuid(uid);
 
-  app_dir = [[NSBundle mainBundle] bundlePath];
+  app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
   
   putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s/Contents/Resources/lib/gio/modules", app_dir));
 
