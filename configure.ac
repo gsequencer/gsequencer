@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.16.12],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.16.14],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -32,6 +32,11 @@ AC_ARG_VAR(LIBAGS_API_DIR, install path of Libags API Reference Manual)
 AC_ARG_VAR(LIBAGS_AUDIO_API_DIR, install path of Libags-audio API Reference Manual)
 AC_ARG_VAR(LIBAGS_GUI_API_DIR, install path of Libags-gui API Reference Manual)
 AC_ARG_VAR(LIBGSEQUENCER_API_DIR, install path of Libgsequencer API Reference Manual)
+
+AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debug],
+                                     [enable debug symbols (default is no)])],
+              [],
+              [enable_debug=no])
 
 AC_ARG_ENABLE(public-libgsequencer, [AS_HELP_STRING([--enable-public-libgsequencer],
                                                     [provide public libgsequencer (default is yes)])],
@@ -427,6 +432,13 @@ AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 
 AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])
+
+AS_IF([test "x$enable_debug" != xno],
+      [AC_DEFINE([AGS_WITH_DEBUG], [1], [debug symbols enabled])
+      
+      AC_MSG_NOTICE([debug enabled])],
+      [AC_MSG_NOTICE([debug disabled])])
+AM_CONDITIONAL([AGS_WITH_DEBUG], [test "x$enable_debug" == xyes])
 
 AS_IF([test "x$enable_public_libgsequencer" != xno],
       [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])

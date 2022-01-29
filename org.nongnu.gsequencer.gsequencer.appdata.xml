@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.16.14" date="2022-01-29">
+      <description>
+	<p>
+	  Fixed AgsSF2Synth potential SIGSEGV because of unitialized field.
+	</p>
+      </description>
+    </release>
+
     <release version="3.16.11" date="2022-01-22">
       <description>
 	<p>

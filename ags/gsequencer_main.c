@@ -49,6 +49,10 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#if defined(AGS_OSX_DMG_ENV)
+#include <Foundation/Foundation.h>
+#endif
+
 #define _GNU_SOURCE
 #include <locale.h>
 
@@ -172,47 +176,9 @@ main(int argc, char **argv)
   
   builtin_theme_disabled = FALSE;
 
-  /**/
-  LIBXML_TEST_VERSION;
-  xmlInitParser();
-  
-  //ao_initialize();
-
-#if defined(AGS_WITH_GSTREAMER)
-  gst_argc = 1;
-  gst_argv = (char **) g_malloc(2 * sizeof(char *));
-
-  gst_argv[0] = g_strdup(argv[0]);
-  gst_argv[1] = NULL;
-    
-  gst_init(&gst_argc, &gst_argv);
-#endif
-  
-  //  gdk_threads_enter();
-  //  g_thread_init(NULL);
-  gtk_init(&argc, &argv);
-
-  settings = gtk_settings_get_default();
-
-  g_object_set(settings,
-	       "gtk-primary-button-warps-slider", FALSE,
-	       NULL);
-  g_signal_handlers_block_matched(settings,
-				  G_SIGNAL_MATCH_DETAIL,
-				  g_signal_lookup("set-property",
-						  GTK_TYPE_SETTINGS),
-				  g_quark_from_string("gtk-primary-button-warps-slider"),
-				  NULL,
-				  NULL,
-				  NULL);
-  
-  config = NULL;
-  
-  priority = ags_priority_get_instance();  
-  ags_priority_load_defaults(priority);
-
 //  mtrace();
-  
+
+  /* env */
 #if defined (AGS_W32API)
 #if defined(AGS_W32_EXE_ENV)
   app_dir = NULL;
@@ -248,8 +214,7 @@ main(int argc, char **argv)
   uid = getuid();
   pw = getpwuid(uid);
 
-  app_dir = app_dir = g_strndup(argv[0],
-				strlen(argv[0]) - strlen("Contents/MacOS/gsequencer"));
+  app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
   
   putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s/Contents/Resources/lib/gio/modules", app_dir));
 
@@ -313,6 +278,45 @@ main(int argc, char **argv)
   g_free(wdir);
 #endif
 #endif
+
+  /* init */
+  LIBXML_TEST_VERSION;
+  xmlInitParser();
+  
+  //ao_initialize();
+
+#if defined(AGS_WITH_GSTREAMER)
+  gst_argc = 1;
+  gst_argv = (char **) g_malloc(2 * sizeof(char *));
+
+  gst_argv[0] = g_strdup(argv[0]);
+  gst_argv[1] = NULL;
+    
+  gst_init(&gst_argc, &gst_argv);
+#endif
+  
+  //  gdk_threads_enter();
+  //  g_thread_init(NULL);
+  gtk_init(&argc, &argv);
+
+  settings = gtk_settings_get_default();
+
+  g_object_set(settings,
+	       "gtk-primary-button-warps-slider", FALSE,
+	       NULL);
+  g_signal_handlers_block_matched(settings,
+				  G_SIGNAL_MATCH_DETAIL,
+				  g_signal_lookup("set-property",
+						  GTK_TYPE_SETTINGS),
+				  g_quark_from_string("gtk-primary-button-warps-slider"),
+				  NULL,
+				  NULL,
+				  NULL);
+  
+  config = NULL;
+  
+  priority = ags_priority_get_instance();  
+  ags_priority_load_defaults(priority);
   
   /* real-time setup */
 #ifdef AGS_WITH_RT

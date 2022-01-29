@@ -1757,14 +1757,21 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   }
 
   channel_data->synth.ipatch_sample = NULL;
-
+  
   channel_data->synth.source = NULL;
   channel_data->synth.source_stride = 1;
+
+  channel_data->synth.sample_buffer = NULL;
+  channel_data->synth.im_buffer = NULL;
  
   channel_data->synth.buffer_length = 0;
   channel_data->synth.format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   channel_data->synth.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
+  channel_data->synth.preset = NULL;
+  channel_data->synth.instrument = NULL;
+  channel_data->synth.sample = NULL;
+  
   channel_data->synth.note = 0.0;
   channel_data->synth.volume = 0.5;
 

@@ -108,17 +108,17 @@ ags_soundcard_test_init_suite()
   
   i = 0;
   
-  soundcard_test_types[i++] = AGS_TYPE_DEVOUT;
-  soundcard_test_types[i++] = AGS_TYPE_DEVIN;
-  soundcard_test_types[i++] = AGS_TYPE_CORE_AUDIO_DEVOUT;
-  soundcard_test_types[i++] = AGS_TYPE_CORE_AUDIO_DEVIN;
-  soundcard_test_types[i++] = AGS_TYPE_JACK_DEVOUT;
-  soundcard_test_types[i++] = AGS_TYPE_JACK_DEVIN;
-  soundcard_test_types[i++] = AGS_TYPE_PULSE_DEVOUT;
-  soundcard_test_types[i++] = AGS_TYPE_PULSE_DEVIN;
-  soundcard_test_types[i++] = AGS_TYPE_WASAPI_DEVOUT;
-  soundcard_test_types[i++] = AGS_TYPE_WASAPI_DEVIN;
-  soundcard_test_types[i++] = G_TYPE_NONE;
+  soundcard_test_types[(i++)] = AGS_TYPE_DEVOUT;
+  soundcard_test_types[(i++)] = AGS_TYPE_DEVIN;
+  soundcard_test_types[(i++)] = AGS_TYPE_CORE_AUDIO_DEVOUT;
+  soundcard_test_types[(i++)] = AGS_TYPE_CORE_AUDIO_DEVIN;
+  soundcard_test_types[(i++)] = AGS_TYPE_JACK_DEVOUT;
+  soundcard_test_types[(i++)] = AGS_TYPE_JACK_DEVIN;
+  soundcard_test_types[(i++)] = AGS_TYPE_PULSE_DEVOUT;
+  soundcard_test_types[(i++)] = AGS_TYPE_PULSE_DEVIN;
+  soundcard_test_types[(i++)] = AGS_TYPE_WASAPI_DEVOUT;
+  soundcard_test_types[(i++)] = AGS_TYPE_WASAPI_DEVIN;
+  soundcard_test_types[(i++)] = G_TYPE_NONE;
 
   return(0);
 }
@@ -148,6 +148,8 @@ ags_soundcard_test_set_device()
   for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
     current = g_object_new(soundcard_test_types[i],
 			   NULL);
+    
+    g_message("instantiated %s", G_OBJECT_TYPE_NAME(current));    
 
     if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_device == NULL){
       g_message("AgsSoundcard::set-device missing: %s", G_OBJECT_TYPE_NAME(current));
@@ -361,7 +363,8 @@ ags_soundcard_test_list_cards()
     current = g_object_new(soundcard_test_types[i],
 			   NULL);
 
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->list_cards == NULL){
+    if(!AGS_IS_SOUNDCARD(current) ||
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->list_cards == NULL){
       g_message("AgsSoundcard::list-cards missing: %s", G_OBJECT_TYPE_NAME(current));
       
       success = FALSE;

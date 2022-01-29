@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -555,7 +555,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -565,8 +565,6 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gint8) v_buffer[0];
@@ -626,7 +624,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint8) ((gint16) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gint8) ((gint16) ((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint8) ((gint16) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint8) ((gint16) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint8) ((gint16) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -637,7 +635,6 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 
@@ -703,7 +700,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -713,8 +710,6 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gint16) v_buffer[0];
@@ -774,7 +769,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint16) ((gint32) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gint16) ((gint32) ((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint16) ((gint32) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint16) ((gint32) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint16) ((gint32) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -785,7 +780,6 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 
@@ -851,7 +845,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -861,8 +855,6 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gint32) v_buffer[0];
@@ -922,7 +914,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint32) ((gint32) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gint32) ((gint32) ((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint32) ((gint32) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint32) ((gint32) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint32) ((gint32) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -933,7 +925,6 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 
@@ -999,7 +990,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -1009,8 +1000,6 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gint32) v_buffer[0];
@@ -1070,7 +1059,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint32) ((gint64) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gint32) ((gint64) ((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint32) ((gint64) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint32) ((gint64) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint32) ((gint64) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -1081,7 +1070,6 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 
@@ -1147,7 +1135,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -1157,8 +1145,6 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gint64) v_buffer[0];
@@ -1218,7 +1204,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gint64) ((gint64) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gint64) ((gint64) ((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint64) ((gint64) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint64) ((gint64) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gint64) ((gint64) ((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -1229,7 +1215,6 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 
@@ -1295,7 +1280,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -1305,8 +1290,6 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gfloat) v_buffer[0];
@@ -1366,7 +1349,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gfloat) (((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gfloat) (((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gfloat) (((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gfloat) (((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gfloat) (((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -1377,7 +1360,6 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 
@@ -1443,7 +1425,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
     source += envelope_util->source_stride;
 
     v_volume = (ags_v8double) {
-      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
       (gdouble) start_volume + (i++) * envelope_util->amount,
@@ -1453,8 +1435,6 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
       (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
-    i++;
-    
     v_buffer *= v_volume;
 
     *(destination) = (gdouble) v_buffer[0];
@@ -1514,7 +1494,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    *(destination) = (gdouble) (((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination) = (gdouble) (((source)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gdouble) (((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gdouble) (((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
     *(destination += envelope_util->destination_stride) = (gdouble) (((source += envelope_util->source_stride)[0] * (start_volume + (i++) * envelope_util->amount)));
@@ -1525,7 +1505,6 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 
     destination += envelope_util->destination_stride;
     source += envelope_util->source_stride;
-    i++;
   }
 #endif
 

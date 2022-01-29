@@ -15,7 +15,13 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 # what flags you want to pass to the C compiler & linker
 # AM_CPPFLAGS += -march=native -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
-CPPFLAGS =  @CPPFLAGS@ -include errno.h -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"$(datadir)\" -DAGS_DOC_DIR=\"$(docdir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1
+CPPFLAGS = @CPPFLAGS@
+
+if AGS_WITH_DEBUG
+CPPFLAGS += -g
+endif
+
+CPPFLAGS += -include errno.h -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"$(datadir)\" -DAGS_DOC_DIR=\"$(docdir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1
 
 if WITH_W32API
 else
@@ -863,9 +869,21 @@ endif
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 
+if WITH_OSXAPI
+gsequencer_CPPFLAGS = -x objective-c -framework Cocoa
+else
+gsequencer_CPPFLAGS = -std=gnu99
+endif
+
+gsequencer_CPPFLAGS += $(CPPFLAGS)
+
 gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
 gsequencer_LDFLAGS += -pthread
 gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(WEBKITGTK_LIBS) $(POPPLER_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
+
+if WITH_OSXAPI
+gsequencer_LDFLAGS += -framework Cocoa
+endif
 
 if WITH_W32API
 else

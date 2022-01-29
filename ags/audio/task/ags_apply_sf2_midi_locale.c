@@ -281,6 +281,9 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
     for(i = 0; i < 128; i++){
       ags_stream_free(synth->sf2_orig_buffer[i]);
       ags_stream_free(synth->sf2_resampled_buffer[i]);
+
+      synth->sf2_orig_buffer[i] = NULL;
+      synth->sf2_resampled_buffer[i] = NULL;
     }
   }
 
