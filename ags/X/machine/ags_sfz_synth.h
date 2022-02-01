@@ -41,8 +41,8 @@ G_BEGIN_DECLS
 #define AGS_IS_SFZ_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SFZ_SYNTH))
 #define AGS_SFZ_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SFZ_SYNTH, AgsSFZSynthClass))
 
-#define AGS_SFZ_SYNTH_BASE_NOTE_MAX (72.0)
-#define AGS_SFZ_SYNTH_BASE_NOTE_MIN (-72.0)
+#define AGS_SFZ_SYNTH_SAMPLE_HEIGHT_REQUEST (256)
+#define AGS_SFZ_SYNTH_SAMPLE_WIDTH_REQUEST (512)
 
 typedef struct _AgsSFZSynth AgsSFZSynth;
 typedef struct _AgsSFZSynthClass AgsSFZSynthClass;
@@ -80,7 +80,9 @@ struct _AgsSFZSynth
   AgsSFZLoader *sfz_loader;
 
   gint position;
-  GtkSpinner *sf2_loader_spinner;
+  GtkSpinner *sfz_loader_spinner;
+
+  GtkTreeView *sample_tree_view;
 
   AgsDial *synth_octave;
   AgsDial *synth_key;

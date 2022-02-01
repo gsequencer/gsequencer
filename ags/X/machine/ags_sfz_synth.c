@@ -134,6 +134,23 @@ ags_sfz_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 {
+  GtkBox *sfz_hbox;
+  GtkBox *sfz_file_hbox;
+  GtkBox *sfz_sample_hbox;
+  GtkBox *effect_vbox;
+  GtkTreeView *sfz_sample_tree_view;
+  GtkTreeViewColumn *sfz_sample_column;
+  GtkGrid *synth_grid;
+  GtkGrid *chorus_grid;
+  GtkScrolledWindow *scrolled_window;
+  GtkLabel *label;
+
+  GtkCellRenderer *sfz_sample_renderer;
+
+  GtkListStore *sfz_sample;
+
+  GtkAdjustment *adjustment;
+
   AgsAudio *audio;
   
   g_signal_connect_after((GObject *) sfz_synth, "parent_set",
@@ -189,8 +206,8 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   sfz_synth->playback_play_container = ags_recall_container_new();
   sfz_synth->playback_recall_container = ags_recall_container_new();
 
-  sfz_synth->notation_play_container = ags_recall_container_new();
-  sfz_synth->notation_recall_container = ags_recall_container_new();
+  sfz_synth->sfz_synth_play_container = ags_recall_container_new();
+  sfz_synth->sfz_synth_recall_container = ags_recall_container_new();
 
   sfz_synth->envelope_play_container = ags_recall_container_new();
   sfz_synth->envelope_recall_container = ags_recall_container_new();
@@ -206,7 +223,439 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   sfz_synth->name = NULL;
   sfz_synth->xml_type = "ags-sfz-synth";
 
-  //TODO:JK: implement me
+  /* SFZ */
+  sfz_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    0);
+  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) sfz_synth)),
+		    (GtkWidget *) sfz_hbox);
+
+  /* file */
+  sfz_file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					 0);  
+  gtk_box_pack_start(sfz_hbox,
+		     (GtkWidget *) sfz_file_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  sfz_synth->filename = (GtkEntry *) gtk_entry_new();
+
+  gtk_widget_set_valign((GtkWidget *) sfz_synth->filename,
+			GTK_ALIGN_START);
+  
+  gtk_box_pack_start(sfz_file_hbox,
+		     (GtkWidget *) sfz_synth->filename,
+		     FALSE, FALSE,
+		     0);
+  
+  sfz_synth->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"));
+
+  gtk_widget_set_valign((GtkWidget *) sfz_synth->open,
+			GTK_ALIGN_START);
+
+  gtk_box_pack_start(sfz_file_hbox,
+		     (GtkWidget *) sfz_synth->open,
+		     FALSE, FALSE,
+		     0);
+
+  sfz_synth->sfz_loader = NULL;
+  
+  sfz_synth->position = -1;
+
+  sfz_synth->sfz_loader_spinner = (GtkSpinner *) gtk_spinner_new();
+  gtk_box_pack_start(sfz_file_hbox,
+		     (GtkWidget *) sfz_synth->sfz_loader_spinner,
+		     FALSE, FALSE,
+		     0);
+  gtk_widget_set_no_show_all((GtkWidget *) sfz_synth->sfz_loader_spinner,
+			     TRUE);
+  gtk_widget_hide((GtkWidget *) sfz_synth->sfz_loader_spinner);
+
+  /* sample */
+  sfz_sample_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					   0);
+  gtk_box_pack_start(sfz_hbox,
+		     (GtkWidget *) sfz_sample_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+								  NULL);
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_SFZ_SYNTH_SAMPLE_WIDTH_REQUEST,
+			      AGS_SFZ_SYNTH_SAMPLE_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_pack_start(sfz_sample_hbox,
+		     (GtkWidget *) scrolled_window,
+		     FALSE, FALSE,
+		     0);
+  
+  sfz_synth->sample_tree_view = 
+    sfz_sample_tree_view = gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(sfz_sample_tree_view,
+					     TRUE);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) sfz_sample_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) sfz_sample_tree_view,
+			      AGS_SFZ_SYNTH_SAMPLE_WIDTH_REQUEST,
+			      AGS_SFZ_SYNTH_SAMPLE_HEIGHT_REQUEST);
+
+  sfz_sample_renderer = gtk_cell_renderer_text_new();
+
+  sfz_sample_column = gtk_tree_view_column_new_with_attributes(i18n("sample"),
+							       sfz_sample_renderer,
+							       "text", 0,
+							       NULL);
+  gtk_tree_view_append_column(sfz_sample_tree_view,
+			      sfz_sample_column);
+  
+  sfz_sample = gtk_list_store_new(1,
+				  G_TYPE_STRING);
+
+  gtk_tree_view_set_model(sfz_sample_tree_view,
+			  GTK_TREE_MODEL(sfz_sample));  
+
+  /* effect control */
+  effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				       0);
+  gtk_container_add((GtkContainer *) sfz_hbox,
+		    (GtkWidget *) effect_vbox);
+
+  /*  */
+  synth_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start(effect_vbox,
+		     (GtkWidget *) synth_grid,
+		     FALSE, FALSE,
+		     0);
+
+  /* WAV 1 - octave */
+  label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - octave"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+
+  sfz_synth->synth_octave = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->synth_octave);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -6.0);
+  gtk_adjustment_set_upper(adjustment,
+			   6.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+//  sfz_synth->synth_octave->scale_max_precision = 12;
+  
+//  ags_dial_set_scale_precision(sfz_synth->synth_octave,
+//			       12);
+  ags_dial_set_radius(sfz_synth->synth_octave,
+		      12);
+  
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) sfz_synth->synth_octave,
+		  1, 0,
+		  1, 1);
+
+  /* WAV 1 - key */
+  label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - key"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  sfz_synth->synth_key = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->synth_key);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   2.0);
+
+//  sfz_synth->synth_key->scale_max_precision = 12;
+//  ags_dial_set_scale_precision(sfz_synth->synth_key,
+//			       12);
+  ags_dial_set_radius(sfz_synth->synth_key,
+		      12);
+  
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) sfz_synth->synth_key,
+		  1, 1,
+		  1, 1);
+
+  /* WAV 1 - volume */
+  label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+
+  sfz_synth->synth_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->synth_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.5);
+
+  ags_dial_set_radius(sfz_synth->synth_volume,
+		      12);
+  
+  gtk_grid_attach(synth_grid,
+		  (GtkWidget *) sfz_synth->synth_volume,
+		  3, 0,
+		  1, 1);
+
+  /* chorus grid */
+  chorus_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start(effect_vbox,
+		     (GtkWidget *) chorus_grid,
+		     FALSE, FALSE,
+		     0);
+  
+  /* chorus input volume */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus input volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+
+  sfz_synth->chorus_input_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->chorus_input_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(sfz_synth->chorus_input_volume,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_input_volume,
+		  1, 0,
+		  1, 1);
+
+  /* chorus output volume */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus output volume"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  sfz_synth->chorus_output_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->chorus_output_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(sfz_synth->chorus_output_volume,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_output_volume,
+		  1, 1,
+		  1, 1);
+  
+  /* chorus LFO */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus LFO"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+  
+  sfz_synth->chorus_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+				 "sine");
+  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+				 "sawtooth");
+  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+				 "triangle");
+  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+				 "square");
+  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+				 "impulse");
+
+  gtk_combo_box_set_active(sfz_synth->chorus_lfo_oscillator,
+			   0);
+
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_lfo_oscillator,
+		  3, 0,
+		  1, 1);
+
+  /* chorus LFO frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus LFO frequency"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  2, 1,
+		  1, 1);
+
+  sfz_synth->chorus_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 10.0, 0.01);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_lfo_frequency,
+		  3, 1,
+		  1, 1);
+
+  /* chorus depth */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus depth"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  4, 0,
+		  1, 1);
+
+  sfz_synth->chorus_depth = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->chorus_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(sfz_synth->chorus_depth,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_depth,
+		  5, 0,
+		  1, 1);
+
+  /* chorus mix */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus mix"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  4, 1,
+		  1, 1);
+
+  sfz_synth->chorus_mix = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->chorus_mix);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.5);
+
+  ags_dial_set_radius(sfz_synth->chorus_mix,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_mix,
+		  5, 1,
+		  1, 1);
+
+  /* chorus delay */
+  label = (GtkLabel *) gtk_label_new(i18n("chorus delay"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) label,
+		  4, 2,
+		  1, 1);
+
+  sfz_synth->chorus_delay = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->chorus_delay);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(sfz_synth->chorus_delay,
+		      12);
+  
+  gtk_grid_attach(chorus_grid,
+		  (GtkWidget *) sfz_synth->chorus_delay,
+		  5, 2,
+		  1, 1);
 
   /* dialog */
   sfz_synth->open_dialog = NULL;
@@ -367,7 +816,7 @@ ags_sfz_synth_map_recall(AgsMachine *machine)
 
   /* ags-fx-sfz-synth */
   start_recall = ags_fx_factory_create(audio,
-				       sfz_synth->notation_play_container, sfz_synth->notation_recall_container,
+				       sfz_synth->sfz_synth_play_container, sfz_synth->sfz_synth_recall_container,
 				       "ags-fx-sfz-synth",
 				       NULL,
 				       NULL,
@@ -472,7 +921,7 @@ ags_sfz_synth_input_map_recall(AgsSFZSynth *sfz_synth,
 
 	/* ags-fx-sfz-synth */
 	start_recall = ags_fx_factory_create(audio,
-					     sfz_synth->notation_play_container, sfz_synth->notation_recall_container,
+					     sfz_synth->sfz_synth_play_container, sfz_synth->sfz_synth_recall_container,
 					     "ags-fx-sfz-synth",
 					     NULL,
 					     NULL,
@@ -550,7 +999,7 @@ ags_sfz_synth_output_map_recall(AgsSFZSynth *sfz_synth,
  * 
  * Open @filename.
  * 
- * Since: 3.4.0
+ * Since: 3.17.0
  */
 void
 ags_sfz_synth_open_filename(AgsSFZSynth *sfz_synth,
