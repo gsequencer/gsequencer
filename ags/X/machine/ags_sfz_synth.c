@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -180,6 +180,9 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   sfz_synth->flags = 0;
 
   /* mapped IO */
+  sfz_synth->mapped_output_audio_channel = 0;
+  sfz_synth->mapped_input_audio_channel = 0;
+
   sfz_synth->mapped_input_pad = 0;
   sfz_synth->mapped_output_pad = 0;
 
@@ -362,10 +365,10 @@ ags_sfz_synth_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-notation */
+  /* ags-fx-sfz-synth */
   start_recall = ags_fx_factory_create(audio,
 				       sfz_synth->notation_play_container, sfz_synth->notation_recall_container,
-				       "ags-fx-notation",
+				       "ags-fx-sfz-synth",
 				       NULL,
 				       NULL,
 				       0, 0,
@@ -430,83 +433,89 @@ ags_sfz_synth_input_map_recall(AgsSFZSynth *sfz_synth,
 
   GList *start_recall;
 
-  gint position;
   guint input_pads;
   guint audio_channels;
-
-  if(sfz_synth->mapped_input_pad > input_pad_start){
-    return;
-  }
+  gint position;
+  guint i;
+  guint j;
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
   position = 0;
-  
-  input_pads = 0;
-  audio_channels = 0;
 
   /* get some fields */
-  g_object_get(audio,
-	       "input-pads", &input_pads,
-	       "audio-channels", &audio_channels,
-	       NULL);
+  input_pads = AGS_MACHINE(sfz_synth)->input_pads;
+  audio_channels = AGS_MACHINE(sfz_synth)->audio_channels;    
   
-  /* ags-fx-playback */
-  start_recall = ags_fx_factory_create(audio,
-				       sfz_synth->playback_play_container, sfz_synth->playback_recall_container,
-				       "ags-fx-playback",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+  for(i = 0; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsMachineInputLine* input_line;
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+      input_line = g_list_nth_data(AGS_MACHINE(sfz_synth)->machine_input_line,
+				   (i * audio_channels) + j);
 
-  /* ags-fx-notation */
-  start_recall = ags_fx_factory_create(audio,
-				       sfz_synth->notation_play_container, sfz_synth->notation_recall_container,
-				       "ags-fx-notation",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+      if(input_line != NULL &&
+	 input_line->mapped_recall == FALSE){
+	/* ags-fx-playback */
+	start_recall = ags_fx_factory_create(audio,
+					     sfz_synth->playback_play_container, sfz_synth->playback_recall_container,
+					     "ags-fx-playback",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-envelope */
-  start_recall = ags_fx_factory_create(audio,
-				       sfz_synth->envelope_play_container, sfz_synth->envelope_recall_container,
-				       "ags-fx-envelope",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+	/* ags-fx-sfz-synth */
+	start_recall = ags_fx_factory_create(audio,
+					     sfz_synth->notation_play_container, sfz_synth->notation_recall_container,
+					     "ags-fx-sfz-synth",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
-  /* ags-fx-buffer */
-  start_recall = ags_fx_factory_create(audio,
-				       sfz_synth->buffer_play_container, sfz_synth->buffer_recall_container,
-				       "ags-fx-buffer",
-				       NULL,
-				       NULL,
-				       audio_channel_start, audio_channels,
-				       input_pad_start, input_pads,
-				       position,
-				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+	/* ags-fx-envelope */
+	start_recall = ags_fx_factory_create(audio,
+					     sfz_synth->envelope_play_container, sfz_synth->envelope_recall_container,
+					     "ags-fx-envelope",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
 
+	/* ags-fx-buffer */
+	start_recall = ags_fx_factory_create(audio,
+					     sfz_synth->buffer_play_container, sfz_synth->buffer_recall_container,
+					     "ags-fx-buffer",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
+      }
+    }
+  }
+  
+  sfz_synth->mapped_input_audio_channel = audio_channels;
   sfz_synth->mapped_input_pad = input_pads;
 }
 
@@ -518,19 +527,48 @@ ags_sfz_synth_output_map_recall(AgsSFZSynth *sfz_synth,
   AgsAudio *audio;
 
   guint output_pads;
+  guint audio_channels;
 
   if(sfz_synth->mapped_output_pad > output_pad_start){
     return;
   }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
-
-  /* get some fields */
-  g_object_get(audio,
-	       "output-pads", &output_pads,
-	       NULL);
   
+  /* get some fields */
+  output_pads = AGS_MACHINE(sfz_synth)->output_pads;
+  audio_channels = AGS_MACHINE(sfz_synth)->audio_channels;    
+  
+  sfz_synth->mapped_output_audio_channel = audio_channels;
   sfz_synth->mapped_output_pad = output_pads;
+}
+
+/**
+ * ags_sfz_synth_open_filename:
+ * @sfz_synth: the #AgsSFZSynth
+ * @filename: the filename
+ * 
+ * Open @filename.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sfz_synth_open_filename(AgsSFZSynth *sfz_synth,
+			    gchar *filename)
+{
+  AgsSFZLoader *sfz_loader;
+
+  if(!AGS_IS_SFZ_SYNTH(sfz_synth) ||
+     filename == NULL){
+    return;
+  }
+  
+  sfz_synth->sfz_loader = 
+    sfz_loader = ags_sfz_loader_new(AGS_MACHINE(sfz_synth)->audio,
+				    filename,
+				    TRUE);
+
+  ags_sfz_loader_start(sfz_loader);
 }
 
 /**

@@ -1,3 +1,9 @@
+ags (3.17.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsSFZSynth
+	* TODO:JK: implemented additional getter/setter functions of utility structs
+
 ags (3.16.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,14 +56,17 @@ struct _AgsSFZSynth
   gchar *name;
   gchar *xml_type;
 
+  guint mapped_output_audio_channel;
+  guint mapped_input_audio_channel;
+
   guint mapped_input_pad;
   guint mapped_output_pad;
 
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *notation_play_container;
-  AgsRecallContainer *notation_recall_container;
+  AgsRecallContainer *sfz_synth_play_container;
+  AgsRecallContainer *sfz_synth_recall_container;
 
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
@@ -75,6 +78,26 @@ struct _AgsSFZSynth
   GtkButton *open;
 
   AgsSFZLoader *sfz_loader;
+
+  gint position;
+  GtkSpinner *sf2_loader_spinner;
+
+  AgsDial *synth_octave;
+  AgsDial *synth_key;
+
+  AgsDial *synth_volume;
+
+  GtkCheckButton *chorus_enabled;
+
+  AgsDial *chorus_input_volume;
+  AgsDial *chorus_output_volume;
+
+  GtkComboBox *chorus_lfo_oscillator;  
+  GtkSpinButton *chorus_lfo_frequency;
+
+  AgsDial *chorus_depth;
+  AgsDial *chorus_mix;
+  AgsDial *chorus_delay;
   
   GtkWidget *open_dialog;
 };
