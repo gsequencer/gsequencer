@@ -43,7 +43,7 @@
     <release version="3.16.14" date="2022-01-29">
       <description>
 	<p>
-	  Fixed AgsSF2Synth potential SIGSEGV because of unitialized field.
+	  Fixed AgsSF2Synth potential SIGSEGV because of uninitialized field.
 	</p>
       </description>
     </release>
