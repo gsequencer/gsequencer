@@ -2151,6 +2151,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_sf2_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_sf2_synth_recycling.h \
 	ags/audio/fx/ags_fx_sf2_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_sfz_synth_audio.h \
+	ags/audio/fx/ags_fx_sfz_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_sfz_synth_channel.h \
+	ags/audio/fx/ags_fx_sfz_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_sfz_synth_recycling.h \
+	ags/audio/fx/ags_fx_sfz_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_ladspa_audio.h \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
 	ags/audio/fx/ags_fx_ladspa_channel.h \
@@ -2294,6 +2300,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_sf2_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_sf2_synth_recycling.c \
 	ags/audio/fx/ags_fx_sf2_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_sfz_synth_audio.c \
+	ags/audio/fx/ags_fx_sfz_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_sfz_synth_channel.c \
+	ags/audio/fx/ags_fx_sfz_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_sfz_synth_recycling.c \
+	ags/audio/fx/ags_fx_sfz_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_ladspa_audio.c \
 	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
 	ags/audio/fx/ags_fx_ladspa_channel.c \

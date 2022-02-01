@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,10 @@ G_BEGIN_DECLS
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
 #define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
 
+typedef enum{
+  AGS_SFZ_SYNTH_UTIL_FX_ENGINE   = 1,
+}AgsSFZSynthUtilFlags;
+
 /**
  * AgsSFZSynthUtilLoopMode:
  * @AGS_SFZ_SYNTH_UTIL_LOOP_NONE: loop none
@@ -54,6 +58,24 @@ typedef struct _AgsSFZSynthUtil AgsSFZSynthUtil;
 
 struct _AgsSFZSynthUtil
 {
+  guint flags;
+  
+  AgsAudioContainer *sfz_file;
+
+  guint sfz_sample_count;
+  IpatchSample **sfz_sample;
+  gint **sfz_note_range;
+
+  gint sfz_loop_mode[128];
+  gint sfz_loop_start[128];
+  gint sfz_loop_end[128];
+
+  guint sfz_orig_buffer_length[128];
+  gpointer *sfz_orig_buffer;
+  
+  guint sfz_resampled_buffer_length[128];
+  gpointer *sfz_resampled_buffer;  
+
   AgsSFZSample *sfz_sample;
   
   gpointer source;
