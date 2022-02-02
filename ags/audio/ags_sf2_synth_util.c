@@ -157,7 +157,6 @@ ags_sf2_synth_util_alloc()
   ptr->midi_key = -1;
   
   ptr->note = 0.0;
-
   ptr->volume = 1.0;
 
   ptr->frame_count = 0;
@@ -228,7 +227,6 @@ ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
   new_ptr->midi_key = ptr->midi_key;
 
   new_ptr->note = ptr->note;
-
   new_ptr->volume = ptr->volume;
 
   new_ptr->frame_count = ptr->frame_count;

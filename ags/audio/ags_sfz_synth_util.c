@@ -28,10 +28,8 @@
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
-#include <ags/audio/file/ags_sfz_file.h>
 #include <ags/audio/file/ags_sfz_group.h>
 #include <ags/audio/file/ags_sfz_region.h>
-#include <ags/audio/file/ags_sfz_sample.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -116,9 +114,10 @@ ags_sfz_synth_util_alloc()
   ptr->buffer_length = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  ptr->midi_key = -1;
   
   ptr->note = 0.0;
-
   ptr->volume = 1.0;
 
   ptr->frame_count = 0;
@@ -165,8 +164,9 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
-  new_ptr->note = ptr->note;
+  new_ptr->midi_key = ptr->midi_key;
 
+  new_ptr->note = ptr->note;
   new_ptr->volume = ptr->volume;
 
   new_ptr->frame_count = ptr->frame_count;
@@ -402,6 +402,46 @@ ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,
   }
 
   sfz_synth_util->samplerate = samplerate;
+}
+
+/**
+ * ags_sfz_synth_util_get_midi_key:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get midi_key of @sfz_synth_util.
+ * 
+ * Returns: the midi key
+ * 
+ * Since: 3.17.0
+ */
+gint
+ags_sfz_synth_util_get_midi_key(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(-1);
+  }
+
+  return(sfz_synth_util->midi_key);
+}
+
+/**
+ * ags_sfz_synth_util_set_midi_key:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @midi_key: the midi key
+ *
+ * Set @midi_key of @sfz_synth_util.
+ *
+ * Since: 3.17.0
+ */
+void
+ags_sfz_synth_util_set_midi_key(AgsSFZSynthUtil *sfz_synth_util,
+				gint midi_key)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+
+  sfz_synth_util->midi_key = midi_key;
 }
 
 /**
