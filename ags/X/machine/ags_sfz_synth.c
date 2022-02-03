@@ -136,18 +136,20 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 {
   GtkBox *sfz_hbox;
   GtkBox *sfz_file_hbox;
-  GtkBox *sfz_sample_hbox;
+  GtkBox *sfz_opcode_hbox;
   GtkBox *effect_vbox;
-  GtkTreeView *sfz_sample_tree_view;
-  GtkTreeViewColumn *sfz_sample_column;
+  GtkTreeView *sfz_opcode_tree_view;
+  GtkTreeViewColumn *sfz_opcode_column;
+  GtkTreeViewColumn *sfz_opcode_value_column;
   GtkGrid *synth_grid;
   GtkGrid *chorus_grid;
   GtkScrolledWindow *scrolled_window;
   GtkLabel *label;
 
-  GtkCellRenderer *sfz_sample_renderer;
+  GtkCellRenderer *sfz_opcode_renderer;
+  GtkCellRenderer *sfz_opcode_value_renderer;
 
-  GtkListStore *sfz_sample;
+  GtkListStore *sfz_opcode;
 
   GtkAdjustment *adjustment;
 
@@ -270,52 +272,62 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 			     TRUE);
   gtk_widget_hide((GtkWidget *) sfz_synth->sfz_loader_spinner);
 
-  /* sample */
-  sfz_sample_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+  /* opcode */
+  sfz_opcode_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					   0);
   gtk_box_pack_start(sfz_hbox,
-		     (GtkWidget *) sfz_sample_hbox,
+		     (GtkWidget *) sfz_opcode_hbox,
 		     FALSE, FALSE,
 		     0);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
   gtk_widget_set_size_request((GtkWidget *) scrolled_window,
-			      AGS_SFZ_SYNTH_SAMPLE_WIDTH_REQUEST,
-			      AGS_SFZ_SYNTH_SAMPLE_HEIGHT_REQUEST);
+			      AGS_SFZ_SYNTH_OPCODE_WIDTH_REQUEST,
+			      AGS_SFZ_SYNTH_OPCODE_HEIGHT_REQUEST);
   gtk_scrolled_window_set_policy(scrolled_window,
 				 GTK_POLICY_AUTOMATIC,
 				 GTK_POLICY_ALWAYS);
-  gtk_box_pack_start(sfz_sample_hbox,
+  gtk_box_pack_start(sfz_opcode_hbox,
 		     (GtkWidget *) scrolled_window,
 		     FALSE, FALSE,
 		     0);
   
-  sfz_synth->sample_tree_view = 
-    sfz_sample_tree_view = gtk_tree_view_new();
-  gtk_tree_view_set_activate_on_single_click(sfz_sample_tree_view,
+  sfz_synth->opcode_tree_view = 
+    sfz_opcode_tree_view = gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(sfz_opcode_tree_view,
 					     TRUE);
   gtk_container_add((GtkContainer *) scrolled_window,
-		    (GtkWidget *) sfz_sample_tree_view);
+		    (GtkWidget *) sfz_opcode_tree_view);
     
-  gtk_widget_set_size_request((GtkWidget *) sfz_sample_tree_view,
-			      AGS_SFZ_SYNTH_SAMPLE_WIDTH_REQUEST,
-			      AGS_SFZ_SYNTH_SAMPLE_HEIGHT_REQUEST);
+  gtk_widget_set_size_request((GtkWidget *) sfz_opcode_tree_view,
+			      AGS_SFZ_SYNTH_OPCODE_WIDTH_REQUEST,
+			      AGS_SFZ_SYNTH_OPCODE_HEIGHT_REQUEST);
 
-  sfz_sample_renderer = gtk_cell_renderer_text_new();
+  sfz_opcode_renderer = gtk_cell_renderer_text_new();
 
-  sfz_sample_column = gtk_tree_view_column_new_with_attributes(i18n("sample"),
-							       sfz_sample_renderer,
+  sfz_opcode_column = gtk_tree_view_column_new_with_attributes(i18n("opcode"),
+							       sfz_opcode_renderer,
 							       "text", 0,
 							       NULL);
-  gtk_tree_view_append_column(sfz_sample_tree_view,
-			      sfz_sample_column);
+  gtk_tree_view_append_column(sfz_opcode_tree_view,
+			      sfz_opcode_column);
+
+  sfz_opcode_value_renderer = gtk_cell_renderer_text_new();
+
+  sfz_opcode_value_column = gtk_tree_view_column_new_with_attributes(i18n("value"),
+								     sfz_opcode_value_renderer,
+								     "text", 1,
+								     NULL);
+  gtk_tree_view_append_column(sfz_opcode_tree_view,
+			      sfz_opcode_value_column);
   
-  sfz_sample = gtk_list_store_new(1,
+  sfz_opcode = gtk_list_store_new(2,
+				  G_TYPE_STRING,
 				  G_TYPE_STRING);
 
-  gtk_tree_view_set_model(sfz_sample_tree_view,
-			  GTK_TREE_MODEL(sfz_sample));  
+  gtk_tree_view_set_model(sfz_opcode_tree_view,
+			  GTK_TREE_MODEL(sfz_opcode));  
 
   /* effect control */
   effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -693,7 +705,44 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   /* AgsSFZSynth */
   sfz_synth = AGS_SFZ_SYNTH(connectable);
 
-  //TODO:JK: implement me
+  g_signal_connect((GObject *) sfz_synth, "destroy",
+		   G_CALLBACK(ags_sfz_synth_destroy_callback), (gpointer) sfz_synth);  
+
+  g_signal_connect((GObject *) sfz_synth->open, "clicked",
+		   G_CALLBACK(ags_sfz_synth_open_clicked_callback), (gpointer) sfz_synth);
+
+  g_signal_connect_after(sfz_synth->synth_octave, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_synth_octave_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->synth_key, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_synth_key_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->synth_volume, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_synth_volume_callback), sfz_synth);
+
+  //  g_signal_connect_after(sfz_synth->chorus_enabled, "clicked",
+//			 G_CALLBACK(ags_sfz_synth_chorus_enabled_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_input_volume, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_input_volume_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_output_volume, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_output_volume_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_lfo_oscillator, "changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_lfo_oscillator_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_lfo_frequency_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_depth, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_depth_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_mix, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_mix_callback), sfz_synth);
+  
+  g_signal_connect_after(sfz_synth->chorus_delay, "value-changed",
+			 G_CALLBACK(ags_sfz_synth_chorus_delay_callback), sfz_synth);
 }
 
 void
@@ -710,7 +759,83 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
   /* AgsSFZSynth */
   sfz_synth = AGS_SFZ_SYNTH(connectable);
 
-  //TODO:JK: implement me
+  g_object_disconnect((GObject *) sfz_synth,
+		      "any_signal::destroy",
+		      G_CALLBACK(ags_sfz_synth_destroy_callback),
+		      (gpointer) sfz_synth,
+		      NULL);  
+
+  g_object_disconnect((GObject *) sfz_synth->open,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_open_clicked_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->synth_octave,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_synth_octave_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->synth_key,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_synth_key_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->synth_volume,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_synth_volume_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_input_volume,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_input_volume_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_output_volume,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_output_volume_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_input_volume,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_input_volume_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_lfo_oscillator,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_lfo_oscillator_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_lfo_frequency,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_lfo_frequency_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_depth,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_depth_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_mix,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_mix_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sfz_synth->chorus_delay,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_sfz_synth_chorus_delay_callback),
+		      (gpointer) sfz_synth,
+		      NULL);
 }
 
 void
