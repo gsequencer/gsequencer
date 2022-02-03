@@ -2,6 +2,10 @@ ags (3.17.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsSFZSynth
+	* implemented ags-fx-sfz-synth
+	* implemented AgsSFZInstrumentLoader worker
+	* implemented AgsApplySFZInstrument task
+	* implemented ags_sfz_synth_util_load_instrument()
 	* TODO:JK: implemented additional getter/setter functions of utility structs
 
 ags (3.16.14)

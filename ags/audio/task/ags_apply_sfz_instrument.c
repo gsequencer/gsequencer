@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_apply_sf2_midi_locale.h>
+#include <ags/audio/task/ags_apply_sfz_instrument.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -28,32 +28,32 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_sf2_midi_locale_class_init(AgsApplySF2MidiLocaleClass *apply_sf2_midi_locale);
-void ags_apply_sf2_midi_locale_init(AgsApplySF2MidiLocale *apply_sf2_midi_locale);
-void ags_apply_sf2_midi_locale_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_apply_sf2_midi_locale_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
-void ags_apply_sf2_midi_locale_dispose(GObject *gobject);
-void ags_apply_sf2_midi_locale_finalize(GObject *gobject);
+void ags_apply_sfz_instrument_class_init(AgsApplySFZInstrumentClass *apply_sfz_instrument);
+void ags_apply_sfz_instrument_init(AgsApplySFZInstrument *apply_sfz_instrument);
+void ags_apply_sfz_instrument_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+void ags_apply_sfz_instrument_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+void ags_apply_sfz_instrument_dispose(GObject *gobject);
+void ags_apply_sfz_instrument_finalize(GObject *gobject);
 
-void ags_apply_sf2_midi_locale_launch(AgsTask *task);
+void ags_apply_sfz_instrument_launch(AgsTask *task);
 
 /**
- * SECTION:ags_apply_sf2_midi_locale
- * @short_description: apply Soundfont2 synth template
- * @title: AgsApplySF2MidiLocale
+ * SECTION:ags_apply_sfz_instrument
+ * @short_description: apply SFZ synth template
+ * @title: AgsApplySFZInstrument
  * @section_id:
- * @include: ags/audio/task/ags_apply_sf2_midi_locale.h
+ * @include: ags/audio/task/ags_apply_sfz_instrument.h
  *
- * The #AgsApplySF2MidiLocale task apply the specified Soundfont2 synth template.
+ * The #AgsApplySFZInstrument task apply the specified SFZ synth template.
  */
 
-static gpointer ags_apply_sf2_midi_locale_parent_class = NULL;
+static gpointer ags_apply_sfz_instrument_parent_class = NULL;
 
 enum{
   PROP_0,
@@ -62,62 +62,62 @@ enum{
 };
 
 GType
-ags_apply_sf2_midi_locale_get_type()
+ags_apply_sfz_instrument_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_apply_sf2_midi_locale = 0;
+    GType ags_type_apply_sfz_instrument = 0;
 
-    static const GTypeInfo ags_apply_sf2_midi_locale_info = {
-      sizeof(AgsApplySF2MidiLocaleClass),
+    static const GTypeInfo ags_apply_sfz_instrument_info = {
+      sizeof(AgsApplySFZInstrumentClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_apply_sf2_midi_locale_class_init,
+      (GClassInitFunc) ags_apply_sfz_instrument_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsApplySF2MidiLocale),
+      sizeof(AgsApplySFZInstrument),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_apply_sf2_midi_locale_init,
+      (GInstanceInitFunc) ags_apply_sfz_instrument_init,
     };
 
-    ags_type_apply_sf2_midi_locale = g_type_register_static(AGS_TYPE_TASK,
-							    "AgsApplySF2MidiLocale",
-							    &ags_apply_sf2_midi_locale_info,
-							    0);
+    ags_type_apply_sfz_instrument = g_type_register_static(AGS_TYPE_TASK,
+							   "AgsApplySFZInstrument",
+							   &ags_apply_sfz_instrument_info,
+							   0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_sf2_midi_locale);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_sfz_instrument);
   }
 
   return g_define_type_id__volatile;
 }
 
 void
-ags_apply_sf2_midi_locale_class_init(AgsApplySF2MidiLocaleClass *apply_sf2_midi_locale)
+ags_apply_sfz_instrument_class_init(AgsApplySFZInstrumentClass *apply_sfz_instrument)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
 
   GParamSpec *param_spec;
 
-  ags_apply_sf2_midi_locale_parent_class = g_type_class_peek_parent(apply_sf2_midi_locale);
+  ags_apply_sfz_instrument_parent_class = g_type_class_peek_parent(apply_sfz_instrument);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) apply_sf2_midi_locale;
+  gobject = (GObjectClass *) apply_sfz_instrument;
 
-  gobject->set_property = ags_apply_sf2_midi_locale_set_property;
-  gobject->get_property = ags_apply_sf2_midi_locale_get_property;
+  gobject->set_property = ags_apply_sfz_instrument_set_property;
+  gobject->get_property = ags_apply_sfz_instrument_get_property;
 
-  gobject->dispose = ags_apply_sf2_midi_locale_dispose;
-  gobject->finalize = ags_apply_sf2_midi_locale_finalize;
+  gobject->dispose = ags_apply_sfz_instrument_dispose;
+  gobject->finalize = ags_apply_sfz_instrument_finalize;
 
   /* properties */
   /**
-   * AgsApplySF2MidiLocale:template:
+   * AgsApplySFZInstrument:template:
    *
    * The template to apply.
    * 
-   * Since: 3.16.0
+   * Since: 3.17.0
    */
   param_spec = g_param_spec_pointer("template",
 				    i18n_pspec("template"),
@@ -128,11 +128,11 @@ ags_apply_sf2_midi_locale_class_init(AgsApplySF2MidiLocaleClass *apply_sf2_midi_
 				  param_spec);
 
   /**
-   * AgsApplySF2MidiLocale:synth:
+   * AgsApplySFZInstrument:synth:
    *
    * The synth to apply.
    * 
-   * Since: 3.16.0
+   * Since: 3.17.0
    */
   param_spec = g_param_spec_pointer("synth",
 				    i18n_pspec("synth"),
@@ -143,37 +143,37 @@ ags_apply_sf2_midi_locale_class_init(AgsApplySF2MidiLocaleClass *apply_sf2_midi_
 				  param_spec);
 
   /* AgsTaskClass */
-  task = (AgsTaskClass *) apply_sf2_midi_locale;
+  task = (AgsTaskClass *) apply_sfz_instrument;
 
-  task->launch = ags_apply_sf2_midi_locale_launch;
+  task->launch = ags_apply_sfz_instrument_launch;
 }
 
 void
-ags_apply_sf2_midi_locale_init(AgsApplySF2MidiLocale *apply_sf2_midi_locale)
+ags_apply_sfz_instrument_init(AgsApplySFZInstrument *apply_sfz_instrument)
 {
-  apply_sf2_midi_locale->template = NULL;
-  apply_sf2_midi_locale->synth = NULL;
+  apply_sfz_instrument->template = NULL;
+  apply_sfz_instrument->synth = NULL;
 }
 
 void
-ags_apply_sf2_midi_locale_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec)
+ags_apply_sfz_instrument_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec)
 {
-  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+  AgsApplySFZInstrument *apply_sfz_instrument;
 
-  apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(gobject);
+  apply_sfz_instrument = AGS_APPLY_SFZ_INSTRUMENT(gobject);
 
   switch(prop_id){
   case PROP_TEMPLATE:
   {
-    apply_sf2_midi_locale->template = g_value_get_pointer(value);
+    apply_sfz_instrument->template = g_value_get_pointer(value);
   }
   break;
   case PROP_SYNTH:
   {
-    apply_sf2_midi_locale->synth = g_value_get_pointer(value);
+    apply_sfz_instrument->synth = g_value_get_pointer(value);
   }
   break;
   default:
@@ -183,24 +183,24 @@ ags_apply_sf2_midi_locale_set_property(GObject *gobject,
 }
 
 void
-ags_apply_sf2_midi_locale_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec)
+ags_apply_sfz_instrument_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec)
 {
-  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+  AgsApplySFZInstrument *apply_sfz_instrument;
 
-  apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(gobject);
+  apply_sfz_instrument = AGS_APPLY_SFZ_INSTRUMENT(gobject);
 
   switch(prop_id){
   case PROP_TEMPLATE:
   {
-    g_value_set_pointer(value, apply_sf2_midi_locale->template);
+    g_value_set_pointer(value, apply_sfz_instrument->template);
   }
   break;
   case PROP_SYNTH:
   {
-    g_value_set_pointer(value, apply_sf2_midi_locale->synth);
+    g_value_set_pointer(value, apply_sfz_instrument->synth);
   }
   break;
   default:
@@ -210,36 +210,36 @@ ags_apply_sf2_midi_locale_get_property(GObject *gobject,
 }
 
 void
-ags_apply_sf2_midi_locale_dispose(GObject *gobject)
+ags_apply_sfz_instrument_dispose(GObject *gobject)
 {
-  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+  AgsApplySFZInstrument *apply_sfz_instrument;
 
-  apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(gobject);
+  apply_sfz_instrument = AGS_APPLY_SFZ_INSTRUMENT(gobject);
 
   /* call parent */
-  G_OBJECT_CLASS(ags_apply_sf2_midi_locale_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(ags_apply_sfz_instrument_parent_class)->dispose(gobject);
 }
 
 void
-ags_apply_sf2_midi_locale_finalize(GObject *gobject)
+ags_apply_sfz_instrument_finalize(GObject *gobject)
 {
-  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+  AgsApplySFZInstrument *apply_sfz_instrument;
 
-  apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(gobject);
+  apply_sfz_instrument = AGS_APPLY_SFZ_INSTRUMENT(gobject);
 
   //TODO:JK: implement me
 
   /* call parent */
-  G_OBJECT_CLASS(ags_apply_sf2_midi_locale_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_apply_sfz_instrument_parent_class)->finalize(gobject);
 }
 
 void
-ags_apply_sf2_midi_locale_launch(AgsTask *task)
+ags_apply_sfz_instrument_launch(AgsTask *task)
 {
-  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+  AgsApplySFZInstrument *apply_sfz_instrument;
   
-  AgsSF2SynthUtil *template;
-  AgsSF2SynthUtil *synth;
+  AgsSFZSynthUtil *template;
+  AgsSFZSynthUtil *synth;
   AgsResampleUtil *template_resample_util;
   AgsResampleUtil *synth_resample_util;
   AgsHQPitchUtil *template_hq_pitch_util;
@@ -249,68 +249,68 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
 
   guint i;
   
-  apply_sf2_midi_locale = AGS_APPLY_SF2_MIDI_LOCALE(task);
+  apply_sfz_instrument = AGS_APPLY_SFZ_INSTRUMENT(task);
 
-  g_return_if_fail(apply_sf2_midi_locale->template != NULL);
-  g_return_if_fail(apply_sf2_midi_locale->synth != NULL);
+  g_return_if_fail(apply_sfz_instrument->template != NULL);
+  g_return_if_fail(apply_sfz_instrument->synth != NULL);
 
-  template = apply_sf2_midi_locale->template;
-  synth = apply_sf2_midi_locale->synth;
+  template = apply_sfz_instrument->template;
+  synth = apply_sfz_instrument->synth;
 
   /* synth */
   synth->flags = template->flags;
 
-  synth->sf2_file = template->sf2_file;
+  synth->sfz_file = template->sfz_file;
   
-  if(synth->sf2_file != NULL){
-    g_object_ref(synth->sf2_file);
+  if(synth->sfz_file != NULL){
+    g_object_ref(synth->sfz_file);
   }
   
-  synth->sf2_sample_count = template->sf2_sample_count;
-  template->sf2_sample_count = 0;
+  synth->sfz_sample_count = template->sfz_sample_count;
+  template->sfz_sample_count = 0;
   
-  synth->sf2_sample = template->sf2_sample;
-  template->sf2_sample = NULL;
+  synth->sample = template->sample;
+  template->sample = NULL;
 
-  g_free(synth->sf2_note_range);
+  g_free(synth->sfz_note_range);
   
-  synth->sf2_note_range = template->sf2_note_range;
-  template->sf2_note_range = NULL;
+  synth->sfz_note_range = template->sfz_note_range;
+  template->sfz_note_range = NULL;
 
-  if(synth->sf2_orig_buffer != NULL){
+  if(synth->sfz_orig_buffer != NULL){
     for(i = 0; i < 128; i++){
-      ags_stream_free(synth->sf2_orig_buffer[i]);
-      ags_stream_free(synth->sf2_resampled_buffer[i]);
+      ags_stream_free(synth->sfz_orig_buffer[i]);
+      ags_stream_free(synth->sfz_resampled_buffer[i]);
 
-      synth->sf2_orig_buffer[i] = NULL;
-      synth->sf2_resampled_buffer[i] = NULL;
+      synth->sfz_orig_buffer[i] = NULL;
+      synth->sfz_resampled_buffer[i] = NULL;
     }
   }
 
-  g_free(synth->sf2_orig_buffer);
-  g_free(synth->sf2_resampled_buffer);
+  g_free(synth->sfz_orig_buffer);
+  g_free(synth->sfz_resampled_buffer);
   
-  synth->sf2_orig_buffer = template->sf2_orig_buffer;
-  template->sf2_orig_buffer = NULL;
+  synth->sfz_orig_buffer = template->sfz_orig_buffer;
+  template->sfz_orig_buffer = NULL;
   
-  synth->sf2_resampled_buffer = template->sf2_resampled_buffer;
-  template->sf2_resampled_buffer = NULL;
+  synth->sfz_resampled_buffer = template->sfz_resampled_buffer;
+  template->sfz_resampled_buffer = NULL;
   
   for(i = 0; i < 128; i++){
-    synth->sf2_orig_buffer_length[i] = template->sf2_orig_buffer_length[i];
+    synth->sfz_orig_buffer_length[i] = template->sfz_orig_buffer_length[i];
     
-    synth->sf2_resampled_buffer_length[i] = template->sf2_resampled_buffer_length[i];
+    synth->sfz_resampled_buffer_length[i] = template->sfz_resampled_buffer_length[i];
 
-    synth->sf2_loop_mode[i] = template->sf2_loop_mode[i];
+    synth->sfz_loop_mode[i] = template->sfz_loop_mode[i];
 
-    synth->sf2_loop_start[i] = template->sf2_loop_start[i];
-    synth->sf2_loop_end[i] = template->sf2_loop_end[i];
+    synth->sfz_loop_start[i] = template->sfz_loop_start[i];
+    synth->sfz_loop_end[i] = template->sfz_loop_end[i];
   }
   
-  synth->ipatch_sample = template->ipatch_sample;
+  synth->sfz_sample = template->sfz_sample;
   
-  if(synth->ipatch_sample != NULL){
-    g_object_ref(synth->ipatch_sample);
+  if(synth->sfz_sample != NULL){
+    g_object_ref(synth->sfz_sample);
   }
 
   ags_stream_free(synth->source);
@@ -332,17 +332,6 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth->buffer_length = template->buffer_length;
   synth->format = template->format;
   synth->samplerate = template->samplerate;
-
-  g_free(synth->preset);
-  g_free(synth->instrument);
-  g_free(synth->sample);
-  
-  synth->preset = g_strdup(template->preset);
-  synth->instrument = g_strdup(template->instrument);
-  synth->sample = g_strdup(template->sample);
-
-  synth->bank = template->bank;
-  synth->program = template->program;
 
   synth->midi_key = template->midi_key;
 
@@ -435,27 +424,27 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
 }
 
 /**
- * ags_apply_sf2_midi_locale_new:
+ * ags_apply_sfz_instrument_new:
  * @template: the template
  * @synth: the synth
  *
- * Creates an #AgsApplySF2MidiLocale.
+ * Creates an #AgsApplySFZInstrument.
  *
- * Returns: an new #AgsApplySF2MidiLocale.
+ * Returns: an new #AgsApplySFZInstrument.
  *
- * Since: 3.16.0
+ * Since: 3.17.0
  */
-AgsApplySF2MidiLocale*
-ags_apply_sf2_midi_locale_new(AgsSF2SynthUtil *template,
-			      AgsSF2SynthUtil *synth)
+AgsApplySFZInstrument*
+ags_apply_sfz_instrument_new(AgsSFZSynthUtil *template,
+			     AgsSFZSynthUtil *synth)
 {
-  AgsApplySF2MidiLocale *apply_sf2_midi_locale;
+  AgsApplySFZInstrument *apply_sfz_instrument;
 
-  apply_sf2_midi_locale = (AgsApplySF2MidiLocale *) g_object_new(AGS_TYPE_APPLY_SF2_MIDI_LOCALE,
-								 "template", template,
-								 "synth", synth,
-								 NULL);
+  apply_sfz_instrument = (AgsApplySFZInstrument *) g_object_new(AGS_TYPE_APPLY_SFZ_INSTRUMENT,
+								"template", template,
+								"synth", synth,
+								NULL);
 
 
-  return(apply_sf2_midi_locale);
+  return(apply_sfz_instrument);
 }

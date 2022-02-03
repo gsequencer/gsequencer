@@ -178,6 +178,8 @@ AgsGenericPitchUtil* ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *
 void ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
 					       AgsGenericPitchUtil *generic_pitch_util);
 
+void ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util);
+
 void ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util);

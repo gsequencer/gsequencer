@@ -78,6 +78,7 @@ struct _AgsSFZSynth
   GtkButton *open;
 
   AgsSFZLoader *sfz_loader;
+  AgsSFZInstrumentLoader *sfz_instrument_loader;
 
   gint position;
   GtkSpinner *sfz_loader_spinner;

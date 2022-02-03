@@ -766,6 +766,245 @@ ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
 }
 
 /**
+ * ags_sfz_synth_util_load_midi_locale:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Load midi locale of @sfz_synth_util.
+ *
+ * Since: 3.16.0
+ */
+void
+ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
+{
+  GList *start_sound_resource, *sound_resource;
+  
+  guint i;
+  guint j;
+  
+  GRecMutex *audio_container_mutex;
+  
+  if(sfz_synth_util == NULL ||
+     !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
+    return;
+  }
+
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sfz_synth_util->sfz_file);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
+    if(sfz_synth_util->sample[i] != NULL){
+      g_object_unref(sfz_synth_util->sample[i]);
+
+      sfz_synth_util->sample[i] = NULL;
+    }
+
+    sfz_synth_util->sfz_note_range[i][0] = -1;
+    sfz_synth_util->sfz_note_range[i][1] = -1;
+
+    sfz_synth_util->sfz_loop_start[i] = 0;
+    sfz_synth_util->sfz_loop_end[i] = 0;
+
+    ags_stream_free(sfz_synth_util->sfz_orig_buffer[i]);
+		
+    ags_stream_free(sfz_synth_util->sfz_resampled_buffer[i]);
+
+    sfz_synth_util->sfz_orig_buffer_length[i] = 0;
+    sfz_synth_util->sfz_orig_buffer[i] = NULL;
+
+    sfz_synth_util->sfz_resampled_buffer_length[i] = 0;
+    sfz_synth_util->sfz_resampled_buffer[i] = NULL;
+  }
+
+  sfz_synth_util->sfz_sample_count = 0;
+
+  sound_resource =
+    start_sound_resource = ags_sound_container_get_resource_current(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_file->sound_container));
+
+  i = 0;
+  
+  while(sound_resource != NULL){
+    AgsSFZSample *sample;
+    
+    gpointer buffer;
+    gpointer cache;
+	      
+    guint sample_frame_count;
+    guint sample_format;
+    guint format;
+    guint orig_samplerate;
+    gint loop_start, loop_end;
+    guint audio_channels;
+    guint channel;
+    int sfz_sample_format;
+    guint copy_mode;
+    
+    sample = AGS_SFZ_SAMPLE(sound_resource->data);
+    
+    sfz_synth_util->sample[i] = sample;
+    g_object_ref(sample);
+
+    sample_frame_count = 0;
+
+    format = AGS_SOUNDCARD_DOUBLE;
+    sample_format = AGS_SOUNDCARD_DOUBLE;
+
+    sample_frame_count = 0;
+    orig_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+	      
+    loop_start = 0;
+    loop_end = 0;
+
+    audio_channels = 0;
+    channel = 0;
+
+    ags_sound_resource_info(AGS_SOUND_RESOURCE(sample),
+			    &sample_frame_count,
+			    &loop_start, &loop_end);
+
+    ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sample),
+				   &audio_channels,
+				   &orig_samplerate,
+				   NULL,
+				   &sample_format);
+    
+    sfz_synth_util->sfz_loop_start[i] = loop_start;
+    sfz_synth_util->sfz_loop_end[i] = loop_end;
+
+    cache = NULL;
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						    ags_audio_buffer_util_format_from_soundcard(sample_format));
+
+    cache = ags_stream_alloc(audio_channels * sample_frame_count,
+			     sample_format);
+
+    for(j = 0; j < audio_channels; j++){
+      gpointer current_cache;
+
+      current_cache = cache;
+      
+      switch(sample_format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	current_cache = ((gint8 *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	current_cache = ((gint16 *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	current_cache = ((gint32 *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	current_cache = ((gint32 *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	current_cache = ((gint64 *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_FLOAT:
+      {
+	current_cache = ((gfloat *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_DOUBLE:
+      {
+	current_cache = ((gdouble *) cache) + j;
+      }
+      break;
+      case AGS_SOUNDCARD_COMPLEX:
+      {
+	current_cache = ((AgsComplex *) cache) + j;
+      }
+      break;
+      }
+      
+      ags_sound_resource_read(AGS_SOUND_RESOURCE(sample),
+			      current_cache, audio_channels,
+			      j,
+			      sample_frame_count, sample_format);
+    }
+    
+    sfz_synth_util->sfz_orig_buffer_length[i] = sample_frame_count;
+    buffer =
+      sfz_synth_util->sfz_orig_buffer[i] = ags_stream_alloc(sfz_synth_util->sfz_orig_buffer_length[i],
+							    format);
+		
+    sfz_synth_util->sfz_resampled_buffer_length[i] = 0;
+    sfz_synth_util->sfz_resampled_buffer[i] = NULL;
+		
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
+						cache, audio_channels, 0,
+						sample_frame_count, copy_mode);
+
+    ags_stream_free(cache);
+	      
+    if(sfz_synth_util->samplerate != orig_samplerate){
+      AgsResampleUtil *resample_util;
+
+      resample_util = sfz_synth_util->resample_util;
+
+      sfz_synth_util->sfz_resampled_buffer_length[i] = floor(sfz_synth_util->samplerate / orig_samplerate) * sample_frame_count;
+      sfz_synth_util->sfz_resampled_buffer[i] = ags_stream_alloc(sfz_synth_util->sfz_resampled_buffer_length[i],
+								 format);
+		  
+      sfz_synth_util->sfz_loop_start[i] = floor(sfz_synth_util->samplerate / orig_samplerate) * loop_start;
+      sfz_synth_util->sfz_loop_end[i] = floor(sfz_synth_util->samplerate / orig_samplerate) * loop_end;
+		
+      resample_util->destination = sfz_synth_util->sfz_resampled_buffer[i];
+      resample_util->destination_stride = 1;
+		  
+      resample_util->source = sfz_synth_util->sfz_orig_buffer[i];
+      resample_util->source_stride = 1;
+
+      if(resample_util->secret_rabbit.data_in != NULL){
+	g_free(resample_util->secret_rabbit.data_in);
+      }
+
+      if(resample_util->secret_rabbit.data_out != NULL){
+	g_free(resample_util->secret_rabbit.data_out);
+      }
+		
+      resample_util->secret_rabbit.src_ratio = sfz_synth_util->samplerate / orig_samplerate;
+		
+      resample_util->secret_rabbit.input_frames = sample_frame_count;
+
+      resample_util->secret_rabbit.data_in = g_malloc(sample_frame_count * sizeof(gfloat));
+
+      resample_util->secret_rabbit.output_frames = sfz_synth_util->sfz_resampled_buffer_length[i];
+
+      resample_util->secret_rabbit.data_out = g_malloc(sfz_synth_util->sfz_resampled_buffer_length[i] * sizeof(gfloat));
+		
+      resample_util->buffer_length = sfz_synth_util->sfz_orig_buffer_length[i];
+      resample_util->format = AGS_SOUNDCARD_DOUBLE;
+      resample_util->samplerate = orig_samplerate;
+
+      resample_util->audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
+
+      resample_util->target_samplerate = sfz_synth_util->samplerate;
+
+      ags_resample_util_compute(resample_util);
+    }
+
+    /* iterate */
+    sound_resource = sound_resource->next;
+    
+    i++;    
+  }
+
+  g_list_free_full(start_sound_resource,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
  * ags_sfz_synth_util_compute_s8:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
  * 

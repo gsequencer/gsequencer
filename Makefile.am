@@ -1385,6 +1385,7 @@ libags_audio_thread_h_sources = \
        ags/audio/thread/ags_sequencer_thread.h \
        ags/audio/thread/ags_soundcard_thread.h \
        ags/audio/thread/ags_export_thread.h \
+       ags/audio/thread/ags_sfz_instrument_loader.h \
        ags/audio/thread/ags_sfz_loader.h \
        ags/audio/thread/ags_wave_loader.h
 
@@ -1409,6 +1410,7 @@ libags_audio_thread_c_sources = \
        ags/audio/thread/ags_sequencer_thread.c \
        ags/audio/thread/ags_soundcard_thread.c \
        ags/audio/thread/ags_export_thread.c \
+       ags/audio/thread/ags_sfz_instrument_loader.c \
        ags/audio/thread/ags_sfz_loader.c \
        ags/audio/thread/ags_wave_loader.c
 
@@ -2356,6 +2358,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_sound_config.h \
 	ags/audio/task/ags_apply_synth.h \
+	ags/audio/task/ags_apply_sfz_instrument.h \
 	ags/audio/task/ags_apply_sfz_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
@@ -2438,6 +2441,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_sound_config.c \
 	ags/audio/task/ags_apply_synth.c \
+	ags/audio/task/ags_apply_sfz_instrument.c \
 	ags/audio/task/ags_apply_sfz_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \

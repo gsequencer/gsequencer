@@ -28,6 +28,8 @@
 
 #include <ags/audio/task/ags_apply_sf2_midi_locale.h>
 
+#include <ags/audio/fx/ags_fx_sf2_synth_audio.h>
+
 #include <ags/i18n.h>
 
 void ags_sf2_midi_locale_loader_class_init(AgsSF2MidiLocaleLoaderClass *sf2_midi_locale_loader);
