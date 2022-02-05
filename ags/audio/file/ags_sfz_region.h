@@ -81,6 +81,15 @@ gboolean ags_sfz_region_test_flags(AgsSFZRegion *sfz_region, guint flags);
 void ags_sfz_region_set_flags(AgsSFZRegion *sfz_region, guint flags);
 void ags_sfz_region_unset_flags(AgsSFZRegion *sfz_region, guint flags);
 
+GObject* ags_sfz_region_get_group(AgsSFZRegion *sfz_region);
+void ags_sfz_region_set_group(AgsSFZRegion *sfz_region,
+			      GObject *group);
+
+GObject* ags_sfz_region_get_sample(AgsSFZRegion *sfz_region);
+void ags_sfz_region_set_sample(AgsSFZRegion *sfz_region,
+			       GObject *sample);
+
+GList* ags_sfz_region_get_control(AgsSFZRegion *sfz_region);
 void ags_sfz_region_insert_control(AgsSFZRegion *sfz_region,
 				   gchar *key,
 				   gchar *value);

@@ -118,6 +118,14 @@ gboolean ags_sfz_sample_test_flags(AgsSFZSample *sfz_sample, guint flags);
 void ags_sfz_sample_set_flags(AgsSFZSample *sfz_sample, guint flags);
 void ags_sfz_sample_unset_flags(AgsSFZSample *sfz_sample, guint flags);
 
+GObject* ags_sfz_sample_get_group(AgsSFZSample *sfz_sample);
+void ags_sfz_sample_set_group(AgsSFZSample *sfz_sample,
+			      GObject *group);
+
+GObject* ags_sfz_sample_get_region(AgsSFZSample *sfz_sample);
+void ags_sfz_sample_set_region(AgsSFZSample *sfz_sample,
+			       GObject *region);
+
 gint ags_sfz_sample_get_key(AgsSFZSample *sfz_sample);
 
 gint ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample);

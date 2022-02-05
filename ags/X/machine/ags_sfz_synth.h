@@ -74,6 +74,8 @@ struct _AgsSFZSynth
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
+  AgsAudioContainer *audio_container;
+
   GtkEntry *filename;
   GtkButton *open;
 
@@ -114,6 +116,8 @@ GType ags_sfz_synth_get_type(void);
 
 void ags_sfz_synth_open_filename(AgsSFZSynth *sfz_synth,
 				 gchar *filename);
+
+void ags_sfz_synth_load_opcode(AgsSFZSynth *sfz_synth);
 
 gboolean ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -669,6 +669,151 @@ ags_sfz_group_unset_flags(AgsSFZGroup *sfz_group, guint flags)
 }
 
 /**
+ * ags_sfz_group_get_region:
+ * @sfz_group: the #AgsSFZGroup
+ *
+ * Get the regions of @sfz_group.
+ * 
+ * Returns: (element-type AgsAudio.SFZRegion) (transfer full): the #GList-struct containing #AgsSFZRegion
+ *
+ * Since: 3.17.0
+ */
+GList*
+ags_sfz_group_get_region(AgsSFZGroup *sfz_group)
+{
+  GList *start_region;
+  
+  if(!AGS_IS_SFZ_GROUP(sfz_group)){
+    return(NULL);
+  }
+
+  start_region = NULL;
+
+  g_object_get(sfz_group,
+	       "region", &start_region,
+	       NULL);
+  
+  return(start_region);
+}
+
+/**
+ * ags_sfz_group_set_region:
+ * @sfz_group: the #AgsSFZGroup
+ * @region: (element-type AgsAudio.SFZRegion) (transfer none): the #GList-struct containing #AgsSFZRegion
+ *
+ * Set the region field of @sfz_group
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_group_set_region(AgsSFZGroup *sfz_group,
+			 GList *region)
+{
+  GRecMutex *sfz_group_mutex;
+
+  if(!AGS_IS_SFZ_GROUP(sfz_group)){
+    return;
+  }
+
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+
+  g_rec_mutex_lock(sfz_group_mutex);
+  
+  g_list_free_full(sfz_group->region,
+		   (GDestroyNotify) g_object_unref);
+  
+  sfz_group->region = g_list_copy_deep(region,
+				       (GCopyFunc) g_object_ref,
+				       NULL);
+  
+  g_rec_mutex_unlock(sfz_group_mutex);
+}
+
+/**
+ * ags_sfz_group_get_sample:
+ * @sfz_group: the #AgsSFZGroup
+ *
+ * Get the samples of @sfz_group.
+ * 
+ * Returns: (transfer full): the #AgsSFZSample
+ *
+ * Since: 3.17.0
+ */
+GObject*
+ags_sfz_group_get_sample(AgsSFZGroup *sfz_group)
+{
+  GObject *sample;
+  
+  if(!AGS_IS_SFZ_GROUP(sfz_group)){
+    return(NULL);
+  }
+
+  sample = NULL;
+
+  g_object_get(sfz_group,
+	       "sample", &sample,
+	       NULL);
+  
+  return(sample);
+}
+
+/**
+ * ags_sfz_group_set_sample:
+ * @sfz_group: the #AgsSFZGroup
+ * @sample: (transfer none): the #AgsSFZSample
+ *
+ * Set the sample field of @sfz_group
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_group_set_sample(AgsSFZGroup *sfz_group,
+			 GObject *sample)
+{
+  if(!AGS_IS_SFZ_GROUP(sfz_group)){
+    return;
+  }
+
+  g_object_set(sfz_group,
+	       "sample", sample,
+	       NULL);
+}
+
+/**
+ * ags_sfz_group_get_control:
+ * @sfz_group: the #AgsSFZGroup
+ *
+ * Get all control of @sfz_group.
+ * 
+ * Returns: (transfer container): the #GList-struct containing controls as string
+ *
+ * Since: 3.17.0
+ */
+GList*
+ags_sfz_group_get_control(AgsSFZGroup *sfz_group)
+{
+  GList *start_list;
+  
+  GRecMutex *sfz_group_mutex;
+
+  if(!AGS_IS_SFZ_GROUP(sfz_group)){
+    return(NULL);
+  }
+
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+  
+  /* get */
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  start_list = g_hash_table_get_keys(sfz_group->control);
+  
+  g_rec_mutex_unlock(sfz_group_mutex);
+
+  return(start_list);
+}
+
+/**
  * ags_sfz_group_insert_control:
  * @sfz_group: the #AgsSFZGroup
  * @key: the key
@@ -709,6 +854,8 @@ ags_sfz_group_insert_control(AgsSFZGroup *sfz_group,
  *
  * Lookup control specified by @key of @sfz_group.
  *
+ * Returns: (transfer full): the matching value of key
+ * 
  * Since: 3.0.0
  */
 gchar*

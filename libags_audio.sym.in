@@ -4359,6 +4359,12 @@ ags_sfz_file_get_type
 ags_sfz_file_test_flags
 ags_sfz_file_set_flags
 ags_sfz_file_unset_flags
+ags_sfz_file_get_group
+ags_sfz_file_set_group
+ags_sfz_file_get_region
+ags_sfz_file_set_region
+ags_sfz_file_get_sample
+ags_sfz_file_set_sample
 ags_sfz_file_select_sample
 ags_sfz_file_get_range
 ags_sfz_file_check_suffix
@@ -4368,6 +4374,10 @@ ags_sfz_sample_get_type
 ags_sfz_sample_test_flags
 ags_sfz_sample_set_flags
 ags_sfz_sample_unset_flags
+ags_sfz_sample_get_group
+ags_sfz_sample_set_group
+ags_sfz_sample_get_region
+ags_sfz_sample_set_region
 ags_sfz_sample_get_key
 ags_sfz_sample_get_hikey
 ags_sfz_sample_get_lokey
@@ -4435,6 +4445,11 @@ ags_sfz_region_get_type
 ags_sfz_region_test_flags
 ags_sfz_region_set_flags
 ags_sfz_region_unset_flags
+ags_sfz_region_get_group
+ags_sfz_region_set_group
+ags_sfz_region_get_sample
+ags_sfz_region_set_sample
+ags_sfz_region_get_control
 ags_sfz_region_insert_control
 ags_sfz_region_lookup_control
 ags_sfz_region_new
@@ -4462,6 +4477,11 @@ ags_sfz_group_get_type
 ags_sfz_group_test_flags
 ags_sfz_group_set_flags
 ags_sfz_group_unset_flags
+ags_sfz_group_get_region
+ags_sfz_group_set_region
+ags_sfz_group_get_sample
+ags_sfz_group_set_sample
+ags_sfz_group_get_control
 ags_sfz_group_insert_control
 ags_sfz_group_lookup_control
 ags_sfz_group_new

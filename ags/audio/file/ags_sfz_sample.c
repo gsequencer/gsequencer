@@ -1839,6 +1839,106 @@ ags_sfz_sample_unset_flags(AgsSFZSample *sfz_sample, guint flags)
 }
 
 /**
+ * ags_sfz_sample_get_group:
+ * @sfz_sample: the #AgsSFZSample
+ *
+ * Get the groups of @sfz_sample.
+ * 
+ * Returns: (transfer full): the #AgsSFZGroup
+ *
+ * Since: 3.17.0
+ */
+GObject*
+ags_sfz_sample_get_group(AgsSFZSample *sfz_sample)
+{
+  GObject *group;
+  
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return(NULL);
+  }
+
+  group = NULL;
+
+  g_object_get(sfz_sample,
+	       "group", &group,
+	       NULL);
+  
+  return(group);
+}
+
+/**
+ * ags_sfz_sample_set_group:
+ * @sfz_sample: the #AgsSFZSample
+ * @group: (transfer none): the #AgsSFZGroup
+ *
+ * Set the group field of @sfz_sample
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_sample_set_group(AgsSFZSample *sfz_sample,
+			 GObject *group)
+{
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return;
+  }
+
+  g_object_set(sfz_sample,
+	       "group", group,
+	       NULL);
+}
+
+/**
+ * ags_sfz_sample_get_region:
+ * @sfz_sample: the #AgsSFZSample
+ *
+ * Get the regions of @sfz_sample.
+ * 
+ * Returns: (transfer full): the #AgsSFZRegion
+ *
+ * Since: 3.17.0
+ */
+GObject*
+ags_sfz_sample_get_region(AgsSFZSample *sfz_sample)
+{
+  GObject *region;
+  
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return(NULL);
+  }
+
+  region = NULL;
+
+  g_object_get(sfz_sample,
+	       "region", &region,
+	       NULL);
+  
+  return(region);
+}
+
+/**
+ * ags_sfz_sample_set_region:
+ * @sfz_sample: the #AgsSFZSample
+ * @region: (transfer none): the #AgsSFZRegion
+ *
+ * Set the region field of @sfz_sample
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_sample_set_region(AgsSFZSample *sfz_sample,
+			  GObject *region)
+{
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return;
+  }
+
+  g_object_set(sfz_sample,
+	       "region", region,
+	       NULL);
+}
+
+/**
  * ags_sfz_sample_get_key:
  * @sfz_sample: the #AgsSFZSample
  * 

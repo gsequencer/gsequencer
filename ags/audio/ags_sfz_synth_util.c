@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -103,14 +103,50 @@ AgsSFZSynthUtil*
 ags_sfz_synth_util_alloc()
 {
   AgsSFZSynthUtil *ptr;
+
+  guint i;
   
   ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
 				  1);
+
+  ptr->flags = 0;
+
+  ptr->sfz_file = NULL;
+
+  ptr->sfz_sample_count = 0;
+  ptr->sample = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*));
+  ptr->sfz_note_range = (gint **) g_malloc(128 * sizeof(gint*));
+  
+  ptr->sfz_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
+
+  ptr->sfz_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
+
+  for(i = 0; i < 128; i++){
+    ptr->sample[i] = NULL;
+
+    ptr->sfz_note_range[i] = (gint *) g_malloc(2 * sizeof(gint));
+    ptr->sfz_note_range[i][0] = -1;
+    ptr->sfz_note_range[i][1] = -1;
+    
+    ptr->sfz_orig_buffer_length[i] = 0;
+    ptr->sfz_orig_buffer[i] = NULL;
+
+    ptr->sfz_resampled_buffer_length[i] = 0;
+    ptr->sfz_resampled_buffer[i] = NULL;
+
+    ptr->sfz_loop_mode[i] = AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD;
+
+    ptr->sfz_loop_start[i] = 0;
+    ptr->sfz_loop_end[i] = 0;
+  }
 
   ptr->sfz_sample = NULL;
 
   ptr->source = NULL;
   ptr->source_stride = 1;
+
+  ptr->sample_buffer = NULL;
+  ptr->im_buffer = NULL;
 
   ptr->buffer_length = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -129,7 +165,17 @@ ags_sfz_synth_util_alloc()
   ptr->loop_start = 0;
   ptr->loop_end = 0;
 
+  ptr->resample_util = ags_resample_util_alloc();
+
+  ags_resample_util_set_format(ptr->resample_util,
+			       AGS_SOUNDCARD_DOUBLE);  
+
+
   ptr->generic_pitch_util = ags_generic_pitch_util_alloc();
+
+  ptr->hq_pitch_util = ags_hq_pitch_util_alloc();
+
+  ptr->volume_util = ags_volume_util_alloc();
 
   return(ptr);
 }
@@ -148,6 +194,8 @@ gpointer
 ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
 {
   AgsSFZSynthUtil *new_ptr;
+
+  guint i;
   
   new_ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
 				      1);
@@ -178,7 +226,12 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
   new_ptr->loop_start = ptr->loop_start;
   new_ptr->loop_end = ptr->loop_end;
 
+  new_ptr->resample_util = ags_resample_util_copy(ptr->resample_util);
   new_ptr->generic_pitch_util = ags_generic_pitch_util_copy(ptr->generic_pitch_util);
+
+  new_ptr->generic_pitch_util = ags_generic_pitch_util_copy(ptr->generic_pitch_util);
+
+  new_ptr->volume_util = ags_hq_pitch_util_copy(ptr->volume_util);
   
   return(new_ptr);
 }

@@ -120,6 +120,18 @@ gboolean ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags);
 void ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags);
 void ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags);
 
+GList* ags_sfz_file_get_group(AgsSFZFile *sfz_file);
+void ags_sfz_file_set_group(AgsSFZFile *sfz_file,
+			    GList *group);
+
+GList* ags_sfz_file_get_region(AgsSFZFile *sfz_file);
+void ags_sfz_file_set_region(AgsSFZFile *sfz_file,
+			     GList *region);
+
+GList* ags_sfz_file_get_sample(AgsSFZFile *sfz_file);
+void ags_sfz_file_set_sample(AgsSFZFile *sfz_file,
+			     GList *sample);
+
 gboolean ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 				    guint sample_index);
 

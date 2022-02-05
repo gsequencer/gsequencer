@@ -24,7 +24,7 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_sound_container.h>
-#include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_sfz_file.h>
 
 #include <ags/audio/task/ags_apply_sfz_instrument.h>
 
@@ -618,7 +618,7 @@ ags_sfz_instrument_loader_run(void *ptr)
     ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sfz_instrument_loader->audio_container->sound_container),
 					      0);
 
-    AGS_IPATCH(sfz_instrument_loader->audio_container->sound_container)->nesting_level += 1;
+    AGS_SFZ_FILE(sfz_instrument_loader->audio_container->sound_container)->nesting_level += 1;
   }
 
   if(output_soundcard != NULL){

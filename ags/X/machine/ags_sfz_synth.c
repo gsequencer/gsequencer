@@ -225,6 +225,9 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   sfz_synth->name = NULL;
   sfz_synth->xml_type = "ags-sfz-synth";
 
+  /* audio container */
+  sfz_synth->audio_container = NULL;
+
   /* SFZ */
   sfz_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				    0);
@@ -1146,6 +1149,182 @@ ags_sfz_synth_open_filename(AgsSFZSynth *sfz_synth,
 }
 
 /**
+ * ags_sfz_synth_load_opcode:
+ * @sfz_synth: the #AgsSFZSynth
+ * 
+ * Load opcodes of @sfz_synth.
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_synth_load_opcode(AgsSFZSynth *sfz_synth)
+{
+  GtkListStore *opcode_list_store;	
+
+  GObject *sound_container;
+  
+  GList *start_group, *group;
+  GList *start_region, *region;
+  GList *start_sample, *sample;
+  GList *start_control, *control;
+
+  GtkTreeIter tree_iter;
+  
+  GRecMutex *audio_container_mutex;
+  
+  if(!AGS_IS_SFZ_SYNTH(sfz_synth)){
+    return;
+  }
+
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sfz_synth->audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  if(sfz_synth->audio_container == NULL ||
+     sfz_synth->audio_container->sound_container == NULL){
+    g_rec_mutex_unlock(audio_container_mutex);
+    
+    return;
+  }
+
+  sound_container = sfz_synth->audio_container->sound_container;
+  
+  g_rec_mutex_unlock(audio_container_mutex);
+  
+  opcode_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sfz_synth->opcode_tree_view)));
+
+  start_group = ags_sfz_file_get_group(AGS_SFZ_FILE(sound_container));
+  start_region = ags_sfz_file_get_region(AGS_SFZ_FILE(sound_container));
+  start_sample = ags_sfz_file_get_sample(AGS_SFZ_FILE(sound_container));
+
+  group = start_group;
+
+  while(group != NULL){
+    GList *start_tmp_region, *tmp_region;
+
+    if(AGS_SFZ_GROUP(group->data)->sample != NULL){
+      start_sample = g_list_remove(start_sample,
+				   AGS_SFZ_GROUP(group->data)->sample);
+      
+      g_object_unref(AGS_SFZ_GROUP(group->data)->sample);
+    }
+    
+    control =
+      start_control = ags_sfz_group_get_control(group->data);
+      
+    while(control != NULL){
+      gtk_list_store_append(opcode_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(opcode_list_store, &tree_iter,
+			 0, g_strdup(control->data),
+			 1, ags_sfz_group_lookup_control(group->data, control->data),
+			 -1);
+
+      /* iterate */
+      control = control->next;
+    }
+
+    g_list_free(start_control);
+
+    tmp_region = 
+      start_tmp_region = ags_sfz_group_get_region(group->data);
+
+    while(tmp_region != NULL){
+      if(AGS_SFZ_REGION(tmp_region->data)->sample != NULL){
+	start_sample = g_list_remove(start_sample,
+				     AGS_SFZ_REGION(tmp_region->data)->sample);
+      
+	g_object_unref(AGS_SFZ_REGION(tmp_region->data)->sample);
+      }
+      
+      start_region = g_list_remove(start_region,
+				   tmp_region->data);
+      g_object_unref(tmp_region->data);
+      
+      control =
+	start_control = ags_sfz_region_get_control(tmp_region->data);
+      
+      while(control != NULL){
+	gtk_list_store_append(opcode_list_store,
+			      &tree_iter);
+
+	gtk_list_store_set(opcode_list_store, &tree_iter,
+			   0, g_strdup(control->data),
+			   1, ags_sfz_region_lookup_control(tmp_region->data, control->data),
+			   -1);
+
+	control = control->next;
+      }
+
+      g_list_free(start_control);
+
+      /* iterate */
+      tmp_region = tmp_region->next;
+    }
+
+    g_list_free_full(start_tmp_region,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    group = group->next;
+  }
+
+  g_list_free_full(start_group,
+		   (GDestroyNotify) g_object_unref);
+
+  region = start_region;
+  
+  while(region != NULL){
+    if(AGS_SFZ_REGION(region->data)->sample != NULL){
+      start_sample = g_list_remove(start_sample,
+				   AGS_SFZ_REGION(region->data)->sample);
+      
+      g_object_unref(AGS_SFZ_REGION(region->data)->sample);
+    }
+      
+    control =
+      start_control = ags_sfz_region_get_control(region->data);
+      
+    while(control != NULL){
+      gtk_list_store_append(opcode_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(opcode_list_store, &tree_iter,
+			 0, g_strdup(control->data),
+			 1, ags_sfz_region_lookup_control(region->data, control->data),
+			 -1);
+
+      control = control->next;
+    }
+
+    /* iterate */
+    region = region->next;
+  }
+
+  g_list_free_full(start_region,
+		   (GDestroyNotify) g_object_unref);
+
+  sample = start_sample;
+  
+  while(sample != NULL){
+    gtk_list_store_append(opcode_list_store,
+			  &tree_iter);
+
+    gtk_list_store_set(opcode_list_store, &tree_iter,
+		       0, g_strdup("sample"),
+		       1, g_strdup(AGS_SFZ_SAMPLE(sample->data)->filename),
+		       -1);
+
+    /* iterate */
+    sample = sample->next;
+  }
+
+  g_list_free_full(start_sample,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
  * ags_sfz_synth_sfz_loader_completed_timeout:
  * @sfz_synth: the #AgsSFZSynth
  *
@@ -1160,7 +1339,95 @@ ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth)
 {
   if(g_hash_table_lookup(ags_sfz_synth_sfz_loader_completed,
 			 sfz_synth) != NULL){
-    //TODO:JK: implement me
+    if(sfz_synth->sfz_loader != NULL){
+      if(ags_sfz_loader_test_flags(sfz_synth->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
+	GtkListStore *opcode_list_store;
+	
+	AgsFxSFZSynthAudio *fx_sfz_synth_audio;
+	
+	guint i;
+	guint j;
+	guint k;
+	
+	/* reassign audio container */
+	sfz_synth->audio_container = sfz_synth->sfz_loader->audio_container;
+	sfz_synth->sfz_loader->audio_container = NULL;
+
+	opcode_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sfz_synth->opcode_tree_view)));
+
+	gtk_list_store_clear(opcode_list_store);
+
+	if(sfz_synth->audio_container == NULL ||
+	   sfz_synth->audio_container->sound_container == NULL){
+	  g_object_run_dispose((GObject *) sfz_synth->sfz_loader);
+	  g_object_unref(sfz_synth->sfz_loader);
+
+	  sfz_synth->sfz_loader = NULL;
+
+	  sfz_synth->position = -1;
+
+	  gtk_spinner_stop(sfz_synth->sfz_loader_spinner);
+	  gtk_widget_hide((GtkWidget *) sfz_synth->sfz_loader_spinner);
+	  
+	  return(TRUE);
+	}
+	
+	ags_sfz_synth_load_opcode(sfz_synth);
+	
+	fx_sfz_synth_audio = ags_recall_container_get_recall_audio(sfz_synth->sfz_synth_recall_container);
+
+	for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	  AgsFxSFZSynthAudioScopeData *scope_data;
+      
+	  scope_data = fx_sfz_synth_audio->scope_data[i];
+
+	  if(scope_data != NULL){
+	    for(j = 0; j < scope_data->audio_channels; j++){
+	      AgsFxSFZSynthAudioChannelData *channel_data;
+
+	      channel_data = scope_data->channel_data[j];
+	  
+	      if(channel_data != NULL){
+		AgsSFZInstrumentLoader *sfz_instrument_loader;
+	  
+		sfz_instrument_loader =
+		  sfz_synth->sfz_instrument_loader = ags_sfz_instrument_loader_new(AGS_MACHINE(sfz_synth)->audio,
+										   sfz_synth->audio_container->filename);
+	    
+		ags_sfz_instrument_loader_set_flags(sfz_instrument_loader,
+						    AGS_SFZ_INSTRUMENT_LOADER_RUN_APPLY_INSTRUMENT);
+		
+		sfz_instrument_loader->synth = &(channel_data->synth);
+      
+		ags_sfz_instrument_loader_start(sfz_instrument_loader);
+	      }
+	    }
+	  }
+	}
+    
+	if(fx_sfz_synth_audio != NULL){
+	  g_object_unref(fx_sfz_synth_audio);
+	}
+	
+	/* cleanup */	
+	g_object_run_dispose((GObject *) sfz_synth->sfz_loader);
+	g_object_unref(sfz_synth->sfz_loader);
+
+	sfz_synth->sfz_loader = NULL;
+
+	sfz_synth->position = -1;
+
+	gtk_spinner_stop(sfz_synth->sfz_loader_spinner);
+	gtk_widget_hide((GtkWidget *) sfz_synth->sfz_loader_spinner);
+      }else{
+	if(sfz_synth->position == -1){
+	  sfz_synth->position = 0;
+
+	  gtk_widget_show((GtkWidget *) sfz_synth->sfz_loader_spinner);
+	  gtk_spinner_start(sfz_synth->sfz_loader_spinner);
+	}
+      }
+    }
     
     return(TRUE);
   }else{
