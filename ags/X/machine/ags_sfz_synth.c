@@ -182,7 +182,7 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   
   AGS_MACHINE(sfz_synth)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				    AGS_MACHINE_REVERSE_NOTATION);
-  AGS_MACHINE(sfz_synth)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
+  AGS_MACHINE(sfz_synth)->file_input_flags |= AGS_MACHINE_ACCEPT_SFZ;
 
   /* context menu */
   ags_machine_popup_add_connection_options((AgsMachine *) sfz_synth,

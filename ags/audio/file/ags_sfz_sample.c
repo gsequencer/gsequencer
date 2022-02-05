@@ -754,7 +754,7 @@ ags_sfz_sample_finalize(GObject *gobject)
   AgsSFZSample *sfz_sample;
 
   sfz_sample = AGS_SFZ_SAMPLE(gobject);
-
+  
   g_free(sfz_sample->filename);
   
   ags_stream_free(sfz_sample->buffer);
@@ -961,7 +961,7 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   sfz_sample->info->samplerate = 0;
 
   if(filename != NULL){
-    sfz_sample->file = (SNDFILE *) sf_open(filename, SFM_READ, sfz_sample->info);
+    sfz_sample->file = (SNDFILE *) sf_open(g_strdup(filename), SFM_READ, sfz_sample->info);
   }
   
   if(sfz_sample->file == NULL){
@@ -1453,6 +1453,10 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
       read_count = total_frame_count - sfz_sample->offset;
     }
 
+    if(read_count == 0){
+      break;
+    }
+
     multi_frames = read_count * sfz_sample->info->channels;
 
     retval = -1;
@@ -1506,7 +1510,7 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
 	break;
       }    
       //    }
-
+      
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						sfz_sample->buffer, sfz_sample->info->channels, audio_channel,
 						read_count, copy_mode);
@@ -1700,7 +1704,8 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  retval = sf_seek(sfz_sample->file, sfz_sample->offset, SEEK_SET);
+  retval = sf_seek(sfz_sample->file, sfz_sample->offset, (SEEK_SET | SFM_READ));
+//  retval = sf_seek(sfz_sample->file, sfz_sample->offset, (SEEK_SET | SFM_WRITE));
 
   g_rec_mutex_unlock(sfz_sample_mutex);
 

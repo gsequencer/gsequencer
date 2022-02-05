@@ -819,32 +819,39 @@ ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
 }
 
 /**
- * ags_sfz_synth_util_load_midi_locale:
+ * ags_sfz_synth_util_load_instrument:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
  * 
- * Load midi locale of @sfz_synth_util.
+ * Load instrument of @sfz_synth_util.
  *
- * Since: 3.16.0
+ * Since: 3.17.0
  */
 void
 ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
 {
+  GObject *sound_container;
+  
   GList *start_sound_resource, *sound_resource;
   
   guint i;
   guint j;
+  guint k;
   
   GRecMutex *audio_container_mutex;
   
   if(sfz_synth_util == NULL ||
-     !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
+     sfz_synth_util->sfz_file == NULL ||
+     sfz_synth_util->sfz_file->sound_container == NULL){
     return;
   }
 
   audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(sfz_synth_util->sfz_file);
 
   g_rec_mutex_lock(audio_container_mutex);
+
+  sound_container = sfz_synth_util->sfz_file->sound_container;
+  
+  g_rec_mutex_unlock(audio_container_mutex);
 
   for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
     if(sfz_synth_util->sample[i] != NULL){
@@ -873,8 +880,8 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
   sfz_synth_util->sfz_sample_count = 0;
 
   sound_resource =
-    start_sound_resource = ags_sound_container_get_resource_current(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_file->sound_container));
-
+    start_sound_resource = ags_sfz_file_get_sample(AGS_SFZ_FILE(sound_container));
+  
   i = 0;
   
   while(sound_resource != NULL){
@@ -892,8 +899,12 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
     guint channel;
     int sfz_sample_format;
     guint copy_mode;
+
+    GRecMutex *sfz_sample_mutex;
     
     sample = AGS_SFZ_SAMPLE(sound_resource->data);
+
+    sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sample);
     
     sfz_synth_util->sample[i] = sample;
     g_object_ref(sample);
@@ -922,6 +933,9 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
 				   NULL,
 				   &sample_format);
     
+    sfz_synth_util->sfz_note_range[i][0] = ags_sfz_sample_get_lokey(sample);
+    sfz_synth_util->sfz_note_range[i][1] = ags_sfz_sample_get_hikey(sample);
+
     sfz_synth_util->sfz_loop_start[i] = loop_start;
     sfz_synth_util->sfz_loop_end[i] = loop_end;
 
@@ -935,55 +949,68 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
     for(j = 0; j < audio_channels; j++){
       gpointer current_cache;
 
-      current_cache = cache;
+      g_rec_mutex_lock(sfz_sample_mutex);
       
-      switch(sample_format){
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	current_cache = ((gint8 *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	current_cache = ((gint16 *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	current_cache = ((gint32 *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	current_cache = ((gint32 *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	current_cache = ((gint64 *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_FLOAT:
-      {
-	current_cache = ((gfloat *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_DOUBLE:
-      {
-	current_cache = ((gdouble *) cache) + j;
-      }
-      break;
-      case AGS_SOUNDCARD_COMPLEX:
-      {
-	current_cache = ((AgsComplex *) cache) + j;
-      }
-      break;
+      ags_sound_resource_seek(AGS_SOUND_RESOURCE(sample),
+			      0, G_SEEK_SET);
+
+      for(k = 0; k < sample_frame_count; ){
+	current_cache = cache;
+      
+	switch(sample_format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  current_cache = ((gint8 *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  current_cache = ((gint16 *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  current_cache = ((gint32 *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  current_cache = ((gint32 *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  current_cache = ((gint64 *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_FLOAT:
+	{
+	  current_cache = ((gfloat *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_DOUBLE:
+	{
+	  current_cache = ((gdouble *) cache) + j + (audio_channels * k);
+	}
+	break;
+	case AGS_SOUNDCARD_COMPLEX:
+	{
+	  current_cache = ((AgsComplex *) cache) + j + (audio_channels * k);
+	}
+	break;
+	default:
+	  g_warning("unknown format");
+	}
+	
+	ags_sound_resource_read(AGS_SOUND_RESOURCE(sample),
+				current_cache, audio_channels,
+				j,
+				256, sample_format);
+
+	k += 256;
       }
       
-      ags_sound_resource_read(AGS_SOUND_RESOURCE(sample),
-			      current_cache, audio_channels,
-			      j,
-			      sample_frame_count, sample_format);
+      g_rec_mutex_unlock(sfz_sample_mutex);
     }
     
     sfz_synth_util->sfz_orig_buffer_length[i] = sample_frame_count;
@@ -1053,6 +1080,8 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
     i++;    
   }
 
+  sfz_synth_util->sfz_sample_count = i;
+  
   g_list_free_full(start_sound_resource,
 		   (GDestroyNotify) g_object_unref);
 }
@@ -1704,7 +1733,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     gint root_note;
     guint i;
     guint j;
-    
+
     if(sfz_synth_util->sfz_file == NULL){
       return;
     }
@@ -1945,7 +1974,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 
     ags_volume_util_compute(volume_util);
 
-    /* to source */
+    /* to source */    
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -4684,7 +4713,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
     gint root_note;
     guint i;
     guint j;
-    
+
     if(sfz_synth_util->sfz_file == NULL){
       return;
     }
