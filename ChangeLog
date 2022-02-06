@@ -1,3 +1,8 @@
+ags (3.17.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gtk-doc
+
 ags (3.17.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2021 Joël Krähemann
+# Copyright (C) 2005-2022 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -37,6 +37,7 @@ AgsFxDssiAudioSignal AgsConnectable
 AgsFxFMSynthAudioSignal AgsConnectable
 AgsFxLv2AudioSignal AgsConnectable
 AgsFxSF2SynthAudioSignal AgsConnectable
+AgsFxSFZSynthAudioSignal AgsConnectable
 AgsFxSynthAudioSignal AgsConnectable
 AgsFxEnvelopeAudioSignal AgsConnectable
 AgsFxEq10AudioSignal AgsConnectable
@@ -77,6 +78,7 @@ AgsFxDssiChannel AgsConnectable
 AgsFxFMSynthChannel AgsConnectable
 AgsFxLv2Channel AgsConnectable
 AgsFxSF2SynthChannel AgsConnectable
+AgsFxSFZSynthChannel AgsConnectable
 AgsFxSynthChannel AgsConnectable
 AgsFxEnvelopeChannel AgsConnectable
 AgsFxEq10Channel AgsConnectable
@@ -119,6 +121,7 @@ AgsFxDssiChannelProcessor AgsConnectable
 AgsFxFMSynthChannelProcessor AgsConnectable
 AgsFxLv2ChannelProcessor AgsConnectable
 AgsFxSF2SynthChannelProcessor AgsConnectable
+AgsFxSFZSynthChannelProcessor AgsConnectable
 AgsFxSynthChannelProcessor AgsConnectable
 AgsFxEnvelopeChannelProcessor AgsConnectable
 AgsFxEq10ChannelProcessor AgsConnectable
@@ -158,6 +161,7 @@ AgsFxDssiRecycling AgsConnectable
 AgsFxFMSynthRecycling AgsConnectable
 AgsFxLv2Recycling AgsConnectable
 AgsFxSF2SynthRecycling AgsConnectable
+AgsFxSFZSynthRecycling AgsConnectable
 AgsFxSynthRecycling AgsConnectable
 AgsFxEnvelopeRecycling AgsConnectable
 AgsFxEq10Recycling AgsConnectable
@@ -192,6 +196,7 @@ AgsFxDssiAudio AgsConnectable
 AgsFxFMSynthAudio AgsConnectable
 AgsFxLv2Audio AgsConnectable
 AgsFxSF2SynthAudio AgsConnectable
+AgsFxSFZSynthAudio AgsConnectable
 AgsFxSynthAudio AgsConnectable
 AgsFxEnvelopeAudio AgsConnectable
 AgsFxEq10Audio AgsConnectable
@@ -226,6 +231,7 @@ AgsFxDssiAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxFMSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxLv2AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSF2SynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxSFZSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxEnvelopeAudioProcessor AgsConnectable
 AgsFxEq10AudioProcessor AgsConnectable
