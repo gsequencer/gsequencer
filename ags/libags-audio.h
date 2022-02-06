@@ -153,6 +153,7 @@
 #include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_sf2_midi_locale_loader.h>
 #include <ags/audio/thread/ags_sf2_loader.h>
+#include <ags/audio/thread/ags_sfz_instrument_loader.h>
 #include <ags/audio/thread/ags_sfz_loader.h>
 #include <ags/audio/thread/ags_wave_loader.h>
 
@@ -449,6 +450,12 @@
 #include <ags/audio/fx/ags_fx_sf2_synth_channel.h>
 #include <ags/audio/fx/ags_fx_sf2_synth_channel_processor.h>
 #include <ags/audio/fx/ags_fx_sf2_synth_recycling.h>
+#include <ags/audio/fx/ags_fx_sfz_synth_audio.h>
+#include <ags/audio/fx/ags_fx_sfz_synth_audio_processor.h>
+#include <ags/audio/fx/ags_fx_sfz_synth_audio_signal.h>
+#include <ags/audio/fx/ags_fx_sfz_synth_channel.h>
+#include <ags/audio/fx/ags_fx_sfz_synth_channel_processor.h>
+#include <ags/audio/fx/ags_fx_sfz_synth_recycling.h>
 #include <ags/audio/fx/ags_fx_synth_audio.h>
 #include <ags/audio/fx/ags_fx_synth_audio_processor.h>
 #include <ags/audio/fx/ags_fx_synth_audio_signal.h>
@@ -495,6 +502,7 @@
 #include <ags/audio/task/ags_apply_synth.h>
 #include <ags/audio/task/ags_apply_sf2_midi_locale.h>
 #include <ags/audio/task/ags_apply_sf2_synth.h>
+#include <ags/audio/task/ags_apply_sfz_instrument.h>
 #include <ags/audio/task/ags_apply_sfz_synth.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>

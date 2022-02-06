@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -504,6 +504,8 @@ ags_sfz_loader_run(void *ptr)
 							  NULL,
 							  output_soundcard,
 							  -1);
+    g_object_ref(sfz_loader->audio_container);
+
     ags_audio_container_open(sfz_loader->audio_container);
 
     ags_audio_container_manager_add_audio_container(audio_container_manager,

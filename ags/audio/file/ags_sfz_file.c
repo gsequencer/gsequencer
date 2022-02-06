@@ -1297,6 +1297,189 @@ ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags)
 }
 
 /**
+ * ags_sfz_file_get_group:
+ * @sfz_file: the #AgsSFZFile
+ *
+ * Get the groups of @sfz_file.
+ * 
+ * Returns: (element-type AgsAudio.SFZGroup) (transfer full): the #GList-struct containing #AgsSFZGroup
+ *
+ * Since: 3.17.0
+ */
+GList*
+ags_sfz_file_get_group(AgsSFZFile *sfz_file)
+{
+  GList *start_group;
+  
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return(NULL);
+  }
+
+  start_group = NULL;
+
+  g_object_get(sfz_file,
+	       "group", &start_group,
+	       NULL);
+  
+  return(start_group);
+}
+
+/**
+ * ags_sfz_file_set_group:
+ * @sfz_file: the #AgsSFZFile
+ * @group: (element-type AgsAudio.SFZGroup) (transfer none): the #GList-struct containing #AgsSFZGroup
+ *
+ * Set the group field of @sfz_file
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_file_set_group(AgsSFZFile *sfz_file,
+		       GList *group)
+{
+  GRecMutex *sfz_file_mutex;
+
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return;
+  }
+
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  g_list_free_full(sfz_file->group,
+		   (GDestroyNotify) g_object_unref);
+  
+  sfz_file->group = g_list_copy_deep(group,
+				     (GCopyFunc) g_object_ref,
+				      NULL);
+
+  g_rec_mutex_unlock(sfz_file_mutex);
+}
+
+/**
+ * ags_sfz_file_get_region:
+ * @sfz_file: the #AgsSFZFile
+ *
+ * Get the regions of @sfz_file.
+ * 
+ * Returns: (element-type AgsAudio.SFZRegion) (transfer full): the #GList-struct containing #AgsSFZRegion
+ *
+ * Since: 3.17.0
+ */
+GList*
+ags_sfz_file_get_region(AgsSFZFile *sfz_file)
+{
+  GList *start_region;
+  
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return(NULL);
+  }
+
+  start_region = NULL;
+
+  g_object_get(sfz_file,
+	       "region", &start_region,
+	       NULL);
+  
+  return(start_region);
+}
+
+/**
+ * ags_sfz_file_set_region:
+ * @sfz_file: the #AgsSFZFile
+ * @region: (element-type AgsAudio.SFZRegion) (transfer none): the #GList-struct containing #AgsSFZRegion
+ *
+ * Set the region field of @sfz_file
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_file_set_region(AgsSFZFile *sfz_file,
+			GList *region)
+{
+  GRecMutex *sfz_file_mutex;
+
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return;
+  }
+
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  g_list_free_full(sfz_file->region,
+		   (GDestroyNotify) g_object_unref);
+  
+  sfz_file->region = g_list_copy_deep(region,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
+
+  g_rec_mutex_unlock(sfz_file_mutex);
+}
+
+/**
+ * ags_sfz_file_get_sample:
+ * @sfz_file: the #AgsSFZFile
+ *
+ * Get the samples of @sfz_file.
+ * 
+ * Returns: (element-type AgsAudio.SFZSample) (transfer full): the #GList-struct containing #AgsSFZSample
+ *
+ * Since: 3.17.0
+ */
+GList*
+ags_sfz_file_get_sample(AgsSFZFile *sfz_file)
+{
+  GList *start_sample;
+  
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return(NULL);
+  }
+
+  start_sample = NULL;
+
+  g_object_get(sfz_file,
+	       "sample", &start_sample,
+	       NULL);
+  
+  return(start_sample);
+}
+
+/**
+ * ags_sfz_file_set_sample:
+ * @sfz_file: the #AgsSFZFile
+ * @sample: (element-type AgsAudio.SFZSample) (transfer none): the #GList-struct containing #AgsSFZSample
+ *
+ * Set the sample field of @sfz_file
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_file_set_sample(AgsSFZFile *sfz_file,
+			GList *sample)
+{
+  GRecMutex *sfz_file_mutex;
+
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return;
+  }
+
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+  
+  g_list_free_full(sfz_file->sample,
+		   (GDestroyNotify) g_object_unref);
+  
+  sfz_file->sample = g_list_copy_deep(sample,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
+  
+  g_rec_mutex_unlock(sfz_file_mutex);
+}
+
+/**
  * ags_sfz_file_select_sample:
  * @sfz_file: the #AgsSFZFile
  * @sample_index: the sample index

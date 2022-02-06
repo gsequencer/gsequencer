@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-01-29 07:24+0100\n"
+"POT-Creation-Date: 2022-02-06 06:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,6 +164,7 @@ msgstr ""
 #: ags/X/ags_menu_bar.c:131 ags/X/machine/ags_audiorec.c:298
 #: ags/X/machine/ags_drum.c:306 ags/X/machine/ags_drum_input_pad_callbacks.c:54
 #: ags/X/machine/ags_ffplayer.c:363 ags/X/machine/ags_sf2_synth.c:263
+#: ags/X/machine/ags_sfz_synth.c:255
 msgid "_Open"
 msgstr ""
 
@@ -252,56 +253,56 @@ msgstr ""
 msgid "Sampler"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:222 ags/X/ags_menu_bar.c:219
+#: ags/X/ags_context_menu.c:221 ags/X/ags_menu_bar.c:218
 msgid "SFZ Synth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:226 ags/X/ags_menu_bar.c:223
+#: ags/X/ags_context_menu.c:224 ags/X/ags_menu_bar.c:221
 msgid "Audiorec"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:230 ags/X/ags_menu_bar.c:227
+#: ags/X/ags_context_menu.c:228 ags/X/ags_menu_bar.c:225
 msgid "Desk"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:235 ags/X/ags_menu_bar.c:232
+#: ags/X/ags_context_menu.c:233 ags/X/ags_menu_bar.c:230
 msgid "Notation"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:241 ags/X/ags_menu_bar.c:238
+#: ags/X/ags_context_menu.c:239 ags/X/ags_menu_bar.c:236
 msgid "Automation"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:247 ags/X/ags_menu_bar.c:244
+#: ags/X/ags_context_menu.c:245 ags/X/ags_menu_bar.c:242
 msgid "Wave"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:256 ags/X/ags_menu_bar.c:253
+#: ags/X/ags_context_menu.c:254 ags/X/ags_menu_bar.c:251
 msgid "Preferences"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:266 ags/X/ags_machine.c:3889
-#: ags/X/ags_menu_bar.c:263
+#: ags/X/ags_context_menu.c:264 ags/X/ags_machine.c:3889
+#: ags/X/ags_menu_bar.c:261
 msgid "import"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:269 ags/X/ags_menu_bar.c:266
+#: ags/X/ags_context_menu.c:267 ags/X/ags_menu_bar.c:264
 msgid "export track"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:275 ags/X/ags_menu_bar.c:272
+#: ags/X/ags_context_menu.c:273 ags/X/ags_menu_bar.c:270
 msgid "playback"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:281 ags/X/ags_menu_bar.c:278
+#: ags/X/ags_context_menu.c:279 ags/X/ags_menu_bar.c:276
 msgid "_Help"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:287 ags/X/ags_menu_bar.c:284
+#: ags/X/ags_context_menu.c:285 ags/X/ags_menu_bar.c:282
 msgid "Online help"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:290 ags/X/ags_menu_bar.c:287
+#: ags/X/ags_context_menu.c:288 ags/X/ags_menu_bar.c:285
 msgid "About"
 msgstr ""
 
@@ -1646,44 +1647,52 @@ msgstr ""
 msgid "bank"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:402
+#: ags/X/machine/ags_sf2_synth.c:402 ags/X/machine/ags_sfz_synth.c:349
 msgid "WAV 1 - octave"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:438
+#: ags/X/machine/ags_sf2_synth.c:438 ags/X/machine/ags_sfz_synth.c:385
 msgid "WAV 1 - key"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:473
+#: ags/X/machine/ags_sf2_synth.c:473 ags/X/machine/ags_sfz_synth.c:420
 msgid "WAV 1 - volume"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:514
+#: ags/X/machine/ags_sf2_synth.c:514 ags/X/machine/ags_sfz_synth.c:461
 msgid "chorus input volume"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:548
+#: ags/X/machine/ags_sf2_synth.c:548 ags/X/machine/ags_sfz_synth.c:495
 msgid "chorus output volume"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:582
+#: ags/X/machine/ags_sf2_synth.c:582 ags/X/machine/ags_sfz_synth.c:529
 msgid "chorus LFO"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:612
+#: ags/X/machine/ags_sf2_synth.c:612 ags/X/machine/ags_sfz_synth.c:559
 msgid "chorus LFO frequency"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:627
+#: ags/X/machine/ags_sf2_synth.c:627 ags/X/machine/ags_sfz_synth.c:574
 msgid "chorus depth"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:661
+#: ags/X/machine/ags_sf2_synth.c:661 ags/X/machine/ags_sfz_synth.c:608
 msgid "chorus mix"
 msgstr ""
 
-#: ags/X/machine/ags_sf2_synth.c:695
+#: ags/X/machine/ags_sf2_synth.c:695 ags/X/machine/ags_sfz_synth.c:642
 msgid "chorus delay"
+msgstr ""
+
+#: ags/X/machine/ags_sfz_synth.c:312
+msgid "opcode"
+msgstr ""
+
+#: ags/X/machine/ags_sfz_synth.c:321
+msgid "value"
 msgstr ""
 
 #: ags/audio/osc/ags_osc_response.c:167

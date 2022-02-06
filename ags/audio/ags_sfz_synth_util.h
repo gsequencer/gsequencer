@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,14 +25,23 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_generic_pitch_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_volume_util.h>
 
+#include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_sfz_file.h>
 #include <ags/audio/file/ags_sfz_sample.h>
 
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
 #define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
+
+typedef enum{
+  AGS_SFZ_SYNTH_UTIL_FX_ENGINE   = 1,
+}AgsSFZSynthUtilFlags;
 
 /**
  * AgsSFZSynthUtilLoopMode:
@@ -54,8 +63,26 @@ typedef struct _AgsSFZSynthUtil AgsSFZSynthUtil;
 
 struct _AgsSFZSynthUtil
 {
-  AgsSFZSample *sfz_sample;
+  guint flags;
   
+  AgsAudioContainer *sfz_file;
+
+  guint sfz_sample_count;
+  AgsSFZSample **sfz_sample_arr;
+  gint **sfz_note_range;
+
+  gint sfz_loop_mode[128];
+  gint sfz_loop_start[128];
+  gint sfz_loop_end[128];
+
+  guint sfz_orig_buffer_length[128];
+  gpointer *sfz_orig_buffer;
+  
+  guint sfz_resampled_buffer_length[128];
+  gpointer *sfz_resampled_buffer;  
+  
+  AgsSFZSample *sfz_sample;
+
   gpointer source;
   guint source_stride;
 
@@ -65,9 +92,11 @@ struct _AgsSFZSynthUtil
   guint buffer_length;
   guint format;
   guint samplerate;
-
+  guint orig_samplerate;
+  
+  gint midi_key;
+  
   gdouble note;
-
   gdouble volume;
 
   guint frame_count;
@@ -78,7 +107,10 @@ struct _AgsSFZSynthUtil
   guint loop_start;
   guint loop_end;
   
+  AgsResampleUtil *resample_util;
   AgsGenericPitchUtil *generic_pitch_util;
+  AgsHQPitchUtil *hq_pitch_util;
+  AgsVolumeUtil *volume_util;
 };
 
 GType ags_sfz_synth_util_get_type(void);
@@ -109,6 +141,10 @@ void ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
 guint ags_sfz_synth_util_get_samplerate(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,
 				       guint samplerate);
+
+gint ags_sfz_synth_util_get_midi_key(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_midi_key(AgsSFZSynthUtil *sfz_synth_util,
+				     gint midi_key);
 
 gdouble ags_sfz_synth_util_get_note(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_note(AgsSFZSynthUtil *sfz_synth_util,
@@ -141,6 +177,8 @@ void ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
 AgsGenericPitchUtil* ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
 					       AgsGenericPitchUtil *generic_pitch_util);
+
+void ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util);
 
 void ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util);

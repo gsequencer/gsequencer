@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,8 +41,8 @@ G_BEGIN_DECLS
 #define AGS_IS_SFZ_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SFZ_SYNTH))
 #define AGS_SFZ_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SFZ_SYNTH, AgsSFZSynthClass))
 
-#define AGS_SFZ_SYNTH_BASE_NOTE_MAX (72.0)
-#define AGS_SFZ_SYNTH_BASE_NOTE_MIN (-72.0)
+#define AGS_SFZ_SYNTH_OPCODE_HEIGHT_REQUEST (256)
+#define AGS_SFZ_SYNTH_OPCODE_WIDTH_REQUEST (512)
 
 typedef struct _AgsSFZSynth AgsSFZSynth;
 typedef struct _AgsSFZSynthClass AgsSFZSynthClass;
@@ -56,14 +56,17 @@ struct _AgsSFZSynth
   gchar *name;
   gchar *xml_type;
 
+  guint mapped_output_audio_channel;
+  guint mapped_input_audio_channel;
+
   guint mapped_input_pad;
   guint mapped_output_pad;
 
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *notation_play_container;
-  AgsRecallContainer *notation_recall_container;
+  AgsRecallContainer *sfz_synth_play_container;
+  AgsRecallContainer *sfz_synth_recall_container;
 
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
@@ -71,10 +74,35 @@ struct _AgsSFZSynth
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
+  AgsAudioContainer *audio_container;
+
   GtkEntry *filename;
   GtkButton *open;
 
   AgsSFZLoader *sfz_loader;
+  AgsSFZInstrumentLoader *sfz_instrument_loader;
+
+  gint position;
+  GtkSpinner *sfz_loader_spinner;
+
+  GtkTreeView *opcode_tree_view;
+
+  AgsDial *synth_octave;
+  AgsDial *synth_key;
+
+  AgsDial *synth_volume;
+
+  GtkCheckButton *chorus_enabled;
+
+  AgsDial *chorus_input_volume;
+  AgsDial *chorus_output_volume;
+
+  GtkComboBox *chorus_lfo_oscillator;  
+  GtkSpinButton *chorus_lfo_frequency;
+
+  AgsDial *chorus_depth;
+  AgsDial *chorus_mix;
+  AgsDial *chorus_delay;
   
   GtkWidget *open_dialog;
 };
@@ -88,6 +116,8 @@ GType ags_sfz_synth_get_type(void);
 
 void ags_sfz_synth_open_filename(AgsSFZSynth *sfz_synth,
 				 gchar *filename);
+
+void ags_sfz_synth_load_opcode(AgsSFZSynth *sfz_synth);
 
 gboolean ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth);
 

@@ -641,6 +641,7 @@
       <xi:include href="xml/ags_start_soundcard.xml"/>
       <xi:include href="xml/ags_stop_sequencer.xml"/>
       <xi:include href="xml/ags_stop_soundcard.xml"/>
+      <xi:include href="xml/ags_stop_thread.xml"/>
       <xi:include href="xml/ags_switch_buffer_flag.xml"/>
       <xi:include href="xml/ags_tic_device.xml"/>
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -671,6 +671,140 @@ ags_sfz_region_unset_flags(AgsSFZRegion *sfz_region, guint flags)
 }
 
 /**
+ * ags_sfz_region_get_group:
+ * @sfz_region: the #AgsSFZRegion
+ *
+ * Get the groups of @sfz_region.
+ * 
+ * Returns: (transfer full): the #AgsSFZGroup
+ *
+ * Since: 3.17.0
+ */
+GObject*
+ags_sfz_region_get_group(AgsSFZRegion *sfz_region)
+{
+  GObject *group;
+  
+  if(!AGS_IS_SFZ_REGION(sfz_region)){
+    return(NULL);
+  }
+
+  group = NULL;
+
+  g_object_get(sfz_region,
+	       "group", &group,
+	       NULL);
+  
+  return(group);
+}
+
+/**
+ * ags_sfz_region_set_group:
+ * @sfz_region: the #AgsSFZRegion
+ * @group: (transfer none): the #AgsSFZGroup
+ *
+ * Set the group field of @sfz_region
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_region_set_group(AgsSFZRegion *sfz_region,
+			 GObject *group)
+{
+  if(!AGS_IS_SFZ_REGION(sfz_region)){
+    return;
+  }
+
+  g_object_set(sfz_region,
+	       "group", group,
+	       NULL);
+}
+
+/**
+ * ags_sfz_region_get_sample:
+ * @sfz_region: the #AgsSFZRegion
+ *
+ * Get the samples of @sfz_region.
+ * 
+ * Returns: (transfer full): the #AgsSFZSample
+ *
+ * Since: 3.17.0
+ */
+GObject*
+ags_sfz_region_get_sample(AgsSFZRegion *sfz_region)
+{
+  GObject *sample;
+  
+  if(!AGS_IS_SFZ_REGION(sfz_region)){
+    return(NULL);
+  }
+
+  sample = NULL;
+
+  g_object_get(sfz_region,
+	       "sample", &sample,
+	       NULL);
+  
+  return(sample);
+}
+
+/**
+ * ags_sfz_region_set_sample:
+ * @sfz_region: the #AgsSFZRegion
+ * @sample: (transfer none): the #AgsSFZSample
+ *
+ * Set the sample field of @sfz_region
+ * 
+ * Since: 3.17.0
+ */
+void
+ags_sfz_region_set_sample(AgsSFZRegion *sfz_region,
+			  GObject *sample)
+{
+  if(!AGS_IS_SFZ_REGION(sfz_region)){
+    return;
+  }
+
+  g_object_set(sfz_region,
+	       "sample", sample,
+	       NULL);
+}
+
+/**
+ * ags_sfz_region_get_control:
+ * @sfz_region: the #AgsSFZRegion
+ *
+ * Get all control of @sfz_region.
+ * 
+ * Returns: (transfer container): the #GList-struct containing controls as string
+ *
+ * Since: 3.17.0
+ */
+GList*
+ags_sfz_region_get_control(AgsSFZRegion *sfz_region)
+{
+  GList *start_list;
+  
+  GRecMutex *sfz_region_mutex;
+
+  if(!AGS_IS_SFZ_REGION(sfz_region)){
+    return(NULL);
+  }
+
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
+  
+  /* get */
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  start_list = g_hash_table_get_keys(sfz_region->control);
+  
+  g_rec_mutex_unlock(sfz_region_mutex);
+
+  return(start_list);
+}
+
+/**
  * ags_sfz_region_insert_control:
  * @sfz_region: the #AgsSFZRegion
  * @key: the key
@@ -711,6 +845,8 @@ ags_sfz_region_insert_control(AgsSFZRegion *sfz_region,
  *
  * Lookup control specified by @key of @sfz_region.
  *
+ * Returns: (transfer full): the matching value of key
+ * 
  * Since: 3.0.0
  */
 gchar*

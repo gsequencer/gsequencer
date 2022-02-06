@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,6 +81,15 @@ gboolean ags_sfz_group_test_flags(AgsSFZGroup *sfz_group, guint flags);
 void ags_sfz_group_set_flags(AgsSFZGroup *sfz_group, guint flags);
 void ags_sfz_group_unset_flags(AgsSFZGroup *sfz_group, guint flags);
 
+GList* ags_sfz_group_get_region(AgsSFZGroup *sfz_group);
+void ags_sfz_group_set_region(AgsSFZGroup *sfz_group,
+			     GList *region);
+
+GObject* ags_sfz_group_get_sample(AgsSFZGroup *sfz_group);
+void ags_sfz_group_set_sample(AgsSFZGroup *sfz_group,
+			      GObject *sample);
+
+GList* ags_sfz_group_get_control(AgsSFZGroup *sfz_group);
 void ags_sfz_group_insert_control(AgsSFZGroup *sfz_group,
 				  gchar *key,
 				  gchar *value);

@@ -1,3 +1,13 @@
+ags (3.17.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsSFZSynth
+	* implemented ags-fx-sfz-synth
+	* implemented AgsSFZInstrumentLoader worker
+	* implemented AgsApplySFZInstrument task
+	* implemented ags_sfz_synth_util_load_instrument()
+	* implemented additional getter/setter functions of AgsSFZFile, AgsSFZGroup, AgsSFZRegion and AgsSFZSample
+
 ags (3.16.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
