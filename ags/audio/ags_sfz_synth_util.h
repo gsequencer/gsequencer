@@ -68,7 +68,7 @@ struct _AgsSFZSynthUtil
   AgsAudioContainer *sfz_file;
 
   guint sfz_sample_count;
-  AgsSFZSample **sample;
+  AgsSFZSample **sfz_sample_arr;
   gint **sfz_note_range;
 
   gint sfz_loop_mode[128];

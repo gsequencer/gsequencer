@@ -68,7 +68,7 @@ struct _AgsSF2SynthUtil
   AgsAudioContainer *sf2_file;
   
   guint sf2_sample_count;
-  IpatchSample **sf2_sample;
+  IpatchSample **sf2_sample_arr;
   gint **sf2_note_range;
 
   gint sf2_loop_mode[128];

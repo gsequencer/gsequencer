@@ -1730,7 +1730,7 @@ ags_fx_sfz_synth_audio_channel_data_alloc()
 
   /* synth 0 */
   channel_data->synth.sfz_sample_count = 0;
-  channel_data->synth.sample = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*));
+  channel_data->synth.sfz_sample_arr = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*));
   channel_data->synth.sfz_note_range = (gint **) g_malloc(128 * sizeof(gint*));
 
   channel_data->synth.sfz_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
@@ -1738,7 +1738,7 @@ ags_fx_sfz_synth_audio_channel_data_alloc()
   channel_data->synth.sfz_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
 
   for(i = 0; i < 128; i++){
-    channel_data->synth.sample[i] = NULL;
+    channel_data->synth.sfz_sample_arr[i] = NULL;
 
     channel_data->synth.sfz_note_range[i] = (gint *) g_malloc(2 * sizeof(gint));
     

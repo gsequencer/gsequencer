@@ -114,7 +114,7 @@ ags_sfz_synth_util_alloc()
   ptr->sfz_file = NULL;
 
   ptr->sfz_sample_count = 0;
-  ptr->sample = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*));
+  ptr->sfz_sample_arr = (AgsSFZSample **) g_malloc(128 * sizeof(AgsSFZSample*));
   ptr->sfz_note_range = (gint **) g_malloc(128 * sizeof(gint*));
   
   ptr->sfz_orig_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
@@ -122,7 +122,7 @@ ags_sfz_synth_util_alloc()
   ptr->sfz_resampled_buffer = (gpointer *) g_malloc(128 * sizeof(gpointer));
 
   for(i = 0; i < 128; i++){
-    ptr->sample[i] = NULL;
+    ptr->sfz_sample_arr[i] = NULL;
 
     ptr->sfz_note_range[i] = (gint *) g_malloc(2 * sizeof(gint));
     ptr->sfz_note_range[i][0] = -1;
@@ -854,10 +854,10 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
   g_rec_mutex_unlock(audio_container_mutex);
 
   for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
-    if(sfz_synth_util->sample[i] != NULL){
-      g_object_unref(sfz_synth_util->sample[i]);
+    if(sfz_synth_util->sfz_sample_arr[i] != NULL){
+      g_object_unref(sfz_synth_util->sfz_sample_arr[i]);
 
-      sfz_synth_util->sample[i] = NULL;
+      sfz_synth_util->sfz_sample_arr[i] = NULL;
     }
 
     sfz_synth_util->sfz_note_range[i][0] = -1;
@@ -906,7 +906,7 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
 
     sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sample);
     
-    sfz_synth_util->sample[i] = sample;
+    sfz_synth_util->sfz_sample_arr[i] = sample;
     g_object_ref(sample);
 
     sample_frame_count = 0;
@@ -1163,7 +1163,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -1175,7 +1175,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -1185,7 +1185,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -1193,7 +1193,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -1759,7 +1759,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -1771,7 +1771,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -1781,7 +1781,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -1789,7 +1789,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -2355,7 +2355,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -2367,7 +2367,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -2377,7 +2377,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -2385,7 +2385,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -2951,7 +2951,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -2963,7 +2963,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -2973,7 +2973,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -2981,7 +2981,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -3547,7 +3547,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -3559,7 +3559,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -3569,7 +3569,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -3577,7 +3577,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -4143,7 +4143,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -4155,7 +4155,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -4165,7 +4165,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -4173,7 +4173,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -4739,7 +4739,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -4751,7 +4751,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -4761,7 +4761,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -4769,7 +4769,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -5335,7 +5335,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
     
     for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
       if(current_sfz_sample == NULL){
-	current_sfz_sample = sfz_synth_util->sample[i];
+	current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	nth_sample = i;
@@ -5347,7 +5347,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
       }else{
 	if(sfz_synth_util->sfz_note_range[i][0] <= midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] >= midi_key){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -5357,7 +5357,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][1] < midi_key &&
 	   sfz_synth_util->sfz_note_range[i][0] > sfz_synth_util->sfz_note_range[nth_sample][0]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;
@@ -5365,7 +5365,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 
 	if(sfz_synth_util->sfz_note_range[nth_sample][0] > midi_key &&
 	   sfz_synth_util->sfz_note_range[i][1] < sfz_synth_util->sfz_note_range[nth_sample][1]){
-	  current_sfz_sample = sfz_synth_util->sample[i];
+	  current_sfz_sample = sfz_synth_util->sfz_sample_arr[i];
 	  current_sfz_note_range = sfz_synth_util->sfz_note_range[i];
 
 	  nth_sample = i;

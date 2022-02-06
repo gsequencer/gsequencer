@@ -269,8 +269,8 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
   synth->sfz_sample_count = template->sfz_sample_count;
   template->sfz_sample_count = 0;
   
-  synth->sample = template->sample;
-  template->sample = NULL;
+  synth->sfz_sample_arr = template->sfz_sample_arr;
+  template->sfz_sample_arr = NULL;
 
   g_free(synth->sfz_note_range);
   

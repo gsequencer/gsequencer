@@ -269,8 +269,8 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
   synth->sf2_sample_count = template->sf2_sample_count;
   template->sf2_sample_count = 0;
   
-  synth->sf2_sample = template->sf2_sample;
-  template->sf2_sample = NULL;
+  synth->sf2_sample_arr = template->sf2_sample_arr;
+  template->sf2_sample_arr = NULL;
 
   g_free(synth->sf2_note_range);
   
