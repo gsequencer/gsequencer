@@ -292,6 +292,7 @@
       <xi:include href="xml/ags_sf2_loader.xml"/>
       <xi:include href="xml/ags_sf2_midi_locale_loader.xml"/>
       <xi:include href="xml/ags_sfz_loader.xml"/>
+      <xi:include href="xml/ags_sfz_instrument_loader.xml"/>
       <xi:include href="xml/ags_wave_loader.xml"/>
     </chapter>
     
@@ -602,6 +603,7 @@
       <xi:include href="xml/ags_apply_sf2_synth.xml"/>
       <xi:include href="xml/ags_apply_sf2_midi_locale.xml"/>
       <xi:include href="xml/ags_apply_sfz_synth.xml"/>
+      <xi:include href="xml/ags_apply_sfz_instrument.xml"/>
       <xi:include href="xml/ags_apply_tact.xml"/>
       <xi:include href="xml/ags_cancel_audio.xml"/>
       <xi:include href="xml/ags_cancel_channel.xml"/>
