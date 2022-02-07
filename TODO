@@ -10,7 +10,6 @@ Free Documentation License".
 * TODO:JK: fix ags_turtle_test.c
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: implemented AgsConnectableFlags
-* TODO:JK: implemented AgsSFZSynth
 * FIXME:JK: make indicator orientable
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
