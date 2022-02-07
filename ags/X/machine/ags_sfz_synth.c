@@ -775,67 +775,61 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->synth_octave,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_synth_octave_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->synth_key,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_synth_key_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->synth_volume,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_synth_volume_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->chorus_input_volume,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_input_volume_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->chorus_output_volume,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_output_volume_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
-  g_object_disconnect((GObject *) sfz_synth->chorus_input_volume,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_sfz_synth_chorus_input_volume_callback),
-		      (gpointer) sfz_synth,
-		      NULL);
-
   g_object_disconnect((GObject *) sfz_synth->chorus_lfo_oscillator,
-		      "any_signal::clicked",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_lfo_oscillator_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->chorus_lfo_frequency,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_lfo_frequency_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->chorus_depth,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_depth_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->chorus_mix,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_mix_callback),
 		      (gpointer) sfz_synth,
 		      NULL);
 
   g_object_disconnect((GObject *) sfz_synth->chorus_delay,
-		      "any_signal::clicked",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_chorus_delay_callback),
 		      (gpointer) sfz_synth,
 		      NULL);

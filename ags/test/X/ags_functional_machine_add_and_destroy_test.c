@@ -48,15 +48,16 @@ void ags_functional_machine_add_and_destroy_test_drum();
 void ags_functional_machine_add_and_destroy_test_matrix();
 void ags_functional_machine_add_and_destroy_test_synth();
 void ags_functional_machine_add_and_destroy_test_fm_synth();
+void ags_functional_machine_add_and_destroy_test_syncsynth();
+void ags_functional_machine_add_and_destroy_test_fm_syncsynth();
 void ags_functional_machine_add_and_destroy_test_hybrid_synth();
 void ags_functional_machine_add_and_destroy_test_hybrid_fm_synth();
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_add_and_destroy_test_ffplayer();
 void ags_functional_machine_add_and_destroy_test_sf2_synth();
 #endif
-void ags_functional_machine_add_and_destroy_test_syncsynth();
-void ags_functional_machine_add_and_destroy_test_fm_syncsynth();
 void ags_functional_machine_add_and_destroy_test_pitch_sampler();
+void ags_functional_machine_add_and_destroy_test_sfz_synth();
 void ags_functional_machine_add_and_destroy_test_audiorec();
 
 #define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
@@ -116,7 +117,8 @@ ags_functional_machine_add_and_destroy_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSF2Synth", ags_functional_machine_add_and_destroy_test_sf2_synth) == NULL)
 #endif
      || (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsPitchSampler", ags_functional_machine_add_and_destroy_test_pitch_sampler) == NULL) ||
-      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsAudiorec", ags_functional_machine_add_and_destroy_test_audiorec) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSFZSynth", ags_functional_machine_add_and_destroy_test_sfz_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsAudiorec", ags_functional_machine_add_and_destroy_test_audiorec) == NULL)
      ){
     
     CU_cleanup_registry();
@@ -412,6 +414,23 @@ ags_functional_machine_add_and_destroy_test_pitch_sampler()
   /* add fplayer */
   success = ags_functional_test_util_add_machine(NULL,
 						 "Sampler");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy fplayer */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_functional_machine_add_and_destroy_test_sfz_synth()
+{
+  gboolean success;
+
+  /* add fplayer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "SFZ Synth");
 
   CU_ASSERT(success == TRUE);
 
