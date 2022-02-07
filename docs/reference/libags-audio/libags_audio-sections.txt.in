@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2021 Joël Krähemann
+# Copyright (C) 2005-2022 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -369,6 +369,22 @@ AGS_TYPE_APPLY_SF2_SYNTH
 AgsApplySF2Synth
 AgsApplySF2SynthClass
 ags_apply_sf2_synth_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_apply_sfz_instrument</FILE>
+<TITLE>AgsApplySFZInstrument</TITLE>
+ags_apply_sfz_instrument_new
+<SUBSECTION Public>
+AGS_APPLY_SFZ_INSTRUMENT
+AGS_APPLY_SFZ_INSTRUMENT_CLASS
+AGS_APPLY_SFZ_INSTRUMENT_GET_CLASS
+AGS_IS_APPLY_SFZ_INSTRUMENT
+AGS_IS_APPLY_SFZ_INSTRUMENT_CLASS
+AGS_TYPE_APPLY_SFZ_INSTRUMENT
+AgsApplySFZInstrument
+AgsApplySFZInstrumentClass
+ags_apply_sfz_instrument_get_type
 </SECTION>
 
 <SECTION>
@@ -5103,6 +5119,112 @@ AGS_TYPE_FX_SF2_SYNTH_RECYCLING
 AgsFxSF2SynthRecycling
 AgsFxSF2SynthRecyclingClass
 ags_fx_sf2_synth_recycling_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_sfz_synth_audio</FILE>
+<TITLE>AgsFxSFZSynthAudio</TITLE>
+AGS_FX_SFZ_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE
+AgsFxSFZSynthAudioScopeData
+AgsFxSFZSynthAudioChannelData
+AgsFxSFZSynthAudioInputData
+ags_fx_sfz_synth_audio_scope_data_alloc
+ags_fx_sfz_synth_audio_scope_data_free
+ags_fx_sfz_synth_audio_channel_data_alloc
+ags_fx_sfz_synth_audio_channel_data_free
+ags_fx_sfz_synth_audio_input_data_alloc
+ags_fx_sfz_synth_audio_input_data_free
+ags_fx_sfz_synth_audio_new
+<SUBSECTION Public>
+AGS_FX_SFZ_SYNTH_AUDIO
+AGS_FX_SFZ_SYNTH_AUDIO_CLASS
+AGS_FX_SFZ_SYNTH_AUDIO_GET_CLASS
+AGS_IS_FX_SFZ_SYNTH_AUDIO
+AGS_IS_FX_SFZ_SYNTH_AUDIO_CLASS
+AGS_TYPE_FX_SFZ_SYNTH_AUDIO
+AgsFxSFZSynthAudio
+AgsFxSFZSynthAudioClass
+ags_fx_sfz_synth_audio_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_sfz_synth_audio_processor</FILE>
+<TITLE>AgsFxSFZSynthAudioProcessor</TITLE>
+ags_fx_sfz_synth_audio_processor_new
+<SUBSECTION Public>
+AGS_FX_SFZ_SYNTH_AUDIO_PROCESSOR
+AGS_FX_SFZ_SYNTH_AUDIO_PROCESSOR_CLASS
+AGS_FX_SFZ_SYNTH_AUDIO_PROCESSOR_GET_CLASS
+AGS_IS_FX_SFZ_SYNTH_AUDIO_PROCESSOR
+AGS_IS_FX_SFZ_SYNTH_AUDIO_PROCESSOR_CLASS
+AGS_TYPE_FX_SFZ_SYNTH_AUDIO_PROCESSOR
+AgsFxSFZSynthAudioProcessor
+AgsFxSFZSynthAudioProcessorClass
+ags_fx_sfz_synth_audio_processor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_sfz_synth_audio_signal</FILE>
+<TITLE>AgsFxSFZSynthAudioSignal</TITLE>
+ags_fx_sfz_synth_audio_signal_new
+<SUBSECTION Public>
+AGS_FX_SFZ_SYNTH_AUDIO_SIGNAL
+AGS_FX_SFZ_SYNTH_AUDIO_SIGNAL_CLASS
+AGS_FX_SFZ_SYNTH_AUDIO_SIGNAL_GET_CLASS
+AGS_IS_FX_SFZ_SYNTH_AUDIO_SIGNAL
+AGS_IS_FX_SFZ_SYNTH_AUDIO_SIGNAL_CLASS
+AGS_TYPE_FX_SFZ_SYNTH_AUDIO_SIGNAL
+AgsFxSFZSynthAudioSignal
+AgsFxSFZSynthAudioSignalClass
+ags_fx_sfz_synth_audio_signal_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_sfz_synth_channel</FILE>
+<TITLE>AgsFxSFZSynthChannel</TITLE>
+ags_fx_sfz_synth_channel_new
+<SUBSECTION Public>
+AGS_FX_SFZ_SYNTH_CHANNEL
+AGS_FX_SFZ_SYNTH_CHANNEL_CLASS
+AGS_FX_SFZ_SYNTH_CHANNEL_GET_CLASS
+AGS_IS_FX_SFZ_SYNTH_CHANNEL
+AGS_IS_FX_SFZ_SYNTH_CHANNEL_CLASS
+AGS_TYPE_FX_SFZ_SYNTH_CHANNEL
+AgsFxSFZSynthChannel
+AgsFxSFZSynthChannelClass
+ags_fx_sfz_synth_channel_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_sfz_synth_channel_processor</FILE>
+<TITLE>AgsFxSFZSynthChannelProcessor</TITLE>
+ags_fx_sfz_synth_channel_processor_new
+<SUBSECTION Public>
+AGS_FX_SFZ_SYNTH_CHANNEL_PROCESSOR
+AGS_FX_SFZ_SYNTH_CHANNEL_PROCESSOR_CLASS
+AGS_FX_SFZ_SYNTH_CHANNEL_PROCESSOR_GET_CLASS
+AGS_IS_FX_SFZ_SYNTH_CHANNEL_PROCESSOR
+AGS_IS_FX_SFZ_SYNTH_CHANNEL_PROCESSOR_CLASS
+AGS_TYPE_FX_SFZ_SYNTH_CHANNEL_PROCESSOR
+AgsFxSFZSynthChannelProcessor
+AgsFxSFZSynthChannelProcessorClass
+ags_fx_sfz_synth_channel_processor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_sfz_synth_recycling</FILE>
+<TITLE>AgsFxSFZSynthRecycling</TITLE>
+ags_fx_sfz_synth_recycling_new
+<SUBSECTION Public>
+AGS_FX_SFZ_SYNTH_RECYCLING
+AGS_FX_SFZ_SYNTH_RECYCLING_CLASS
+AGS_FX_SFZ_SYNTH_RECYCLING_GET_CLASS
+AGS_IS_FX_SFZ_SYNTH_RECYCLING
+AGS_IS_FX_SFZ_SYNTH_RECYCLING_CLASS
+AGS_TYPE_FX_SFZ_SYNTH_RECYCLING
+AgsFxSFZSynthRecycling
+AgsFxSFZSynthRecyclingClass
+ags_fx_sfz_synth_recycling_get_type
 </SECTION>
 
 <SECTION>
@@ -10461,6 +10583,12 @@ AgsSFZLevel
 ags_sfz_file_test_flags
 ags_sfz_file_set_flags
 ags_sfz_file_unset_flags
+ags_sfz_file_get_group
+ags_sfz_file_set_group
+ags_sfz_file_get_region
+ags_sfz_file_set_region
+ags_sfz_file_get_sample
+ags_sfz_file_set_sample
 ags_sfz_file_select_sample
 ags_sfz_file_get_range
 ags_sfz_file_check_suffix
@@ -10486,6 +10614,11 @@ AgsSFZGroupFlags
 ags_sfz_group_test_flags
 ags_sfz_group_set_flags
 ags_sfz_group_unset_flags
+ags_sfz_group_get_region
+ags_sfz_group_set_region
+ags_sfz_group_get_sample
+ags_sfz_group_set_sample
+ags_sfz_group_get_control
 ags_sfz_group_insert_control
 ags_sfz_group_lookup_control
 ags_sfz_group_new
@@ -10499,6 +10632,38 @@ AGS_TYPE_SFZ_GROUP
 AgsSFZGroup
 AgsSFZGroupClass
 ags_sfz_group_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_sfz_instrument_loader</FILE>
+<TITLE>AgsSFZInstrumentLoader</TITLE>
+AGS_SFZ_INSTRUMENT_LOADER_GET_OBJ_MUTEX
+AgsSFZInstrumentLoaderFlags
+ags_sfz_instrument_loader_test_flags
+ags_sfz_instrument_loader_set_flags
+ags_sfz_instrument_loader_unset_flags
+ags_sfz_instrument_loader_get_audio
+ags_sfz_instrument_loader_set_audio
+ags_sfz_instrument_loader_get_filename
+ags_sfz_instrument_loader_set_filename
+ags_sfz_instrument_loader_get_audio_container
+ags_sfz_instrument_loader_set_audio_container
+ags_sfz_instrument_loader_get_template
+ags_sfz_instrument_loader_set_template
+ags_sfz_instrument_loader_get_synth
+ags_sfz_instrument_loader_set_synth
+ags_sfz_instrument_loader_start
+ags_sfz_instrument_loader_new
+<SUBSECTION Public>
+AGS_IS_SFZ_INSTRUMENT_LOADER
+AGS_IS_SFZ_INSTRUMENT_LOADER_CLASS
+AGS_SFZ_INSTRUMENT_LOADER
+AGS_SFZ_INSTRUMENT_LOADER_CLASS
+AGS_SFZ_INSTRUMENT_LOADER_GET_CLASS
+AGS_TYPE_SFZ_INSTRUMENT_LOADER
+AgsSFZInstrumentLoader
+AgsSFZInstrumentLoaderClass
+ags_sfz_instrument_loader_get_type
 </SECTION>
 
 <SECTION>
@@ -10537,6 +10702,11 @@ AgsSFZRegionFlags
 ags_sfz_region_test_flags
 ags_sfz_region_set_flags
 ags_sfz_region_unset_flags
+ags_sfz_region_get_group
+ags_sfz_region_set_group
+ags_sfz_region_get_sample
+ags_sfz_region_set_sample
+ags_sfz_region_get_control
 ags_sfz_region_insert_control
 ags_sfz_region_lookup_control
 ags_sfz_region_new
@@ -10561,6 +10731,10 @@ AgsSFZSampleLoopMode
 ags_sfz_sample_test_flags
 ags_sfz_sample_set_flags
 ags_sfz_sample_unset_flags
+ags_sfz_sample_get_group
+ags_sfz_sample_set_group
+ags_sfz_sample_get_region
+ags_sfz_sample_set_region
 ags_sfz_sample_get_key
 ags_sfz_sample_get_hikey
 ags_sfz_sample_get_lokey
@@ -10632,6 +10806,7 @@ ags_sfz_synth_generator_get_type
 
 <SECTION>
 <FILE>ags_sfz_synth_util</FILE>
+AgsSFZSynthUtilFlags
 AgsSFZSynthUtilLoopMode
 ags_sfz_synth_util_alloc
 ags_sfz_synth_util_boxed_copy
@@ -10646,6 +10821,8 @@ ags_sfz_synth_util_get_format
 ags_sfz_synth_util_set_format
 ags_sfz_synth_util_get_samplerate
 ags_sfz_synth_util_set_samplerate
+ags_sfz_synth_util_get_midi_key
+ags_sfz_synth_util_set_midi_key
 ags_sfz_synth_util_get_note
 ags_sfz_synth_util_set_note
 ags_sfz_synth_util_get_volume
@@ -10662,6 +10839,7 @@ ags_sfz_synth_util_get_loop_end
 ags_sfz_synth_util_set_loop_end
 ags_sfz_synth_util_get_generic_pitch_util
 ags_sfz_synth_util_set_generic_pitch_util
+ags_sfz_synth_util_load_instrument
 ags_sfz_synth_util_compute_s8
 ags_sfz_synth_util_compute_s16
 ags_sfz_synth_util_compute_s24
@@ -10980,6 +11158,22 @@ AGS_TYPE_STOP_SOUNDCARD
 AgsStopSoundcard
 AgsStopSoundcardClass
 ags_stop_soundcard_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_stop_thread</FILE>
+<TITLE>AgsStopThread</TITLE>
+ags_stop_thread_new
+<SUBSECTION Public>
+AGS_IS_STOP_THREAD
+AGS_IS_STOP_THREAD_CLASS
+AGS_STOP_THREAD
+AGS_STOP_THREAD_CLASS
+AGS_STOP_THREAD_GET_CLASS
+AGS_TYPE_STOP_THREAD
+AgsStopThread
+AgsStopThreadClass
+ags_stop_thread_get_type
 </SECTION>
 
 <SECTION>

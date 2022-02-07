@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2021 Joël Krähemann
+# Copyright (C) 2005-2022 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -37,6 +37,7 @@ ags_apply_presets_get_type
 ags_apply_sequencer_length_get_type
 ags_apply_sf2_midi_locale_get_type
 ags_apply_sf2_synth_get_type
+ags_apply_sfz_instrument_get_type
 ags_apply_sfz_synth_get_type
 ags_apply_sound_config_get_type
 ags_apply_synth_get_type
@@ -242,6 +243,12 @@ ags_fx_sf2_synth_audio_signal_get_type
 ags_fx_sf2_synth_channel_get_type
 ags_fx_sf2_synth_channel_processor_get_type
 ags_fx_sf2_synth_recycling_get_type
+ags_fx_sfz_synth_audio_get_type
+ags_fx_sfz_synth_audio_processor_get_type
+ags_fx_sfz_synth_audio_signal_get_type
+ags_fx_sfz_synth_channel_get_type
+ags_fx_sfz_synth_channel_processor_get_type
+ags_fx_sfz_synth_recycling_get_type
 ags_fx_synth_audio_get_type
 ags_fx_synth_audio_processor_get_type
 ags_fx_synth_audio_signal_get_type
@@ -468,6 +475,7 @@ ags_sf2_synth_util_loop_mode_get_type
 ags_sf2_util_get_type
 ags_sfz_file_get_type
 ags_sfz_group_get_type
+ags_sfz_instrument_loader_get_type
 ags_sfz_loader_get_type
 ags_sfz_region_get_type
 ags_sfz_sample_get_type
@@ -493,6 +501,7 @@ ags_start_sequencer_get_type
 ags_start_soundcard_get_type
 ags_stop_sequencer_get_type
 ags_stop_soundcard_get_type
+ags_stop_thread_get_type
 ags_stream_audio_signal_get_type
 ags_stream_channel_get_type
 ags_stream_channel_run_get_type
