@@ -1,3 +1,9 @@
+ags (3.17.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsOscillator length depending on samplerate config
+	* improved AgsFMOscillator length depending on samplerate config
+
 ags (3.17.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
