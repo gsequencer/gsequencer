@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -139,13 +139,20 @@ ags_oscillator_init(AgsOscillator *oscillator)
   GtkListStore *model;
   GtkTreeIter iter;
 
+  AgsConfig *config;
+
+  guint samplerate;
   guint i;
 
-  oscillator->flags = 0;
+  config = ags_config_get_instance();
   
+  oscillator->flags = 0;
+
   grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) oscillator,
 		    (GtkWidget *) grid);
+
+  samplerate = ags_soundcard_helper_config_get_samplerate(config);
   
   /* wave */
   gtk_grid_attach(grid,
@@ -223,7 +230,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		  1, 1);
   
   oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  gtk_spin_button_set_value(oscillator->frame_count, AGS_OSCILLATOR_DEFAULT_FRAME_COUNT);
+  gtk_spin_button_set_value(oscillator->frame_count,
+			    AGS_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_OSCILLATOR_DEFAULT_SAMPLERATE));
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->frame_count, 5, 0,
 		  1, 1);
