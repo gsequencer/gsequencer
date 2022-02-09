@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-02-07 07:46+0100\n"
+"POT-Creation-Date: 2022-02-09 20:46+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -878,8 +878,8 @@ msgstr "WASAPI Teilungs Modus"
 msgid "WASAPI buffer size"
 msgstr "WASAPI Puffer grösse"
 
-#: ags/X/ags_wave_editor.c:263 ags/X/machine/ags_fm_oscillator.c:155
-#: ags/X/machine/ags_oscillator.c:152
+#: ags/X/ags_wave_editor.c:263 ags/X/machine/ags_fm_oscillator.c:163
+#: ags/X/machine/ags_oscillator.c:159
 msgid "wave"
 msgstr "Wellenform"
 
@@ -1146,7 +1146,7 @@ msgstr "Voreinstellung"
 
 #: ags/X/editor/ags_envelope_editor.c:282
 #: ags/X/editor/ags_pattern_envelope.c:453
-#: ags/X/machine/ags_fm_oscillator.c:212 ags/X/machine/ags_oscillator.c:208
+#: ags/X/machine/ags_fm_oscillator.c:219 ags/X/machine/ags_oscillator.c:215
 msgid "attack"
 msgstr "Angriff"
 
@@ -1470,8 +1470,8 @@ msgstr "default"
 msgid "run"
 msgstr "lauf"
 
-#: ags/X/machine/ags_drum.c:401 ags/X/machine/ags_fm_oscillator.c:223
-#: ags/X/machine/ags_oscillator.c:221
+#: ags/X/machine/ags_drum.c:401 ags/X/machine/ags_fm_oscillator.c:230
+#: ags/X/machine/ags_oscillator.c:228
 msgid "length"
 msgstr "Länge"
 
@@ -1565,59 +1565,59 @@ msgstr "aktualisieren"
 msgid "aliase"
 msgstr ""
 
-#: ags/X/machine/ags_ffplayer.c:667 ags/X/machine/ags_fm_oscillator.c:257
+#: ags/X/machine/ags_ffplayer.c:667 ags/X/machine/ags_fm_oscillator.c:265
 #: ags/X/machine/ags_fm_syncsynth.c:394 ags/X/machine/ags_matrix.c:348
-#: ags/X/machine/ags_oscillator.c:261 ags/X/machine/ags_pitch_sampler.c:559
+#: ags/X/machine/ags_oscillator.c:269 ags/X/machine/ags_pitch_sampler.c:559
 #: ags/X/machine/ags_syncsynth.c:398
 msgid "volume"
 msgstr "Lautstärke"
 
-#: ags/X/machine/ags_fm_oscillator.c:189 ags/X/machine/ags_fm_oscillator.c:342
-#: ags/X/machine/ags_oscillator.c:185
+#: ags/X/machine/ags_fm_oscillator.c:196 ags/X/machine/ags_fm_oscillator.c:350
+#: ags/X/machine/ags_oscillator.c:192
 msgid "sawtooth"
 msgstr "sawtooth"
 
-#: ags/X/machine/ags_fm_oscillator.c:194 ags/X/machine/ags_fm_oscillator.c:347
-#: ags/X/machine/ags_oscillator.c:190
+#: ags/X/machine/ags_fm_oscillator.c:201 ags/X/machine/ags_fm_oscillator.c:355
+#: ags/X/machine/ags_oscillator.c:197
 msgid "square"
 msgstr "square"
 
-#: ags/X/machine/ags_fm_oscillator.c:199 ags/X/machine/ags_fm_oscillator.c:352
-#: ags/X/machine/ags_oscillator.c:195
+#: ags/X/machine/ags_fm_oscillator.c:206 ags/X/machine/ags_fm_oscillator.c:360
+#: ags/X/machine/ags_oscillator.c:202
 msgid "triangle"
 msgstr "triangle"
 
-#: ags/X/machine/ags_fm_oscillator.c:204 ags/X/machine/ags_fm_oscillator.c:357
-#: ags/X/machine/ags_oscillator.c:200
+#: ags/X/machine/ags_fm_oscillator.c:211 ags/X/machine/ags_fm_oscillator.c:365
+#: ags/X/machine/ags_oscillator.c:207
 msgid "impulse"
 msgstr "impulse"
 
-#: ags/X/machine/ags_fm_oscillator.c:233 ags/X/machine/ags_oscillator.c:233
+#: ags/X/machine/ags_fm_oscillator.c:241 ags/X/machine/ags_oscillator.c:241
 msgid "phase"
 msgstr "phase"
 
-#: ags/X/machine/ags_fm_oscillator.c:244 ags/X/machine/ags_oscillator.c:246
+#: ags/X/machine/ags_fm_oscillator.c:252 ags/X/machine/ags_oscillator.c:254
 #: ags/X/machine/ags_pitch_sampler_file.c:171
 msgid "frequency"
 msgstr "Frequenz"
 
-#: ags/X/machine/ags_fm_oscillator.c:270 ags/X/machine/ags_oscillator.c:275
+#: ags/X/machine/ags_fm_oscillator.c:278 ags/X/machine/ags_oscillator.c:283
 msgid "sync"
 msgstr "synchronisieren"
 
-#: ags/X/machine/ags_fm_oscillator.c:309
+#: ags/X/machine/ags_fm_oscillator.c:317
 msgid "LFO wave"
 msgstr "LFO Welle"
 
-#: ags/X/machine/ags_fm_oscillator.c:365
+#: ags/X/machine/ags_fm_oscillator.c:373
 msgid "LFO frequency"
 msgstr "LFO Frequenz"
 
-#: ags/X/machine/ags_fm_oscillator.c:378 ags/X/machine/ags_pitch_sampler.c:674
+#: ags/X/machine/ags_fm_oscillator.c:386 ags/X/machine/ags_pitch_sampler.c:674
 msgid "LFO depth"
 msgstr "LFO Tiefe"
 
-#: ags/X/machine/ags_fm_oscillator.c:391 ags/X/machine/ags_pitch_sampler.c:703
+#: ags/X/machine/ags_fm_oscillator.c:399 ags/X/machine/ags_pitch_sampler.c:703
 msgid "LFO tuning"
 msgstr "LFO Tuning"
 
