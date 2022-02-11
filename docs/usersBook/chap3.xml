@@ -59,7 +59,7 @@
       </imageobject>
       <caption>
 	<para>
-	  The notation edit&apos;s screenshot
+	  The notation edit&apos;s screenshot showing notes
 	</para>
       </caption>
     </mediaobject>
@@ -822,18 +822,18 @@
 
 	</listitem>
       </itemizedlist>
-      
-    </sect2>    
+    </sect2>
   </sect1>
 
   <sect1>
+    <title>The automation editor</title>
     <mediaobject>
       <imageobject>
 	<imagedata width="100%" scalefit="1" fileref="../images/ags_automation_edit.png" />
       </imageobject>
       <caption>
 	<para>
-	  The automation editor&apos;s screenshot
+	  The automation editor&apos;s screenshot showing ramped values
 	</para>
       </caption>
     </mediaobject>
@@ -1165,19 +1165,30 @@
 	</listitem>
       </itemizedlist>    
     </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Wave editor</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_wave_edit.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The wave edit&apos;s screenshot showing audio data
+	</para>
+      </caption>
+    </mediaobject>
 
-    <sect2>
-      <title>Wave edit</title>
-      <para>
-	The wave edit widget is available as linking an editor index with AgsAudiorec.
-      </para>
+    <para>
+      The wave edit widget is available as linking an editor index with AgsAudiorec.
+    </para>
 
-      <para>
-	The wave editor features a wave form area. After linking an editor index with
-	an enginge you may perform tasks like copy, cut and paste audio data. You may
-	change view segmentation, too.
-      </para>      
-    </sect2>
+    <para>
+      The wave editor features a wave form area. After linking an editor index with
+      an enginge you may perform tasks like copy, cut and paste audio data. You may
+      change view segmentation, too.
+    </para>      
 
     <sect2>
       <title>Linking</title>
@@ -1347,6 +1358,55 @@
 		<entry>select x1</entry>
 		<entry>
 		  Set the x1 offset of region to select.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+
+      <sect3>
+	<title>Time-stretch buffers</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_time_stretch_buffers_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The time-stretch buffer dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The time-stretch buffer dialog allows you to stretch time of buffers at given frequency.
+	</para>
+
+	<table>
+	  <title>AGS time-stretch buffer dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>frequency</entry>
+		<entry>
+		  The time-stretch center frequency.
+		</entry>
+	      </row>
+	      <row>
+		<entry>orig BPM</entry>
+		<entry>
+		  The original BPM the audio data was recorded.
+		</entry>
+	      </row>
+	      <row>
+		<entry>new BPM</entry>
+		<entry>
+		  The new BPM the audio data shall have.
 		</entry>
 	      </row>
 	    </tbody>

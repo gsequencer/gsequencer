@@ -1875,27 +1875,27 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      y1 = (double) ((gint8 *) buffer->data)[i] / exp2(7.0);
+      y1 = (double) ((gint8 *) buffer->data)[i] / 127.0;
     }
     break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      y1 = (double) ((gint16 *) buffer->data)[i] / exp2(15.0);
+      y1 = (double) ((gint16 *) buffer->data)[i] / 32767.0;
     }
     break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      y1 = (double) ((gint32 *) buffer->data)[i] / exp2(23.0);
+      y1 = (double) ((gint32 *) buffer->data)[i] / 8388607.0;
     }
     break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      y1 = (double) ((gint32 *) buffer->data)[i] / exp2(31.0);
+      y1 = (double) ((gint32 *) buffer->data)[i] / 214748363.0;
     }
     break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      y1 = (double) ((gint64 *) buffer->data)[i] / exp2(63.0);
+      y1 = (double) ((gint64 *) buffer->data)[i] / 9223372036854775807.0;
     }
     break;
     case AGS_SOUNDCARD_FLOAT:
