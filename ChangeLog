@@ -1,3 +1,9 @@
+ags (3.17.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSyncsynth loop start and end upper value
+	* fixed AgsFMSyncsynth loop start and end upper value
+
 ags (3.17.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
