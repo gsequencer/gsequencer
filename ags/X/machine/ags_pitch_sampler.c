@@ -1414,6 +1414,8 @@ ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
     sfz_loader = ags_sfz_loader_new(AGS_MACHINE(pitch_sampler)->audio,
 				    filename,
 				    TRUE);
+  ags_sfz_loader_set_flags(sfz_loader,
+			   AGS_SFZ_LOADER_RUN_APPLY_SYNTH);
 
   ags_sfz_loader_start(sfz_loader);
 }

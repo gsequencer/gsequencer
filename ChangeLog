@@ -1,6 +1,7 @@
 ags (3.17.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer missing preset load
 	* updated user's handbook
 
 ags (3.17.3)
