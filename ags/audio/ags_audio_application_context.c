@@ -2308,7 +2308,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
       GList *start_port, *port;
 
       g_object_get(soundcard,
-		   "core_audio-port", &start_port,
+		   "core-audio-port", &start_port,
 		   NULL);
 
       port = start_port;

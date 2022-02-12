@@ -358,7 +358,7 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		  1, 1);
 
   fm_syncsynth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									      AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_OSCILLATOR_DEFAULT_SAMPLERATE),
+									      AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_FM_OSCILLATOR_DEFAULT_SAMPLERATE),
 									      1.0);
 
   gtk_widget_set_valign((GtkWidget *) fm_syncsynth->loop_start,
@@ -388,7 +388,7 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		   1, 1);
 
   fm_syncsynth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									    AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_OSCILLATOR_DEFAULT_SAMPLERATE),
+									    AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_FM_OSCILLATOR_DEFAULT_SAMPLERATE),
 									    1.0);
 
   gtk_widget_set_valign((GtkWidget *) fm_syncsynth->loop_end,
