@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-02-11 10:56+0100\n"
+"POT-Creation-Date: 2022-02-12 14:22+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -1545,9 +1545,9 @@ msgstr "synth générateur"
 msgid "pitch"
 msgstr ""
 
-#: ags/X/machine/ags_ffplayer.c:506 ags/X/machine/ags_fm_syncsynth.c:306
+#: ags/X/machine/ags_ffplayer.c:506 ags/X/machine/ags_fm_syncsynth.c:313
 #: ags/X/machine/ags_fm_synth.c:210 ags/X/machine/ags_pitch_sampler.c:402
-#: ags/X/machine/ags_syncsynth.c:310 ags/X/machine/ags_synth.c:213
+#: ags/X/machine/ags_syncsynth.c:317 ags/X/machine/ags_synth.c:213
 msgid "lower"
 msgstr "en bas"
 
@@ -1555,9 +1555,9 @@ msgstr "en bas"
 msgid "key count"
 msgstr "nombre d'entités"
 
-#: ags/X/machine/ags_ffplayer.c:549 ags/X/machine/ags_fm_syncsynth.c:291
+#: ags/X/machine/ags_ffplayer.c:549 ags/X/machine/ags_fm_syncsynth.c:298
 #: ags/X/machine/ags_fm_synth.c:198 ags/X/machine/ags_pitch_sampler.c:444
-#: ags/X/machine/ags_syncsynth.c:295 ags/X/machine/ags_synth.c:198
+#: ags/X/machine/ags_syncsynth.c:302 ags/X/machine/ags_synth.c:198
 msgid "update"
 msgstr "actualiser"
 
@@ -1566,9 +1566,9 @@ msgid "aliase"
 msgstr ""
 
 #: ags/X/machine/ags_ffplayer.c:667 ags/X/machine/ags_fm_oscillator.c:265
-#: ags/X/machine/ags_fm_syncsynth.c:394 ags/X/machine/ags_matrix.c:348
+#: ags/X/machine/ags_fm_syncsynth.c:405 ags/X/machine/ags_matrix.c:348
 #: ags/X/machine/ags_oscillator.c:269 ags/X/machine/ags_pitch_sampler.c:559
-#: ags/X/machine/ags_syncsynth.c:398
+#: ags/X/machine/ags_syncsynth.c:409
 msgid "volume"
 msgstr "volume"
 
@@ -1621,18 +1621,18 @@ msgstr "LFO bas"
 msgid "LFO tuning"
 msgstr "LFO tuning"
 
-#: ags/X/machine/ags_fm_syncsynth.c:285 ags/X/machine/ags_fm_synth.c:192
-#: ags/X/machine/ags_syncsynth.c:289 ags/X/machine/ags_synth.c:192
+#: ags/X/machine/ags_fm_syncsynth.c:292 ags/X/machine/ags_fm_synth.c:192
+#: ags/X/machine/ags_syncsynth.c:296 ags/X/machine/ags_synth.c:192
 msgid "auto update"
 msgstr "actualiser automatique"
 
-#: ags/X/machine/ags_fm_syncsynth.c:339
-#: ags/X/machine/ags_pitch_sampler_file.c:233 ags/X/machine/ags_syncsynth.c:343
+#: ags/X/machine/ags_fm_syncsynth.c:346
+#: ags/X/machine/ags_pitch_sampler_file.c:233 ags/X/machine/ags_syncsynth.c:350
 msgid "loop start"
 msgstr "premier boucle"
 
-#: ags/X/machine/ags_fm_syncsynth.c:367
-#: ags/X/machine/ags_pitch_sampler_file.c:264 ags/X/machine/ags_syncsynth.c:371
+#: ags/X/machine/ags_fm_syncsynth.c:376
+#: ags/X/machine/ags_pitch_sampler_file.c:264 ags/X/machine/ags_syncsynth.c:380
 msgid "loop end"
 msgstr "dernier boucle"
 
