@@ -29,11 +29,9 @@
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #include <machine/endian.h>
-#else
-#if defined(AGS_W32API)
+#elif defined(AGS_W32API)
 #else
 #include <endian.h>
-#endif
 #endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
