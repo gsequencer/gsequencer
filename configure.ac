@@ -609,12 +609,6 @@ AGS_DOCS_BOOKS([])
 AGS_DOCS_API([])
 
 
-AS_IF([test "x$HTMLHELP_XSL" != x],
-      [AC_SUBST(HTMLHELP_XSL, $HTMLHELP_XSL)
-       AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])],
-      [AC_SUBST(HTMLHELP_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl)
-       AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])])
-
 AS_IF([test "x$INTROSPECTION_SCANNER" != x],
       [AC_SUBST(INTROSPECTION_SCANNER, $INTROSPECTION_SCANNER)
        AC_MSG_NOTICE([INTROSPECTION_SCANNER = $INTROSPECTION_SCANNER])],
@@ -626,6 +620,12 @@ AS_IF([test "x$INTROSPECTION_COMPILER" != x],
        AC_MSG_NOTICE([INTROSPECTION_COMPILER = $INTROSPECTION_COMPILER])],
       [AC_SUBST(INTROSPECTION_COMPILER, /usr/bin/g-ir-compiler)
        AC_MSG_NOTICE([INTROSPECTION_COMPILER = $INTROSPECTION_COMPILER])])
+
+AS_IF([test "x$HTMLHELP_XSL" != x],
+      [AC_SUBST(HTMLHELP_XSL, $HTMLHELP_XSL)
+       AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])],
+      [AC_SUBST(HTMLHELP_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl)
+       AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])])
 
 AS_IF([test "x$enable_upstream_gtk_doc" != xno],
 [AS_IF([test "x$GOBJECT_API_DOC" != x],

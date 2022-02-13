@@ -4,13 +4,6 @@
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
-# 
-# -*- Mode: make -*-
-# Copyright 2009-2010 Johan Dahlin
-#
-# This file is free software; the author(s) gives unlimited
-# permission to copy and/or distribute it, with or without
-# modifications, as long as this notice is preserved.
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -307,6 +300,8 @@ INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all
 INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_builddir)
 
+-include $(top_srcdir)/introspection.mk
+
 if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES) $(libags_thread_la_SOURCES) $(libags_server_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
 
@@ -349,76 +344,6 @@ gir_DATA = $(INTROSPECTION_GIRS)
 
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
-
-$(if $(INTROSPECTION_SCANNER),,$(error Need to define INTROSPECTION_SCANNER))
-$(if $(INTROSPECTION_COMPILER),,$(error Need to define INTROSPECTION_COMPILER))
-
-_gir_name = $(subst /,_,$(subst -,_,$(subst .,_,$(1))))
-
-_gir_namespace = $(or $($(_gir_name)_NAMESPACE),$(firstword $(subst -, ,$(notdir $(1)))))
-_gir_version = $(or $($(_gir_name)_VERSION),$(lastword $(subst -, ,$(1:.gir=))))
-
-_gir_libraries = $(foreach lib,$($(_gir_name)_LIBS),--library=$(lib))
-_gir_packages = $(foreach pkg,$($(_gir_name)_PACKAGES),--pkg=$(pkg))
-_gir_includes = $(foreach include,$($(_gir_name)_INCLUDES),--include=$(include))
-_gir_export_packages = $(foreach pkg,$($(_gir_name)_EXPORT_PACKAGES),--pkg-export=$(pkg))
-_gir_c_includes = $(foreach include,$($(_gir_name)_C_INCLUDES),--c-include=$(include))
-
-_gir_libtool = $(if $(LIBTOOL),--libtool="$(LIBTOOL)")
-
-_gir_verbosity = $(if $(AM_DEFAULT_VERBOSITY),$(AM_DEFAULT_VERBOSITY),1)
-
-_gir_silent_scanner_prefix = $(_gir_silent_scanner_prefix_$(V))
-_gir_silent_scanner_prefix_ = $(_gir_silent_scanner_prefix_$(_gir_verbosity))
-_gir_silent_scanner_prefix_0 = @echo "  GISCAN   $(1)";
-_gir_silent_scanner_opts = $(_gir_silent_scanner_opts_$(V))
-_gir_silent_scanner_opts_ = $(_gir_silent_scanner_opts_$(_gir_verbosity))
-_gir_silent_scanner_opts_0 = --quiet
-
-_gir_silent_compiler = $(_gir_silent_compiler_$(V))
-_gir_silent_compiler_ = $(_gir_silent_compiler_$(_gir_verbosity))
-_gir_silent_compiler_0 = @echo "  GICOMP   $(1)";
-
-_gir_default_scanner_env = CPPFLAGS="$(CPPFLAGS)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" PKG_CONFIG="$(PKG_CONFIG)" GI_HOST_OS="$(GI_HOST_OS)" DLLTOOL="$(DLLTOOL)"
-
-define introspection-scanner
-
-$(if $($(_gir_name)_FILES),,$(error Need to define $(_gir_name)_FILES))
-$(if $(or $(findstring --header-only,$($(_gir_name)_SCANNERFLAGS)),
-          $($(_gir_name)_LIBS),
-          $($(_gir_name)_PROGRAM)),,
-    $(error Need to define $(_gir_name)_LIBS or $(_gir_name)_PROGRAM))
-
-$(1): $$($(_gir_name)_FILES)
-	@ $(MKDIR_P) $(dir $(1))
-	$(_gir_silent_scanner_prefix) $(_gir_default_scanner_env) $(INTROSPECTION_SCANNER_ENV) $(INTROSPECTION_SCANNER) $(_gir_silent_scanner_opts) \
-	$(INTROSPECTION_SCANNER_ARGS) \
-	  --namespace=$(_gir_namespace) \
-	  --nsversion=$(_gir_version) \
-	  $(_gir_libtool) \
-	  $(_gir_packages) \
-	  $(_gir_includes) \
-	  $(_gir_export_packages) \
-	  $(_gir_c_includes) \
-	  $(_gir_program) \
-	  $(_gir_libraries) \
-	  $($(_gir_name)_SCANNERFLAGS) \
-	  --cflags-begin \
-	  $($(_gir_name)_CFLAGS) \
-	  --cflags-end \
-	  $($(_gir_name)_LDFLAGS) \
-	  $$^ \
-	  --output $(1)
-endef
-
-$(foreach gir,$(INTROSPECTION_GIRS),$(eval $(call introspection-scanner,$(gir))))
-
-define introspection-compiler
-$(_gir_silent_compiler) $(INTROSPECTION_COMPILER) $(INTROSPECTION_COMPILER_ARGS) --includedir=. $(1) -o $(2)
-endef
-
-%.typelib: %.gir
-	$(call introspection-compiler,$<,$@)
 
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
 endif
