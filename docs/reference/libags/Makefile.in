@@ -469,14 +469,8 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
-INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
 INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
-INTROSPECTION_GENERATE = @INTROSPECTION_GENERATE@
-INTROSPECTION_GIRDIR = @INTROSPECTION_GIRDIR@
-INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
-INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
 INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
-INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JACK_CFLAGS = @JACK_CFLAGS@
 JACK_LIBS = @JACK_LIBS@
 LD = @LD@
@@ -578,8 +572,6 @@ XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMKMF = @XMKMF@
-_GI_EXP_DATADIR = @_GI_EXP_DATADIR@
-_GI_EXP_LIBDIR = @_GI_EXP_LIBDIR@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -811,9 +803,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__con
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu docs/reference/libags/Makefile
+	  $(AUTOMAKE) --foreign docs/reference/libags/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
