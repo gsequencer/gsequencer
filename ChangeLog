@@ -2,6 +2,8 @@ ags (3.17.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved gobject introspection automake build
+	* improved chapter 1 of user's handbook, added missing instruments
+	* fixed chapter 3 title of user's handbook
 
 ags (3.17.5)
 
