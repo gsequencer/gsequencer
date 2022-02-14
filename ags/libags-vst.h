@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,8 @@
 #define __LIBAGS_VST_H__
 
 #include <glib.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/vst3-capi/host/ags_vst_host_context.h>
 #include <ags/vst3-capi/host/ags_vst_component_handler.h>

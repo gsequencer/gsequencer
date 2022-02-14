@@ -20,9 +20,9 @@
 #ifndef __AGS_API_CONFIG_H__
 #define __AGS_API_CONFIG_H__
 
-#undef AGS_WITH_W32API
+#undef AGS_W32API
 
-#undef AGS_WITH_OSXAPI
+#undef AGS_OSXAPI
 
 #undef AGS_WITH_ALSA
 
