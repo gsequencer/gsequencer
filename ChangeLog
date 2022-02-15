@@ -1,3 +1,9 @@
+ags (3.17.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsFFPlayer use GtkSpinner
+	* improved AgsPitchSampler use GtkSpinner
+
 ags (3.17.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-02-13 23:42+0100\n"
+"POT-Creation-Date: 2022-02-15 17:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -772,7 +772,7 @@ msgstr "przemieść x"
 #: ags/X/export/ags_machine_collection_entry.c:175
 #: ags/X/import/ags_track_collection_mapper.c:221
 #: ags/X/machine/ags_ffplayer.c:450 ags/X/machine/ags_ffplayer.c:579
-#: ags/X/machine/ags_pitch_sampler.c:346 ags/X/machine/ags_pitch_sampler.c:471
+#: ags/X/machine/ags_pitch_sampler.c:345 ags/X/machine/ags_pitch_sampler.c:470
 msgid "enabled"
 msgstr "włączone"
 
@@ -1532,41 +1532,37 @@ msgstr ""
 msgid "pressure"
 msgstr "ciśnienie"
 
-#: ags/X/machine/ags_ffplayer.c:376 ags/X/machine/ags_pitch_sampler.c:324
-msgid "loading ...  "
-msgstr "ładowanie ..."
-
-#: ags/X/machine/ags_ffplayer.c:433 ags/X/machine/ags_pitch_sampler.c:335
+#: ags/X/machine/ags_ffplayer.c:433 ags/X/machine/ags_pitch_sampler.c:334
 msgid "synth generator"
 msgstr "syntetyczny generator"
 
-#: ags/X/machine/ags_ffplayer.c:464 ags/X/machine/ags_pitch_sampler.c:360
+#: ags/X/machine/ags_ffplayer.c:464 ags/X/machine/ags_pitch_sampler.c:359
 msgid "pitch"
 msgstr ""
 
 #: ags/X/machine/ags_ffplayer.c:506 ags/X/machine/ags_fm_syncsynth.c:313
-#: ags/X/machine/ags_fm_synth.c:210 ags/X/machine/ags_pitch_sampler.c:402
+#: ags/X/machine/ags_fm_synth.c:210 ags/X/machine/ags_pitch_sampler.c:401
 #: ags/X/machine/ags_syncsynth.c:317 ags/X/machine/ags_synth.c:213
 msgid "lower"
 msgstr "niżej"
 
-#: ags/X/machine/ags_ffplayer.c:532 ags/X/machine/ags_pitch_sampler.c:428
+#: ags/X/machine/ags_ffplayer.c:532 ags/X/machine/ags_pitch_sampler.c:427
 msgid "key count"
 msgstr "liczba kluczy"
 
 #: ags/X/machine/ags_ffplayer.c:549 ags/X/machine/ags_fm_syncsynth.c:298
-#: ags/X/machine/ags_fm_synth.c:198 ags/X/machine/ags_pitch_sampler.c:444
+#: ags/X/machine/ags_fm_synth.c:198 ags/X/machine/ags_pitch_sampler.c:443
 #: ags/X/machine/ags_syncsynth.c:302 ags/X/machine/ags_synth.c:198
 msgid "update"
 msgstr "zaktualizuj"
 
-#: ags/X/machine/ags_ffplayer.c:562 ags/X/machine/ags_pitch_sampler.c:454
+#: ags/X/machine/ags_ffplayer.c:562 ags/X/machine/ags_pitch_sampler.c:453
 msgid "aliase"
 msgstr ""
 
 #: ags/X/machine/ags_ffplayer.c:667 ags/X/machine/ags_fm_oscillator.c:265
 #: ags/X/machine/ags_fm_syncsynth.c:405 ags/X/machine/ags_matrix.c:348
-#: ags/X/machine/ags_oscillator.c:269 ags/X/machine/ags_pitch_sampler.c:559
+#: ags/X/machine/ags_oscillator.c:269 ags/X/machine/ags_pitch_sampler.c:558
 #: ags/X/machine/ags_syncsynth.c:409
 msgid "volume"
 msgstr "głośność"
@@ -1612,11 +1608,11 @@ msgstr "fala LFO"
 msgid "LFO frequency"
 msgstr "częstotliwość LFO"
 
-#: ags/X/machine/ags_fm_oscillator.c:386 ags/X/machine/ags_pitch_sampler.c:674
+#: ags/X/machine/ags_fm_oscillator.c:386 ags/X/machine/ags_pitch_sampler.c:673
 msgid "LFO depth"
 msgstr "głębia LFO"
 
-#: ags/X/machine/ags_fm_oscillator.c:399 ags/X/machine/ags_pitch_sampler.c:703
+#: ags/X/machine/ags_fm_oscillator.c:399 ags/X/machine/ags_pitch_sampler.c:702
 msgid "LFO tuning"
 msgstr "tuning LFO"
 
@@ -1639,15 +1635,15 @@ msgstr "koniec pętli"
 msgid "show GUI"
 msgstr "pokaż interfejs graficzny"
 
-#: ags/X/machine/ags_pitch_sampler.c:606
+#: ags/X/machine/ags_pitch_sampler.c:605
 msgid "enable LFO"
 msgstr "włącz LFO"
 
-#: ags/X/machine/ags_pitch_sampler.c:618
+#: ags/X/machine/ags_pitch_sampler.c:617
 msgid "LFO freq"
 msgstr "frekwencja LFO"
 
-#: ags/X/machine/ags_pitch_sampler.c:647
+#: ags/X/machine/ags_pitch_sampler.c:646
 msgid "LFO phase"
 msgstr "faza LFO"
 
@@ -1748,6 +1744,9 @@ msgstr "certyfikaty"
 #: ags/server/security/ags_security_context.c:145
 msgid "The certificates as string"
 msgstr "Certyfikaty"
+
+#~ msgid "loading ...  "
+#~ msgstr "ładowanie ..."
 
 #~ msgid "outputs"
 #~ msgstr "wyjścia"

@@ -1512,13 +1512,15 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
     if(sf2_synth->sf2_loader != NULL){
       if(ags_sf2_loader_test_flags(sf2_synth->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
 	GtkListStore *bank_list_store;
+	GtkTreeModel *model;
 	
 	AgsIpatch *ipatch;
 
 	IpatchSF2 *sf2;
 	IpatchItem *ipatch_item;
 	IpatchList *ipatch_list;
-	
+
+	GtkTreeIter tree_iter;	
 	IpatchIter preset_iter;
 
 	gint bank;
@@ -1533,21 +1535,6 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 
 	gtk_list_store_clear(bank_list_store);
 	gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view))));
-
-	if(sf2_synth->audio_container == NULL ||
-	   sf2_synth->audio_container->sound_container == NULL){
-	  g_object_run_dispose((GObject *) sf2_synth->sf2_loader);
-	  g_object_unref(sf2_synth->sf2_loader);
-
-	  sf2_synth->sf2_loader = NULL;
-
-	  sf2_synth->position = -1;
-
-	  gtk_spinner_stop(sf2_synth->sf2_loader_spinner);
-	  gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
-	  
-	  return(TRUE);
-	}
 	
 	ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
@@ -1608,101 +1595,22 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	  }
 	}
 
-	if(sf2_synth->load_bank >= 0){
-	  GtkTreeModel *model;
-	  
-	  GtkTreeIter tree_iter;
-	  
-	  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
+	model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
 
-	  if(model != NULL &&
-	     gtk_tree_model_get_iter_first(model, &tree_iter)){
-	    do{
-	      gint current_bank;
+	if(model != NULL &&
+	   gtk_tree_model_get_iter_first(model, &tree_iter)){
+	  gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+				   gtk_tree_model_get_path(model,
+							   &tree_iter),
+				   NULL,
+				   FALSE);
 
-	      current_bank = 0;
-	      
-	      gtk_tree_model_get(model,
-				 &tree_iter,
-				 0, &current_bank,
-				 -1);
-
-	      if(current_bank == sf2_synth->load_bank){
-		gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
-					 gtk_tree_model_get_path(model,
-								 &tree_iter),
-					 NULL,
-					 FALSE);
-	    
-		ags_sf2_synth_load_bank(sf2_synth,
-					current_bank);
-		
-		break;
-	      }
-	    }while(gtk_tree_model_iter_next(model, &tree_iter));
-	  }
-	}else{
-	  GtkTreeModel *model;
-
-	  GtkTreeIter tree_iter;
-
-	  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
-
-	  if(model != NULL &&
-	     gtk_tree_model_get_iter_first(model, &tree_iter)){
-	    gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
-				     gtk_tree_model_get_path(model,
-							     &tree_iter),
-				     NULL,
-				     FALSE);
-
-	    gtk_tree_view_row_activated(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
-					gtk_tree_model_get_path(model,
-								&tree_iter),
-					NULL);
-	  }
+	  gtk_tree_view_row_activated(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+				      gtk_tree_model_get_path(model,
+							      &tree_iter),
+				      NULL);
 	}
 
-	if(sf2_synth->load_bank >= 0 &&
-	   sf2_synth->load_program >= 0){
-	  GtkTreeModel *model;
-
-	  GtkTreeIter tree_iter;
-	  
-	  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view)));
-
-	  if(model != NULL &&
-	     gtk_tree_model_get_iter_first(model, &tree_iter)){
-	    do{
-	      gint current_bank;
-	      gint current_program;
-
-	      current_bank = 0;
-	      current_program = 0;
-	      
-	      gtk_tree_model_get(model,
-				 &tree_iter,
-				 0, &current_bank,
-				 1, &current_program,
-				 -1);
-
-	      if(current_program == sf2_synth->load_program){
-		gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->program_tree_view),
-					 gtk_tree_model_get_path(model,
-								 &tree_iter),
-					 NULL,
-					 FALSE);
-		
-		ags_sf2_synth_load_midi_locale(sf2_synth,
-					       current_bank,
-					       current_program);
-		break;
-	      }
-	    }while(gtk_tree_model_iter_next(model, &tree_iter));
-	  }
-	}
-	
-	/* cleanup */	
 	g_object_run_dispose((GObject *) sf2_synth->sf2_loader);
 	g_object_unref(sf2_synth->sf2_loader);
 
@@ -1712,6 +1620,8 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 
 	gtk_spinner_stop(sf2_synth->sf2_loader_spinner);
 	gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
+	  
+	return(TRUE);
       }else{
 	if(sf2_synth->position == -1){
 	  sf2_synth->position = 0;
@@ -1719,8 +1629,91 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	  gtk_widget_show((GtkWidget *) sf2_synth->sf2_loader_spinner);
 	  gtk_spinner_start(sf2_synth->sf2_loader_spinner);
 	}
+
+	return(TRUE);
       }
     }
+
+    if(sf2_synth->load_bank >= 0){
+      GtkTreeModel *model;
+	  
+      GtkTreeIter tree_iter;
+	  
+      model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
+
+      if(model != NULL &&
+	 gtk_tree_model_get_iter_first(model, &tree_iter)){
+	do{
+	  gint current_bank;
+
+	  current_bank = 0;
+	      
+	  gtk_tree_model_get(model,
+			     &tree_iter,
+			     0, &current_bank,
+			     -1);
+
+	  if(current_bank == sf2_synth->load_bank){
+	    gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->bank_tree_view),
+				     gtk_tree_model_get_path(model,
+							     &tree_iter),
+				     NULL,
+				     FALSE);
+	    
+	    ags_sf2_synth_load_bank(sf2_synth,
+				    current_bank);
+		
+	    break;
+	  }
+	}while(gtk_tree_model_iter_next(model, &tree_iter));
+      }
+
+      sf2_synth->load_bank = -1;
+	  
+      return(TRUE);
+    }
+
+    if(sf2_synth->load_program >= 0){
+      GtkTreeModel *model;
+
+      GtkTreeIter tree_iter;
+	  
+      model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view)));
+
+      if(model != NULL &&
+	 gtk_tree_model_get_iter_first(model, &tree_iter)){
+	do{
+	  gint current_bank;
+	  gint current_program;
+
+	  current_bank = 0;
+	  current_program = 0;
+	      
+	  gtk_tree_model_get(model,
+			     &tree_iter,
+			     0, &current_bank,
+			     1, &current_program,
+			     -1);
+
+	  if(current_program == sf2_synth->load_program){
+	    gtk_tree_view_set_cursor(GTK_TREE_VIEW(sf2_synth->program_tree_view),
+				     gtk_tree_model_get_path(model,
+							     &tree_iter),
+				     NULL,
+				     FALSE);
+		
+	    ags_sf2_synth_load_midi_locale(sf2_synth,
+					   current_bank,
+					   current_program);
+	    break;
+	  }
+	}while(gtk_tree_model_iter_next(model, &tree_iter));
+      }
+
+      sf2_synth->load_program = -1;
+	  
+      return(TRUE);
+    }	
     
     return(TRUE);
   }else{

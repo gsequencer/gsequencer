@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,7 +97,7 @@ struct _AgsPitchSampler
   AgsSFZLoader *sfz_loader;
 
   gint position;
-  GtkLabel *loading;
+  GtkSpinner *sfz_loader_spinner;  
 
   GtkCheckButton *enable_synth_generator;
 

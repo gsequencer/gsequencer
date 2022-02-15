@@ -321,15 +321,14 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 
   pitch_sampler->position = -1;
 
-  pitch_sampler->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  pitch_sampler->sfz_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) pitch_sampler->loading,
+		     (GtkWidget *) pitch_sampler->sfz_loader_spinner,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_no_show_all((GtkWidget *) pitch_sampler->loading,
+  gtk_widget_set_no_show_all((GtkWidget *) pitch_sampler->sfz_loader_spinner,
 			     TRUE);
-  gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
-
+  gtk_widget_hide((GtkWidget *) pitch_sampler->sfz_loader_spinner);
 
   /* synth generator */
   frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
@@ -1626,8 +1625,10 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	  pitch_sampler->sfz_loader = NULL;
 
 	  pitch_sampler->position = -1;
-	  gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
-    
+
+	  gtk_spinner_stop(pitch_sampler->sfz_loader_spinner);
+	  gtk_widget_hide((GtkWidget *) pitch_sampler->sfz_loader_spinner);
+	  
 	  return(TRUE);
 	}
 	
@@ -1788,40 +1789,15 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	pitch_sampler->sfz_loader = NULL;
 
 	pitch_sampler->position = -1;
-	gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
 
+	gtk_spinner_stop(pitch_sampler->sfz_loader_spinner);
+	gtk_widget_hide((GtkWidget *) pitch_sampler->sfz_loader_spinner);
       }else{
 	if(pitch_sampler->position == -1){
 	  pitch_sampler->position = 0;
 
-	  gtk_widget_show((GtkWidget *) pitch_sampler->loading);
-	}
-
-	switch(pitch_sampler->position){
-	case 0:
-	{
-	  pitch_sampler->position = 1;
-	    
-	  gtk_label_set_label(pitch_sampler->loading,
-			      "loading ...  ");
-	}
-	break;
-	case 1:
-	{
-	  pitch_sampler->position = 2;
-
-	  gtk_label_set_label(pitch_sampler->loading,
-			      "loading  ... ");
-	}
-	break;
-	case 2:
-	{
-	  pitch_sampler->position = 0;
-
-	  gtk_label_set_label(pitch_sampler->loading,
-			      "loading   ...");
-	}
-	break;
+	  gtk_widget_show((GtkWidget *) pitch_sampler->sfz_loader_spinner);
+	  gtk_spinner_start(pitch_sampler->sfz_loader_spinner);
 	}
       }
     }

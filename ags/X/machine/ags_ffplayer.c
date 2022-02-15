@@ -373,14 +373,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ffplayer->position = -1;
 
-  ffplayer->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  ffplayer->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) ffplayer->loading,
+		     (GtkWidget *) ffplayer->sf2_loader_spinner,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->loading,
+  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->sf2_loader_spinner,
 			     TRUE);
-  gtk_widget_hide((GtkWidget *) ffplayer->loading);
+  gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
 
   /* piano */
   piano_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -1545,7 +1545,9 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));    
 
 	ffplayer->position = -1;
-	gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+	gtk_spinner_stop(ffplayer->sf2_loader_spinner);
+	gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
 
 	/* cleanup */	
 	g_object_run_dispose((GObject *) ffplayer->sf2_loader);
@@ -1560,34 +1562,8 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	if(ffplayer->position == -1){
 	  ffplayer->position = 0;
 
-	  gtk_widget_show((GtkWidget *) ffplayer->loading);
-	}
-
-	switch(ffplayer->position){
-	case 0:
-	  {
-	    ffplayer->position = 1;
-	    
-	    gtk_label_set_label(ffplayer->loading,
-				"loading ...  ");
-	  }
-	  break;
-	case 1:
-	  {
-	    ffplayer->position = 2;
-
-	    gtk_label_set_label(ffplayer->loading,
-				"loading  ... ");
-	  }
-	  break;
-	case 2:
-	  {
-	    ffplayer->position = 0;
-
-	    gtk_label_set_label(ffplayer->loading,
-				"loading   ...");
-	  }
-	  break;
+	  gtk_widget_show((GtkWidget *) ffplayer->sf2_loader_spinner);
+	  gtk_spinner_start(ffplayer->sf2_loader_spinner);
 	}
     
 	return(TRUE);
