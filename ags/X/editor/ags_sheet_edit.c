@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,8 +80,6 @@ static gpointer ags_sheet_edit_parent_class = NULL;
 
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *sheet_edit_style = NULL;
-
 GHashTable *ags_sheet_edit_auto_scroll = NULL;
 
 GType
@@ -110,9 +108,9 @@ ags_sheet_edit_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_sheet_edit = g_type_register_static(GTK_TYPE_TABLE,
-						    "AgsSheetEdit", &ags_sheet_edit_info,
-						    0);
+    ags_type_sheet_edit = g_type_register_static(GTK_TYPE_GRID,
+						 "AgsSheetEdit", &ags_sheet_edit_info,
+						 0);
     
     g_type_add_interface_static(ags_type_sheet_edit,
 				AGS_TYPE_CONNECTABLE,
@@ -230,30 +228,20 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   sheet_edit->selection_y0 = 0;
   sheet_edit->selection_y1 = 0;
 
-  if(sheet_edit_style == NULL){
-    sheet_edit_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) sheet_edit));
-  }
+  sheet_edit->paper_name = g_strdup(AGS_SHEET_EDIT_DEFAULT_PAPER_NAME);
 
-  sheet_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_events(GTK_WIDGET(sheet_edit->drawing_area), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			| GDK_CONTROL_MASK
-			| GDK_KEY_PRESS_MASK
-			| GDK_KEY_RELEASE_MASK);
-  gtk_widget_set_can_focus((GtkWidget *) sheet_edit->drawing_area,
-			   TRUE);
-  
-  gtk_table_attach(GTK_TABLE(sheet_edit),
-		   (GtkWidget *) sheet_edit->drawing_area,
-		   0, 1,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  sheet_edit->scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+									      NULL);
+  gtk_grid_attach(GTK_TABLE(sheet_edit),
+		  (GtkWidget *) sheet_edit->scrolled_window,
+		  0, 0,
+		  1, 1);
 
+  sheet_edit->sheet_vbox = (GtkBox * )gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						  AGS_SHEET_EDIT_DEFAULT_SPACING);
+  gtk_container_add((GtkContainer *) sheet_edit->scrolled_window,
+		    (GtkWidget *) sheet_edit->sheet_vbox);
+    
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
     ags_sheet_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -374,7 +362,7 @@ ags_sheet_edit_disconnect(AgsConnectable *connectable)
 
 gboolean
 ags_accessible_sheet_edit_do_action(AtkAction *action,
-				       gint i)
+				    gint i)
 {
   AgsSheetEdit *sheet_edit;
   
@@ -736,9 +724,112 @@ ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget)
   }
 }
 
-void
-ags_sheet_edit_draw(AgsSheetEdit *sheet_edit)
+/**
+ * ags_sheet_edit_page_alloc:
+ * @width: the width
+ * @height: the height
+ * 
+ * Allocate sheet edit page.
+ * 
+ * Returns: the newly allocated #AgsSheetEditPage-struct
+ * 
+ * Since: 3.18.0
+ */
+AgsSheetEditPage*
+ags_sheet_edit_page_alloc(gdouble width, gdouble height)
 {
+  AgsSheetEditPage *page;
+
+  page = (AgsSheetEditPage *) g_malloc(sizeof(AgsSheetEditPage));
+  
+  page->notation_x0 = 0;
+  page->notation_x1 = 0;
+
+  page->utf8_tablature_line = 0;
+  page->utf8_tablature_note = 0;
+
+  page->ps_surface = cairo_ps_surface_create(NULL,
+					     width, height);
+  
+  page->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_widget_set_events(GTK_WIDGET(page->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK);
+  gtk_widget_set_can_focus((GtkWidget *) page->drawing_area,
+			   TRUE);
+
+  return(page);
+}
+
+/**
+ * ags_sheet_edit_page_free:
+ * @page: the #AgsSheetEditPage-struct
+ * 
+ * Free sheet edit page.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_sheet_edit_page_free(AgsSheetEditPage *page)
+{
+  if(page == NULL){
+    return;
+  }
+
+  g_free(page->utf8_tablature_line);
+  g_free(page->utf8_tablature_note);
+
+  gtk_widget_destroy(page->drawing_area);
+
+  g_free(page);
+}
+
+/**
+ * ags_sheet_edit_insert_page:
+ * @sheet_edit: the #AgsSheetEdit
+ * @page: the #AgsSheetEditPage-struct
+ * @position: the position
+ * 
+ * Insert @page at @position to @sheet_edit.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_sheet_edit_insert_page(AgsSheetEdit *sheet_edit,
+			   AgsSheetEditPage *page,
+			   gint position)
+{
+  if(!AGS_IS_SHEET_EDIT(sheet_edit) ||
+     page == NULL){
+    return;
+  }
+  
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sheet_edit_remove_page:
+ * @sheet_edit: the #AgsSheetEdit
+ * @nth: the nth page to remove
+ * 
+ * Remove the page at @nth position from @sheet_edit.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_sheet_edit_remove_page(AgsSheetEdit *sheet_edit,
+			   gint nth)
+{
+  if(!AGS_IS_SHEET_EDIT(sheet_edit)){
+    return;
+  }
+  
   //TODO:JK: implement me
 }
 
@@ -757,7 +848,7 @@ ags_sheet_edit_new()
   AgsSheetEdit *sheet_edit;
 
   sheet_edit = (AgsSheetEdit *) g_object_new(AGS_TYPE_SHEET_EDIT,
-						   NULL);
+					     NULL);
 
   return(sheet_edit);
 }

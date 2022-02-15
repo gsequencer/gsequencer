@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,10 @@ G_BEGIN_DECLS
 #define AGS_IS_SHEET_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SHEET_EDIT))
 #define AGS_SHEET_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_SHEET_EDIT, AgsSheetEditClass))
 
+#define AGS_SHEET_EDIT_DEFAULT_PAPER_NAME (GTK_PAPER_NAME_LETTER)
+
+#define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
+
 #define AGS_SHEET_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_SHEET_EDIT_DEFAULT_CURSOR_POSITION_Y (0)
 
@@ -45,6 +49,7 @@ G_BEGIN_DECLS
 
 typedef struct _AgsSheetEdit AgsSheetEdit;
 typedef struct _AgsSheetEditClass AgsSheetEditClass;
+typedef struct _AgsSheetEditPage AgsSheetEditPage;
 
 typedef enum{
   AGS_SHEET_EDIT_CONNECTED             = 1,
@@ -72,7 +77,7 @@ typedef enum{
 
 struct _AgsSheetEdit
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   guint mode;
@@ -91,17 +96,40 @@ struct _AgsSheetEdit
   guint selection_y0;
   guint selection_y1;
 
-  GtkDrawingArea *drawing_area;
+  gchar *paper_name;
+
+  GtkScrolledWindow *scrolled_window;
+  GtkBox *sheet_vbox;
 };
 
 struct _AgsSheetEditClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
+};
+
+struct _AgsSheetEditPage
+{
+  guint notation_x0;
+  guint notation_x1;
+
+  gchar *utf8_tablature_line;
+  gchar *utf8_tablature_note;
+  
+  cairo_surface_t *ps_surface;
+  
+  GtkDrawingArea *drawing_area;
 };
 
 GType ags_sheet_edit_get_type(void);
 
-void ags_sheet_edit_draw(AgsSheetEdit *sheet_edit);
+AgsSheetEditPage* ags_sheet_edit_page_alloc(gdouble width, gdouble height);
+void ags_sheet_edit_page_free(AgsSheetEditPage *page);
+
+void ags_sheet_edit_insert_page(AgsSheetEdit *sheet_edit,
+				AgsSheetEditPage *page,
+				gint position);
+void ags_sheet_edit_remove_page(AgsSheetEdit *sheet_edit,
+				gint nth);
 
 AgsSheetEdit* ags_sheet_edit_new();
 
