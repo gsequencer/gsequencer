@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,15 +22,16 @@
 
 #include <glib.h>
 
+#include <ags/ags_api_config.h>
+
 #define AGS_VST_KLITTLE_ENDIAN    (0)
 #define AGS_VST_KBIG_ENDIAN       (1)
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #include <machine/endian.h>
+#elif defined(AGS_W32API)
 #else
-#ifndef AGS_W32API
 #include <endian.h>
-#endif
 #endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN

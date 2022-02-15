@@ -31,6 +31,8 @@
 
 #include <ags/i18n.h>
 
+#define AGS_CORE_AUDIO_PORT_USE_HW (1)
+
 void ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server);
 void ags_core_audio_server_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_core_audio_server_sound_server_interface_init(AgsSoundServerInterface *sound_server);

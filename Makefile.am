@@ -293,10 +293,14 @@ CLEANFILES = \
 	docs/reference/libgsequencer/libgsequencer.interfaces
 
 # gir - gobject introspection
--include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
+INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
+
 INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all
 INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_builddir)
+
+include $(top_srcdir)/introspection.mk
 
 if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES) $(libags_thread_la_SOURCES) $(libags_server_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
@@ -448,8 +452,6 @@ userdoc = \
 	docs/usersBook/chap2.xml \
 	docs/usersBook/chap3.xml \
 	docs/usersBook/chap4.xml \
-	docs/usersBook/chap5.xml \
-	docs/usersBook/chap6.xml \
 	docs/usersBook/preface.xml
 
 devdoc = \
@@ -523,13 +525,16 @@ devdocimages = \
 
 userdocimages = \
 	docs/images/ags_audiorec.png \
+	docs/images/ags_automation_edit.png \
 	docs/images/ags-automation-toolbar.png \
-	docs/images/ags_automation_window_drum.png \
 	docs/images/ags_equalizer10.png \
 	docs/images/ags_export_window.png \
+	docs/images/ags_hybrid_fm_synth.png \
+	docs/images/ags_hybrid_synth.png \
 	docs/images/ags_machine_properties-input.png \
 	docs/images/ags_machine_properties-resize_channels.png \
 	docs/images/ags_navigation.png \
+	docs/images/ags_notation_edit.png \
 	docs/images/ags_audio_preferences.png \
 	docs/images/ags_audio_connection_output_bulk.png \
 	docs/images/ags_audio_connection_output_line.png \
@@ -571,8 +576,11 @@ userdocimages = \
 	docs/images/ags_select_accelerations_dialog.png \
 	docs/images/ags_select_buffers_dialog.png \
 	docs/images/ags_ramp_accelerations_dialog.png \
+	docs/images/ags_sf2_synth.png \
+	docs/images/ags_sfz_synth.png \
+	docs/images/ags_time_stretch_buffers_dialog.png \
 	docs/images/ags-wave-toolbar.png \
-	docs/images/ags_wave_window_audiorec.png
+	docs/images/ags_wave_edit.png
 
 userdocadwaitaimages = \
 	docs/images/adwaita/accessories-text-editor.png \

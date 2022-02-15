@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.17.3],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.17.7],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -20,6 +20,9 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
+AC_ARG_VAR(INTROSPECTION_SCANNER, introspection scanner)
+AC_ARG_VAR(INTROSPECTION_COMPILER, introspection compiler)
+
 AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
 
 AC_ARG_VAR(GOBJECT_API_DOC, path for use with sed to GObject API Reference Manual)
@@ -37,6 +40,11 @@ AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debug],
                                      [enable debug symbols (default is no)])],
               [],
               [enable_debug=no])
+
+AC_ARG_ENABLE(introspection, [AS_HELP_STRING([--enable-introspection],
+                                             [enable introspection symbols (default is no)])],
+              [],
+              [enable_introspection=no])
 
 AC_ARG_ENABLE(public-libgsequencer, [AS_HELP_STRING([--enable-public-libgsequencer],
                                                     [provide public libgsequencer (default is yes)])],
@@ -420,8 +428,11 @@ AC_DEFINE([HAVE_GLIB_2_56], [1], [GLib 2.56 available])
 AC_DEFINE([HAVE_GLIB_2_62], [0], [GLib 2.62 available])
 AC_DEFINE([HAVE_GLIB_2_68], [0], [GLib 2.68 available])
 
-AM_CONDITIONAL([HAVE_INTROSPECTION], [test "xno" == xyes])
-GOBJECT_INTROSPECTION_CHECK([1.30.0])
+AS_IF([test "x$enable_introspection" != xno],
+      [AC_MSG_NOTICE([introspection enabled])],
+      [AC_MSG_NOTICE([introspection disabled])])
+AM_CONDITIONAL([HAVE_INTROSPECTION], [test "x$enable_introspection" == xyes])
+# GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
 AC_SUBST(GIO_CFLAGS)
@@ -597,6 +608,18 @@ AGS_DEVELOPER_BOOK_LISTINGS([])
 AGS_DOCS_BOOKS([])
 AGS_DOCS_API([])
 
+
+AS_IF([test "x$INTROSPECTION_SCANNER" != x],
+      [AC_SUBST(INTROSPECTION_SCANNER, $INTROSPECTION_SCANNER)
+       AC_MSG_NOTICE([INTROSPECTION_SCANNER = $INTROSPECTION_SCANNER])],
+      [AC_SUBST(INTROSPECTION_SCANNER, /usr/bin/g-ir-scanner)
+       AC_MSG_NOTICE([INTROSPECTION_SCANNER = $INTROSPECTION_SCANNER])])
+
+AS_IF([test "x$INTROSPECTION_COMPILER" != x],
+      [AC_SUBST(INTROSPECTION_COMPILER, $INTROSPECTION_COMPILER)
+       AC_MSG_NOTICE([INTROSPECTION_COMPILER = $INTROSPECTION_COMPILER])],
+      [AC_SUBST(INTROSPECTION_COMPILER, /usr/bin/g-ir-compiler)
+       AC_MSG_NOTICE([INTROSPECTION_COMPILER = $INTROSPECTION_COMPILER])])
 
 AS_IF([test "x$HTMLHELP_XSL" != x],
       [AC_SUBST(HTMLHELP_XSL, $HTMLHELP_XSL)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,18 +137,30 @@ struct _AgsCoreAudioPort
   volatile guint queued;
 
 #ifdef AGS_WITH_CORE_AUDIO
+  AudioObjectPropertyAddress *output_samplerate_property_address;
+  AudioObjectPropertyAddress *output_buffer_size_property_address;
+  
   AudioObjectPropertyAddress *output_property_address;
   AudioObjectID output_device;
   AudioDeviceIOProcID output_proc_id;
+  
+  AudioObjectPropertyAddress *input_samplerate_property_address;
+  AudioObjectPropertyAddress *input_buffer_size_property_address;
 
   AudioObjectPropertyAddress *input_property_address;
   AudioObjectID input_device; 
   AudioDeviceIOProcID input_proc_id;
 #else
+  gpointer output_samplerate_property_address;
+  gpointer output_buffer_size_property_address;
+  
   gpointer output_property_address;
   gint64 output_device;
   gint64 output_proc_id;
 
+  gpointer input_samplerate_property_address;
+  gpointer input_buffer_size_property_address;
+  
   gpointer input_property_address;
   gint64 input_device;
   gint64 input_proc_id;

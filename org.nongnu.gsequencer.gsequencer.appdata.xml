@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright 2018-2021 Joël Krähemann <jkraehemann@gmail.com> -->
+<!-- Copyright 2005-2022 Joël Krähemann <jkraehemann@gmail.com> -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved. This file is offered as-is, -->
@@ -40,6 +40,22 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.17.7" date="2022-02-15">
+      <description>
+	<p>
+	  Minor improvements.
+	</p>
+      </description>
+    </release>
+
+    <release version="3.17.5" date="2022-02-12">
+      <description>
+	<p>
+	  Minor improvements.
+	</p>
+      </description>
+    </release>
+
     <release version="3.17.0" date="2022-02-06">
       <description>
 	<p>

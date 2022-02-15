@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -151,12 +151,19 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 
   AgsApplicationContext *application_context;   
 
+  AgsConfig *config;
+
   gdouble gui_scale_factor;
+  guint samplerate;
 
   application_context = ags_application_context_get_instance();
 
+  config = ags_config_get_instance();
+
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  samplerate = ags_soundcard_helper_config_get_samplerate(config);
 
   g_signal_connect_after((GObject *) fm_syncsynth, "parent_set",
 			 G_CALLBACK(ags_fm_syncsynth_parent_set_callback), (gpointer) fm_syncsynth);
@@ -350,7 +357,9 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		  0, 1,
 		  1, 1);
 
-  fm_syncsynth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
+  fm_syncsynth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									      AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_FM_OSCILLATOR_DEFAULT_SAMPLERATE),
+									      1.0);
 
   gtk_widget_set_valign((GtkWidget *) fm_syncsynth->loop_start,
 			GTK_ALIGN_FILL);
@@ -378,7 +387,9 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		   0, 2,
 		   1, 1);
 
-  fm_syncsynth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
+  fm_syncsynth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									    AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_FM_OSCILLATOR_DEFAULT_SAMPLERATE),
+									    1.0);
 
   gtk_widget_set_valign((GtkWidget *) fm_syncsynth->loop_end,
 			GTK_ALIGN_FILL);

@@ -373,14 +373,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ffplayer->position = -1;
 
-  ffplayer->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  ffplayer->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) ffplayer->loading,
+		     (GtkWidget *) ffplayer->sf2_loader_spinner,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->loading,
+  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->sf2_loader_spinner,
 			     TRUE);
-  gtk_widget_hide((GtkWidget *) ffplayer->loading);
+  gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
 
   /* piano */
   piano_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -1268,7 +1268,9 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 				    filename,
 				    NULL,
 				    NULL);
-
+//  ags_sf2_loader_set_flags(sf2_loader,
+//			   AGS_SF2_LOADER_RUN_APPLY_SYNTH);
+  
   ags_sf2_loader_start(sf2_loader);
 }
 
@@ -1528,164 +1530,120 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 {
   if(g_hash_table_lookup(ags_ffplayer_sf2_loader_completed,
 			 ffplayer) != NULL){
+    gchar *load_preset, *load_instrument;
+    
+    load_preset = ffplayer->load_preset;
+    load_instrument = ffplayer->load_instrument;
+      
     if(ffplayer->sf2_loader != NULL){
       if(ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
-	gchar *load_preset, *load_instrument;
+	ffplayer->audio_container = ffplayer->sf2_loader->audio_container;
+	ffplayer->sf2_loader->audio_container = NULL;
 
-	load_preset = ffplayer->load_preset;
-	load_instrument = ffplayer->load_instrument;
-	
-	/* reassign audio container */
-	if(load_preset != NULL){
-	  ffplayer->audio_container = ffplayer->sf2_loader->audio_container;
-	  ffplayer->sf2_loader->audio_container = NULL;
+	/* clear preset and instrument */
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));    
 
-	  ffplayer->load_preset = NULL;
+	ffplayer->position = -1;
 
-	  /* clear preset and instrument */
-	  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
-	  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));    
-
-	  if(ffplayer->audio_container == NULL ||
-	     ffplayer->audio_container->sound_container == NULL){
-	    g_object_run_dispose((GObject *) ffplayer->sf2_loader);
-	    g_object_unref(ffplayer->sf2_loader);
-
-	    ffplayer->sf2_loader = NULL;
-
-	    ffplayer->position = -1;
-	    gtk_widget_hide((GtkWidget *) ffplayer->loading);
-
-	    return(TRUE);
-	  }
-	  
-	  ags_ffplayer_load_preset(ffplayer);
-	}
-	
-	/* level select */
-	if(ffplayer->audio_container != NULL &&
-	   ffplayer->audio_container->sound_container != NULL){
-//	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
-//	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
-
-	  if(load_preset != NULL){
-	    GtkTreeModel *model;
-	    GtkTreeIter iter;
-
-	    gchar *value;
-	    
-	    /* preset */
-	    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
-
-	    if(gtk_tree_model_get_iter_first(model, &iter)){
-	      do{
-		gtk_tree_model_get(model, &iter,
-				   0, &value,
-				   -1);
-
-		if(!g_strcmp0(load_preset,
-			      value)){
-		  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
-						&iter);
-		  ags_ffplayer_load_instrument(ffplayer);
-
-		  break;
-		}
-	      }while(gtk_tree_model_iter_next(model,
-					      &iter));
-	    }
-
-	    g_free(load_preset);
-
-	    return(TRUE);
-	  }
-
-	  if(load_instrument != NULL){
-	    GtkTreeModel *model;
-	    GtkTreeIter iter;
-
-	    gchar *value;
-
-	    /* instrument */
-	    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
-
-	    if(gtk_tree_model_get_iter_first(model, &iter)){
-	      do{
-		gtk_tree_model_get(model, &iter,
-				   0, &value,
-				   -1);
-
-		if(!g_strcmp0(load_instrument,
-			      value)){
-		  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
-						&iter);
-		  
-		  break;
-		}
-	      }while(gtk_tree_model_iter_next(model,
-					      &iter));
-	    }
-	  }
-
-	  g_free(load_instrument);
-
-	  ffplayer->load_instrument = NULL;
-
-	  /* cleanup */	
-	  g_object_run_dispose((GObject *) ffplayer->sf2_loader);
-	  g_object_unref(ffplayer->sf2_loader);
-
-	  ffplayer->sf2_loader = NULL;
-
-	  ffplayer->position = -1;
-	  gtk_widget_hide((GtkWidget *) ffplayer->loading);
-
-	  return(TRUE);
-	}
+	gtk_spinner_stop(ffplayer->sf2_loader_spinner);
+	gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
 
 	/* cleanup */	
 	g_object_run_dispose((GObject *) ffplayer->sf2_loader);
 	g_object_unref(ffplayer->sf2_loader);
 
 	ffplayer->sf2_loader = NULL;
-
-	ffplayer->position = -1;
-	gtk_widget_hide((GtkWidget *) ffplayer->loading);
+	
+	ags_ffplayer_load_preset(ffplayer);
+    
+	return(TRUE);
       }else{
 	if(ffplayer->position == -1){
 	  ffplayer->position = 0;
 
-	  gtk_widget_show((GtkWidget *) ffplayer->loading);
+	  gtk_widget_show((GtkWidget *) ffplayer->sf2_loader_spinner);
+	  gtk_spinner_start(ffplayer->sf2_loader_spinner);
 	}
-
-	switch(ffplayer->position){
-	case 0:
-	  {
-	    ffplayer->position = 1;
-	    
-	    gtk_label_set_label(ffplayer->loading,
-				"loading ...  ");
-	  }
-	  break;
-	case 1:
-	  {
-	    ffplayer->position = 2;
-
-	    gtk_label_set_label(ffplayer->loading,
-				"loading  ... ");
-	  }
-	  break;
-	case 2:
-	  {
-	    ffplayer->position = 0;
-
-	    gtk_label_set_label(ffplayer->loading,
-				"loading   ...");
-	  }
-	  break;
-	}
+    
+	return(TRUE);
       }      
     }
+    
+    if(load_preset != NULL){
+      /* level select */
+      if(ffplayer->audio_container != NULL &&
+	 ffplayer->audio_container->sound_container != NULL){
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	
+	gchar *value;
+	
+	/* preset */
+	model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
+	
+	if(gtk_tree_model_get_iter_first(model, &iter)){
+	  do{
+	    gtk_tree_model_get(model, &iter,
+			       0, &value,
+			       -1);
+	    
+	    if(!g_strcmp0(load_preset,
+			  value)){
+	      gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
+					    &iter);
+	      ags_ffplayer_load_instrument(ffplayer);
+	      
+	      break;
+	    }
+	  }while(gtk_tree_model_iter_next(model,
+					  &iter));
+	}
+      }
+	
+      g_free(load_preset);
+
+      ffplayer->load_preset = NULL;
+    
+      return(TRUE);
+    }
+    
+    if(load_instrument != NULL){
+      /* level select */
+      if(ffplayer->audio_container != NULL &&
+	 ffplayer->audio_container->sound_container != NULL){
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+
+	gchar *value;
+
+	/* instrument */
+	model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
+
+	if(gtk_tree_model_get_iter_first(model, &iter)){
+	  do{
+	    gtk_tree_model_get(model, &iter,
+			       0, &value,
+			       -1);
+
+	    if(!g_strcmp0(load_instrument,
+			  value)){
+	      gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
+					    &iter);
+		  
+	      break;
+	    }
+	  }while(gtk_tree_model_iter_next(model,
+					  &iter));
+	}
+      }
+
+      g_free(load_instrument);
+
+      ffplayer->load_instrument = NULL;
+    
+      return(TRUE);
+    }    
     
     return(TRUE);
   }else{

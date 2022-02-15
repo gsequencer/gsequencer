@@ -915,7 +915,7 @@
       </imageobject>
       <caption>
 	<para>
-	  The frequency modulator synth screenshot
+	  The frequency modulation synth screenshot
 	</para>
       </caption>
     </mediaobject>
@@ -996,6 +996,81 @@
   </sect1>
 
   <sect1>
+    <title>Hybrid Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_hybrid_synth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The hybrid synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      Produce audio data using 2 oscillators, those can be phase modulated with attack and phase tuples.
+    </para>
+
+    <para>
+      In order to enable phase modulation for the first oscillator, you need to check
+      &quot;OSC 1 - sync enabled&quot;. The &quot;OSC 1 - sync factor&quot; applies to every tuples
+      attack. The tuples maximum value is 2 times Pi for attack and phase. The LFO applies to the
+      phase reset.
+    </para>
+
+    <para>
+      The pitch tuning does additional frequency shift.
+    </para>
+    
+    <para>
+      There is a white noise source, which can adjust its gain.
+    </para>
+
+    <para>
+      The low-pass filter is disabled by default.
+    </para>
+
+    <para>
+      The high-pass filter is disabled by default.
+    </para>
+        
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Hybrid FM Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_hybrid_fm_synth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The hybrid frequency modulation synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    
+    <para>
+      Produce audio data using 3 FM oscillators. The synth is compute just-in-time.
+    </para>
+
+    <para>
+      The Hybrid FM Synth has got the same additional effect processors like Hybrid Synth.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
+    </para>
+  </sect1>
+
+  <sect1>
     <title>FFPlayer</title>
     <mediaobject>
       <imageobject>
@@ -1021,6 +1096,32 @@
       The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
       click Add or Remove within AgsFFPlayer&apos;s bridge, what you can collapse/expand. To add an effect
       to a line, you have open as usual input/output of machine properties.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>SF2 Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_sf2_synth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The SF2 synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    
+    <para>
+      Produce audio data using Soundfont2 files.
+    </para>
+
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
     </para>
   </sect1>
 
@@ -1076,6 +1177,32 @@
       
     </itemizedlist>
     
+  </sect1>
+
+  <sect1>
+    <title>SFZ Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_sfz_synth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The SFZ synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    
+    <para>
+      Produce audio data using SFZ files.
+    </para>
+
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
+    </para>
   </sect1>
   
   <sect1>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -339,9 +339,9 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
 				 i18n_pspec("The count of frames a buffer contains"),
-				 1,
-				 44100,
-				 940,
+				 AGS_SOUNDCARD_MIN_BUFFER_SIZE,
+				 AGS_SOUNDCARD_MAX_BUFFER_SIZE,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
@@ -357,9 +357,9 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
 				 i18n_pspec("The frames count played during a second"),
-				 8000,
-				 96000,
-				 44100,
+				 (guint) AGS_SOUNDCARD_MIN_SAMPLERATE,
+				 (guint) AGS_SOUNDCARD_MAX_SAMPLERATE,
+				 (guint) AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
@@ -1411,7 +1411,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
   }
 
   if(!g_str_has_prefix(device,
-		       "ags-core_audio-devout-")){
+		       "ags-core-audio-devout-")){
     g_rec_mutex_unlock(core_audio_devout_mutex);
 
     g_warning("invalid core_audioaudio device prefix");
@@ -1420,7 +1420,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
   }
 
   ret = sscanf(device,
-	       "ags-core_audio-devout-%u",
+	       "ags-core-audio-devout-%u",
 	       &nth_card);
 
   if(ret != 1){
@@ -1583,7 +1583,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
 
       if(card_name != NULL){
 	g_object_get(list->data,
-		     "core_audio-client", &core_audio_client,
+		     "core-audio-client", &core_audio_client,
 		     NULL);
 	
 	if(core_audio_client != NULL){

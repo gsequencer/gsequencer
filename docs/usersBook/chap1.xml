@@ -107,6 +107,16 @@
 	  </listitem>
 	  <listitem>
 	    <para>
+	      Spectrometer - enables you to visualize played frequency using FFTW3.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Equalizer - enables you to adjust 10 band equalizer.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
 	      Drum - is used to do pattern editing using PCM audio files. 
 	    </para>
 	  </listitem>
@@ -140,14 +150,38 @@
 	  </listitem>
 	  <listitem>
 	    <para>
+	      Hybrid Syncsynth - is a software synthesizer supporting 2 oscillators with relative phase modulation.
+	      Use with notation editor.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Hybrid FM Syncsynth - is a frequency modulation software synthesizer supporting 3 oscillators.
+	      Use with notation editor.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
 	      FFPlayer - may be used to open Soundfont2 audio file container format in order to do
 	      notation.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
+	      SF2 Synth - may be used to open Soundfont2 audio file container format in order to do
+	      notation. Computation just-in-time.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
 	      Sampler - may be used to open SFZ audio file container format in order to do
 	      notation.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      SFZ Synth - may be used to open SFZ audio file container format in order to do
+	      notation. Computation just-in-time.
 	    </para>
 	  </listitem>
 	  <listitem>

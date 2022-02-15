@@ -3,6 +3,7 @@
 <!ENTITY indexMenuIcon "../images/adwaita/system-run.png">
 <!ENTITY cursorIcon "../images/adwaita/go-jump.png">
 <!ENTITY notesIcon "../images/adwaita/accessories-text-editor.png">
+<!ENTITY accelerationsIcon "../images/adwaita/accessories-text-editor.png">
 <!ENTITY deleteIcon "../images/adwaita/edit-clear-all.png">
 <!ENTITY selectIcon "../images/adwaita/edit-select-all.png">
 <!ENTITY copyIcon "../images/adwaita/edit-copy.png">
@@ -20,766 +21,1440 @@
 <!-- Free Documentation License". -->
 
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
-  <title>Editor</title>
+  <title>Composite editor</title>
   <para>
-    The editor features a piano roll. After linking an editor index with an enginge
-    You may perform tasks like adding notes or copy, cut and paste them. You may
-    change view segmentation, too.
-    Further you might shift the displayed piano on the left or reverse the channel
-    mapping.
+    The composite editor features 3 different implementations like notation, automation
+    and wave form editing. You switch the implementation by opening the Edit menu and
+    click one of:
+  </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	Notation
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Automation
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Wave
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    Note there are individual tools available depending on active editor implementation
+    within toolbar.
   </para>
 
   <sect1>
-    <title>Linking</title>
-    <para>
-      Before you might perform any task with the editor you have to link engines
-      by adding an index. Then you should link it with an engine. That can all be
-      done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
-      index list.
-      The corresponding editor appears as you click appropriate link.
-    </para>
-  </sect1>
-
-  <sect1>
-    <title>Toolbar</title>
+    <title>Notation editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../images/ags-toolbar.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_notation_edit.png" />
       </imageobject>
       <caption>
 	<para>
-	  The editor&apos;s toolbar screenshot
+	  The notation edit&apos;s screenshot showing notes
 	</para>
       </caption>
     </mediaobject>
+    
     <para>
-      In the table below are the various buttons explained you may use for editing.
+      The notation editor features a piano roll. After linking an editor index with an
+      enginge you may perform tasks like adding notes or copy, cut and paste them. You may
+      change view segmentation, too.
+      Further you might shift the displayed piano on the left or reverse the channel
+      mapping.
     </para>
-    
-    <table>
-      <title>AGS editor toolbar controls table.</title>
-      <tgroup cols="3" align="left" colsep='1' rowsep='1'>
-	<thead>
-	  <row>
-	    <entry>icon</entry>
-	    <entry>action</entry>
-	    <entry>description</entry>
-	  </row>
-	</thead>
-	<tbody>
-	  <row>
-	    <entry><imagedata fileref="&cursorIcon;" /></entry>
-	    <entry>cursor</entry>
-	    <entry>
-	      You may want to set the cursor to paste notes at the position where it
-	      is located.
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&notesIcon;" /></entry>
-	    <entry>notes</entry>
-	    <entry>
-	      Add notes by clicking within the piano roll and move to till them having
-	      the wished duration.
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&deleteIcon;" /></entry>
-	    <entry>delete</entry>
-	    <entry>
-	      Delete notes by clicking on the note you don&apos;t want anymore.
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&selectIcon;" /></entry>
-	    <entry>select</entry>
-	    <entry>
-	      Select notes to copy or cut them.
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&copyIcon;" /></entry>
-	    <entry>copy</entry>
-	    <entry>
-	      Copy notes to the clipboard.
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&cutIcon;" /></entry>
-	    <entry>cut</entry>
-	    <entry>
-	      Cut notes to the clipboard.
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&pasteIcon;" /></entry>
-	    <entry>paste</entry>
-	    <entry>
-	      Paste the previously copied or cutted notes at the cursor position or
-	      just insert them where they are/were located. 
-	    </entry>
-	  </row>
-	  <row>
-	    <entry><imagedata fileref="&invertIcon;" /></entry>
-	    <entry>invert</entry>
-	    <entry>
-	      Invert entire notation in conjunction with reverse mapping or MIDI import.
-	    </entry>
-	  </row>
-	</tbody>
-      </tgroup>
-    </table>
 
     <sect2>
-      <title>Editing tools</title>
+      <title>Linking</title>
       <para>
-	The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
-	crop or select notes.
+	Before you might perform any task with the editor you have to link engines
+	by adding an index. Then you should link it with an engine. That can all be
+	done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+	index list.
+	The corresponding editor appears as you click appropriate link.
       </para>
-    </sect2>      
-
-    <sect2>
-      <title>Position cursor</title>
-      <mediaobject>
-	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags_position_notation_cursor_dialog.png" />
-	</imageobject>
-	<caption>
-	  <para>
-	    The positon notation cursor dialog screenshot
-	  </para>
-	</caption>
-      </mediaobject>
-      <para>
-	The position notation cursor dialog allows you to position the cursor.
-      </para>
-
-      <table>
-	<title>AGS position notation cursor dialog controls.</title>
-	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
-	  <thead>
-	    <row>
-	      <entry>control</entry>
-	      <entry>description</entry>
-	    </row>
-	  </thead>
-	  <tbody>
-	    <row>
-	      <entry>position x</entry>
-	      <entry>
-		Set the cursor at position x.
-	      </entry>
-	    </row>
-	    <row>
-	      <entry>position y</entry>
-	      <entry>
-		Set the cursor at position y.
-	      </entry>
-	    </row>
-	  </tbody>
-	</tgroup>
-      </table>      
-    </sect2>    
-    
-    <sect2>
-      <title>Move notes</title>
-      <mediaobject>
-	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags_move_notes_dialog.png" />
-	</imageobject>
-	<caption>
-	  <para>
-	    The move note dialog screenshot
-	  </para>
-	</caption>
-      </mediaobject>
-      <para>
-	The move notes dialog allows you to move selected notes to a given position.
-      </para>
-
-      <table>
-	<title>AGS move note dialog controls.</title>
-	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
-	  <thead>
-	    <row>
-	      <entry>control</entry>
-	      <entry>description</entry>
-	    </row>
-	  </thead>
-	  <tbody>
-	    <row>
-	      <entry>relative</entry>
-	      <entry>
-		Radio button to choose relative positioning. The x- and y-offset are going to be added
-		to current selections insets.
-	      </entry>
-	    </row>
-	    <row>
-	      <entry>absolute</entry>
-	      <entry>
-		Radio button to choose absolute positioning. The x- and y-offset are goint to be added
-		to most upper-left position x = 0 and y = 0.
-	      </entry>
-	    </row>
-	    <row>
-	      <entry>x</entry>
-	      <entry>
-		The x-offset to position the selected notes.
-	      </entry>
-	    </row>
-	    <row>
-	      <entry>y</entry>
-	      <entry>
-		The y-offset to position the selected notes.
-	      </entry>
-	    </row>
-	  </tbody>
-	</tgroup>
-      </table>      
     </sect2>
 
     <sect2>
-      <title>Crop notes</title>
+      <title>Toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags_crop_notes_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags-toolbar.png" />
 	</imageobject>
 	<caption>
 	  <para>
-	    The crop note dialog screenshot
+	    The editor&apos;s toolbar screenshot
 	  </para>
 	</caption>
       </mediaobject>
       <para>
-	The crop notes dialog allows you to crop selected notes to a specified width or insert
-	desired padding. Per default the values are added or subtracted of each note and doesn&apos;t
-	require any additional space.
+	In the table below are the various buttons explained you may use for editing.
       </para>
-
+      
       <table>
-	<title>AGS crop note dialog controls.</title>
-	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	<title>AGS editor toolbar controls table.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
-	      <entry>control</entry>
+	      <entry>icon</entry>
+	      <entry>action</entry>
 	      <entry>description</entry>
 	    </row>
 	  </thead>
 	  <tbody>
 	    <row>
-	      <entry>absolute</entry>
+	      <entry><imagedata fileref="&cursorIcon;" /></entry>
+	      <entry>cursor</entry>
 	      <entry>
-		Modify behavior of crop, if checked it does use crop note control as absolute value,
-		rather than add/subtract the value of current insets.
+		You may want to set the cursor to paste notes at the position where it
+		is located.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>in-place</entry>
+	      <entry><imagedata fileref="&notesIcon;" /></entry>
+	      <entry>notes</entry>
 	      <entry>
-		Radio button to specify that all crop happens in-place i.e. no additional space is used.
+		Add notes by clicking within the piano roll and move to till them having
+		the wished duration.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>do resize</entry>
+	      <entry><imagedata fileref="&deleteIcon;" /></entry>
+	      <entry>delete</entry>
 	      <entry>
-		Radio button to specify that all crop adds some extra space i.e. the padding is increased
-		as well.
+		Delete notes by clicking on the note you don&apos;t want anymore.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>crop note</entry>
+	      <entry><imagedata fileref="&selectIcon;" /></entry>
+	      <entry>select</entry>
 	      <entry>
-		Set the crop note value to resize the selected notes. This may be a relative or absolute value.
+		Select notes to copy or cut them.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>padding</entry>
+	      <entry><imagedata fileref="&copyIcon;" /></entry>
+	      <entry>copy</entry>
 	      <entry>
-		Set the padding per tic to use.
+		Copy notes to the clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&cutIcon;" /></entry>
+	      <entry>cut</entry>
+	      <entry>
+		Cut notes to the clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&pasteIcon;" /></entry>
+	      <entry>paste</entry>
+	      <entry>
+		Paste the previously copied or cutted notes at the cursor position or
+		just insert them where they are/were located. 
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&invertIcon;" /></entry>
+	      <entry>invert</entry>
+	      <entry>
+		Invert entire notation in conjunction with reverse mapping or MIDI import.
 	      </entry>
 	    </row>
 	  </tbody>
 	</tgroup>
-      </table>      
+      </table>
+
+      <sect3>
+	<title>Editing tools</title>
+	<para>
+	  The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
+	  crop or select notes.
+	</para>
+      </sect3>      
+
+      <sect3>
+	<title>Position cursor</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_position_notation_cursor_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The positon notation cursor dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The position notation cursor dialog allows you to position the cursor.
+	</para>
+
+	<table>
+	  <title>AGS position notation cursor dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>position x</entry>
+		<entry>
+		  Set the cursor at position x.
+		</entry>
+	      </row>
+	      <row>
+		<entry>position y</entry>
+		<entry>
+		  Set the cursor at position y.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>    
+      
+      <sect3>
+	<title>Move notes</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_move_notes_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The move note dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The move notes dialog allows you to move selected notes to a given position.
+	</para>
+
+	<table>
+	  <title>AGS move note dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>relative</entry>
+		<entry>
+		  Radio button to choose relative positioning. The x- and y-offset are going to be added
+		  to current selections insets.
+		</entry>
+	      </row>
+	      <row>
+		<entry>absolute</entry>
+		<entry>
+		  Radio button to choose absolute positioning. The x- and y-offset are goint to be added
+		  to most upper-left position x = 0 and y = 0.
+		</entry>
+	      </row>
+	      <row>
+		<entry>x</entry>
+		<entry>
+		  The x-offset to position the selected notes.
+		</entry>
+	      </row>
+	      <row>
+		<entry>y</entry>
+		<entry>
+		  The y-offset to position the selected notes.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+
+      <sect3>
+	<title>Crop notes</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_crop_notes_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The crop note dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The crop notes dialog allows you to crop selected notes to a specified width or insert
+	  desired padding. Per default the values are added or subtracted of each note and doesn&apos;t
+	  require any additional space.
+	</para>
+
+	<table>
+	  <title>AGS crop note dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>absolute</entry>
+		<entry>
+		  Modify behavior of crop, if checked it does use crop note control as absolute value,
+		  rather than add/subtract the value of current insets.
+		</entry>
+	      </row>
+	      <row>
+		<entry>in-place</entry>
+		<entry>
+		  Radio button to specify that all crop happens in-place i.e. no additional space is used.
+		</entry>
+	      </row>
+	      <row>
+		<entry>do resize</entry>
+		<entry>
+		  Radio button to specify that all crop adds some extra space i.e. the padding is increased
+		  as well.
+		</entry>
+	      </row>
+	      <row>
+		<entry>crop note</entry>
+		<entry>
+		  Set the crop note value to resize the selected notes. This may be a relative or absolute value.
+		</entry>
+	      </row>
+	      <row>
+		<entry>padding</entry>
+		<entry>
+		  Set the padding per tic to use.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+
+      <sect3>
+	<title>Select notes</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_select_notes_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The select note dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The select note dialog allows you to select notes of given position and region.
+	</para>
+
+	<table>
+	  <title>AGS select note dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>copy selection</entry>
+		<entry>
+		  Check button to say if you would like to copy selection to clipboard.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select x0</entry>
+		<entry>
+		  Set the x0 offset of region to select.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select y0</entry>
+		<entry>
+		  Set the y0 offset of region to select.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select x1</entry>
+		<entry>
+		  Set the x1 offset of region to select.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select y1</entry>
+		<entry>
+		  Set the y1 offset of region to select.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+      
+    </sect2>
+    
+    <sect2>
+      <title>Pattern edit</title>
+      <para>
+	The pattern edit widget is available as linking an editor index with a pattern sequencer e.g.
+	drum or matrix.
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    Left, Left-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation left, as there is a pattern you get an audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Right, Right-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation right, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Up, Up-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation up, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Down, Down-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation down, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Space
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Add audio pattern and give audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Delete
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Remove audio pattern and give audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+c
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Copy the selected pattern to clipboard.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+x
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Cut the selected pattern to clipboard.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+v
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Paste pattern from clipboard.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+a
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Select all.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+i
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Invert all.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+m
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Show/hide meta information.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Tab
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Leave notation focus.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+      </itemizedlist>
+
     </sect2>
 
     <sect2>
-      <title>Select notes</title>
+      <title>Note edit</title>
+      <para>
+	The note edit widget is available as linking an editor index with a notes sequencer e.g.
+	Soundfont2 file player.
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    Left, Left-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation left, as there is a note you get an audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Shift and Left, Left-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Shrink note by zoom factor.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Right, Right-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation right, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Shift and Right, Right-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Grow note by zoom factor.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Up, Up-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation up, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Down, Down-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within notation down, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Space
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Add audio notes and give audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Delete
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Remove audio notes and give audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+c
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Copy the selected notes to clipboard.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+x
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Cut the selected notes to clipboard.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+v
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Paste notes from clipboard.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+a
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Select all.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+i
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Invert all.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+m
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Show/hide meta information.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Tab
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Leave notation focus.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+      </itemizedlist>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Automation editor</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_automation_edit.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The automation editor&apos;s screenshot showing ramped values
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      The automation editor features a timeline value map. After linking an editor index with
+      an enginge you may perform tasks like adding values or copy, cut and paste them. You may
+      change view segmentation, too.
+    </para>
+
+    <sect2>
+      <title>Linking</title>
+      <para>
+	Before you might perform any task with the editor you have to link engines
+	by adding an index. Then you should link it with an engine. That can all be
+	done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+	index list.
+	The corresponding editor appears as you click appropriate link, if automation editor
+	is not the default view you have to change it by clicking Edit -> Automation from
+	your menu bar or context menu.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>Toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../images/ags_select_notes_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags-toolbar.png" />
 	</imageobject>
 	<caption>
 	  <para>
-	    The select note dialog screenshot
+	    The editor&apos;s toolbar screenshot
 	  </para>
 	</caption>
       </mediaobject>
       <para>
-	The select note dialog allows you to select notes of given position and region.
+	In the table below are the various buttons explained you may use for editing.
       </para>
 
       <table>
-	<title>AGS select note dialog controls.</title>
-	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	<title>AGS automation editor toolbar controls table.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
-	      <entry>control</entry>
+	      <entry>icon</entry>
+	      <entry>action</entry>
 	      <entry>description</entry>
 	    </row>
 	  </thead>
 	  <tbody>
 	    <row>
-	      <entry>copy selection</entry>
+	      <entry><imagedata fileref="&cursorIcon;" /></entry>
+	      <entry>cursor</entry>
 	      <entry>
-		Check button to say if you would like to copy selection to clipboard.
+		You may want to set the cursor to paste accelerations at the position where it
+		is located.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>select x0</entry>
+	      <entry><imagedata fileref="&accelerationsIcon;" /></entry>
+	      <entry>accelerations</entry>
 	      <entry>
-		Set the x0 offset of region to select.
+		Add accelerations by clicking within the automation area.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>select y0</entry>
+	      <entry><imagedata fileref="&deleteIcon;" /></entry>
+	      <entry>delete</entry>
 	      <entry>
-		Set the y0 offset of region to select.
+		Delete accelerations by clicking on the acceleration you don&apos;t want anymore.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>select x1</entry>
+	      <entry><imagedata fileref="&selectIcon;" /></entry>
+	      <entry>select</entry>
 	      <entry>
-		Set the x1 offset of region to select.
+		Select accelerations to copy or cut them.
 	      </entry>
 	    </row>
 	    <row>
-	      <entry>select y1</entry>
+	      <entry><imagedata fileref="&copyIcon;" /></entry>
+	      <entry>copy</entry>
 	      <entry>
-		Set the y1 offset of region to select.
+		Copy accelerations to the clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&cutIcon;" /></entry>
+	      <entry>cut</entry>
+	      <entry>
+		Cut accelerations to the clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&pasteIcon;" /></entry>
+	      <entry>paste</entry>
+	      <entry>
+		Paste the previously copied or cutted accelerations at the cursor position or
+		just insert them where they are/were located. 
 	      </entry>
 	    </row>
 	  </tbody>
 	</tgroup>
-      </table>      
+      </table>
+
+      <sect3>
+	<title>Editing tools</title>
+	<para>
+	  The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
+	  crop or select accelerations.
+	</para>
+      </sect3>
+
+      <sect3>
+	<title>Position cursor</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_position_automation_cursor_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The positon automation cursor dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The position automation cursor dialog allows you to position the cursor.
+	</para>
+
+	<table>
+	  <title>AGS position automation cursor dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>position x</entry>
+		<entry>
+		  Set the cursor at position x.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+      
+      <sect3>
+	<title>Select accelerations</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_select_accelerations_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The select acceleration dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The select acceleration dialog allows you to select accelerations of given position and selected
+	  controls.
+	</para>
+
+	<table>
+	  <title>AGS select acceleration dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>copy selection</entry>
+		<entry>
+		  Check button to say if you would like to copy selection to clipboard.
+		</entry>
+	      </row>
+	      <row>
+		<entry>add/remove</entry>
+		<entry>
+		  Add/remove controls to enable/disable for selecting automation area.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select x0</entry>
+		<entry>
+		  Set the x0 offset of region to select.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select x1</entry>
+		<entry>
+		  Set the x1 offset of region to select.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+
+      <sect3>
+	<title>Ramp accelerations</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_ramp_accelerations_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The ramp acceleration dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The ramp acceleration dialog allows you to ramp accelerations to a specified value using
+	  given number of steps.
+	</para>
+
+	<table>
+	  <title>AGS ramp acceleration dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>ramp control</entry>
+		<entry>
+		  Select the control to ramp.
+		</entry>
+	      </row>
+	      <row>
+		<entry>ramp x0</entry>
+		<entry>
+		  The x0-offset to start ramp from.
+		</entry>
+	      </row>
+	      <row>
+		<entry>ramp y0</entry>
+		<entry>
+		  The y0-value to use as first value.
+		</entry>
+	      </row>
+	      <row>
+		<entry>ramp x1</entry>
+		<entry>
+		  The x1-offset to stop ramp to.
+		</entry>
+	      </row>
+	      <row>
+		<entry>ramp y1</entry>
+		<entry>
+		  The y1-value to use as last value.
+		</entry>
+	      </row>
+	      <row>
+		<entry>step count</entry>
+		<entry>
+		  The number of steps to use to ramp value y0 to y1 from offset x0 to x1.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
     </sect2>
     
+    <sect2>
+      <title>Automation edit</title>
+      <para>
+	The automation edit widget is available as linking an editor index with any machine.
+      </para>
+
+      <para>
+	There are basic edit tools available to do your automation. You can use keyboard
+	bindings to do your tasks are select appropriate edit tool of toolbar. As the appropriate
+	port is checked it enables the automation of it. Else it is by-passed and won&apos;t see
+	any automation data. By enabling a port it gets visible within the editor.
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    Position cursor. Use arrow keys. Page-Up and Page-Down switches the automation area.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Add automation point applied horizontally by time and vertically as value. Add by enter space.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Delete automation point. Use delete key.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Select automation. Alternatively do select all, note selects everything visible within scope tab.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Copy automation. Control-c key-stroke.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Cut automation. Control-x key-stroke.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Paste automation. Control-v key-stroke.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Show/hide meta information. Control-m key-stroke.
+	  </para>
+	</listitem>
+      </itemizedlist>    
+    </sect2>
   </sect1>
   
   <sect1>
-    <title>Pattern edit</title>
+    <title>Wave editor</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_wave_edit.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The wave edit&apos;s screenshot showing audio data
+	</para>
+      </caption>
+    </mediaobject>
+
     <para>
-      The pattern edit widget is available as linking an editor index with a pattern sequencer e.g.
-      drum or matrix.
+      The wave edit widget is available as linking an editor index with AgsAudiorec.
     </para>
 
-    <itemizedlist mark="bullet">
-      <listitem>
-	<para>
-	  Left, Left-Arrow
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation left, as there is a pattern you get an audible feedback.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Right, Right-Arrow 
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation right, audible feedback as above.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Up, Up-Arrow
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation up, audible feedback as above.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Down, Down-Arrow 
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation down, audible feedback as above.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Space
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Add audio pattern and give audible feedback.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Delete
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Remove audio pattern and give audible feedback.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+c
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Copy the selected pattern to clipboard.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+x
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Cut the selected pattern to clipboard.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+v
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Paste pattern from clipboard.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+a
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Select all.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+i
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Invert all.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+m
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Show/hide meta information.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Tab
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Leave notation focus.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-    </itemizedlist>
-
-  </sect1>
-
-  <sect1>
-    <title>Note edit</title>
     <para>
-      The note edit widget is available as linking an editor index with a notes sequencer e.g.
-      Soundfont2 file player.
-    </para>
+      The wave editor features a wave form area. After linking an editor index with
+      an enginge you may perform tasks like copy, cut and paste audio data. You may
+      change view segmentation, too.
+    </para>      
 
-    <itemizedlist mark="bullet">
-      <listitem>
-	<para>
-	  Left, Left-Arrow
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation left, as there is a note you get an audible feedback.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Shift and Left, Left-Arrow
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Shrink note by zoom factor.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Right, Right-Arrow 
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation right, audible feedback as above.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Shift and Right, Right-Arrow 
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Grow note by zoom factor.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Up, Up-Arrow
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation up, audible feedback as above.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Down, Down-Arrow 
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Move within notation down, audible feedback as above.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Space
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Add audio notes and give audible feedback.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Delete
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Remove audio notes and give audible feedback.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+c
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Copy the selected notes to clipboard.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+x
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Cut the selected notes to clipboard.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+v
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Paste notes from clipboard.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+a
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Select all.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+i
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Invert all.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Ctrl+m
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Show/hide meta information.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-      <listitem>
-	<para>
-	  Tab
-	</para>
-	
-	<itemizedlist mark="bullet">
-	  <listitem>
-	    <para>
-	      Leave notation focus.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-
-      </listitem>
-    </itemizedlist>
+    <sect2>
+      <title>Linking</title>
+      <para>
+	Before you might perform any task with the editor you have to link engines
+	by adding an index. Then you should link it with an engine. That can all be
+	done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+	index list.
+	The corresponding editor appears as you click appropriate link, if wave editor
+	is not the default view you have to change it by clicking Edit -> Wave from
+	your menu bar or context menu.
+      </para>
+    </sect2>
     
-  </sect1>
+    <sect2>
+      <title>Wave toolbar</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags-wave-toolbar.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The wave editor&apos;s toolbar screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	In the table below are the various buttons explained you may use for editing.
+      </para>
+      
+      <table>
+	<title>AGS wave editor toolbar controls table.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>icon</entry>
+	      <entry>action</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry><imagedata fileref="&cursorIcon;" /></entry>
+	      <entry>cursor</entry>
+	      <entry>
+		You may want to set the cursor to paste buffers at the position where it
+		is located.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&selectIcon;" /></entry>
+	      <entry>select</entry>
+	      <entry>
+		Select buffers to copy or cut them.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&copyIcon;" /></entry>
+	      <entry>copy</entry>
+	      <entry>
+		Copy buffers to the clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&cutIcon;" /></entry>
+	      <entry>cut</entry>
+	      <entry>
+		Cut buffers to the clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry><imagedata fileref="&pasteIcon;" /></entry>
+	      <entry>paste</entry>
+	      <entry>
+		Paste the previously copied or cutted buffers at the cursor position or
+		just insert them where they are/were located. 
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
 
+      <sect3>
+	<title>Editing tools</title>
+	<para>
+	  The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
+	  crop or select buffers.
+	</para>
+      </sect3>
+
+      <sect3>
+	<title>Position cursor</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_position_wave_cursor_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The position wave cursor dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The position wave cursor dialog allows you to position the cursor.
+	</para>
+
+	<table>
+	  <title>AGS position wave cursor dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>position x</entry>
+		<entry>
+		  Set the cursor at position x.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+      
+      <sect3>
+	<title>Select buffers</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_select_buffers_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The select buffer dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The select buffer dialog allows you to select buffers of given position.
+	</para>
+
+	<table>
+	  <title>AGS select buffer dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>copy selection</entry>
+		<entry>
+		  Check button to say if you would like to copy selection to clipboard.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select x0</entry>
+		<entry>
+		  Set the x0 offset of region to select.
+		</entry>
+	      </row>
+	      <row>
+		<entry>select x1</entry>
+		<entry>
+		  Set the x1 offset of region to select.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+
+      <sect3>
+	<title>Time-stretch buffers</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_time_stretch_buffers_dialog.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The time-stretch buffer dialog screenshot
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  The time-stretch buffer dialog allows you to stretch time of buffers at given frequency.
+	</para>
+
+	<table>
+	  <title>AGS time-stretch buffer dialog controls.</title>
+	  <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	    <thead>
+	      <row>
+		<entry>control</entry>
+		<entry>description</entry>
+	      </row>
+	    </thead>
+	    <tbody>
+	      <row>
+		<entry>frequency</entry>
+		<entry>
+		  The time-stretch center frequency.
+		</entry>
+	      </row>
+	      <row>
+		<entry>orig BPM</entry>
+		<entry>
+		  The original BPM the audio data was recorded.
+		</entry>
+	      </row>
+	      <row>
+		<entry>new BPM</entry>
+		<entry>
+		  The new BPM the audio data shall have.
+		</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>      
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Wave edit</title>
+      <para>
+	The wave edit widget is available as linking an editor index with AgsAudiorec.
+      </para>
+
+      <para>
+	There are basic edit tools available to do modify wave form. You can use keyboard
+	bindings to do your tasks are select appropriate edit tool of toolbar. The wave editor
+	shows all audio channels in vertical alignment and are grouped by default.
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    Position cursor. Use arrow keys. Page-Up and Page-Down switches the wave area.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Select wave. Alternatively do select all, note selects everything visible within scope tab.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Copy wave. Control-C key-stroke.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Cut wave. Control-X key-stroke.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Paste wave. Control-V key-stroke.
+	  </para>
+	</listitem>
+      </itemizedlist>      
+    </sect2>
+  </sect1>
+    
 </chapter>

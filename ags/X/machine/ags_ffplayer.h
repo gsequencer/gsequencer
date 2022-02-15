@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,7 +92,7 @@ struct _AgsFFPlayer
   gchar *load_instrument;
   
   gint position;
-  GtkLabel *loading;
+  GtkSpinner *sf2_loader_spinner;  
 
   guint control_width;
   guint control_height;

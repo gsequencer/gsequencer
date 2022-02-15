@@ -1,3 +1,29 @@
+ags (3.17.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsFFPlayer use GtkSpinner
+	* improved AgsPitchSampler use GtkSpinner
+
+ags (3.17.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gobject introspection automake build
+	* improved chapter 1 of user's handbook, added missing instruments
+	* fixed chapter 3 title of user's handbook
+
+ags (3.17.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSyncsynth loop start and end upper value
+	* fixed AgsFMSyncsynth loop start and end upper value
+	* improved CoreAudio set buffer size and samplerate
+
+ags (3.17.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer missing preset load
+	* updated user's handbook
+
 ags (3.17.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
