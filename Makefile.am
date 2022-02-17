@@ -2711,6 +2711,7 @@ libgsequencer_h_sources = \
 	ags/GSequencer/ags_wave_editor.h \
 	ags/GSequencer/ags_window.h \
 	ags/GSequencer/ags_window_callbacks.h \
+	ags/GSequencer/ags_gsequencer_application.h \
 	ags/GSequencer/ags_gsequencer_application_context.h
 
 if WITH_VST3
@@ -2846,6 +2847,7 @@ libgsequencer_c_sources = \
 	ags/GSequencer/ags_soundcard_editor_callbacks.c \
 	ags/GSequencer/ags_soundcard_editor.c \
 	ags/GSequencer/ags_window_callbacks.c \
+	ags/GSequencer/ags_gsequencer_application.c \
 	ags/GSequencer/ags_gsequencer_application_context.c
 
 if WITH_VST3

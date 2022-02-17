@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1126,4 +1126,49 @@ ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,
 
   ui_provider_interface->set_navigation(ui_provider,
 					navigation);
+}
+
+/**
+ * ags_ui_provider_get_app:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get application.
+ * 
+ * Returns: the #GtkApplication
+ * 
+ * Since: 3.18.0
+ */
+GtkApplication*
+ags_ui_provider_get_app(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_app, NULL);
+
+  return(ui_provider_interface->get_app(ui_provider));
+}
+
+/**
+ * ags_ui_provider_set_app:
+ * @ui_provider: the #AgsUiProvider
+ * @app: the #GtkApplication
+ * 
+ * Set app.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_ui_provider_set_app(AgsUiProvider *ui_provider,
+			GtkApplication *app)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_app);
+
+  ui_provider_interface->set_app(ui_provider,
+				 app);
 }

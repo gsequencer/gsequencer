@@ -190,12 +190,17 @@ ags_window_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_window_init(AgsWindow *window)
 {
+  GtkMenuButton *menu_button;
   GtkBox *vbox;
   GtkViewport *viewport;
   GtkWidget *scrolled_window;
 
-  AgsApplicationContext *application_context;
+  GtkBuilder *builder;
+  
+  GMenu *menu;
 
+  AgsApplicationContext *application_context;
+  
   gchar *app_icon;
   gchar *window_title;
 
@@ -251,6 +256,14 @@ ags_window_init(AgsWindow *window)
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
 
+  builder = gtk_builder_new_from_file("./ags/GSequencer/ags_application_menu.ui");
+
+  menu = gtk_builder_get_object(builder,
+				"menu");
+
+  gtk_application_set_app_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)),
+			       menu);
+  
   /* menubar */
   window->context_menu = ags_context_menu_new();
   gtk_widget_set_events(GTK_WIDGET(window), 

@@ -2,8 +2,16 @@
   <menu id="ags-application-menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">File</attribute>
-        <attribute name="action">gsequencer.file</attribute>
+        <attribute name="label" translatable="yes">Open</attribute>
+        <attribute name="action">gsequencer.open</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Save</attribute>
+        <attribute name="action">gsequencer.save</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Save as</attribute>
+        <attribute name="action">gsequencer.save_as</attribute>
       </item>
     </section>
   </menu>

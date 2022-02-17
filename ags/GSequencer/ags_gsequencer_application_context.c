@@ -111,13 +111,13 @@ void ags_gsequencer_application_context_sound_provider_interface_init(AgsSoundPr
 void ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInterface *ui_provider);
 void ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequencer_application_context);
 void ags_gsequencer_application_context_set_property(GObject *gobject,
-					       guint prop_id,
-					       const GValue *value,
-					       GParamSpec *param_spec);
+						     guint prop_id,
+						     const GValue *value,
+						     GParamSpec *param_spec);
 void ags_gsequencer_application_context_get_property(GObject *gobject,
-					       guint prop_id,
-					       GValue *value,
-					       GParamSpec *param_spec);
+						     guint prop_id,
+						     GValue *value,
+						     GParamSpec *param_spec);
 void ags_gsequencer_application_context_dispose(GObject *gobject);
 void ags_gsequencer_application_context_finalize(GObject *gobject);
 
@@ -126,117 +126,120 @@ void ags_gsequencer_application_context_disconnect(AgsConnectable *connectable);
 
 AgsThread* ags_gsequencer_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 void ags_gsequencer_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
-						AgsThread *main_loop);
+						      AgsThread *main_loop);
 AgsTaskLauncher* ags_gsequencer_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
 void ags_gsequencer_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
-						    AgsTaskLauncher *task_launcher);
+							  AgsTaskLauncher *task_launcher);
 AgsThreadPool* ags_gsequencer_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 void ags_gsequencer_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
-						  AgsThreadPool *thread_pool);
+							AgsThreadPool *thread_pool);
 GList* ags_gsequencer_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
 void ags_gsequencer_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
-					     GList *worker);
+						   GList *worker);
 
 gboolean ags_gsequencer_application_context_is_operating(AgsServiceProvider *service_provider);
 
 AgsServerStatus* ags_gsequencer_application_context_server_status(AgsServiceProvider *service_provider);
 
 void ags_gsequencer_application_context_set_registry(AgsServiceProvider *service_provider,
-					       AgsRegistry *registry);
+						     AgsRegistry *registry);
 AgsRegistry* ags_gsequencer_application_context_get_registry(AgsServiceProvider *service_provider);
 
 void ags_gsequencer_application_context_set_server(AgsServiceProvider *service_provider,
-					     GList *server);
+						   GList *server);
 GList* ags_gsequencer_application_context_get_server(AgsServiceProvider *service_provider);
 
 GObject* ags_gsequencer_application_context_get_default_soundcard(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
-							GObject *soundcard);
+							      GObject *soundcard);
 GObject* ags_gsequencer_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
-							       GObject *soundcard_thread);
+								     GObject *soundcard_thread);
 GList* ags_gsequencer_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-						GList *soundcard);
+						      GList *soundcard);
 GList* ags_gsequencer_application_context_get_sequencer(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_sequencer(AgsSoundProvider *sound_provider,
-						GList *sequencer);
+						      GList *sequencer);
 GList* ags_gsequencer_application_context_get_audio(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_audio(AgsSoundProvider *sound_provider,
-					    GList *audio);
+						  GList *audio);
 GList* ags_gsequencer_application_context_get_sound_server(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_sound_server(AgsSoundProvider *sound_provider,
-						   GList *sound_server);
+							 GList *sound_server);
 GList* ags_gsequencer_application_context_get_osc_server(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_osc_server(AgsSoundProvider *sound_provider,
-						 GList *osc_server);
+						       GList *osc_server);
 
 gboolean ags_gsequencer_application_context_get_show_animation(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_show_animation(AgsUiProvider *ui_provider,
-						     gboolean show_animation);
+							   gboolean show_animation);
 gboolean ags_gsequencer_application_context_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_gui_ready(AgsUiProvider *ui_provider,
-						gboolean gui_ready);
+						      gboolean gui_ready);
 gboolean ags_gsequencer_application_context_get_file_ready(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_file_ready(AgsUiProvider *ui_provider,
-						 gboolean file_ready);
+						       gboolean file_ready);
 gdouble ags_gsequencer_application_context_get_gui_scale_factor(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
-						       gdouble gui_scale_factor);
+							     gdouble gui_scale_factor);
 void ags_gsequencer_application_context_schedule_task(AgsUiProvider *ui_provider,
-						AgsTask *task);
+						      AgsTask *task);
 void ags_gsequencer_application_context_schedule_task_all(AgsUiProvider *ui_provider,
-						    GList *task);
+							  GList *task);
 void ags_gsequencer_application_context_clean_message(AgsUiProvider *ui_provider);
 GtkWidget* ags_gsequencer_application_context_get_animation_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_animation_window(AgsUiProvider *ui_provider,
-						       GtkWidget *widget);
+							     GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
-					     GtkWidget *widget);
+						   GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_automation_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_automation_window(AgsUiProvider *ui_provider,
-							GtkWidget *widget);
+							      GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_wave_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_wave_window(AgsUiProvider *ui_provider,
-						  GtkWidget *widget);
+							GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_sheet_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_sheet_window(AgsUiProvider *ui_provider,
-						   GtkWidget *widget);
+							 GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_export_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_export_window(AgsUiProvider *ui_provider,
-						    GtkWidget *widget);
+							  GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_online_help_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_online_help_window(AgsUiProvider *ui_provider,
-							 GtkWidget *widget);
+							       GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_preferences(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_preferences(AgsUiProvider *ui_provider,
-						  GtkWidget *widget);
+							GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_history_browser(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_history_browser(AgsUiProvider *ui_provider,
-						      GtkWidget *widget);
+							    GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_midi_browser(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_midi_browser(AgsUiProvider *ui_provider,
-						   GtkWidget *widget);
+							 GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_sample_browser(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_sample_browser(AgsUiProvider *ui_provider,
-						     GtkWidget *widget);
+							   GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_midi_import_wizard(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_midi_import_wizard(AgsUiProvider *ui_provider,
-							 GtkWidget *widget);
+							       GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_midi_export_wizard(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_midi_export_wizard(AgsUiProvider *ui_provider,
-							 GtkWidget *widget);
+							       GtkWidget *widget);
 GList* ags_gsequencer_application_context_get_machine(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
-					      GList *machine);
+						    GList *machine);
 gboolean ags_gsequencer_application_context_use_composite_editor(AgsUiProvider *ui_provider);
 GtkWidget* ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
-						       GtkWidget *widget);
+							     GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_navigation(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
-						 GtkWidget *widget);
+						       GtkWidget *widget);
+GtkApplication* ags_gsequencer_application_context_get_app(AgsUiProvider *ui_provider);
+void ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
+						GtkApplication *app);
 
 void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
 void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
@@ -338,9 +341,9 @@ ags_gsequencer_application_context_get_type()
     };
 
     ags_type_gsequencer_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
-							       "AgsGSequencerApplicationContext",
-							       &ags_gsequencer_application_context_info,
-							       0);
+								     "AgsGSequencerApplicationContext",
+								     &ags_gsequencer_application_context_info,
+								     0);
 
     g_type_add_interface_static(ags_type_gsequencer_application_context,
 				AGS_TYPE_CONNECTABLE,
@@ -575,6 +578,9 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
 
   ui_provider->get_navigation = ags_gsequencer_application_context_get_navigation;
   ui_provider->set_navigation = ags_gsequencer_application_context_set_navigation;
+
+  ui_provider->get_app = ags_gsequencer_application_context_get_app;
+  ui_provider->set_app = ags_gsequencer_application_context_set_app;
 }
 
 void
@@ -677,7 +683,9 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->vst3_loader = NULL;
 
   gsequencer_application_context->lv2_turtle_scanner = NULL;
-  
+
+  gsequencer_application_context->app = NULL;
+
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);
@@ -685,9 +693,9 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 
 void
 ags_gsequencer_application_context_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec)
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -723,9 +731,9 @@ ags_gsequencer_application_context_set_property(GObject *gobject,
 
 void
 ags_gsequencer_application_context_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec)
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -1054,7 +1062,7 @@ ags_gsequencer_application_context_get_main_loop(AgsConcurrencyProvider *concurr
 
 void
 ags_gsequencer_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
-					   AgsThread *main_loop)
+						 AgsThread *main_loop)
 {
   AgsApplicationContext *application_context;
   
@@ -1117,7 +1125,7 @@ ags_gsequencer_application_context_get_task_launcher(AgsConcurrencyProvider *con
 
 void
 ags_gsequencer_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
-					       AgsTaskLauncher *task_launcher)
+						     AgsTaskLauncher *task_launcher)
 {
   AgsApplicationContext *application_context;
   
@@ -1180,7 +1188,7 @@ ags_gsequencer_application_context_get_thread_pool(AgsConcurrencyProvider *concu
 
 void
 ags_gsequencer_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
-					     AgsThreadPool *thread_pool)
+						   AgsThreadPool *thread_pool)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -1241,7 +1249,7 @@ ags_gsequencer_application_context_get_worker(AgsConcurrencyProvider *concurrenc
 
 void
 ags_gsequencer_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
-					GList *worker)
+					      GList *worker)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -1351,7 +1359,7 @@ ags_gsequencer_application_context_get_registry(AgsServiceProvider *service_prov
 
 void
 ags_gsequencer_application_context_set_registry(AgsServiceProvider *service_provider,
-					  AgsRegistry *registry)
+						AgsRegistry *registry)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -1412,7 +1420,7 @@ ags_gsequencer_application_context_get_server(AgsServiceProvider *service_provid
 
 void
 ags_gsequencer_application_context_set_server(AgsServiceProvider *service_provider,
-					GList *server)
+					      GList *server)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -1470,7 +1478,7 @@ ags_gsequencer_application_context_get_default_soundcard_thread(AgsSoundProvider
 
 void
 ags_gsequencer_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
-						   GObject *soundcard)
+							 GObject *soundcard)
 {
   AgsMessageDelivery *message_delivery;
   GList *start_message_queue;
@@ -1509,7 +1517,7 @@ ags_gsequencer_application_context_set_default_soundcard(AgsSoundProvider *sound
   message_delivery = ags_message_delivery_get_instance();
 
   start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
-							     "libags-audio");
+								   "libags-audio");
 
   if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
@@ -1591,7 +1599,7 @@ ags_gsequencer_application_context_get_default_soundcard(AgsSoundProvider *sound
 
 void
 ags_gsequencer_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
-							  GObject *soundcard_thread)
+								GObject *soundcard_thread)
 {
   AgsApplicationContext *application_context;
 
@@ -1652,7 +1660,7 @@ ags_gsequencer_application_context_get_soundcard(AgsSoundProvider *sound_provide
 
 void
 ags_gsequencer_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-					   GList *soundcard)
+						 GList *soundcard)
 {
   AgsApplicationContext *application_context;
 
@@ -1708,7 +1716,7 @@ ags_gsequencer_application_context_get_sequencer(AgsSoundProvider *sound_provide
 
 void
 ags_gsequencer_application_context_set_sequencer(AgsSoundProvider *sound_provider,
-					   GList *sequencer)
+						 GList *sequencer)
 {
   AgsApplicationContext *application_context;
 
@@ -1764,7 +1772,7 @@ ags_gsequencer_application_context_get_sound_server(AgsSoundProvider *sound_prov
 
 void
 ags_gsequencer_application_context_set_sound_server(AgsSoundProvider *concurrency_provider,
-					      GList *sound_server)
+						    GList *sound_server)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -1820,7 +1828,7 @@ ags_gsequencer_application_context_get_audio(AgsSoundProvider *sound_provider)
 
 void
 ags_gsequencer_application_context_set_audio(AgsSoundProvider *sound_provider,
-				       GList *audio)
+					     GList *audio)
 {
   AgsApplicationContext *application_context;
 
@@ -1876,7 +1884,7 @@ ags_gsequencer_application_context_get_osc_server(AgsSoundProvider *sound_provid
 
 void
 ags_gsequencer_application_context_set_osc_server(AgsSoundProvider *sound_provider,
-					    GList *osc_server)
+						  GList *osc_server)
 {
   AgsApplicationContext *application_context;
 
@@ -1930,7 +1938,7 @@ ags_gsequencer_application_context_get_show_animation(AgsUiProvider *ui_provider
 
 void
 ags_gsequencer_application_context_set_show_animation(AgsUiProvider *ui_provider,
-						gboolean show_animation)
+						      gboolean show_animation)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -1975,7 +1983,7 @@ ags_gsequencer_application_context_get_gui_ready(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_gui_ready(AgsUiProvider *ui_provider,
-					   gboolean gui_ready)
+						 gboolean gui_ready)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2020,7 +2028,7 @@ ags_gsequencer_application_context_get_file_ready(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_file_ready(AgsUiProvider *ui_provider,
-					    gboolean file_ready)
+						  gboolean file_ready)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2056,7 +2064,7 @@ ags_gsequencer_application_context_get_gui_scale_factor(AgsUiProvider *ui_provid
 
 void
 ags_gsequencer_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
-						  gdouble gui_scale_factor)
+							gdouble gui_scale_factor)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -2069,7 +2077,7 @@ ags_gsequencer_application_context_set_gui_scale_factor(AgsUiProvider *ui_provid
 
 void
 ags_gsequencer_application_context_schedule_task(AgsUiProvider *ui_provider,
-					   AgsTask *task)
+						 AgsTask *task)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -2085,7 +2093,7 @@ ags_gsequencer_application_context_schedule_task(AgsUiProvider *ui_provider,
   }
   
   gsequencer_application_context->task = g_list_prepend(gsequencer_application_context->task,
-						  task);
+							task);
   
   /* unref */
   g_object_unref(task_launcher);
@@ -2093,7 +2101,7 @@ ags_gsequencer_application_context_schedule_task(AgsUiProvider *ui_provider,
 
 void
 ags_gsequencer_application_context_schedule_task_all(AgsUiProvider *ui_provider,
-					       GList *task)
+						     GList *task)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
@@ -2110,7 +2118,7 @@ ags_gsequencer_application_context_schedule_task_all(AgsUiProvider *ui_provider,
 
   if(gsequencer_application_context->task != NULL){
     gsequencer_application_context->task = g_list_concat(g_list_reverse(task),
-						   gsequencer_application_context->task);
+							 gsequencer_application_context->task);
   }else{
     gsequencer_application_context->task = g_list_reverse(task);
   }
@@ -2183,7 +2191,7 @@ ags_gsequencer_application_context_get_animation_window(AgsUiProvider *ui_provid
 
 void
 ags_gsequencer_application_context_set_animation_window(AgsUiProvider *ui_provider,
-						  GtkWidget *widget)
+							GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2210,7 +2218,7 @@ ags_gsequencer_application_context_get_window(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
-					GtkWidget *widget)
+					      GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2237,7 +2245,7 @@ ags_gsequencer_application_context_get_automation_window(AgsUiProvider *ui_provi
 
 void
 ags_gsequencer_application_context_set_automation_window(AgsUiProvider *ui_provider,
-						   GtkWidget *widget)
+							 GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2264,7 +2272,7 @@ ags_gsequencer_application_context_get_wave_window(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_wave_window(AgsUiProvider *ui_provider,
-					     GtkWidget *widget)
+						   GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2291,7 +2299,7 @@ ags_gsequencer_application_context_get_sheet_window(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_sheet_window(AgsUiProvider *ui_provider,
-					      GtkWidget *widget)
+						    GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2318,7 +2326,7 @@ ags_gsequencer_application_context_get_export_window(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_export_window(AgsUiProvider *ui_provider,
-					       GtkWidget *widget)
+						     GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2345,7 +2353,7 @@ ags_gsequencer_application_context_get_online_help_window(AgsUiProvider *ui_prov
 
 void
 ags_gsequencer_application_context_set_online_help_window(AgsUiProvider *ui_provider,
-						    GtkWidget *widget)
+							  GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2372,7 +2380,7 @@ ags_gsequencer_application_context_get_preferences(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_preferences(AgsUiProvider *ui_provider,
-					     GtkWidget *widget)
+						   GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2399,7 +2407,7 @@ ags_gsequencer_application_context_get_history_browser(AgsUiProvider *ui_provide
 
 void
 ags_gsequencer_application_context_set_history_browser(AgsUiProvider *ui_provider,
-						 GtkWidget *widget)
+						       GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2426,7 +2434,7 @@ ags_gsequencer_application_context_get_midi_browser(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_midi_browser(AgsUiProvider *ui_provider,
-					      GtkWidget *widget)
+						    GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2453,7 +2461,7 @@ ags_gsequencer_application_context_get_sample_browser(AgsUiProvider *ui_provider
 
 void
 ags_gsequencer_application_context_set_sample_browser(AgsUiProvider *ui_provider,
-						GtkWidget *widget)
+						      GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2480,7 +2488,7 @@ ags_gsequencer_application_context_get_midi_import_wizard(AgsUiProvider *ui_prov
 
 void
 ags_gsequencer_application_context_set_midi_import_wizard(AgsUiProvider *ui_provider,
-						    GtkWidget *widget)
+							  GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2507,7 +2515,7 @@ ags_gsequencer_application_context_get_midi_export_wizard(AgsUiProvider *ui_prov
 
 void
 ags_gsequencer_application_context_set_midi_export_wizard(AgsUiProvider *ui_provider,
-						    GtkWidget *widget)
+							  GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2534,7 +2542,7 @@ ags_gsequencer_application_context_get_machine(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
-					 GList *machine)
+					       GList *machine)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2579,7 +2587,7 @@ ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provid
 
 void
 ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
-						  GtkWidget *widget)
+							GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2606,7 +2614,7 @@ ags_gsequencer_application_context_get_navigation(AgsUiProvider *ui_provider)
 
 void
 ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
-					    GtkWidget *widget)
+						  GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2614,6 +2622,33 @@ ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
 
   /* set navigation */
   gsequencer_application_context->navigation = widget;
+}
+
+GtkApplication*
+ags_gsequencer_application_context_get_app(AgsUiProvider *ui_provider)
+{
+  GtkWidget *app;
+  
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* get app */
+  app = gsequencer_application_context->app;
+
+  return(app);
+}
+
+void
+ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
+					   GtkApplication *app)
+{
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* set app */
+  gsequencer_application_context->app = app;
 }
 
 void
@@ -3181,7 +3216,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   /* core audio server */
   core_audio_server = ags_core_audio_server_new(NULL);
   gsequencer_application_context->sound_server = g_list_append(gsequencer_application_context->sound_server,
-							 core_audio_server);
+							       core_audio_server);
   g_object_ref(G_OBJECT(core_audio_server));
 
   has_core_audio = FALSE;
@@ -3189,7 +3224,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   /* pulse server */
   pulse_server = ags_pulse_server_new(NULL);
   gsequencer_application_context->sound_server = g_list_append(gsequencer_application_context->sound_server,
-							 pulse_server);
+							       pulse_server);
   g_object_ref(G_OBJECT(pulse_server));
 
   has_pulse = FALSE;
@@ -3197,7 +3232,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   /* jack server */
   jack_server = ags_jack_server_new(NULL);
   gsequencer_application_context->sound_server = g_list_append(gsequencer_application_context->sound_server,
-							 jack_server);
+							       jack_server);
   g_object_ref(G_OBJECT(jack_server));
 
   has_jack = FALSE;
@@ -3254,15 +3289,15 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 
 	has_core_audio = TRUE;
       }else if(!g_ascii_strncasecmp(str,
-			      "pulse",
-			      6)){
+				    "pulse",
+				    6)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
 							is_output);
 
 	has_pulse = TRUE;
       }else if(!g_ascii_strncasecmp(str,
-			      "jack",
-			      5)){
+				    "jack",
+				    5)){
 	if(!is_output){
 	  AgsJackClient *input_client;
 
@@ -3395,7 +3430,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     }
     
     gsequencer_application_context->soundcard = g_list_append(gsequencer_application_context->soundcard,
-							soundcard);
+							      soundcard);
     g_object_ref(soundcard);
 
     /* device */
@@ -3641,7 +3676,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     }
     
     gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
-							sequencer);
+							      sequencer);
     g_object_ref(sequencer);
 
     /* device */
@@ -3694,7 +3729,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     server = ags_server_new();
 
     gsequencer_application_context->server = g_list_append(gsequencer_application_context->server,
-						     server);
+							   server);
     g_object_ref(server);
 
     /* realm */
@@ -3835,7 +3870,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 			 (AGS_SERVER_INET4));
 
     gsequencer_application_context->server = g_list_append(gsequencer_application_context->server,
-						     server);
+							   server);
     g_object_ref(server);
   }
   
@@ -3936,7 +3971,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 			     (AGS_OSC_SERVER_TCP));
 
     gsequencer_application_context->osc_server = g_list_append(gsequencer_application_context->osc_server,
-							 osc_server);
+							       osc_server);
     g_object_ref(osc_server);
 
     /* any address */
@@ -4069,7 +4104,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     ags_osc_server_add_default_controller(osc_server);
 
     gsequencer_application_context->osc_server = g_list_append(gsequencer_application_context->osc_server,
-							 osc_server);
+							       osc_server);
     g_object_ref(osc_server);
   }
   
@@ -4082,7 +4117,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 				(AgsThread *) destroy_worker,
 				TRUE, TRUE);
   gsequencer_application_context->worker = g_list_prepend(gsequencer_application_context->worker,
-						    destroy_worker);
+							  destroy_worker);
   ags_thread_start((AgsThread *) destroy_worker);
   
   /* AgsThreadPool */
@@ -4544,7 +4579,7 @@ ags_gsequencer_application_context_task_timeout(AgsGSequencerApplicationContext 
 
 gint
 ags_gsequencer_application_context_compare_strv(gconstpointer a,
-					  gconstpointer b)
+						gconstpointer b)
 {
   return(g_strcmp0(((gchar **) a)[1], ((gchar **) b)[1]));
 }
@@ -4685,10 +4720,10 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			       filename,
 			       g_strcmp0)){
 	  gsequencer_application_context->ladspa_loader = g_list_prepend(gsequencer_application_context->ladspa_loader,
-								   g_strdup_printf("%s%c%s",
-										   ladspa_path[0],
-										   G_DIR_SEPARATOR,
-										   filename));
+									 g_strdup_printf("%s%c%s",
+											 ladspa_path[0],
+											 G_DIR_SEPARATOR,
+											 filename));
 	}
       }
     
@@ -4728,10 +4763,10 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			       filename,
 			       g_strcmp0)){
 	  gsequencer_application_context->dssi_loader = g_list_prepend(gsequencer_application_context->dssi_loader,
-								 g_strdup_printf("%s%c%s",
-										 dssi_path[0],
-										 G_DIR_SEPARATOR,
-										 filename));
+								       g_strdup_printf("%s%c%s",
+										       dssi_path[0],
+										       G_DIR_SEPARATOR,
+										       filename));
 	}
       }
     
@@ -4787,7 +4822,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			       filename,
 			       g_strcmp0)){
 	  gsequencer_application_context->lv2_loader = g_list_prepend(gsequencer_application_context->lv2_loader,
-								g_strdup(plugin_path));
+								      g_strdup(plugin_path));
 	}
       }
             
@@ -4844,7 +4879,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			       filename,
 			       g_strcmp0)){
 	  gsequencer_application_context->vst3_loader = g_list_prepend(gsequencer_application_context->vst3_loader,
-								 g_strdup(plugin_path));
+								       g_strdup(plugin_path));
 	}
       }
       
@@ -4892,7 +4927,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     }
     
     gsequencer_application_context->ladspa_loader = g_list_remove(gsequencer_application_context->ladspa_loader,
-							    loader_filename);
+								  loader_filename);
     
     initial_load = FALSE;
   }
@@ -4932,7 +4967,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     }
     
     gsequencer_application_context->dssi_loader = g_list_remove(gsequencer_application_context->dssi_loader,
-							  loader_filename);
+								loader_filename);
     
     initial_load = FALSE;
   }
@@ -4981,7 +5016,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
       if(!g_file_test(manifest_filename,
 		      G_FILE_TEST_EXISTS)){
 	gsequencer_application_context->lv2_loader = g_list_remove(gsequencer_application_context->lv2_loader,
-							     loader_filename);
+								   loader_filename);
 
 	g_free(manifest_filename);
 	  
@@ -4998,7 +5033,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     }
       
     gsequencer_application_context->lv2_loader = g_list_remove(gsequencer_application_context->lv2_loader,
-							 loader_filename);
+							       loader_filename);
     
     initial_load = FALSE;
   }
@@ -5232,7 +5267,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 	g_warning("%s", error->message);
 
 	gsequencer_application_context->vst3_loader = g_list_remove(gsequencer_application_context->vst3_loader,
-							      loader_filename);
+								    loader_filename);
 
 	g_free(arch_path);
 
@@ -5265,7 +5300,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     }
 
     gsequencer_application_context->vst3_loader = g_list_remove(gsequencer_application_context->vst3_loader,
-							  loader_filename);
+								loader_filename);
 
     g_free(arch_path);
     
@@ -5282,7 +5317,7 @@ ags_gsequencer_application_context_new()
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
   gsequencer_application_context = (AgsGSequencerApplicationContext *) g_object_new(AGS_TYPE_GSEQUENCER_APPLICATION_CONTEXT,
-									NULL);
+										    NULL);
 
   return(gsequencer_application_context);
 }

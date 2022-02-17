@@ -91,7 +91,7 @@ struct _AgsGSequencerApplicationContext
   gdouble gui_scale_factor;
   
   GList *task;
-
+  
   GtkWidget *animation_window;
   GtkWidget *window;
   GtkWidget *automation_window;
@@ -136,6 +136,8 @@ struct _AgsGSequencerApplicationContext
   GList *vst3_loader;
   
   AgsLv2TurtleScanner *lv2_turtle_scanner;
+
+  GtkApplication *app;
 };
 
 struct _AgsGSequencerApplicationContextClass

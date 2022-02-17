@@ -63,39 +63,23 @@
 #include <sys/resource.h>
 #endif
 
+#include <ags/GSequencer/ags_ui_provider.h>
 #include <ags/GSequencer/ags_gsequencer_application_context.h>
+#include <ags/GSequencer/ags_gsequencer_application.h>
 
 #include "gsequencer_main.h"
 
 #include <ags/i18n.h>
 
-void* ags_setup_thread(void *ptr);
 void ags_setup(int argc, char **argv);
 
 extern AgsApplicationContext *ags_application_context;
-
-void*
-ags_setup_thread(void *ptr)
-{
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-  
-  gsequencer_application_context = (AgsGSequencerApplicationContext *) ptr;
-
-  while(g_atomic_int_get(&(gsequencer_application_context->gui_ready)) == 0){
-    usleep(500000);
-  }
-
-  ags_application_context_setup(AGS_APPLICATION_CONTEXT(gsequencer_application_context));
-  
-  g_thread_exit(NULL);
-
-  return(NULL);
-}
 
 void
 ags_setup(int argc, char **argv)
 {
   AgsApplicationContext *application_context;
+  AgsGSequencerApplication *app;
   AgsLog *log;
 
   /* application context */
@@ -110,24 +94,22 @@ ags_setup(int argc, char **argv)
 
   ags_log_add_message(log,
 		      "Welcome to Advanced Gtk+ Sequencer");
+
+  app = ags_gsequencer_application_new("org.nongnu.gsequencer",
+				       G_APPLICATION_FLAGS_NONE);
   
-  /* application context */
-#if 0
-  g_thread_new("Advanced Gtk+ Sequencer - setup",
-	       ags_setup_thread,
-	       application_context);
-#endif
+  ags_ui_provider_set_app(AGS_UI_PROVIDER(application_context),
+			  app);
   
-  ags_application_context_prepare(application_context);
-  ags_application_context_setup(application_context);
-  
-  /* gtk main */
+  g_application_run(G_APPLICATION(app),
+		    argc, argv);
+
   gtk_main();
 }
 
 int
 main(int argc, char **argv)
-{
+{  
   GtkSettings *settings;
   GtkCssProvider *css_provider;
   

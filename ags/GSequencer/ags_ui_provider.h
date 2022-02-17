@@ -141,6 +141,10 @@ struct _AgsUiProviderInterface
   GtkWidget* (*get_navigation)(AgsUiProvider *ui_provider);
   void (*set_navigation)(AgsUiProvider *ui_provider,
 			 GtkWidget *navigation);
+
+  GtkApplication* (*get_app)(AgsUiProvider *ui_provider);
+  void (*set_app)(AgsUiProvider *ui_provider,
+		  GtkApplication *app);
 };
 
 GType ags_ui_provider_get_type();
@@ -236,6 +240,10 @@ gboolean ags_ui_provider_use_composite_editor(AgsUiProvider *ui_provider);
 GtkWidget* ags_ui_provider_get_navigation(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,
 				    GtkWidget *navigation);
+
+GtkApplication* ags_ui_provider_get_app(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_app(AgsUiProvider *ui_provider,
+			     GtkApplication *app);
 
 G_END_DECLS
 
