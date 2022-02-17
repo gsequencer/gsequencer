@@ -31,7 +31,7 @@
 #include <ags/gsequencer_main.h>
 
 #include <ags/GSequencer/ags_ui_provider.h>
-#include <ags/GSequencer/ags_xorg_application_context.h>
+#include <ags/GSequencer/ags_gsequencer_application_context.h>
 #include <ags/GSequencer/ags_window.h>
 
 #include "gsequencer_setup_util.h"
@@ -132,7 +132,7 @@ ags_functional_audio_config_test_clean_suite()
 void
 ags_functional_audio_config_test_file_setup()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *preferences;
 
   gboolean success;
@@ -141,11 +141,11 @@ ags_functional_audio_config_test_file_setup()
     usleep(500000);
   }
 
-  xorg_application_context = application_context;
+  gsequencer_application_context = application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_audio_config_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   /* shrink buffer size */
   success = ags_functional_test_util_preferences_open();
@@ -154,7 +154,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -174,7 +174,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -194,7 +194,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -214,7 +214,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 

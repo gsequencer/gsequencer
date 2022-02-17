@@ -20,7 +20,7 @@
 #include <ags/GSequencer/file/ags_simple_file.h>
 
 #include <ags/GSequencer/ags_ui_provider.h>
-#include <ags/GSequencer/ags_xorg_application_context.h>
+#include <ags/GSequencer/ags_gsequencer_application_context.h>
 #include <ags/GSequencer/ags_window.h>
 #include <ags/GSequencer/ags_machine_util.h>
 #include <ags/GSequencer/ags_notation_editor.h>
@@ -2260,7 +2260,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       xmlFree(effect);
     }
     
-    ags_xorg_application_context_task_timeout((AgsXorgApplicationContext *) application_context);
+    ags_gsequencer_application_context_task_timeout((AgsGSequencerApplicationContext *) application_context);
 
     ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
     ags_ui_provider_clean_message(AGS_UI_PROVIDER(application_context));
@@ -2477,7 +2477,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		      wait_data,
 		      NULL);
 
-  ags_xorg_application_context_task_timeout(application_context);
+  ags_gsequencer_application_context_task_timeout(application_context);
 
   ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
   ags_ui_provider_clean_message(AGS_UI_PROVIDER(application_context));

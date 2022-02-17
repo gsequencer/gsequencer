@@ -174,26 +174,26 @@ ags_functional_test_util_notify_add_test(volatile gboolean *is_available)
 void*
 ags_functional_test_util_do_run_thread(void *ptr)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   
   volatile gboolean *is_available;
   
-  xorg_application_context = (AgsXorgApplicationContext *) ags_application_context_get_instance();
+  gsequencer_application_context = (AgsGSequencerApplicationContext *) ags_application_context_get_instance();
 
   is_available = ptr;
   
-  //  g_atomic_int_set(&(xorg_application_context->gui_ready),
+  //  g_atomic_int_set(&(gsequencer_application_context->gui_ready),
   //		   FALSE);
 
   /*  */
-  while(g_atomic_int_get(&(xorg_application_context->show_animation))){
+  while(g_atomic_int_get(&(gsequencer_application_context->show_animation))){
     usleep(500000);
   }
 
   usleep(1000000);
 
   /* get gui thread */
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(gsequencer_application_context));
   
   ags_functional_test_util_notify_add_test(is_available);
   
@@ -217,7 +217,7 @@ ags_functional_test_util_do_run(int argc, char **argv,
 
   /* application context */
   application_context = 
-    ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+    ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
   g_object_ref(application_context);
   
   application_context->argc = argc;
@@ -289,7 +289,7 @@ ags_functional_test_util_setup_and_launch()
   ags_test_launch(FALSE);
 
   /* do the work */
-  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
+  while(g_atomic_int_get(&(AGS_GSEQUENCER_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
     usleep(500000);
   }
 
@@ -576,7 +576,7 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
 gboolean
 ags_functional_test_util_menu_bar_click(gchar *item_label)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkMenuBar *menu_bar;
   
   GList *list_start, *list;
@@ -591,8 +591,8 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
-  menu_bar = AGS_WINDOW(xorg_application_context->window)->menu_bar;
+  gsequencer_application_context = ags_application_context_get_instance();
+  menu_bar = AGS_WINDOW(gsequencer_application_context->window)->menu_bar;
 
   list =
     list_start = gtk_container_get_children(menu_bar);
@@ -1336,13 +1336,13 @@ ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser)
 gboolean
 ags_functional_test_util_file_default_window_resize()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
 
   ags_test_enter();
     
-  xorg_application_context = ags_application_context_get_instance();
-  window = AGS_WINDOW(xorg_application_context->window);
+  gsequencer_application_context = ags_application_context_get_instance();
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   gdk_window_move_resize(gtk_widget_get_window(window),
 			 64, 0,
@@ -1358,7 +1358,7 @@ ags_functional_test_util_file_default_window_resize()
 gboolean
 ags_functional_test_util_file_default_editor_resize()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
 
@@ -1369,8 +1369,8 @@ ags_functional_test_util_file_default_editor_resize()
   
   ags_test_enter();
     
-  xorg_application_context = ags_application_context_get_instance();
-  window = AGS_WINDOW(xorg_application_context->window);
+  gsequencer_application_context = ags_application_context_get_instance();
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
 
   main_paned = window->paned;
@@ -1392,13 +1392,13 @@ ags_functional_test_util_file_default_editor_resize()
 gboolean
 ags_functional_test_util_file_default_automation_window_resize()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
 
   ags_test_enter();
     
-  xorg_application_context = ags_application_context_get_instance();
-  window = AGS_WINDOW(xorg_application_context->window);
+  gsequencer_application_context = ags_application_context_get_instance();
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   gdk_window_move_resize(gtk_widget_get_window(window),
 			 64, 0,
@@ -1414,7 +1414,7 @@ ags_functional_test_util_file_default_automation_window_resize()
 gboolean
 ags_functional_test_util_file_default_automation_editor_resize()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
 
@@ -1424,8 +1424,8 @@ ags_functional_test_util_file_default_automation_editor_resize()
   
   ags_test_enter();
     
-  xorg_application_context = ags_application_context_get_instance();
-  window = AGS_WINDOW(xorg_application_context->window);
+  gsequencer_application_context = ags_application_context_get_instance();
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   composite_editor = window->composite_editor;
 
@@ -1449,7 +1449,7 @@ ags_functional_test_util_file_default_automation_editor_resize()
 gboolean
 ags_functional_test_util_open()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   GtkMenu *menu;
   
@@ -1461,8 +1461,8 @@ ags_functional_test_util_open()
 
   ags_test_enter();
     
-  xorg_application_context = ags_application_context_get_instance();
-  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
+  gsequencer_application_context = ags_application_context_get_instance();
+  menu = AGS_WINDOW(gsequencer_application_context->window)->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"open");
@@ -1477,7 +1477,7 @@ ags_functional_test_util_open()
 gboolean
 ags_functional_test_util_save()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   GtkMenu *menu;
   
@@ -1489,8 +1489,8 @@ ags_functional_test_util_save()
     
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
+  gsequencer_application_context = ags_application_context_get_instance();
+  menu = AGS_WINDOW(gsequencer_application_context->window)->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"save");
@@ -1505,7 +1505,7 @@ ags_functional_test_util_save()
 gboolean
 ags_functional_test_util_save_as()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   GtkMenu *menu;
   
@@ -1517,8 +1517,8 @@ ags_functional_test_util_save_as()
     
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
+  gsequencer_application_context = ags_application_context_get_instance();
+  menu = AGS_WINDOW(gsequencer_application_context->window)->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"save as");
@@ -1533,7 +1533,7 @@ ags_functional_test_util_save_as()
 gboolean
 ags_functional_test_util_export_open()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *export_window;
   
   GtkMenu *menu;
@@ -1546,10 +1546,10 @@ ags_functional_test_util_export_open()
 
   ags_test_enter();
     
-  xorg_application_context = ags_application_context_get_instance();
-  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
+  gsequencer_application_context = ags_application_context_get_instance();
+  menu = AGS_WINDOW(gsequencer_application_context->window)->menu_bar->file;
 
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   ags_test_leave();
   
@@ -1567,15 +1567,15 @@ ags_functional_test_util_export_open()
 gboolean
 ags_functional_test_util_export_close()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *export_window;
   
   gboolean success;
 
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   ags_test_leave();
 
@@ -1592,7 +1592,7 @@ ags_functional_test_util_export_close()
 gboolean
 ags_functional_test_util_export_add()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsExportWindow *export_window;
   GtkButton *add_button;
 
@@ -1604,8 +1604,8 @@ ags_functional_test_util_export_add()
   
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   add_button = export_window->add;
 
@@ -1630,14 +1630,14 @@ ags_functional_test_util_export_add()
 gboolean
 ags_functional_test_util_export_tact(gdouble tact)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsExportWindow *export_window;
   
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   gtk_spin_button_set_value(export_window->tact,
 			    tact);
@@ -1652,7 +1652,7 @@ ags_functional_test_util_export_tact(gdouble tact)
 gboolean
 ags_functional_test_util_export_remove(guint nth)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsExportWindow *export_window;
 
@@ -1667,8 +1667,8 @@ ags_functional_test_util_export_remove(guint nth)
   
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   container_test.container = &(export_window->export_soundcard);
 
@@ -1726,7 +1726,7 @@ gboolean
 ags_functional_test_util_export_set_backend(guint nth,
 					    gchar *backend)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsExportWindow *export_window;
 
@@ -1737,8 +1737,8 @@ ags_functional_test_util_export_set_backend(guint nth,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   list_start =
     list = gtk_container_get_children(export_window->export_soundcard);
@@ -1803,7 +1803,7 @@ gboolean
 ags_functional_test_util_export_set_device(guint nth,
 					   gchar *device)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsExportWindow *export_window;
 
@@ -1814,8 +1814,8 @@ ags_functional_test_util_export_set_device(guint nth,
   
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   list_start =
     list = gtk_container_get_children(export_window->export_soundcard);
@@ -1880,7 +1880,7 @@ gboolean
 ags_functional_test_util_export_set_filename(guint nth,
 					     gchar *filename)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsExportWindow *export_window;
 
@@ -1891,8 +1891,8 @@ ags_functional_test_util_export_set_filename(guint nth,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
-  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
+  gsequencer_application_context = ags_application_context_get_instance();
+  export_window = AGS_WINDOW(gsequencer_application_context->window)->export_window;
 
   list_start =
     list = gtk_container_get_children(export_window->export_soundcard);
@@ -1961,7 +1961,7 @@ gboolean
 ags_functional_test_util_add_machine(gchar *submenu,
 				     gchar *machine_name)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMenuBar *menu_bar;
   AgsMachine *machine;
@@ -1984,9 +1984,9 @@ ags_functional_test_util_add_machine(gchar *submenu,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   menu_bar = window->menu_bar;
 
   container_test.container = &(window->machines);
@@ -2058,7 +2058,7 @@ ags_functional_test_util_automation_close()
 gboolean
 ags_functional_test_util_preferences_open()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMenuBar *menu_bar;
 
@@ -2070,9 +2070,9 @@ ags_functional_test_util_preferences_open()
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   menu_bar = window->menu_bar;
 
   ags_test_leave();
@@ -2092,15 +2092,15 @@ ags_functional_test_util_preferences_open()
 gboolean
 ags_functional_test_util_preferences_close()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *preferences;
   
   gboolean success;
 
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  gsequencer_application_context = ags_application_context_get_instance();
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -2207,7 +2207,7 @@ ags_functional_test_util_navigation_exclude_sequencers()
 gboolean
 ags_functional_test_util_notation_toolbar_cursor_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2218,9 +2218,9 @@ ags_functional_test_util_notation_toolbar_cursor_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2236,7 +2236,7 @@ ags_functional_test_util_notation_toolbar_cursor_click()
 gboolean
 ags_functional_test_util_notation_toolbar_edit_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2247,9 +2247,9 @@ ags_functional_test_util_notation_toolbar_edit_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2265,7 +2265,7 @@ ags_functional_test_util_notation_toolbar_edit_click()
 gboolean
 ags_functional_test_util_notation_toolbar_delete_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2276,9 +2276,9 @@ ags_functional_test_util_notation_toolbar_delete_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2294,7 +2294,7 @@ ags_functional_test_util_notation_toolbar_delete_click()
 gboolean
 ags_functional_test_util_notation_toolbar_select_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2305,9 +2305,9 @@ ags_functional_test_util_notation_toolbar_select_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2323,7 +2323,7 @@ ags_functional_test_util_notation_toolbar_select_click()
 gboolean
 ags_functional_test_util_notation_toolbar_invert_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2334,9 +2334,9 @@ ags_functional_test_util_notation_toolbar_invert_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2352,7 +2352,7 @@ ags_functional_test_util_notation_toolbar_invert_click()
 gboolean
 ags_functional_test_util_notation_toolbar_paste_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2363,9 +2363,9 @@ ags_functional_test_util_notation_toolbar_paste_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2381,7 +2381,7 @@ ags_functional_test_util_notation_toolbar_paste_click()
 gboolean
 ags_functional_test_util_notation_toolbar_copy_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2392,9 +2392,9 @@ ags_functional_test_util_notation_toolbar_copy_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2410,7 +2410,7 @@ ags_functional_test_util_notation_toolbar_copy_click()
 gboolean
 ags_functional_test_util_notation_toolbar_cut_click()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2421,9 +2421,9 @@ ags_functional_test_util_notation_toolbar_cut_click()
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2439,7 +2439,7 @@ ags_functional_test_util_notation_toolbar_cut_click()
 gboolean
 ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
@@ -2450,9 +2450,9 @@ ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
@@ -2470,7 +2470,7 @@ gboolean
 ags_functional_test_util_machine_selection_select(gchar *editor_type,
 						  gchar *machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -2487,9 +2487,9 @@ ags_functional_test_util_machine_selection_select(gchar *editor_type,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   machine_selector = NULL;
   
@@ -2558,7 +2558,7 @@ gboolean
 ags_functional_test_util_machine_selector_select(gchar *editor_type,
 						 guint nth_index)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachineSelector *machine_selector;
   AgsMachineRadioButton *machine_radio_button;
@@ -2569,9 +2569,9 @@ ags_functional_test_util_machine_selector_select(gchar *editor_type,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   machine_selector = NULL;
   
@@ -2619,7 +2619,7 @@ ags_functional_test_util_machine_selector_select(gchar *editor_type,
 gboolean
 ags_functional_test_util_machine_selector_remove_index(gchar *editor_type)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachineSelector *machine_selector;
   
@@ -2630,9 +2630,9 @@ ags_functional_test_util_machine_selector_remove_index(gchar *editor_type)
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   machine_selector = NULL;
   
@@ -2680,7 +2680,7 @@ ags_functional_test_util_machine_selector_remove_index(gchar *editor_type)
 gboolean
 ags_functional_test_util_machine_selector_add_index(gchar *editor_type)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachineSelector *machine_selector;
   
@@ -2691,9 +2691,9 @@ ags_functional_test_util_machine_selector_add_index(gchar *editor_type)
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   machine_selector = NULL;
   
@@ -2741,7 +2741,7 @@ ags_functional_test_util_machine_selector_add_index(gchar *editor_type)
 gboolean
 ags_functional_test_util_machine_selector_link_index(gchar *editor_type)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachineSelector *machine_selector;
   
@@ -2752,9 +2752,9 @@ ags_functional_test_util_machine_selector_link_index(gchar *editor_type)
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   machine_selector = NULL;
   
@@ -2802,7 +2802,7 @@ ags_functional_test_util_machine_selector_link_index(gchar *editor_type)
 gboolean
 ags_functional_test_util_machine_selector_reverse_mapping()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachineSelector *machine_selector;
@@ -2814,9 +2814,9 @@ ags_functional_test_util_machine_selector_reverse_mapping()
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   machine_selector = composite_editor->machine_selector;
   
@@ -2858,7 +2858,7 @@ gboolean
 ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
 						 guint y)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
   AgsNotationEdit *notation_edit;
@@ -2884,9 +2884,9 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  composite_editor = AGS_WINDOW(xorg_application_context->window)->composite_editor;
+  composite_editor = AGS_WINDOW(gsequencer_application_context->window)->composite_editor;
   composite_toolbar = composite_editor->toolbar;
 
   if(composite_editor->selected_machine == NULL){
@@ -3080,16 +3080,16 @@ ags_functional_test_util_automation_edit_select_region(guint nth_index,
 gboolean
 ags_functional_test_util_preferences_click_tab(guint nth_tab)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsPreferences *preferences;
   
   gboolean success;
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -3114,7 +3114,7 @@ gboolean
 ags_functional_test_util_audio_preferences_buffer_size(guint nth_backend,
 						       guint buffer_size)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
@@ -3124,9 +3124,9 @@ ags_functional_test_util_audio_preferences_buffer_size(guint nth_backend,
   
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -3170,7 +3170,7 @@ gboolean
 ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,
 						      guint samplerate)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
   
@@ -3180,9 +3180,9 @@ ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,
   
   ags_test_enter();
 
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
+  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -3237,7 +3237,7 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
 gboolean
 ags_functional_test_util_machine_hide(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
 
   GtkMenu *popup;
@@ -3248,10 +3248,10 @@ ags_functional_test_util_machine_hide(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3291,7 +3291,7 @@ ags_functional_test_util_machine_hide(guint nth_machine)
 gboolean
 ags_functional_test_util_machine_show(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
 
   GtkMenu *popup;
@@ -3302,10 +3302,10 @@ ags_functional_test_util_machine_show(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3340,7 +3340,7 @@ ags_functional_test_util_machine_show(guint nth_machine)
 gboolean
 ags_functional_test_util_machine_destroy(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachine *machine;
 
@@ -3354,9 +3354,9 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   
   /* retrieve machine */
   container_test.container = &(window->machines);
@@ -3479,7 +3479,7 @@ ags_functional_test_util_get_line_editor(GtkWidget *machine_editor,
 gboolean
 ags_functional_test_util_machine_properties_open(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsMachine *machine;
   GtkWidget **properties;
@@ -3491,9 +3491,9 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   
   /* retrieve machine */
   list_start = gtk_container_get_children(window->machines);
@@ -3540,7 +3540,7 @@ gboolean
 ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
 						      guint nth_tab)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
@@ -3550,10 +3550,10 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3586,7 +3586,7 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
 gboolean
 ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   GtkButton *enable_button;
@@ -3598,12 +3598,12 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
   enable_button = NULL;
   
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3667,7 +3667,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
 						     guint pad, guint audio_channel,
 						     gchar *link_name, guint link_nth_line)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -3687,10 +3687,10 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3832,7 +3832,7 @@ gboolean
 ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
 						       guint pad, guint audio_channel)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -3854,10 +3854,10 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3966,7 +3966,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
 							  guint pad, guint audio_channel,
 							  guint nth_effect)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -3991,10 +3991,10 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4134,7 +4134,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
 							       guint pad, guint audio_channel,
 							       gchar *plugin_type)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -4155,10 +4155,10 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4266,7 +4266,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
 							    guint pad, guint audio_channel,
 							    gchar *filename)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -4288,10 +4288,10 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4410,7 +4410,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
 							  guint pad, guint audio_channel,
 							  gchar *effect)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -4432,10 +4432,10 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4552,7 +4552,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
 							 guint pad, guint audio_channel,
 							 gchar *filename)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -4574,10 +4574,10 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4694,7 +4694,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
 						       guint pad, guint audio_channel,
 						       gchar *effect)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
@@ -4716,10 +4716,10 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4834,7 +4834,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
 gboolean
 ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsPropertyCollectionEditor *property_collection_editor;
@@ -4847,10 +4847,10 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4913,7 +4913,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
 						      guint nth_bulk,
 						      gchar *link)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsPropertyCollectionEditor *property_collection_editor;
@@ -4932,10 +4932,10 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5029,7 +5029,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
 							    guint nth_bulk,
 							    guint first_line)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsPropertyCollectionEditor *property_collection_editor;
@@ -5047,10 +5047,10 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5125,7 +5125,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
 							   guint nth_bulk,
 							   guint first_link_line)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsPropertyCollectionEditor *property_collection_editor;
@@ -5143,10 +5143,10 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5222,7 +5222,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
 						       guint nth_bulk,
 						       guint count)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsPropertyCollectionEditor *property_collection_editor;
@@ -5240,10 +5240,10 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
   
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5317,7 +5317,7 @@ gboolean
 ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_machine,
 								  guint audio_channels)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
@@ -5325,10 +5325,10 @@ ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_mach
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5361,7 +5361,7 @@ gboolean
 ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
 							  guint inputs)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
@@ -5369,10 +5369,10 @@ ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5405,7 +5405,7 @@ gboolean
 ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
 							   guint outputs)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
@@ -5413,10 +5413,10 @@ ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5667,7 +5667,7 @@ ags_functional_test_util_mixer_input_line_volume(guint nth_machine,
 gboolean
 ags_functional_test_util_drum_open(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsDrum *drum;
   GtkButton *open_button;
   GtkWidget **open_dialog;
@@ -5678,10 +5678,10 @@ ags_functional_test_util_drum_open(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve drum */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5885,7 +5885,7 @@ ags_functional_test_util_oscillator_volume(guint nth_machine,
 gboolean
 ags_functional_test_util_ffplayer_open(guint nth_machine)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsFFPlayer *ffplayer;
   GtkButton *open_button;
   GtkWidget **open_dialog;
@@ -5896,10 +5896,10 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
 
   ags_test_enter();
   
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve ffplayer */
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

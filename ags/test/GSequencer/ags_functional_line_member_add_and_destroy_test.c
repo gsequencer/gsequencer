@@ -131,13 +131,13 @@ ags_functional_line_member_add_and_destroy_test_add_test()
 int
 ags_functional_line_member_add_and_destroy_test_init_suite()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_line_member_add_and_destroy_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   return(0);
 }
@@ -155,7 +155,7 @@ ags_functional_line_member_add_and_destroy_test_clean_suite()
 void
 ags_functional_line_member_add_and_destroy_test_panel()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
@@ -169,7 +169,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   guint nth_pad, nth_audio_channel;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
   
   /* add panel */
   success = ags_functional_test_util_add_machine(NULL,
@@ -182,7 +182,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* get machine */
   nth_machine = 0;
 
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = nth_machine + 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -191,7 +191,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -440,7 +440,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
 void
 ags_functional_line_member_add_and_destroy_test_mixer()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
@@ -454,7 +454,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   guint nth_pad, nth_audio_channel;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
   
   /* add mixer */
   success = ags_functional_test_util_add_machine(NULL,
@@ -467,7 +467,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /* get machine */
   nth_machine = 0;
   
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = nth_machine + 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -476,7 +476,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -725,7 +725,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 void
 ags_functional_line_member_add_and_destroy_test_drum()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
@@ -739,7 +739,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   guint nth_pad, nth_audio_channel;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
   
   /* add drum */
   success = ags_functional_test_util_add_machine(NULL,
@@ -752,7 +752,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /* get machine */
   nth_machine = 0;
   
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = nth_machine + 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -761,7 +761,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1011,7 +1011,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
 void
 ags_functional_line_member_add_and_destroy_test_matrix()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
 
   GList *list_start, *list;
@@ -1021,7 +1021,7 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
   
   /* add matrix */
   success = ags_functional_test_util_add_machine(NULL,
@@ -1034,7 +1034,7 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   /* get machine */
   nth_machine = 0;
   
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = nth_machine + 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -1043,7 +1043,7 @@ ags_functional_line_member_add_and_destroy_test_matrix()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1069,7 +1069,7 @@ ags_functional_line_member_add_and_destroy_test_matrix()
 void
 ags_functional_line_member_add_and_destroy_test_synth()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   
   GList *list_start, *list;
@@ -1079,7 +1079,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
   
   /* add synth */
   success = ags_functional_test_util_add_machine(NULL,
@@ -1092,7 +1092,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
   /* get machine */
   nth_machine = 0;
   
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = nth_machine + 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -1101,7 +1101,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1128,7 +1128,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
 void
 ags_functional_line_member_add_and_destroy_test_ffplayer()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
@@ -1142,7 +1142,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   guint nth_pad, nth_audio_channel;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
   
   /* add fplayer */
   success = ags_functional_test_util_add_machine(NULL,
@@ -1155,7 +1155,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /* get machine */
   nth_machine = 0;
   
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = nth_machine + 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -1164,7 +1164,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

@@ -156,7 +156,7 @@
 #include <ags/GSequencer/ags_wave_window_callbacks.h>
 #include <ags/GSequencer/ags_window.h>
 #include <ags/GSequencer/ags_window_callbacks.h>
-#include <ags/GSequencer/ags_xorg_application_context.h>
+#include <ags/GSequencer/ags_gsequencer_application_context.h>
 
 #include <ags/GSequencer/editor/ags_automation_edit.h>
 #include <ags/GSequencer/editor/ags_automation_edit_box.h>

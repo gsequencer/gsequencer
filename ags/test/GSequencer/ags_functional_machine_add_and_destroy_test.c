@@ -144,13 +144,13 @@ ags_functional_machine_add_and_destroy_test_add_test()
 int
 ags_functional_machine_add_and_destroy_test_init_suite()
 {    
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_machine_add_and_destroy_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   return(0);
 }

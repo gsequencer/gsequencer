@@ -1,0 +1,10 @@
+<interface>
+  <menu id="ags-application-menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">File</attribute>
+        <attribute name="action">gsequencer.file</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

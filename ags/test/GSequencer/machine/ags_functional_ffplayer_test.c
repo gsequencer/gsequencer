@@ -137,7 +137,7 @@ ags_functional_ffplayer_test_clean_suite()
 void
 ags_functional_ffplayer_test_open_sf2()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsFFPlayer *ffplayer;
 
@@ -148,9 +148,9 @@ ags_functional_ffplayer_test_open_sf2()
   guint nth_machine;
   gboolean success;
   
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
-  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(xorg_application_context))){
+  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(gsequencer_application_context))){
     usleep(500000);
   }
 
@@ -158,7 +158,7 @@ ags_functional_ffplayer_test_open_sf2()
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_ffplayer_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   /* add ffplayer */
   success = ags_functional_test_util_add_machine(NULL,
@@ -167,7 +167,7 @@ ags_functional_ffplayer_test_open_sf2()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -179,7 +179,7 @@ ags_functional_ffplayer_test_open_sf2()
   /* retrieve ffplayer */
   nth_machine = 0;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -231,7 +231,7 @@ ags_functional_ffplayer_test_resize_pads()
 {
   GtkDialog *properties;
 
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   
   AgsFFPlayer *ffplayer;
 
@@ -243,7 +243,7 @@ ags_functional_ffplayer_test_resize_pads()
   guint resize_tab;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   /* add ffplayer */
   success = ags_functional_test_util_add_machine(NULL,
@@ -252,7 +252,7 @@ ags_functional_ffplayer_test_resize_pads()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -264,7 +264,7 @@ ags_functional_ffplayer_test_resize_pads()
   /* retrieve ffplayer */
   nth_machine = 0;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -321,7 +321,7 @@ ags_functional_ffplayer_test_resize_audio_channels()
 {
   GtkDialog *properties;
 
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   
   AgsFFPlayer *ffplayer;
 
@@ -333,7 +333,7 @@ ags_functional_ffplayer_test_resize_audio_channels()
   guint resize_tab;
   gboolean success;
   
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   /* add ffplayer */
   success = ags_functional_test_util_add_machine(NULL,
@@ -342,7 +342,7 @@ ags_functional_ffplayer_test_resize_audio_channels()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -354,7 +354,7 @@ ags_functional_ffplayer_test_resize_audio_channels()
   /* retrieve ffplayer */
   nth_machine = 0;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

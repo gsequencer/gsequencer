@@ -33,7 +33,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/GSequencer/ags_ui_provider.h>
-#include <ags/GSequencer/ags_xorg_application_context.h>
+#include <ags/GSequencer/ags_gsequencer_application_context.h>
 #include <ags/GSequencer/ags_window.h>
 
 #include <ags/GSequencer/file/ags_simple_file.h>
@@ -347,14 +347,14 @@ ags_test_init(int *argc, char ***argv,
 void
 ags_test_quit()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
 
-  xorg_application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
 
   ags_test_enter();
   
-  window = xorg_application_context->window;
+  window = gsequencer_application_context->window;
   
   window->flags |= AGS_WINDOW_TERMINATING;
 
@@ -577,14 +577,14 @@ ags_test_setup(int argc, char **argv)
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
   
   /* application contex */
-  ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+  ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
   ags_application_context_register_types(ags_application_context);
 
   /* fix cross-references in managers */
-  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
+  lv2_worker_manager->thread_pool = ((AgsGSequencerApplicationContext *) ags_application_context)->thread_pool;
 
   ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(ags_application_context), FALSE);
 }

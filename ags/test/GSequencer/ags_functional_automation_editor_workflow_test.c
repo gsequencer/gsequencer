@@ -125,21 +125,21 @@ void ags_functional_automation_editor_workflow_test_add_test()
 int
 ags_functional_automation_editor_workflow_test_init_suite()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   GtkMenu *edit_menu;
   
   GdkEvent *delete_event;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_automation_editor_workflow_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   ags_test_enter();
     
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
 
   edit_menu = window->menu_bar->edit;
 
@@ -187,7 +187,7 @@ ags_functional_automation_editor_workflow_test_clean_suite()
 void
 ags_functional_automation_editor_workflow_test_panel()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -204,7 +204,7 @@ ags_functional_automation_editor_workflow_test_panel()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 0;
 
@@ -219,7 +219,7 @@ ags_functional_automation_editor_workflow_test_panel()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -240,7 +240,7 @@ ags_functional_automation_editor_workflow_test_panel()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
@@ -301,7 +301,7 @@ ags_functional_automation_editor_workflow_test_panel()
 void
 ags_functional_automation_editor_workflow_test_mixer()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -318,7 +318,7 @@ ags_functional_automation_editor_workflow_test_mixer()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 1;
 
@@ -333,7 +333,7 @@ ags_functional_automation_editor_workflow_test_mixer()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -354,7 +354,7 @@ ags_functional_automation_editor_workflow_test_mixer()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
@@ -416,7 +416,7 @@ ags_functional_automation_editor_workflow_test_mixer()
 void
 ags_functional_automation_editor_workflow_test_equalizer10()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -433,7 +433,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 2;
 
@@ -448,7 +448,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -469,7 +469,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
@@ -530,7 +530,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 void
 ags_functional_automation_editor_workflow_test_drum()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -547,7 +547,7 @@ ags_functional_automation_editor_workflow_test_drum()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 3;
 
@@ -562,7 +562,7 @@ ags_functional_automation_editor_workflow_test_drum()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -583,7 +583,7 @@ ags_functional_automation_editor_workflow_test_drum()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
@@ -644,7 +644,7 @@ ags_functional_automation_editor_workflow_test_drum()
 void
 ags_functional_automation_editor_workflow_test_matrix()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -661,7 +661,7 @@ ags_functional_automation_editor_workflow_test_matrix()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 4;
 
@@ -676,7 +676,7 @@ ags_functional_automation_editor_workflow_test_matrix()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -697,7 +697,7 @@ ags_functional_automation_editor_workflow_test_matrix()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
@@ -758,7 +758,7 @@ ags_functional_automation_editor_workflow_test_matrix()
 void
 ags_functional_automation_editor_workflow_test_syncsynth()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -775,7 +775,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 5;
 
@@ -790,7 +790,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -811,7 +811,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
@@ -873,7 +873,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 void
 ags_functional_automation_editor_workflow_test_ffplayer()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -890,7 +890,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 6;
 
@@ -905,7 +905,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -926,7 +926,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   

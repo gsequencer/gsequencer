@@ -93,7 +93,7 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
-AgsXorgApplicationContext *xorg_application_context;
+AgsGSequencerApplicationContext *gsequencer_application_context;
 
 AgsMachine *panel;
 AgsMachine *master_mixer;
@@ -180,18 +180,18 @@ ags_functional_machine_link_test_master_mixer()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   /* add panel */
   ags_functional_test_util_add_machine(NULL,
 				       "Panel");
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -203,7 +203,7 @@ ags_functional_machine_link_test_master_mixer()
   /* retrieve panel */
   nth_machine = 0;
   
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -227,7 +227,7 @@ ags_functional_machine_link_test_master_mixer()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 2;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -239,7 +239,7 @@ ags_functional_machine_link_test_master_mixer()
   /* retrieve master mixer */
   nth_machine = 1;
   
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -402,7 +402,7 @@ ags_functional_machine_link_test_slave_mixer()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 3;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -414,7 +414,7 @@ ags_functional_machine_link_test_slave_mixer()
   /* retrieve master mixer */
   nth_machine = 2;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -531,7 +531,7 @@ ags_functional_machine_link_test_drum()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 4;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -544,7 +544,7 @@ ags_functional_machine_link_test_drum()
   nth_parent_machine = 2;
   nth_machine = 3;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -659,7 +659,7 @@ ags_functional_machine_link_test_matrix()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 5;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -672,7 +672,7 @@ ags_functional_machine_link_test_matrix()
   nth_parent_machine = 2;
   nth_machine = 4;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -836,7 +836,7 @@ ags_functional_machine_link_test_synth()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 6;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -849,7 +849,7 @@ ags_functional_machine_link_test_synth()
   nth_parent_machine = 4;
   nth_machine = 5;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -971,7 +971,7 @@ ags_functional_machine_link_test_ffplayer_0()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 7;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -984,7 +984,7 @@ ags_functional_machine_link_test_ffplayer_0()
   nth_parent_machine = 2;
   nth_machine = 6;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1099,7 +1099,7 @@ ags_functional_machine_link_test_ffplayer_1()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 8;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -1112,7 +1112,7 @@ ags_functional_machine_link_test_ffplayer_1()
   nth_parent_machine = 2;
   nth_machine = 7;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

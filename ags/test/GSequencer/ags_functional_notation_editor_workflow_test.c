@@ -136,7 +136,7 @@ ags_functional_notation_editor_workflow_test_clean_suite()
 void
 ags_functional_notation_editor_workflow_test_drum()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -152,11 +152,11 @@ ags_functional_notation_editor_workflow_test_drum()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_notation_editor_workflow_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   /* window and editor size */
   ags_functional_test_util_file_default_window_resize();
@@ -174,7 +174,7 @@ ags_functional_notation_editor_workflow_test_drum()
   ags_functional_test_util_idle();
 
   /* get machine */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -183,7 +183,7 @@ ags_functional_notation_editor_workflow_test_drum()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -204,7 +204,7 @@ ags_functional_notation_editor_workflow_test_drum()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   
   ags_test_leave();
@@ -248,7 +248,7 @@ ags_functional_notation_editor_workflow_test_drum()
 void
 ags_functional_notation_editor_workflow_test_matrix()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -264,7 +264,7 @@ ags_functional_notation_editor_workflow_test_matrix()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 1;
   
@@ -277,7 +277,7 @@ ags_functional_notation_editor_workflow_test_matrix()
   ags_functional_test_util_idle();
 
   /* get machine */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 2;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -286,7 +286,7 @@ ags_functional_notation_editor_workflow_test_matrix()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -307,7 +307,7 @@ ags_functional_notation_editor_workflow_test_matrix()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   
   ags_test_leave();
@@ -352,7 +352,7 @@ ags_functional_notation_editor_workflow_test_matrix()
 void
 ags_functional_notation_editor_workflow_test_ffplayer()
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
@@ -368,7 +368,7 @@ ags_functional_notation_editor_workflow_test_ffplayer()
   guint nth_machine;
   gboolean success;
 
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   nth_machine = 2;
   
@@ -381,7 +381,7 @@ ags_functional_notation_editor_workflow_test_ffplayer()
   ags_functional_test_util_idle();
 
   /* get machine */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 3;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -390,7 +390,7 @@ ags_functional_notation_editor_workflow_test_ffplayer()
 
   ags_test_enter();
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -411,7 +411,7 @@ ags_functional_notation_editor_workflow_test_ffplayer()
 
   ags_test_enter();
 
-  window = AGS_WINDOW(xorg_application_context->window);
+  window = AGS_WINDOW(gsequencer_application_context->window);
   composite_editor = window->composite_editor;
   
   ags_test_leave();

@@ -128,7 +128,7 @@ ags_functional_panel_test_resize_pads()
 {
   GtkDialog *properties;
 
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   
   AgsPanel *panel;
 
@@ -140,11 +140,11 @@ ags_functional_panel_test_resize_pads()
   guint resize_tab;
   gboolean success;
   
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_panel_test_default_timeout,
-						      &(xorg_application_context->window));
+						      &(gsequencer_application_context->window));
 
   /* add panel */
   success = ags_functional_test_util_add_machine(NULL,
@@ -153,7 +153,7 @@ ags_functional_panel_test_resize_pads()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -165,7 +165,7 @@ ags_functional_panel_test_resize_pads()
   /* retrieve panel */
   nth_machine = 0;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -222,7 +222,7 @@ ags_functional_panel_test_resize_audio_channels()
 {
   GtkDialog *properties;
 
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   
   AgsPanel *panel;
 
@@ -234,7 +234,7 @@ ags_functional_panel_test_resize_audio_channels()
   guint resize_tab;
   gboolean success;
   
-  xorg_application_context = ags_application_context;
+  gsequencer_application_context = ags_application_context;
 
   /* add panel */
   success = ags_functional_test_util_add_machine(NULL,
@@ -243,7 +243,7 @@ ags_functional_panel_test_resize_audio_channels()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
   container_test.count = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -255,7 +255,7 @@ ags_functional_panel_test_resize_audio_channels()
   /* retrieve panel */
   nth_machine = 0;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
