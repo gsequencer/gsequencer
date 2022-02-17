@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2021 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2020-2022 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -1091,6 +1091,8 @@ libgsequencer_sources = files(
   'X/ags_window.c',
   'X/ags_window_callbacks.c',
   'X/ags_xorg_application_context.c',
+  'X/editor/ags_add_sheet_page_dialog.c',
+  'X/editor/ags_add_sheet_page_dialog_callbacks.c',
   'X/editor/ags_automation_edit_box.c',
   'X/editor/ags_automation_edit.c',
   'X/editor/ags_automation_edit_callbacks.c',
@@ -1129,10 +1131,14 @@ libgsequencer_sources = files(
   'X/editor/ags_position_automation_cursor_dialog_callbacks.c',
   'X/editor/ags_position_notation_cursor_dialog.c',
   'X/editor/ags_position_notation_cursor_dialog_callbacks.c',
+  'X/editor/ags_position_sheet_cursor_dialog.c',
+  'X/editor/ags_position_sheet_cursor_dialog_callbacks.c',
   'X/editor/ags_position_wave_cursor_dialog.c',
   'X/editor/ags_position_wave_cursor_dialog_callbacks.c',
   'X/editor/ags_ramp_acceleration_dialog.c',
   'X/editor/ags_ramp_acceleration_dialog_callbacks.c',
+  'X/editor/ags_remove_sheet_page_dialog.c',
+  'X/editor/ags_remove_sheet_page_dialog_callbacks.c',
   'X/editor/ags_scrolled_automation_edit_box.c',
   'X/editor/ags_scrolled_wave_edit_box.c',
   'X/editor/ags_select_acceleration_dialog.c',

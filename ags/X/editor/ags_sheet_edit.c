@@ -230,17 +230,31 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 
   sheet_edit->paper_name = g_strdup(AGS_SHEET_EDIT_DEFAULT_PAPER_NAME);
 
-  sheet_edit->scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-									      NULL);
+  sheet_edit->notation_x0 = 0;
+  sheet_edit->notation_x1 = 0;
+
+  sheet_edit->utf8_tablature_line = NULL;
+  sheet_edit->utf8_tablature_note = NULL;
+
+  sheet_edit->ps_surface = cairo_ps_surface_create(NULL,
+						   AGS_SHEET_EDIT_DEFAULT_WIDTH, AGS_SHEET_EDIT_DEFAULT_HEIGHT);
+  
+  sheet_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_widget_set_events(GTK_WIDGET(sheet_edit->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK);
+  gtk_widget_set_can_focus((GtkWidget *) sheet_edit->drawing_area,
+			   TRUE);
   gtk_grid_attach(GTK_TABLE(sheet_edit),
-		  (GtkWidget *) sheet_edit->scrolled_window,
+		  (GtkWidget *) sheet_edit->drawing_area,
 		  0, 0,
 		  1, 1);
-
-  sheet_edit->sheet_vbox = (GtkBox * )gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						  AGS_SHEET_EDIT_DEFAULT_SPACING);
-  gtk_container_add((GtkContainer *) sheet_edit->scrolled_window,
-		    (GtkWidget *) sheet_edit->sheet_vbox);
     
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
@@ -260,6 +274,11 @@ ags_sheet_edit_finalize(GObject *gobject)
   AgsSheetEdit *sheet_edit;
   
   sheet_edit = AGS_SHEET_EDIT(gobject);
+
+  g_free(sheet_edit->utf8_tablature_line);
+  g_free(sheet_edit->utf8_tablature_note);
+
+  cairo_surface_destroy(sheet_edit->ps_surface);
   
   /* remove auto scroll */
   g_hash_table_remove(ags_sheet_edit_auto_scroll,
@@ -722,115 +741,6 @@ ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget)
   }else{
     return(FALSE);
   }
-}
-
-/**
- * ags_sheet_edit_page_alloc:
- * @width: the width
- * @height: the height
- * 
- * Allocate sheet edit page.
- * 
- * Returns: the newly allocated #AgsSheetEditPage-struct
- * 
- * Since: 3.18.0
- */
-AgsSheetEditPage*
-ags_sheet_edit_page_alloc(gdouble width, gdouble height)
-{
-  AgsSheetEditPage *page;
-
-  page = (AgsSheetEditPage *) g_malloc(sizeof(AgsSheetEditPage));
-  
-  page->notation_x0 = 0;
-  page->notation_x1 = 0;
-
-  page->utf8_tablature_line = 0;
-  page->utf8_tablature_note = 0;
-
-  page->ps_surface = cairo_ps_surface_create(NULL,
-					     width, height);
-  
-  page->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_events(GTK_WIDGET(page->drawing_area), GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_BUTTON_RELEASE_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK
-			| GDK_CONTROL_MASK
-			| GDK_KEY_PRESS_MASK
-			| GDK_KEY_RELEASE_MASK);
-  gtk_widget_set_can_focus((GtkWidget *) page->drawing_area,
-			   TRUE);
-
-  return(page);
-}
-
-/**
- * ags_sheet_edit_page_free:
- * @page: the #AgsSheetEditPage-struct
- * 
- * Free sheet edit page.
- * 
- * Since: 3.18.0
- */
-void
-ags_sheet_edit_page_free(AgsSheetEditPage *page)
-{
-  if(page == NULL){
-    return;
-  }
-
-  g_free(page->utf8_tablature_line);
-  g_free(page->utf8_tablature_note);
-
-  gtk_widget_destroy(page->drawing_area);
-
-  g_free(page);
-}
-
-/**
- * ags_sheet_edit_insert_page:
- * @sheet_edit: the #AgsSheetEdit
- * @page: the #AgsSheetEditPage-struct
- * @position: the position
- * 
- * Insert @page at @position to @sheet_edit.
- * 
- * Since: 3.18.0
- */
-void
-ags_sheet_edit_insert_page(AgsSheetEdit *sheet_edit,
-			   AgsSheetEditPage *page,
-			   gint position)
-{
-  if(!AGS_IS_SHEET_EDIT(sheet_edit) ||
-     page == NULL){
-    return;
-  }
-  
-  //TODO:JK: implement me
-}
-
-/**
- * ags_sheet_edit_remove_page:
- * @sheet_edit: the #AgsSheetEdit
- * @nth: the nth page to remove
- * 
- * Remove the page at @nth position from @sheet_edit.
- * 
- * Since: 3.18.0
- */
-void
-ags_sheet_edit_remove_page(AgsSheetEdit *sheet_edit,
-			   gint nth)
-{
-  if(!AGS_IS_SHEET_EDIT(sheet_edit)){
-    return;
-  }
-  
-  //TODO:JK: implement me
 }
 
 /**

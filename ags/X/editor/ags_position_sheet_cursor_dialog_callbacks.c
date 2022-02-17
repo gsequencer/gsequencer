@@ -17,11 +17,11 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/editor/ags_position_wave_cursor_dialog_callbacks.h>
+#include <ags/X/editor/ags_position_sheet_cursor_dialog_callbacks.h>
 
 void
-ags_position_wave_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
-						  AgsPositionWaveCursorDialog *position_wave_cursor_dialog)
+ags_position_sheet_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
+						   AgsPositionSheetCursorDialog *position_sheet_cursor_dialog)
 {
   gboolean hide_dialog;
 
@@ -34,12 +34,12 @@ ags_position_wave_cursor_dialog_response_callback(GtkWidget *dialog, gint respon
     }
   case GTK_RESPONSE_OK:
     {
-      ags_applicable_apply(AGS_APPLICABLE(position_wave_cursor_dialog));
+      ags_applicable_apply(AGS_APPLICABLE(position_sheet_cursor_dialog));
     }
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide((GtkWidget *) position_wave_cursor_dialog);
+	gtk_widget_hide((GtkWidget *) position_sheet_cursor_dialog);
       }
     }
   }

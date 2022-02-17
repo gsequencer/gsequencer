@@ -17,30 +17,25 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/editor/ags_position_wave_cursor_dialog_callbacks.h>
+#ifndef __AGS_POSITION_SHEET_CURSOR_DIALOG_CALLBACKS_H__
+#define __AGS_POSITION_SHEET_CURSOR_DIALOG_CALLBACKS_H__
 
-void
-ags_position_wave_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
-						  AgsPositionWaveCursorDialog *position_wave_cursor_dialog)
-{
-  gboolean hide_dialog;
+#include <glib.h>
+#include <glib-object.h>
 
-  hide_dialog = TRUE;
-  
-  switch(response){
-  case GTK_RESPONSE_APPLY:
-    {
-      hide_dialog = FALSE;
-    }
-  case GTK_RESPONSE_OK:
-    {
-      ags_applicable_apply(AGS_APPLICABLE(position_wave_cursor_dialog));
-    }
-  case GTK_RESPONSE_CANCEL:
-    {
-      if(hide_dialog){
-	gtk_widget_hide((GtkWidget *) position_wave_cursor_dialog);
-      }
-    }
-  }
-}
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+#include <ags/X/editor/ags_position_sheet_cursor_dialog.h>
+
+G_BEGIN_DECLS
+
+void ags_position_sheet_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
+							AgsPositionSheetCursorDialog *position_sheet_cursor_dialog);
+
+G_END_DECLS
+
+#endif /*__AGS_POSITION_SHEET_CURSOR_DIALOG_CALLBACKS_H__*/

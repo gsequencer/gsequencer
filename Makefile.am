@@ -3209,6 +3209,8 @@ deprecated_libgsequencer_editor_h_sources =
 
 libgsequencer_editor_h_sources = \
 	$(deprecated_libgsequencer_editor_h_sources) \
+	ags/X/editor/ags_add_sheet_page_dialog_callbacks.h \
+	ags/X/editor/ags_add_sheet_page_dialog.h \
 	ags/X/editor/ags_automation_edit_callbacks.h \
 	ags/X/editor/ags_automation_edit_box.h \
 	ags/X/editor/ags_automation_edit.h \
@@ -3247,10 +3249,14 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_position_notation_cursor_dialog.h \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
+	ags/X/editor/ags_position_sheet_cursor_dialog.h \
+	ags/X/editor/ags_position_sheet_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_position_wave_cursor_dialog.h \
 	ags/X/editor/ags_position_wave_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
+	ags/X/editor/ags_remove_sheet_page_dialog_callbacks.h \
+	ags/X/editor/ags_remove_sheet_page_dialog.h \
 	ags/X/editor/ags_scrolled_automation_edit_box.h \
 	ags/X/editor/ags_scrolled_wave_edit_box.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
@@ -3279,6 +3285,8 @@ deprecated_libgsequencer_editor_c_sources =
 
 libgsequencer_editor_c_sources = \
 	$(deprecated_libgsequencer_editor_c_sources) \
+	ags/X/editor/ags_add_sheet_page_dialog_callbacks.c \
+	ags/X/editor/ags_add_sheet_page_dialog.c \
 	ags/X/editor/ags_automation_edit.c \
 	ags/X/editor/ags_automation_edit_box.c \
 	ags/X/editor/ags_automation_edit_callbacks.c \
@@ -3317,10 +3325,14 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_position_automation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_position_notation_cursor_dialog.c \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
+	ags/X/editor/ags_position_sheet_cursor_dialog.c \
+	ags/X/editor/ags_position_sheet_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_position_wave_cursor_dialog.c \
 	ags/X/editor/ags_position_wave_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
+	ags/X/editor/ags_remove_sheet_page_dialog_callbacks.c \
+	ags/X/editor/ags_remove_sheet_page_dialog.c \
 	ags/X/editor/ags_scrolled_automation_edit_box.c \
 	ags/X/editor/ags_scrolled_wave_edit_box.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,6 +54,8 @@ void ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GtkMenu
 void ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
 
 void ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_sheet_add_page_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_sheet_remove_page_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
 
 void ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
 void ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);

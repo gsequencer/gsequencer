@@ -85,6 +85,8 @@ typedef enum{
   AGS_COMPOSITE_TOOLBAR_HAS_ZOOM           = 1 <<  1,
   AGS_COMPOSITE_TOOLBAR_HAS_OPACITY        = 1 <<  2,
   AGS_COMPOSITE_TOOLBAR_HAS_PORT           = 1 <<  3,
+  AGS_COMPOSITE_TOOLBAR_HAS_BEATS          = 1 <<  4,
+  AGS_COMPOSITE_TOOLBAR_HAS_BEATS_TYPE     = 1 <<  5,
 }AgsCompositeToolbarOption;
 
 typedef enum{
@@ -112,7 +114,9 @@ typedef enum{
 }AgsCompositeToolbarNotationDialog;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR,
+  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR       = 1,
+  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_ADD_PAGE              = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_REMOVE_PAGE           = 1 <<  2,  
 }AgsCompositeToolbarSheetDialog;
 
 typedef enum{
@@ -163,6 +167,10 @@ struct _AgsCompositeToolbar
   GtkMenuToolButton *menu_tool;
   GtkMenu *menu_tool_popup;
 
+  GtkComboBox *beats;
+  GtkComboBox *beats_type;
+  GtkComboBox *note;
+  
   GtkComboBox *port;
 
   gint selected_zoom;
@@ -176,6 +184,8 @@ struct _AgsCompositeToolbar
   GtkDialog *notation_position_cursor;
   
   GtkDialog *sheet_position_cursor;
+  GtkDialog *sheet_add_page;
+  GtkDialog *sheet_remove_page;
   
   GtkDialog *automation_select_acceleration;
   GtkDialog *automation_ramp_acceleration;

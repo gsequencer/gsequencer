@@ -246,6 +246,12 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
+
+  /* sheet */
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Sheet"));
+  //  gtk_widget_set_sensitive(item,
+  //			   FALSE);
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
   
   /* preferences */
   gtk_menu_shell_append((GtkMenuShell*) context_menu->edit,
@@ -535,7 +541,7 @@ ags_context_menu_connect(AgsConnectable *connectable)
   g_list_free(list3_start);
   g_list_free(list2_start);
 
-  /* notation, automation, wave and preferences */
+  /* notation, automation, wave, sheet and preferences */
   g_signal_connect(G_OBJECT (list1->data), "activate",
 		   G_CALLBACK (ags_menu_action_notation_callback), (gpointer) context_menu);
   list1 = list1->next;
@@ -546,6 +552,10 @@ ags_context_menu_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT (list1->data), "activate",
 		   G_CALLBACK (ags_menu_action_wave_callback), (gpointer) context_menu);
+  list1 = list1->next;
+
+  g_signal_connect(G_OBJECT (list1->data), "activate",
+		   G_CALLBACK (ags_menu_action_sheet_callback), (gpointer) context_menu);
   list1 = list1->next;
   list1 = list1->next;
 

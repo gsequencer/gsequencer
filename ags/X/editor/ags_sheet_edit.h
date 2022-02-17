@@ -39,6 +39,8 @@ G_BEGIN_DECLS
 #define AGS_SHEET_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_SHEET_EDIT, AgsSheetEditClass))
 
 #define AGS_SHEET_EDIT_DEFAULT_PAPER_NAME (GTK_PAPER_NAME_LETTER)
+#define AGS_SHEET_EDIT_DEFAULT_WIDTH (612)
+#define AGS_SHEET_EDIT_DEFAULT_HEIGHT (792)
 
 #define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
 
@@ -49,7 +51,6 @@ G_BEGIN_DECLS
 
 typedef struct _AgsSheetEdit AgsSheetEdit;
 typedef struct _AgsSheetEditClass AgsSheetEditClass;
-typedef struct _AgsSheetEditPage AgsSheetEditPage;
 
 typedef enum{
   AGS_SHEET_EDIT_CONNECTED             = 1,
@@ -98,8 +99,18 @@ struct _AgsSheetEdit
 
   gchar *paper_name;
 
-  GtkScrolledWindow *scrolled_window;
-  GtkBox *sheet_vbox;
+  guint notation_x0;
+  guint notation_x1;
+
+  gchar *utf8_tablature_line;
+  gchar *utf8_tablature_note;
+  
+  cairo_surface_t *ps_surface;  
+  
+  GtkDrawingArea *drawing_area;
+  
+  GtkVScrollbar *vscrollbar;
+  GtkHScrollbar *hscrollbar;
 };
 
 struct _AgsSheetEditClass
@@ -107,29 +118,7 @@ struct _AgsSheetEditClass
   GtkGridClass grid;
 };
 
-struct _AgsSheetEditPage
-{
-  guint notation_x0;
-  guint notation_x1;
-
-  gchar *utf8_tablature_line;
-  gchar *utf8_tablature_note;
-  
-  cairo_surface_t *ps_surface;
-  
-  GtkDrawingArea *drawing_area;
-};
-
 GType ags_sheet_edit_get_type(void);
-
-AgsSheetEditPage* ags_sheet_edit_page_alloc(gdouble width, gdouble height);
-void ags_sheet_edit_page_free(AgsSheetEditPage *page);
-
-void ags_sheet_edit_insert_page(AgsSheetEdit *sheet_edit,
-				AgsSheetEditPage *page,
-				gint position);
-void ags_sheet_edit_remove_page(AgsSheetEdit *sheet_edit,
-				gint nth);
 
 AgsSheetEdit* ags_sheet_edit_new();
 

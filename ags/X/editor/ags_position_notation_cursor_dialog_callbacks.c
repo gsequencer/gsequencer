@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h>
-
-#include <ags/object/ags_applicable.h>
 
 void
 ags_position_notation_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
