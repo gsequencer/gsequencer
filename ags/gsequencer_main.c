@@ -63,7 +63,7 @@
 #include <sys/resource.h>
 #endif
 
-#include <ags/X/ags_xorg_application_context.h>
+#include <ags/GSequencer/ags_xorg_application_context.h>
 
 #include "gsequencer_main.h"
 
