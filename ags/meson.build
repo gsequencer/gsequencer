@@ -1090,7 +1090,7 @@ libgsequencer_sources = files(
   'GSequencer/ags_wave_window_callbacks.c',
   'GSequencer/ags_window.c',
   'GSequencer/ags_window_callbacks.c',
-  'GSequencer/ags_xorg_application_context.c',
+  'GSequencer/ags_gsequencer_application_context.c',
   'GSequencer/editor/ags_add_sheet_page_dialog.c',
   'GSequencer/editor/ags_add_sheet_page_dialog_callbacks.c',
   'GSequencer/editor/ags_automation_edit_box.c',

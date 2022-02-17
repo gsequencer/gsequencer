@@ -63,7 +63,7 @@
 #include <sys/resource.h>
 #endif
 
-#include <ags/GSequencer/ags_xorg_application_context.h>
+#include <ags/GSequencer/ags_gsequencer_application_context.h>
 
 #include "gsequencer_main.h"
 
@@ -77,15 +77,15 @@ extern AgsApplicationContext *ags_application_context;
 void*
 ags_setup_thread(void *ptr)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsGSequencerApplicationContext *gsequencer_application_context;
   
-  xorg_application_context = (AgsXorgApplicationContext *) ptr;
+  gsequencer_application_context = (AgsGSequencerApplicationContext *) ptr;
 
-  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
+  while(g_atomic_int_get(&(gsequencer_application_context->gui_ready)) == 0){
     usleep(500000);
   }
 
-  ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(gsequencer_application_context));
   
   g_thread_exit(NULL);
 
@@ -100,7 +100,7 @@ ags_setup(int argc, char **argv)
 
   /* application context */
   application_context = 
-    ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+    ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
   g_object_ref(application_context);
   
   application_context->argc = argc;
@@ -577,7 +577,7 @@ main(int argc, char **argv)
   /* some GUI scaling */
   if(!builtin_theme_disabled &&
      !has_file){
-//    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
+//    ags_gsequencer_application_context_load_gui_scale(ags_application_context_get_instance());
   }
 
   ags_setup(argc, argv);
