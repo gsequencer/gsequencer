@@ -609,7 +609,7 @@ EXTRA_DIST += \
 	ags/audio/midi/ags_midi_file.dtd \
 	ags/audio/osc/ags_osc_file.dtd \
 	ags/file/ags_file.dtd \
-	ags/GSequencer/file/ags_simple_file.dtd \
+	ags/app/file/ags_simple_file.dtd \
 	ags.xsl \
 	ags-simple.xsl \
 	ags/object/ags_marshallers.list.in \
@@ -2592,272 +2592,272 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
-	ags/GSequencer/ags_animation_window.h \
-	ags/GSequencer/ags_automation_editor_callbacks.h \
-	ags/GSequencer/ags_automation_editor.h \
-	ags/GSequencer/ags_automation_window_callbacks.h \
-	ags/GSequencer/ags_automation_window.h \
-	ags/GSequencer/ags_audio_preferences_callbacks.h \
-	ags/GSequencer/ags_audio_preferences.h \
-	ags/GSequencer/ags_bulk_member_callbacks.h \
-	ags/GSequencer/ags_bulk_member.h \
-	ags/GSequencer/ags_composite_editor.h \
-	ags/GSequencer/ags_composite_editor_callbacks.h \
-	ags/GSequencer/ags_connection_editor_callbacks.h \
-	ags/GSequencer/ags_connection_editor.h \
-	ags/GSequencer/ags_context_menu.h \
-	ags/GSequencer/ags_dssi_browser_callbacks.h \
-	ags/GSequencer/ags_dssi_browser.h \
-	ags/GSequencer/ags_effect_bridge_callbacks.h \
-	ags/GSequencer/ags_effect_bridge.h \
-	ags/GSequencer/ags_effect_bulk_callbacks.h \
-	ags/GSequencer/ags_effect_bulk.h \
-	ags/GSequencer/ags_effect_line_callbacks.h \
-	ags/GSequencer/ags_effect_line.h \
-	ags/GSequencer/ags_effect_pad_callbacks.h \
-	ags/GSequencer/ags_effect_pad.h \
-	ags/GSequencer/ags_effect_separator.h \
-	ags/GSequencer/ags_export_soundcard_callbacks.h \
-	ags/GSequencer/ags_export_soundcard.h \
-	ags/GSequencer/ags_export_window_callbacks.h \
-	ags/GSequencer/ags_export_window.h \
-	ags/GSequencer/ags_generic_preferences_callbacks.h \
-	ags/GSequencer/ags_generic_preferences.h \
-	ags/GSequencer/ags_input_collection_editor_callbacks.h \
-	ags/GSequencer/ags_input_collection_editor.h \
-	ags/GSequencer/ags_input_editor_callbacks.h \
-	ags/GSequencer/ags_input_editor.h \
-	ags/GSequencer/ags_input_listing_editor_callbacks.h \
-	ags/GSequencer/ags_input_listing_editor.h \
-	ags/GSequencer/ags_ladspa_browser_callbacks.h \
-	ags/GSequencer/ags_ladspa_browser.h \
-	ags/GSequencer/ags_lv2_browser_callbacks.h \
-	ags/GSequencer/ags_lv2_browser.h \
-	ags/GSequencer/ags_line_callbacks.h \
-	ags/GSequencer/ags_line_editor_callbacks.h \
-	ags/GSequencer/ags_line_editor.h \
-	ags/GSequencer/ags_line.h \
-	ags/GSequencer/ags_line_member_callbacks.h \
-	ags/GSequencer/ags_line_member_editor_callbacks.h \
-	ags/GSequencer/ags_line_member_editor.h \
-	ags/GSequencer/ags_line_member.h \
-	ags/GSequencer/ags_link_collection_editor_callbacks.h \
-	ags/GSequencer/ags_link_collection_editor.h \
-	ags/GSequencer/ags_link_editor_callbacks.h \
-	ags/GSequencer/ags_link_editor.h \
-	ags/GSequencer/ags_listing_editor_callbacks.h \
-	ags/GSequencer/ags_listing_editor.h \
-	ags/GSequencer/ags_machine_callbacks.h \
-	ags/GSequencer/ags_machine_editor_callbacks.h \
-	ags/GSequencer/ags_machine_editor.h \
-	ags/GSequencer/ags_machine.h \
-	ags/GSequencer/ags_machine_util.h \
-	ags/GSequencer/ags_menu_action_callbacks.h \
-	ags/GSequencer/ags_menu_bar.h \
-	ags/GSequencer/ags_midi_dialog_callbacks.h \
-	ags/GSequencer/ags_midi_dialog.h \
-	ags/GSequencer/ags_midi_preferences.h \
-	ags/GSequencer/ags_midi_preferences_callbacks.h \
-	ags/GSequencer/ags_navigation_callbacks.h \
-	ags/GSequencer/ags_navigation.h \
-	ags/GSequencer/ags_notation_editor_callbacks.h \
-	ags/GSequencer/ags_notation_editor.h \
-	ags/GSequencer/ags_online_help_window.h \
-	ags/GSequencer/ags_online_help_window_callbacks.h \
-	ags/GSequencer/ags_osc_server_preferences_callbacks.h \
-	ags/GSequencer/ags_osc_server_preferences.h \
-	ags/GSequencer/ags_output_collection_editor_callbacks.h \
-	ags/GSequencer/ags_output_collection_editor.h \
-	ags/GSequencer/ags_output_editor_callbacks.h \
-	ags/GSequencer/ags_output_editor.h \
-	ags/GSequencer/ags_output_listing_editor_callbacks.h \
-	ags/GSequencer/ags_output_listing_editor.h \
-	ags/GSequencer/ags_pad_callbacks.h \
-	ags/GSequencer/ags_pad_editor_callbacks.h \
-	ags/GSequencer/ags_pad_editor.h \
-	ags/GSequencer/ags_pad.h \
-	ags/GSequencer/ags_performance_preferences_callbacks.h \
-	ags/GSequencer/ags_performance_preferences.h \
-	ags/GSequencer/ags_playback_window_callbacks.h \
-	ags/GSequencer/ags_playback_window.h \
-	ags/GSequencer/ags_plugin_browser_callbacks.h \
-	ags/GSequencer/ags_plugin_browser.h \
-	ags/GSequencer/ags_plugin_preferences_callbacks.h \
-	ags/GSequencer/ags_plugin_preferences.h \
-	ags/GSequencer/ags_preferences_callbacks.h \
-	ags/GSequencer/ags_preferences.h \
-	ags/GSequencer/ags_property_collection_editor_callbacks.h \
-	ags/GSequencer/ags_property_collection_editor.h \
-	ags/GSequencer/ags_property_editor_callbacks.h \
-	ags/GSequencer/ags_property_editor.h \
-	ags/GSequencer/ags_property_listing_editor.h \
-	ags/GSequencer/ags_quit_dialog_callbacks.h \
-	ags/GSequencer/ags_quit_dialog.h \
-	ags/GSequencer/ags_resize_editor.h \
-	ags/GSequencer/ags_sequencer_editor_callbacks.h \
-	ags/GSequencer/ags_sequencer_editor.h \
-	ags/GSequencer/ags_server_preferences_callbacks.h \
-	ags/GSequencer/ags_server_preferences.h \
-	ags/GSequencer/ags_sheet_window.h \
-	ags/GSequencer/ags_sheet_window_callbacks.h \
-	ags/GSequencer/ags_sheet_editor.h \
-	ags/GSequencer/ags_sheet_editor_callbacks.h \
-	ags/GSequencer/ags_soundcard_editor_callbacks.h \
-	ags/GSequencer/ags_soundcard_editor.h \
-	ags/GSequencer/ags_ui_provider.h \
-	ags/GSequencer/ags_wave_window_callbacks.h \
-	ags/GSequencer/ags_wave_window.h \
-	ags/GSequencer/ags_wave_editor_callbacks.h \
-	ags/GSequencer/ags_wave_editor.h \
-	ags/GSequencer/ags_window.h \
-	ags/GSequencer/ags_window_callbacks.h \
-	ags/GSequencer/ags_gsequencer_application.h \
-	ags/GSequencer/ags_gsequencer_application_context.h
+	ags/app/ags_animation_window.h \
+	ags/app/ags_automation_editor_callbacks.h \
+	ags/app/ags_automation_editor.h \
+	ags/app/ags_automation_window_callbacks.h \
+	ags/app/ags_automation_window.h \
+	ags/app/ags_audio_preferences_callbacks.h \
+	ags/app/ags_audio_preferences.h \
+	ags/app/ags_bulk_member_callbacks.h \
+	ags/app/ags_bulk_member.h \
+	ags/app/ags_composite_editor.h \
+	ags/app/ags_composite_editor_callbacks.h \
+	ags/app/ags_connection_editor_callbacks.h \
+	ags/app/ags_connection_editor.h \
+	ags/app/ags_context_menu.h \
+	ags/app/ags_dssi_browser_callbacks.h \
+	ags/app/ags_dssi_browser.h \
+	ags/app/ags_effect_bridge_callbacks.h \
+	ags/app/ags_effect_bridge.h \
+	ags/app/ags_effect_bulk_callbacks.h \
+	ags/app/ags_effect_bulk.h \
+	ags/app/ags_effect_line_callbacks.h \
+	ags/app/ags_effect_line.h \
+	ags/app/ags_effect_pad_callbacks.h \
+	ags/app/ags_effect_pad.h \
+	ags/app/ags_effect_separator.h \
+	ags/app/ags_export_soundcard_callbacks.h \
+	ags/app/ags_export_soundcard.h \
+	ags/app/ags_export_window_callbacks.h \
+	ags/app/ags_export_window.h \
+	ags/app/ags_generic_preferences_callbacks.h \
+	ags/app/ags_generic_preferences.h \
+	ags/app/ags_input_collection_editor_callbacks.h \
+	ags/app/ags_input_collection_editor.h \
+	ags/app/ags_input_editor_callbacks.h \
+	ags/app/ags_input_editor.h \
+	ags/app/ags_input_listing_editor_callbacks.h \
+	ags/app/ags_input_listing_editor.h \
+	ags/app/ags_ladspa_browser_callbacks.h \
+	ags/app/ags_ladspa_browser.h \
+	ags/app/ags_lv2_browser_callbacks.h \
+	ags/app/ags_lv2_browser.h \
+	ags/app/ags_line_callbacks.h \
+	ags/app/ags_line_editor_callbacks.h \
+	ags/app/ags_line_editor.h \
+	ags/app/ags_line.h \
+	ags/app/ags_line_member_callbacks.h \
+	ags/app/ags_line_member_editor_callbacks.h \
+	ags/app/ags_line_member_editor.h \
+	ags/app/ags_line_member.h \
+	ags/app/ags_link_collection_editor_callbacks.h \
+	ags/app/ags_link_collection_editor.h \
+	ags/app/ags_link_editor_callbacks.h \
+	ags/app/ags_link_editor.h \
+	ags/app/ags_listing_editor_callbacks.h \
+	ags/app/ags_listing_editor.h \
+	ags/app/ags_machine_callbacks.h \
+	ags/app/ags_machine_editor_callbacks.h \
+	ags/app/ags_machine_editor.h \
+	ags/app/ags_machine.h \
+	ags/app/ags_machine_util.h \
+	ags/app/ags_menu_action_callbacks.h \
+	ags/app/ags_menu_bar.h \
+	ags/app/ags_midi_dialog_callbacks.h \
+	ags/app/ags_midi_dialog.h \
+	ags/app/ags_midi_preferences.h \
+	ags/app/ags_midi_preferences_callbacks.h \
+	ags/app/ags_navigation_callbacks.h \
+	ags/app/ags_navigation.h \
+	ags/app/ags_notation_editor_callbacks.h \
+	ags/app/ags_notation_editor.h \
+	ags/app/ags_online_help_window.h \
+	ags/app/ags_online_help_window_callbacks.h \
+	ags/app/ags_osc_server_preferences_callbacks.h \
+	ags/app/ags_osc_server_preferences.h \
+	ags/app/ags_output_collection_editor_callbacks.h \
+	ags/app/ags_output_collection_editor.h \
+	ags/app/ags_output_editor_callbacks.h \
+	ags/app/ags_output_editor.h \
+	ags/app/ags_output_listing_editor_callbacks.h \
+	ags/app/ags_output_listing_editor.h \
+	ags/app/ags_pad_callbacks.h \
+	ags/app/ags_pad_editor_callbacks.h \
+	ags/app/ags_pad_editor.h \
+	ags/app/ags_pad.h \
+	ags/app/ags_performance_preferences_callbacks.h \
+	ags/app/ags_performance_preferences.h \
+	ags/app/ags_playback_window_callbacks.h \
+	ags/app/ags_playback_window.h \
+	ags/app/ags_plugin_browser_callbacks.h \
+	ags/app/ags_plugin_browser.h \
+	ags/app/ags_plugin_preferences_callbacks.h \
+	ags/app/ags_plugin_preferences.h \
+	ags/app/ags_preferences_callbacks.h \
+	ags/app/ags_preferences.h \
+	ags/app/ags_property_collection_editor_callbacks.h \
+	ags/app/ags_property_collection_editor.h \
+	ags/app/ags_property_editor_callbacks.h \
+	ags/app/ags_property_editor.h \
+	ags/app/ags_property_listing_editor.h \
+	ags/app/ags_quit_dialog_callbacks.h \
+	ags/app/ags_quit_dialog.h \
+	ags/app/ags_resize_editor.h \
+	ags/app/ags_sequencer_editor_callbacks.h \
+	ags/app/ags_sequencer_editor.h \
+	ags/app/ags_server_preferences_callbacks.h \
+	ags/app/ags_server_preferences.h \
+	ags/app/ags_sheet_window.h \
+	ags/app/ags_sheet_window_callbacks.h \
+	ags/app/ags_sheet_editor.h \
+	ags/app/ags_sheet_editor_callbacks.h \
+	ags/app/ags_soundcard_editor_callbacks.h \
+	ags/app/ags_soundcard_editor.h \
+	ags/app/ags_ui_provider.h \
+	ags/app/ags_wave_window_callbacks.h \
+	ags/app/ags_wave_window.h \
+	ags/app/ags_wave_editor_callbacks.h \
+	ags/app/ags_wave_editor.h \
+	ags/app/ags_window.h \
+	ags/app/ags_window_callbacks.h \
+	ags/app/ags_gsequencer_application.h \
+	ags/app/ags_gsequencer_application_context.h
 
 if WITH_VST3
 libgsequencer_h_sources += \
-	ags/GSequencer/ags_vst3_browser_callbacks.h \
-	ags/GSequencer/ags_vst3_browser.h
+	ags/app/ags_vst3_browser_callbacks.h \
+	ags/app/ags_vst3_browser.h
 else
 EXTRA_DIST += \
-	ags/GSequencer/ags_vst3_browser_callbacks.h \
-	ags/GSequencer/ags_vst3_browser.h
+	ags/app/ags_vst3_browser_callbacks.h \
+	ags/app/ags_vst3_browser.h
 endif
 
 deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
-	ags/GSequencer/ags_animation_window.c \
-	ags/GSequencer/ags_automation_editor.c \
-	ags/GSequencer/ags_automation_editor_callbacks.c \
-	ags/GSequencer/ags_automation_window.c \
-	ags/GSequencer/ags_automation_window_callbacks.c \
-	ags/GSequencer/ags_audio_preferences.c \
-	ags/GSequencer/ags_audio_preferences_callbacks.c \
-	ags/GSequencer/ags_bulk_member.c \
-	ags/GSequencer/ags_bulk_member_callbacks.c \
-	ags/GSequencer/ags_composite_editor.c \
-	ags/GSequencer/ags_composite_editor_callbacks.c \
-	ags/GSequencer/ags_connection_editor_callbacks.c \
-	ags/GSequencer/ags_connection_editor.c \
-	ags/GSequencer/ags_context_menu.c \
-	ags/GSequencer/ags_dssi_browser_callbacks.c \
-	ags/GSequencer/ags_dssi_browser.c \
-	ags/GSequencer/ags_effect_bridge.c \
-	ags/GSequencer/ags_effect_bridge_callbacks.c \
-	ags/GSequencer/ags_effect_bulk.c \
-	ags/GSequencer/ags_effect_bulk_callbacks.c \
-	ags/GSequencer/ags_effect_line.c \
-	ags/GSequencer/ags_effect_line_callbacks.c \
-	ags/GSequencer/ags_effect_pad.c \
-	ags/GSequencer/ags_effect_pad_callbacks.c \
-	ags/GSequencer/ags_effect_separator.c \
-	ags/GSequencer/ags_export_soundcard.c \
-	ags/GSequencer/ags_export_soundcard_callbacks.c \
-	ags/GSequencer/ags_export_window.c \
-	ags/GSequencer/ags_export_window_callbacks.c \
-	ags/GSequencer/ags_generic_preferences.c \
-	ags/GSequencer/ags_generic_preferences_callbacks.c \
-	ags/GSequencer/ags_ladspa_browser.c \
-	ags/GSequencer/ags_ladspa_browser_callbacks.c \
-	ags/GSequencer/ags_lv2_browser.c \
-	ags/GSequencer/ags_lv2_browser_callbacks.c \
-	ags/GSequencer/ags_input_collection_editor_callbacks.c \
-	ags/GSequencer/ags_input_collection_editor.c \
-	ags/GSequencer/ags_input_editor_callbacks.c \
-	ags/GSequencer/ags_input_editor.c \
-	ags/GSequencer/ags_input_listing_editor_callbacks.c \
-	ags/GSequencer/ags_input_listing_editor.c \
-	ags/GSequencer/ags_line.c \
-	ags/GSequencer/ags_line_callbacks.c \
-	ags/GSequencer/ags_line_editor.c \
-	ags/GSequencer/ags_line_editor_callbacks.c \
-	ags/GSequencer/ags_line_member.c \
-	ags/GSequencer/ags_line_member_callbacks.c \
-	ags/GSequencer/ags_line_member_editor.c \
-	ags/GSequencer/ags_line_member_editor_callbacks.c \
-	ags/GSequencer/ags_link_collection_editor.c \
-	ags/GSequencer/ags_link_collection_editor_callbacks.c \
-	ags/GSequencer/ags_link_editor.c \
-	ags/GSequencer/ags_link_editor_callbacks.c \
-	ags/GSequencer/ags_listing_editor.c \
-	ags/GSequencer/ags_listing_editor_callbacks.c \
-	ags/GSequencer/ags_machine.c \
-	ags/GSequencer/ags_machine_util.c \
-	ags/GSequencer/ags_machine_callbacks.c \
-	ags/GSequencer/ags_machine_editor.c \
-	ags/GSequencer/ags_machine_editor_callbacks.c \
-	ags/GSequencer/ags_menu_action_callbacks.c \
-	ags/GSequencer/ags_menu_bar.c \
-	ags/GSequencer/ags_midi_dialog.c \
-	ags/GSequencer/ags_midi_dialog_callbacks.c \
-	ags/GSequencer/ags_midi_preferences.c \
-	ags/GSequencer/ags_midi_preferences_callbacks.c \
-	ags/GSequencer/ags_navigation.c \
-	ags/GSequencer/ags_navigation_callbacks.c \
-	ags/GSequencer/ags_notation_editor.c \
-	ags/GSequencer/ags_notation_editor_callbacks.c \
-	ags/GSequencer/ags_online_help_window.c \
-	ags/GSequencer/ags_online_help_window_callbacks.c \
-	ags/GSequencer/ags_osc_server_preferences_callbacks.c \
-	ags/GSequencer/ags_osc_server_preferences.c \
-	ags/GSequencer/ags_output_collection_editor_callbacks.c \
-	ags/GSequencer/ags_output_collection_editor.c \
-	ags/GSequencer/ags_output_editor_callbacks.c \
-	ags/GSequencer/ags_output_editor.c \
-	ags/GSequencer/ags_output_listing_editor_callbacks.c \
-	ags/GSequencer/ags_output_listing_editor.c \
-	ags/GSequencer/ags_pad.c \
-	ags/GSequencer/ags_pad_callbacks.c \
-	ags/GSequencer/ags_pad_editor.c \
-	ags/GSequencer/ags_pad_editor_callbacks.c \
-	ags/GSequencer/ags_performance_preferences.c \
-	ags/GSequencer/ags_performance_preferences_callbacks.c \
-	ags/GSequencer/ags_playback_window.c \
-	ags/GSequencer/ags_playback_window_callbacks.c \
-	ags/GSequencer/ags_plugin_browser.c \
-	ags/GSequencer/ags_plugin_browser_callbacks.c \
-	ags/GSequencer/ags_plugin_preferences.c \
-	ags/GSequencer/ags_plugin_preferences_callbacks.c \
-	ags/GSequencer/ags_preferences.c \
-	ags/GSequencer/ags_preferences_callbacks.c \
-	ags/GSequencer/ags_property_collection_editor.c \
-	ags/GSequencer/ags_property_collection_editor_callbacks.c \
-	ags/GSequencer/ags_property_editor.c \
-	ags/GSequencer/ags_property_editor_callbacks.c \
-	ags/GSequencer/ags_property_listing_editor.c \
-	ags/GSequencer/ags_quit_dialog_callbacks.c \
-	ags/GSequencer/ags_quit_dialog.c \
-	ags/GSequencer/ags_resize_editor.c \
-	ags/GSequencer/ags_sequencer_editor_callbacks.c \
-	ags/GSequencer/ags_sequencer_editor.c \
-	ags/GSequencer/ags_server_preferences.c \
-	ags/GSequencer/ags_server_preferences_callbacks.c \
-	ags/GSequencer/ags_sheet_window.c \
-	ags/GSequencer/ags_sheet_window_callbacks.c \
-	ags/GSequencer/ags_sheet_editor.c \
-	ags/GSequencer/ags_sheet_editor_callbacks.c \
-	ags/GSequencer/ags_ui_provider.c \
-	ags/GSequencer/ags_wave_window_callbacks.c \
-	ags/GSequencer/ags_wave_window.c \
-	ags/GSequencer/ags_wave_editor.c \
-	ags/GSequencer/ags_wave_editor_callbacks.c \
-	ags/GSequencer/ags_window.c \
-	ags/GSequencer/ags_soundcard_editor_callbacks.c \
-	ags/GSequencer/ags_soundcard_editor.c \
-	ags/GSequencer/ags_window_callbacks.c \
-	ags/GSequencer/ags_gsequencer_application.c \
-	ags/GSequencer/ags_gsequencer_application_context.c
+	ags/app/ags_animation_window.c \
+	ags/app/ags_automation_editor.c \
+	ags/app/ags_automation_editor_callbacks.c \
+	ags/app/ags_automation_window.c \
+	ags/app/ags_automation_window_callbacks.c \
+	ags/app/ags_audio_preferences.c \
+	ags/app/ags_audio_preferences_callbacks.c \
+	ags/app/ags_bulk_member.c \
+	ags/app/ags_bulk_member_callbacks.c \
+	ags/app/ags_composite_editor.c \
+	ags/app/ags_composite_editor_callbacks.c \
+	ags/app/ags_connection_editor_callbacks.c \
+	ags/app/ags_connection_editor.c \
+	ags/app/ags_context_menu.c \
+	ags/app/ags_dssi_browser_callbacks.c \
+	ags/app/ags_dssi_browser.c \
+	ags/app/ags_effect_bridge.c \
+	ags/app/ags_effect_bridge_callbacks.c \
+	ags/app/ags_effect_bulk.c \
+	ags/app/ags_effect_bulk_callbacks.c \
+	ags/app/ags_effect_line.c \
+	ags/app/ags_effect_line_callbacks.c \
+	ags/app/ags_effect_pad.c \
+	ags/app/ags_effect_pad_callbacks.c \
+	ags/app/ags_effect_separator.c \
+	ags/app/ags_export_soundcard.c \
+	ags/app/ags_export_soundcard_callbacks.c \
+	ags/app/ags_export_window.c \
+	ags/app/ags_export_window_callbacks.c \
+	ags/app/ags_generic_preferences.c \
+	ags/app/ags_generic_preferences_callbacks.c \
+	ags/app/ags_ladspa_browser.c \
+	ags/app/ags_ladspa_browser_callbacks.c \
+	ags/app/ags_lv2_browser.c \
+	ags/app/ags_lv2_browser_callbacks.c \
+	ags/app/ags_input_collection_editor_callbacks.c \
+	ags/app/ags_input_collection_editor.c \
+	ags/app/ags_input_editor_callbacks.c \
+	ags/app/ags_input_editor.c \
+	ags/app/ags_input_listing_editor_callbacks.c \
+	ags/app/ags_input_listing_editor.c \
+	ags/app/ags_line.c \
+	ags/app/ags_line_callbacks.c \
+	ags/app/ags_line_editor.c \
+	ags/app/ags_line_editor_callbacks.c \
+	ags/app/ags_line_member.c \
+	ags/app/ags_line_member_callbacks.c \
+	ags/app/ags_line_member_editor.c \
+	ags/app/ags_line_member_editor_callbacks.c \
+	ags/app/ags_link_collection_editor.c \
+	ags/app/ags_link_collection_editor_callbacks.c \
+	ags/app/ags_link_editor.c \
+	ags/app/ags_link_editor_callbacks.c \
+	ags/app/ags_listing_editor.c \
+	ags/app/ags_listing_editor_callbacks.c \
+	ags/app/ags_machine.c \
+	ags/app/ags_machine_util.c \
+	ags/app/ags_machine_callbacks.c \
+	ags/app/ags_machine_editor.c \
+	ags/app/ags_machine_editor_callbacks.c \
+	ags/app/ags_menu_action_callbacks.c \
+	ags/app/ags_menu_bar.c \
+	ags/app/ags_midi_dialog.c \
+	ags/app/ags_midi_dialog_callbacks.c \
+	ags/app/ags_midi_preferences.c \
+	ags/app/ags_midi_preferences_callbacks.c \
+	ags/app/ags_navigation.c \
+	ags/app/ags_navigation_callbacks.c \
+	ags/app/ags_notation_editor.c \
+	ags/app/ags_notation_editor_callbacks.c \
+	ags/app/ags_online_help_window.c \
+	ags/app/ags_online_help_window_callbacks.c \
+	ags/app/ags_osc_server_preferences_callbacks.c \
+	ags/app/ags_osc_server_preferences.c \
+	ags/app/ags_output_collection_editor_callbacks.c \
+	ags/app/ags_output_collection_editor.c \
+	ags/app/ags_output_editor_callbacks.c \
+	ags/app/ags_output_editor.c \
+	ags/app/ags_output_listing_editor_callbacks.c \
+	ags/app/ags_output_listing_editor.c \
+	ags/app/ags_pad.c \
+	ags/app/ags_pad_callbacks.c \
+	ags/app/ags_pad_editor.c \
+	ags/app/ags_pad_editor_callbacks.c \
+	ags/app/ags_performance_preferences.c \
+	ags/app/ags_performance_preferences_callbacks.c \
+	ags/app/ags_playback_window.c \
+	ags/app/ags_playback_window_callbacks.c \
+	ags/app/ags_plugin_browser.c \
+	ags/app/ags_plugin_browser_callbacks.c \
+	ags/app/ags_plugin_preferences.c \
+	ags/app/ags_plugin_preferences_callbacks.c \
+	ags/app/ags_preferences.c \
+	ags/app/ags_preferences_callbacks.c \
+	ags/app/ags_property_collection_editor.c \
+	ags/app/ags_property_collection_editor_callbacks.c \
+	ags/app/ags_property_editor.c \
+	ags/app/ags_property_editor_callbacks.c \
+	ags/app/ags_property_listing_editor.c \
+	ags/app/ags_quit_dialog_callbacks.c \
+	ags/app/ags_quit_dialog.c \
+	ags/app/ags_resize_editor.c \
+	ags/app/ags_sequencer_editor_callbacks.c \
+	ags/app/ags_sequencer_editor.c \
+	ags/app/ags_server_preferences.c \
+	ags/app/ags_server_preferences_callbacks.c \
+	ags/app/ags_sheet_window.c \
+	ags/app/ags_sheet_window_callbacks.c \
+	ags/app/ags_sheet_editor.c \
+	ags/app/ags_sheet_editor_callbacks.c \
+	ags/app/ags_ui_provider.c \
+	ags/app/ags_wave_window_callbacks.c \
+	ags/app/ags_wave_window.c \
+	ags/app/ags_wave_editor.c \
+	ags/app/ags_wave_editor_callbacks.c \
+	ags/app/ags_window.c \
+	ags/app/ags_soundcard_editor_callbacks.c \
+	ags/app/ags_soundcard_editor.c \
+	ags/app/ags_window_callbacks.c \
+	ags/app/ags_gsequencer_application.c \
+	ags/app/ags_gsequencer_application_context.c
 
 if WITH_VST3
 libgsequencer_c_sources += \
-	ags/GSequencer/ags_vst3_browser_callbacks.c \
-	ags/GSequencer/ags_vst3_browser.c
+	ags/app/ags_vst3_browser_callbacks.c \
+	ags/app/ags_vst3_browser.c
 else
 EXTRA_DIST += \
-	ags/GSequencer/ags_vst3_browser_callbacks.c \
-	ags/GSequencer/ags_vst3_browser.c
+	ags/app/ags_vst3_browser_callbacks.c \
+	ags/app/ags_vst3_browser.c
 endif
 
 # libgsequencer - OSC conotroller
@@ -2865,345 +2865,345 @@ deprecated_libgsequencer_osc_controller_h_sources =
 
 libgsequencer_osc_controller_h_sources = \
 	$(deprecated_libgsequencer_osc_controller_h_sources) \
-	ags/GSequencer/osc/controller/ags_ui_osc_renew_controller.h
+	ags/app/osc/controller/ags_ui_osc_renew_controller.h
 
 deprecated_libgsequencer_osc_controller_c_sources =
 
 libgsequencer_osc_controller_c_sources = \
 	$(deprecated_libgsequencer_osc_controller_c_sources) \
-	ags/GSequencer/osc/controller/ags_ui_osc_renew_controller.c
+	ags/app/osc/controller/ags_ui_osc_renew_controller.c
 
 # libgsequencer - file
 deprecated_libgsequencer_file_h_sources =
 
 libgsequencer_file_h_sources = \
 	$(deprecated_libgsequencer_file_h_sources) \
-	ags/GSequencer/file/ags_simple_file.h
+	ags/app/file/ags_simple_file.h
 
 deprecated_libgsequencer_file_c_sources =
 
 libgsequencer_file_c_sources = \
 	$(deprecated_libgsequencer_file_c_sources) \
-	ags/GSequencer/file/ags_simple_file.c
+	ags/app/file/ags_simple_file.c
 
 # libgsequencer - task
 deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
-	ags/GSequencer/task/ags_simple_file_read.h \
-	ags/GSequencer/task/ags_simple_file_write.h
+	ags/app/task/ags_simple_file_read.h \
+	ags/app/task/ags_simple_file_write.h
 
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
-	ags/GSequencer/task/ags_simple_file_read.c \
-	ags/GSequencer/task/ags_simple_file_write.c
+	ags/app/task/ags_simple_file_read.c \
+	ags/app/task/ags_simple_file_write.c
 
 # libgsequencer - import
 deprecated_libgsequencer_import_h_sources =
 
 libgsequencer_import_h_sources = \
 	$(deprecated_libgsequencer_import_h_sources) \
-	ags/GSequencer/import/ags_midi_import_wizard.h \
-	ags/GSequencer/import/ags_midi_import_wizard_callbacks.h \
-	ags/GSequencer/import/ags_track_collection.h \
-	ags/GSequencer/import/ags_track_collection_callbacks.h \
-	ags/GSequencer/import/ags_track_collection_mapper.h \
-	ags/GSequencer/import/ags_track_collection_mapper_callbacks.h
+	ags/app/import/ags_midi_import_wizard.h \
+	ags/app/import/ags_midi_import_wizard_callbacks.h \
+	ags/app/import/ags_track_collection.h \
+	ags/app/import/ags_track_collection_callbacks.h \
+	ags/app/import/ags_track_collection_mapper.h \
+	ags/app/import/ags_track_collection_mapper_callbacks.h
 
 deprecated_libgsequencer_import_c_sources =
 
 libgsequencer_import_c_sources = \
 	$(deprecated_libgsequencer_import_c_sources) \
-	ags/GSequencer/import/ags_midi_import_wizard.c \
-	ags/GSequencer/import/ags_midi_import_wizard_callbacks.c \
-	ags/GSequencer/import/ags_track_collection.c \
-	ags/GSequencer/import/ags_track_collection_callbacks.c \
-	ags/GSequencer/import/ags_track_collection_mapper.c \
-	ags/GSequencer/import/ags_track_collection_mapper_callbacks.c
+	ags/app/import/ags_midi_import_wizard.c \
+	ags/app/import/ags_midi_import_wizard_callbacks.c \
+	ags/app/import/ags_track_collection.c \
+	ags/app/import/ags_track_collection_callbacks.c \
+	ags/app/import/ags_track_collection_mapper.c \
+	ags/app/import/ags_track_collection_mapper_callbacks.c
 
 # libgsequencer - export
 deprecated_libgsequencer_export_h_sources =
 
 libgsequencer_export_h_sources = \
 	$(deprecated_libgsequencer_export_h_sources) \
-	ags/GSequencer/export/ags_midi_export_wizard.h \
-	ags/GSequencer/export/ags_midi_export_wizard_callbacks.h \
-	ags/GSequencer/export/ags_machine_collection.h \
-	ags/GSequencer/export/ags_machine_collection_callbacks.h \
-	ags/GSequencer/export/ags_machine_collection_entry.h \
-	ags/GSequencer/export/ags_machine_collection_entry_callbacks.h \
-	ags/GSequencer/export/ags_wave_export_dialog.h \
-	ags/GSequencer/export/ags_wave_export_dialog_callbacks.h
+	ags/app/export/ags_midi_export_wizard.h \
+	ags/app/export/ags_midi_export_wizard_callbacks.h \
+	ags/app/export/ags_machine_collection.h \
+	ags/app/export/ags_machine_collection_callbacks.h \
+	ags/app/export/ags_machine_collection_entry.h \
+	ags/app/export/ags_machine_collection_entry_callbacks.h \
+	ags/app/export/ags_wave_export_dialog.h \
+	ags/app/export/ags_wave_export_dialog_callbacks.h
 
 deprecated_libgsequencer_export_c_sources =
 
 libgsequencer_export_c_sources = \
 	$(deprecated_libgsequencer_export_c_sources) \
-	ags/GSequencer/export/ags_midi_export_wizard.c \
-	ags/GSequencer/export/ags_midi_export_wizard_callbacks.c \
-	ags/GSequencer/export/ags_machine_collection.c \
-	ags/GSequencer/export/ags_machine_collection_callbacks.c \
-	ags/GSequencer/export/ags_machine_collection_entry.c \
-	ags/GSequencer/export/ags_machine_collection_entry_callbacks.c \
-	ags/GSequencer/export/ags_wave_export_dialog.c \
-	ags/GSequencer/export/ags_wave_export_dialog_callbacks.c
+	ags/app/export/ags_midi_export_wizard.c \
+	ags/app/export/ags_midi_export_wizard_callbacks.c \
+	ags/app/export/ags_machine_collection.c \
+	ags/app/export/ags_machine_collection_callbacks.c \
+	ags/app/export/ags_machine_collection_entry.c \
+	ags/app/export/ags_machine_collection_entry_callbacks.c \
+	ags/app/export/ags_wave_export_dialog.c \
+	ags/app/export/ags_wave_export_dialog_callbacks.c
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =
 
 libgsequencer_machine_h_sources = \
 	$(deprecated_libgsequencer_machine_h_sources) \
-	ags/GSequencer/machine/ags_audiorec.h \
-	ags/GSequencer/machine/ags_audiorec_callbacks.h \
-	ags/GSequencer/machine/ags_cell_pattern_callbacks.h \
-	ags/GSequencer/machine/ags_cell_pattern.h \
-	ags/GSequencer/machine/ags_desk_callbacks.h \
-	ags/GSequencer/machine/ags_desk.h \
-	ags/GSequencer/machine/ags_desk_file_chooser.h \
-	ags/GSequencer/machine/ags_desk_pad_callbacks.h \
-	ags/GSequencer/machine/ags_desk_pad.h \
-	ags/GSequencer/machine/ags_drum_callbacks.h \
-	ags/GSequencer/machine/ags_drum.h \
-	ags/GSequencer/machine/ags_drum_input_line_callbacks.h \
-	ags/GSequencer/machine/ags_drum_input_line.h \
-	ags/GSequencer/machine/ags_drum_input_pad_callbacks.h \
-	ags/GSequencer/machine/ags_drum_input_pad.h \
-	ags/GSequencer/machine/ags_drum_output_line_callbacks.h \
-	ags/GSequencer/machine/ags_drum_output_line.h \
-	ags/GSequencer/machine/ags_drum_output_pad_callbacks.h \
-	ags/GSequencer/machine/ags_drum_output_pad.h \
-	ags/GSequencer/machine/ags_dssi_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_dssi_bridge.h \
-	ags/GSequencer/machine/ags_equalizer10.h \
-	ags/GSequencer/machine/ags_equalizer10_callbacks.h \
-	ags/GSequencer/machine/ags_hybrid_fm_synth_callbacks.h \
-	ags/GSequencer/machine/ags_hybrid_fm_synth.h \
-	ags/GSequencer/machine/ags_fm_oscillator_callbacks.h \
-	ags/GSequencer/machine/ags_fm_oscillator.h \
-	ags/GSequencer/machine/ags_fm_syncsynth.h \
-	ags/GSequencer/machine/ags_fm_syncsynth_callbacks.h \
-	ags/GSequencer/machine/ags_fm_synth.h \
-	ags/GSequencer/machine/ags_fm_synth_callbacks.h \
-	ags/GSequencer/machine/ags_fm_synth_input_pad.h \
-	ags/GSequencer/machine/ags_fm_synth_input_line.h \
-	ags/GSequencer/machine/ags_fm_synth_input_line_callbacks.h \
-	ags/GSequencer/machine/ags_hybrid_synth.h \
-	ags/GSequencer/machine/ags_hybrid_synth_callbacks.h \
-	ags/GSequencer/machine/ags_ladspa_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_ladspa_bridge.h \
-	ags/GSequencer/machine/ags_live_dssi_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_live_dssi_bridge.h \
-	ags/GSequencer/machine/ags_live_lv2_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_live_lv2_bridge.h \
-	ags/GSequencer/machine/ags_lv2_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_lv2_bridge.h \
-	ags/GSequencer/machine/ags_matrix_callbacks.h \
-	ags/GSequencer/machine/ags_matrix.h \
-	ags/GSequencer/machine/ags_matrix_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_matrix_bridge.h \
-	ags/GSequencer/machine/ags_matrix_bulk_input_callbacks.h \
-	ags/GSequencer/machine/ags_matrix_bulk_input.h \
-	ags/GSequencer/machine/ags_mixer_callbacks.h \
-	ags/GSequencer/machine/ags_mixer.h \
-	ags/GSequencer/machine/ags_mixer_input_line.h \
-	ags/GSequencer/machine/ags_mixer_input_pad.h \
-	ags/GSequencer/machine/ags_oscillator_callbacks.h \
-	ags/GSequencer/machine/ags_oscillator.h \
-	ags/GSequencer/machine/ags_panel_callbacks.h \
-	ags/GSequencer/machine/ags_panel.h \
-	ags/GSequencer/machine/ags_panel_input_line.h \
-	ags/GSequencer/machine/ags_panel_input_line_callbacks.h \
-	ags/GSequencer/machine/ags_panel_input_pad.h \
-	ags/GSequencer/machine/ags_pattern_box_callbacks.h \
-	ags/GSequencer/machine/ags_pattern_box.h \
-	ags/GSequencer/machine/ags_pitch_sampler.h \
-	ags/GSequencer/machine/ags_pitch_sampler_callbacks.h \
-	ags/GSequencer/machine/ags_pitch_sampler_file.h \
-	ags/GSequencer/machine/ags_pitch_sampler_file_callbacks.h \
-	ags/GSequencer/machine/ags_sfz_synth.h \
-	ags/GSequencer/machine/ags_sfz_synth_callbacks.h \
-	ags/GSequencer/machine/ags_synth_callbacks.h \
-	ags/GSequencer/machine/ags_syncsynth.h \
-	ags/GSequencer/machine/ags_syncsynth_callbacks.h \
-	ags/GSequencer/machine/ags_synth.h \
-	ags/GSequencer/machine/ags_synth_input_line.h \
-	ags/GSequencer/machine/ags_synth_input_line_callbacks.h \
-	ags/GSequencer/machine/ags_synth_input_pad.h \
-	ags/GSequencer/machine/ags_spectrometer.h \
-	ags/GSequencer/machine/ags_spectrometer_callbacks.h
+	ags/app/machine/ags_audiorec.h \
+	ags/app/machine/ags_audiorec_callbacks.h \
+	ags/app/machine/ags_cell_pattern_callbacks.h \
+	ags/app/machine/ags_cell_pattern.h \
+	ags/app/machine/ags_desk_callbacks.h \
+	ags/app/machine/ags_desk.h \
+	ags/app/machine/ags_desk_file_chooser.h \
+	ags/app/machine/ags_desk_pad_callbacks.h \
+	ags/app/machine/ags_desk_pad.h \
+	ags/app/machine/ags_drum_callbacks.h \
+	ags/app/machine/ags_drum.h \
+	ags/app/machine/ags_drum_input_line_callbacks.h \
+	ags/app/machine/ags_drum_input_line.h \
+	ags/app/machine/ags_drum_input_pad_callbacks.h \
+	ags/app/machine/ags_drum_input_pad.h \
+	ags/app/machine/ags_drum_output_line_callbacks.h \
+	ags/app/machine/ags_drum_output_line.h \
+	ags/app/machine/ags_drum_output_pad_callbacks.h \
+	ags/app/machine/ags_drum_output_pad.h \
+	ags/app/machine/ags_dssi_bridge_callbacks.h \
+	ags/app/machine/ags_dssi_bridge.h \
+	ags/app/machine/ags_equalizer10.h \
+	ags/app/machine/ags_equalizer10_callbacks.h \
+	ags/app/machine/ags_hybrid_fm_synth_callbacks.h \
+	ags/app/machine/ags_hybrid_fm_synth.h \
+	ags/app/machine/ags_fm_oscillator_callbacks.h \
+	ags/app/machine/ags_fm_oscillator.h \
+	ags/app/machine/ags_fm_syncsynth.h \
+	ags/app/machine/ags_fm_syncsynth_callbacks.h \
+	ags/app/machine/ags_fm_synth.h \
+	ags/app/machine/ags_fm_synth_callbacks.h \
+	ags/app/machine/ags_fm_synth_input_pad.h \
+	ags/app/machine/ags_fm_synth_input_line.h \
+	ags/app/machine/ags_fm_synth_input_line_callbacks.h \
+	ags/app/machine/ags_hybrid_synth.h \
+	ags/app/machine/ags_hybrid_synth_callbacks.h \
+	ags/app/machine/ags_ladspa_bridge_callbacks.h \
+	ags/app/machine/ags_ladspa_bridge.h \
+	ags/app/machine/ags_live_dssi_bridge_callbacks.h \
+	ags/app/machine/ags_live_dssi_bridge.h \
+	ags/app/machine/ags_live_lv2_bridge_callbacks.h \
+	ags/app/machine/ags_live_lv2_bridge.h \
+	ags/app/machine/ags_lv2_bridge_callbacks.h \
+	ags/app/machine/ags_lv2_bridge.h \
+	ags/app/machine/ags_matrix_callbacks.h \
+	ags/app/machine/ags_matrix.h \
+	ags/app/machine/ags_matrix_bridge_callbacks.h \
+	ags/app/machine/ags_matrix_bridge.h \
+	ags/app/machine/ags_matrix_bulk_input_callbacks.h \
+	ags/app/machine/ags_matrix_bulk_input.h \
+	ags/app/machine/ags_mixer_callbacks.h \
+	ags/app/machine/ags_mixer.h \
+	ags/app/machine/ags_mixer_input_line.h \
+	ags/app/machine/ags_mixer_input_pad.h \
+	ags/app/machine/ags_oscillator_callbacks.h \
+	ags/app/machine/ags_oscillator.h \
+	ags/app/machine/ags_panel_callbacks.h \
+	ags/app/machine/ags_panel.h \
+	ags/app/machine/ags_panel_input_line.h \
+	ags/app/machine/ags_panel_input_line_callbacks.h \
+	ags/app/machine/ags_panel_input_pad.h \
+	ags/app/machine/ags_pattern_box_callbacks.h \
+	ags/app/machine/ags_pattern_box.h \
+	ags/app/machine/ags_pitch_sampler.h \
+	ags/app/machine/ags_pitch_sampler_callbacks.h \
+	ags/app/machine/ags_pitch_sampler_file.h \
+	ags/app/machine/ags_pitch_sampler_file_callbacks.h \
+	ags/app/machine/ags_sfz_synth.h \
+	ags/app/machine/ags_sfz_synth_callbacks.h \
+	ags/app/machine/ags_synth_callbacks.h \
+	ags/app/machine/ags_syncsynth.h \
+	ags/app/machine/ags_syncsynth_callbacks.h \
+	ags/app/machine/ags_synth.h \
+	ags/app/machine/ags_synth_input_line.h \
+	ags/app/machine/ags_synth_input_line_callbacks.h \
+	ags/app/machine/ags_synth_input_pad.h \
+	ags/app/machine/ags_spectrometer.h \
+	ags/app/machine/ags_spectrometer_callbacks.h
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_h_sources += \
-	ags/GSequencer/machine/ags_ffplayer_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer.h \
-	ags/GSequencer/machine/ags_ffplayer_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_bridge.h \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input.h \
-	ags/GSequencer/machine/ags_ffplayer_input_line_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_input_line.h \
-	ags/GSequencer/machine/ags_ffplayer_input_pad_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_input_pad.h \
-	ags/GSequencer/machine/ags_sf2_synth_callbacks.h \
-	ags/GSequencer/machine/ags_sf2_synth.h
+	ags/app/machine/ags_ffplayer_callbacks.h \
+	ags/app/machine/ags_ffplayer.h \
+	ags/app/machine/ags_ffplayer_bridge_callbacks.h \
+	ags/app/machine/ags_ffplayer_bridge.h \
+	ags/app/machine/ags_ffplayer_bulk_input_callbacks.h \
+	ags/app/machine/ags_ffplayer_bulk_input.h \
+	ags/app/machine/ags_ffplayer_input_line_callbacks.h \
+	ags/app/machine/ags_ffplayer_input_line.h \
+	ags/app/machine/ags_ffplayer_input_pad_callbacks.h \
+	ags/app/machine/ags_ffplayer_input_pad.h \
+	ags/app/machine/ags_sf2_synth_callbacks.h \
+	ags/app/machine/ags_sf2_synth.h
 else
 EXTRA_DIST += \
-	ags/GSequencer/machine/ags_ffplayer_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer.h \
-	ags/GSequencer/machine/ags_ffplayer_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_bridge.h \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input.h \
-	ags/GSequencer/machine/ags_ffplayer_input_line_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_input_line.h \
-	ags/GSequencer/machine/ags_ffplayer_input_pad_callbacks.h \
-	ags/GSequencer/machine/ags_ffplayer_input_pad.h \
-	ags/GSequencer/machine/ags_sf2_synth_callbacks.h \
-	ags/GSequencer/machine/ags_sf2_synth.h
+	ags/app/machine/ags_ffplayer_callbacks.h \
+	ags/app/machine/ags_ffplayer.h \
+	ags/app/machine/ags_ffplayer_bridge_callbacks.h \
+	ags/app/machine/ags_ffplayer_bridge.h \
+	ags/app/machine/ags_ffplayer_bulk_input_callbacks.h \
+	ags/app/machine/ags_ffplayer_bulk_input.h \
+	ags/app/machine/ags_ffplayer_input_line_callbacks.h \
+	ags/app/machine/ags_ffplayer_input_line.h \
+	ags/app/machine/ags_ffplayer_input_pad_callbacks.h \
+	ags/app/machine/ags_ffplayer_input_pad.h \
+	ags/app/machine/ags_sf2_synth_callbacks.h \
+	ags/app/machine/ags_sf2_synth.h
 endif
 
 if WITH_VST3
 libgsequencer_machine_h_sources += \
-	ags/GSequencer/machine/ags_live_vst3_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_live_vst3_bridge.h \
-	ags/GSequencer/machine/ags_vst3_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_vst3_bridge.h
+	ags/app/machine/ags_live_vst3_bridge_callbacks.h \
+	ags/app/machine/ags_live_vst3_bridge.h \
+	ags/app/machine/ags_vst3_bridge_callbacks.h \
+	ags/app/machine/ags_vst3_bridge.h
 else
 EXTRA_DIST += \
-	ags/GSequencer/machine/ags_live_vst3_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_live_vst3_bridge.h \
-	ags/GSequencer/machine/ags_vst3_bridge_callbacks.h \
-	ags/GSequencer/machine/ags_vst3_bridge.h
+	ags/app/machine/ags_live_vst3_bridge_callbacks.h \
+	ags/app/machine/ags_live_vst3_bridge.h \
+	ags/app/machine/ags_vst3_bridge_callbacks.h \
+	ags/app/machine/ags_vst3_bridge.h
 endif
 
 deprecated_libgsequencer_machine_c_sources =
 
 libgsequencer_machine_c_sources = \
 	$(deprecated_libgsequencer_machine_c_sources) \
-	ags/GSequencer/machine/ags_audiorec.c \
-	ags/GSequencer/machine/ags_audiorec_callbacks.c \
-	ags/GSequencer/machine/ags_cell_pattern.c \
-	ags/GSequencer/machine/ags_cell_pattern_callbacks.c \
-	ags/GSequencer/machine/ags_desk_callbacks.c \
-	ags/GSequencer/machine/ags_desk.c \
-	ags/GSequencer/machine/ags_desk_file_chooser.c \
-	ags/GSequencer/machine/ags_desk_pad_callbacks.c \
-	ags/GSequencer/machine/ags_desk_pad.c \
-	ags/GSequencer/machine/ags_drum.c \
-	ags/GSequencer/machine/ags_drum_callbacks.c \
-	ags/GSequencer/machine/ags_drum_input_line.c \
-	ags/GSequencer/machine/ags_drum_input_line_callbacks.c \
-	ags/GSequencer/machine/ags_drum_input_pad.c \
-	ags/GSequencer/machine/ags_drum_input_pad_callbacks.c \
-	ags/GSequencer/machine/ags_drum_output_line.c \
-	ags/GSequencer/machine/ags_drum_output_line_callbacks.c \
-	ags/GSequencer/machine/ags_drum_output_pad.c \
-	ags/GSequencer/machine/ags_drum_output_pad_callbacks.c \
-	ags/GSequencer/machine/ags_dssi_bridge.c \
-	ags/GSequencer/machine/ags_dssi_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_equalizer10.c \
-	ags/GSequencer/machine/ags_equalizer10_callbacks.c \
-	ags/GSequencer/machine/ags_hybrid_fm_synth.c \
-	ags/GSequencer/machine/ags_hybrid_fm_synth_callbacks.c \
-	ags/GSequencer/machine/ags_fm_oscillator_callbacks.c \
-	ags/GSequencer/machine/ags_fm_oscillator.c \
-	ags/GSequencer/machine/ags_fm_syncsynth.c \
-	ags/GSequencer/machine/ags_fm_syncsynth_callbacks.c \
-	ags/GSequencer/machine/ags_fm_synth.c \
-	ags/GSequencer/machine/ags_fm_synth_callbacks.c \
-	ags/GSequencer/machine/ags_fm_synth_input_pad.c \
-	ags/GSequencer/machine/ags_fm_synth_input_line.c \
-	ags/GSequencer/machine/ags_fm_synth_input_line_callbacks.c \
-	ags/GSequencer/machine/ags_hybrid_synth.c \
-	ags/GSequencer/machine/ags_hybrid_synth_callbacks.c \
-	ags/GSequencer/machine/ags_ladspa_bridge.c \
-	ags/GSequencer/machine/ags_ladspa_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_live_dssi_bridge.c \
-	ags/GSequencer/machine/ags_live_dssi_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_live_lv2_bridge.c \
-	ags/GSequencer/machine/ags_live_lv2_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_lv2_bridge.c \
-	ags/GSequencer/machine/ags_lv2_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_matrix.c \
-	ags/GSequencer/machine/ags_matrix_callbacks.c \
-	ags/GSequencer/machine/ags_matrix_bridge.c \
-	ags/GSequencer/machine/ags_matrix_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_matrix_bulk_input.c \
-	ags/GSequencer/machine/ags_matrix_bulk_input_callbacks.c \
-	ags/GSequencer/machine/ags_mixer.c \
-	ags/GSequencer/machine/ags_mixer_callbacks.c \
-	ags/GSequencer/machine/ags_mixer_input_line.c \
-	ags/GSequencer/machine/ags_mixer_input_pad.c \
-	ags/GSequencer/machine/ags_oscillator.c \
-	ags/GSequencer/machine/ags_oscillator_callbacks.c \
-	ags/GSequencer/machine/ags_panel.c \
-	ags/GSequencer/machine/ags_panel_callbacks.c \
-	ags/GSequencer/machine/ags_panel_input_line.c \
-	ags/GSequencer/machine/ags_panel_input_line_callbacks.c \
-	ags/GSequencer/machine/ags_panel_input_pad.c \
-	ags/GSequencer/machine/ags_pattern_box_callbacks.c \
-	ags/GSequencer/machine/ags_pattern_box.c \
-	ags/GSequencer/machine/ags_pitch_sampler.c \
-	ags/GSequencer/machine/ags_pitch_sampler_callbacks.c \
-	ags/GSequencer/machine/ags_pitch_sampler_file.c \
-	ags/GSequencer/machine/ags_pitch_sampler_file_callbacks.c \
-	ags/GSequencer/machine/ags_sfz_synth.c \
-	ags/GSequencer/machine/ags_sfz_synth_callbacks.c \
-	ags/GSequencer/machine/ags_syncsynth.c \
-	ags/GSequencer/machine/ags_syncsynth_callbacks.c \
-	ags/GSequencer/machine/ags_synth.c \
-	ags/GSequencer/machine/ags_synth_callbacks.c \
-	ags/GSequencer/machine/ags_synth_input_line.c \
-	ags/GSequencer/machine/ags_synth_input_line_callbacks.c \
-	ags/GSequencer/machine/ags_synth_input_pad.c \
-	ags/GSequencer/machine/ags_spectrometer.c \
-	ags/GSequencer/machine/ags_spectrometer_callbacks.c
+	ags/app/machine/ags_audiorec.c \
+	ags/app/machine/ags_audiorec_callbacks.c \
+	ags/app/machine/ags_cell_pattern.c \
+	ags/app/machine/ags_cell_pattern_callbacks.c \
+	ags/app/machine/ags_desk_callbacks.c \
+	ags/app/machine/ags_desk.c \
+	ags/app/machine/ags_desk_file_chooser.c \
+	ags/app/machine/ags_desk_pad_callbacks.c \
+	ags/app/machine/ags_desk_pad.c \
+	ags/app/machine/ags_drum.c \
+	ags/app/machine/ags_drum_callbacks.c \
+	ags/app/machine/ags_drum_input_line.c \
+	ags/app/machine/ags_drum_input_line_callbacks.c \
+	ags/app/machine/ags_drum_input_pad.c \
+	ags/app/machine/ags_drum_input_pad_callbacks.c \
+	ags/app/machine/ags_drum_output_line.c \
+	ags/app/machine/ags_drum_output_line_callbacks.c \
+	ags/app/machine/ags_drum_output_pad.c \
+	ags/app/machine/ags_drum_output_pad_callbacks.c \
+	ags/app/machine/ags_dssi_bridge.c \
+	ags/app/machine/ags_dssi_bridge_callbacks.c \
+	ags/app/machine/ags_equalizer10.c \
+	ags/app/machine/ags_equalizer10_callbacks.c \
+	ags/app/machine/ags_hybrid_fm_synth.c \
+	ags/app/machine/ags_hybrid_fm_synth_callbacks.c \
+	ags/app/machine/ags_fm_oscillator_callbacks.c \
+	ags/app/machine/ags_fm_oscillator.c \
+	ags/app/machine/ags_fm_syncsynth.c \
+	ags/app/machine/ags_fm_syncsynth_callbacks.c \
+	ags/app/machine/ags_fm_synth.c \
+	ags/app/machine/ags_fm_synth_callbacks.c \
+	ags/app/machine/ags_fm_synth_input_pad.c \
+	ags/app/machine/ags_fm_synth_input_line.c \
+	ags/app/machine/ags_fm_synth_input_line_callbacks.c \
+	ags/app/machine/ags_hybrid_synth.c \
+	ags/app/machine/ags_hybrid_synth_callbacks.c \
+	ags/app/machine/ags_ladspa_bridge.c \
+	ags/app/machine/ags_ladspa_bridge_callbacks.c \
+	ags/app/machine/ags_live_dssi_bridge.c \
+	ags/app/machine/ags_live_dssi_bridge_callbacks.c \
+	ags/app/machine/ags_live_lv2_bridge.c \
+	ags/app/machine/ags_live_lv2_bridge_callbacks.c \
+	ags/app/machine/ags_lv2_bridge.c \
+	ags/app/machine/ags_lv2_bridge_callbacks.c \
+	ags/app/machine/ags_matrix.c \
+	ags/app/machine/ags_matrix_callbacks.c \
+	ags/app/machine/ags_matrix_bridge.c \
+	ags/app/machine/ags_matrix_bridge_callbacks.c \
+	ags/app/machine/ags_matrix_bulk_input.c \
+	ags/app/machine/ags_matrix_bulk_input_callbacks.c \
+	ags/app/machine/ags_mixer.c \
+	ags/app/machine/ags_mixer_callbacks.c \
+	ags/app/machine/ags_mixer_input_line.c \
+	ags/app/machine/ags_mixer_input_pad.c \
+	ags/app/machine/ags_oscillator.c \
+	ags/app/machine/ags_oscillator_callbacks.c \
+	ags/app/machine/ags_panel.c \
+	ags/app/machine/ags_panel_callbacks.c \
+	ags/app/machine/ags_panel_input_line.c \
+	ags/app/machine/ags_panel_input_line_callbacks.c \
+	ags/app/machine/ags_panel_input_pad.c \
+	ags/app/machine/ags_pattern_box_callbacks.c \
+	ags/app/machine/ags_pattern_box.c \
+	ags/app/machine/ags_pitch_sampler.c \
+	ags/app/machine/ags_pitch_sampler_callbacks.c \
+	ags/app/machine/ags_pitch_sampler_file.c \
+	ags/app/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/app/machine/ags_sfz_synth.c \
+	ags/app/machine/ags_sfz_synth_callbacks.c \
+	ags/app/machine/ags_syncsynth.c \
+	ags/app/machine/ags_syncsynth_callbacks.c \
+	ags/app/machine/ags_synth.c \
+	ags/app/machine/ags_synth_callbacks.c \
+	ags/app/machine/ags_synth_input_line.c \
+	ags/app/machine/ags_synth_input_line_callbacks.c \
+	ags/app/machine/ags_synth_input_pad.c \
+	ags/app/machine/ags_spectrometer.c \
+	ags/app/machine/ags_spectrometer_callbacks.c
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_c_sources += \
-	ags/GSequencer/machine/ags_ffplayer.c \
-	ags/GSequencer/machine/ags_ffplayer_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_bridge.c \
-	ags/GSequencer/machine/ags_ffplayer_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input.c \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_input_line.c \
-	ags/GSequencer/machine/ags_ffplayer_input_line_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_input_pad.c \
-	ags/GSequencer/machine/ags_ffplayer_input_pad_callbacks.c \
-	ags/GSequencer/machine/ags_sf2_synth.c \
-	ags/GSequencer/machine/ags_sf2_synth_callbacks.c
+	ags/app/machine/ags_ffplayer.c \
+	ags/app/machine/ags_ffplayer_callbacks.c \
+	ags/app/machine/ags_ffplayer_bridge.c \
+	ags/app/machine/ags_ffplayer_bridge_callbacks.c \
+	ags/app/machine/ags_ffplayer_bulk_input.c \
+	ags/app/machine/ags_ffplayer_bulk_input_callbacks.c \
+	ags/app/machine/ags_ffplayer_input_line.c \
+	ags/app/machine/ags_ffplayer_input_line_callbacks.c \
+	ags/app/machine/ags_ffplayer_input_pad.c \
+	ags/app/machine/ags_ffplayer_input_pad_callbacks.c \
+	ags/app/machine/ags_sf2_synth.c \
+	ags/app/machine/ags_sf2_synth_callbacks.c
 else
 EXTRA_DIST += \
-	ags/GSequencer/machine/ags_ffplayer.c \
-	ags/GSequencer/machine/ags_ffplayer_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_bridge.c \
-	ags/GSequencer/machine/ags_ffplayer_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input.c \
-	ags/GSequencer/machine/ags_ffplayer_bulk_input_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_input_line.c \
-	ags/GSequencer/machine/ags_ffplayer_input_line_callbacks.c \
-	ags/GSequencer/machine/ags_ffplayer_input_pad.c \
-	ags/GSequencer/machine/ags_ffplayer_input_pad_callbacks.c \
-	ags/GSequencer/machine/ags_sf2_synth.c \
-	ags/GSequencer/machine/ags_sf2_synth_callbacks.c
+	ags/app/machine/ags_ffplayer.c \
+	ags/app/machine/ags_ffplayer_callbacks.c \
+	ags/app/machine/ags_ffplayer_bridge.c \
+	ags/app/machine/ags_ffplayer_bridge_callbacks.c \
+	ags/app/machine/ags_ffplayer_bulk_input.c \
+	ags/app/machine/ags_ffplayer_bulk_input_callbacks.c \
+	ags/app/machine/ags_ffplayer_input_line.c \
+	ags/app/machine/ags_ffplayer_input_line_callbacks.c \
+	ags/app/machine/ags_ffplayer_input_pad.c \
+	ags/app/machine/ags_ffplayer_input_pad_callbacks.c \
+	ags/app/machine/ags_sf2_synth.c \
+	ags/app/machine/ags_sf2_synth_callbacks.c
 endif
 
 if WITH_VST3
 libgsequencer_machine_c_sources += \
-	ags/GSequencer/machine/ags_live_vst3_bridge.c \
-	ags/GSequencer/machine/ags_live_vst3_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_vst3_bridge.c \
-	ags/GSequencer/machine/ags_vst3_bridge_callbacks.c
+	ags/app/machine/ags_live_vst3_bridge.c \
+	ags/app/machine/ags_live_vst3_bridge_callbacks.c \
+	ags/app/machine/ags_vst3_bridge.c \
+	ags/app/machine/ags_vst3_bridge_callbacks.c
 else
 EXTRA_DIST += \
-	ags/GSequencer/machine/ags_live_vst3_bridge.c \
-	ags/GSequencer/machine/ags_live_vst3_bridge_callbacks.c \
-	ags/GSequencer/machine/ags_vst3_bridge.c \
-	ags/GSequencer/machine/ags_vst3_bridge_callbacks.c
+	ags/app/machine/ags_live_vst3_bridge.c \
+	ags/app/machine/ags_live_vst3_bridge_callbacks.c \
+	ags/app/machine/ags_vst3_bridge.c \
+	ags/app/machine/ags_vst3_bridge_callbacks.c
 endif
 
 # libgsequencer - editor
@@ -3211,153 +3211,153 @@ deprecated_libgsequencer_editor_h_sources =
 
 libgsequencer_editor_h_sources = \
 	$(deprecated_libgsequencer_editor_h_sources) \
-	ags/GSequencer/editor/ags_add_sheet_page_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_add_sheet_page_dialog.h \
-	ags/GSequencer/editor/ags_automation_edit_callbacks.h \
-	ags/GSequencer/editor/ags_automation_edit_box.h \
-	ags/GSequencer/editor/ags_automation_edit.h \
-	ags/GSequencer/editor/ags_automation_meta_callbacks.h \
-	ags/GSequencer/editor/ags_automation_meta.h \
-	ags/GSequencer/editor/ags_automation_toolbar_callbacks.h \
-	ags/GSequencer/editor/ags_automation_toolbar.h \
-	ags/GSequencer/editor/ags_composite_edit.h \
-	ags/GSequencer/editor/ags_composite_edit_callbacks.h \
-	ags/GSequencer/editor/ags_composite_toolbar.h \
-	ags/GSequencer/editor/ags_composite_toolbar_callbacks.h \
-	ags/GSequencer/editor/ags_crop_note_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_crop_note_dialog.h \
-	ags/GSequencer/editor/ags_envelope_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_envelope_dialog.h \
-	ags/GSequencer/editor/ags_envelope_editor_callbacks.h \
-	ags/GSequencer/editor/ags_envelope_editor.h \
-	ags/GSequencer/editor/ags_envelope_info_callbacks.h \
-	ags/GSequencer/editor/ags_envelope_info.h \
-	ags/GSequencer/editor/ags_machine_radio_button.h \
-	ags/GSequencer/editor/ags_machine_radio_button_callbacks.h \
-	ags/GSequencer/editor/ags_machine_selection.h \
-	ags/GSequencer/editor/ags_machine_selector_callbacks.h \
-	ags/GSequencer/editor/ags_machine_selector.h \
-	ags/GSequencer/editor/ags_move_note_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_move_note_dialog.h \
-	ags/GSequencer/editor/ags_notation_edit_callbacks.h \
-	ags/GSequencer/editor/ags_notation_edit.h \
-	ags/GSequencer/editor/ags_notation_meta_callbacks.h \
-	ags/GSequencer/editor/ags_notation_meta.h \
-	ags/GSequencer/editor/ags_notation_toolbar_callbacks.h \
-	ags/GSequencer/editor/ags_notation_toolbar.h \
-	ags/GSequencer/editor/ags_pattern_envelope_callbacks.h \
-	ags/GSequencer/editor/ags_pattern_envelope.h \
-	ags/GSequencer/editor/ags_position_automation_cursor_dialog.h \
-	ags/GSequencer/editor/ags_position_automation_cursor_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_position_notation_cursor_dialog.h \
-	ags/GSequencer/editor/ags_position_notation_cursor_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_position_sheet_cursor_dialog.h \
-	ags/GSequencer/editor/ags_position_sheet_cursor_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_position_wave_cursor_dialog.h \
-	ags/GSequencer/editor/ags_position_wave_cursor_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_ramp_acceleration_dialog.h \
-	ags/GSequencer/editor/ags_ramp_acceleration_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_remove_sheet_page_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_remove_sheet_page_dialog.h \
-	ags/GSequencer/editor/ags_scrolled_automation_edit_box.h \
-	ags/GSequencer/editor/ags_scrolled_wave_edit_box.h \
-	ags/GSequencer/editor/ags_select_acceleration_dialog.h \
-	ags/GSequencer/editor/ags_select_acceleration_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_select_buffer_dialog.h \
-	ags/GSequencer/editor/ags_select_buffer_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_select_note_dialog.h \
-	ags/GSequencer/editor/ags_select_note_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_sheet_edit.h \
-	ags/GSequencer/editor/ags_sheet_edit_callbacks.h \
-	ags/GSequencer/editor/ags_sheet_toolbar.h \
-	ags/GSequencer/editor/ags_sheet_toolbar_callbacks.h \
-	ags/GSequencer/editor/ags_time_stretch_buffer_dialog.h \
-	ags/GSequencer/editor/ags_time_stretch_buffer_dialog_callbacks.h \
-	ags/GSequencer/editor/ags_vautomation_edit_box.h \
-	ags/GSequencer/editor/ags_vwave_edit_box.h \
-	ags/GSequencer/editor/ags_wave_edit_callbacks.h \
-	ags/GSequencer/editor/ags_wave_edit.h \
-	ags/GSequencer/editor/ags_wave_edit_box.h \
-	ags/GSequencer/editor/ags_wave_meta_callbacks.h \
-	ags/GSequencer/editor/ags_wave_meta.h \
-	ags/GSequencer/editor/ags_wave_toolbar_callbacks.h \
-	ags/GSequencer/editor/ags_wave_toolbar.h
+	ags/app/editor/ags_add_sheet_page_dialog_callbacks.h \
+	ags/app/editor/ags_add_sheet_page_dialog.h \
+	ags/app/editor/ags_automation_edit_callbacks.h \
+	ags/app/editor/ags_automation_edit_box.h \
+	ags/app/editor/ags_automation_edit.h \
+	ags/app/editor/ags_automation_meta_callbacks.h \
+	ags/app/editor/ags_automation_meta.h \
+	ags/app/editor/ags_automation_toolbar_callbacks.h \
+	ags/app/editor/ags_automation_toolbar.h \
+	ags/app/editor/ags_composite_edit.h \
+	ags/app/editor/ags_composite_edit_callbacks.h \
+	ags/app/editor/ags_composite_toolbar.h \
+	ags/app/editor/ags_composite_toolbar_callbacks.h \
+	ags/app/editor/ags_crop_note_dialog_callbacks.h \
+	ags/app/editor/ags_crop_note_dialog.h \
+	ags/app/editor/ags_envelope_dialog_callbacks.h \
+	ags/app/editor/ags_envelope_dialog.h \
+	ags/app/editor/ags_envelope_editor_callbacks.h \
+	ags/app/editor/ags_envelope_editor.h \
+	ags/app/editor/ags_envelope_info_callbacks.h \
+	ags/app/editor/ags_envelope_info.h \
+	ags/app/editor/ags_machine_radio_button.h \
+	ags/app/editor/ags_machine_radio_button_callbacks.h \
+	ags/app/editor/ags_machine_selection.h \
+	ags/app/editor/ags_machine_selector_callbacks.h \
+	ags/app/editor/ags_machine_selector.h \
+	ags/app/editor/ags_move_note_dialog_callbacks.h \
+	ags/app/editor/ags_move_note_dialog.h \
+	ags/app/editor/ags_notation_edit_callbacks.h \
+	ags/app/editor/ags_notation_edit.h \
+	ags/app/editor/ags_notation_meta_callbacks.h \
+	ags/app/editor/ags_notation_meta.h \
+	ags/app/editor/ags_notation_toolbar_callbacks.h \
+	ags/app/editor/ags_notation_toolbar.h \
+	ags/app/editor/ags_pattern_envelope_callbacks.h \
+	ags/app/editor/ags_pattern_envelope.h \
+	ags/app/editor/ags_position_automation_cursor_dialog.h \
+	ags/app/editor/ags_position_automation_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_notation_cursor_dialog.h \
+	ags/app/editor/ags_position_notation_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_sheet_cursor_dialog.h \
+	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_position_wave_cursor_dialog.h \
+	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_ramp_acceleration_dialog.h \
+	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.h \
+	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.h \
+	ags/app/editor/ags_remove_sheet_page_dialog.h \
+	ags/app/editor/ags_scrolled_automation_edit_box.h \
+	ags/app/editor/ags_scrolled_wave_edit_box.h \
+	ags/app/editor/ags_select_acceleration_dialog.h \
+	ags/app/editor/ags_select_acceleration_dialog_callbacks.h \
+	ags/app/editor/ags_select_buffer_dialog.h \
+	ags/app/editor/ags_select_buffer_dialog_callbacks.h \
+	ags/app/editor/ags_select_note_dialog.h \
+	ags/app/editor/ags_select_note_dialog_callbacks.h \
+	ags/app/editor/ags_sheet_edit.h \
+	ags/app/editor/ags_sheet_edit_callbacks.h \
+	ags/app/editor/ags_sheet_toolbar.h \
+	ags/app/editor/ags_sheet_toolbar_callbacks.h \
+	ags/app/editor/ags_time_stretch_buffer_dialog.h \
+	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.h \
+	ags/app/editor/ags_vautomation_edit_box.h \
+	ags/app/editor/ags_vwave_edit_box.h \
+	ags/app/editor/ags_wave_edit_callbacks.h \
+	ags/app/editor/ags_wave_edit.h \
+	ags/app/editor/ags_wave_edit_box.h \
+	ags/app/editor/ags_wave_meta_callbacks.h \
+	ags/app/editor/ags_wave_meta.h \
+	ags/app/editor/ags_wave_toolbar_callbacks.h \
+	ags/app/editor/ags_wave_toolbar.h
 
 deprecated_libgsequencer_editor_c_sources =
 
 libgsequencer_editor_c_sources = \
 	$(deprecated_libgsequencer_editor_c_sources) \
-	ags/GSequencer/editor/ags_add_sheet_page_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_add_sheet_page_dialog.c \
-	ags/GSequencer/editor/ags_automation_edit.c \
-	ags/GSequencer/editor/ags_automation_edit_box.c \
-	ags/GSequencer/editor/ags_automation_edit_callbacks.c \
-	ags/GSequencer/editor/ags_automation_meta.c \
-	ags/GSequencer/editor/ags_automation_meta_callbacks.c \
-	ags/GSequencer/editor/ags_automation_toolbar.c \
-	ags/GSequencer/editor/ags_automation_toolbar_callbacks.c \
-	ags/GSequencer/editor/ags_composite_edit.c \
-	ags/GSequencer/editor/ags_composite_edit_callbacks.c \
-	ags/GSequencer/editor/ags_composite_toolbar.c \
-	ags/GSequencer/editor/ags_composite_toolbar_callbacks.c \
-	ags/GSequencer/editor/ags_crop_note_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_crop_note_dialog.c \
-	ags/GSequencer/editor/ags_envelope_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_envelope_dialog.c \
-	ags/GSequencer/editor/ags_envelope_editor_callbacks.c \
-	ags/GSequencer/editor/ags_envelope_editor.c \
-	ags/GSequencer/editor/ags_envelope_info_callbacks.c \
-	ags/GSequencer/editor/ags_envelope_info.c \
-	ags/GSequencer/editor/ags_machine_radio_button.c \
-	ags/GSequencer/editor/ags_machine_radio_button_callbacks.c \
-	ags/GSequencer/editor/ags_machine_selection.c \
-	ags/GSequencer/editor/ags_machine_selector.c \
-	ags/GSequencer/editor/ags_machine_selector_callbacks.c \
-	ags/GSequencer/editor/ags_move_note_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_move_note_dialog.c \
-	ags/GSequencer/editor/ags_notation_edit.c \
-	ags/GSequencer/editor/ags_notation_edit_callbacks.c \
-	ags/GSequencer/editor/ags_notation_meta.c \
-	ags/GSequencer/editor/ags_notation_meta_callbacks.c \
-	ags/GSequencer/editor/ags_notation_toolbar.c \
-	ags/GSequencer/editor/ags_notation_toolbar_callbacks.c \
-	ags/GSequencer/editor/ags_pattern_envelope_callbacks.c \
-	ags/GSequencer/editor/ags_pattern_envelope.c \
-	ags/GSequencer/editor/ags_position_automation_cursor_dialog.c \
-	ags/GSequencer/editor/ags_position_automation_cursor_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_position_notation_cursor_dialog.c \
-	ags/GSequencer/editor/ags_position_notation_cursor_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_position_sheet_cursor_dialog.c \
-	ags/GSequencer/editor/ags_position_sheet_cursor_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_position_wave_cursor_dialog.c \
-	ags/GSequencer/editor/ags_position_wave_cursor_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_ramp_acceleration_dialog.c \
-	ags/GSequencer/editor/ags_ramp_acceleration_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_remove_sheet_page_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_remove_sheet_page_dialog.c \
-	ags/GSequencer/editor/ags_scrolled_automation_edit_box.c \
-	ags/GSequencer/editor/ags_scrolled_wave_edit_box.c \
-	ags/GSequencer/editor/ags_select_acceleration_dialog.c \
-	ags/GSequencer/editor/ags_select_acceleration_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_select_buffer_dialog.c \
-	ags/GSequencer/editor/ags_select_buffer_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_select_note_dialog.c \
-	ags/GSequencer/editor/ags_select_note_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_sheet_edit.c \
-	ags/GSequencer/editor/ags_sheet_edit_callbacks.c \
-	ags/GSequencer/editor/ags_sheet_toolbar.c \
-	ags/GSequencer/editor/ags_sheet_toolbar_callbacks.c \
-	ags/GSequencer/editor/ags_time_stretch_buffer_dialog.c \
-	ags/GSequencer/editor/ags_time_stretch_buffer_dialog_callbacks.c \
-	ags/GSequencer/editor/ags_vautomation_edit_box.c \
-	ags/GSequencer/editor/ags_vwave_edit_box.c \
-	ags/GSequencer/editor/ags_wave_edit.c \
-	ags/GSequencer/editor/ags_wave_edit_box.c \
-	ags/GSequencer/editor/ags_wave_edit_callbacks.c \
-	ags/GSequencer/editor/ags_wave_meta.c \
-	ags/GSequencer/editor/ags_wave_meta_callbacks.c \
-	ags/GSequencer/editor/ags_wave_toolbar.c \
-	ags/GSequencer/editor/ags_wave_toolbar_callbacks.c
+	ags/app/editor/ags_add_sheet_page_dialog_callbacks.c \
+	ags/app/editor/ags_add_sheet_page_dialog.c \
+	ags/app/editor/ags_automation_edit.c \
+	ags/app/editor/ags_automation_edit_box.c \
+	ags/app/editor/ags_automation_edit_callbacks.c \
+	ags/app/editor/ags_automation_meta.c \
+	ags/app/editor/ags_automation_meta_callbacks.c \
+	ags/app/editor/ags_automation_toolbar.c \
+	ags/app/editor/ags_automation_toolbar_callbacks.c \
+	ags/app/editor/ags_composite_edit.c \
+	ags/app/editor/ags_composite_edit_callbacks.c \
+	ags/app/editor/ags_composite_toolbar.c \
+	ags/app/editor/ags_composite_toolbar_callbacks.c \
+	ags/app/editor/ags_crop_note_dialog_callbacks.c \
+	ags/app/editor/ags_crop_note_dialog.c \
+	ags/app/editor/ags_envelope_dialog_callbacks.c \
+	ags/app/editor/ags_envelope_dialog.c \
+	ags/app/editor/ags_envelope_editor_callbacks.c \
+	ags/app/editor/ags_envelope_editor.c \
+	ags/app/editor/ags_envelope_info_callbacks.c \
+	ags/app/editor/ags_envelope_info.c \
+	ags/app/editor/ags_machine_radio_button.c \
+	ags/app/editor/ags_machine_radio_button_callbacks.c \
+	ags/app/editor/ags_machine_selection.c \
+	ags/app/editor/ags_machine_selector.c \
+	ags/app/editor/ags_machine_selector_callbacks.c \
+	ags/app/editor/ags_move_note_dialog_callbacks.c \
+	ags/app/editor/ags_move_note_dialog.c \
+	ags/app/editor/ags_notation_edit.c \
+	ags/app/editor/ags_notation_edit_callbacks.c \
+	ags/app/editor/ags_notation_meta.c \
+	ags/app/editor/ags_notation_meta_callbacks.c \
+	ags/app/editor/ags_notation_toolbar.c \
+	ags/app/editor/ags_notation_toolbar_callbacks.c \
+	ags/app/editor/ags_pattern_envelope_callbacks.c \
+	ags/app/editor/ags_pattern_envelope.c \
+	ags/app/editor/ags_position_automation_cursor_dialog.c \
+	ags/app/editor/ags_position_automation_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_notation_cursor_dialog.c \
+	ags/app/editor/ags_position_notation_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_sheet_cursor_dialog.c \
+	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_position_wave_cursor_dialog.c \
+	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_ramp_acceleration_dialog.c \
+	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.c \
+	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.c \
+	ags/app/editor/ags_remove_sheet_page_dialog.c \
+	ags/app/editor/ags_scrolled_automation_edit_box.c \
+	ags/app/editor/ags_scrolled_wave_edit_box.c \
+	ags/app/editor/ags_select_acceleration_dialog.c \
+	ags/app/editor/ags_select_acceleration_dialog_callbacks.c \
+	ags/app/editor/ags_select_buffer_dialog.c \
+	ags/app/editor/ags_select_buffer_dialog_callbacks.c \
+	ags/app/editor/ags_select_note_dialog.c \
+	ags/app/editor/ags_select_note_dialog_callbacks.c \
+	ags/app/editor/ags_sheet_edit.c \
+	ags/app/editor/ags_sheet_edit_callbacks.c \
+	ags/app/editor/ags_sheet_toolbar.c \
+	ags/app/editor/ags_sheet_toolbar_callbacks.c \
+	ags/app/editor/ags_time_stretch_buffer_dialog.c \
+	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.c \
+	ags/app/editor/ags_vautomation_edit_box.c \
+	ags/app/editor/ags_vwave_edit_box.c \
+	ags/app/editor/ags_wave_edit.c \
+	ags/app/editor/ags_wave_edit_box.c \
+	ags/app/editor/ags_wave_edit_callbacks.c \
+	ags/app/editor/ags_wave_meta.c \
+	ags/app/editor/ags_wave_meta_callbacks.c \
+	ags/app/editor/ags_wave_toolbar.c \
+	ags/app/editor/ags_wave_toolbar_callbacks.c
 
 # libags-vst
 deprecated_libags_vst_h_sources =
@@ -3630,7 +3630,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
-	install -c -p -m 644 $(top_srcdir)/ags/GSequencer/file/ags_simple_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/app/file/ags_simple_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/

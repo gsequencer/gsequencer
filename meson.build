@@ -126,7 +126,7 @@ install_data(join_paths(meson.source_root(), 'application-x-gsequencer.xml'),
                                      'mime', 'packages'),
              rename: 'gsequencer.xml')
 
-install_data(join_paths(meson.source_root(), 'ags', 'X', 'file', 'ags_simple_file.dtd'),
+install_data(join_paths(meson.source_root(), 'ags', 'app', 'file', 'ags_simple_file.dtd'),
              install_dir: join_paths(get_option('datadir'),
                                      'xml', 'gsequencer', 'schema', 'dtd', meson.project_version()))	     
 install_data(join_paths(meson.source_root(), 'ags', 'audio', 'midi', 'ags_midi_file.dtd'),
