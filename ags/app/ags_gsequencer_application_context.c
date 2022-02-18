@@ -4415,7 +4415,7 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
   g_list_free_full(start_list,
 		   g_object_unref);
 
-  gtk_main_quit();
+  g_application_quit(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 }
 
 void

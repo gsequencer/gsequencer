@@ -103,8 +103,6 @@ ags_setup(int argc, char **argv)
   
   g_application_run(G_APPLICATION(app),
 		    argc, argv);
-
-  gtk_main();
 }
 
 int

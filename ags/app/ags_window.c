@@ -138,7 +138,7 @@ ags_window_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_window = g_type_register_static(GTK_TYPE_WINDOW,
+    ags_type_window = g_type_register_static(GTK_TYPE_APPLICATION_WINDOW,
 					     "AgsWindow", &ags_window_info,
 					     0);
     
@@ -230,6 +230,7 @@ ags_window_init(AgsWindow *window)
   error = NULL;  
   g_object_set(G_OBJECT(window),
   	       "icon", gdk_pixbuf_new_from_file(app_icon, &error),
+	       "application", ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)),
   	       NULL);
   g_free(app_icon);
 
@@ -256,7 +257,7 @@ ags_window_init(AgsWindow *window)
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
 
-  builder = gtk_builder_new_from_file("./ags/GSequencer/ags_application_menu.ui");
+  builder = gtk_builder_new_from_file("./ags/app/ags_application_menu.ui");
 
   menu = gtk_builder_get_object(builder,
 				"menu");

@@ -66,7 +66,7 @@ typedef enum{
 
 struct _AgsWindow
 {
-  GtkWindow window;
+  GtkApplicationWindow application_window;
 
   guint flags;
 
@@ -106,7 +106,7 @@ struct _AgsWindow
 
 struct _AgsWindowClass
 {
-  GtkWindowClass window;
+  GtkApplicationWindowClass application_window;
 };
 
 struct _AgsMachineCounter
