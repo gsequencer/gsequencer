@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,10 +147,8 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
-  preferences->main_window = NULL;
-
   gtk_window_set_title(GTK_WINDOW(preferences),
-		       i18n("preferences"));
+		       i18n("Preferences"));
   gtk_window_set_deletable(GTK_WINDOW(preferences),
 			   TRUE);
 

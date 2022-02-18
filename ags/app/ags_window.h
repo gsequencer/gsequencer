@@ -76,7 +76,8 @@ struct _AgsWindow
   char *name;
 
   GtkHeaderBar *header_bar;
-  GtkMenuButton *menu_button;
+  GtkMenuButton *app_button;
+  GtkMenuButton *add_button;
   
   AgsMenuBar *menu_bar;
   AgsContextMenu *context_menu;

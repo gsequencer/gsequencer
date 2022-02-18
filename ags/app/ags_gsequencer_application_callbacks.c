@@ -53,21 +53,21 @@ void
 ags_gsequencer_preferences_callback(GAction *action, GVariant *parameter,
 				    AgsGSequencerApplication *gsequencer_app)
 {
-  g_message("preferences");
+  ags_app_action_util_preferences();
 }
 
 void
 ags_gsequencer_about_callback(GAction *action, GVariant *parameter,
 			      AgsGSequencerApplication *gsequencer_app)
 {
-  g_message("about");
+  ags_app_action_util_about();
 }
 
 void
 ags_gsequencer_help_callback(GAction *action, GVariant *parameter,
 			     AgsGSequencerApplication *gsequencer_app)
 {
-  g_message("help");
+  ags_app_action_util_help();
 }
 
 void

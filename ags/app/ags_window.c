@@ -259,17 +259,36 @@ ags_window_init(AgsWindow *window)
   gtk_header_bar_set_subtitle(window->header_bar,
 			      window->name);
 
-  window->menu_button = gtk_menu_button_new();
+  /* app menu buttton */
+  window->app_button = gtk_menu_button_new();
+  g_object_set(window->app_button,
+	       "direction", GTK_ARROW_NONE,
+	       NULL);
   gtk_header_bar_pack_end(window->header_bar,
-			  window->menu_button);
-
+			  window->app_button);
+  
   builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_primary_menu.ui");
 
   menu = gtk_builder_get_object(builder,
 				"ags-primary-menu");
-  gtk_menu_button_set_menu_model(window->menu_button,
+  gtk_menu_button_set_menu_model(window->app_button,
 				 menu);
+
+  /* add menu button */
+  window->add_button = gtk_menu_button_new();
+  gtk_container_add(window->add_button,
+		    gtk_image_new_from_icon_name("list-add-symbolic",
+						 GTK_ICON_SIZE_BUTTON));
+  gtk_header_bar_pack_end(window->header_bar,
+			  window->add_button);
   
+  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
+
+  menu = gtk_builder_get_object(builder,
+				"ags-add-menu");
+  gtk_menu_button_set_menu_model(window->add_button,
+				 menu);
+
   /* vbox */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);

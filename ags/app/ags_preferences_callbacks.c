@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,20 +20,17 @@
 #include <ags/app/ags_preferences_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_window.h>
 
 gboolean
 ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
 				      gpointer user_data)
 {
-  AgsWindow *window;
-
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
   
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-  window->preferences = NULL;
+  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				  NULL);
   
   return(FALSE);
 }
@@ -64,17 +61,13 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
     }
   case GTK_RESPONSE_REJECT:
     {
-      AgsWindow *window;
-
       AgsApplicationContext *application_context;
 
-      application_context = ags_application_context_get_instance();
+      application_context = ags_application_context_get_instance();  
   
-      window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
       AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
-
-      window->preferences = NULL;
+      ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				      NULL);
       
       gtk_widget_destroy(GTK_WIDGET(dialog));
     }

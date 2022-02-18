@@ -25,9 +25,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_export_window.h>
 #include <ags/app/ags_machine_util.h>
-#include <ags/app/ags_online_help_window.h>
 
 #include <ags/app/editor/ags_composite_edit.h>
 #include <ags/app/editor/ags_composite_edit_callbacks.h>
@@ -35,8 +33,6 @@
 #include <ags/app/import/ags_midi_import_wizard.h>
 
 #include <ags/app/export/ags_midi_export_wizard.h>
-
-#include <ags/app/file/ags_simple_file.h>
 
 #include <ags/app/machine/ags_panel.h>
 #include <ags/app/machine/ags_mixer.h>
@@ -72,14 +68,6 @@
 #include <ags/app/machine/ags_vst3_bridge.h>
 #include <ags/app/machine/ags_live_vst3_bridge.h>
 #endif
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/stat.h>
-
-#define _GNU_SOURCE
-#include <locale.h>
 
 static GMutex locale_mutex;
 
@@ -1293,23 +1281,7 @@ ags_menu_action_sheet_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_preferences_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
-  AgsWindow *window;
-
-  application_context = ags_application_context_get_instance();
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  if(window->preferences != NULL){
-    return;
-  }
-
-  window->preferences = ags_preferences_new();
-  window->preferences->main_window = GTK_WINDOW(window);
-
-  ags_connectable_connect(AGS_CONNECTABLE(window->preferences));
-  ags_applicable_reset(AGS_APPLICABLE(window->preferences));
-
-  gtk_widget_show_all(GTK_WIDGET(window->preferences));
+  ags_app_action_util_preferences();
 }
 
 void
@@ -1364,178 +1336,11 @@ ags_menu_action_midi_playback_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsOnlineHelpWindow *online_help_window;
-  
-  AgsApplicationContext *application_context;
-
-  application_context = ags_application_context_get_instance();
-
-  online_help_window = ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context));
-
-  if(online_help_window == NULL){
-    online_help_window = ags_online_help_window_new();
-    
-    ags_connectable_connect(AGS_CONNECTABLE(online_help_window));
-    
-    ags_ui_provider_set_online_help_window(AGS_UI_PROVIDER(application_context),
-					   (GtkWidget *) online_help_window);
-  }
-  
-  gtk_widget_show_all((GtkWidget *) online_help_window);
+  ags_app_action_util_help();
 }
 
 void
 ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
-  AgsWindow *window;
-
-  static FILE *file = NULL;
-  struct stat sb;
-  static gchar *license = NULL;
-  static GdkPixbuf *logo = NULL;
-
-  gchar *license_filename;
-  gchar *logo_filename;
-#if defined(AGS_W32API)
-  gchar *app_dir;
-#endif
-  
-  int n_read;
-  
-  GError *error;
-
-  gchar *authors[] = { "Joël Krähemann", "Daniel Maksymow", NULL }; 
-
-  license_filename = NULL;
-  logo_filename = NULL;
-  
-#if defined AGS_W32API
-  app_dir = NULL;
-#endif
-  
-#ifdef AGS_LICENSE_FILENAME
-  license_filename = g_strdup(AGS_LICENSE_FILENAME);
-#else
-  if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
-#if defined (AGS_W32API)
-    application_context = ags_application_context_get_instance();
-
-    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
-    }
-  
-    license_filename = g_strdup_printf("%s\\share\\gsequencer\\license\\GPL-3",
-				       g_get_current_dir());
-    
-    if(!g_file_test(license_filename,
-		    G_FILE_TEST_IS_REGULAR)){
-      g_free(license_filename);
-
-      if(g_path_is_absolute(app_dir)){
-	license_filename = g_strdup_printf("%s\\%s",
-					   app_dir,
-					   "\\share\\gsequencer\\license\\GPL-3");
-      }else{
-	license_filename = g_strdup_printf("%s\\%s\\%s",
-					   g_get_current_dir(),
-					   app_dir,
-					   "\\share\\gsequencer\\license\\GPL-3");
-      }
-    }
-#else
-    license_filename = g_strdup("/usr/share/common-licenses/GPL-3");
-#endif
-  }else{
-    license_filename = g_strdup(license_filename);
-  }
-#endif
-  
-  if(g_file_test(license_filename,
-		 G_FILE_TEST_EXISTS)){
-    if(file == NULL){
-      file = fopen(license_filename, "r");
-
-      if(file != NULL){
-	stat(license_filename, &sb);
-	license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
-
-	n_read = fread(license, sizeof(char), sb.st_size, file);
-
-	if(n_read != sb.st_size){
-	  g_critical("fread() number of bytes returned doesn't match buffer size");
-	}
-      
-	license[sb.st_size] = '\0';
-	fclose(file);
-      }
-      
-#ifdef AGS_LOGO_FILENAME
-      logo_filename = g_strdup(AGS_LOGO_FILENAME);
-#else
-      if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
-#if defined AGS_W32API
-	logo_filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags.png",
-				      g_get_current_dir());
-    
-	if(!g_file_test(logo_filename,
-			G_FILE_TEST_IS_REGULAR)){
-	  g_free(logo_filename);
-
-	  if(g_path_is_absolute(app_dir)){
-	    logo_filename = g_strdup_printf("%s\\%s",
-					    app_dir,
-					    "\\share\\gsequencer\\images\\ags.png");
-	  }else{
-	    logo_filename = g_strdup_printf("%s\\%s\\%s",
-					    g_get_current_dir(),
-					    app_dir,
-					    "\\share\\gsequencer\\images\\ags.png");
-	  }
-	}
-#else
-	logo_filename = g_strdup_printf("%s/%s",
-					AGS_DATA_DIR,
-					"/gsequencer/images/ags.png");
-#endif
-      }else{
-	logo_filename = g_strdup(logo_filename);
-      }
-#endif
-
-      error = NULL;
-      logo = gdk_pixbuf_new_from_file(logo_filename,
-				      &error);
-  
-      //g_free(logo_filename);
-
-      if(error != NULL){
-	g_message("%s", error->message);
-
-	g_error_free(error);
-      }
-  
-    }
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  gtk_show_about_dialog((GtkWindow *) window,
-			"program-name", "gsequencer",
-			"authors", authors,
-			"license", license,
-			"version", AGS_VERSION,
-			"website", "http://nongnu.org/gsequencer",
-			"title", "Advanced Gtk+ Sequencer",
-			"logo", logo,
-			NULL);
-
-  g_free(license_filename);
-
-#if defined AGS_W32API
-  g_free(app_dir);
-#endif
+  ags_app_action_util_about();
 }

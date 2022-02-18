@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,8 +61,6 @@ struct _AgsPreferences
   GtkDialog dialog;
 
   guint flags;
-
-  GtkWindow *main_window;
 
   GtkNotebook *notebook;
 

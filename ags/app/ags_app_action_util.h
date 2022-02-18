@@ -37,6 +37,11 @@ void ags_app_action_util_save_as();
 
 void ags_app_action_util_export();
 
+void ags_app_action_util_preferences();
+
+void ags_app_action_util_about();
+void ags_app_action_util_help();
+
 void ags_app_action_util_quit();
 
 G_END_DECLS
