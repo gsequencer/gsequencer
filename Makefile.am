@@ -2712,6 +2712,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_window.h \
 	ags/app/ags_window_callbacks.h \
 	ags/app/ags_gsequencer_application.h \
+	ags/app/ags_gsequencer_application_callbacks.h \
 	ags/app/ags_gsequencer_application_context.h
 
 if WITH_VST3
@@ -2759,6 +2760,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_export_window_callbacks.c \
 	ags/app/ags_generic_preferences.c \
 	ags/app/ags_generic_preferences_callbacks.c \
+	ags/app/ags_gsequencer_resource.c \
 	ags/app/ags_ladspa_browser.c \
 	ags/app/ags_ladspa_browser_callbacks.c \
 	ags/app/ags_lv2_browser.c \
@@ -2848,6 +2850,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_soundcard_editor.c \
 	ags/app/ags_window_callbacks.c \
 	ags/app/ags_gsequencer_application.c \
+	ags/app/ags_gsequencer_application_callbacks.c \
 	ags/app/ags_gsequencer_application_context.c
 
 if WITH_VST3
@@ -3936,6 +3939,10 @@ gen-marshallers:
 	cat ags_license_header > ags/widget/ags_widget_marshal.c
 	glib-genmarshal --prefix=ags_widget_cclosure_marshal --body ags/widget/ags_widget_marshallers.list >> ags/widget/ags_widget_marshal.c
 	echo "generated marshallers in ags/widget/"
+
+compile-resources:
+	glib-compile-resources --target=ags/app/ags_gsequencer_resource.c --generate-source ags/app/ags_gsequencer.gresource.xml
+	echo "compiled resources in ags/app/"
 
 check-gettext:
 	@if test x$(USE_NLS) != "xyes" ; then echo "Missing gettext. Rerun configure and check for" \

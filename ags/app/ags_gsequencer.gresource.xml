@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/nongnu/gsequencer">
-    <file>ags/GSequencer/ags_application_menu.ui</file>
+    <file>ags/app/ui/ags_primary_menu.ui</file>
   </gresource>
 </gresources>

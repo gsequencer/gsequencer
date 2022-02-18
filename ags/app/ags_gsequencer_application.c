@@ -18,6 +18,7 @@
  */
 
 #include <ags/app/ags_gsequencer_application.h>
+#include <ags/app/ags_gsequencer_application_callbacks.h>
 
 void ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_app);
 void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
@@ -69,6 +70,15 @@ ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_
 void
 ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 {
+  GSimpleAction *open_action;
+
+  open_action = g_simple_action_new("gsequencer.open",
+				    NULL);
+  g_signal_connect(open_action, "activate",
+		   G_CALLBACK(ags_gsequencer_open_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(open_action));
+  
   //TODO:JK: implement me
 }
 

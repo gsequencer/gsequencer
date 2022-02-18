@@ -173,7 +173,7 @@ ags_window_class_init(AgsWindowClass *window)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) window;
-
+  
   widget->show = ags_window_show;
   widget->delete_event = ags_window_delete_event;
 }
@@ -196,13 +196,13 @@ ags_window_init(AgsWindow *window)
   GtkWidget *scrolled_window;
 
   GtkBuilder *builder;
-  
+
+  GApplication *app;
   GMenu *menu;
 
   AgsApplicationContext *application_context;
   
   gchar *app_icon;
-  gchar *window_title;
 
   gboolean use_composite_editor;
   
@@ -226,44 +226,52 @@ ags_window_init(AgsWindow *window)
 			       "/icons/hicolor/128x128/apps/gsequencer.png");
   }
 #endif
+
+  app = ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context));
   
   error = NULL;  
   g_object_set(G_OBJECT(window),
   	       "icon", gdk_pixbuf_new_from_file(app_icon, &error),
-	       "application", ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)),
+	       "application", app,
   	       NULL);
   g_free(app_icon);
 
   if(error != NULL){
     g_error_free(error);
   }
-    
-  /* window name and title */
+
+  /* window header bar */
   window->no_config = FALSE;
   
   window->filename = NULL;
 
   window->name = g_strdup("unnamed");
 
-  window_title = g_strconcat("GSequencer - ",
-			     window->name,
-			     NULL);
-  gtk_window_set_title((GtkWindow *) window,
-		       window_title);
+  window->header_bar = gtk_header_bar_new();
+  gtk_window_set_titlebar((GtkWindow *) window,
+			  (GtkWidget *) window->header_bar);
 
-  g_free(window_title);
+  gtk_header_bar_set_decoration_layout(window->header_bar,
+				       "menu:minimize,maximize,close");
+  gtk_header_bar_set_title(window->header_bar,
+			   "GSequencer");
+  gtk_header_bar_set_subtitle(window->header_bar,
+			      window->name);
 
+  window->menu_button = gtk_menu_button_new();
+  gtk_header_bar_pack_end(window->header_bar,
+			  window->menu_button);
+
+  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_primary_menu.ui");
+
+  menu = gtk_builder_get_object(builder,
+				"ags-primary-menu");
+  gtk_menu_button_set_menu_model(window->menu_button,
+				 menu);
+  
   /* vbox */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
-
-  builder = gtk_builder_new_from_file("./ags/app/ags_application_menu.ui");
-
-  menu = gtk_builder_get_object(builder,
-				"menu");
-
-  gtk_application_set_app_menu(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)),
-			       menu);
   
   /* menubar */
   window->context_menu = ags_context_menu_new();
