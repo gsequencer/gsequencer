@@ -2593,6 +2593,7 @@ deprecated_libgsequencer_h_sources =
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
 	ags/app/ags_animation_window.h \
+	ags/app/ags_app_action_util.h \
 	ags/app/ags_automation_editor_callbacks.h \
 	ags/app/ags_automation_editor.h \
 	ags/app/ags_automation_window_callbacks.h \
@@ -2730,6 +2731,7 @@ deprecated_libgsequencer_c_sources =
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
 	ags/app/ags_animation_window.c \
+	ags/app/ags_app_action_util.c \
 	ags/app/ags_automation_editor.c \
 	ags/app/ags_automation_editor_callbacks.c \
 	ags/app/ags_automation_window.c \

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,14 +30,6 @@
 void ags_export_window_class_init(AgsExportWindowClass *export_window);
 void ags_export_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_window_init(AgsExportWindow *export_window);
-void ags_export_window_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_export_window_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
 void ags_export_window_finalize(GObject *gobject);
 
 void ags_export_window_connect(AgsConnectable *connectable);
@@ -56,11 +48,6 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
  * #AgsExportWindow lets you export to audio files. This widget
  * can contain mulitple #AgsExportSoundcard widgets.
  */
-
-enum{
-  PROP_0,
-  PROP_MAIN_WINDOW,
-};
 
 static gpointer ags_export_window_parent_class = NULL;
 
@@ -117,27 +104,7 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
   /* GObjectClass */
   gobject = (GObjectClass *) export_window;
 
-  gobject->set_property = ags_export_window_set_property;
-  gobject->get_property = ags_export_window_get_property;
-
   gobject->finalize = ags_export_window_finalize;
-
-  /* properties */
-  /**
-   * AgsExportWindow:main-window:
-   *
-   * The assigned #AgsWindow.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_object("main-window",
-				   i18n_pspec("assigned main window"),
-				   i18n_pspec("The assigned main window"),
-				   AGS_TYPE_WINDOW,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MAIN_WINDOW,
-				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) export_window;
@@ -182,10 +149,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->flags = 0;
 
   g_object_set(export_window,
-	       "title", i18n("export to audio data"),
+	       "title", i18n("Export to audio data"),
 	       NULL);
-
-  export_window->main_window = NULL;
 
   /* pack */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -381,66 +346,6 @@ ags_export_window_init(AgsExportWindow *export_window)
 }
 
 void
-ags_export_window_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsExportWindow *export_window;
-
-  export_window = AGS_EXPORT_WINDOW(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      AgsWindow *main_window;
-
-      main_window = (AgsWindow *) g_value_get_object(value);
-
-      if((AgsWindow *) export_window->main_window == main_window){
-	return;
-      }
-
-      if(export_window->main_window != NULL){
-	g_object_unref(export_window->main_window);
-      }
-
-      if(main_window != NULL){
-	g_object_ref(main_window);
-      }
-
-      export_window->main_window = (GtkWidget *) main_window;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_export_window_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsExportWindow *export_window;
-
-  export_window = AGS_EXPORT_WINDOW(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      g_value_set_object(value, export_window->main_window);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_export_window_connect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
@@ -554,6 +459,80 @@ ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
   //  GTK_WIDGET_CLASS(ags_export_window_parent_class)->delete_event(widget, event);
 
   return(TRUE);
+}
+
+/**
+ * ags_export_window_add_export_soundcard:
+ * @export_window: the #AgsExportWindow
+ * 
+ * Add soundcard editor.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_export_window_add_export_soundcard(AgsExportWindow *export_window)
+{
+  AgsExportSoundcard *export_soundcard;
+  GtkBox *hbox;
+  GtkButton *remove_button;
+  
+  /* create GtkHBox */
+  hbox = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+  gtk_box_pack_start(export_window->export_soundcard,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
+    
+  /* instantiate export soundcard */
+  export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
+							 NULL);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) export_soundcard,
+		     FALSE, FALSE,
+		     0);
+  ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
+    
+  /* remove button */    
+  remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+							      GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) remove_button,
+		     FALSE, FALSE,
+		     0);
+    
+  g_signal_connect(G_OBJECT(remove_button), "clicked",
+		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
+
+  /* show all */
+  gtk_widget_show_all(GTK_WIDGET(hbox));
+}
+
+/**
+ * ags_export_window_remove_export_soundcard:
+ * @export_window: the #AgsExportWindow
+ * @nth: the nth index to remove
+ * 
+ * Remove soundcard editor.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_export_window_remove_export_soundcard(AgsExportWindow *export_window,
+					  gint nth)
+{
+  GList *start_list, *list;
+
+  start_list = gtk_container_get_children((GtkContainer *) export_window->export_soundcard);
+
+  list = g_list_nth(start_list,
+		    nth);
+
+  if(list != NULL){
+    gtk_widget_destroy(GTK_WIDGET(list->data));
+  }
+
+  g_list_free(start_list);
 }
 
 /**

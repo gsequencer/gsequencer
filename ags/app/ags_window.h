@@ -40,7 +40,6 @@
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_composite_editor.h>
 
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_WINDOW                (ags_window_get_type())

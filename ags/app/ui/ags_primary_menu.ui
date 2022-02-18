@@ -4,15 +4,35 @@
     <section>
       <item>
         <attribute name="label" translatable="yes">_Open</attribute>
-        <attribute name="action">gsequencer.open</attribute>
+        <attribute name="action">app.open</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Save</attribute>
-        <attribute name="action">gsequencer.save</attribute>
+        <attribute name="action">app.save</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Save as</attribute>
-        <attribute name="action">gsequencer.save_as</attribute>
+        <attribute name="action">app.save_as</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Export</attribute>
+        <attribute name="action">app.export</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Help</attribute>
+        <attribute name="action">app.help</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">app.quit</attribute>
       </item>
     </section>
   </menu>

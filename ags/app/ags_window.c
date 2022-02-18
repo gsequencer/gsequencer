@@ -107,7 +107,7 @@ static GMutex locale_mutex;
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
 static char *locale_env;
 #else
-static locale_t c_locale;
+static locale_t c_utf8_locale;
 #endif
 
 static gboolean locale_initialized = FALSE;
@@ -199,6 +199,7 @@ ags_window_init(AgsWindow *window)
 
   GApplication *app;
   GMenu *menu;
+  GSimpleAction *open_action;
 
   AgsApplicationContext *application_context;
   
@@ -384,8 +385,11 @@ ags_window_init(AgsWindow *window)
   }
   
   window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
-							   "main-window", window,
 							   NULL);
+  ags_export_window_add_export_soundcard(window->export_window);
+  
+  ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
+				    window->export_window);
   
   window->midi_import_wizard = NULL;
   window->midi_export_wizard = NULL;
@@ -862,8 +866,6 @@ ags_window_load_file_timeout(AgsWindow *window)
     if(window->filename != NULL){
       AgsSimpleFile *simple_file;
 
-      gchar *str;
-      
       GError *error;
 
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
@@ -881,7 +883,7 @@ ags_window_load_file_timeout(AgsWindow *window)
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
 	locale_env = getenv("LC_ALL");
 #else
-	c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+	c_utf8_locale = newlocale(LC_ALL_MASK, "C.UTF-8", (locale_t) 0);
 #endif
     
 	locale_initialized = TRUE;
@@ -890,9 +892,9 @@ ags_window_load_file_timeout(AgsWindow *window)
       g_mutex_unlock(&locale_mutex);
 
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
-      setlocale(LC_ALL, "C");
+      setlocale(LC_ALL, "C.UTF-8");
 #else
-      current = uselocale(c_locale);
+      current = uselocale(c_utf8_locale);
 #endif
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
@@ -913,13 +915,9 @@ ags_window_load_file_timeout(AgsWindow *window)
       
       /* set name */
       window->name = g_strdup(window->filename);
-
-      str = g_strconcat("GSequencer - ",
-			window->name,
-			NULL);
       
-      gtk_window_set_title((GtkWindow *) window,
-			   str);
+      gtk_header_bar_set_subtitle(window->header_bar,
+				  window->name);
       
       window->filename = NULL;
 

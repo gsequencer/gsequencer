@@ -19,9 +19,60 @@
 
 #include <ags/app/ags_gsequencer_application_callbacks.h>
 
+#include <ags/app/ags_app_action_util.h>
+
 void
 ags_gsequencer_open_callback(GAction *action, GVariant *parameter,
 			     AgsGSequencerApplication *gsequencer_app)
 {
-  g_message("gsequencer.open");
+  ags_app_action_util_open();
+}
+
+void
+ags_gsequencer_save_callback(GAction *action, GVariant *parameter,
+			     AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_save();
+}
+
+void
+ags_gsequencer_save_as_callback(GAction *action, GVariant *parameter,
+				AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_save_as();
+}
+
+void
+ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
+			       AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_export();
+}
+
+void
+ags_gsequencer_preferences_callback(GAction *action, GVariant *parameter,
+				    AgsGSequencerApplication *gsequencer_app)
+{
+  g_message("preferences");
+}
+
+void
+ags_gsequencer_about_callback(GAction *action, GVariant *parameter,
+			      AgsGSequencerApplication *gsequencer_app)
+{
+  g_message("about");
+}
+
+void
+ags_gsequencer_help_callback(GAction *action, GVariant *parameter,
+			     AgsGSequencerApplication *gsequencer_app)
+{
+  g_message("help");
+}
+
+void
+ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
+			     AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_quit();
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,6 +74,10 @@ struct _AgsExportWindowClass
 };
 
 GType ags_export_window_get_type(void);
+
+void ags_export_window_add_export_soundcard(AgsExportWindow *export_window);
+void ags_export_window_remove_export_soundcard(AgsExportWindow *export_window,
+					       gint nth);
 
 void ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window);
 

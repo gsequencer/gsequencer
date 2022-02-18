@@ -71,15 +71,77 @@ void
 ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 {
   GSimpleAction *open_action;
+  GSimpleAction *save_action;
+  GSimpleAction *save_as_action;
+  GSimpleAction *export_action;
+  GSimpleAction *preferences_action;
+  GSimpleAction *about_action;
+  GSimpleAction *help_action;
+  GSimpleAction *quit_action;
 
-  open_action = g_simple_action_new("gsequencer.open",
+  /* open */
+  open_action = g_simple_action_new("open",
 				    NULL);
   g_signal_connect(open_action, "activate",
 		   G_CALLBACK(ags_gsequencer_open_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(open_action));
-  
-  //TODO:JK: implement me
+
+  /* save */
+  save_action = g_simple_action_new("save",
+				    NULL);
+  g_signal_connect(save_action, "activate",
+		   G_CALLBACK(ags_gsequencer_save_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(save_action));
+
+  /* save as */
+  save_as_action = g_simple_action_new("save_as",
+				       NULL);
+  g_signal_connect(save_as_action, "activate",
+		   G_CALLBACK(ags_gsequencer_save_as_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(save_as_action));
+
+  /* export */
+  export_action = g_simple_action_new("export",
+				      NULL);
+  g_signal_connect(export_action, "activate",
+		   G_CALLBACK(ags_gsequencer_export_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(export_action));
+
+  /* preferences */
+  preferences_action = g_simple_action_new("preferences",
+					   NULL);
+  g_signal_connect(preferences_action, "activate",
+		   G_CALLBACK(ags_gsequencer_preferences_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(preferences_action));
+
+  /* about */
+  about_action = g_simple_action_new("about",
+				     NULL);
+  g_signal_connect(about_action, "activate",
+		   G_CALLBACK(ags_gsequencer_about_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(about_action));
+
+  /* help */
+  help_action = g_simple_action_new("help",
+				    NULL);
+  g_signal_connect(help_action, "activate",
+		   G_CALLBACK(ags_gsequencer_help_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(help_action));
+
+  /* quit */
+  quit_action = g_simple_action_new("quit",
+				    NULL);
+  g_signal_connect(quit_action, "activate",
+		   G_CALLBACK(ags_gsequencer_quit_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(quit_action));
 }
 
 void

@@ -36,6 +36,27 @@ G_BEGIN_DECLS
 void ags_gsequencer_open_callback(GAction *action, GVariant *parameter,
 				  AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_save_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_save_as_callback(GAction *action, GVariant *parameter,
+				     AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
+				    AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_preferences_callback(GAction *action, GVariant *parameter,
+					 AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_about_callback(GAction *action, GVariant *parameter,
+				   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_help_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app);
+
 G_END_DECLS
 
 #endif /*__AGS_GSEQUENCER_APPLICATION_CALLBACKS_H__*/

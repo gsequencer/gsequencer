@@ -33,43 +33,7 @@ void
 ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 						AgsExportWindow *export_window)
 {
-  AgsExportSoundcard *export_soundcard;
-  GtkBox *hbox;
-  GtkButton *remove_button;
-  
-  /* create GtkHBox */
-  hbox = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				 0);
-  gtk_box_pack_start(export_window->export_soundcard,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
-    
-  /* instantiate export soundcard */
-  export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
-							 NULL);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) export_soundcard,
-		     FALSE, FALSE,
-		     0);
-  ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
-    
-  /* remove button */    
-  remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-							      GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) remove_button,
-		     FALSE, FALSE,
-		     0);
-    
-  g_signal_connect(G_OBJECT(remove_button), "clicked",
-		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
-
-  /* show all */
-  gtk_widget_show_all(GTK_WIDGET(hbox));
-
-  /* refresh card */
-  ags_export_soundcard_refresh_card(export_soundcard);
+  ags_export_window_add_export_soundcard(export_window);
 }
 
 void
@@ -78,9 +42,22 @@ ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 {
   GtkBox *hbox;
 
+  GList *start_list;
+
+  gint nth;
+
   hbox = (GtkBox *) gtk_widget_get_ancestor(button,
 					    GTK_TYPE_BOX);
-  gtk_widget_destroy(GTK_WIDGET(hbox));
+
+  start_list = gtk_container_get_children((GtkContainer *) export_window->export_soundcard);
+
+  nth = g_list_index(start_list,
+		     hbox);
+  
+  ags_export_window_remove_export_soundcard(export_window,
+					    nth);
+
+  g_list_free(start_list);
 }
 
 void
