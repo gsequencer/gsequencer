@@ -63,9 +63,9 @@
 #include <sys/resource.h>
 #endif
 
-#include <ags/GSequencer/ags_ui_provider.h>
-#include <ags/GSequencer/ags_gsequencer_application_context.h>
-#include <ags/GSequencer/ags_gsequencer_application.h>
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_gsequencer_application.h>
 
 #include "gsequencer_main.h"
 
