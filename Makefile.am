@@ -149,6 +149,10 @@ EXTRA_DIST = config.rpath \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
 	ags/audio/recall/AUTHORS \
+	ags/app/ui/ags_add_menu.ui \
+	ags/app/ui/ags_edit_menu.ui \
+	ags/app/ui/ags_meta_data_window.ui \
+	ags/app/ui/ags_primary_menu.ui \
 	ags/test/X/examples/ags-loop-000.xml \
 	ags/test/X/examples/ags-loop-001.xml \
 	ags/test/X/examples/ags-loop-002.xml \
@@ -2655,6 +2659,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine_util.h \
 	ags/app/ags_menu_action_callbacks.h \
 	ags/app/ags_menu_bar.h \
+	ags/app/ags_meta_data_window.h \
 	ags/app/ags_midi_dialog_callbacks.h \
 	ags/app/ags_midi_dialog.h \
 	ags/app/ags_midi_preferences.h \
@@ -2794,6 +2799,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor_callbacks.c \
 	ags/app/ags_menu_action_callbacks.c \
 	ags/app/ags_menu_bar.c \
+	ags/app/ags_meta_data_window.c \
 	ags/app/ags_midi_dialog.c \
 	ags/app/ags_midi_dialog_callbacks.c \
 	ags/app/ags_midi_preferences.c \
