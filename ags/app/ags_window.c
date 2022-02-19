@@ -1131,11 +1131,96 @@ ags_window_load_add_menu_lv2(AgsWindow *window,
 		     lv2_item);
 }
 
+/**
+ * ags_window_load_add_menu_vst3:
+ * @window: the #AgsWindow
+ * @menu: the #GMenu
+ * 
+ * Load add menu VST3.
+ * 
+ * Since: 3.18.0
+ */
 void
 ags_window_load_add_menu_vst3(AgsWindow *window,
 			      GMenu *menu)
 {
-  //TODO:JK: implement me
+#if defined(AGS_WITH_VST3)
+  GMenu *vst3_menu;
+  GMenuItem *vst3_item;
+  GMenuItem *item;
+
+  AgsVst3Manager *vst3_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *vst3_manager_mutex;
+
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  /* get vst3 manager mutex */
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+
+  /* vst3 sub-menu */
+  vst3_menu = g_menu_new();
+  vst3_item = g_menu_item_new("VST3",
+			      NULL);
+  
+  /* get plugin */
+  g_rec_mutex_lock(vst3_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(vst3_manager->vst3_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(vst3_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    GVariantBuilder *builder;
+
+    gchar *filename, *effect;
+    
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+
+    item = g_menu_item_new(effect,
+			   "app.add_vst3_bridge");
+
+    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+    g_variant_builder_add(builder, "s", filename);
+    g_variant_builder_add(builder, "s", effect);
+
+    g_menu_item_set_attribute_value(item,
+				    "target",
+				    g_variant_new("as", builder));
+    
+    g_menu_append_item(vst3_menu,
+		       item);
+
+    g_variant_builder_unref(builder);
+    
+    /* iterate */
+    list = list->next;
+  }
+  
+  g_menu_item_set_submenu(vst3_item,
+			  G_MENU_MODEL(vst3_menu));  
+
+  g_menu_append_item(menu,
+		     vst3_item);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+#endif
 }
 
 void

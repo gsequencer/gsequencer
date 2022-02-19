@@ -173,6 +173,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_add_lv2_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_lv2_bridge_action));
+
+  /* VST3 */
+  add_vst3_bridge_action = g_simple_action_new("add_vst3_bridge",
+					       g_variant_type_new("as"));
+  g_signal_connect(add_vst3_bridge_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_vst3_bridge_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_vst3_bridge_action));
 }
 
 void
