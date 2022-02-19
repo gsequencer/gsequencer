@@ -199,7 +199,6 @@ ags_window_init(AgsWindow *window)
 
   GApplication *app;
   GMenu *menu;
-  GSimpleAction *open_action;
 
   AgsApplicationContext *application_context;
   
@@ -282,13 +281,6 @@ ags_window_init(AgsWindow *window)
   gtk_header_bar_pack_end(window->header_bar,
 			  window->add_button);
   
-  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
-
-  menu = gtk_builder_get_object(builder,
-				"ags-add-menu");
-  gtk_menu_button_set_menu_model(window->add_button,
-				 menu);
-
   /* vbox */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
@@ -841,6 +833,97 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
   machine_counter->counter = initial_value;
 
   return(machine_counter);
+}
+
+/**
+ * ags_window_load_add_menu_ladspa:
+ * @window: the #AgsWindow
+ * 
+ * Load add menu LADSPA.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_window_load_add_menu_ladspa(AgsWindow *window)
+{
+  GtkBuilder *builder;
+
+  GMenu *menu;
+  GMenu *ladspa_menu;
+  GMenuItem *ladspa_item;
+  GMenuItem *item;
+
+  AgsLadspaManager *ladspa_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *ladspa_manager_mutex;
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  /* get ladspa manager mutex */
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
+
+  /* ladspa sub-menu */
+  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
+
+  menu = gtk_builder_get_object(builder,
+				"ags-add-menu");
+
+  ladspa_item = g_menu_item_new("LADSPA",
+				NULL);
+  g_menu_append_item(menu,
+		     ladspa_item);
+  
+  ladspa_menu = g_menu_new();
+  g_menu_item_set_submenu(ladspa_item,
+			  G_MENU_MODEL(ladspa_menu));  
+  
+  /* get plugin */
+  g_rec_mutex_lock(ladspa_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(ladspa_manager->ladspa_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(ladspa_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    gchar *filename, *effect;
+    
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+
+    item = g_menu_item_new(effect,
+			   "app.add_ladspa_bridge");
+    
+    g_menu_item_set_attribute(item,
+			      "filename",
+			      "s",
+			      filename);
+    g_menu_item_set_attribute(item,
+			      "effect",
+			      "s",
+			      effect);
+    
+    g_menu_append_item(ladspa_menu,
+		       item);
+    
+    /* iterate */
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void

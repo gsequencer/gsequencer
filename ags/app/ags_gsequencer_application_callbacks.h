@@ -57,6 +57,9 @@ void ags_gsequencer_help_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 				  AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_ladspa_bridge_callback(GAction *action, GVariant *parameter,
+					       AgsGSequencerApplication *gsequencer_app);
+
 G_END_DECLS
 
 #endif /*__AGS_GSEQUENCER_APPLICATION_CALLBACKS_H__*/

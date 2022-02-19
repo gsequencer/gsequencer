@@ -609,3 +609,9 @@ ags_app_action_util_quit()
 
   gtk_dialog_run((GtkDialog *) quit_dialog);
 }
+
+void
+ags_app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect)
+{
+  g_message("%s %s", filename, effect);
+}

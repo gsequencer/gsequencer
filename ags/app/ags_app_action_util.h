@@ -44,6 +44,8 @@ void ags_app_action_util_help();
 
 void ags_app_action_util_quit();
 
+void ags_app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect);
+
 G_END_DECLS
 
 #endif /*__AGS_APP_ACTION_UTIL_H__*/
