@@ -78,6 +78,26 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *about_action;
   GSimpleAction *help_action;
   GSimpleAction *quit_action;
+
+  GSimpleAction *add_panel_action;
+  GSimpleAction *add_spectrometer_action;
+  GSimpleAction *add_equalizer_action;
+  GSimpleAction *add_mixer_action;
+  GSimpleAction *add_drum_action;
+  GSimpleAction *add_matrix_action;
+  GSimpleAction *add_synth_action;
+  GSimpleAction *add_fm_synth_action;
+  GSimpleAction *add_syncsynth_action;
+  GSimpleAction *add_fm_syncsynth_action;
+  GSimpleAction *add_hybrid_synth_action;
+  GSimpleAction *add_hybrid_fm_synth_action;
+  GSimpleAction *add_ffplayer_action;
+  GSimpleAction *add_sf2_synth_action;
+  GSimpleAction *add_pitch_sampler_action;
+  GSimpleAction *add_sfz_synth_action;
+  GSimpleAction *add_audiorec_action;
+  GSimpleAction *add_desk_action;
+
   GSimpleAction *add_ladspa_bridge_action;
   GSimpleAction *add_dssi_bridge_action;
   GSimpleAction *add_lv2_bridge_action;
@@ -150,6 +170,162 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(quit_action));
 
+  /* panel */
+  add_panel_action = g_simple_action_new("add_panel",
+					 NULL);
+  g_signal_connect(add_panel_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_panel_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_panel_action));
+
+  /* panel */
+  add_panel_action = g_simple_action_new("add_panel",
+					 NULL);
+  g_signal_connect(add_panel_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_panel_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_panel_action));
+	
+  /* spectrometer */
+  add_spectrometer_action = g_simple_action_new("add_spectrometer",
+						NULL);
+  g_signal_connect(add_spectrometer_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_spectrometer_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_spectrometer_action));
+
+  /* equalizer */
+  add_equalizer_action = g_simple_action_new("add_equalizer",
+					     NULL);
+  g_signal_connect(add_equalizer_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_equalizer_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_equalizer_action));
+
+  /* mixer */
+  add_mixer_action = g_simple_action_new("add_mixer",
+					 NULL);
+  g_signal_connect(add_mixer_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_mixer_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_mixer_action));
+
+  /* drum */
+  add_drum_action = g_simple_action_new("add_drum",
+					NULL);
+  g_signal_connect(add_drum_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_drum_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_drum_action));
+
+  /* matrix */
+  add_matrix_action = g_simple_action_new("add_matrix",
+					  NULL);
+  g_signal_connect(add_matrix_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_matrix_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_matrix_action));
+
+  /* synth */
+  add_synth_action = g_simple_action_new("add_synth",
+					 NULL);
+  g_signal_connect(add_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_synth_action));
+
+  /* FM synth */
+  add_fm_synth_action = g_simple_action_new("add_fm_synth",
+					    NULL);
+  g_signal_connect(add_fm_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_fm_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_fm_synth_action));
+
+  /* syncsynth */
+  add_syncsynth_action = g_simple_action_new("add_syncsynth",
+					     NULL);
+  g_signal_connect(add_syncsynth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_syncsynth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_syncsynth_action));
+
+  /* FM syncsynth */
+  add_fm_syncsynth_action = g_simple_action_new("add_fm_syncsynth",
+						NULL);
+  g_signal_connect(add_fm_syncsynth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_fm_syncsynth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_fm_syncsynth_action));
+
+  /* hybrid_synth */
+  add_hybrid_synth_action = g_simple_action_new("add_hybrid_synth",
+						NULL);
+  g_signal_connect(add_hybrid_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_hybrid_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_hybrid_synth_action));
+
+  /* hybrid_fm_synth */
+  add_hybrid_fm_synth_action = g_simple_action_new("add_hybrid_fm_synth",
+						   NULL);
+  g_signal_connect(add_hybrid_fm_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_hybrid_fm_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_hybrid_fm_synth_action));
+
+#if defined(AGS_WITH_LIBINSTPATCH)
+  /* ffplayer */
+  add_ffplayer_action = g_simple_action_new("add_ffplayer",
+					    NULL);
+  g_signal_connect(add_ffplayer_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_ffplayer_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_ffplayer_action));
+
+  /* SF2 synth */
+  add_sf2_synth_action = g_simple_action_new("add_sf2_synth",
+					     NULL);
+  g_signal_connect(add_sf2_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_sf2_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_sf2_synth_action));
+#endif
+  
+  /* pitch sampler */
+  add_pitch_sampler_action = g_simple_action_new("add_pitch_sampler",
+						 NULL);
+  g_signal_connect(add_pitch_sampler_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_pitch_sampler_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_pitch_sampler_action));
+
+  /* SFZ synth */
+  add_sfz_synth_action = g_simple_action_new("add_sfz_synth",
+					     NULL);
+  g_signal_connect(add_sfz_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_sfz_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_sfz_synth_action));
+
+  /* audiorec */
+  add_audiorec_action = g_simple_action_new("add_audiorec",
+					    NULL);
+  g_signal_connect(add_audiorec_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_audiorec_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_audiorec_action));  
+
+#if 0
+  /* desk */
+  add_desk_action = g_simple_action_new("add_desk",
+					NULL);
+  g_signal_connect(add_desk_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_desk_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_desk_action));  
+#endif
+  
   /* LADSPA */
   add_ladspa_bridge_action = g_simple_action_new("add_ladspa_bridge",
 						 g_variant_type_new("as"));
@@ -181,6 +357,30 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_add_vst3_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_vst3_bridge_action));
+
+  /* live DSSI */
+  add_live_dssi_bridge_action = g_simple_action_new("add_live_dssi_bridge",
+						    g_variant_type_new("as"));
+  g_signal_connect(add_live_dssi_bridge_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_live_dssi_bridge_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_live_dssi_bridge_action));
+
+  /* live LV2 */
+  add_live_lv2_bridge_action = g_simple_action_new("add_live_lv2_bridge",
+						   g_variant_type_new("as"));
+  g_signal_connect(add_live_lv2_bridge_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_live_lv2_bridge_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_live_lv2_bridge_action));
+
+  /* live VST3 */
+  add_live_vst3_bridge_action = g_simple_action_new("add_live_vst3_bridge",
+						    g_variant_type_new("as"));
+  g_signal_connect(add_live_vst3_bridge_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_live_vst3_bridge_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_live_vst3_bridge_action));
 }
 
 void

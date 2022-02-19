@@ -26,6 +26,29 @@
 #include <ags/app/ags_online_help_window.h>
 #include <ags/app/ags_quit_dialog.h>
 #include <ags/app/ags_machine_util.h>
+#include <ags/app/machine/ags_panel.h>
+#include <ags/app/machine/ags_mixer.h>
+#include <ags/app/machine/ags_spectrometer.h>
+#include <ags/app/machine/ags_equalizer10.h>
+#include <ags/app/machine/ags_drum.h>
+#include <ags/app/machine/ags_matrix.h>
+#include <ags/app/machine/ags_synth.h>
+#include <ags/app/machine/ags_fm_synth.h>
+#include <ags/app/machine/ags_syncsynth.h>
+#include <ags/app/machine/ags_fm_syncsynth.h>
+#include <ags/app/machine/ags_hybrid_synth.h>
+#include <ags/app/machine/ags_hybrid_fm_synth.h>
+
+#if defined(AGS_WITH_LIBINSTPATCH)
+#include <ags/app/machine/ags_ffplayer.h>
+#include <ags/app/machine/ags_sf2_synth.h>
+#endif
+
+#include <ags/app/machine/ags_pitch_sampler.h>
+#include <ags/app/machine/ags_sfz_synth.h>
+
+#include <ags/app/machine/ags_audiorec.h>
+#include <ags/app/machine/ags_desk.h>
 
 #include <ags/app/machine/ags_ladspa_bridge.h>
 #include <ags/app/machine/ags_dssi_bridge.h>
@@ -628,6 +651,352 @@ ags_app_action_util_quit()
   ags_connectable_connect(AGS_CONNECTABLE(quit_dialog));
 
   gtk_dialog_run((GtkDialog *) quit_dialog);
+}
+
+void
+ags_app_action_util_add_panel()
+{
+  AgsPanel *panel;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create panel */
+  panel = (AgsPanel *) ags_machine_util_new_panel();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(panel)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_spectrometer()
+{
+  AgsSpectrometer *spectrometer;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  /* create spectrometer */
+  spectrometer = (AgsSpectrometer *) ags_machine_util_new_spectrometer();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(spectrometer)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_equalizer()
+{
+  AgsEqualizer10 *equalizer10;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  /* create equalizer10 */
+  equalizer10 = (AgsEqualizer10 *) ags_machine_util_new_equalizer();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(equalizer10)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_mixer()
+{
+  AgsMixer *mixer;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create mixer */
+  mixer = (AgsMixer *) ags_machine_util_new_mixer();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(mixer)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_drum()
+{
+  AgsDrum *drum;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  /* create drum */
+  drum = (AgsDrum *) ags_machine_util_new_drum();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(drum)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_matrix()
+{
+  AgsMatrix *matrix;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  /* create matrix */
+  matrix = (AgsMatrix *) ags_machine_util_new_matrix();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(matrix)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_synth()
+{
+  AgsSynth *synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  /* create synth */
+  synth = (AgsSynth *) ags_machine_util_new_synth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_fm_synth()
+{
+  AgsFMSynth *fm_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  /* create fm synth */
+  fm_synth = (AgsFMSynth *) ags_machine_util_new_fm_synth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(fm_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_syncsynth()
+{
+  AgsSyncsynth *syncsynth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create syncsynth */
+  syncsynth = (AgsSyncsynth *) ags_machine_util_new_syncsynth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(syncsynth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_fm_syncsynth()
+{
+  AgsFMSyncsynth *fm_syncsynth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create fm syncsynth */
+  fm_syncsynth = (AgsFMSyncsynth *) ags_machine_util_new_fm_syncsynth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(fm_syncsynth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_hybrid_synth()
+{
+  AgsHybridSynth *hybrid_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create hybrid synth */
+  hybrid_synth = (AgsHybridSynth *) ags_machine_util_new_hybrid_synth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(hybrid_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_hybrid_fm_synth()
+{
+  AgsHybridFMSynth *hybrid_fm_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create FM hybrid synth */
+  hybrid_fm_synth = (AgsHybridFMSynth *) ags_machine_util_new_hybrid_fm_synth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(hybrid_fm_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_ffplayer()
+{
+#if defined(AGS_WITH_LIBINSTPATCH)
+  AgsFFPlayer *ffplayer;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create ffplayer */
+  ffplayer = (AgsFFPlayer *) ags_machine_util_new_ffplayer();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(ffplayer)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+#endif
+}
+
+void
+ags_app_action_util_add_sf2_synth()
+{
+#if defined(AGS_WITH_LIBINSTPATCH)
+  AgsSF2Synth *sf2_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create SF2 synth */
+  sf2_synth = (AgsSF2Synth *) ags_machine_util_new_sf2_synth();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(sf2_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+#endif
+}
+
+void
+ags_app_action_util_add_pitch_sampler()
+{
+  AgsPitchSampler *pitch_sampler;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create pitch sampler */
+  pitch_sampler = (AgsPitchSampler *) ags_machine_util_new_pitch_sampler();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(pitch_sampler)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_sfz_synth()
+{
+  AgsSFZSynth *sfz_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create SFZ synth */
+  sfz_synth = (AgsSFZSynth *) ags_machine_util_new_sfz_synth();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(sfz_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_audiorec()
+{
+  AgsAudiorec *audiorec;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create audiorec */
+  audiorec = (AgsAudiorec *) ags_machine_util_new_audiorec();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(audiorec)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_desk()
+{
+  AgsDesk *desk;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create desk */
+  desk = (AgsDesk *) ags_machine_util_new_desk();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(desk)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
 }
 
 void

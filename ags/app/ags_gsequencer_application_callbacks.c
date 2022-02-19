@@ -78,6 +78,132 @@ ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_gsequencer_add_panel_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_panel();
+}
+
+void
+ags_gsequencer_add_spectrometer_callback(GAction *action, GVariant *parameter,
+					 AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_spectrometer();
+}
+
+void
+ags_gsequencer_add_equalizer_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_equalizer();
+}
+
+void
+ags_gsequencer_add_mixer_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_mixer();
+}
+
+void
+ags_gsequencer_add_drum_callback(GAction *action, GVariant *parameter,
+				 AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_drum();
+}
+
+void
+ags_gsequencer_add_matrix_callback(GAction *action, GVariant *parameter,
+				   AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_matrix();
+}
+
+void
+ags_gsequencer_add_synth_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_synth();
+}
+
+void
+ags_gsequencer_add_fm_synth_callback(GAction *action, GVariant *parameter,
+				     AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_fm_synth();
+}
+
+void
+ags_gsequencer_add_syncsynth_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_syncsynth();
+}
+
+void
+ags_gsequencer_add_fm_syncsynth_callback(GAction *action, GVariant *parameter,
+					 AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_fm_syncsynth();
+}
+
+void
+ags_gsequencer_add_hybrid_synth_callback(GAction *action, GVariant *parameter,
+					 AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_hybrid_synth();
+}
+
+void
+ags_gsequencer_add_hybrid_fm_synth_callback(GAction *action, GVariant *parameter,
+					    AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_hybrid_fm_synth();
+}
+
+void
+ags_gsequencer_add_ffplayer_callback(GAction *action, GVariant *parameter,
+				     AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_ffplayer();
+}
+
+void
+ags_gsequencer_add_sf2_synth_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_sf2_synth();
+}
+
+void
+ags_gsequencer_add_pitch_sampler_callback(GAction *action, GVariant *parameter,
+					  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_pitch_sampler();
+}
+
+void
+ags_gsequencer_add_sfz_synth_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_sfz_synth();
+}
+
+void
+ags_gsequencer_add_audiorec_callback(GAction *action, GVariant *parameter,
+				     AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_audiorec();
+}
+
+void
+ags_gsequencer_add_desk_callback(GAction *action, GVariant *parameter,
+				 AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_desk();
+}
+
+void
 ags_gsequencer_add_ladspa_bridge_callback(GAction *action, GVariant *parameter,
 					  AgsGSequencerApplication *gsequencer_app)
 {
@@ -169,19 +295,64 @@ void
 ags_gsequencer_add_live_dssi_bridge_callback(GAction *action, GVariant *parameter,
 					     AgsGSequencerApplication *gsequencer_app)
 {
-  //TODO:JK: implement me
+  GVariantIter *iter;
+  
+  gchar *filename;
+  gchar *effect;
+  
+  iter = NULL;
+
+  filename = NULL;
+  effect = NULL;
+  
+  g_variant_get(parameter, "as", &iter);
+
+  g_variant_iter_loop(iter, "s", &filename);
+  g_variant_iter_loop(iter, "s", &effect);
+  
+  ags_app_action_util_add_live_dssi_bridge(filename, effect);
 }
 
 void
 ags_gsequencer_add_live_lv2_bridge_callback(GAction *action, GVariant *parameter,
 					    AgsGSequencerApplication *gsequencer_app)
 {
-  //TODO:JK: implement me
+  GVariantIter *iter;
+  
+  gchar *filename;
+  gchar *effect;
+  
+  iter = NULL;
+
+  filename = NULL;
+  effect = NULL;
+  
+  g_variant_get(parameter, "as", &iter);
+
+  g_variant_iter_loop(iter, "s", &filename);
+  g_variant_iter_loop(iter, "s", &effect);
+  
+  ags_app_action_util_add_live_lv2_bridge(filename, effect);
 }
 
 void
 ags_gsequencer_add_live_vst3_bridge_callback(GAction *action, GVariant *parameter,
 					     AgsGSequencerApplication *gsequencer_app)
 {
-  //TODO:JK: implement me
+  GVariantIter *iter;
+  
+  gchar *filename;
+  gchar *effect;
+  
+  iter = NULL;
+
+  filename = NULL;
+  effect = NULL;
+  
+  g_variant_get(parameter, "as", &iter);
+
+  g_variant_iter_loop(iter, "s", &filename);
+  g_variant_iter_loop(iter, "s", &effect);
+  
+  ags_app_action_util_add_live_vst3_bridge(filename, effect);
 }

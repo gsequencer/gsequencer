@@ -44,6 +44,25 @@ void ags_app_action_util_help();
 
 void ags_app_action_util_quit();
 
+void ags_app_action_util_add_panel();
+void ags_app_action_util_add_spectrometer();
+void ags_app_action_util_add_equalizer();
+void ags_app_action_util_add_mixer();
+void ags_app_action_util_add_drum();
+void ags_app_action_util_add_matrix();
+void ags_app_action_util_add_synth();
+void ags_app_action_util_add_fm_synth();
+void ags_app_action_util_add_syncsynth();
+void ags_app_action_util_add_fm_syncsynth();
+void ags_app_action_util_add_hybrid_synth();
+void ags_app_action_util_add_hybrid_fm_synth();
+void ags_app_action_util_add_ffplayer();
+void ags_app_action_util_add_sf2_synth();
+void ags_app_action_util_add_pitch_sampler();
+void ags_app_action_util_add_sfz_synth();
+void ags_app_action_util_add_audiorec();
+void ags_app_action_util_add_desk();
+
 void ags_app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_dssi_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_lv2_bridge(gchar *filename, gchar *effect);

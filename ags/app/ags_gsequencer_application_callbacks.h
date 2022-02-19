@@ -57,6 +57,60 @@ void ags_gsequencer_help_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 				  AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_panel_callback(GAction *action, GVariant *parameter,
+				       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_spectrometer_callback(GAction *action, GVariant *parameter,
+					      AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_equalizer_callback(GAction *action, GVariant *parameter,
+					   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_mixer_callback(GAction *action, GVariant *parameter,
+				       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_drum_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_matrix_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_synth_callback(GAction *action, GVariant *parameter,
+				       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_fm_synth_callback(GAction *action, GVariant *parameter,
+					  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_syncsynth_callback(GAction *action, GVariant *parameter,
+					   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_fm_syncsynth_callback(GAction *action, GVariant *parameter,
+					      AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_hybrid_synth_callback(GAction *action, GVariant *parameter,
+					      AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_hybrid_fm_synth_callback(GAction *action, GVariant *parameter,
+						 AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_ffplayer_callback(GAction *action, GVariant *parameter,
+					  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_sf2_synth_callback(GAction *action, GVariant *parameter,
+					   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_pitch_sampler_callback(GAction *action, GVariant *parameter,
+					       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_sfz_synth_callback(GAction *action, GVariant *parameter,
+					   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_audiorec_callback(GAction *action, GVariant *parameter,
+					  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_desk_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_add_ladspa_bridge_callback(GAction *action, GVariant *parameter,
 					       AgsGSequencerApplication *gsequencer_app);
 
