@@ -149,11 +149,19 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* LADSPA */
   add_ladspa_bridge_action = g_simple_action_new("add_ladspa_bridge",
-						 NULL);
+						 g_variant_type_new("as"));
   g_signal_connect(add_ladspa_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_ladspa_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_ladspa_bridge_action));
+
+  /* DSSI */
+  add_dssi_bridge_action = g_simple_action_new("add_dssi_bridge",
+					       g_variant_type_new("as"));
+  g_signal_connect(add_dssi_bridge_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_dssi_bridge_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_dssi_bridge_action));
 }
 
 void

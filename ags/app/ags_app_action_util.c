@@ -25,6 +25,10 @@
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_online_help_window.h>
 #include <ags/app/ags_quit_dialog.h>
+#include <ags/app/ags_machine_util.h>
+
+#include <ags/app/machine/ags_ladspa_bridge.h>
+#include <ags/app/machine/ags_dssi_bridge.h>
 
 #include <ags/app/file/ags_simple_file.h>
 
@@ -613,5 +617,48 @@ ags_app_action_util_quit()
 void
 ags_app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect)
 {
-  g_message("%s %s", filename, effect);
+  AgsLadspaBridge *ladspa_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* create ladspa bridge */
+  ladspa_bridge = (AgsLadspaBridge *) ags_machine_util_new_ladspa_bridge(filename, effect);
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(ladspa_bridge)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
 }
+
+void
+ags_app_action_util_add_dssi_bridge(gchar *filename, gchar *effect)
+{
+  AgsDssiBridge *dssi_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* create dssi bridge */
+  dssi_bridge = (AgsDssiBridge *) ags_machine_util_new_dssi_bridge(filename, effect);
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(dssi_bridge)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_app_action_util_add_lv2_bridge(gchar *filename, gchar *effect)
+{
+}
+
+void
+ags_app_action_util_add_vst3_bridge(gchar *filename, gchar *effect)
+{
+}
+

@@ -122,31 +122,39 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   menu_bar = window->menu_bar;
   context_menu = window->context_menu;
     
+  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
+
+  menu = gtk_builder_get_object(builder,
+				"ags-add-menu");
+
   /* menu - bridge */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  ags_window_load_add_menu_ladspa(window);
-
-  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
-
-  menu = gtk_builder_get_object(builder,
-				"ags-add-menu");
-  gtk_menu_button_set_menu_model(window->add_button,
-				 menu);
+  ags_window_load_add_menu_ladspa(window,
+				  menu);
   
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  ags_window_load_add_menu_dssi(window,
+				menu);
+
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  ags_window_load_add_menu_lv2(window,
+			       menu);
+
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("VST3"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_vst3_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  ags_window_load_add_menu_vst3(window,
+				menu);
 
   /* menu - live */
   menu_bar->live = (GtkMenu *) gtk_menu_new();
@@ -212,6 +220,9 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   gtk_widget_set_no_show_all((GtkWidget *) window->menu_bar, TRUE);
   gtk_widget_hide((GtkWidget *) window->menu_bar);
 #endif
+
+  gtk_menu_button_set_menu_model(window->add_button,
+				 menu);
 
   /* connect and show window */
   ags_connectable_connect(AGS_CONNECTABLE(window));

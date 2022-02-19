@@ -838,17 +838,16 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
 /**
  * ags_window_load_add_menu_ladspa:
  * @window: the #AgsWindow
+ * @menu: the #GMenu
  * 
  * Load add menu LADSPA.
  * 
  * Since: 3.18.0
  */
 void
-ags_window_load_add_menu_ladspa(AgsWindow *window)
+ags_window_load_add_menu_ladspa(AgsWindow *window,
+				GMenu *menu)
 {
-  GtkBuilder *builder;
-
-  GMenu *menu;
   GMenu *ladspa_menu;
   GMenuItem *ladspa_item;
   GMenuItem *item;
@@ -865,19 +864,9 @@ ags_window_load_add_menu_ladspa(AgsWindow *window)
   ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* ladspa sub-menu */
-  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
-
-  menu = gtk_builder_get_object(builder,
-				"ags-add-menu");
-
+  ladspa_menu = g_menu_new();
   ladspa_item = g_menu_item_new("LADSPA",
 				NULL);
-  g_menu_append_item(menu,
-		     ladspa_item);
-  
-  ladspa_menu = g_menu_new();
-  g_menu_item_set_submenu(ladspa_item,
-			  G_MENU_MODEL(ladspa_menu));  
   
   /* get plugin */
   g_rec_mutex_lock(ladspa_manager_mutex);
@@ -895,6 +884,8 @@ ags_window_load_add_menu_ladspa(AgsWindow *window)
   list = start_list;
 
   while(list != NULL){
+    GVariantBuilder *builder;
+
     gchar *filename, *effect;
     
     /* get filename and effect */
@@ -905,25 +896,135 @@ ags_window_load_add_menu_ladspa(AgsWindow *window)
 
     item = g_menu_item_new(effect,
 			   "app.add_ladspa_bridge");
+
+    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
     
-    g_menu_item_set_attribute(item,
-			      "filename",
-			      "s",
-			      filename);
-    g_menu_item_set_attribute(item,
-			      "effect",
-			      "s",
-			      effect);
+    g_variant_builder_add(builder, "s", filename);
+    g_variant_builder_add(builder, "s", effect);
+
+    g_menu_item_set_attribute_value(item,
+				    "target",
+				    g_variant_new("as", builder));
     
     g_menu_append_item(ladspa_menu,
 		       item);
+
+    g_variant_builder_unref(builder);
+    
+    /* iterate */
+    list = list->next;
+  }
+  
+  g_menu_item_set_submenu(ladspa_item,
+			  G_MENU_MODEL(ladspa_menu));  
+
+  g_menu_append_item(menu,
+		     ladspa_item);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * ags_window_load_add_menu_dssi:
+ * @window: the #AgsWindow
+ * @menu: the #GMenu
+ * 
+ * Load add menu DSSI.
+ * 
+ * Since: 3.18.0
+ */
+void
+ags_window_load_add_menu_dssi(AgsWindow *window,
+			      GMenu *menu)
+{
+  GMenu *dssi_menu;
+  GMenuItem *dssi_item;
+  GMenuItem *item;
+
+  AgsDssiManager *dssi_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *dssi_manager_mutex;
+
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  /* get dssi manager mutex */
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
+
+  /* dssi sub-menu */
+  dssi_menu = g_menu_new();
+  dssi_item = g_menu_item_new("DSSI",
+			      NULL);
+
+  /* get plugin */
+  g_rec_mutex_lock(dssi_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(dssi_manager->dssi_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(dssi_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    GVariantBuilder *builder;
+
+    gchar *filename, *effect;
+    
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+    
+    item = g_menu_item_new(effect,
+			   "app.add_dssi_bridge");
+
+    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+    g_variant_builder_add(builder, "s", filename);
+    g_variant_builder_add(builder, "s", effect);
+
+    g_menu_item_set_attribute_value(item,
+				    "target",
+				    g_variant_new("as", builder));
+    
+    g_menu_append_item(dssi_menu,
+		       item);
+
+    g_variant_builder_unref(builder);
     
     /* iterate */
     list = list->next;
   }
 
+  g_menu_item_set_submenu(dssi_item,
+			  G_MENU_MODEL(dssi_menu));  
+
+  g_menu_append_item(menu,
+		     dssi_item);
+
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_window_load_add_menu_lv2(AgsWindow *window,
+			     GMenu *menu)
+{
+}
+
+void
+ags_window_load_add_menu_vst3(AgsWindow *window,
+			      GMenu *menu)
+{
 }
 
 void

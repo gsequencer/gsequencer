@@ -60,6 +60,15 @@ void ags_gsequencer_quit_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_add_ladspa_bridge_callback(GAction *action, GVariant *parameter,
 					       AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_dssi_bridge_callback(GAction *action, GVariant *parameter,
+					     AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_lv2_bridge_callback(GAction *action, GVariant *parameter,
+					    AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_vst3_bridge_callback(GAction *action, GVariant *parameter,
+					     AgsGSequencerApplication *gsequencer_app);
+
 G_END_DECLS
 
 #endif /*__AGS_GSEQUENCER_APPLICATION_CALLBACKS_H__*/

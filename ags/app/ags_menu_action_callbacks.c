@@ -58,7 +58,6 @@
 #include <ags/app/machine/ags_audiorec.h>
 #include <ags/app/machine/ags_desk.h>
 
-#include <ags/app/machine/ags_ladspa_bridge.h>
 #include <ags/app/machine/ags_dssi_bridge.h>
 #include <ags/app/machine/ags_lv2_bridge.h>
 #include <ags/app/machine/ags_live_dssi_bridge.h>
@@ -469,11 +468,6 @@ ags_menu_action_add_desk_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsLadspaBridge *ladspa_bridge;
-
-  AgsAddAudio *add_audio;
-
-  AgsApplicationContext *application_context;
 
   gchar *filename, *effect;
   
@@ -481,41 +475,21 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 			       AGS_MENU_ITEM_FILENAME_KEY);
   effect = g_object_get_data((GObject *) menu_item,
 			     AGS_MENU_ITEM_EFFECT_KEY);
-  
-  application_context = ags_application_context_get_instance();
-  
-  /* create ladspa bridge */
-  ladspa_bridge = (AgsLadspaBridge *) ags_machine_util_new_ladspa_bridge(filename, effect);
-  
-  add_audio = ags_add_audio_new(AGS_MACHINE(ladspa_bridge)->audio);
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
+
+  ags_app_action_util_add_ladspa_bridge(filename, effect);
 }
 
 void
 ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsDssiBridge *dssi_bridge;
-
-  AgsAddAudio *add_audio;
-
-  AgsApplicationContext *application_context;
-
   gchar *filename, *effect;
 
   filename = g_object_get_data((GObject *) menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
   effect = g_object_get_data((GObject *) menu_item,
-			     AGS_MENU_ITEM_EFFECT_KEY);
-  
-  application_context = ags_application_context_get_instance();
-  
-  /* create dssi bridge */
-  dssi_bridge = (AgsDssiBridge *) ags_machine_util_new_dssi_bridge(filename, effect);
-  
-  add_audio = ags_add_audio_new(AGS_MACHINE(dssi_bridge)->audio);
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
+			     AGS_MENU_ITEM_EFFECT_KEY);  
+
+  ags_app_action_util_add_dssi_bridge(filename, effect);
 }
 
 void

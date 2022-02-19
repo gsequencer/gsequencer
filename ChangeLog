@@ -1,3 +1,9 @@
+ags (3.18.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsGSequencerApplication
+	* refactored AgsWindow to use GtkHeaderBar
+
 ags (3.17.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
