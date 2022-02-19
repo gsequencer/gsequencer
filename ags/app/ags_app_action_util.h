@@ -49,6 +49,10 @@ void ags_app_action_util_add_dssi_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_lv2_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_vst3_bridge(gchar *filename, gchar *effect);
 
+void ags_app_action_util_add_live_dssi_bridge(gchar *filename, gchar *effect);
+void ags_app_action_util_add_live_lv2_bridge(gchar *filename, gchar *effect);
+void ags_app_action_util_add_live_vst3_bridge(gchar *filename, gchar *effect);
+
 G_END_DECLS
 
 #endif /*__AGS_APP_ACTION_UTIL_H__*/

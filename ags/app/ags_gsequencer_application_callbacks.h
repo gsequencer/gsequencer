@@ -69,6 +69,15 @@ void ags_gsequencer_add_lv2_bridge_callback(GAction *action, GVariant *parameter
 void ags_gsequencer_add_vst3_bridge_callback(GAction *action, GVariant *parameter,
 					     AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_live_dssi_bridge_callback(GAction *action, GVariant *parameter,
+						  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_live_lv2_bridge_callback(GAction *action, GVariant *parameter,
+						 AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_live_vst3_bridge_callback(GAction *action, GVariant *parameter,
+						  AgsGSequencerApplication *gsequencer_app);
+
 G_END_DECLS
 
 #endif /*__AGS_GSEQUENCER_APPLICATION_CALLBACKS_H__*/

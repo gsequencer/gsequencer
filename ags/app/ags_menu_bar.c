@@ -967,8 +967,6 @@ ags_lv2_bridge_menu_new()
       /* get filename and effect */
       filename = lv2_manager->quick_scan_plugin_filename[i];
       effect = lv2_manager->quick_scan_plugin_effect[i];
-
-      g_message("%s %s", filename, effect);
       
       /* create item */
       if(filename != NULL &&

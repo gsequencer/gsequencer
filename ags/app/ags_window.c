@@ -1015,16 +1015,148 @@ ags_window_load_add_menu_dssi(AgsWindow *window,
 		   (GDestroyNotify) g_object_unref);
 }
 
+/**
+ * ags_window_load_add_menu_lv2:
+ * @window: the #AgsWindow
+ * @menu: the #GMenu
+ * 
+ * Load add menu LV2.
+ * 
+ * Since: 3.18.0
+ */
 void
 ags_window_load_add_menu_lv2(AgsWindow *window,
 			     GMenu *menu)
 {
+  GMenu *lv2_menu;
+  GMenuItem *lv2_item;
+  GMenuItem *item;
+
+  AgsLv2Manager *lv2_manager;
+
+  guint length;
+  guint i;
+
+  GRecMutex *lv2_manager_mutex;
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  /* get lv2 manager mutex */
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+
+  /* lv2 sub-menu */
+  lv2_menu = g_menu_new();
+  lv2_item = g_menu_item_new("LV2",
+			      NULL);
+
+  /* get plugin */
+  g_rec_mutex_lock(lv2_manager_mutex);
+  
+  if(lv2_manager->quick_scan_plugin_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_plugin_filename);
+
+    for(i = 0; i < length; i++){
+      gchar *filename, *effect;
+    
+      /* get filename and effect */
+      filename = lv2_manager->quick_scan_plugin_filename[i];
+      effect = lv2_manager->quick_scan_plugin_effect[i];
+      
+      /* create item */
+      if(filename != NULL &&
+	 effect != NULL){
+	GVariantBuilder *builder;
+    
+	item = g_menu_item_new(effect,
+			       "app.add_lv2_bridge");
+
+	builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+	g_variant_builder_add(builder, "s", filename);
+	g_variant_builder_add(builder, "s", effect);
+
+	g_menu_item_set_attribute_value(item,
+					"target",
+					g_variant_new("as", builder));
+    
+	g_menu_append_item(lv2_menu,
+			   item);
+
+	g_variant_builder_unref(builder);
+      }
+    }
+  }
+  
+  if(lv2_manager->quick_scan_instrument_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
+  
+    for(i = 0; i < length; i++){
+      gchar *filename, *effect;
+    
+      /* get filename and effect */
+      filename = lv2_manager->quick_scan_instrument_filename[i];
+      effect = lv2_manager->quick_scan_instrument_effect[i];
+    
+      /* create item */
+      if(filename != NULL &&
+	 effect != NULL){
+	GVariantBuilder *builder;
+    
+	item = g_menu_item_new(effect,
+			       "app.add_lv2_bridge");
+
+	builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+	g_variant_builder_add(builder, "s", filename);
+	g_variant_builder_add(builder, "s", effect);
+
+	g_menu_item_set_attribute_value(item,
+					"target",
+					g_variant_new("as", builder));
+    
+	g_menu_append_item(lv2_menu,
+			   item);
+
+	g_variant_builder_unref(builder);
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(lv2_manager_mutex);
+  
+  g_menu_item_set_submenu(lv2_item,
+			  G_MENU_MODEL(lv2_menu));  
+
+  g_menu_append_item(menu,
+		     lv2_item);
 }
 
 void
 ags_window_load_add_menu_vst3(AgsWindow *window,
 			      GMenu *menu)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_window_load_add_menu_live_dssi(AgsWindow *window,
+				   GMenu *menu)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_window_load_add_menu_live_lv2(AgsWindow *window,
+				  GMenu *menu)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_window_load_add_menu_live_vst3(AgsWindow *window,
+				   GMenu *menu)
+{
+  //TODO:JK: implement me
 }
 
 void
