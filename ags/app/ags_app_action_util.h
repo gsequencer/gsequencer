@@ -37,6 +37,9 @@ void ags_app_action_util_save_as();
 
 void ags_app_action_util_export();
 
+void ags_app_action_util_smf_import();
+void ags_app_action_util_smf_export();
+
 void ags_app_action_util_preferences();
 
 void ags_app_action_util_about();
@@ -71,6 +74,11 @@ void ags_app_action_util_add_vst3_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_dssi_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_lv2_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_vst3_bridge(gchar *filename, gchar *effect);
+
+void ags_app_action_util_edit_notation();
+void ags_app_action_util_edit_automation();
+void ags_app_action_util_edit_wave();
+void ags_app_action_util_edit_sheet();
 
 G_END_DECLS
 

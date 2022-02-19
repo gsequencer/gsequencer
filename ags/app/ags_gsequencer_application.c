@@ -74,6 +74,8 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *save_action;
   GSimpleAction *save_as_action;
   GSimpleAction *export_action;
+  GSimpleAction *smf_import_action;
+  GSimpleAction *smf_export_action;
   GSimpleAction *preferences_action;
   GSimpleAction *about_action;
   GSimpleAction *help_action;
@@ -105,6 +107,11 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *add_live_dssi_bridge_action;
   GSimpleAction *add_live_lv2_bridge_action;
   GSimpleAction *add_live_vst3_bridge_action;
+
+  GSimpleAction *edit_notation_action;
+  GSimpleAction *edit_automation_action;
+  GSimpleAction *edit_wave_action;
+  GSimpleAction *edit_sheet_action;
 
   /* open */
   open_action = g_simple_action_new("open",
@@ -138,6 +145,22 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(export_action));
 
+  /* SMF import */
+  smf_import_action = g_simple_action_new("smf_import",
+					  NULL);
+  g_signal_connect(smf_import_action, "activate",
+		   G_CALLBACK(ags_gsequencer_smf_import_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(smf_import_action));
+
+  /* SMF export */
+  smf_export_action = g_simple_action_new("smf_export",
+				      NULL);
+  g_signal_connect(smf_export_action, "activate",
+		   G_CALLBACK(ags_gsequencer_smf_export_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(smf_export_action));
+  
   /* preferences */
   preferences_action = g_simple_action_new("preferences",
 					   NULL);
@@ -381,6 +404,38 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_add_live_vst3_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_live_vst3_bridge_action));
+
+  /* edit notation */
+  edit_notation_action = g_simple_action_new("edit_notation",
+					     NULL);
+  g_signal_connect(edit_notation_action, "activate",
+		   G_CALLBACK(ags_gsequencer_edit_notation_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(edit_notation_action));
+
+  /* edit automation */
+  edit_automation_action = g_simple_action_new("edit_automation",
+					       NULL);
+  g_signal_connect(edit_automation_action, "activate",
+		   G_CALLBACK(ags_gsequencer_edit_automation_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(edit_automation_action));
+
+  /* edit wave */
+  edit_wave_action = g_simple_action_new("edit_wave",
+					 NULL);
+  g_signal_connect(edit_wave_action, "activate",
+		   G_CALLBACK(ags_gsequencer_edit_wave_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(edit_wave_action));
+
+  /* edit sheet */
+  edit_sheet_action = g_simple_action_new("edit_sheet",
+					  NULL);
+  g_signal_connect(edit_sheet_action, "activate",
+		   G_CALLBACK(ags_gsequencer_edit_sheet_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(edit_sheet_action));
 }
 
 void

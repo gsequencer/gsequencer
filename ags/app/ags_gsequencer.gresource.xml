@@ -6,4 +6,7 @@
   <gresource prefix="/org/nongnu/gsequencer">
     <file>ags/app/ui/ags_add_menu.ui</file>
   </gresource>
+  <gresource prefix="/org/nongnu/gsequencer">
+    <file>ags/app/ui/ags_edit_menu.ui</file>
+  </gresource>
 </gresources>

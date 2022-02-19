@@ -50,6 +50,20 @@ ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_gsequencer_smf_import_callback(GAction *action, GVariant *parameter,
+				   AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_smf_import();
+}
+
+void
+ags_gsequencer_smf_export_callback(GAction *action, GVariant *parameter,
+				   AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_smf_export();
+}
+
+void
 ags_gsequencer_preferences_callback(GAction *action, GVariant *parameter,
 				    AgsGSequencerApplication *gsequencer_app)
 {
@@ -355,4 +369,32 @@ ags_gsequencer_add_live_vst3_bridge_callback(GAction *action, GVariant *paramete
   g_variant_iter_loop(iter, "s", &effect);
   
   ags_app_action_util_add_live_vst3_bridge(filename, effect);
+}
+
+void
+ags_gsequencer_edit_notation_callback(GAction *action, GVariant *parameter,
+				      AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_edit_notation();
+}
+
+void
+ags_gsequencer_edit_automation_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_edit_automation();
+}
+
+void
+ags_gsequencer_edit_wave_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_edit_wave();
+}
+
+void
+ags_gsequencer_edit_sheet_callback(GAction *action, GVariant *parameter,
+				   AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_edit_sheet();
 }

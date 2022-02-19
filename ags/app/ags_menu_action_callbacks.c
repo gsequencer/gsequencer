@@ -581,44 +581,13 @@ ags_menu_action_preferences_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
-  AgsWindow *window;
-
-  application_context = ags_application_context_get_instance();
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  if(window->midi_import_wizard != NULL){
-    return;
-  }
-
-  window->midi_import_wizard = (GtkWidget *) ags_midi_import_wizard_new();
-
-  ags_connectable_connect(AGS_CONNECTABLE(window->midi_import_wizard));
-  ags_applicable_reset(AGS_APPLICABLE(window->midi_import_wizard));
-
-  gtk_widget_show_all(GTK_WIDGET(window->midi_import_wizard));
+  ags_app_action_util_smf_import();
 }
 
 void
 ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
-  AgsWindow *window;
-
-  application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  if(window->midi_export_wizard != NULL){
-    return;
-  }
-
-  window->midi_export_wizard = (GtkWidget *) ags_midi_export_wizard_new((GtkWidget *) window);
-
-  ags_connectable_connect(AGS_CONNECTABLE(window->midi_export_wizard));
-  ags_applicable_reset(AGS_APPLICABLE(window->midi_export_wizard));
-
-  gtk_widget_show_all(GTK_WIDGET(window->midi_export_wizard));
+  ags_app_action_util_smf_export();
 }
 
 void

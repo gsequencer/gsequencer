@@ -5,6 +5,7 @@ ags (3.18.0)
 	* implemented ags_app_action_util.[ch]
 	* implemented ags_primary_menu.ui
 	* implemented ags_add_menu.ui
+	* implemented ags_edit_menu.ui
 	* refactored AgsWindow to use GtkHeaderBar
 	* refactored ags_menu_action_callbacks.c
 	* moved ags/X to ags/app

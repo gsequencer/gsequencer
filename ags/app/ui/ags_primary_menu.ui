@@ -19,6 +19,14 @@
         <attribute name="action">app.export</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">SMF import</attribute>
+        <attribute name="action">app.smf_import</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">SMF export</attribute>
+        <attribute name="action">app.smf_export</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">_Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
       </item>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,12 +20,10 @@
 #include <ags/app/export/ags_midi_export_wizard_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_window.h>
 
 void
 ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data)
 {
-  AgsWindow *window;    
   AgsMidiExportWizard *midi_export_wizard;
 
   AgsApplicationContext *application_context;
@@ -33,8 +31,6 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   midi_export_wizard = (AgsMidiExportWizard *) wizard;
 
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   switch(response){
   case GTK_RESPONSE_REJECT:
@@ -69,7 +65,8 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_CANCEL:
     {
-      window->midi_export_wizard = NULL;
+      ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
+					     NULL);
       
       gtk_widget_destroy(wizard);
     }

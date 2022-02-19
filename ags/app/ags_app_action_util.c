@@ -21,11 +21,20 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_online_help_window.h>
 #include <ags/app/ags_quit_dialog.h>
 #include <ags/app/ags_machine_util.h>
+
+#include <ags/app/editor/ags_composite_edit.h>
+#include <ags/app/editor/ags_composite_edit_callbacks.h>
+
+#include <ags/app/import/ags_midi_import_wizard.h>
+
+#include <ags/app/export/ags_midi_export_wizard.h>
+
 #include <ags/app/machine/ags_panel.h>
 #include <ags/app/machine/ags_mixer.h>
 #include <ags/app/machine/ags_spectrometer.h>
@@ -38,6 +47,7 @@
 #include <ags/app/machine/ags_fm_syncsynth.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
 #include <ags/app/machine/ags_hybrid_fm_synth.h>
+
 
 #if defined(AGS_WITH_LIBINSTPATCH)
 #include <ags/app/machine/ags_ffplayer.h>
@@ -431,6 +441,56 @@ ags_app_action_util_export()
 
   export_window = (AgsExportWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
   gtk_widget_show_all((GtkWidget *) export_window);
+}
+
+void
+ags_app_action_util_smf_import()
+{
+  AgsMidiImportWizard *midi_import_wizard;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  midi_import_wizard = (AgsMidiImportWizard *) ags_ui_provider_get_midi_import_wizard(AGS_UI_PROVIDER(application_context));
+
+  if(midi_import_wizard != NULL){
+    return;
+  }
+
+  midi_import_wizard = ags_midi_import_wizard_new();
+  ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
+					 midi_import_wizard);
+
+  ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
+  ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
+
+  gtk_widget_show_all(GTK_WIDGET(midi_import_wizard));
+}
+
+void
+ags_app_action_util_smf_export()
+{
+  AgsMidiExportWizard *midi_export_wizard;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  midi_export_wizard = (AgsMidiExportWizard *) ags_ui_provider_get_midi_export_wizard(AGS_UI_PROVIDER(application_context));
+
+  if(midi_export_wizard != NULL){
+    return;
+  }
+
+  midi_export_wizard = ags_midi_export_wizard_new();
+  ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
+					 midi_export_wizard);
+
+  ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
+  ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
+
+  gtk_widget_show_all(GTK_WIDGET(midi_export_wizard));
 }
 
 void
@@ -1500,4 +1560,28 @@ ags_app_action_util_add_live_vst3_bridge(gchar *filename, gchar *effect)
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 #endif
+}
+
+void
+ags_app_action_util_edit_notation()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_app_action_util_edit_automation()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_app_action_util_edit_wave()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_app_action_util_edit_sheet()
+{
+  //TODO:JK: implement me
 }

@@ -45,6 +45,12 @@ void ags_gsequencer_save_as_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
 				    AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_smf_import_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_smf_export_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_preferences_callback(GAction *action, GVariant *parameter,
 					 AgsGSequencerApplication *gsequencer_app);
 
@@ -131,6 +137,18 @@ void ags_gsequencer_add_live_lv2_bridge_callback(GAction *action, GVariant *para
 
 void ags_gsequencer_add_live_vst3_bridge_callback(GAction *action, GVariant *parameter,
 						  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_edit_notation_callback(GAction *action, GVariant *parameter,
+					   AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_edit_automation_callback(GAction *action, GVariant *parameter,
+					     AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_edit_wave_callback(GAction *action, GVariant *parameter,
+				       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_edit_sheet_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app);
 
 G_END_DECLS
 
