@@ -249,6 +249,13 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
+
+  /* meta data */
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
+			(GtkWidget*) gtk_separator_menu_item_new());
+  
+  item = gtk_menu_item_new_with_label(i18n("Meta-data"));
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
   
   /* preferences */
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
@@ -256,7 +263,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Preferences"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
-  
+
   /* MIDI */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label("MIDI");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
@@ -552,6 +559,11 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT (list1->data), "activate",
 		   G_CALLBACK (ags_menu_action_sheet_callback), (gpointer) menu_bar);
+  list1 = list1->next;  
+  list1 = list1->next;
+
+  g_signal_connect(G_OBJECT (list1->data), "activate",
+		   G_CALLBACK(ags_menu_action_meta_data_callback), (gpointer) menu_bar);
   list1 = list1->next;  
   list1 = list1->next;
 

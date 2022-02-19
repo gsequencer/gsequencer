@@ -573,6 +573,12 @@ ags_menu_action_sheet_callback(GtkWidget *menu_item, gpointer data)
 }
 
 void
+ags_menu_action_meta_data_callback(GtkWidget *menu_item, gpointer data)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_menu_action_preferences_callback(GtkWidget *menu_item, gpointer data)
 {
   ags_app_action_util_preferences();

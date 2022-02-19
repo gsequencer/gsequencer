@@ -76,6 +76,7 @@ void ags_menu_action_notation_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_sheet_callback(GtkWidget *menu_item, gpointer data);
+void ags_menu_action_meta_data(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_preferences_callback(GtkWidget *menu_item, gpointer data);
 
 void ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data);

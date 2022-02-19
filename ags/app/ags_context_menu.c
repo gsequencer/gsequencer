@@ -252,7 +252,14 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
-  
+
+  /* meta data */
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->edit,
+			(GtkWidget*) gtk_separator_menu_item_new());
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Meta-data"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
+
   /* preferences */
   gtk_menu_shell_append((GtkMenuShell*) context_menu->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
@@ -557,6 +564,11 @@ ags_context_menu_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT (list1->data), "activate",
 		   G_CALLBACK (ags_menu_action_sheet_callback), (gpointer) context_menu);
   list1 = list1->next;
+  list1 = list1->next;
+
+  g_signal_connect(G_OBJECT (list1->data), "activate",
+		   G_CALLBACK(ags_menu_action_meta_data_callback), (gpointer) context_menu);
+  list1 = list1->next;  
   list1 = list1->next;
 
   g_signal_connect(G_OBJECT (list1->data), "activate",
