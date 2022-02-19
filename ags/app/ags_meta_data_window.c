@@ -44,7 +44,7 @@ static void
 ags_meta_data_window_class_init(AgsMetaDataWindowClass *klass)
 {
   gtk_widget_class_set_template_from_resource(klass,
-                                              "/ags/gsequencer/ui/ags_meta_data_window.ui");
+                                              "/ags/app/ui/ags_meta_data_window.ui");
   gtk_widget_class_bind_template_child(klass, AgsMetaDataWindow, author_entry);
   gtk_widget_class_bind_template_child(klass, AgsMetaDataWindow, title_entry);
   gtk_widget_class_bind_template_child(klass, AgsMetaDataWindow, album_entry);
