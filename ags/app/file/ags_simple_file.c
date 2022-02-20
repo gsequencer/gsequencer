@@ -22,6 +22,7 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_machine_util.h>
 #include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_automation_window.h>
@@ -127,6 +128,7 @@ void ags_simple_file_read_change_max_precision(AgsThread *thread,
 					       gdouble max_precision);
 
 void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **config);
+void ags_simple_file_read_meta_data_window(AgsSimpleFile *simple_file, xmlNode *node, AgsMetaDataWindow **meta_data_window);
 void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
 void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
 void ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv);
@@ -230,6 +232,7 @@ void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node,
 void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
 
 xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
+xmlNode* ags_simple_file_write_meta_data_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsMetaDataWindow *meta_data_window);
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
 xmlNode* ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property);
 xmlNode* ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property);
@@ -1169,6 +1172,10 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
 			       node,
 			       config);  
   
+  ags_simple_file_write_meta_data_window(simple_file,
+					 node,
+					 (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)));
+  
   ags_simple_file_write_window(simple_file,
 			       node,
 			       (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
@@ -1277,6 +1284,16 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	  ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
 				     (GtkWidget *) window);
 	}
+      }else if(!xmlStrncmp(BAD_CAST "ags-sf-meta-list",
+			   child->name,
+			   17)){
+	AgsMetaDataWindow *meta_data_window;
+
+	meta_data_window = ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
+	
+	ags_simple_file_read_meta_data_window(simple_file,
+					      child,
+					      (AgsMetaDataWindow **) &meta_data_window);
       }
     }
 
@@ -1473,6 +1490,85 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 
   ags_ui_provider_set_gui_scale_factor(AGS_UI_PROVIDER(application_context),
 				       gui_scale_factor);
+}
+
+void
+ags_simple_file_read_meta_data_window(AgsSimpleFile *simple_file, xmlNode *node, AgsMetaDataWindow **meta_data_window)
+{
+  AgsMetaDataWindow *current;
+
+  xmlNode *child;
+
+  xmlChar *name;
+  xmlChar *str;
+  
+  if(meta_data_window == NULL){
+    return;
+  }
+
+  current = meta_data_window[0];
+
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-meta",
+		     12)){
+	name = xmlGetProp(child,
+			  "name");
+	
+	str = xmlNodeGetContent(child);
+	
+	if(!xmlStrncmp(name,
+		       (xmlChar *) "author",
+		       7)){
+	  gtk_entry_set_text(current->author,
+			     str);
+	}else if(!xmlStrncmp(name,
+			     (xmlChar *) "title",
+			     6)){
+	  gtk_entry_set_text(current->title,
+			     str);
+	}else if(!xmlStrncmp(name,
+			     (xmlChar *) "album",
+			     6)){
+	  gtk_entry_set_text(current->album,
+			     str);
+	}else if(!xmlStrncmp(name,
+			     (xmlChar *) "release-date",
+			     13)){
+	  gtk_entry_set_text(current->release_date,
+			     str);
+	}else if(!xmlStrncmp(name,
+			     (xmlChar *) "copyright",
+			     10)){
+	  gtk_entry_set_text(current->copyright,
+			     str);
+	}else if(!xmlStrncmp(name,
+			     (xmlChar *) "license",
+			     8)){
+	  gtk_entry_set_text(current->license,
+			     str);
+	}else if(!xmlStrncmp(name,
+			     (xmlChar *) "comment",
+			     8)){
+	  GtkTextBuffer *text_buffer;
+	  
+	  text_buffer = gtk_text_view_get_buffer(current->comment);
+
+	  gtk_text_buffer_set_text(text_buffer,
+				   str,
+				   xmlStrlen(str));
+	}
+
+	xmlFree(name);
+	xmlFree(str);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 void
@@ -10967,6 +11063,180 @@ ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsCon
   xmlAddChild(node,
 	      cdata);
 
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_meta_data_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsMetaDataWindow *meta_data_window)
+{
+  GtkTextBuffer *text_buffer;
+  
+  GtkTextIter start;
+  GtkTextIter end;
+
+  xmlNode *node;
+  xmlNode *child;
+  xmlNode *cdata;
+
+  gchar *str;
+
+  node = xmlNewNode(NULL,
+		    "ags-sf-meta-list");
+
+  /* author */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "author");
+
+  str = gtk_entry_get_text(meta_data_window->author);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+  /* title */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "title");
+
+  str = gtk_entry_get_text(meta_data_window->title);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+  /* album */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "album");
+
+  str = gtk_entry_get_text(meta_data_window->album);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+  /* release date */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "release-date");
+
+  str = gtk_entry_get_text(meta_data_window->release_date);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+  /* copyright */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "copyright");
+
+  str = gtk_entry_get_text(meta_data_window->copyright);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+  /* license */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "license");
+
+  str = gtk_entry_get_text(meta_data_window->license);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+
+  /* comment */
+  child = xmlNewNode(NULL,
+		     "ags-sf-meta");
+
+  xmlNewProp(child,
+	     "name",
+	     "comment");
+
+  text_buffer = gtk_text_view_get_buffer(meta_data_window->comment);
+
+  gtk_text_buffer_get_bounds(text_buffer,
+			     &start,
+			     &end);
+  
+  str = gtk_text_buffer_get_text(text_buffer,
+				 &start,
+				 &end,
+				 TRUE);
+  
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   str,
+			   strlen(str));
+  
+  xmlAddChild(child,
+	      cdata);
+
+  xmlAddChild(node,
+	      child);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+  
   return(node);
 }
 

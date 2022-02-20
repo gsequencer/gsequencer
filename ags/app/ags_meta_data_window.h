@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2021 Daniel Maksymow
+ * Copyright (C) 2021,2022 Daniel Maksymow
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,19 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE(AgsMetaDataWindow, ags_meta_data_window, AGS,
                      META_DATA_WINDOW, GtkWindow)
+  
+struct _AgsMetaDataWindow
+{
+  GtkWindow parent;
+
+  GtkEntry *author;
+  GtkEntry *title;
+  GtkEntry *album;
+  GtkEntry *release_date;
+  GtkEntry *copyright;
+  GtkEntry *license;
+  GtkTextView *comment;
+};
 
 AgsMetaDataWindow* ags_meta_data_window_new();
 

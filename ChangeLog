@@ -11,6 +11,9 @@ ags (3.18.0)
 	* merged dev-maksymow-meta-data-window
 	* moved ags/X to ags/app
 
+	[ Daniel Maksymow (Contributor of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMetaDataWindow
+
 ags (3.17.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

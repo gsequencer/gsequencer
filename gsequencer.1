@@ -164,7 +164,8 @@ device=hw:CARD=CODEC,DEV=0
 auto\-sense=false
 
 [thread]
-model=multi\-threaded
+model=super\-threaded
+super\-threaded\-scope=audio
 lock\-global=ags\-thread
 lock\-parent=ags\-recycling\-thread
 thread\-pool\-max\-unused\-threads=4
@@ -204,7 +205,8 @@ device=/dev/dsp
 auto\-sense=false
 
 [thread]
-model=multi\-threaded
+model=super\-threaded
+super\-threaded\-scope=audio
 lock\-global=ags\-thread
 lock\-parent=ags\-recycling\-thread
 thread\-pool\-max\-unused\-threads=4

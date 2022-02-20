@@ -28,6 +28,7 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_animation_window.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_effect_pad.h>
@@ -240,6 +241,9 @@ void ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provide
 GtkApplication* ags_gsequencer_application_context_get_app(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
 						GtkApplication *app);
+GtkWidget* ags_gsequencer_application_context_get_meta_data_window(AgsUiProvider *ui_provider);
+void ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provider,
+							  GtkWidget *widget);
 
 void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
 void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
@@ -581,6 +585,9 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
 
   ui_provider->get_app = ags_gsequencer_application_context_get_app;
   ui_provider->set_app = ags_gsequencer_application_context_set_app;
+
+  ui_provider->get_meta_data_window = ags_gsequencer_application_context_get_meta_data_window;
+  ui_provider->set_meta_data_window = ags_gsequencer_application_context_set_meta_data_window;
 }
 
 void
@@ -685,6 +692,8 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->lv2_turtle_scanner = NULL;
 
   gsequencer_application_context->app = NULL;
+
+  gsequencer_application_context->meta_data_window = NULL;
 
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		ags_gsequencer_application_context_loader_timeout,
@@ -2651,6 +2660,33 @@ ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
   gsequencer_application_context->app = app;
 }
 
+GtkWidget*
+ags_gsequencer_application_context_get_meta_data_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *meta_data_window;
+  
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* get meta_data window */
+  meta_data_window = gsequencer_application_context->meta_data_window;
+
+  return(meta_data_window);
+}
+
+void
+ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provider,
+							GtkWidget *widget)
+{
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* set meta_data window */
+  gsequencer_application_context->meta_data_window = widget;
+}
+
 void
 ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context)
 {
@@ -2880,6 +2916,10 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   if(filename != NULL){
     window->filename = filename;
   }  
+
+  widget = (GtkWidget *) ags_meta_data_window_new();
+  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
+				       widget);
 }
 
 void

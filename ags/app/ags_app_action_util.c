@@ -23,6 +23,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_export_window.h>
+#include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_online_help_window.h>
 #include <ags/app/ags_quit_dialog.h>
@@ -425,9 +426,27 @@ ags_app_action_util_save_as()
 #else
     uselocale(current);
 #endif
+
+    window->name = filename;
+    
+    gtk_header_bar_set_subtitle(window->header_bar,
+				window->name);
   }
   
   gtk_widget_destroy((GtkWidget *) file_chooser);
+}
+
+void
+ags_app_action_util_meta_data()
+{
+  AgsMetaDataWindow *meta_data_window;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  meta_data_window = (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
+  gtk_widget_show_all((GtkWidget *) meta_data_window);
 }
 
 void

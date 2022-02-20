@@ -138,6 +138,8 @@ struct _AgsGSequencerApplicationContext
   AgsLv2TurtleScanner *lv2_turtle_scanner;
 
   GtkApplication *app;
+
+  GtkWidget *meta_data_window;
 };
 
 struct _AgsGSequencerApplicationContextClass

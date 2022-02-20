@@ -33,6 +33,12 @@
 
 G_BEGIN_DECLS
 
+int ags_gsequencer_application_command_line_callback(GApplication *gsequencer_app,
+						     GApplicationCommandLine *cmdline);
+int ags_gsequencer_application_handle_local_options_callback(GApplication *gsequencer_app,
+							     GVariantDict *options,
+							     gpointer user_data);
+
 void ags_gsequencer_open_callback(GAction *action, GVariant *parameter,
 				  AgsGSequencerApplication *gsequencer_app);
 
@@ -41,6 +47,9 @@ void ags_gsequencer_save_callback(GAction *action, GVariant *parameter,
 
 void ags_gsequencer_save_as_callback(GAction *action, GVariant *parameter,
 				     AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_meta_data_callback(GAction *action, GVariant *parameter,
+				       AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_export_callback(GAction *action, GVariant *parameter,
 				    AgsGSequencerApplication *gsequencer_app);

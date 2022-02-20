@@ -73,6 +73,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *open_action;
   GSimpleAction *save_action;
   GSimpleAction *save_as_action;
+  GSimpleAction *meta_data_action;
   GSimpleAction *export_action;
   GSimpleAction *smf_import_action;
   GSimpleAction *smf_export_action;
@@ -113,6 +114,22 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *edit_wave_action;
   GSimpleAction *edit_sheet_action;
 
+#if 0
+  g_signal_connect(gsequencer_app, "command-line",
+		   G_CALLBACK(ags_gsequencer_application_command_line_callback), NULL);
+
+  g_signal_connect(gsequencer_app, "handle-local-options",
+		   G_CALLBACK(ags_gsequencer_application_handle_local_options_callback), NULL);
+
+  g_application_add_main_option(gsequencer_app,
+				"--filename",
+				NULL,
+				G_OPTION_FLAG_IN_MAIN,
+				G_OPTION_ARG_FILENAME,
+				"open file",
+				"file");
+#endif
+  
   /* open */
   open_action = g_simple_action_new("open",
 				    NULL);
@@ -136,6 +153,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_save_as_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(save_as_action));
+
+  /* meta-data */
+  meta_data_action = g_simple_action_new("meta_data",
+					 NULL);
+  g_signal_connect(meta_data_action, "activate",
+		   G_CALLBACK(ags_gsequencer_meta_data_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(meta_data_action));
 
   /* export */
   export_action = g_simple_action_new("export",

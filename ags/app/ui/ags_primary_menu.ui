@@ -15,6 +15,10 @@
         <attribute name="action">app.save_as</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">_Meta-data</attribute>
+        <attribute name="action">app.meta_data</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">_Export</attribute>
         <attribute name="action">app.export</attribute>
       </item>

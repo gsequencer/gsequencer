@@ -102,7 +102,7 @@ ags_setup(int argc, char **argv)
 			  app);
   
   g_application_run(G_APPLICATION(app),
-		    argc, argv);
+		    0, NULL);
 }
 
 int

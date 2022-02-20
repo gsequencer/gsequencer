@@ -145,6 +145,10 @@ struct _AgsUiProviderInterface
   GtkApplication* (*get_app)(AgsUiProvider *ui_provider);
   void (*set_app)(AgsUiProvider *ui_provider,
 		  GtkApplication *app);
+
+  GtkWidget* (*get_meta_data_window)(AgsUiProvider *ui_provider);
+  void (*set_meta_data_window)(AgsUiProvider *ui_provider,
+			       GtkWidget *meta_data_window);
 };
 
 GType ags_ui_provider_get_type();
@@ -244,6 +248,10 @@ void ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,
 GtkApplication* ags_ui_provider_get_app(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_app(AgsUiProvider *ui_provider,
 			     GtkApplication *app);
+
+GtkWidget* ags_ui_provider_get_meta_data_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_meta_data_window(AgsUiProvider *ui_provider,
+					  GtkWidget *meta_data_window);
 
 G_END_DECLS
 

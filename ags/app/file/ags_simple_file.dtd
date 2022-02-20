@@ -1,11 +1,11 @@
-<!-- Copyright (C) 2005-2021 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2022 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
 <!-- without any warranty. -->
 
 <!-- root node -->
-<!ELEMENT ags-simple-file (ags-sf-window, ags-sf-config)>
+<!ELEMENT ags-simple-file (ags-sf-meta-list, ags-sf-window, ags-sf-config)>
 <!ATTLIST ags-simple-file
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
@@ -18,6 +18,14 @@
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
+	  >
+
+<!-- meta-data -->
+<!ELEMENT ags-sf-meta-list (ags-sf-meta*)>
+
+<!ELEMENT ags-sf-meta (#CDATA)>
+<!ATTLIST ags-sf-meta
+	  name             CDATA     #REQUIRED
 	  >
 
 <!-- property -->

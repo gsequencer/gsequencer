@@ -575,7 +575,7 @@ ags_menu_action_sheet_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_meta_data_callback(GtkWidget *menu_item, gpointer data)
 {
-  //TODO:JK: implement me
+  ags_app_action_util_meta_data();
 }
 
 void
