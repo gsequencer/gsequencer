@@ -145,13 +145,62 @@ ags_add_sheet_page_dialog_applicable_interface_init(AgsApplicableInterface *appl
 void
 ags_add_sheet_page_dialog_init(AgsAddSheetPageDialog *add_sheet_page_dialog)
 {
+  GtkGrid *grid;
+  GtkLabel *label;
+  
   add_sheet_page_dialog->flags = 0;
 
   g_object_set(add_sheet_page_dialog,
-	       "title", i18n("add sheet page"),
+	       "title", i18n("Add sheet page"),
 	       NULL);
 
-  //TODO:JK: implement me
+  grid = gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(add_sheet_page_dialog),
+		     (GtkWidget *) grid,
+		     FALSE, FALSE,
+		     0);  
+
+  label = (GtkLabel *) gtk_label_new(i18n("sheet title"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+
+  add_sheet_page_dialog->sheet_title = (GtkEntry *) gtk_entry_new();
+  gtk_grid_attach(grid,
+		  (GtkWidget *) add_sheet_page_dialog->sheet_title,
+		  1, 0,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("notation x0"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  add_sheet_page_dialog->notation_x0 = gtk_spin_button_new_with_range(0.0,
+								      (gdouble) AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X,
+								      1.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) add_sheet_page_dialog->notation_x0,
+		  1, 1,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("notation x1"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  add_sheet_page_dialog->notation_x1 = gtk_spin_button_new_with_range(0.0,
+								      (gdouble) AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X,
+								      1.0);
+  gtk_spin_button_set_value(add_sheet_page_dialog->notation_x1,
+			    64.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) add_sheet_page_dialog->notation_x1,
+		  1, 2,
+		  1, 1);
   
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) add_sheet_page_dialog,

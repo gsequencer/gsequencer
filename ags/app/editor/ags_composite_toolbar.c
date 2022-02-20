@@ -2592,11 +2592,17 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       /* static initializers */
       if(!initialized){
 	sheet_menu_tool_value = (GValue *) g_new0(GValue,
-						  1);
+						  2);
 
 	g_value_init(sheet_menu_tool_value,
 		     G_TYPE_UINT);
 	g_value_set_uint(sheet_menu_tool_value,
+			 (AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS |
+			  AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS));
+
+	g_value_init(sheet_menu_tool_value + 1,
+		     G_TYPE_UINT);
+	g_value_set_uint(sheet_menu_tool_value + 1,
 			 (AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR |
 			  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_ADD_PAGE |
 			  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_REMOVE_PAGE));

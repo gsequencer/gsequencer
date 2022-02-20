@@ -99,6 +99,8 @@ struct _AgsSheetEdit
 
   gchar *paper_name;
 
+  gchar *sheet_title;
+  
   guint notation_x0;
   guint notation_x1;
 

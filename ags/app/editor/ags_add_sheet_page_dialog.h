@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ADD_SHEET_PAGE_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_ADD_SHEET_PAGE_DIALOG))
 #define AGS_ADD_SHEET_PAGE_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_ADD_SHEET_PAGE_DIALOG, AgsAddSheetPageDialogClass))
 
+#define AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X (16 * 16 * 1200)
+
 typedef struct _AgsAddSheetPageDialog AgsAddSheetPageDialog;
 typedef struct _AgsAddSheetPageDialogClass AgsAddSheetPageDialogClass;
 
@@ -50,6 +52,11 @@ struct _AgsAddSheetPageDialog
   GtkDialog dialog;
 
   guint flags;
+
+  GtkEntry *sheet_title;
+  
+  GtkSpinButton *notation_x0;
+  GtkSpinButton *notation_x1;
 };
 
 struct _AgsAddSheetPageDialogClass
