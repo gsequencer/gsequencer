@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,6 @@ struct _AgsCropNoteDialog
 
   guint flags;
 
-  GtkWidget *main_window;
-
   GtkCheckButton *absolute;
   
   GtkRadioButton *in_place;
@@ -71,7 +69,7 @@ struct _AgsCropNoteDialogClass
 
 GType ags_crop_note_dialog_get_type(void);
 
-AgsCropNoteDialog* ags_crop_note_dialog_new(GtkWidget *main_window);
+AgsCropNoteDialog* ags_crop_note_dialog_new();
 
 G_END_DECLS
 

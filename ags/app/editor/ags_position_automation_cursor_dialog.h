@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,6 @@ struct _AgsPositionAutomationCursorDialog
 
   guint flags;
   
-  GtkWidget *main_window;
-
   GtkCheckButton *set_focus;
 
   GtkSpinButton *position_x;
@@ -67,7 +65,7 @@ struct _AgsPositionAutomationCursorDialogClass
 
 GType ags_position_automation_cursor_dialog_get_type(void);
 
-AgsPositionAutomationCursorDialog* ags_position_automation_cursor_dialog_new(GtkWidget *main_window);
+AgsPositionAutomationCursorDialog* ags_position_automation_cursor_dialog_new();
 
 G_END_DECLS
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,8 +54,6 @@ struct _AgsSelectAccelerationDialog
 
   guint flags;
   
-  GtkWidget *main_window;
-
   GtkCheckButton *copy_selection;
 
   GtkVBox *port;
@@ -73,7 +71,7 @@ struct _AgsSelectAccelerationDialogClass
 
 GType ags_select_acceleration_dialog_get_type(void);
 
-AgsSelectAccelerationDialog* ags_select_acceleration_dialog_new(GtkWidget *main_window);
+AgsSelectAccelerationDialog* ags_select_acceleration_dialog_new();
 
 G_END_DECLS
 

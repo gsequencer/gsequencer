@@ -44,11 +44,11 @@
       </item>
       <item>
         <attribute name="label" translatable="yes">Hybrid Synth</attribute>
-        <attribute name="action">app.add_synth</attribute>
+        <attribute name="action">app.add_hybrid_synth</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">Hybrid FM Synth</attribute>
-        <attribute name="action">app.add_fm_synth</attribute>
+        <attribute name="action">app.add_hybrid_fm_synth</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">FPlayer</attribute>

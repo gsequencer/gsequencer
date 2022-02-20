@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,14 +37,6 @@ void ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCurso
 void ags_position_automation_cursor_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_position_automation_cursor_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *position_automation_cursor_dialog);
-void ags_position_automation_cursor_dialog_set_property(GObject *gobject,
-							guint prop_id,
-							const GValue *value,
-							GParamSpec *param_spec);
-void ags_position_automation_cursor_dialog_get_property(GObject *gobject,
-							guint prop_id,
-							GValue *value,
-							GParamSpec *param_spec);
 void ags_position_automation_cursor_dialog_finalize(GObject *gobject);
 void ags_position_automation_cursor_dialog_connect(AgsConnectable *connectable);
 void ags_position_automation_cursor_dialog_disconnect(AgsConnectable *connectable);
@@ -62,11 +54,6 @@ gboolean ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, G
  *
  * The #AgsPositionAutomationCursorDialog lets you position automation editor cursor.
  */
-
-enum{
-  PROP_0,
-  PROP_MAIN_WINDOW,
-};
 
 static gpointer ags_position_automation_cursor_dialog_parent_class = NULL;
 
@@ -126,34 +113,12 @@ ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDial
   GObjectClass *gobject;
   GtkWidgetClass *widget;
 
-  GParamSpec *param_spec;
-
   ags_position_automation_cursor_dialog_parent_class = g_type_class_peek_parent(position_automation_cursor_dialog);
 
   /* GObjectClass */
   gobject = (GObjectClass *) position_automation_cursor_dialog;
 
-  gobject->set_property = ags_position_automation_cursor_dialog_set_property;
-  gobject->get_property = ags_position_automation_cursor_dialog_get_property;
-
   gobject->finalize = ags_position_automation_cursor_dialog_finalize;
-
-  /* properties */
-  /**
-   * AgsPositionAutomationCursorDialog:main-window:
-   *
-   * The assigned #AgsWindow.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_object("main-window",
-				   i18n_pspec("assigned main window"),
-				   i18n_pspec("The assigned main window"),
-				   AGS_TYPE_WINDOW,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MAIN_WINDOW,
-				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) position_automation_cursor_dialog;
@@ -237,66 +202,6 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 			 i18n("_OK"), GTK_RESPONSE_OK,
 			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 			 NULL);
-}
-
-void
-ags_position_automation_cursor_dialog_set_property(GObject *gobject,
-						   guint prop_id,
-						   const GValue *value,
-						   GParamSpec *param_spec)
-{
-  AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
-
-  position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      AgsWindow *main_window;
-
-      main_window = (AgsWindow *) g_value_get_object(value);
-
-      if((AgsWindow *) position_automation_cursor_dialog->main_window == main_window){
-	return;
-      }
-
-      if(position_automation_cursor_dialog->main_window != NULL){
-	g_object_unref(position_automation_cursor_dialog->main_window);
-      }
-
-      if(main_window != NULL){
-	g_object_ref(main_window);
-      }
-
-      position_automation_cursor_dialog->main_window = (GtkWidget *) main_window;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_position_automation_cursor_dialog_get_property(GObject *gobject,
-						   guint prop_id,
-						   GValue *value,
-						   GParamSpec *param_spec)
-{
-  AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
-
-  position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      g_value_set_object(value, position_automation_cursor_dialog->main_window);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -458,7 +363,6 @@ ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAn
 
 /**
  * ags_position_automation_cursor_dialog_new:
- * @main_window: the #AgsWindow
  *
  * Create a new #AgsPositionAutomationCursorDialog.
  *
@@ -467,12 +371,11 @@ ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAn
  * Since: 3.0.0
  */
 AgsPositionAutomationCursorDialog*
-ags_position_automation_cursor_dialog_new(GtkWidget *main_window)
+ags_position_automation_cursor_dialog_new()
 {
   AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
 
   position_automation_cursor_dialog = (AgsPositionAutomationCursorDialog *) g_object_new(AGS_TYPE_POSITION_AUTOMATION_CURSOR_DIALOG,
-											 "main-window", main_window,
 											 NULL);
 
   return(position_automation_cursor_dialog);

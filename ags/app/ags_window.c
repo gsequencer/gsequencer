@@ -196,12 +196,14 @@ ags_window_init(AgsWindow *window)
   GtkWidget *scrolled_window;
 
   GtkBuilder *builder;
+  GtkSettings *settings;
 
   GApplication *app;
   GMenu *menu;
 
   AgsApplicationContext *application_context;
-  
+
+  gchar *window_title;
   gchar *app_icon;
 
   gboolean use_composite_editor;
@@ -209,6 +211,8 @@ ags_window_init(AgsWindow *window)
   GError *error;
 
   application_context = ags_application_context_get_instance();
+
+  settings = gtk_settings_get_default();
   
   window->flags = 0;
 
@@ -242,14 +246,29 @@ ags_window_init(AgsWindow *window)
 
   /* window header bar */
   window->no_config = FALSE;
+
+  window->shows_menu_bar = TRUE;
+  
+  g_object_get(settings,
+	       "gtk-shell-shows-menubar", &(window->shows_menu_bar),
+	       NULL);
   
   window->filename = NULL;
 
   window->name = g_strdup("unnamed");
 
+  window_title = g_strdup_printf("GSequencer - %s", window->name);
+  gtk_window_set_title(window,
+		       window_title);
+
+  g_free(window_title);
+  
   window->header_bar = gtk_header_bar_new();
-  gtk_window_set_titlebar((GtkWindow *) window,
-			  (GtkWidget *) window->header_bar);
+
+  if(!window->shows_menu_bar){
+    gtk_window_set_titlebar((GtkWindow *) window,
+			    (GtkWidget *) window->header_bar);
+  }
 
   gtk_header_bar_set_decoration_layout(window->header_bar,
 				       "menu:minimize,maximize,close");
@@ -257,7 +276,7 @@ ags_window_init(AgsWindow *window)
 			   "GSequencer");
   gtk_header_bar_set_subtitle(window->header_bar,
 			      window->name);
-
+  
   /* app menu buttton */
   window->app_button = gtk_menu_button_new();
   g_object_set(window->app_button,
@@ -314,8 +333,16 @@ ags_window_init(AgsWindow *window)
   gtk_box_pack_start((GtkBox *) vbox,
   		     (GtkWidget *) window->menu_bar,
   		     FALSE, FALSE, 0);
-  gtk_widget_show_all((GtkWidget *) window->menu_bar);
 
+  //FIXME:JK: the header bar is actually not working properly on Xorg
+#if 0
+  if(window->shows_menu_bar){
+    gtk_widget_show_all((GtkWidget *) window->menu_bar);
+  }
+#else
+  gtk_widget_show_all((GtkWidget *) window->menu_bar);
+#endif
+  
   /* vpaned and scrolled window */
   window->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_VERTICAL);
   gtk_box_pack_start((GtkBox*) vbox,
@@ -1301,6 +1328,8 @@ ags_window_load_file_timeout(AgsWindow *window)
     if(window->filename != NULL){
       AgsSimpleFile *simple_file;
 
+      gchar *window_title;
+      
       GError *error;
 
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
@@ -1350,6 +1379,12 @@ ags_window_load_file_timeout(AgsWindow *window)
       
       /* set name */
       window->name = g_strdup(window->filename);
+
+      window_title = g_strdup_printf("GSequencer - %s", window->name);
+      gtk_window_set_title(window,
+			   window_title);
+
+      g_free(window_title);
       
       gtk_header_bar_set_subtitle(window->header_bar,
 				  window->name);

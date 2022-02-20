@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,14 +31,6 @@ void ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog);
 void ags_move_note_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_move_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog);
-void ags_move_note_dialog_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_move_note_dialog_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
 void ags_move_note_dialog_finalize(GObject *gobject);
 void ags_move_note_dialog_connect(AgsConnectable *connectable);
 void ags_move_note_dialog_disconnect(AgsConnectable *connectable);
@@ -56,11 +48,6 @@ gboolean ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event
  *
  * The #AgsMoveNoteDialog lets you move notes.
  */
-
-enum{
-  PROP_0,
-  PROP_MAIN_WINDOW,
-};
 
 static gpointer ags_move_note_dialog_parent_class = NULL;
 
@@ -120,34 +107,12 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
   GObjectClass *gobject;
   GtkWidgetClass *widget;
 
-  GParamSpec *param_spec;
-
   ags_move_note_dialog_parent_class = g_type_class_peek_parent(move_note_dialog);
 
   /* GObjectClass */
   gobject = (GObjectClass *) move_note_dialog;
 
-  gobject->set_property = ags_move_note_dialog_set_property;
-  gobject->get_property = ags_move_note_dialog_get_property;
-
   gobject->finalize = ags_move_note_dialog_finalize;
-
-  /* properties */
-  /**
-   * AgsMoveNoteDialog:main-window:
-   *
-   * The assigned #AgsWindow.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_object("main-window",
-				   i18n_pspec("assigned main window"),
-				   i18n_pspec("The assigned main window"),
-				   AGS_TYPE_WINDOW,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MAIN_WINDOW,
-				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) move_note_dialog;
@@ -263,66 +228,6 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 			 i18n("_OK"), GTK_RESPONSE_OK,
 			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 			 NULL);
-}
-
-void
-ags_move_note_dialog_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec)
-{
-  AgsMoveNoteDialog *move_note_dialog;
-
-  move_note_dialog = AGS_MOVE_NOTE_DIALOG(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      AgsWindow *main_window;
-
-      main_window = (AgsWindow *) g_value_get_object(value);
-
-      if((AgsWindow *) move_note_dialog->main_window == main_window){
-	return;
-      }
-
-      if(move_note_dialog->main_window != NULL){
-	g_object_unref(move_note_dialog->main_window);
-      }
-
-      if(main_window != NULL){
-	g_object_ref(main_window);
-      }
-
-      move_note_dialog->main_window = (GtkWidget *) main_window;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_move_note_dialog_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec)
-{
-  AgsMoveNoteDialog *move_note_dialog;
-
-  move_note_dialog = AGS_MOVE_NOTE_DIALOG(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      g_value_set_object(value, move_note_dialog->main_window);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -582,7 +487,6 @@ ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
 
 /**
  * ags_move_note_dialog_new:
- * @main_window: the #AgsWindow
  *
  * Create a new #AgsMoveNoteDialog.
  *
@@ -591,12 +495,11 @@ ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  * Since: 3.0.0
  */
 AgsMoveNoteDialog*
-ags_move_note_dialog_new(GtkWidget *main_window)
+ags_move_note_dialog_new()
 {
   AgsMoveNoteDialog *move_note_dialog;
 
   move_note_dialog = (AgsMoveNoteDialog *) g_object_new(AGS_TYPE_MOVE_NOTE_DIALOG,
-							"main-window", main_window,
 							NULL);
 
   return(move_note_dialog);

@@ -376,6 +376,7 @@ ags_app_action_util_save_as()
     
     gchar *filename;
     gchar *str;
+    gchar *window_title;
     
     GError *error;
     
@@ -428,6 +429,12 @@ ags_app_action_util_save_as()
 #endif
 
     window->name = filename;
+
+    window_title = g_strdup_printf("GSequencer - %s", window->name);
+    gtk_window_set_title(window,
+			 window_title);
+
+    g_free(window_title);
     
     gtk_header_bar_set_subtitle(window->header_bar,
 				window->name);

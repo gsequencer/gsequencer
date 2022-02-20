@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,8 +54,6 @@ struct _AgsMoveNoteDialog
 
   guint flags;
 
-  GtkWidget *main_window;
-
   GtkRadioButton *relative;
   GtkRadioButton *absolute;
 
@@ -70,7 +68,7 @@ struct _AgsMoveNoteDialogClass
 
 GType ags_move_note_dialog_get_type(void);
 
-AgsMoveNoteDialog* ags_move_note_dialog_new(GtkWidget *main_window);
+AgsMoveNoteDialog* ags_move_note_dialog_new();
 
 G_END_DECLS
 

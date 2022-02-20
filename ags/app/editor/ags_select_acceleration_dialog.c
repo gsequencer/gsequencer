@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,14 +35,6 @@ void ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass 
 void ags_select_acceleration_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_select_acceleration_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_acceleration_dialog);
-void ags_select_acceleration_dialog_set_property(GObject *gobject,
-						 guint prop_id,
-						 const GValue *value,
-						 GParamSpec *param_spec);
-void ags_select_acceleration_dialog_get_property(GObject *gobject,
-						 guint prop_id,
-						 GValue *value,
-						 GParamSpec *param_spec);
 void ags_select_acceleration_dialog_finalize(GObject *gobject);
 void ags_select_acceleration_dialog_connect(AgsConnectable *connectable);
 void ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable);
@@ -60,11 +52,6 @@ gboolean ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEvent
  *
  * The #AgsSelectAccelerationDialog lets you select accelerations.
  */
-
-enum{
-  PROP_0,
-  PROP_MAIN_WINDOW,
-};
 
 static gpointer ags_select_acceleration_dialog_parent_class = NULL;
 
@@ -124,34 +111,12 @@ ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass *sele
   GObjectClass *gobject;
   GtkWidgetClass *widget;
 
-  GParamSpec *param_spec;
-
   ags_select_acceleration_dialog_parent_class = g_type_class_peek_parent(select_acceleration_dialog);
 
   /* GObjectClass */
   gobject = (GObjectClass *) select_acceleration_dialog;
 
-  gobject->set_property = ags_select_acceleration_dialog_set_property;
-  gobject->get_property = ags_select_acceleration_dialog_get_property;
-
   gobject->finalize = ags_select_acceleration_dialog_finalize;
-
-  /* properties */
-  /**
-   * AgsSelectAccelerationDialog:main-window:
-   *
-   * The assigned #AgsWindow.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_object("main-window",
-				   i18n_pspec("assigned main window"),
-				   i18n_pspec("The assigned main window"),
-				   AGS_TYPE_WINDOW,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MAIN_WINDOW,
-				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) select_acceleration_dialog;
@@ -283,66 +248,6 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 }
 
 void
-ags_select_acceleration_dialog_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec)
-{
-  AgsSelectAccelerationDialog *select_acceleration_dialog;
-
-  select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      AgsWindow *main_window;
-
-      main_window = (AgsWindow *) g_value_get_object(value);
-
-      if((AgsWindow *) select_acceleration_dialog->main_window == main_window){
-	return;
-      }
-
-      if(select_acceleration_dialog->main_window != NULL){
-	g_object_unref(select_acceleration_dialog->main_window);
-      }
-
-      if(main_window != NULL){
-	g_object_ref(main_window);
-      }
-
-      select_acceleration_dialog->main_window = (GtkWidget *) main_window;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_select_acceleration_dialog_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec)
-{
-  AgsSelectAccelerationDialog *select_acceleration_dialog;
-
-  select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(gobject);
-
-  switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      g_value_set_object(value, select_acceleration_dialog->main_window);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
@@ -395,8 +300,11 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 void
 ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 {
-  AgsAutomationEditor *automation_editor;
   AgsSelectAccelerationDialog *select_acceleration_dialog;
+
+  AgsApplicationContext *application_context;
+
+  gboolean use_composite_editor;
 
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
 
@@ -406,8 +314,10 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 
   select_acceleration_dialog->flags &= (~AGS_SELECT_ACCELERATION_DIALOG_CONNECTED);
 
-  automation_editor = AGS_WINDOW(select_acceleration_dialog->main_window)->automation_window->automation_editor;
+  application_context = ags_application_context_get_instance();
 
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+  
   g_object_disconnect(G_OBJECT(select_acceleration_dialog),
 		      "any_signal::response",
 		      G_CALLBACK(ags_select_acceleration_dialog_response_callback),
@@ -420,11 +330,27 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 		      select_acceleration_dialog,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(automation_editor),
-		      "any_signal::machine-changed",
-		      G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
-		      select_acceleration_dialog,
-		      NULL);
+  if(use_composite_editor){
+    AgsWindow *window;
+
+    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+    g_object_disconnect(G_OBJECT(window->composite_editor),
+			"any_signal::machine-changed",
+			G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
+			select_acceleration_dialog,
+			NULL);
+  }else{
+    AgsAutomationWindow *automation_window;
+
+    automation_window = ags_ui_provider_get_automation_window(AGS_UI_PROVIDER(application_context));
+    
+    g_object_disconnect(G_OBJECT(automation_window->automation_editor),
+			"any_signal::machine-changed",
+			G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
+			select_acceleration_dialog,
+			NULL);
+  }
 }
 
 void
@@ -779,7 +705,6 @@ ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *even
 
 /**
  * ags_select_acceleration_dialog_new:
- * @main_window: the #AgsWindow
  *
  * Create a new #AgsSelectAccelerationDialog.
  *
@@ -788,12 +713,11 @@ ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *even
  * Since: 3.0.0
  */
 AgsSelectAccelerationDialog*
-ags_select_acceleration_dialog_new(GtkWidget *main_window)
+ags_select_acceleration_dialog_new()
 {
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
   select_acceleration_dialog = (AgsSelectAccelerationDialog *) g_object_new(AGS_TYPE_SELECT_ACCELERATION_DIALOG,
-									    "main-window", main_window,
 									    NULL);
 
   return(select_acceleration_dialog);

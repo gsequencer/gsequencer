@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,8 +54,6 @@ struct _AgsSelectBufferDialog
 
   guint flags;
   
-  GtkWidget *main_window;
-
   GtkCheckButton *copy_selection;
 
   GtkSpinButton *select_x0;
@@ -70,7 +68,7 @@ struct _AgsSelectBufferDialogClass
 
 GType ags_select_buffer_dialog_get_type(void);
 
-AgsSelectBufferDialog* ags_select_buffer_dialog_new(GtkWidget *main_window);
+AgsSelectBufferDialog* ags_select_buffer_dialog_new();
 
 G_END_DECLS
 
