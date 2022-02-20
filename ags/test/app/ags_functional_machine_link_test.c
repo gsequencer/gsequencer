@@ -34,7 +34,7 @@
 
 #include <ags/gsequencer_main.h>
 
-#include <ags/test/GSequencer/libgsequencer.h>
+#include <ags/test/app/libgsequencer.h>
 
 #include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"

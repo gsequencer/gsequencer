@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/test/GSequencer/ags_functional_test_util.h>
+#include <ags/test/app/ags_functional_test_util.h>
 
 //FIXME:JK: conflict of KeyCode
 #define __AGS_VST_KEYCODES_H__
@@ -27,8 +27,8 @@
 
 #include <ags/gsequencer_main.h>
 
-#include <ags/test/GSequencer/gsequencer_setup_util.h>
-#include <ags/test/GSequencer/libgsequencer.h>
+#include <ags/test/app/gsequencer_setup_util.h>
+#include <ags/test/app/libgsequencer.h>
 
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>

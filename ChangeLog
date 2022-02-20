@@ -9,9 +9,10 @@ ags (3.18.0)
 	* refactored AgsWindow to use GtkHeaderBar
 	* refactored ags_menu_action_callbacks.c
 	* merged dev-maksymow-meta-data-window
+	* renamed AgsXorgApplicationContext to AgsGSequencerApplicationContext
 	* moved ags/X to ags/app
 
-	[ Daniel Maksymow (Contributor of Advanced Gtk+ Sequencer) ]
+	[ Danìl Maksymow (Contributor of Advanced Gtk+ Sequencer) ]
 	* implemented AgsMetaDataWindow
 
 ags (3.17.7)
