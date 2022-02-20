@@ -129,7 +129,7 @@ GList* ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsEffectBulk
  * @section_id:
- * @include: ags/X/ags_effect_bulk.h
+ * @include: ags/app/ags_effect_bulk.h
  *
  * #AgsEffectBulk is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsEffectBulk.

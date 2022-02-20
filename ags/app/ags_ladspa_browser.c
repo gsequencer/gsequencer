@@ -49,7 +49,7 @@ void ags_ladspa_browser_reset(AgsApplicable *applicable);
  * @short_description: A composite to select ladspa effect.
  * @title: AgsLadspaBrowser
  * @section_id:
- * @include: ags/X/ags_ladspa_browser.h
+ * @include: ags/app/ags_ladspa_browser.h
  *
  * #AgsLadspaBrowser is a composite widget to select ladspa plugin and the desired
  * effect.

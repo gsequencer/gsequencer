@@ -132,7 +132,7 @@ GList* ags_effect_line_real_find_port(AgsEffectLine *effect_line);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsEffectLine
  * @section_id:
- * @include: ags/X/ags_effect_line.h
+ * @include: ags/app/ags_effect_line.h
  *
  * #AgsEffectLine is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsEffectLine.

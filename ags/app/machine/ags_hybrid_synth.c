@@ -61,7 +61,7 @@ void ags_hybrid_synth_output_map_recall(AgsHybridSynth *hybrid_synth,
  * @short_description: hybrid synth
  * @title: AgsHybridSynth
  * @section_id:
- * @include: ags/X/machine/ags_hybrid_synth.h
+ * @include: ags/app/machine/ags_hybrid_synth.h
  *
  * The #AgsHybridSynth is a composite widget to act as hybrid synth.
  */

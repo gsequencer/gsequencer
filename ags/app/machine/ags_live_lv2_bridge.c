@@ -61,7 +61,7 @@ void ags_live_lv2_bridge_map_recall(AgsMachine *machine);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsLiveLv2Bridge
  * @section_id:
- * @include: ags/X/ags_live_lv2_bridge.h
+ * @include: ags/app/ags_live_lv2_bridge.h
  *
  * #AgsLiveLv2Bridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

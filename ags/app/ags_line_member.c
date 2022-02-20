@@ -60,7 +60,7 @@ GList* ags_line_member_real_find_port(AgsLineMember *line_member);
  * @short_description: Modify assigned recall's port
  * @title: AgsLineMember
  * @section_id:
- * @include: ags/X/ags_line_member.h
+ * @include: ags/app/ags_line_member.h
  *
  * #AgsLineMember is a composite widget to modify ports of recalls. A line member
  * controls only one specific port of a recall but distinguishes between simple/complex

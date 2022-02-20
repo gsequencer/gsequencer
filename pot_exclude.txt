@@ -1,9 +1,9 @@
 ags/audio/audio-unit
-ags/X/ags_composite_editor.c
-ags/X/ags_composite_editor_callbacks.c
-ags/X/ags_composite_edit.c
-ags/X/ags_composite_edit_callbacks.c
-ags/X/ags_composite_view.c
-ags/X/ags_composite_view_callbacks.c
-ags/X/editor/ags_toolbar.c
-ags/X/editor/ags_toolbar_callbacks.c
+ags/app/ags_composite_editor.c
+ags/app/ags_composite_editor_callbacks.c
+ags/app/ags_composite_edit.c
+ags/app/ags_composite_edit_callbacks.c
+ags/app/ags_composite_view.c
+ags/app/ags_composite_view_callbacks.c
+ags/app/editor/ags_toolbar.c
+ags/app/editor/ags_toolbar_callbacks.c

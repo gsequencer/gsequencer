@@ -52,7 +52,7 @@ void ags_link_collection_editor_reset(AgsApplicable *applicable);
  * @short_description: edit links in bulk mode.
  * @title: AgsLinkCollectionEditor
  * @section_id:
- * @include: ags/X/ags_link_collection_editor.h
+ * @include: ags/app/ags_link_collection_editor.h
  *
  * #AgsLinkCollectionEditor is a composite widget to modify links in bulk mode. A link collection
  * editor should be packed by a #AgsMachineEditor.

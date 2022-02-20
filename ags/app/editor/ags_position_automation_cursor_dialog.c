@@ -58,7 +58,7 @@ gboolean ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, G
  * @short_description: position tool
  * @title: AgsPositionAutomationCursorDialog
  * @section_id:
- * @include: ags/X/editor/ags_position_automation_cursor_dialog.h
+ * @include: ags/app/editor/ags_position_automation_cursor_dialog.h
  *
  * The #AgsPositionAutomationCursorDialog lets you position automation editor cursor.
  */

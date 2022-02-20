@@ -51,7 +51,7 @@ void ags_plugin_browser_reset(AgsApplicable *applicable);
  * @short_description: A composite to select plugin effect.
  * @title: AgsPluginBrowser
  * @section_id:
- * @include: ags/X/ags_plugin_browser.h
+ * @include: ags/app/ags_plugin_browser.h
  *
  * #AgsPluginBrowser is a composite widget to select plugin plugin and the desired
  * effect.

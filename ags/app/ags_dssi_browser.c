@@ -45,7 +45,7 @@ void ags_dssi_browser_reset(AgsApplicable *applicable);
  * @short_description: A composite to select dssi effect.
  * @title: AgsDssiBrowser
  * @section_id:
- * @include: ags/X/ags_dssi_browser.h
+ * @include: ags/app/ags_dssi_browser.h
  *
  * #AgsDssiBrowser is a composite widget to select dssi plugin and the desired
  * effect.

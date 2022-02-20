@@ -52,7 +52,7 @@ void ags_pad_editor_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to edit #AgsChannel
  * @title: AgsPadEditor
  * @section_id:
- * @include: ags/X/ags_pad_editor.h
+ * @include: ags/app/ags_pad_editor.h
  *
  * #AgsPadEditor is a composite widget to edit #AgsChannel. It should be
  * packed by an #AgsPadEditor.

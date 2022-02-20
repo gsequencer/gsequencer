@@ -54,7 +54,7 @@ void ags_matrix_resize_pads(AgsMachine *machine, GType type,
  * @short_description: matrix sequencer
  * @title: AgsMatrix
  * @section_id:
- * @include: ags/X/machine/ags_matrix.h
+ * @include: ags/app/machine/ags_matrix.h
  *
  * The #AgsMatrix is a composite widget to act as matrix sequencer.
  */

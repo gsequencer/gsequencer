@@ -52,7 +52,7 @@ gboolean ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event
  * @short_description: move tool
  * @title: AgsMoveNoteDialog
  * @section_id:
- * @include: ags/X/editor/ags_move_note_dialog.h
+ * @include: ags/app/editor/ags_move_note_dialog.h
  *
  * The #AgsMoveNoteDialog lets you move notes.
  */

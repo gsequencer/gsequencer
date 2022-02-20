@@ -59,7 +59,7 @@ gchar* ags_spectrometer_y_label_func(gdouble value,
  * @short_description: spectrometer sequencer
  * @title: AgsSpectrometer
  * @section_id:
- * @include: ags/X/machine/ags_spectrometer.h
+ * @include: ags/app/machine/ags_spectrometer.h
  *
  * The #AgsSpectrometer is a composite widget to act as spectrometer sequencer.
  */

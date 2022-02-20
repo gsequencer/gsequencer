@@ -36,7 +36,7 @@ void ags_wave_meta_disconnect(AgsConnectable *connectable);
  * @short_description: wave_meta
  * @title: AgsWaveMeta
  * @section_id:
- * @include: ags/X/editor/ags_wave_meta.h
+ * @include: ags/app/editor/ags_wave_meta.h
  *
  * The #AgsWaveMeta provides you information about wave editor.
  */

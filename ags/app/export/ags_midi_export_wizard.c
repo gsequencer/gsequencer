@@ -56,7 +56,7 @@ void ags_midi_export_wizard_show_all(GtkWidget *widget);
  * @short_description: Export to MIDI using wizard
  * @title: AgsMidiExportWizard
  * @section_id:
- * @include: ags/X/ags_midi_export_wizard.h
+ * @include: ags/app/ags_midi_export_wizard.h
  *
  * #AgsMidiExportWizard is a wizard to select machines in order
  * to export to midi files.

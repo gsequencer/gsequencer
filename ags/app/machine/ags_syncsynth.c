@@ -61,7 +61,7 @@ void ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
  * @short_description: syncsynth
  * @title: AgsSyncsynth
  * @section_id:
- * @include: ags/X/machine/ags_syncsynth.h
+ * @include: ags/app/machine/ags_syncsynth.h
  *
  * The #AgsSyncsynth is a composite widget to act as syncsynth.
  */

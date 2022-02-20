@@ -56,7 +56,7 @@ gboolean ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEvent
  * @short_description: select tool
  * @title: AgsSelectAccelerationDialog
  * @section_id:
- * @include: ags/X/editor/ags_select_acceleration_dialog.h
+ * @include: ags/app/editor/ags_select_acceleration_dialog.h
  *
  * The #AgsSelectAccelerationDialog lets you select accelerations.
  */

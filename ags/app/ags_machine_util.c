@@ -62,7 +62,7 @@
  * @short_description: machine util
  * @title: AgsMachineUtil
  * @section_id:
- * @include: ags/X/ags_machine_util.h
+ * @include: ags/app/ags_machine_util.h
  *
  * Machine utility functions.
  */

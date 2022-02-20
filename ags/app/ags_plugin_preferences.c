@@ -38,7 +38,7 @@ void* ags_plugin_preferences_refresh(void *ptr);
  * @short_description: A composite widget to do plugin related preferences
  * @title: AgsPluginPreferences
  * @section_id: 
- * @include: ags/X/ags_plugin_preferences.h
+ * @include: ags/app/ags_plugin_preferences.h
  *
  * #AgsPluginPreferences enables you to make plugin related preferences.
  */

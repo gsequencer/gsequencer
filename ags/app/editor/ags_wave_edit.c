@@ -86,7 +86,7 @@ gboolean ags_wave_edit_auto_scroll_timeout(GtkWidget *widget);
  * @short_description: edit audio data
  * @title: AgsWaveEdit
  * @section_id:
- * @include: ags/X/editor/ags_wave_edit.h
+ * @include: ags/app/editor/ags_wave_edit.h
  *
  * The #AgsWaveEdit lets you edit audio data.
  */

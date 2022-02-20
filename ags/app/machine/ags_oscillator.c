@@ -34,7 +34,7 @@ void ags_oscillator_disconnect(AgsConnectable *connectable);
  * @short_description: oscillator
  * @title: AgsOscillator
  * @section_id:
- * @include: ags/X/machine/ags_oscillator.h
+ * @include: ags/app/machine/ags_oscillator.h
  *
  * The #AgsOscillator is a composite widget to act as oscillator.
  */

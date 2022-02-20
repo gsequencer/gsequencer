@@ -50,7 +50,7 @@ void ags_navigation_real_change_position(AgsNavigation *navigation,
  * @short_description: control audio object's playback.
  * @title: AgsNavigation
  * @section_id:
- * @include: ags/X/ags_navigation.h
+ * @include: ags/app/ags_navigation.h
  *
  * #AgsNavigation is a composite widget to control playback of #AgsAudio objects.
  * It can start #AgsMachine in bulk mode or position the stream.

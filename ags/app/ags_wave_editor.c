@@ -90,7 +90,7 @@ static guint wave_editor_signals[LAST_SIGNAL];
  * @short_description: A composite widget to edit wave
  * @title: AgsWaveEditor
  * @section_id:
- * @include: ags/X/ags_wave_editor.h
+ * @include: ags/app/ags_wave_editor.h
  *
  * #AgsWaveEditor is a composite widget to edit wave. You may select machines
  * or change editor tool to do wave.

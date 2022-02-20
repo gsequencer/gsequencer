@@ -41,7 +41,7 @@ void ags_resize_editor_reset(AgsApplicable *applicable);
  * @short_description: Resize audio channels or pads. 
  * @title: AgsResizeEditor
  * @section_id:
- * @include: ags/X/ags_resize_editor.h
+ * @include: ags/app/ags_resize_editor.h
  *
  * #AgsResizeEditor is a composite widget to resize. A resize editor 
  * should be packed by a #AgsMachineEditor.

@@ -38,7 +38,7 @@ void ags_fm_oscillator_disconnect(AgsConnectable *connectable);
  * @short_description: fm oscillator
  * @title: AgsFMOscillator
  * @section_id:
- * @include: ags/X/machine/ags_fm_oscillator.h
+ * @include: ags/app/machine/ags_fm_oscillator.h
  *
  * The #AgsFMOscillator is a composite widget to act as fm oscillator.
  */

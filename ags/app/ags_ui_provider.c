@@ -26,7 +26,7 @@ void ags_ui_provider_class_init(AgsUiProviderInterface *ginterface);
  * @short_description: provide user interface
  * @title: AgsUiProvider
  * @section_id: AgsUiProvider
- * @include: ags/X/ags_ui_provider.h
+ * @include: ags/app/ags_ui_provider.h
  *
  * The #AgsUiProvider provides you the window capabilities.
  */

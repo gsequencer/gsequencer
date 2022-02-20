@@ -75,7 +75,7 @@ static gpointer ags_composite_toolbar_parent_class = NULL;
  * @short_description: composite_toolbar
  * @title: AgsCompositeToolbar
  * @section_id:
- * @include: ags/X/editor/ags_composite_toolbar.h
+ * @include: ags/app/editor/ags_composite_toolbar.h
  *
  * The #AgsCompositeToolbar lets you choose edit tool.
  */

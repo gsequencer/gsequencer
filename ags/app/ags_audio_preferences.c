@@ -45,7 +45,7 @@ void ags_audio_preferences_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to do audio related preferences
  * @title: AgsAudioPreferences
  * @section_id: 
- * @include: ags/X/ags_audio_preferences.h
+ * @include: ags/app/ags_audio_preferences.h
  *
  * #AgsAudioPreferences enables you to make preferences of soundcard, audio channels,
  * samplerate and buffer size.

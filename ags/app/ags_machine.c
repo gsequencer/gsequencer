@@ -64,7 +64,7 @@ xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
  * @short_description: visualize audio object.
  * @title: AgsMachine
  * @section_id:
- * @include: ags/X/ags_machine.h
+ * @include: ags/app/ags_machine.h
  *
  * #AgsMachine is a composite widget to act as base class to visualize #AgsAudio.
  */

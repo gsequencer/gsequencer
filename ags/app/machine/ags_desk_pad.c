@@ -42,7 +42,7 @@ void ags_desk_pad_disconnect(AgsConnectable *connectable);
  * @short_description: desk sequencer input pad
  * @title: AgsDeskPad
  * @section_id:
- * @include: ags/X/machine/ags_desk_pad.h
+ * @include: ags/app/machine/ags_desk_pad.h
  *
  * The #AgsDeskPad is a composite widget to act as desk sequencer input pad.
  */

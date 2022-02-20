@@ -36,7 +36,7 @@ void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerInputLine
  * @section_id:
- * @include: ags/X/machine/ags_ffplayer_input_line.h
+ * @include: ags/app/machine/ags_ffplayer_input_line.h
  *
  * #AgsFFPlayerInputLine is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsFFPlayerInputLine.

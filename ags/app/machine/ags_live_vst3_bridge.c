@@ -59,7 +59,7 @@ void ags_live_vst3_bridge_map_recall(AgsMachine *machine);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsLiveVst3Bridge
  * @section_id:
- * @include: ags/X/machine/ags_live_vst3_bridge.h
+ * @include: ags/app/machine/ags_live_vst3_bridge.h
  *
  * #AgsLiveVst3Bridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

@@ -40,7 +40,7 @@ void ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
  * @short_description: drum sequencer output pad
  * @title: AgsDrumOutputPad
  * @section_id:
- * @include: ags/X/machine/ags_drum_output_pad.h
+ * @include: ags/app/machine/ags_drum_output_pad.h
  *
  * The #AgsDrumOutputPad is a composite widget to act as drum sequencer output pad.
  */

@@ -47,7 +47,7 @@ void ags_automation_toolbar_disconnect(AgsConnectable *connectable);
  * @short_description: automation toolbar
  * @title: AgsAutomationToolbar
  * @section_id:
- * @include: ags/X/editor/ags_automation_toolbar.h
+ * @include: ags/app/editor/ags_automation_toolbar.h
  *
  * The #AgsAutomationToolbar lets you choose edit tool.
  */

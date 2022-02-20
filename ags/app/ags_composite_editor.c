@@ -169,7 +169,7 @@ static guint composite_editor_signals[LAST_SIGNAL];
  * @short_description: composite editor
  * @title: AgsCompositeEditor
  * @section_id:
- * @include: ags/X/ags_composite_editor.h
+ * @include: ags/app/ags_composite_editor.h
  *
  * The #AgsCompositeEditor is a composite abstraction of edit implementation.
  */

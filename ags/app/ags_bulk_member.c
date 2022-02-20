@@ -59,7 +59,7 @@ GList* ags_bulk_member_real_find_port(AgsBulkMember *bulk_member);
  * @short_description: Modify assigned recall's port
  * @title: AgsBulkMember
  * @section_id:
- * @include: ags/X/ags_bulk_member.h
+ * @include: ags/app/ags_bulk_member.h
  *
  * #AgsBulkMember is a composite widget to modify ports of recalls. A bulk member
  * controls only one specific port of a recall but distinguishes between simple/complex

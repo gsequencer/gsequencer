@@ -34,7 +34,7 @@ void ags_property_editor_disconnect(AgsConnectable *connectable);
  * @short_description: Property of audio, channels or pads in bulk mode.
  * @title: AgsPropertyEditor
  * @section_id:
- * @include: ags/X/ags_property_editor.h
+ * @include: ags/app/ags_property_editor.h
  *
  * #AgsPropertyEditor is a composite widget to property. A property editor 
  * should be packed by a #AgsPropertyCollectionEditor.

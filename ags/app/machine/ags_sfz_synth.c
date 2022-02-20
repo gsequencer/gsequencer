@@ -53,7 +53,7 @@ void ags_sfz_synth_output_map_recall(AgsSFZSynth *sfz_synth,
  * @short_description: sfz_synth
  * @title: AgsSFZSynth
  * @section_id:
- * @include: ags/X/machine/ags_sfz_synth.h
+ * @include: ags/app/machine/ags_sfz_synth.h
  *
  * The #AgsSFZSynth is a composite widget to act as sfz_synth.
  */

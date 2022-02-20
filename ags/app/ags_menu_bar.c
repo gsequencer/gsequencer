@@ -55,7 +55,7 @@ void ags_menu_bar_disconnect(AgsConnectable *connectable);
  * @short_description: the menu bar.
  * @title: AgsMenuBar
  * @section_id:
- * @include: ags/X/ags_menu_bar.h
+ * @include: ags/app/ags_menu_bar.h
  *
  * #AgsMenuBar is a composite widget to be used as application's menu bar.
  */

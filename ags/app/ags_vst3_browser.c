@@ -47,7 +47,7 @@ void ags_vst3_browser_reset(AgsApplicable *applicable);
  * @short_description: A composite to select vst3 uri.
  * @title: AgsVst3Browser
  * @section_id:
- * @include: ags/X/ags_vst3_browser.h
+ * @include: ags/app/ags_vst3_browser.h
  *
  * #AgsVst3Browser is a composite widget to select vst3 plugin and the desired
  * uri.

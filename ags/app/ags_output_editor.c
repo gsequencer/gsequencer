@@ -43,7 +43,7 @@ void ags_output_editor_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to edit #AgsChannel
  * @title: AgsOutputEditor
  * @section_id:
- * @include: ags/X/ags_output_editor.h
+ * @include: ags/app/ags_output_editor.h
  *
  * #AgsOutputEditor is a composite widget to edit #AgsChannel.
  */

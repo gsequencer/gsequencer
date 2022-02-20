@@ -48,7 +48,7 @@ gboolean ags_wave_window_delete_event(GtkWidget *widget, GdkEventAny *event);
  * @short_description: The wave window
  * @title: AgsWaveWindow
  * @section_id:
- * @include: ags/X/ags_wave_window.h
+ * @include: ags/app/ags_wave_window.h
  *
  * #AgsWaveWindow lets you edit audio files.
  */

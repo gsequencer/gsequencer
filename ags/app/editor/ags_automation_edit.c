@@ -87,7 +87,7 @@ gboolean ags_automation_edit_auto_scroll_timeout(GtkWidget *widget);
  * @short_description: edit automations
  * @title: AgsAutomationEdit
  * @section_id:
- * @include: ags/X/editor/ags_automation_edit.h
+ * @include: ags/app/editor/ags_automation_edit.h
  *
  * The #AgsAutomationEdit lets you edit automations.
  */

@@ -60,7 +60,7 @@ void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
  * @short_description: ffplayer notation
  * @title: AgsFFPlayer
  * @section_id:
- * @include: ags/X/machine/ags_ffplayer.h
+ * @include: ags/app/machine/ags_ffplayer.h
  *
  * The #AgsFFPlayer is a composite widget to act as soundfont2 notation player.
  */

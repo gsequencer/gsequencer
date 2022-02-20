@@ -43,7 +43,7 @@ void ags_server_preferences_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to do server related preferences
  * @title: AgsServerPreferences
  * @section_id: 
- * @include: ags/X/ags_server_preferences.h
+ * @include: ags/app/ags_server_preferences.h
  *
  * #AgsServerPreferences enables you to make server related preferences.
  */

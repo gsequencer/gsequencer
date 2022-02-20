@@ -98,7 +98,7 @@ static guint notation_editor_signals[LAST_SIGNAL];
  * @short_description: A composite widget to edit notation
  * @title: AgsNotationEditor
  * @section_id:
- * @include: ags/X/ags_notation_editor.h
+ * @include: ags/app/ags_notation_editor.h
  *
  * #AgsNotationEditor is a composite widget to edit notation. You may select machines
  * or change editor tool to do notation.

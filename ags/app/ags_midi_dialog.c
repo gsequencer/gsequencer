@@ -51,7 +51,7 @@ void ags_midi_dialog_show_all(GtkWidget *widget);
  * @short_description: Edit MIDI settings
  * @title: AgsMidiDialog
  * @section_id:
- * @include: ags/X/ags_midi_dialog.h
+ * @include: ags/app/ags_midi_dialog.h
  *
  * #AgsMidiDialog is a composite widget to edit MIDI settings.
  */

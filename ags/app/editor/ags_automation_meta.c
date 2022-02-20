@@ -36,7 +36,7 @@ void ags_automation_meta_disconnect(AgsConnectable *connectable);
  * @short_description: automation_meta
  * @title: AgsAutomationMeta
  * @section_id:
- * @include: ags/X/editor/ags_automation_meta.h
+ * @include: ags/app/editor/ags_automation_meta.h
  *
  * The #AgsAutomationMeta provides you information about automation editor.
  */

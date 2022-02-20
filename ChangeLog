@@ -1581,7 +1581,7 @@ ags (3.3.4)
 ags (3.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed infinite loop in ags/X/ags_line_member_editor_callbacks.c
+	* fixed infinite loop in ags/app/ags_line_member_editor_callbacks.c
 	* fixed pointer corruption because of wrong cast to get stream mutex
 
 ags (3.3.2)

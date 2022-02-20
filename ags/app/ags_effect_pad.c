@@ -52,7 +52,7 @@ GList* ags_effect_pad_real_find_port(AgsEffectPad *effect_pad);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsEffectPad
  * @section_id:
- * @include: ags/X/ags_effect_pad.h
+ * @include: ags/app/ags_effect_pad.h
  *
  * #AgsEffectPad is a composite widget to visualize a bunch of #AgsChannel. It should be
  * packed by an #AgsEffectBridge.

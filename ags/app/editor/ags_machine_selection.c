@@ -64,7 +64,7 @@ void ags_machine_selection_finalize(GObject *gobject);
  * @short_description: machine selection
  * @title: AgsMachineSelection
  * @section_id:
- * @include: ags/X/editor/ags_machine_selection.h
+ * @include: ags/app/editor/ags_machine_selection.h
  *
  * The #AgsMachineSelection enables you make choice of an #AgsMachine.
  */

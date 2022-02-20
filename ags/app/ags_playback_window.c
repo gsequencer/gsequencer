@@ -49,7 +49,7 @@ gboolean ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * @short_description: The playback dialog
  * @title: AgsPlaybackWindow
  * @section_id:
- * @include: ags/X/ags_playback_window.h
+ * @include: ags/app/ags_playback_window.h
  *
  * #AgsPlaybackWindow lets you playback to audio files.
  */

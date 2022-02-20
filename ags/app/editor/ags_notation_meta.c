@@ -36,7 +36,7 @@ void ags_notation_meta_disconnect(AgsConnectable *connectable);
  * @short_description: notation_meta
  * @title: AgsNotationMeta
  * @section_id:
- * @include: ags/X/editor/ags_notation_meta.h
+ * @include: ags/app/editor/ags_notation_meta.h
  *
  * The #AgsNotationMeta provides you information about notation editor.
  */

@@ -52,7 +52,7 @@ void ags_envelope_dialog_reset(AgsApplicable *applicable);
  * @short_description: Edit envelope dialog
  * @title: AgsEnvelopeDialog
  * @section_id:
- * @include: ags/X/ags_envelope_dialog.h
+ * @include: ags/app/ags_envelope_dialog.h
  *
  * #AgsEnvelopeDialog is a composite widget to edit envelope controls
  * of selected AgsNote.

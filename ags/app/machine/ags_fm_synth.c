@@ -51,7 +51,7 @@ void ags_fm_synth_map_recall(AgsMachine *machine);
  * @short_description: fm synth
  * @title: AgsFMSynth
  * @section_id:
- * @include: ags/X/machine/ags_fm_synth.h
+ * @include: ags/app/machine/ags_fm_synth.h
  *
  * The #AgsFMSynth is a composite widget to act as fm synth.
  */

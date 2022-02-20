@@ -45,7 +45,7 @@ gboolean ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *even
  * @short_description: The automation window
  * @title: AgsAutomationWindow
  * @section_id:
- * @include: ags/X/ags_automation_window.h
+ * @include: ags/app/ags_automation_window.h
  *
  * #AgsAutomationWindow lets you automation to audio files. Currently only
  * WAV supported.

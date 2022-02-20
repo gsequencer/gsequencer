@@ -68,7 +68,7 @@ void* ags_audiorec_fast_export_run(void *ptr);
  * @short_description: record audio data
  * @title: AgsAudiorec
  * @section_id:
- * @include: ags/X/machine/ags_audiorec.h
+ * @include: ags/app/machine/ags_audiorec.h
  *
  * The #AgsAudiorec is a composite widget to act as capture source.
  */

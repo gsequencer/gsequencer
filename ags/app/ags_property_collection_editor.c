@@ -39,7 +39,7 @@ void ags_property_collection_editor_reset(AgsApplicable *applicable);
  * @short_description: Edit propertys in bulk mode.
  * @title: AgsPropertyCollectionEditor
  * @section_id:
- * @include: ags/X/ags_property_collection_editor.h
+ * @include: ags/app/ags_property_collection_editor.h
  *
  * #AgsPropertyCollectionEditor is a composite widget to modify propertys in bulk mode. A property collection
  * editor should be packed by a #AgsMachineEditor.

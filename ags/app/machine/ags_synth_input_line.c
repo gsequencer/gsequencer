@@ -46,7 +46,7 @@ void ags_synth_input_line_map_recall(AgsLine *line,
  * @short_description: synth input line
  * @title: AgsSynthInputLine
  * @section_id:
- * @include: ags/X/machine/ags_synth_input_line.h
+ * @include: ags/app/machine/ags_synth_input_line.h
  *
  * The #AgsSynthInputLine is a composite widget to act as synth input line.
  */

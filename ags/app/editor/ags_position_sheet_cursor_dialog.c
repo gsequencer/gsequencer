@@ -47,7 +47,7 @@ gboolean ags_position_sheet_cursor_dialog_delete_event(GtkWidget *widget, GdkEve
  * @short_description: position tool
  * @title: AgsPositionSheetCursorDialog
  * @section_id:
- * @include: ags/X/editor/ags_position_sheet_cursor_dialog.h
+ * @include: ags/app/editor/ags_position_sheet_cursor_dialog.h
  *
  * The #AgsPositionSheetCursorDialog lets you position sheet editor cursor.
  */

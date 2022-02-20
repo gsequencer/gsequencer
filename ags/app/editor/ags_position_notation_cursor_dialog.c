@@ -55,7 +55,7 @@ gboolean ags_position_notation_cursor_dialog_delete_event(GtkWidget *widget, Gdk
  * @short_description: position tool
  * @title: AgsPositionNotationCursorDialog
  * @section_id:
- * @include: ags/X/editor/ags_position_notation_cursor_dialog.h
+ * @include: ags/app/editor/ags_position_notation_cursor_dialog.h
  *
  * The #AgsPositionNotationCursorDialog lets you position notation editor cursor.
  */

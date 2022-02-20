@@ -35,7 +35,7 @@ void ags_ffplayer_bulk_input_map_recall(AgsEffectBulk *effect_bulk);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerBulkInput
  * @section_id:
- * @include: ags/X/machine/gs_ffplayer_bulk_input.h
+ * @include: ags/app/machine/gs_ffplayer_bulk_input.h
  *
  * #AgsFFPlayerBulkInput is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsFFPlayerBulkInput.

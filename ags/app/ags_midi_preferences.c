@@ -44,7 +44,7 @@ static void ags_midi_preferences_finalize(GObject *gobject);
  * @short_description: A composite widget to do midi related preferences
  * @title: AgsMidiPreferences
  * @section_id: 
- * @include: ags/X/ags_midi_preferences.h
+ * @include: ags/app/ags_midi_preferences.h
  *
  * #AgsMidiPreferences enables you to make preferences of sequencer, midi channels,
  * samplerate and buffer size.

@@ -47,7 +47,7 @@ void ags_panel_input_line_map_recall(AgsLine *line,
  * @short_description: panel input line
  * @title: AgsPanelInputLine
  * @section_id:
- * @include: ags/X/machine/ags_panel_input_line.h
+ * @include: ags/app/machine/ags_panel_input_line.h
  *
  * The #AgsPanelInputLine is a composite widget to act as panel input line.
  */

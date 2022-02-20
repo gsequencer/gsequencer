@@ -52,7 +52,7 @@ gboolean ags_select_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *eve
  * @short_description: select tool
  * @title: AgsSelectNoteDialog
  * @section_id:
- * @include: ags/X/editor/ags_select_note_dialog.h
+ * @include: ags/app/editor/ags_select_note_dialog.h
  *
  * The #AgsSelectNoteDialog lets you select notes.
  */

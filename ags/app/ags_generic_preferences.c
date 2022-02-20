@@ -46,7 +46,7 @@ GtkListStore* ags_generic_preferences_create_segmentation();
  * @short_description: A composite widget to do generic related preferences
  * @title: AgsGenericPreferences
  * @section_id: 
- * @include: ags/X/ags_generic_preferences.h
+ * @include: ags/app/ags_generic_preferences.h
  *
  * #AgsGenericPreferences enables you to make generic related preferences.
  */

@@ -49,7 +49,7 @@ void ags_machine_collection_reset(AgsApplicable *applicable);
  * @short_description: Pack machine entry
  * @title: AgsMachineCollection
  * @section_id:
- * @include: ags/X/ags_machine_collection.h
+ * @include: ags/app/ags_machine_collection.h
  *
  * #AgsMachineCollection is a composite widget which packs
  * several #AgsMachineCollectionEntry widgets.

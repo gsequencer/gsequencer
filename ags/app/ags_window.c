@@ -88,7 +88,7 @@ gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
  * @short_description: The window object.
  * @title: AgsWindow
  * @section_id:
- * @include: ags/X/ags_window.h
+ * @include: ags/app/ags_window.h
  *
  * #AgsWindow is a composite toplevel widget. It contains the
  * menubar, the machine rack and the notation editor.

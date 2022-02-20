@@ -38,7 +38,7 @@ void ags_ffplayer_bridge_disconnect(AgsConnectable *connectable);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerBridge
  * @section_id:
- * @include: ags/X/machine/ags_ffplayer_bridge.h
+ * @include: ags/app/machine/ags_ffplayer_bridge.h
  *
  * #AgsFFPlayerBridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

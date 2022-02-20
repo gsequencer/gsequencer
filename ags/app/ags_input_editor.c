@@ -45,7 +45,7 @@ void ags_input_editor_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to edit #AgsChannel
  * @title: AgsInputEditor
  * @section_id:
- * @include: ags/X/ags_input_editor.h
+ * @include: ags/app/ags_input_editor.h
  *
  * #AgsInputEditor is a composite widget to edit #AgsChannel.
  */

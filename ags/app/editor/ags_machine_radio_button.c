@@ -46,7 +46,7 @@ void ags_machine_radio_button_finalize(GObject *gobject);
  * @short_description: machine radio buttons
  * @title: AgsMachineRadioButton
  * @section_id:
- * @include: ags/X/editor/ags_machine_radio_button.h
+ * @include: ags/app/editor/ags_machine_radio_button.h
  *
  * The #AgsMachineRadioButton enables you make choice of an #AgsMachine.
  */

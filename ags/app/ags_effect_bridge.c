@@ -53,7 +53,7 @@ GList* ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsEffectBridge
  * @section_id:
- * @include: ags/X/ags_effect_bridge.h
+ * @include: ags/app/ags_effect_bridge.h
  *
  * #AgsEffectBridge is a composite widget containing #AgsEffectBulk or #AgsEffectPad. It should be
  * packed by an #AgsMachine.

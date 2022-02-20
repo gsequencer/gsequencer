@@ -43,7 +43,7 @@ void ags_link_editor_reset(AgsApplicable *applicable);
  * @short_description: Edit links.
  * @title: AgsLinkEditor
  * @section_id:
- * @include: ags/X/ags_link_editor.h
+ * @include: ags/app/ags_link_editor.h
  *
  * #AgsLinkEditor is a composite widget to modify links. A link editor 
  * should be packed by a #AgsLineEditor.

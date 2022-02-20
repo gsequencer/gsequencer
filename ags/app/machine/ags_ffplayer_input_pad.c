@@ -40,7 +40,7 @@ void ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerInputPad
  * @section_id:
- * @include: ags/X/machine/ags_ffplayer_input_pad.h
+ * @include: ags/app/machine/ags_ffplayer_input_pad.h
  *
  * #AgsFFPlayerInputPad is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsFFPlayerInputPad.

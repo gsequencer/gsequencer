@@ -53,7 +53,7 @@ void ags_track_collection_reset(AgsApplicable *applicable);
  * @short_description: Pack track mapper
  * @title: AgsTrackCollection
  * @section_id:
- * @include: ags/X/ags_track_collection.h
+ * @include: ags/app/ags_track_collection.h
  *
  * #AgsTrackCollection is a composite widget to property. A property editor 
  * should be packed by a #AgsPropertyCollectionEditor.

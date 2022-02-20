@@ -56,7 +56,7 @@ void ags_desk_disconnect(AgsConnectable *connectable);
  * @short_description: desk sequencer
  * @title: AgsDesk
  * @section_id:
- * @include: ags/X/machine/ags_desk.h
+ * @include: ags/app/machine/ags_desk.h
  *
  * The #AgsDesk is a composite widget to act as desk sequencer.
  */

@@ -50,7 +50,7 @@ void ags_synth_map_recall(AgsMachine *machine);
  * @short_description: synth
  * @title: AgsSynth
  * @section_id:
- * @include: ags/X/machine/ags_synth.h
+ * @include: ags/app/machine/ags_synth.h
  *
  * The #AgsSynth is a composite widget to act as synth.
  */

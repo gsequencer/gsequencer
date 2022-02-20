@@ -49,7 +49,7 @@ void ags_lv2_browser_reset(AgsApplicable *applicable);
  * @short_description: A composite to select lv2 uri.
  * @title: AgsLv2Browser
  * @section_id:
- * @include: ags/X/ags_lv2_browser.h
+ * @include: ags/app/ags_lv2_browser.h
  *
  * #AgsLv2Browser is a composite widget to select lv2 plugin and the desired
  * uri.

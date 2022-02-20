@@ -153,16 +153,16 @@ EXTRA_DIST = config.rpath \
 	ags/app/ui/ags_edit_menu.ui \
 	ags/app/ui/ags_meta_data_window.ui \
 	ags/app/ui/ags_primary_menu.ui \
-	ags/test/X/examples/ags-loop-000.xml \
-	ags/test/X/examples/ags-loop-001.xml \
-	ags/test/X/examples/ags-loop-002.xml \
-	ags/test/X/examples/ags-loop-003.xml \
-	ags/test/X/examples/ags-loop-004.xml \
-	ags/test/X/examples/ags-loop-005.xml \
-	ags/test/X/examples/ags-loop-006.xml \
-	ags/test/X/examples/ags-loop-007.xml \
-	ags/test/X/examples/ags-loop-008.xml \
-	ags/test/X/examples/ags-loop-010.xml \
+	ags/test/app/examples/ags-loop-000.xml \
+	ags/test/app/examples/ags-loop-001.xml \
+	ags/test/app/examples/ags-loop-002.xml \
+	ags/test/app/examples/ags-loop-003.xml \
+	ags/test/app/examples/ags-loop-004.xml \
+	ags/test/app/examples/ags-loop-005.xml \
+	ags/test/app/examples/ags-loop-006.xml \
+	ags/test/app/examples/ags-loop-007.xml \
+	ags/test/app/examples/ags-loop-008.xml \
+	ags/test/app/examples/ags-loop-010.xml \
 	docs/images/README \
 	gsequencer.share/icons/README \
 	gsequencer.share/images/README
@@ -214,7 +214,7 @@ EXTRA_DIST += \
 	docs/reference/libgsequencer/meson.build \
 	docs/reference/libags/meson.build \
 	docs/reference/meson.build \
-	ags/test/X/meson.build \
+	ags/test/app/meson.build \
 	ags/test/audio/meson.build \
 	ags/test/plugin/meson.build \
 	ags/test/thread/meson.build \

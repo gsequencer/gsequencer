@@ -37,7 +37,7 @@ void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsMatrixBulkInput
  * @section_id:
- * @include: ags/X/machine/ags_matrix_bulk_input.h
+ * @include: ags/app/machine/ags_matrix_bulk_input.h
  *
  * #AgsMatrixBulkInput is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsMatrixBulkInput.

@@ -61,7 +61,7 @@ gchar* ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
  * @short_description: cell pattern sequencer
  * @title: AgsCellPattern
  * @section_id:
- * @include: ags/X/machine/ags_cell_pattern.h
+ * @include: ags/app/machine/ags_cell_pattern.h
  *
  * The #AgsCellPattern is a composite widget to act as cell pattern sequencer.
  */

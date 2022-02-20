@@ -47,7 +47,7 @@ gboolean ags_add_sheet_page_dialog_delete_event(GtkWidget *widget, GdkEventAny *
  * @short_description: add tool
  * @title: AgsAddSheetPageDialog
  * @section_id:
- * @include: ags/X/editor/ags_add_sheet_page_dialog.h
+ * @include: ags/app/editor/ags_add_sheet_page_dialog.h
  *
  * The #AgsAddSheetPageDialog lets you add sheet editor page.
  */

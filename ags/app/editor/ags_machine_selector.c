@@ -74,7 +74,7 @@ void ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, Ags
  * @short_description: machine selector
  * @title: AgsMachineSelector
  * @section_id:
- * @include: ags/X/editor/ags_machine_selector.h
+ * @include: ags/app/editor/ags_machine_selector.h
  *
  * The #AgsMachineSelector enables you make choice of an #AgsMachine.
  */

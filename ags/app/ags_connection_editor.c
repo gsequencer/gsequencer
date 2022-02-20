@@ -59,7 +59,7 @@ void ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_edit
  * @short_description: Edit audio connections
  * @title: AgsConnectionEditor
  * @section_id:
- * @include: ags/X/ags_connection_editor.h
+ * @include: ags/app/ags_connection_editor.h
  *
  * #AgsConnectionEditor is a composite widget intended to assign output or input
  * soundcards. It consists of multiple child editors.

@@ -53,7 +53,7 @@ gchar* ags_pattern_envelope_y_label_func(gdouble value,
  * @short_description: Edit envelope presets
  * @title: AgsPatternEnvelope
  * @section_id:
- * @include: ags/X/editor/ags_pattern_envelope.h
+ * @include: ags/app/editor/ags_pattern_envelope.h
  *
  * #AgsPatternEnvelope is a composite widget to edit envelope controls
  * by applying to #AgsPreset used by ags-copy-pattern recall.

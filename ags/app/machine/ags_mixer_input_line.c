@@ -45,7 +45,7 @@ void ags_mixer_input_line_map_recall(AgsLine *line,
  * @short_description: mixer input line
  * @title: AgsMixerInputLine
  * @section_id:
- * @include: ags/X/machine/ags_mixer_input_line.h
+ * @include: ags/app/machine/ags_mixer_input_line.h
  *
  * The #AgsMixerInputLine is a composite widget to act as mixer input line.
  */

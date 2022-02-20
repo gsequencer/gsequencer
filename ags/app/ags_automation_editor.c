@@ -81,7 +81,7 @@ static guint automation_editor_signals[LAST_SIGNAL];
  * @short_description: A composite widget to edit automation
  * @title: AgsAutomationEditor
  * @section_id:
- * @include: ags/X/ags_automation_editor.h
+ * @include: ags/app/ags_automation_editor.h
  *
  * #AgsAutomationEditor is a composite widget to edit automation. You may select machines
  * or change editor tool to do automation.

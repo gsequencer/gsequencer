@@ -42,7 +42,7 @@ void ags_notation_toolbar_disconnect(AgsConnectable *connectable);
  * @short_description: notation_toolbar
  * @title: AgsNotationToolbar
  * @section_id:
- * @include: ags/X/editor/ags_notation_toolbar.h
+ * @include: ags/app/editor/ags_notation_toolbar.h
  *
  * The #AgsNotationToolbar lets you choose edit tool.
  */

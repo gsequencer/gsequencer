@@ -47,7 +47,7 @@ void ags_quit_dialog_disconnect(AgsConnectable *connectable);
  * @short_description: The quit dialog
  * @title: AgsQuitDialog
  * @section_id:
- * @include: ags/X/ags_quit_dialog.h
+ * @include: ags/app/ags_quit_dialog.h
  *
  * #AgsQuitDialog is shown as terminating GSequencer.
  */

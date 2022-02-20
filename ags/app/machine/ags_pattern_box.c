@@ -67,7 +67,7 @@ gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
  * @short_description: pattern box sequencer
  * @title: AgsPatternBox
  * @section_id:
- * @include: ags/X/machine/ags_pattern_box.h
+ * @include: ags/app/machine/ags_pattern_box.h
  *
  * The #AgsPatternBox is a composite widget to act as pattern box sequencer.
  */

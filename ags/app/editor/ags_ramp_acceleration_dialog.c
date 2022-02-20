@@ -55,7 +55,7 @@ gboolean ags_ramp_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAn
  * @short_description: ramp tool
  * @title: AgsRampAccelerationDialog
  * @section_id:
- * @include: ags/X/editor/ags_ramp_acceleration_dialog.h
+ * @include: ags/app/editor/ags_ramp_acceleration_dialog.h
  *
  * The #AgsRampAccelerationDialog lets you ramp accelerations.
  */

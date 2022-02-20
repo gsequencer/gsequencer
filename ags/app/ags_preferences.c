@@ -52,7 +52,7 @@ void ags_preferences_show_all(GtkWidget *widget);
  * @short_description: A dialog to do preferences
  * @title: AgsPluginPreferences
  * @section_id: 
- * @include: ags/X/ags_plugin_preferences.h
+ * @include: ags/app/ags_plugin_preferences.h
  *
  * #AgsDialogPreferences enables you to make preferences.
  */

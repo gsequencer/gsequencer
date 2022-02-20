@@ -56,7 +56,7 @@ gint ags_sf2_synth_int_compare_func(gconstpointer a,
  * @short_description: sf2_synth
  * @title: AgsSF2Synth
  * @section_id:
- * @include: ags/X/machine/ags_sf2_synth.h
+ * @include: ags/app/machine/ags_sf2_synth.h
  *
  * The #AgsSF2Synth is a composite widget to act as sf2_synth.
  */

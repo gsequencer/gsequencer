@@ -44,7 +44,7 @@ void ags_soundcard_editor_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to configure soundcard
  * @title: AgsSoundcardEditor
  * @section_id: 
- * @include: ags/X/ags_soundcard_editor.h
+ * @include: ags/app/ags_soundcard_editor.h
  *
  * #AgsSoundcardEditor enables you to make preferences of soundcard, audio channels,
  * samplerate and buffer size.

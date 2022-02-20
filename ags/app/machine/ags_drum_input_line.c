@@ -45,7 +45,7 @@ void ags_drum_input_line_map_recall(AgsLine *line,
  * @short_description: drum sequencer input line
  * @title: AgsDrumInputLine
  * @section_id:
- * @include: ags/X/machine/ags_drum_input_line.h
+ * @include: ags/app/machine/ags_drum_input_line.h
  *
  * The #AgsDrumInputLine is a composite widget to act as drum sequencer input line.
  */

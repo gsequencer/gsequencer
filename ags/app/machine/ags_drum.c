@@ -63,7 +63,7 @@ void ags_drum_map_recall(AgsMachine *machine);
  * @short_description: drum sequencer
  * @title: AgsDrum
  * @section_id:
- * @include: ags/X/machine/ags_drum.h
+ * @include: ags/app/machine/ags_drum.h
  *
  * The #AgsDrum is a composite widget to act as drum sequencer.
  */

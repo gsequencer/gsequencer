@@ -46,7 +46,7 @@ void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
  * @short_description: drum sequencer input pad
  * @title: AgsDrumInputPad
  * @section_id:
- * @include: ags/X/machine/ags_drum_input_pad.h
+ * @include: ags/app/machine/ags_drum_input_pad.h
  *
  * The #AgsDrumInputPad is a composite widget to act as drum sequencer input pad.
  */

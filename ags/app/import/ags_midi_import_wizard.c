@@ -56,7 +56,7 @@ void ags_midi_import_wizard_show_all(GtkWidget *widget);
  * @short_description: Import MIDI using wizard
  * @title: AgsMidiImportWizard
  * @section_id:
- * @include: ags/X/ags_midi_import_wizard.h
+ * @include: ags/app/ags_midi_import_wizard.h
  *
  * #AgsMidiImportWizard is a wizard to import midi files and do track mapping.
  */

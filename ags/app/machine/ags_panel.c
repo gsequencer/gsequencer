@@ -51,7 +51,7 @@ void ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
  * @short_description: panel
  * @title: AgsPanel
  * @section_id:
- * @include: ags/X/machine/ags_panel.h
+ * @include: ags/app/machine/ags_panel.h
  *
  * The #AgsPanel is a composite widget to act as panel.
  */

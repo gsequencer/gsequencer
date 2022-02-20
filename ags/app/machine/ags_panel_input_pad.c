@@ -44,7 +44,7 @@ void ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
  * @short_description: panel input pad
  * @title: AgsPanelInputPad
  * @section_id:
- * @include: ags/X/machine/ags_panel_input_pad.h
+ * @include: ags/app/machine/ags_panel_input_pad.h
  *
  * The #AgsPanelInputPad is a composite widget to act as panel input pad.
  */

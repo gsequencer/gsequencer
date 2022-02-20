@@ -51,7 +51,7 @@ void ags_input_collection_editor_reset(AgsApplicable *applicable);
  * @short_description: edit audio connections in bulk mode.
  * @title: AgsInputCollectionEditor
  * @section_id:
- * @include: ags/X/ags_input_collection_editor.h
+ * @include: ags/app/ags_input_collection_editor.h
  *
  * #AgsInputCollectionEditor is a composite widget to modify audio connections. A input collection
  * editor should be packed by a #AgsConnectionEditor.

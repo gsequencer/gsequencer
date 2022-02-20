@@ -65,7 +65,7 @@ void ags_track_collection_mapper_reset(AgsApplicable *applicable);
  * @short_description: pack pad editors.
  * @title: AgsTrackCollectionMapper
  * @section_id:
- * @include: ags/X/ags_track_collection_mapper.h
+ * @include: ags/app/ags_track_collection_mapper.h
  *
  * #AgsTrackCollectionMapper is a wizard to import midi files and do track mapping..
  */

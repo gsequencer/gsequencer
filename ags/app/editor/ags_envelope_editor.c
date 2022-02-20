@@ -51,7 +51,7 @@ gchar* ags_envelope_editor_y_label_func(gdouble value,
  * @short_description: Edit envelope of notes
  * @title: AgsEnvelopeEditor
  * @section_id:
- * @include: ags/X/ags_envelope_editor.h
+ * @include: ags/app/ags_envelope_editor.h
  *
  * #AgsEnvelopeEditor is a composite widget to edit envelope controls
  * of selected #AgsNote.

@@ -46,7 +46,7 @@ void ags_fm_synth_input_line_map_recall(AgsLine *line,
  * @short_description: fm synth input line
  * @title: AgsFMSynthInputLine
  * @section_id:
- * @include: ags/X/machine/ags_fm_synth_input_line.h
+ * @include: ags/app/machine/ags_fm_synth_input_line.h
  *
  * The #AgsFMSynthInputLine is a composite widget to act as fm synth input line.
  */

@@ -47,7 +47,7 @@ gboolean ags_time_stretch_buffer_dialog_delete_event(GtkWidget *widget, GdkEvent
  * @short_description: time_stretch tool
  * @title: AgsTimeStretchBufferDialog
  * @section_id:
- * @include: ags/X/editor/ags_time_stretch_buffer_dialog.h
+ * @include: ags/app/editor/ags_time_stretch_buffer_dialog.h
  *
  * The #AgsTimeStretchBufferDialog lets you time_stretch buffers.
  */

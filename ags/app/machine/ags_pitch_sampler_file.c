@@ -39,7 +39,7 @@ void ags_pitch_sampler_file_disconnect(AgsConnectable *connectable);
  * @short_description: pitch sampler file
  * @title: AgsPitchSamplerFile
  * @section_id:
- * @include: ags/X/machine/ags_pitch_sampler_file.h
+ * @include: ags/app/machine/ags_pitch_sampler_file.h
  *
  * The #AgsPitchSamplerFile is a composite widget to act as pitch sampler file.
  */

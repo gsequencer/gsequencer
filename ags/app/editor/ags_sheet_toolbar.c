@@ -36,7 +36,7 @@ void ags_sheet_toolbar_disconnect(AgsConnectable *connectable);
  * @short_description: sheet_toolbar
  * @title: AgsSheetToolbar
  * @section_id:
- * @include: ags/X/editor/ags_sheet_toolbar.h
+ * @include: ags/app/editor/ags_sheet_toolbar.h
  *
  * The #AgsSheetToolbar lets you choose edit tool.
  */

@@ -56,7 +56,7 @@ void ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler,
  * @short_description: pitch_sampler notation
  * @title: AgsPitchSampler
  * @section_id:
- * @include: ags/X/machine/ags_pitch_sampler.h
+ * @include: ags/app/machine/ags_pitch_sampler.h
  *
  * The #AgsPitchSampler is a composite widget to act as soundfont2 notation player.
  */

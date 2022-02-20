@@ -51,7 +51,7 @@ gboolean ags_sheet_window_delete_event(GtkWidget *widget, GdkEventAny *event);
  * @short_description: The sheet window
  * @title: AgsSheetWindow
  * @section_id:
- * @include: ags/X/ags_sheet_window.h
+ * @include: ags/app/ags_sheet_window.h
  *
  * #AgsSheetWindow lets you edit audio files.
  */

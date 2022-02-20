@@ -42,7 +42,7 @@ void ags_wave_toolbar_disconnect(AgsConnectable *connectable);
  * @short_description: wave toolbar
  * @title: AgsWaveToolbar
  * @section_id:
- * @include: ags/X/editor/ags_wave_toolbar.h
+ * @include: ags/app/editor/ags_wave_toolbar.h
  *
  * The #AgsWaveToolbar lets you choose edit tool.
  */

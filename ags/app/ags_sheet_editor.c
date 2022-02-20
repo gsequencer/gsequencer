@@ -57,7 +57,7 @@ static guint sheet_editor_signals[LAST_SIGNAL];
  * @short_description: A composite widget to edit notation
  * @title: AgsSheetEditor
  * @section_id:
- * @include: ags/X/ags_sheet_editor.h
+ * @include: ags/app/ags_sheet_editor.h
  *
  * #AgsSheetEditor is a composite widget to edit notation. You may select machines
  * or change sheet tool to do notation.

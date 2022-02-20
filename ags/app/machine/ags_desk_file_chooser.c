@@ -28,7 +28,7 @@ void ags_desk_file_chooser_finalize(GObject *gobject);
  * @short_description: desk_file_chooser sequencer
  * @title: AgsDeskFileChooser
  * @section_id:
- * @include: ags/X/machine/ags_desk_file_chooser.h
+ * @include: ags/app/machine/ags_desk_file_chooser.h
  *
  * The #AgsDeskFileChooser is a composite widget to act as desk_file_chooser sequencer.
  */

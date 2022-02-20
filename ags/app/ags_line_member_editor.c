@@ -44,7 +44,7 @@ void ags_line_member_editor_reset(AgsApplicable *applicable);
  * @short_description: Edit line member's aspects.
  * @title: AgsLineMemberEditor
  * @section_id:
- * @include: ags/X/ags_line_member_editor.h
+ * @include: ags/app/ags_line_member_editor.h
  *
  * #AgsLineMemberEditor is a composite widget to modify line member. A line member
  * editor should be packed by a #AgsLineEditor. You may add/remove plugins with this

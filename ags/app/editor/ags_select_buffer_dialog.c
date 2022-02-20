@@ -55,7 +55,7 @@ gboolean ags_select_buffer_dialog_delete_event(GtkWidget *widget, GdkEventAny *e
  * @short_description: select tool
  * @title: AgsSelectBufferDialog
  * @section_id:
- * @include: ags/X/editor/ags_select_buffer_dialog.h
+ * @include: ags/app/editor/ags_select_buffer_dialog.h
  *
  * The #AgsSelectBufferDialog lets you select buffers.
  */

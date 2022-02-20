@@ -35,7 +35,7 @@ void ags_simple_file_read_launch(AgsTask *task);
  * @short_description: task to read simple file format
  * @title: AgsSimpleFileRead
  * @section_id:
- * @include: ags/X/task/ags_simple_file_read.h
+ * @include: ags/app/task/ags_simple_file_read.h
  *
  * #AgsSimpleFileRead lets you read the simple file format as a task.
  */

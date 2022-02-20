@@ -44,7 +44,7 @@ void ags_osc_server_preferences_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to do OSC server related preferences
  * @title: AgsOscServerPreferences
  * @section_id: 
- * @include: ags/X/ags_osc_server_preferences.h
+ * @include: ags/app/ags_osc_server_preferences.h
  *
  * #AgsOscServerPreferences enables you to make OSC server related preferences.
  */

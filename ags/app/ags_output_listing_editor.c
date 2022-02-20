@@ -42,7 +42,7 @@ void ags_output_listing_editor_reset(AgsApplicable *applicable);
  * @short_description: pack output editors
  * @title: AgsOutputListingEditor
  * @section_id:
- * @include: ags/X/ags_output_listing_editor.h
+ * @include: ags/app/ags_output_listing_editor.h
  *
  * #AgsOutputListingEditor is a composite widget to pack #AgsOutputEditor.
  */

@@ -42,7 +42,7 @@ void ags_drum_output_line_map_recall(AgsLine *line,
  * @short_description: drum sequencer output line
  * @title: AgsDrumOutputLine
  * @section_id:
- * @include: ags/X/machine/ags_drum_output_line.h
+ * @include: ags/app/machine/ags_drum_output_line.h
  *
  * The #AgsDrumOutputLine is a composite widget to act as drum sequencer output line.
  */

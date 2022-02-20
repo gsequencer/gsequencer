@@ -42,7 +42,7 @@ void ags_input_listing_editor_reset(AgsApplicable *applicable);
  * @short_description: pack input editors
  * @title: AgsInputListingEditor
  * @section_id:
- * @include: ags/X/ags_input_listing_editor.h
+ * @include: ags/app/ags_input_listing_editor.h
  *
  * #AgsInputListingEditor is a composite widget to pack #AgsInputEditor.
  */

@@ -65,7 +65,7 @@ gboolean ags_notation_edit_auto_scroll_timeout(GtkWidget *widget);
  * @short_description: edit notes
  * @title: AgsNotationEdit
  * @section_id:
- * @include: ags/X/editor/ags_notation_edit.h
+ * @include: ags/app/editor/ags_notation_edit.h
  *
  * The #AgsNotationEdit lets you edit notes.
  */

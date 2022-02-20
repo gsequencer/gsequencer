@@ -47,7 +47,7 @@ gboolean ags_remove_sheet_page_dialog_delete_event(GtkWidget *widget, GdkEventAn
  * @short_description: remove tool
  * @title: AgsRemoveSheetPageDialog
  * @section_id:
- * @include: ags/X/editor/ags_remove_sheet_page_dialog.h
+ * @include: ags/app/editor/ags_remove_sheet_page_dialog.h
  *
  * The #AgsRemoveSheetPageDialog lets you remove sheet editor page.
  */

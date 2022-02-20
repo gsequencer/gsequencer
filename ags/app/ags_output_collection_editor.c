@@ -51,7 +51,7 @@ void ags_output_collection_editor_reset(AgsApplicable *applicable);
  * @short_description: edit audio connections in bulk mode.
  * @title: AgsOutputCollectionEditor
  * @section_id:
- * @include: ags/X/ags_output_collection_editor.h
+ * @include: ags/app/ags_output_collection_editor.h
  *
  * #AgsOutputCollectionEditor is a composite widget to modify audio connections. A output collection
  * editor should be packed by a #AgsConnectionEditor.

@@ -46,7 +46,7 @@ void ags_equalizer10_map_recall(AgsMachine *machine);
  * @short_description: equalizer10 sequencer
  * @title: AgsEqualizer10
  * @section_id:
- * @include: ags/X/machine/ags_equalizer10.h
+ * @include: ags/app/machine/ags_equalizer10.h
  *
  * The #AgsEqualizer10 is a composite widget to act as equalizer10 sequencer.
  */

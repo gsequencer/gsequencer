@@ -52,7 +52,7 @@ gboolean ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event
  * @short_description: crop tool
  * @title: AgsCropNoteDialog
  * @section_id:
- * @include: ags/X/editor/ags_crop_note_dialog.h
+ * @include: ags/app/editor/ags_crop_note_dialog.h
  *
  * The #AgsCropNoteDialog lets you crop notes.
  */

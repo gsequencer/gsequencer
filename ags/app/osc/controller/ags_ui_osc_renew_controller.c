@@ -124,7 +124,7 @@ gpointer ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_o
  * @short_description: UI OSC renew controller
  * @title: AgsUiOscRenewController
  * @section_id:
- * @include: ags/X/osc/controller/ags_ui_osc_renew_controller.h
+ * @include: ags/app/osc/controller/ags_ui_osc_renew_controller.h
  *
  * The #AgsUiOscRenewController implements the UI OSC renew controller.
  */

@@ -54,7 +54,7 @@ void ags_machine_collection_entry_reset(AgsApplicable *applicable);
  * @short_description: Machine entry
  * @title: AgsMachineCollectionEntry
  * @section_id:
- * @include: ags/X/ags_machine_collection_entry.h
+ * @include: ags/app/ags_machine_collection_entry.h
  *
  * #AgsMachineCollectionEntry is a composite widget specifying machines
  * to export.

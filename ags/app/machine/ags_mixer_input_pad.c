@@ -45,7 +45,7 @@ void ags_mixer_input_pad_resize_lines(AgsPad *pad, GType line_type,
  * @short_description: mixer input pad
  * @title: AgsMixerInputPad
  * @section_id:
- * @include: ags/X/machine/ags_mixer_input_pad.h
+ * @include: ags/app/machine/ags_mixer_input_pad.h
  *
  * The #AgsMixerInputPad is a composite widget to act as mixer input pad.
  */

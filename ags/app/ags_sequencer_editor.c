@@ -45,7 +45,7 @@ void ags_sequencer_editor_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to configure sequencer
  * @title: AgsSequencerEditor
  * @section_id: 
- * @include: ags/X/ags_sequencer_editor.h
+ * @include: ags/app/ags_sequencer_editor.h
  *
  * #AgsSequencerEditor enables you to make preferences of sequencer.
  */

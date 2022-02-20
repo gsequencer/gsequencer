@@ -43,7 +43,7 @@ void ags_performance_preferences_reset(AgsApplicable *applicable);
  * @short_description: A composite widget to do performance related preferences
  * @title: AgsPerformancePreferences
  * @section_id: 
- * @include: ags/X/ags_performance_preferences.h
+ * @include: ags/app/ags_performance_preferences.h
  *
  * #AgsPerformancePreferences enables you to make performance related preferences.
  */

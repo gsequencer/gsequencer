@@ -64,7 +64,7 @@ void ags_wave_export_dialog_show(GtkWidget *widget);
  * @short_description: The export dialog
  * @title: AgsWaveExportDialog
  * @section_id:
- * @include: ags/X/ags_wave_export_dialog.h
+ * @include: ags/app/ags_wave_export_dialog.h
  *
  * #AgsWaveExportDialog lets you export to audio files. This widget
  * can contain mulitple #AgsExportSoundcard widgets.

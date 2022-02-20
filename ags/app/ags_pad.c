@@ -53,7 +53,7 @@ GList* ags_pad_real_find_port(AgsPad *pad);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsPad
  * @section_id:
- * @include: ags/X/ags_pad.h
+ * @include: ags/app/ags_pad.h
  *
  * #AgsPad is a composite widget to visualize a bunch of #AgsChannel. It should be
  * packed by an #AgsMachine.

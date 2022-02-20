@@ -61,7 +61,7 @@ void ags_fm_syncsynth_output_map_recall(AgsFMSyncsynth *fm_syncsynth,
  * @short_description: fm syncsynth
  * @title: AgsFMSyncsynth
  * @section_id:
- * @include: ags/X/machine/ags_fm_syncsynth.h
+ * @include: ags/app/machine/ags_fm_syncsynth.h
  *
  * The #AgsFMSyncsynth is a composite widget to act as fm syncsynth.
  */

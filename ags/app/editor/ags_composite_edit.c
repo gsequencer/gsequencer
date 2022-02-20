@@ -59,7 +59,7 @@ static gpointer ags_composite_edit_parent_class = NULL;
  * @short_description: composite edit
  * @title: AgsCompositeEdit
  * @section_id:
- * @include: ags/X/ags_composite_edit.h
+ * @include: ags/app/ags_composite_edit.h
  *
  * The #AgsCompositeEdit is a composite abstraction of edit implementation.
  */

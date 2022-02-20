@@ -42,7 +42,7 @@ void ags_mixer_map_recall(AgsMachine *machine);
  * @short_description: mixer
  * @title: AgsMixer
  * @section_id:
- * @include: ags/X/machine/ags_mixer.h
+ * @include: ags/app/machine/ags_mixer.h
  *
  * The #AgsMixer is a composite widget to act as mixer.
  */

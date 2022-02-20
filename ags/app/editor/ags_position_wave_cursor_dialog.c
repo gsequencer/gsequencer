@@ -58,7 +58,7 @@ gboolean ags_position_wave_cursor_dialog_delete_event(GtkWidget *widget, GdkEven
  * @short_description: position tool
  * @title: AgsPositionWaveCursorDialog
  * @section_id:
- * @include: ags/X/editor/ags_position_wave_cursor_dialog.h
+ * @include: ags/app/editor/ags_position_wave_cursor_dialog.h
  *
  * The #AgsPositionWaveCursorDialog lets you position wave editor cursor.
  */

@@ -44,7 +44,7 @@ void ags_listing_editor_reset(AgsApplicable *applicable);
  * @short_description: pack pad editors.
  * @title: AgsListingEditor
  * @section_id:
- * @include: ags/X/ags_listing_editor.h
+ * @include: ags/app/ags_listing_editor.h
  *
  * #AgsListingEditor is a composite widget to pack #AgsPadEditor.
  */

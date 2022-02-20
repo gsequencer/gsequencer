@@ -263,7 +263,7 @@ void* ags_gsequencer_application_context_audio_main_loop_thread(GMainLoop *main_
  * @short_description: The gsequencer application context
  * @title: AgsGSequencerApplicationContext
  * @section_id:
- * @include: ags/X/ags_gsequencer_application_context.h
+ * @include: ags/app/ags_gsequencer_application_context.h
  *
  * #AgsGSequencerApplicationContext is a application context providing
  * the main window and sets up a functional audio layer.

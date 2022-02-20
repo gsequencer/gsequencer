@@ -59,7 +59,7 @@ void ags_ladspa_bridge_map_recall(AgsMachine *machine);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsLadspaBridge
  * @section_id:
- * @include: ags/X/machine/ags_ladspa_bridge.h
+ * @include: ags/app/machine/ags_ladspa_bridge.h
  *
  * #AgsLadspaBridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

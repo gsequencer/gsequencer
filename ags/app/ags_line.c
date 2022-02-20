@@ -117,7 +117,7 @@ GList* ags_line_real_find_port(AgsLine *line);
  * @short_description: A composite widget to visualize #AgsChannel
  * @title: AgsLine
  * @section_id:
- * @include: ags/X/ags_line.h
+ * @include: ags/app/ags_line.h
  *
  * #AgsLine is a composite widget to visualize #AgsChannel. It should be
  * packed by an #AgsPad. It may contain #AgsLineMember to modify ports of
