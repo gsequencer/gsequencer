@@ -29,8 +29,8 @@ void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_application_activate(GApplication *gsequencer_app);
 void ags_gsequencer_application_startup(GApplication *gsequencer_app);
-void ags_gsequencer_application_command_line(GApplication *gsequencer_app,
-					     GApplicationCommandLine *command_line);
+int ags_gsequencer_application_command_line(GApplication *gsequencer_app,
+					    GApplicationCommandLine *command_line);
 gboolean ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
 						       gchar ***arguments,
 						       int *exit_status);
@@ -39,8 +39,9 @@ void ags_gsequencer_application_open(GApplication *application,
 				     gint n_files,
 				     const gchar *hint);
 
-extern AgsApplicationContext *ags_application_context;
 static gpointer ags_gsequencer_application_parent_class = NULL;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_gsequencer_application_get_type()
@@ -137,22 +138,15 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *edit_wave_action;
   GSimpleAction *edit_sheet_action;
   
-  ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
-  g_object_ref(ags_application_context);
-
-  ags_ui_provider_set_app(AGS_UI_PROVIDER(ags_application_context),
-			  gsequencer_app);
-
-#if 1
-  g_application_add_main_option(gsequencer_app,
-				"--filename",
-				NULL,
-				G_OPTION_FLAG_IN_MAIN,
-				G_OPTION_ARG_FILENAME,
-				"open file",
-				"file");
-#endif
+  AgsApplicationContext *application_context;  
   
+  application_context = 
+    ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
+  g_object_ref(application_context);
+
+  ags_ui_provider_set_app(AGS_UI_PROVIDER(application_context),
+			  gsequencer_app);
+      
   /* open */
   open_action = g_simple_action_new("open",
 				    NULL);
@@ -501,41 +495,24 @@ ags_gsequencer_application_startup(GApplication *gsequencer_app)
   
   ags_log_add_message(log,
 		      "Welcome to Advanced Gtk+ Sequencer");
-
-  /* application context prepare and setup */  
-  ags_application_context_prepare(application_context);
-  ags_application_context_setup(application_context);
 }
 
 void
 ags_gsequencer_application_activate(GApplication *gsequencer_app)
 {
-  GtkWidget *window;
-
-  AgsApplicationContext *application_context;
- 
   G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->activate(gsequencer_app);
-
-  /* application context */
-  application_context = ags_application_context_get_instance();  
-  
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-  gtk_application_add_window(gsequencer_app,
-			     GTK_WINDOW(window));
-
-  g_object_set(G_OBJECT(window),
-	       "application", gsequencer_app,
-	       NULL);
 }
 
-void
+int
 ags_gsequencer_application_command_line(GApplication *gsequencer_app,
 					GApplicationCommandLine *command_line)
-{
+{  
   G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->command_line(gsequencer_app,
 									     command_line);
-
+  
   g_message("command line");
+
+  return(0);
 }
 
 gboolean
@@ -543,13 +520,25 @@ ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
 					      gchar ***arguments,
 					      int *exit_status)
 {
-  gboolean retval;
+  AgsApplicationContext *application_context;
+  
+  gchar *filename;
 
+  gboolean handles_command_line;
+  gboolean retval;
+  
   retval = G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->local_command_line(gsequencer_app,
 											    arguments,
 											    exit_status);
 
   g_message("local command line");
+
+  /* application context */
+  application_context = ags_application_context_get_instance();  
+
+  filename = NULL;
+
+  handles_command_line = FALSE;
 
   if(arguments != NULL){
     gchar **iter;
@@ -558,30 +547,18 @@ ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
       if(!g_ascii_strncasecmp("--filename",
 			      iter[0],
 			      11)){
-	GFile* file[2];
-
+	handles_command_line = TRUE;
+	
 	iter++;
-
-	if(iter != NULL && iter[0] != NULL){
-	  g_message("open %s", iter[0]);
-
-	  file[0] = g_file_new_for_path(iter[0]);
-	  file[1] = NULL;
-
-	  g_application_open(gsequencer_app,
-			     file,
-			     1,
-			     "local command line");
-	}
       }
     }
   }
   
   if(exit_status != NULL){
-    exit_status[0] = 1;
+    exit_status[0] = 0;
   }
 
-  return(FALSE);
+  return(TRUE);
 }
 
 void
