@@ -21,29 +21,6 @@
 
 #include <ags/app/ags_app_action_util.h>
 
-int
-ags_gsequencer_application_command_line_callback(GApplication *gsequencer_app,
-						 GApplicationCommandLine *cmdline)
-{
-  g_message("du");
-  
-  //TODO:JK: implement me
-  
-  return(0);
-}
-
-int
-ags_gsequencer_application_handle_local_options_callback(GApplication *gsequencer_app,
-							 GVariantDict *options,
-							 gpointer user_data)
-{
-  g_message("do");
-  
-  //TODO:JK: implement me
-  
-  return(0);
-}
-
 void
 ags_gsequencer_open_callback(GAction *action, GVariant *parameter,
 			     AgsGSequencerApplication *gsequencer_app)

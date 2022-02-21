@@ -433,8 +433,17 @@ ags_machine_init(AgsMachine *machine)
 
   AgsApplicationContext *application_context;
 
+  GList *start_machine;
+
   application_context = ags_application_context_get_instance();
 
+  start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
+  
+  start_machine = g_list_prepend(start_machine,
+				 machine);
+  ags_ui_provider_set_machine(AGS_UI_PROVIDER(application_context),
+			      start_machine);
+  
   g_signal_connect(application_context, "check-message",
 		   G_CALLBACK(ags_machine_check_message_callback), machine);
   

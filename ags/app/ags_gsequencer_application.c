@@ -22,12 +22,22 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_window.h>
 
 void ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_app);
 void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_application_activate(GApplication *gsequencer_app);
 void ags_gsequencer_application_startup(GApplication *gsequencer_app);
+void ags_gsequencer_application_command_line(GApplication *gsequencer_app,
+					     GApplicationCommandLine *command_line);
+gboolean ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
+						       gchar ***arguments,
+						       int *exit_status);
+void ags_gsequencer_application_open(GApplication *application,
+				     GFile **files,
+				     gint n_files,
+				     const gchar *hint);
 
 extern AgsApplicationContext *ags_application_context;
 static gpointer ags_gsequencer_application_parent_class = NULL;
@@ -75,6 +85,9 @@ ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_
 
   app->startup = ags_gsequencer_application_startup;
   app->activate = ags_gsequencer_application_activate;
+  app->command_line = ags_gsequencer_application_command_line;
+  app->local_command_line = ags_gsequencer_application_local_command_line;
+  app->open = ags_gsequencer_application_open;
 }
 
 void
@@ -130,13 +143,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   ags_ui_provider_set_app(AGS_UI_PROVIDER(ags_application_context),
 			  gsequencer_app);
 
-#if 0
-  g_signal_connect(gsequencer_app, "command-line",
-		   G_CALLBACK(ags_gsequencer_application_command_line_callback), NULL);
-
-  g_signal_connect(gsequencer_app, "handle-local-options",
-		   G_CALLBACK(ags_gsequencer_application_handle_local_options_callback), NULL);
-
+#if 1
   g_application_add_main_option(gsequencer_app,
 				"--filename",
 				NULL,
@@ -519,6 +526,134 @@ ags_gsequencer_application_activate(GApplication *gsequencer_app)
   g_object_set(G_OBJECT(window),
 	       "application", gsequencer_app,
 	       NULL);
+}
+
+void
+ags_gsequencer_application_command_line(GApplication *gsequencer_app,
+					GApplicationCommandLine *command_line)
+{
+  G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->command_line(gsequencer_app,
+									     command_line);
+
+  g_message("command line");
+}
+
+gboolean
+ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
+					      gchar ***arguments,
+					      int *exit_status)
+{
+  gboolean retval;
+
+  retval = G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->local_command_line(gsequencer_app,
+											    arguments,
+											    exit_status);
+
+  g_message("local command line");
+
+  if(arguments != NULL){
+    gchar **iter;
+
+    for(iter = arguments[0]; iter != NULL && iter[0] != NULL; iter++){
+      if(!g_ascii_strncasecmp("--filename",
+			      iter[0],
+			      11)){
+	GFile* file[2];
+
+	iter++;
+
+	if(iter != NULL && iter[0] != NULL){
+	  g_message("open %s", iter[0]);
+
+	  file[0] = g_file_new_for_path(iter[0]);
+	  file[1] = NULL;
+
+	  g_application_open(gsequencer_app,
+			     file,
+			     1,
+			     "local command line");
+	}
+      }
+    }
+  }
+  
+  if(exit_status != NULL){
+    exit_status[0] = 1;
+  }
+
+  return(FALSE);
+}
+
+void
+ags_gsequencer_application_open(GApplication *application,
+				GFile **files,
+				gint n_files,
+				const gchar *hint)
+{
+  AgsApplicationContext *application_context;
+
+  /* application context */
+  application_context = ags_application_context_get_instance();  
+  
+  if(n_files > 0 && files != NULL && files[0] != NULL){
+    GtkWidget *window;
+  
+    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+    if(window != NULL){
+      GList *start_machine, *machine;
+      GList *start_list, *list;
+
+      /* destroy editor */
+      list =
+	start_list = gtk_container_get_children((GtkContainer *) AGS_WINDOW(window)->composite_editor->machine_selector);
+
+      list = list->next;
+
+      while(list != NULL){
+	gtk_widget_destroy(list->data);
+    
+	list = list->next;
+      }
+
+      g_list_free(start_list);
+
+      machine = 
+	start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
+
+      while(machine != NULL){
+	AgsAudio *audio;
+  
+	AgsRemoveAudio *remove_audio;
+	
+	ags_machine_set_run(machine->data,
+			    FALSE);
+	
+	/* destroy machine */
+	audio = AGS_MACHINE(machine->data)->audio;
+	g_object_ref(audio);
+
+	ags_connectable_disconnect(AGS_CONNECTABLE(machine->data));
+	gtk_widget_destroy((GtkWidget *) machine->data);
+
+	/* get task thread */
+	remove_audio = ags_remove_audio_new(audio);
+	
+	ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				      (AgsTask *) remove_audio);
+
+	/* iterate */
+	machine = machine->next;
+      }
+      
+      g_list_free(start_machine);
+
+      ags_ui_provider_set_machine(AGS_UI_PROVIDER(application_context),
+				  NULL);
+      
+      AGS_WINDOW(window)->filename = g_file_get_path(files[0]);
+    }
+  }
 }
 
 AgsGSequencerApplication*

@@ -74,15 +74,27 @@ void ags_setup(int argc, char **argv);
 void
 ags_setup(int argc, char **argv)
 {
-  AgsGSequencerApplication *app;
+  AgsGSequencerApplication *gsequencer_app;
+
   gchar *application_id;
+
+  GError *error;
   
   application_id = "org.nongnu.gsequencer.GSequencer";
 				   
-  app = ags_gsequencer_application_new(application_id,
-				       G_APPLICATION_FLAGS_NONE);
+  gsequencer_app = ags_gsequencer_application_new(application_id,
+						  (G_APPLICATION_HANDLES_OPEN));
+
+  error = NULL;
+  g_application_register(G_APPLICATION(gsequencer_app),
+			 NULL,
+			 &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+  }
   
-  g_application_run(G_APPLICATION(app),
+  g_application_run(G_APPLICATION(gsequencer_app),
 		    argc, argv);
 }
 
