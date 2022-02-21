@@ -45,6 +45,8 @@
       <arg>--help</arg>
       <arg>--version</arg>
       <arg>--no-builtin-theme</arg>
+      <arg>--non-unique</arg>
+      <arg>--menu-bar</arg>
       <arg>--filename <replaceable>file</replaceable></arg>
       <arg>--no-config</arg>
     </cmdsynopsis>
@@ -85,6 +87,18 @@
         <term><option>--no-builtin-theme</option></term>
         <listitem>
           <para>Disable built-in theme in order to display default theme.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--non-unique</option></term>
+        <listitem>
+          <para>Don't attach to any existing application ID, i.e. fork a new process.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--menu-bar</option></term>
+        <listitem>
+          <para>Ignore gtk-shell-shows-menubar from GtkSettings and force showing a traditional GtkMenuBar.</para>
         </listitem>
       </varlistentry>
       <varlistentry>

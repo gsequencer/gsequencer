@@ -117,8 +117,10 @@ main(int argc, char **argv)
 
   gboolean builtin_theme_disabled;
   gboolean handles_command_line;
+  gboolean non_unique;
   gboolean is_remote;
-
+  gboolean force_menu_bar;
+  
   guint i;
 
   GError *error;  
@@ -317,19 +319,25 @@ main(int argc, char **argv)
 
   /* parse command line parameter */
   filename = NULL;
-  has_file = FALSE;
 
+  has_file = FALSE;
+  handles_command_line = FALSE;
+  force_menu_bar = FALSE;
+  
+  non_unique = FALSE;
   no_config = FALSE;
   
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
 	     "--no-config         disable config from file"
 	     "--no-builtin-theme  disable built-in theme",
+	     "--non-unique        don't attach to any existing application ID",
+	     "--menu-bar          force traditional menu bar",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
       
@@ -347,6 +355,10 @@ main(int argc, char **argv)
       exit(0);
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
+    }else if(!strncmp(argv[i], "--non-unique", 13)){
+      non_unique = TRUE;
+    }else if(!strncmp(argv[i], "--menu-bar", 11)){
+      force_menu_bar = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
       filename = argv[i + 1];
       i++;
@@ -355,6 +367,8 @@ main(int argc, char **argv)
 		     G_FILE_TEST_EXISTS) &&
 	 g_file_test(filename,
 		     G_FILE_TEST_IS_REGULAR)){
+	handles_command_line = TRUE;
+	
 	has_file = TRUE;
       }
     }else if(!strncmp(argv[i], "--no-config", 12)){
@@ -539,25 +553,15 @@ main(int argc, char **argv)
     
   application_id = "org.nongnu.gsequencer.GSequencer";
 
-  filename = NULL;
-  
-  handles_command_line = FALSE;
-
-  for(iter = argv; iter != NULL && iter[0] != NULL; iter++){
-    if(!g_ascii_strncasecmp("--filename",
-			    iter[0],
-			    11)){
-      handles_command_line = TRUE;
-
-      iter++;
-
-      filename = iter[0];
-    }
+  if(non_unique){
+    gsequencer_app = ags_gsequencer_application_new(application_id,
+						    (G_APPLICATION_HANDLES_OPEN |
+						     G_APPLICATION_NON_UNIQUE));
+  }else{
+    gsequencer_app = ags_gsequencer_application_new(application_id,
+						    G_APPLICATION_HANDLES_OPEN);
   }
-
-  gsequencer_app = ags_gsequencer_application_new(application_id,
-						  G_APPLICATION_HANDLES_OPEN);
-
+  
   error = NULL;
   g_application_register(G_APPLICATION(gsequencer_app),
 			 NULL,
@@ -585,6 +589,13 @@ main(int argc, char **argv)
     ags_application_context_setup(application_context);
   
     window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+    if(!AGS_WINDOW(window)->shows_menu_bar &&
+       !force_menu_bar){
+      gtk_window_set_titlebar((GtkWindow *) window,
+			      (GtkWidget *) AGS_WINDOW(window)->header_bar);
+    }
+
     gtk_application_add_window(gsequencer_app,
 			       GTK_WINDOW(window));
 

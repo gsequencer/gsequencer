@@ -264,11 +264,6 @@ ags_window_init(AgsWindow *window)
   
   window->header_bar = gtk_header_bar_new();
 
-  if(!window->shows_menu_bar){
-    gtk_window_set_titlebar((GtkWindow *) window,
-			    (GtkWidget *) window->header_bar);
-  }
-
   gtk_header_bar_set_decoration_layout(window->header_bar,
 				       "menu:minimize,maximize,close");
   gtk_header_bar_set_title(window->header_bar,
