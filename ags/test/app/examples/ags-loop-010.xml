@@ -4,39 +4,29 @@
 disable-feature=experimental
 autosave-thread=false
 segmentation=4/4
-engine-mode=deterministic
+engine-mode=performance
 rt-safe=false
 gui-scale=1.0
 
 [soundcard-0]
 backend=alsa
 capability=playback
-buffer-size=1024
+buffer-size=2048
 pcm-channels=2
-format=16
-samplerate=44100
-device=default
+format=32
+samplerate=192000
+device=hw:CARD=MGXU,DEV=0
 
 [recall]
-auto-sense=false
+auto-sense=true
 
 [thread]
 model=super-threaded
 super-threaded-scope=audio
 lock-global=ags-thread
 lock-parent=ags-recycling-thread
-thread-pool-max-unused-threads=4
+thread-pool-max-unused-threads=8
 max-precision=250
-
-[osc-server]
-auto-start=false
-any-address=false
-enable-ip4=false
-ip4-address=127.0.0.1
-enable-ip6=false
-ip6-address=::1
-server-port=9000
-monitor-timeout=0.033333
 ]]></ags-sf-config>
   <ags-sf-window filename="ags/test/X/examples/ags-loop-010.xml" bpm="145.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
     <ags-sf-machine-list>

@@ -2693,9 +2693,10 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *widget;
   AgsWindow *window;
-
+  GtkApplication *app;
+  
 #if defined(AGS_WITH_MAC_INTEGRATION)
-  GtkosxApplication *app;
+  GtkosxApplication *osx_app;
 #endif
   
   AgsThread *audio_loop;
@@ -2894,7 +2895,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   /* AgsWindow */
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
 				      NULL);
-  
   window->no_config = no_config;
   
   gsequencer_application_context->window = (GtkWidget *) window;
@@ -2902,12 +2902,12 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   gsequencer_application_context->navigation = (GtkWidget *) window->navigation;
   
 #if defined(AGS_WITH_MAC_INTEGRATION)
-  app = gtkosx_application_get();
+  osx_app = gtkosx_application_get();
 
-  gtkosx_application_set_menu_bar(app,
+  gtkosx_application_set_menu_bar(osx_app,
 				  window->menu_bar);
   
-  gtkosx_application_ready(app);
+  gtkosx_application_ready(osx_app);
 #endif
 
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);

@@ -20,10 +20,17 @@
 #include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_gsequencer_application_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application_context.h>
+
 void ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_app);
 void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
 
-void ags_gsequencer_application_activate(GApplication *app);
+void ags_gsequencer_application_activate(GApplication *gsequencer_app);
+void ags_gsequencer_application_startup(GApplication *gsequencer_app);
+
+extern AgsApplicationContext *ags_application_context;
+static gpointer ags_gsequencer_application_parent_class = NULL;
 
 GType
 ags_gsequencer_application_get_type()
@@ -61,9 +68,12 @@ ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_
 {
   GApplicationClass *app;
 
+  ags_gsequencer_application_parent_class = g_type_class_peek_parent(gsequencer_app);
+
   /* GApplicationClass */
   app = (GApplicationClass *) gsequencer_app;
 
+  app->startup = ags_gsequencer_application_startup;
   app->activate = ags_gsequencer_application_activate;
 }
 
@@ -113,6 +123,12 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *edit_automation_action;
   GSimpleAction *edit_wave_action;
   GSimpleAction *edit_sheet_action;
+  
+  ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
+  g_object_ref(ags_application_context);
+
+  ags_ui_provider_set_app(AGS_UI_PROVIDER(ags_application_context),
+			  gsequencer_app);
 
 #if 0
   g_signal_connect(gsequencer_app, "command-line",
@@ -464,15 +480,45 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 }
 
 void
-ags_gsequencer_application_activate(GApplication *app)
+ags_gsequencer_application_startup(GApplication *gsequencer_app)
 {
   AgsApplicationContext *application_context;
+  AgsLog *log;
 
+  G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->startup(gsequencer_app);
+
+  /* application context */
   application_context = ags_application_context_get_instance();
+    
+  log = ags_log_get_instance();
   
-  /* application context */  
+  ags_log_add_message(log,
+		      "Welcome to Advanced Gtk+ Sequencer");
+
+  /* application context prepare and setup */  
   ags_application_context_prepare(application_context);
   ags_application_context_setup(application_context);
+}
+
+void
+ags_gsequencer_application_activate(GApplication *gsequencer_app)
+{
+  GtkWidget *window;
+
+  AgsApplicationContext *application_context;
+ 
+  G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->activate(gsequencer_app);
+
+  /* application context */
+  application_context = ags_application_context_get_instance();  
+  
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  gtk_application_add_window(gsequencer_app,
+			     GTK_WINDOW(window));
+
+  g_object_set(G_OBJECT(window),
+	       "application", gsequencer_app,
+	       NULL);
 }
 
 AgsGSequencerApplication*

@@ -63,8 +63,6 @@
 #include <sys/resource.h>
 #endif
 
-#include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_gsequencer_application.h>
 
 #include "gsequencer_main.h"
@@ -73,36 +71,19 @@
 
 void ags_setup(int argc, char **argv);
 
-extern AgsApplicationContext *ags_application_context;
-
 void
 ags_setup(int argc, char **argv)
 {
-  AgsApplicationContext *application_context;
   AgsGSequencerApplication *app;
-  AgsLog *log;
-
-  /* application context */
-  application_context = 
-    ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
-  g_object_ref(application_context);
+  gchar *application_id;
   
-  application_context->argc = argc;
-  application_context->argv = argv;
-
-  log = ags_log_get_instance();
-
-  ags_log_add_message(log,
-		      "Welcome to Advanced Gtk+ Sequencer");
-
-  app = ags_gsequencer_application_new("org.nongnu.gsequencer",
+  application_id = "org.nongnu.gsequencer.GSequencer";
+				   
+  app = ags_gsequencer_application_new(application_id,
 				       G_APPLICATION_FLAGS_NONE);
   
-  ags_ui_provider_set_app(AGS_UI_PROVIDER(application_context),
-			  app);
-  
   g_application_run(G_APPLICATION(app),
-		    0, NULL);
+		    argc, argv);
 }
 
 int

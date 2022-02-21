@@ -198,7 +198,7 @@ ags_window_init(AgsWindow *window)
   GtkBuilder *builder;
   GtkSettings *settings;
 
-  GApplication *app;
+  GApplication *gsequencer_app;
   GMenu *menu;
 
   AgsApplicationContext *application_context;
@@ -231,12 +231,11 @@ ags_window_init(AgsWindow *window)
   }
 #endif
 
-  app = ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context));
+  gsequencer_app = ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context));
   
   error = NULL;  
   g_object_set(G_OBJECT(window),
   	       "icon", gdk_pixbuf_new_from_file(app_icon, &error),
-	       "application", app,
   	       NULL);
   g_free(app_icon);
 
