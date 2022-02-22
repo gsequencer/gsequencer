@@ -84,7 +84,6 @@ ags_link_editor_get_type
 ags_listing_editor_get_type
 ags_live_dssi_bridge_get_type
 ags_live_lv2_bridge_get_type
-ags_live_vst3_bridge_get_type
 ags_lv2_bridge_get_type
 ags_lv2_browser_get_type
 ags_machine_collection_entry_get_type
@@ -170,8 +169,6 @@ ags_track_collection_mapper_get_type
 ags_ui_osc_renew_controller_get_type
 ags_ui_provider_get_type
 ags_vautomation_edit_box_get_type
-ags_vst3_bridge_get_type
-ags_vst3_browser_get_type
 ags_vwave_edit_box_get_type
 ags_wave_edit_box_get_type
 ags_wave_edit_get_type
