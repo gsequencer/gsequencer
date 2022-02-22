@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="ags-add-menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Panel</attribute>
+        <attribute name="action">app.add_panel</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Spectrometer</attribute>
+        <attribute name="action">app.add_spectrometer</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Equalizer</attribute>
+        <attribute name="action">app.add_equalizer</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Mixer</attribute>
+        <attribute name="action">app.add_mixer</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Drum</attribute>
+        <attribute name="action">app.add_drum</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Matrix</attribute>
+        <attribute name="action">app.add_matrix</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Synth</attribute>
+        <attribute name="action">app.add_synth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">FM Synth</attribute>
+        <attribute name="action">app.add_fm_synth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Syncsynth</attribute>
+        <attribute name="action">app.add_syncsynth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">FM Syncsynth</attribute>
+        <attribute name="action">app.add_fm_syncsynth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Hybrid Synth</attribute>
+        <attribute name="action">app.add_hybrid_synth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Hybrid FM Synth</attribute>
+        <attribute name="action">app.add_hybrid_fm_synth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">FPlayer</attribute>
+        <attribute name="action">app.add_ffplayer</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">SF2 Synth</attribute>
+        <attribute name="action">app.add_sf2_synth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Pitch Sampler</attribute>
+        <attribute name="action">app.add_pitch_sampler</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">SFZ Synth</attribute>
+        <attribute name="action">app.add_sfz_synth</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Audiorec</attribute>
+        <attribute name="action">app.add_audiorec</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

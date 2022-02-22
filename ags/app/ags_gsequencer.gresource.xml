@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/nongnu/gsequencer">
+    <file>ags/app/ui/ags_primary_menu.ui</file>
+  </gresource>
+  <gresource prefix="/org/nongnu/gsequencer">
+    <file>ags/app/ui/ags_add_menu.ui</file>
+  </gresource>
+  <gresource prefix="/org/nongnu/gsequencer">
+    <file>ags/app/ui/ags_edit_menu.ui</file>
+  </gresource>
+  <gresource prefix="/org/nongnu/gsequencer">
+    <file compressed="true" preprocess="xml-stripblanks">ags/app/ui/ags_meta_data_window.ui</file>
+  </gresource>  
+</gresources>

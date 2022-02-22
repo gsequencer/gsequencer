@@ -9,7 +9,7 @@ project('gsequencer', 'c', 'cpp',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
         meson_version: '>=0.53.0',
-        version: '3.17.7')
+        version: '3.18.0')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -124,7 +124,7 @@ install_data(join_paths(meson.source_root(), 'application-x-gsequencer.xml'),
                                      'mime', 'packages'),
              rename: 'gsequencer.xml')
 
-install_data(join_paths(meson.source_root(), 'ags', 'X', 'file', 'ags_simple_file.dtd'),
+install_data(join_paths(meson.source_root(), 'ags', 'app', 'file', 'ags_simple_file.dtd'),
              install_dir: join_paths(get_option('datadir'),
                                      'xml', 'gsequencer', 'schema', 'dtd', meson.project_version()))	     
 install_data(join_paths(meson.source_root(), 'ags', 'audio', 'midi', 'ags_midi_file.dtd'),

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="ags-edit-menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Notation</attribute>
+        <attribute name="action">app.edit_notation</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Automation</attribute>
+        <attribute name="action">app.edit_automation</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Wave</attribute>
+        <attribute name="action">app.edit_wave</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Sheet</attribute>
+        <attribute name="action">app.edit_sheet</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

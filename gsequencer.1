@@ -33,7 +33,7 @@
 gsequencer \- Advanced Gtk+ Sequencer is an audio sequencer and composition editor
 .SH "SYNOPSIS"
 .HP \w'\fB/usr/bin/gsequencer\fR\ 'u
-\fB/usr/bin/gsequencer\fR [\-\-help] [\-\-version] [\-\-no\-builtin\-theme] [\-\-filename\ \fIfile\fR] [\-\-no\-config]
+\fB/usr/bin/gsequencer\fR [\-\-help] [\-\-version] [\-\-no\-builtin\-theme] [\-\-non\-unique] [\-\-menu\-bar] [\-\-filename\ \fIfile\fR] [\-\-no\-config]
 .SH "DESCRIPTION"
 .PP
 Advanced GTK+ Sequencer is intended to use for music composition\&. It features a piano roll, as well a synth, matrix editor, drum machine, soundfont2 player, mixer and an output panel\&. It\(cqs designed to be highly configurable\&. You may add effects to its effect chain; and add or remove audio channels/pads\&. You may set up a fully functional network of engines, thus there is a link editor for linking audio lines\&.
@@ -52,6 +52,16 @@ files\&.
 \fB\-\-no\-builtin\-theme\fR
 .RS 4
 Disable built\-in theme in order to display default theme\&.
+.RE
+.PP
+\fB\-\-non\-unique\fR
+.RS 4
+Don\*(Aqt attach to any existing application ID, i\&.e\&. fork a new process\&.
+.RE
+.PP
+\fB\-\-menu\-bar\fR
+.RS 4
+Ignore gtk\-shell\-shows\-menubar from GtkSettings and force showing a traditional GtkMenuBar\&.
 .RE
 .PP
 \fB\-\-filename file\fR
@@ -164,7 +174,8 @@ device=hw:CARD=CODEC,DEV=0
 auto\-sense=false
 
 [thread]
-model=multi\-threaded
+model=super\-threaded
+super\-threaded\-scope=audio
 lock\-global=ags\-thread
 lock\-parent=ags\-recycling\-thread
 thread\-pool\-max\-unused\-threads=4
@@ -204,7 +215,8 @@ device=/dev/dsp
 auto\-sense=false
 
 [thread]
-model=multi\-threaded
+model=super\-threaded
+super\-threaded\-scope=audio
 lock\-global=ags\-thread
 lock\-parent=ags\-recycling\-thread
 thread\-pool\-max\-unused\-threads=4

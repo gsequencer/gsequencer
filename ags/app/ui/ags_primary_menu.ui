@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="ags-primary-menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Open</attribute>
+        <attribute name="action">app.open</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Save</attribute>
+        <attribute name="action">app.save</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Save as</attribute>
+        <attribute name="action">app.save_as</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Meta-data</attribute>
+        <attribute name="action">app.meta_data</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Export</attribute>
+        <attribute name="action">app.export</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">SMF import</attribute>
+        <attribute name="action">app.smf_import</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">SMF export</attribute>
+        <attribute name="action">app.smf_export</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Help</attribute>
+        <attribute name="action">app.help</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

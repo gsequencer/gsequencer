@@ -63,86 +63,26 @@
 #include <sys/resource.h>
 #endif
 
-#include <ags/X/ags_xorg_application_context.h>
+#include <ags/app/ags_gsequencer_application.h>
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_window.h>
 
 #include "gsequencer_main.h"
 
 #include <ags/i18n.h>
 
-void* ags_setup_thread(void *ptr);
-void ags_setup(int argc, char **argv);
-
-extern AgsApplicationContext *ags_application_context;
-
-void*
-ags_setup_thread(void *ptr)
-{
-  AgsXorgApplicationContext *xorg_application_context;
-  
-  xorg_application_context = (AgsXorgApplicationContext *) ptr;
-
-  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
-    usleep(500000);
-  }
-
-  ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
-  
-  g_thread_exit(NULL);
-
-  return(NULL);
-}
-
-void
-ags_setup(int argc, char **argv)
-{
-  AgsApplicationContext *application_context;
-  AgsLog *log;
-
-  /* application context */
-  application_context = 
-    ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
-  g_object_ref(application_context);
-  
-  application_context->argc = argc;
-  application_context->argv = argv;
-
-  log = ags_log_get_instance();
-
-  ags_log_add_message(log,
-		      "Welcome to Advanced Gtk+ Sequencer");
-  
-  /* application context */
-#if 0
-  g_thread_new("Advanced Gtk+ Sequencer - setup",
-	       ags_setup_thread,
-	       application_context);
-#endif
-  
-  ags_application_context_prepare(application_context);
-  ags_application_context_setup(application_context);
-  
-  /* gtk main */
-  gtk_main();
-}
-
 int
 main(int argc, char **argv)
-{
+{  
   GtkSettings *settings;
   GtkCssProvider *css_provider;
+  AgsGSequencerApplication *gsequencer_app;
   
+  AgsApplicationContext *application_context;  
   AgsConfig *config;
   AgsPriority *priority;
   
-  gchar *filename;
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-  gchar *app_dir;
-  gchar *path;
-#endif
-
-  gboolean builtin_theme_disabled;
-  guint i;
-
 #ifdef AGS_WITH_RT
   struct sched_param param;
   struct rlimit rl;
@@ -155,6 +95,15 @@ main(int argc, char **argv)
 #endif
   
   char **gst_argv;  
+  gchar **iter;
+
+  gchar *application_id;
+  gchar *filename;
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+  gchar *app_dir;
+  gchar *path;
+#endif
+
   gchar *wdir;
   gchar *config_filename;
   gchar *priority_filename;
@@ -165,6 +114,16 @@ main(int argc, char **argv)
   gboolean has_file;
   gboolean no_config;
   int result;
+
+  gboolean builtin_theme_disabled;
+  gboolean handles_command_line;
+  gboolean non_unique;
+  gboolean is_remote;
+  gboolean force_menu_bar;
+  
+  guint i;
+
+  GError *error;  
 
 #ifdef AGS_WITH_RT
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
@@ -360,19 +319,25 @@ main(int argc, char **argv)
 
   /* parse command line parameter */
   filename = NULL;
-  has_file = FALSE;
 
+  has_file = FALSE;
+  handles_command_line = FALSE;
+  force_menu_bar = FALSE;
+  
+  non_unique = FALSE;
   no_config = FALSE;
   
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
 	     "--no-config         disable config from file"
 	     "--no-builtin-theme  disable built-in theme",
+	     "--non-unique        don't attach to any existing application ID",
+	     "--menu-bar          force traditional menu bar",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
       
@@ -390,6 +355,10 @@ main(int argc, char **argv)
       exit(0);
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
+    }else if(!strncmp(argv[i], "--non-unique", 13)){
+      non_unique = TRUE;
+    }else if(!strncmp(argv[i], "--menu-bar", 11)){
+      force_menu_bar = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
       filename = argv[i + 1];
       i++;
@@ -398,6 +367,8 @@ main(int argc, char **argv)
 		     G_FILE_TEST_EXISTS) &&
 	 g_file_test(filename,
 		     G_FILE_TEST_IS_REGULAR)){
+	handles_command_line = TRUE;
+	
 	has_file = TRUE;
       }
     }else if(!strncmp(argv[i], "--no-config", 12)){
@@ -577,11 +548,81 @@ main(int argc, char **argv)
   /* some GUI scaling */
   if(!builtin_theme_disabled &&
      !has_file){
-//    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
+//    ags_gsequencer_application_context_load_gui_scale(ags_application_context_get_instance());
   }
-
-  ags_setup(argc, argv);
     
+  application_id = "org.nongnu.gsequencer.GSequencer";
+
+  if(non_unique){
+    gsequencer_app = ags_gsequencer_application_new(application_id,
+						    (G_APPLICATION_HANDLES_OPEN |
+						     G_APPLICATION_NON_UNIQUE));
+  }else{
+    gsequencer_app = ags_gsequencer_application_new(application_id,
+						    G_APPLICATION_HANDLES_OPEN);
+  }
+  
+  error = NULL;
+  g_application_register(G_APPLICATION(gsequencer_app),
+			 NULL,
+			 &error);
+    
+  if(error != NULL){
+    g_warning("%s", error->message);
+  }
+  
+  /* application context */
+  is_remote = FALSE;
+
+  application_context = ags_application_context_get_instance();
+  
+  if(g_application_get_is_remote(G_APPLICATION(gsequencer_app))){    
+    is_remote = TRUE;
+  }else{
+    GtkWidget *window;
+
+    application_context->argc = argc;
+    application_context->argv = argv;
+
+    /* application context prepare and setup */  
+    ags_application_context_prepare(application_context);
+    ags_application_context_setup(application_context);
+  
+    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+    if(!AGS_WINDOW(window)->shows_menu_bar &&
+       !force_menu_bar){
+      gtk_window_set_titlebar((GtkWindow *) window,
+			      (GtkWidget *) AGS_WINDOW(window)->header_bar);
+    }
+
+    gtk_application_add_window(gsequencer_app,
+			       GTK_WINDOW(window));
+
+    g_object_set(G_OBJECT(window),
+		 "application", gsequencer_app,
+		 NULL);
+  }
+  
+  if(handles_command_line && filename != NULL){      
+    if(is_remote){
+      GFile* file[2];
+
+      g_message("open %s", filename);
+
+      file[0] = g_file_new_for_path(filename);
+      file[1] = NULL;
+	
+      g_application_open(gsequencer_app,
+			 file,
+			 1,
+			 "local command line");
+    }
+  }
+    
+  g_application_run(G_APPLICATION(gsequencer_app),
+		    0, NULL);
+  
   //  muntrace();
 
   return(0);

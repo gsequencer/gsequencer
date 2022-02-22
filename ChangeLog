@@ -1,3 +1,21 @@
+ags (3.18.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsGSequencerApplication
+	* implemented ags_app_action_util.[ch]
+	* implemented ags_primary_menu.ui
+	* implemented ags_add_menu.ui
+	* implemented ags_edit_menu.ui
+	* refactored AgsWindow to use GtkHeaderBar
+	* refactored ags_menu_action_callbacks.c
+	* merged dev-maksymow-meta-data-window
+	* renamed AgsXorgApplicationContext to AgsGSequencerApplicationContext
+	* moved ags/X to ags/app
+	* fixed missing restore of AgsLineMember for builtin effects
+
+	[ Danìl Maksymow (Contributor of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMetaDataWindow
+
 ags (3.17.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -1564,7 +1582,7 @@ ags (3.3.4)
 ags (3.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed infinite loop in ags/X/ags_line_member_editor_callbacks.c
+	* fixed infinite loop in ags/app/ags_line_member_editor_callbacks.c
 	* fixed pointer corruption because of wrong cast to get stream mutex
 
 ags (3.3.2)
