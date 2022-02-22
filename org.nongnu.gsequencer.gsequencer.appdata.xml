@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.18.2" date="2022-02-22">
+      <description>
+	<p>
+	  Fixed application ID.
+	</p>
+      </description>
+    </release>
+
     <release version="3.18.0" date="2022-02-22">
       <description>
 	<p>

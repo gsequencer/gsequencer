@@ -551,7 +551,7 @@ main(int argc, char **argv)
 //    ags_gsequencer_application_context_load_gui_scale(ags_application_context_get_instance());
   }
     
-  application_id = "org.nongnu.gsequencer.GSequencer";
+  application_id = "org.nongnu.gsequencer.gsequencer";
 
   if(non_unique){
     gsequencer_app = ags_gsequencer_application_new(application_id,
