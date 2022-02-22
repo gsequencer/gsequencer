@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include "ags_indicator.h"
 
 void ags_indicator_class_init(AgsIndicatorClass *indicator);
+void ags_indicator_orientable_interface_init(AgsOrientableInterface *orientable);
 void ags_indicator_init(AgsIndicator *indicator);
 void ags_indicator_set_property(GObject *gobject,
 				guint prop_id,
@@ -29,6 +30,13 @@ void ags_indicator_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
+void ags_indicator_snapshot(AgsVIndicator *indicator,
+			    GtkSnapshot *snapshot);
+
+void ags__indicator_draw(AgsVIndicator *indicator,
+			 cairo_t *cr,
+			 gboolean is_animation);
+
 void ags_indicator_show(GtkWidget *widget);
 
 void ags_indicator_map(GtkWidget *widget);
@@ -54,6 +62,7 @@ void ags_indicator_get_preferred_height(GtkWidget *widget,
 
 enum{
   PROP_0,
+  PROP_ORIENTATION,
   PROP_SEGMENT_WIDTH,
   PROP_SEGMENT_HEIGHT,
   PROP_SEGMENT_PADDING,
@@ -83,14 +92,30 @@ ags_indicator_get_type(void)
       (GInstanceInitFunc) ags_indicator_init,
     };
 
+    static const GInterfaceInfo ags_orientable_interface_info = {
+      (GInterfaceInitFunc) ags_indicator_orientable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_indicator = g_type_register_static(GTK_TYPE_WIDGET,
 						"AgsIndicator", &ags_indicator_info,
 						0);
+    
+    g_type_add_interface_static(ags_type_indicator,
+				AGS_TYPE_ORIENTABLE,
+				&ags_orientable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_indicator);
   }
 
   return g_define_type_id__volatile;
+}
+
+void
+ags_indicator_orientable_interface_init(AgsOrientableInterface *orientable)
+{
+  //empty
 }
 
 void
@@ -108,9 +133,13 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   gobject->set_property = ags_indicator_set_property;
   gobject->get_property = ags_indicator_get_property;
 
+  g_object_class_override_property(gobject, PROP_ORIENTATION, "orientation");
+  
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) indicator;
 
+  widget->snapshot = ags_indicator_snapshot;
+  
   widget->realize = ags_indicator_realize;
   widget->size_allocate = ags_indicator_size_allocate;
   widget->get_preferred_width = ags_indicator_get_preferred_width;
@@ -214,6 +243,8 @@ ags_indicator_init(AgsIndicator *indicator)
 	       "app-paintable", TRUE,
 	       NULL);
 
+  indicator->orientation = GTK_ORIENTATION_VERTICAL;
+  
   /* segment alignment */
   indicator->segment_width = AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH;
   indicator->segment_height = AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT;
@@ -238,6 +269,36 @@ ags_indicator_set_property(GObject *gobject,
   indicator = AGS_INDICATOR(gobject);
 
   switch(prop_id){
+  case PROP_ORIENTATION:
+  {
+    GtkOrientation orientation;
+
+    orientation = g_value_get_enum(value);
+
+    if(orientation != indicator->orientation){
+      GtkLayoutManager *layout;
+
+      layout = gtk_widget_get_layout_manager(GTK_WIDGET(indicator));
+      
+      gtk_orientable_set_orientation(GTK_ORIENTABLE(layout),
+				     orientation);
+
+      indicator->orientation = orientation;
+      
+      gtk_widget_update_orientation(GTK_WIDGET(indicator),
+				    indicator->orientation);
+      
+      gtk_widget_queue_resize(GTK_WIDGET(indicator));
+
+      g_object_notify_by_pspec(gobject,
+			       pspec);
+      
+      gtk_accessible_update_property(GTK_ACCESSIBLE(indicator),
+				     GTK_ACCESSIBLE_PROPERTY_ORIENTATION, orientation,
+				     -1);
+    }
+  }
+  break;
   case PROP_SEGMENT_WIDTH:
   {
     indicator->segment_width = g_value_get_uint(value);
@@ -296,31 +357,36 @@ ags_indicator_get_property(GObject *gobject,
   indicator = AGS_INDICATOR(gobject);
 
   switch(prop_id){
+  case PROP_ORIENTATION:
+  {
+    g_value_set_enum(value, indicator->orientation);
+  }
+  break;
   case PROP_SEGMENT_WIDTH:
-    {
-      g_value_set_uint(value, indicator->segment_width);
-    }
-    break;
+  {
+    g_value_set_uint(value, indicator->segment_width);
+  }
+  break;
   case PROP_SEGMENT_HEIGHT:
-    {
-      g_value_set_uint(value, indicator->segment_height);
-    }
-    break;
+  {
+    g_value_set_uint(value, indicator->segment_height);
+  }
+  break;
   case PROP_SEGMENT_PADDING:
-    {
-      g_value_set_uint(value, indicator->segment_padding);
-    }
-    break;
+  {
+    g_value_set_uint(value, indicator->segment_padding);
+  }
+  break;
   case PROP_SEGMENT_COUNT:
-    {
-      g_value_set_uint(value, indicator->segment_count);
-    }
-    break;
+  {
+    g_value_set_uint(value, indicator->segment_count);
+  }
+  break;
   case PROP_ADJUSTMENT:
-    {
-      g_value_set_object(value, indicator->adjustment);
-    }
-    break;
+  {
+    g_value_set_object(value, indicator->adjustment);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -430,6 +496,189 @@ void
 ags_indicator_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_indicator_parent_class)->show(widget);
+}
+
+void
+ags_indicator_snapshot(AgsVIndicator *indicator,
+		       GtkSnapshot *snapshot)
+{
+  cairo_t *cr;
+
+  graphene_rect_t rect;
+  
+  int width, height;
+
+  width = gtk_widget_get_width((GtkWidget *) indicator);
+  height = gtk_widget_get_height((GtkWidget *) indicator);
+  
+  graphene_rect_init(&rect,
+		     0.0, 0.0,
+		     (float) width, (float) height);
+  
+  cr = gtk_snapshot_append_cairo(snapshot,
+				 &rect);
+
+  ags_indicator_draw(indicator,
+		     cr,
+		     FALSE);
+  
+  cairo_destroy(cr);
+}
+
+void
+ags_indicator_draw(AgsVIndicator *indicator,
+		   cairo_t *cr,
+		   gboolean is_animation)
+{
+  GtkStyleContext *style_context;
+  GtkSettings *settings;
+
+  GtkAdjustment *adjustment;
+
+  GdkRGBA fg_color;
+  GdkRGBA bg_color;
+
+  GtkOrientation orientation;
+
+  int width, height;
+  gint padding_top, padding_left;
+  guint segment_width, segment_height;
+  guint segment_padding;
+  guint segment_count;
+  guint i;
+  gboolean dark_theme;
+  gboolean fg_success;
+  gboolean bg_success;
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) indicator);
+  
+  settings = gtk_settings_get_default();
+
+  dark_theme = TRUE;
+  
+  g_object_set(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
+
+  adjustment = ags_indicator_get_adjustment(indicator);  
+
+  width = gtk_widget_get_width((GtkWidget *) indicator);
+  height = gtk_widget_get_height((GtkWidget *) indicator);
+
+  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(indicator));
+
+  segment_width = ags_indicator_get_segment_width(indicator);
+  segment_height = ags_indicator_get_segment_height(indicator);
+
+  segment_padding = ags_indicator_get_segment_padding(indicator);
+
+  segment_count = ags_indicator_get_segment_count(indicator);
+  
+  if(orientation = GTK_ORIENTATION_VERTICAL){
+    padding_top = (height - (segment_count * segment_height + (segment_count - 1) * segment_padding)) / 2;
+    padding_left = (width - segment_width) / 2;
+  }else{
+    padding_top = (height - segment_height) / 2;
+    padding_left = (width - (segment_count * segment_width + (segment_count - 1) * segment_padding)) / 2;
+  }
+  
+  fg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_fg_color",
+					      &fg_color);
+    
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+
+  if(!fg_success ||
+     !bg_success){
+    gdk_rgba_parse(&fg_color,
+		   "#101010");
+
+    gdk_rgba_parse(&bg_color,
+		   "#cbd5d9");
+  }
+
+  cairo_push_group(cr);
+
+  /* clear bg */
+  if(!is_animation){
+    gtk_render_background(style_context,
+			  cr,
+			  0.0, 0.0,
+			  (gdouble) width, (gdouble) height);
+  }
+
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
+    
+  if(orientation = GTK_ORIENTATION_VERTICAL){
+    for(i = 0; i < segment_count; i++){
+      cairo_rectangle(cr,
+		      (double) padding_left, (double) padding_top + (height - i * (segment_height + padding) - segment_height),
+		      (double) segment_width, (double) segment_height);	
+
+      cairo_fill(cr);
+    }
+  }else{
+    for(i = 0; i < segment_count; i++){
+      cairo_rectangle(cr,
+		      (double) padding_top + (width - i * (segment_width + padding) - segment_width), (double) padding_top,
+		      (double) segment_width, (double) segment_height);
+
+      cairo_fill(cr);
+    }
+  }
+
+  if(is_animation){
+    gdouble value;
+
+    value = gtk_adjustment_get_value(adjustment);
+        
+    if(!dark_theme){
+      cairo_set_source_rgba(cr,
+			    0.0,
+			    0.0,
+			    0.0,
+			    1.0 / 3.0);
+    }else{
+      cairo_set_source_rgba(cr,
+			    1.0,
+			    1.0,
+			    1.0,
+			    1.0 / 3.0);
+    }
+    
+    if(orientation = GTK_ORIENTATION_VERTICAL){
+      for(i = 0; i < segment_count; i++){
+	if(value > 0.0 &&
+	   1.0 / value * i < segment_count){
+	  cairo_rectangle(cr,
+			  (double) padding_left, (double) padding_top + (height - i * (segment_height + padding) - segment_height),
+			  (double) segment_width, (double) segment_height);	
+	
+	  cairo_fill(cr);
+	}
+      }
+    }else{
+      for(i = 0; i < segment_count; i++){
+	if(value > 0.0 &&
+	   1.0 / value * i < segment_count){
+	  cairo_rectangle(cr,
+			  (double) padding_top + (width - i * (segment_width + padding) - segment_width), (double) padding_top,
+			  (double) segment_width, (double) segment_height);
+
+	  cairo_fill(cr);
+	}
+      }
+    }
+  }
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 }
 
 /**
@@ -674,6 +923,9 @@ ags_indicator_set_adjustment(AgsIndicator *indicator,
 
 /**
  * ags_indicator_new:
+ * @orientation: the #GtkOrientation
+ * @segment_width: the width of one segment
+ * @segment_height: the height of one segment
  *
  * Creates an #AgsIndicator. Note, use rather its implementation #AgsVIndicator or
  * #AgsHIndicator.
@@ -683,11 +935,16 @@ ags_indicator_set_adjustment(AgsIndicator *indicator,
  * Since: 3.0.0
  */
 AgsIndicator*
-ags_indicator_new()
+ags_indicator_new(GtkOrientation orientation,
+		  guint segment_width,
+		  guint segment_height)
 {
   AgsIndicator *indicator;
 
   indicator = (AgsIndicator *) g_object_new(AGS_TYPE_INDICATOR,
+					    "orientation", orientation,
+					    "segment-width", segment_width,
+					    "segment-height", segment_height,					    
 					    NULL);
   
   return(indicator);

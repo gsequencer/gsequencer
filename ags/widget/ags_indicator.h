@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,6 +46,8 @@ struct _AgsIndicator
 {
   GtkWidget widget;
 
+  GtkOrientation orientation;
+  
   guint segment_width;
   guint segment_height;
 
@@ -85,7 +87,9 @@ void ags_indicator_set_adjustment(AgsIndicator *indicator,
 				  GtkAdjustment *adjustment);
 
 /* instantiate */
-AgsIndicator* ags_indicator_new();
+AgsIndicator* ags_indicator_new(GtkOrientation orientation,
+				guint segment_width,
+				guint segment_height);
 
 G_END_DECLS
 
