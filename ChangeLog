@@ -1,3 +1,9 @@
+ags (3.18.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated docs/reference/libgsequencer/libgsequencer.xml
+	* fixed docs/reference/libgsequencer/Makefile.am
+
 ags (3.18.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

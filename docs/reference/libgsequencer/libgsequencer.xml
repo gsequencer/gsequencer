@@ -34,8 +34,10 @@
 	Composite widgets related to main application.
       </para>
 
+      <xi:include href="xml/ags_gsequencer_application.xml"/>
+
       <xi:include href="xml/ags_ui_provider.xml"/>
-      <xi:include href="xml/ags_xorg_application_context.xml"/>
+      <xi:include href="xml/ags_gsequencer_application_context.xml"/>
 
       <xi:include href="xml/ags_animation_window.xml"/>
       <xi:include href="xml/ags_window.xml"/>

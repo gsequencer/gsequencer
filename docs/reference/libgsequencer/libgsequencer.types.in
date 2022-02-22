@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
+ags_add_sheet_page_dialog_get_type
 ags_animation_window_get_type
 ags_audio_preferences_get_type
 ags_audiorec_get_type
@@ -65,6 +66,8 @@ ags_fm_synth_get_type
 ags_fm_synth_input_line_get_type
 ags_fm_synth_input_pad_get_type
 ags_generic_preferences_get_type
+ags_gsequencer_application_context_get_type
+ags_gsequencer_application_get_type
 ags_hybrid_fm_synth_get_type
 ags_hybrid_synth_get_type
 ags_input_collection_editor_get_type
@@ -81,6 +84,7 @@ ags_link_editor_get_type
 ags_listing_editor_get_type
 ags_live_dssi_bridge_get_type
 ags_live_lv2_bridge_get_type
+ags_live_vst3_bridge_get_type
 ags_lv2_bridge_get_type
 ags_lv2_browser_get_type
 ags_machine_collection_entry_get_type
@@ -94,6 +98,7 @@ ags_matrix_bridge_get_type
 ags_matrix_bulk_input_get_type
 ags_matrix_get_type
 ags_menu_bar_get_type
+ags_meta_data_window_get_type
 ags_midi_dialog_get_type
 ags_midi_export_wizard_get_type
 ags_midi_import_wizard_get_type
@@ -128,6 +133,7 @@ ags_plugin_browser_get_type
 ags_plugin_preferences_get_type
 ags_position_automation_cursor_dialog_get_type
 ags_position_notation_cursor_dialog_get_type
+ags_position_sheet_cursor_dialog_get_type
 ags_position_wave_cursor_dialog_get_type
 ags_preferences_get_type
 ags_property_collection_editor_get_type
@@ -135,6 +141,7 @@ ags_property_editor_get_type
 ags_property_listing_editor_get_type
 ags_quit_dialog_get_type
 ags_ramp_acceleration_dialog_get_type
+ags_remove_sheet_page_dialog_get_type
 ags_scrolled_automation_edit_box_get_type
 ags_scrolled_wave_edit_box_get_type
 ags_select_acceleration_dialog_get_type
@@ -163,6 +170,8 @@ ags_track_collection_mapper_get_type
 ags_ui_osc_renew_controller_get_type
 ags_ui_provider_get_type
 ags_vautomation_edit_box_get_type
+ags_vst3_bridge_get_type
+ags_vst3_browser_get_type
 ags_vwave_edit_box_get_type
 ags_wave_edit_box_get_type
 ags_wave_edit_get_type
@@ -172,4 +181,3 @@ ags_wave_meta_get_type
 ags_wave_toolbar_get_type
 ags_wave_window_get_type
 ags_window_get_type
-ags_xorg_application_context_get_type
