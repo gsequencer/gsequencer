@@ -249,8 +249,8 @@ ags_context_menu_init(AgsContextMenu *context_menu)
 
   /* sheet */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Sheet"));
-  //  gtk_widget_set_sensitive(item,
-  //			   FALSE);
+  gtk_widget_set_sensitive(item,
+  			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
 
   /* meta data */

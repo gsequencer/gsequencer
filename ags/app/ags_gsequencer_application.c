@@ -472,12 +472,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 			  G_ACTION(edit_wave_action));
 
   /* edit sheet */
+#if 0
   edit_sheet_action = g_simple_action_new("edit_sheet",
 					  NULL);
   g_signal_connect(edit_sheet_action, "activate",
 		   G_CALLBACK(ags_gsequencer_edit_sheet_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(edit_sheet_action));
+#endif
 }
 
 void

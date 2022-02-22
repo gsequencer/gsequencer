@@ -11,6 +11,7 @@ ags (3.18.0)
 	* merged dev-maksymow-meta-data-window
 	* renamed AgsXorgApplicationContext to AgsGSequencerApplicationContext
 	* moved ags/X to ags/app
+	* fixed missing restore of AgsLineMember for builtin effects
 
 	[ Danìl Maksymow (Contributor of Advanced Gtk+ Sequencer) ]
 	* implemented AgsMetaDataWindow

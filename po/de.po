@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-02-20 05:06+0100\n"
+"POT-Creation-Date: 2022-02-22 00:21+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -84,35 +84,35 @@ msgstr "Verbindungen"
 
 #: ags/app/ags_connection_editor.c:245 ags/app/ags_machine_editor.c:255
 #: ags/app/ags_midi_dialog.c:439 ags/app/ags_preferences.c:224
-#: ags/app/editor/ags_crop_note_dialog.c:269
+#: ags/app/editor/ags_crop_note_dialog.c:234
 #: ags/app/editor/ags_envelope_dialog.c:221
-#: ags/app/editor/ags_move_note_dialog.c:262
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:236
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:258
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:236
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:336
-#: ags/app/editor/ags_select_acceleration_dialog.c:279
-#: ags/app/editor/ags_select_buffer_dialog.c:263
-#: ags/app/editor/ags_select_note_dialog.c:305
+#: ags/app/editor/ags_move_note_dialog.c:227
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:201
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:223
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:201
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:301
+#: ags/app/editor/ags_select_acceleration_dialog.c:244
+#: ags/app/editor/ags_select_buffer_dialog.c:228
+#: ags/app/editor/ags_select_note_dialog.c:270
 #: ags/app/export/ags_wave_export_dialog.c:354
 msgid "_Apply"
 msgstr ""
 
 #: ags/app/ags_connection_editor.c:250 ags/app/ags_machine_editor.c:260
 #: ags/app/ags_midi_dialog.c:444 ags/app/ags_plugin_browser.c:220
-#: ags/app/ags_preferences.c:225 ags/app/editor/ags_crop_note_dialog.c:270
+#: ags/app/ags_preferences.c:225 ags/app/editor/ags_crop_note_dialog.c:235
 #: ags/app/editor/ags_envelope_dialog.c:227
 #: ags/app/editor/ags_envelope_editor_callbacks.c:51
 #: ags/app/editor/ags_machine_selection.c:147
-#: ags/app/editor/ags_move_note_dialog.c:263
+#: ags/app/editor/ags_move_note_dialog.c:228
 #: ags/app/editor/ags_pattern_envelope_callbacks.c:1052
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:237
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:259
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:237
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:337
-#: ags/app/editor/ags_select_acceleration_dialog.c:280
-#: ags/app/editor/ags_select_buffer_dialog.c:264
-#: ags/app/editor/ags_select_note_dialog.c:306
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:202
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:224
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:202
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:302
+#: ags/app/editor/ags_select_acceleration_dialog.c:245
+#: ags/app/editor/ags_select_buffer_dialog.c:229
+#: ags/app/editor/ags_select_note_dialog.c:271
 #: ags/app/export/ags_midi_export_wizard.c:202
 #: ags/app/export/ags_wave_export_dialog.c:358
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:34
@@ -126,19 +126,19 @@ msgstr ""
 #: ags/app/ags_connection_editor.c:255
 #: ags/app/ags_export_soundcard_callbacks.c:406 ags/app/ags_midi_dialog.c:449
 #: ags/app/ags_plugin_browser.c:221 ags/app/ags_preferences.c:226
-#: ags/app/editor/ags_crop_note_dialog.c:271
+#: ags/app/editor/ags_crop_note_dialog.c:236
 #: ags/app/editor/ags_envelope_dialog.c:233
 #: ags/app/editor/ags_envelope_editor_callbacks.c:53
 #: ags/app/editor/ags_machine_selection.c:148
-#: ags/app/editor/ags_move_note_dialog.c:264
+#: ags/app/editor/ags_move_note_dialog.c:229
 #: ags/app/editor/ags_pattern_envelope_callbacks.c:1054
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:238
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:260
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:238
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:338
-#: ags/app/editor/ags_select_acceleration_dialog.c:281
-#: ags/app/editor/ags_select_buffer_dialog.c:265
-#: ags/app/editor/ags_select_note_dialog.c:307
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:203
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:225
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:203
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:303
+#: ags/app/editor/ags_select_acceleration_dialog.c:246
+#: ags/app/editor/ags_select_buffer_dialog.c:230
+#: ags/app/editor/ags_select_note_dialog.c:272
 #: ags/app/export/ags_midi_export_wizard.c:203
 #: ags/app/export/ags_wave_export_dialog.c:362
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:33
@@ -181,7 +181,7 @@ msgid "Save as"
 msgstr "Speichern unter"
 
 #: ags/app/ags_context_menu.c:146 ags/app/ags_export_window.c:341
-#: ags/app/ags_machine.c:3850 ags/app/ags_menu_bar.c:143
+#: ags/app/ags_machine.c:3859 ags/app/ags_menu_bar.c:143
 msgid "export"
 msgstr "exportieren"
 
@@ -297,7 +297,7 @@ msgstr ""
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: ags/app/ags_context_menu.c:277 ags/app/ags_machine.c:3889
+#: ags/app/ags_context_menu.c:277 ags/app/ags_machine.c:3898
 #: ags/app/ags_menu_bar.c:274
 msgid "import"
 msgstr "importieren"
@@ -512,103 +512,103 @@ msgstr "M-Box"
 msgid "Ports"
 msgstr "Ports"
 
-#: ags/app/ags_machine.c:3133 ags/app/machine/ags_audiorec_callbacks.c:64
+#: ags/app/ags_machine.c:3142 ags/app/machine/ags_audiorec_callbacks.c:64
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:65
 msgid "Open audio files"
 msgstr "Öffne Audio-Dateien"
 
-#: ags/app/ags_machine.c:3141
+#: ags/app/ags_machine.c:3150
 msgid "open in new channel"
 msgstr "In einem neuen Kanal öffnen"
 
-#: ags/app/ags_machine.c:3151
+#: ags/app/ags_machine.c:3160
 msgid "overwrite existing links"
 msgstr "Überschreibe bestehende Verknüpfungen"
 
-#: ags/app/ags_machine.c:3660 ags/app/editor/ags_pattern_envelope.c:656
+#: ags/app/ags_machine.c:3669 ags/app/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr "Nach oben verschieben"
 
-#: ags/app/ags_machine.c:3663 ags/app/editor/ags_pattern_envelope.c:663
+#: ags/app/ags_machine.c:3672 ags/app/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr "Nach unten verschieben"
 
-#: ags/app/ags_machine.c:3666
+#: ags/app/ags_machine.c:3675
 msgid "hide"
 msgstr "verstecken"
 
-#: ags/app/ags_machine.c:3669
+#: ags/app/ags_machine.c:3678
 msgid "show"
 msgstr "einblenden"
 
-#: ags/app/ags_machine.c:3672
+#: ags/app/ags_machine.c:3681
 msgid "destroy"
 msgstr "zerstören"
 
-#: ags/app/ags_machine.c:3675 ags/app/ags_machine_callbacks.c:396
+#: ags/app/ags_machine.c:3684 ags/app/ags_machine_callbacks.c:396
 msgid "rename"
 msgstr "unbenennen"
 
-#: ags/app/ags_machine.c:3678 ags/app/ags_machine_callbacks.c:458
+#: ags/app/ags_machine.c:3687 ags/app/ags_machine_callbacks.c:458
 msgid "rename audio"
 msgstr "Audio unbenennen"
 
-#: ags/app/ags_machine.c:3681 ags/app/ags_machine_callbacks.c:539
+#: ags/app/ags_machine.c:3690 ags/app/ags_machine_callbacks.c:539
 msgid "reposition audio"
 msgstr "Audio neu positionieren"
 
-#: ags/app/ags_machine.c:3684 ags/app/ags_machine_editor.c:203
+#: ags/app/ags_machine.c:3693 ags/app/ags_machine_editor.c:203
 msgid "properties"
 msgstr "Einstellungen"
 
-#: ags/app/ags_machine.c:3687
+#: ags/app/ags_machine.c:3696
 msgid "sticky controls"
 msgstr "klebrige Steuerelemente"
 
-#: ags/app/ags_machine.c:3753 ags/app/editor/ags_automation_meta.c:590
+#: ags/app/ags_machine.c:3762 ags/app/editor/ags_automation_meta.c:590
 #: ags/app/editor/ags_notation_meta.c:486
 #: ags/app/editor/ags_pattern_envelope.c:225
 #: ags/app/machine/ags_drum_input_pad.c:172
 msgid "edit"
 msgstr "bearbeiten"
 
-#: ags/app/ags_machine.c:3764
+#: ags/app/ags_machine.c:3773
 msgid "copy pattern"
 msgstr "Muster kopieren"
 
-#: ags/app/ags_machine.c:3774
+#: ags/app/ags_machine.c:3783
 msgid "paste pattern"
 msgstr "Muster einfügen"
 
-#: ags/app/ags_machine.c:3784
+#: ags/app/ags_machine.c:3793
 msgid "envelope"
 msgstr "Envelope"
 
-#: ags/app/ags_machine.c:3811
+#: ags/app/ags_machine.c:3820
 msgid "connection"
 msgstr "Verbindung"
 
-#: ags/app/ags_machine.c:3822
+#: ags/app/ags_machine.c:3831
 msgid "audio connection"
 msgstr "Audioverbindung"
 
-#: ags/app/ags_machine.c:3832
+#: ags/app/ags_machine.c:3841
 msgid "MIDI dialog"
 msgstr "MIDI Dialog"
 
-#: ags/app/ags_machine.c:3861
+#: ags/app/ags_machine.c:3870
 msgid "MIDI export"
 msgstr "MIDI exportieren"
 
-#: ags/app/ags_machine.c:3871
+#: ags/app/ags_machine.c:3880
 msgid "Audio export"
 msgstr "Audio exportieren"
 
-#: ags/app/ags_machine.c:3900
+#: ags/app/ags_machine.c:3909
 msgid "MIDI import"
 msgstr "MIDI importieren"
 
-#: ags/app/ags_machine.c:3910
+#: ags/app/ags_machine.c:3919
 msgid "Audio import"
 msgstr "Audio importieren"
 
@@ -842,7 +842,7 @@ msgstr "MIDI Karte"
 #: ags/app/ags_sequencer_editor.c:244 ags/app/ags_soundcard_editor.c:276
 #: ags/app/editor/ags_envelope_editor.c:184
 #: ags/app/editor/ags_pattern_envelope.c:670
-#: ags/app/editor/ags_select_acceleration_dialog.c:217
+#: ags/app/editor/ags_select_acceleration_dialog.c:182
 msgid "_Add"
 msgstr ""
 
@@ -1099,12 +1099,12 @@ msgid "Opacity"
 msgstr "Deckungskraft"
 
 #: ags/app/editor/ags_automation_toolbar.c:1335
-#: ags/app/editor/ags_select_acceleration_dialog.c:189
+#: ags/app/editor/ags_select_acceleration_dialog.c:154
 msgid "select accelerations"
 msgstr "Beschleuningungen auswählen"
 
 #: ags/app/editor/ags_automation_toolbar.c:1338
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:188
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:153
 msgid "ramp accelerations"
 msgstr "Beschleunigungen auframpen"
 
@@ -1124,29 +1124,29 @@ msgstr "Alle Lines einschalten"
 msgid "disable all lines"
 msgstr "Alle Lines ausschalten"
 
-#: ags/app/editor/ags_crop_note_dialog.c:185
+#: ags/app/editor/ags_crop_note_dialog.c:150
 #: ags/app/editor/ags_notation_toolbar.c:532
 msgid "crop notes"
 msgstr "Noten scheren"
 
-#: ags/app/editor/ags_crop_note_dialog.c:195
-#: ags/app/editor/ags_move_note_dialog.c:204
+#: ags/app/editor/ags_crop_note_dialog.c:160
+#: ags/app/editor/ags_move_note_dialog.c:169
 msgid "absolute"
 msgstr "absolut"
 
-#: ags/app/editor/ags_crop_note_dialog.c:203
+#: ags/app/editor/ags_crop_note_dialog.c:168
 msgid "in-place"
 msgstr "vor Ort"
 
-#: ags/app/editor/ags_crop_note_dialog.c:211
+#: ags/app/editor/ags_crop_note_dialog.c:176
 msgid "do resize"
 msgstr "grösse ändern"
 
-#: ags/app/editor/ags_crop_note_dialog.c:225
+#: ags/app/editor/ags_crop_note_dialog.c:190
 msgid "crop note"
 msgstr "Noten scheren"
 
-#: ags/app/editor/ags_crop_note_dialog.c:250
+#: ags/app/editor/ags_crop_note_dialog.c:215
 msgid "padding note"
 msgstr "Noten Abstand"
 
@@ -1245,20 +1245,20 @@ msgstr "Mapping umkehren"
 msgid "shift piano"
 msgstr "Klavier schieben"
 
-#: ags/app/editor/ags_move_note_dialog.c:185
+#: ags/app/editor/ags_move_note_dialog.c:150
 #: ags/app/editor/ags_notation_toolbar.c:529
 msgid "move notes"
 msgstr "Noten bewegen"
 
-#: ags/app/editor/ags_move_note_dialog.c:196
+#: ags/app/editor/ags_move_note_dialog.c:161
 msgid "relative"
 msgstr "relativ"
 
-#: ags/app/editor/ags_move_note_dialog.c:218
+#: ags/app/editor/ags_move_note_dialog.c:183
 msgid "move x"
 msgstr "bewege x"
 
-#: ags/app/editor/ags_move_note_dialog.c:243
+#: ags/app/editor/ags_move_note_dialog.c:208
 msgid "move y"
 msgstr "bewege y"
 
@@ -1282,7 +1282,7 @@ msgid "Invert"
 msgstr "Invertieren"
 
 #: ags/app/editor/ags_notation_toolbar.c:535
-#: ags/app/editor/ags_select_note_dialog.c:185
+#: ags/app/editor/ags_select_note_dialog.c:150
 msgid "select notes"
 msgstr "Noten auswählen"
 
@@ -1324,81 +1324,81 @@ msgstr "x Anfang"
 msgid "x end"
 msgstr "x Ende"
 
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:191
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:156
 msgid "position automation cursor"
 msgstr "positioniere Wagenlauf"
 
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:201
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:198
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:201
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:166
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:163
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:166
 msgid "set focus"
 msgstr "setze Fokus"
 
-#: ags/app/editor/ags_position_automation_cursor_dialog.c:217
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:214
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:217
+#: ags/app/editor/ags_position_automation_cursor_dialog.c:182
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:179
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:182
 msgid "position x"
 msgstr "positioniere x"
 
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:188
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:153
 msgid "position notation cursor"
 msgstr "positioniere Notation's Wagenlauf"
 
-#: ags/app/editor/ags_position_notation_cursor_dialog.c:239
+#: ags/app/editor/ags_position_notation_cursor_dialog.c:204
 msgid "position y"
 msgstr "positioniere y"
 
-#: ags/app/editor/ags_position_wave_cursor_dialog.c:191
+#: ags/app/editor/ags_position_wave_cursor_dialog.c:156
 msgid "position wave cursor"
 msgstr "positioniere Wellenform Wakenlauf"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:213
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:178
 msgid "ramp x0"
 msgstr "x0 rampen"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:240
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:205
 msgid "ramp y0"
 msgstr "y0 rampen"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:265
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:230
 msgid "ramp x1"
 msgstr "x1 rampen"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:292
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:257
 msgid "ramp y1"
 msgstr "y1 rampen"
 
-#: ags/app/editor/ags_ramp_acceleration_dialog.c:317
+#: ags/app/editor/ags_ramp_acceleration_dialog.c:282
 msgid "ramp step count"
 msgstr "Rampen Schrittanzahl"
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:200
-#: ags/app/editor/ags_select_buffer_dialog.c:199
-#: ags/app/editor/ags_select_note_dialog.c:195
+#: ags/app/editor/ags_select_acceleration_dialog.c:165
+#: ags/app/editor/ags_select_buffer_dialog.c:164
+#: ags/app/editor/ags_select_note_dialog.c:160
 msgid "copy selection"
 msgstr "kopiere Auswahl"
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:231
-#: ags/app/editor/ags_select_buffer_dialog.c:215
-#: ags/app/editor/ags_select_note_dialog.c:211
+#: ags/app/editor/ags_select_acceleration_dialog.c:196
+#: ags/app/editor/ags_select_buffer_dialog.c:180
+#: ags/app/editor/ags_select_note_dialog.c:176
 msgid "select x0"
 msgstr "x0 auswählen"
 
-#: ags/app/editor/ags_select_acceleration_dialog.c:258
-#: ags/app/editor/ags_select_buffer_dialog.c:242
-#: ags/app/editor/ags_select_note_dialog.c:261
+#: ags/app/editor/ags_select_acceleration_dialog.c:223
+#: ags/app/editor/ags_select_buffer_dialog.c:207
+#: ags/app/editor/ags_select_note_dialog.c:226
 msgid "select x1"
 msgstr "x1 auswählen"
 
-#: ags/app/editor/ags_select_buffer_dialog.c:188
+#: ags/app/editor/ags_select_buffer_dialog.c:153
 msgid "select buffers"
 msgstr "selektioniere Puffer"
 
-#: ags/app/editor/ags_select_note_dialog.c:236
+#: ags/app/editor/ags_select_note_dialog.c:201
 msgid "select y0"
 msgstr "y0 selektionieren"
 
-#: ags/app/editor/ags_select_note_dialog.c:286
+#: ags/app/editor/ags_select_note_dialog.c:251
 msgid "select y1"
 msgstr "y1 selektionieren"
 

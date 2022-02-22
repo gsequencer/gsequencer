@@ -246,8 +246,8 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
 
   /* wave */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Sheet"));
-  //  gtk_widget_set_sensitive(item,
-  //			   FALSE);
+  gtk_widget_set_sensitive(item,
+  			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   /* meta data */

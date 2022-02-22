@@ -7716,14 +7716,14 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 									     filename, effect);
 
 		if(plugin == NULL){
-		  effect_list_child = effect_list_child->next;
-		  
 		  if(filename != NULL &&
 		     strlen(filename) > 0){
-		    g_warning("unable to open plugin %s %s", filename, effect);
-		  }
+		    effect_list_child = effect_list_child->next;
 		  
-		  continue;
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  
+		    continue;
+		  }
 		}
 	      }
 
@@ -8737,14 +8737,14 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 									     filename, effect);
 
 		if(plugin == NULL){
-		  effect_list_child = effect_list_child->next;
-		  
 		  if(filename != NULL &&
 		     strlen(filename) > 0){
-		    g_warning("unable to open plugin %s %s", filename, effect);
-		  }
+		    effect_list_child = effect_list_child->next;
 		  
-		  continue;
+		    g_warning("unable to open plugin %s %s", filename, effect);
+		  
+		    continue;
+		  }
 		}
 	      }
 	      
