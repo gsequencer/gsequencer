@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,23 +35,34 @@ void ags_cartesian_get_property(GObject *gobject,
 void ags_cartesian_finalize(GObject *gobject);
 void ags_cartesian_show(GtkWidget *widget);
 
-void ags_cartesian_map(GtkWidget *widget);
 void ags_cartesian_realize(GtkWidget *widget);
+
+void ags_cartesian_measure(GtkWidget *widget,
+			   GtkOrientation orientation,
+			   int for_size,
+			   int *minimum,
+			   int *natural,
+			   int *minimum_baseline,
+			   int *natural_baseline);
 void ags_cartesian_size_allocate(GtkWidget *widget,
-				 GtkAllocation *allocation);
-void ags_cartesian_get_preferred_width(GtkWidget *widget,
-				       gint *minimum_width,
-				       gint *natural_width);
-void ags_cartesian_get_preferred_height(GtkWidget *widget,
-					gint *minimum_height,
-					gint *natural_height);
+				 int width,
+				 int height,
+				 int baseline);
+
+void ags_cartesian_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					       AgsCartesian *cartesian);
+
+void ags_cartesian_snapshot(GtkWidget *widget,
+			    GtkSnapshot *snapshot);
 
 void ags_cartesian_draw_putpixel(guchar *data,
 				 gdouble width, gdouble height,
 				 guint stride,
 				 int x, int y, unsigned long int pixel);
 
-gboolean ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr);
+gboolean ags_cartesian_draw(AgsCartesian *cartesian,
+			    cairo_t *cr,
+			    gboolean is_animation);
 
 /**
  * SECTION:ags_cartesian
@@ -95,7 +106,7 @@ enum{
   PROP_X_UNIT,
   PROP_Y_UNIT,
   PROP_X_LABEL,
-  PROP_Y_LABEL,
+  PROP_Y_LABEL,  
   PROP_X_STEP_DATA,
   PROP_X_STEP_FACTOR,
   PROP_Y_STEP_DATA,
@@ -350,6 +361,186 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 				  param_spec);
 
   /**
+   * AgsCartesian:x-unit-x0:
+   *
+   * The x unit's x0 position.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("x-unit-x0",
+				   "x unit x0",
+				   "The x unit's x0 position",
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_UNIT_X0,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-unit-y0:
+   *
+   * The x unit's y0 position.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("x-unit-y0",
+				   "x unit y0",
+				   "The x unit's y0 position",
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_UNIT_Y0,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-unit-size:
+   *
+   * The x unit's size.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-unit-size",
+				   "x unit size",
+				   "The x unit's size",
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_UNIT_SIZE,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-unit-x0:
+   *
+   * The y unit's x0 position.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("y-unit-x0",
+				   "y unit x0",
+				   "The y unit's x0 position",
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_UNIT_X0,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-unit-y0:
+   *
+   * The y unit's y0 position.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("y-unit-y0",
+				   "y unit y0",
+				   "The y unit's y0 position",
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_UNIT_Y0,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-unit-size:
+   *
+   * The y unit's size.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-unit-size",
+				   "y unit size",
+				   "The y unit's size",
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_UNIT_SIZE,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-label-start:
+   *
+   * The x label start position.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("x-label-start",
+				   "x label start",
+				   "The x label start position",
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_CARTESIAN_DEFAULT_X_LABEL_START,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_LABEL_START,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-label-step-width:
+   *
+   * The x label step width.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("x-label-step-width",
+				   "x label step width",
+				   "The x label step width",
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_LABEL_STEP_WIDTH,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-label-start:
+   *
+   * The y label start position.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("y-label-start",
+				   "y label start",
+				   "The y label start position",
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_CARTESIAN_DEFAULT_Y_LABEL_START,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_LABEL_START,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-label-step-height:
+   *
+   * The y label step height.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_double("y-label-step-height",
+				   "y label step height",
+				   "The y label step height",
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_LABEL_STEP_HEIGHT,
+				  param_spec);
+  
+  /**
    * AgsCartesian:x-step:
    *
    * The x step.
@@ -457,41 +648,6 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 				  PROP_Y_END,
 				  param_spec);
 
-  /**
-   * AgsCartesian:x-unit-x0:
-   *
-   * The x unit's x0 position.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("x-unit-x0",
-				   "x unit x0",
-				   "The x unit's x0 position",
-				   0.0,
-				   G_MAXDOUBLE,
-				   0.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_X_UNIT_X0,
-				  param_spec);
-
-  /**
-   * AgsCartesian:x-unit-y0:
-   *
-   * The x unit's y0 position.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("x-unit-y0",
-				   "x unit y0",
-				   "The x unit's y0 position",
-				   0.0,
-				   G_MAXDOUBLE,
-				   0.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_X_UNIT_Y0,
-				  param_spec);
 
   /**
    * AgsCartesian:x-unit:
@@ -507,43 +663,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X_UNIT,
-				  param_spec);
-  
-  /**
-   * AgsCartesian:y-unit-x0:
-   *
-   * The y unit's x0 position.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("y-unit-x0",
-				   "y unit x0",
-				   "The y unit's x0 position",
-				   0.0,
-				   G_MAXDOUBLE,
-				   0.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_Y_UNIT_X0,
-				  param_spec);
-
-  /**
-   * AgsCartesian:y-unit-y0:
-   *
-   * The y unit's y0 position.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("y-unit-y0",
-				   "y unit y0",
-				   "The y unit's y0 position",
-				   0.0,
-				   G_MAXDOUBLE,
-				   0.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_Y_UNIT_Y0,
-				  param_spec);
+				  param_spec);  
   
   /**
    * AgsCartesian:y-unit:
@@ -562,42 +682,6 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 				  param_spec);
 
   /**
-   * AgsCartesian:x-label-start:
-   *
-   * The x label start position.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("x-label-start",
-				   "x label start",
-				   "The x label start position",
-				   0.0,
-				   G_MAXDOUBLE,
-				   AGS_CARTESIAN_DEFAULT_X_LABEL_START,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_X_LABEL_START,
-				  param_spec);
-
-  /**
-   * AgsCartesian:x-label-step-width:
-   *
-   * The x label step width.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("x-label-step-width",
-				   "x label step width",
-				   "The x label step width",
-				   0.0,
-				   G_MAXDOUBLE,
-				   AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_X_LABEL_STEP_WIDTH,
-				  param_spec);
-
-  /**
    * AgsCartesian:x-label:
    *
    * The x labels as a string array.
@@ -610,42 +694,6 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X_LABEL,
-				  param_spec);
-
-  /**
-   * AgsCartesian:y-label-start:
-   *
-   * The y label start position.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("y-label-start",
-				   "y label start",
-				   "The y label start position",
-				   0.0,
-				   G_MAXDOUBLE,
-				   AGS_CARTESIAN_DEFAULT_Y_LABEL_START,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_Y_LABEL_START,
-				  param_spec);
-
-  /**
-   * AgsCartesian:y-label-step-height:
-   *
-   * The y label step height.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_double("y-label-step-height",
-				   "y label step height",
-				   "The y label step height",
-				   0.0,
-				   G_MAXDOUBLE,
-				   AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_Y_LABEL_STEP_HEIGHT,
 				  param_spec);
 
   /**
@@ -663,16 +711,366 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 				  PROP_Y_LABEL,
 				  param_spec);
 
+  /**
+   * AgsCartesian:x-step-data:
+   *
+   * The data to pass to x step conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("x-step-data",
+				    "x step data",
+				    "The x step conversion data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_STEP_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-step-factor:
+   *
+   * The step factor to use with x step conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-step-factor",
+				   "x step factor",
+				   "The x step conversion factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_STEP_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-step-data:
+   *
+   * The data to pass to y step conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("y-step-data",
+				    "y step data",
+				    "The y step conversion data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_STEP_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-step-factor:
+   *
+   * The step factor to use with y step conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-step-factor",
+				   "y step factor",
+				   "The y step conversion factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_STEP_FACTOR,
+				  param_spec);
+  
+  /**
+   * AgsCartesian:translate-data:
+   *
+   * The data to pass to translate function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("translate-data",
+				    "translate data",
+				    "The translate data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TRANSLATE_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-translate-point:
+   *
+   * The x translate point.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-translate-point",
+				   "x translate point",
+				   "The x translate point",
+				   -1.0 * G_MAXDOUBLE,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_TRANSLATE_POINT,
+				  param_spec);
+  
+  /**
+   * AgsCartesian:y-translate-point:
+   *
+   * The y translate point.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-translate-point",
+				   "y translate point",
+				   "The y translate point",
+				   -1.0 * G_MAXDOUBLE,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_TRANSLATE_POINT,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-scale-data:
+   *
+   * The data to pass to x scale conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("x-scale-data",
+				    "x scale data",
+				    "The x scale conversion data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_SCALE_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-small-scale-factor:
+   *
+   * The scale factor to use with x small scale function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-small-scale-factor",
+				   "x small scale factor",
+				   "The x small scale factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_SMALL_SCALE_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-big-scale-factor:
+   *
+   * The scale factor to use with x big scale function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-big-scale-factor",
+				   "x big scale factor",
+				   "The x big scale factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   5.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_BIG_SCALE_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-scale-data:
+   *
+   * The data to pass to y scale conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("y-scale-data",
+				    "y scale data",
+				    "The y scale conversion data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_SCALE_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-small-scale-factor:
+   *
+   * The scale factor to use with y small scale function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-small-scale-factor",
+				   "y small scale factor",
+				   "The y small scale factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_SMALL_SCALE_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-big-scale-factor:
+   *
+   * The scale factor to use with y big scale function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-big-scale-factor",
+				   "y big scale factor",
+				   "The y big scale factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   5.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_BIG_SCALE_FACTOR,
+				  param_spec);
+ 
+  /**
+   * AgsCartesian:x-label-data:
+   *
+   * The data to pass to x label conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("x-label-data",
+				    "x label data",
+				    "The x label conversion data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_LABEL_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-label-factor:
+   *
+   * The factor to use with x label function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-label-factor",
+				   "x label factor",
+				   "The x label factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   5.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_LABEL_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsCartesian:x-label-precision:
+   *
+   * The precision to use with x label function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("x-label-precision",
+				   "x label precision",
+				   "The x label precision",
+				   0.0,
+				   G_MAXDOUBLE,
+				   3.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_LABEL_PRECISION,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-label-data:
+   *
+   * The data to pass to y label conversion function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("y-label-data",
+				    "y label data",
+				    "The y label conversion data",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_LABEL_DATA,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-label-factor:
+   *
+   * The factor to use with y label function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-label-factor",
+				   "y label factor",
+				   "The y label factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   5.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_LABEL_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsCartesian:y-label-precision:
+   *
+   * The precision to use with y label function.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("y-label-precision",
+				   "y label precision",
+				   "The y label precision",
+				   0.0,
+				   G_MAXDOUBLE,
+				   3.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y_LABEL_PRECISION,
+				  param_spec);
+ 
+  /**
+   * AgsCartesian:surface:
+   *
+   * The cairo surface.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("surface",
+				    "surface",
+				    "The cairo surface",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SURFACE,
+				  param_spec);
+
+  /**
+   * AgsCartesian:plot:
+   *
+   * The #GList-struct containig #AgsPlot.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_pointer("plot",
+				    "plot",
+				    "The cairo plot",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLOT,
+				  param_spec);
+
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) cartesian;
 
-  //  widget->map = ags_cartesian_map;
   widget->realize = ags_cartesian_realize;
+
+  widget->measure = ags_cartesian_measure;
   widget->size_allocate = ags_cartesian_size_allocate;
-  widget->get_preferred_width = ags_cartesian_get_preferred_width;
-  widget->get_preferred_height = ags_cartesian_get_preferred_height;
-  widget->show = ags_cartesian_show;
-  widget->draw = ags_cartesian_draw;
+  
+  widget->snapshot = ags_cartesian_snapshot;
 }
 
 void
@@ -680,10 +1078,6 @@ ags_cartesian_init(AgsCartesian *cartesian)
 {
   guint i, i_stop;
   
-  g_object_set(G_OBJECT(cartesian),
-	       "app-paintable", TRUE,
-	       NULL);
-
   /* flags */
   cartesian->flags = (AGS_CARTESIAN_ABSCISSAE |
 		      AGS_CARTESIAN_ORDINATE |
@@ -821,7 +1215,302 @@ ags_cartesian_set_property(GObject *gobject,
 			   const GValue *value,
 			   GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsCartesian *cartesian;
+
+  cartesian = (AgsCartesian *) gobject;
+
+  switch(prop_id){
+  case PROP_X_MARGIN:
+  {
+    cartesian->x_margin = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_MARGIN:
+  {
+    cartesian->y_margin = g_value_get_double(value);
+  }
+  break;
+  case PROP_CENTER:
+  {
+    cartesian->center = g_value_get_double(value);
+  }
+  break;
+  case PROP_LINE_WIDTH:
+  {
+    cartesian->line_width = g_value_get_double(value);
+  }
+  break;
+  case PROP_POINT_RADIUS:
+  {
+    cartesian->point_radius = g_value_get_double(value);
+  }
+  break;
+  case PROP_FONT_SIZE:
+  {
+    cartesian->font_size = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_STEP_WIDTH:
+  {
+    cartesian->x_step_width = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_STEP_HEIGHT:
+  {
+    cartesian->y_step_height = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_SCALE_STEP_WIDTH:
+  {
+    cartesian->x_scale_step_width = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_SCALE_STEP_HEIGHT:
+  {
+    cartesian->y_scale_step_height = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_UNIT_X0:
+  {
+    cartesian->x_unit_x0 = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_UNIT_Y0:
+  {
+    cartesian->x_unit_y0 = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_UNIT_SIZE:
+  {
+    cartesian->x_unit_size = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_UNIT_X0:
+  {
+    cartesian->y_unit_x0 = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_UNIT_Y0:
+  {
+    cartesian->y_unit_y0 = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_UNIT_SIZE:
+  {
+    cartesian->y_unit_size = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_LABEL_START:
+  {
+    cartesian->x_label_start = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_LABEL_STEP_WIDTH:
+  {
+    cartesian->x_label_step_width = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_LABEL_START:
+  {
+    cartesian->y_label_start = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_LABEL_STEP_HEIGHT:
+  {
+    cartesian->y_label_step_height = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_STEP:
+  {
+    cartesian->x_step = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_STEP:
+  {
+    cartesian->y_step = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_START:
+  {
+    cartesian->x_start = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_END:
+  {
+    cartesian->x_end = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_START:
+  {
+    cartesian->y_start = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_END:
+  {
+    cartesian->y_end = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_UNIT:
+  {
+    gchar *x_unit;
+    
+    x_unit = g_value_get_string(value);
+
+    g_free(cartesian->x_unit);
+
+    cartesian->x_unit = g_strdup(x_unit);
+  }
+  break;
+  case PROP_Y_UNIT:
+  {
+    gchar *y_unit;
+    
+    y_unit = g_value_get_string(value);
+
+    g_free(cartesian->y_unit);
+
+    cartesian->y_unit = g_strdup(y_unit);
+  }
+  break;
+  case PROP_X_LABEL:
+  {
+    gchar **x_label;
+
+    x_label = g_value_get_pointer(value);
+    
+    g_strfreev(cartesian->x_label);
+
+    cartesian->x_label = g_strdupv(x_label);
+  }
+  break;
+  case PROP_Y_LABEL:
+  {
+    gchar **y_label;
+
+    y_label = g_value_get_pointer(value);
+    
+    g_strfreev(cartesian->y_label);
+
+    cartesian->y_label = g_strdupv(y_label);
+  }
+  break;  
+  case PROP_X_STEP_DATA:
+  {
+    cartesian->x_step_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_X_STEP_FACTOR:
+  {
+    cartesian->x_step_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_STEP_DATA:
+  {
+    cartesian->y_step_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_Y_STEP_FACTOR:
+  {
+    cartesian->y_step_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_TRANSLATE_DATA:
+  {
+    cartesian->translate_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_X_TRANSLATE_POINT:
+  {
+    cartesian->x_translate_point = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_TRANSLATE_POINT:
+  {
+    cartesian->y_translate_point = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_SCALE_DATA:
+  {
+    cartesian->x_scale_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_X_SMALL_SCALE_FACTOR:
+  {
+    cartesian->x_small_scale_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_BIG_SCALE_FACTOR:
+  {
+    cartesian->x_big_scale_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_SCALE_DATA:
+  {
+    cartesian->y_scale_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_Y_SMALL_SCALE_FACTOR:
+  {
+    cartesian->y_small_scale_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_BIG_SCALE_FACTOR:
+  {
+    cartesian->y_big_scale_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_LABEL_DATA:
+  {
+    cartesian->x_label_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_X_LABEL_FACTOR:
+  {
+    cartesian->x_label_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_X_LABEL_PRECISISON:
+  {
+    cartesian->x_precision_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_LABEL_DATA:
+  {
+    cartesian->y_label_data = g_value_get_pointer(value);
+  }
+  break;
+  case PROP_Y_LABEL_FACTOR:
+  {
+    cartesian->y_label_factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_Y_LABEL_PRECISISON:
+  {
+    cartesian->y_label_precision = g_value_get_double(value);
+  }
+  break;
+  case PROP_SURFACE:
+  {
+    cairo_surface_t *surface;
+    
+    surface = g_value_get_pointer(value);
+
+    if(surface != cartesian->surface){
+      cairo_surface_destroy(cartesian->surface);
+
+      cartesian->surface = surface;
+    }
+  }
+  break;
+  case PROP_PLOT:
+  {
+    cartesian->plot = g_value_get_pointer(value);
+  }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -830,7 +1519,270 @@ ags_cartesian_get_property(GObject *gobject,
 			   GValue *value,
 			   GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsCartesian *cartesian;
+
+  cartesian = (AgsCartesian *) gobject;
+
+  switch(prop_id){
+  case PROP_X_MARGIN:
+  {
+    g_value_set_double(value, cartesian->x_margin);
+  }
+  break;
+  case PROP_Y_MARGIN:
+  {
+    g_value_set_double(value, cartesian->y_margin);
+  }
+  break;
+  case PROP_CENTER:
+  {
+    g_value_set_double(value, cartesian->center);
+  }
+  break;
+  case PROP_LINE_WIDTH:
+  {
+    g_value_set_double(value, cartesian->line_width);
+  }
+  break;
+  case PROP_POINT_RADIUS:
+  {
+    g_value_set_double(value, cartesian->point_radius);
+  }
+  break;
+  case PROP_FONT_SIZE:
+  {
+    g_value_set_double(value, cartesian->font_size);
+  }
+  break;
+  case PROP_X_STEP_WIDTH:
+  {
+    g_value_set_double(value, cartesian->x_step_width);
+  }
+  break;
+  case PROP_Y_STEP_HEIGHT:
+  {
+    g_value_set_double(value, cartesian->y_step_height);
+  }
+  break;
+  case PROP_X_SCALE_STEP_WIDTH:
+  {
+    g_value_set_double(value, cartesian->x_scale_step_width);
+  }
+  break;
+  case PROP_Y_SCALE_STEP_HEIGHT:
+  {
+    g_value_set_double(value, cartesian->y_scale_step_height);
+  }
+  break;
+  case PROP_X_UNIT_X0:
+  {
+    g_value_set_double(value, cartesian->x_unit_x0);
+  }
+  break;
+  case PROP_X_UNIT_Y0:
+  {
+    g_value_set_double(value, cartesian->x_unit_y0);
+  }
+  break;
+  case PROP_X_UNIT_SIZE:
+  {
+    g_value_set_double(value, cartesian->x_unit_size);
+  }
+  break;
+  case PROP_Y_UNIT_X0:
+  {
+    g_value_set_double(value, cartesian->y_unit_x0);
+  }
+  break;
+  case PROP_Y_UNIT_Y0:
+  {
+    g_value_set_double(value, cartesian->y_unit_y0);
+  }
+  break;
+  case PROP_Y_UNIT_SIZE:
+  {
+    g_value_set_double(value, cartesian->y_unit_size);
+  }
+  break;
+  case PROP_X_LABEL_START:
+  {
+    g_value_set_double(value, cartesian->x_label_start);
+  }
+  break;
+  case PROP_X_LABEL_STEP_WIDTH:
+  {
+    g_value_set_double(value, cartesian->x_label_step_width);
+  }
+  break;
+  case PROP_Y_LABEL_START:
+  {
+    g_value_set_double(value, cartesian->y_label_start);
+  }
+  break;
+  case PROP_Y_LABEL_STEP_HEIGHT:
+  {
+    g_value_set_double(value, cartesian->y_label_step_height);
+  }
+  break;
+  case PROP_X_STEP:
+  {
+    g_value_set_double(value, cartesian->x_step);
+  }
+  break;
+  case PROP_Y_STEP:
+  {
+    g_value_set_double(value, cartesian->y_step);
+  }
+  break;
+  case PROP_X_START:
+  {
+    g_value_set_double(value, cartesian->x_start);
+  }
+  break;
+  case PROP_X_END:
+  {
+    g_value_set_double(value, cartesian->x_end);
+  }
+  break;
+  case PROP_Y_START:
+  {
+    g_value_set_double(value, cartesian->y_start);
+  }
+  break;
+  case PROP_Y_END:
+  {
+    g_value_set_double(value, cartesian->y_end);
+  }
+  break;
+  case PROP_X_UNIT:
+  {
+    g_value_set_string(value, cartesian->x_unit);
+  }
+  break;
+  case PROP_Y_UNIT:
+  {
+    g_value_set_string(value, cartesian->y_unit);
+  }
+  break;
+  case PROP_X_LABEL:
+  {
+    g_value_set_pointer(value, cartesian->x_label);
+  }
+  break;
+  case PROP_Y_LABEL:
+  {
+    g_value_set_pointer(value, cartesian->y_label);
+  }
+  break;  
+  case PROP_X_STEP_DATA:
+  {
+    g_value_set_pointer(value, cartesian->x_step_data);
+  }
+  break;
+  case PROP_X_STEP_FACTOR:
+  {
+    g_value_set_double(value, cartesian->x_step_factor);
+  }
+  break;
+  case PROP_Y_STEP_DATA:
+  {
+    g_value_set_pointer(value, cartesian->y_step_data);
+  }
+  break;
+  case PROP_Y_STEP_FACTOR:
+  {
+    g_value_set_double(value, cartesian->y_step_factor);
+  }
+  break;
+  case PROP_TRANSLATE_DATA:
+  {
+    g_value_set_pointer(value, cartesian->translate_data);
+  }
+  break;
+  case PROP_X_TRANSLATE_POINT:
+  {
+    g_value_set_double(value, cartesian->x_translate_point);
+  }
+  break;
+  case PROP_Y_TRANSLATE_POINT:
+  {
+    g_value_set_double(value, cartesian->y_translate_point);
+  }
+  break;
+  case PROP_X_SCALE_DATA:
+  {
+    g_value_set_pointer(value, cartesian->x_scale_data);
+  }
+  break;
+  case PROP_X_SMALL_SCALE_FACTOR:
+  {
+    g_value_set_double(value, cartesian->x_small_scale_factor);
+  }
+  break;
+  case PROP_X_BIG_SCALE_FACTOR:
+  {
+    g_value_set_double(value, cartesian->x_big_scale_factor);
+  }
+  break;
+  case PROP_Y_SCALE_DATA:
+  {
+    g_value_set_pointer(value, cartesian->y_scale_data);
+  }
+  break;
+  case PROP_Y_SMALL_SCALE_FACTOR:
+  {
+    g_value_set_double(value, cartesian->y_small_scale_factor);
+  }
+  break;
+  case PROP_Y_BIG_SCALE_FACTOR:
+  {
+    g_value_set_double(value, cartesian->y_big_scale_factor);
+  }
+  break;
+  case PROP_X_LABEL_DATA:
+  {
+    g_value_set_pointer(value, cartesian->x_label_data);
+  }
+  break;
+  case PROP_X_LABEL_FACTOR:
+  {
+    g_value_set_double(value, cartesian->x_label_factor);
+  }
+  break;
+  case PROP_X_LABEL_PRECISISON:
+  {
+    g_value_set_double(value, cartesian->x_label_precision);
+  }
+  break;
+  case PROP_Y_LABEL_DATA:
+  {
+    g_value_set_pointer(value, cartesian->y_label_data);
+  }
+  break;
+  case PROP_Y_LABEL_FACTOR:
+  {
+    g_value_set_double(value, cartesian->y_label_factor);
+  }
+  break;
+  case PROP_Y_LABEL_PRECISISON:
+  {
+    g_value_set_double(value, cartesian->y_label_precision);
+  }
+  break;
+  case PROP_SURFACE:
+  {
+    g_value_set_pointer(value, cartesian->surface);
+  }
+  break;
+  case PROP_PLOT:
+  {
+    g_value_set_pointer(value, cartesian->plot);
+  }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -842,102 +1794,84 @@ ags_cartesian_finalize(GObject *gobject)
 }
 
 void
-ags_cartesian_map(GtkWidget *widget)
-{
-  if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
-    GTK_WIDGET_CLASS(ags_cartesian_parent_class)->map(widget);
-    
-    gdk_window_show(gtk_widget_get_window(widget));
-//    ags_cartesian_draw((AgsCartesian *) widget);
-  }
-}
-
-void
 ags_cartesian_realize(GtkWidget *widget)
 {
-  AgsCartesian *cartesian;
-
-  GdkWindow *window;
+  GdkFrameClock *frame_clock;
   
-  GtkAllocation allocation;
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->realize(widget);
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
   
-  GdkWindowAttr attributes;
+  g_signal_connect(frame_clock, "update", 
+		   G_CALLBACK(ags_cartesian_frame_clock_update_callback), widget);
 
-  gint attributes_mask;
-
-  g_return_if_fail(widget != NULL);
-  g_return_if_fail(AGS_IS_CARTESIAN(widget));
-
-  cartesian = AGS_CARTESIAN(widget);
-
-  gtk_widget_set_realized(widget, TRUE);
-
-  /*  */
-  attributes.window_type = GDK_WINDOW_CHILD;
-
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  attributes.x = allocation.x;
-  attributes.y = allocation.y;
-  attributes.width = allocation.width;
-  attributes.height = allocation.height;
-
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
-
-  attributes.window_type = GDK_WINDOW_CHILD;
-
-  attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK);
-
-  window = gdk_window_new(gtk_widget_get_parent_window (widget),
-			  &attributes, attributes_mask);
-  gtk_widget_set_window(widget, window);
-  gdk_window_set_user_data(window, cartesian);
-
-  gtk_widget_queue_resize(widget);
+  gdk_frame_clock_begin_updating(frame_clock);
 }
 
 void
-ags_cartesian_show(GtkWidget *widget)
+ags_cartesian_measure(GtkWidget *widget,
+		      GtkOrientation orientation,
+		      int for_size,
+		      int *minimum,
+		      int *natural,
+		      int *minimum_baseline,
+		      int *natural_baseline)
 {
-  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->show(widget);
+  //TODO:JK: implement me
 }
 
 void
 ags_cartesian_size_allocate(GtkWidget *widget,
-			    GtkAllocation *allocation)
+			    int width,
+			    int height,
+			    int baseline)
 {
-  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->size_allocate(widget,
-							      allocation);
-
   //TODO:JK: implement me
 }
 
 void
-ags_cartesian_get_preferred_width(GtkWidget *widget,
-				  gint *minimum_width,
-				  gint *natural_width)
+ags_cartesian_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					  AgsCartesian *cartesian)
 {
-  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->get_preferred_width(widget,
-								    minimum_width,
-								    natural_width);
-
-  //TODO:JK: implement me
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 }
 
 void
-ags_cartesian_get_preferred_height(GtkWidget *widget,
-				   gint *minimum_height,
-				   gint *natural_height)
+ags_cartesian_snapshot(GtkWidget *widget,
+		       GtkSnapshot *snapshot)
 {
-  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->get_preferred_height(widget,
-								     minimum_height,
-								     natural_height);
+  GtkStyleContext *style_context;
 
-  //TODO:JK: implement me
+  cairo_t *cr;
+
+  graphene_rect_t rect;
+  
+  int width, height;
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+  width = gtk_widget_get_width(widget);
+  height = gtk_widget_get_height(widget);
+  
+  graphene_rect_init(&rect,
+		     0.0, 0.0,
+		     (float) width, (float) height);
+  
+  cr = gtk_snapshot_append_cairo(snapshot,
+				 &rect);
+  
+  /* clear bg */
+  gtk_render_background(style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) width, (gdouble) height);
+
+  ags_cartesian_draw((AgsCartesian *) widget,
+		     cr,
+		     TRUE);
+  
+  cairo_destroy(cr);
 }
 
 void
@@ -972,7 +1906,9 @@ ags_cartesian_draw_putpixel(guchar *data,
 }
 
 gboolean
-ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
+ags_cartesian_draw(AgsCartesian *cartesian,
+		   cairo_t *cr,
+		   gboolean is_animation)
 {
   GtkWidget *widget;
 

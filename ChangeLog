@@ -2,6 +2,8 @@ ags (4.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: migrated to Gtk-4
+	* implemented AgsCartesian properties
+	* fixed typo in ags_function.h
 
 ags (3.18.2)
 

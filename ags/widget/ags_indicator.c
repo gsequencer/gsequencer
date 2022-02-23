@@ -48,7 +48,7 @@ void ags_indicator_size_allocate(GtkWidget *widget,
 void ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					       AgsIndicator *indicator);
 
-void ags_indicator_snapshot(GtkWidget *indicator,
+void ags_indicator_snapshot(GtkWidget *widget,
 			    GtkSnapshot *snapshot);
 
 void ags_indicator_draw(AgsIndicator *indicator,
@@ -462,11 +462,11 @@ void
 ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					  AgsIndicator *indicator)
 {
-  gtk_widget_queue_draw(indicator);
+  gtk_widget_queue_draw((GtkWidget *) indicator);
 }
 
 void
-ags_indicator_snapshot(GtkWidget *indicator,
+ags_indicator_snapshot(GtkWidget *widget,
 		       GtkSnapshot *snapshot)
 {
   GtkStyleContext *style_context;
@@ -477,10 +477,10 @@ ags_indicator_snapshot(GtkWidget *indicator,
   
   int width, height;
   
-  style_context = gtk_widget_get_style_context((GtkWidget *) indicator);  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 
-  width = gtk_widget_get_width(indicator);
-  height = gtk_widget_get_height(indicator);
+  width = gtk_widget_get_width(widget);
+  height = gtk_widget_get_height(widget);
   
   graphene_rect_init(&rect,
 		     0.0, 0.0,
@@ -495,7 +495,7 @@ ags_indicator_snapshot(GtkWidget *indicator,
 			0.0, 0.0,
 			(gdouble) width, (gdouble) height);
 
-  ags_indicator_draw((AgsIndicator *) indicator,
+  ags_indicator_draw((AgsIndicator *) widget,
 		     cr,
 		     TRUE);
   
