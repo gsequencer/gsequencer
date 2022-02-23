@@ -13,7 +13,6 @@ Free Documentation License".
 * FIXME:JK: make indicator orientable
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
-* TODO:JK: implemented AgsFunction and fix typo in header
 * TODO:JK: implemented support for GtkApplication
 * TODO:JK: migrated AgsBasePlugin to GModule
 * TODO:JK: removed AgsMenuBar

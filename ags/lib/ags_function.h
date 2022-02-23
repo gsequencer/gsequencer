@@ -104,7 +104,7 @@ struct _AgsFunctionClass
 
 GType ags_function_get_type(void);
 
-gchar** ags_function_collapse_parantheses(AgsFunction *function,
+gchar** ags_function_collapse_parenthesis(AgsFunction *function,
 					  guint *function_count);
 
 gchar** ags_function_find_literals(AgsFunction *function,

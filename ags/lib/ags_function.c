@@ -454,18 +454,18 @@ ags_function_finalize(GObject *gobject)
 }
 
 /**
- * ags_function_collapse_parantheses:
+ * ags_function_collapse_parenthesis:
  * @function: the @AgsFunction
  * @function_count: (out): return location of count of possible functions
  * 
- * Collapse parantheses by respecting many possibilities.
+ * Collapse parenthesis by respecting many possibilities.
  * 
  * Returns: the one-dimensional array of possible functions as strings
  * 
  * Since: 3.0.0
  */
 gchar**
-ags_function_collapse_parantheses(AgsFunction *function,
+ags_function_collapse_parenthesis(AgsFunction *function,
 				  guint *function_count)
 {
   gchar **target_function;
@@ -497,10 +497,10 @@ ags_function_collapse_parantheses(AgsFunction *function,
 				      &term_open_pos, &term_close_pos,
 				      &term_open_pos_count, &term_close_pos_count);
   
-  /* attempt #0 - first, closed parantheses */
+  /* attempt #0 - first, closed parenthesis */
   //TODO:JK: implement me
 
-  /* attempt #1 - first, innermost parantheses */
+  /* attempt #1 - first, innermost parenthesis */
   //TODO:JK: implement me
 
   if(function_count != NULL){

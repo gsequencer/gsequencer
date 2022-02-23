@@ -2532,7 +2532,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_dial.h \
 	ags/widget/ags_expander.h \
 	ags/widget/ags_expander_set.h \
-	ags/widget/ags_hindicator.h \
 	ags/widget/ags_hled_array.h \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
@@ -2552,7 +2551,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_scrolled_level_box.h \
 	ags/widget/ags_scrolled_scale_box.h \
 	ags/widget/ags_ruler.h \
-	ags/widget/ags_vindicator.h \
 	ags/widget/ags_vled_array.h \
 	ags/widget/ags_viewport.h \
 	ags/widget/ags_widget_marshal.h \
@@ -2566,7 +2564,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_dial.c \
 	ags/widget/ags_expander.c \
 	ags/widget/ags_expander_set.c \
-	ags/widget/ags_hindicator.c \
 	ags/widget/ags_hled_array.c \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
@@ -2585,7 +2582,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_scrolled_scale_box.c \
 	ags/widget/ags_scrolled_level_box.c \
 	ags/widget/ags_ruler.c \
-	ags/widget/ags_vindicator.c \
 	ags/widget/ags_vled_array.c \
 	ags/widget/ags_viewport.c \
 	ags/widget/ags_widget_marshal.c \
