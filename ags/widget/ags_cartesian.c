@@ -1077,6 +1077,12 @@ void
 ags_cartesian_init(AgsCartesian *cartesian)
 {
   guint i, i_stop;
+
+  gtk_widget_set_hexpand(cartesian,
+			 TRUE);
+  
+  gtk_widget_set_vexpand(cartesian,
+			 TRUE);
   
   /* flags */
   cartesian->flags = (AGS_CARTESIAN_ABSCISSAE |
@@ -1944,7 +1950,9 @@ ags_cartesian_draw(AgsCartesian *cartesian,
   guint32 *data_ptr;
 
   gchar *font_name;
-  
+
+  gint widget_width, widget_height;
+  gdouble x_padding, y_padding;
   gdouble x, y;
   gdouble x_offset, y_offset;
   gdouble width, height;
@@ -2009,12 +2017,18 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 		   "#00000040");
   }
   
+  widget_width = gtk_widget_get_width((GtkWidget *) cartesian);
+  widget_height = gtk_widget_get_height((GtkWidget *) cartesian);
+
+  x_padding = (widget_width - (2 * cartesian->x_margin + (cartesian->x_end - cartesian->x_start))) / 2.0;
+  y_padding = (widget_height - (2 * cartesian->y_margin + (cartesian->y_end - cartesian->y_start))) / 2.0;
+  
   /* cartesian offset, width and height */
   width = (cartesian->x_end - cartesian->x_start);
   height = (cartesian->y_end - cartesian->y_start);
 
-  x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
-  y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
+  x_offset = x_padding + cartesian->x_margin - cartesian->x_start - cartesian->center;
+  y_offset = y_padding + cartesian->y_margin + cartesian->y_start + height + cartesian->center;
   
   if(cartesian->surface != NULL){
     /* clear surface */
@@ -2037,7 +2051,7 @@ ags_cartesian_draw(AgsCartesian *cartesian,
     /* surface */
     cairo_set_source_surface(cr,
 			     cartesian->surface,
-			     cartesian->x_margin, cartesian->y_margin);
+			     x_padding + cartesian->x_margin, y_padding + cartesian->y_margin);
 //    cairo_surface_mark_dirty(cartesian->surface);
 
     cairo_paint(cr);
@@ -2536,8 +2550,8 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 			       &logical_rect);  
 
       cairo_move_to(cr,
-		    cartesian->x_margin + cartesian->x_label_start + (i * cartesian->x_label_step_width) + cartesian->font_size / 3.0,
-		    cartesian->y_margin + height + cartesian->y_start + cartesian->font_size + (logical_rect.height / PANGO_SCALE));
+		    x_padding + cartesian->x_margin + cartesian->x_label_start + (i * cartesian->x_label_step_width) + cartesian->font_size / 3.0,
+		    y_padding + cartesian->y_margin + height + cartesian->y_start + cartesian->font_size + (logical_rect.height / PANGO_SCALE));
       
       pango_cairo_show_layout(cr,
 			      layout);
@@ -2575,8 +2589,8 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 			       &logical_rect);  
 
       cairo_move_to(cr,
-		    cartesian->x_margin - cartesian->x_start + cartesian->font_size / 2.0,
-		    cartesian->y_margin + height - cartesian->y_label_start - (i * cartesian->y_label_step_height) - cartesian->font_size / 3.0);
+		    x_padding + cartesian->x_margin - cartesian->x_start + cartesian->font_size / 2.0,
+		    y_padding + cartesian->y_margin + height - cartesian->y_label_start - (i * cartesian->y_label_step_height) - cartesian->font_size / 3.0);
             
       pango_cairo_show_layout(cr,
 			      layout);
@@ -2610,8 +2624,8 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 			     &logical_rect);  
 
     cairo_move_to(cr,
-		  cartesian->x_margin - (logical_rect.width / PANGO_SCALE) - 3.0,
-		  cartesian->y_margin + height + cartesian->y_start);
+		  x_padding + cartesian->x_margin - (logical_rect.width / PANGO_SCALE) - 3.0,
+		  y_padding + cartesian->y_margin + height + cartesian->y_start);
       
     pango_cairo_show_layout(cr,
 			    layout);
@@ -2642,8 +2656,8 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 			     &logical_rect);  
 
     cairo_move_to(cr,
-		  cartesian->x_margin - cartesian->x_start,
-		  cartesian->y_margin + height);
+		  x_padding + cartesian->x_margin - cartesian->x_start,
+		  y_padding + cartesian->y_margin + height);
       
     pango_cairo_show_layout(cr,
 			    layout);

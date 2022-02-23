@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
-#include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_hlevel_box.h>
 #include <ags/widget/ags_hscale_box.h>
 #include <ags/widget/ags_indicator.h>
@@ -44,7 +43,6 @@
 #include <ags/widget/ags_scrolled_level_box.h>
 #include <ags/widget/ags_scrolled_scale_box.h>
 #include <ags/widget/ags_ruler.h>
-#include <ags/widget/ags_vindicator.h>
 #include <ags/widget/ags_vlevel_box.h>
 #include <ags/widget/ags_vscale_box.h>
 #include <ags/widget/ags_viewport.h>
