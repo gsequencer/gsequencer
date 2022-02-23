@@ -20,7 +20,7 @@
 #include "ags_indicator.h"
 
 void ags_indicator_class_init(AgsIndicatorClass *indicator);
-void ags_indicator_orientable_interface_init(AgsOrientableInterface *orientable);
+void ags_indicator_orientable_interface_init(GtkOrientableIface *orientable);
 void ags_indicator_init(AgsIndicator *indicator);
 void ags_indicator_set_property(GObject *gobject,
 				guint prop_id,
@@ -30,25 +30,28 @@ void ags_indicator_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_indicator_snapshot(AgsVIndicator *indicator,
+
+void ags_indicator_realize(GtkWidget *widget);
+
+void ags_indicator_measure(GtkWidget *widget,
+			   GtkOrientation orientation,
+			   int for_size,
+			   int *minimum,
+			   int *natural,
+			   int *minimum_baseline,
+			   int *natural_baseline);
+void ags_indicator_size_allocate(GtkWidget *widget,
+				 int width,
+				 int height,
+				 int baseline);
+
+void ags_indicator_snapshot(GtkWidget *indicator,
 			    GtkSnapshot *snapshot);
 
-void ags__indicator_draw(AgsVIndicator *indicator,
-			 cairo_t *cr,
-			 gboolean is_animation);
+void ags_indicator_draw(AgsIndicator *indicator,
+			cairo_t *cr,
+			gboolean is_animation);
 
-void ags_indicator_show(GtkWidget *widget);
-
-void ags_indicator_map(GtkWidget *widget);
-void ags_indicator_realize(GtkWidget *widget);
-void ags_indicator_size_allocate(GtkWidget *widget,
-				 GtkAllocation *allocation);
-void ags_indicator_get_preferred_width(GtkWidget *widget,
-				       gint *minimal_width,
-				       gint *natural_width);
-void ags_indicator_get_preferred_height(GtkWidget *widget,
-					gint *minimal_height,
-					gint *natural_height);
 
 /**
  * SECTION:ags_indicator
@@ -103,7 +106,7 @@ ags_indicator_get_type(void)
 						0);
     
     g_type_add_interface_static(ags_type_indicator,
-				AGS_TYPE_ORIENTABLE,
+				GTK_TYPE_ORIENTABLE,
 				&ags_orientable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_indicator);
@@ -113,7 +116,7 @@ ags_indicator_get_type(void)
 }
 
 void
-ags_indicator_orientable_interface_init(AgsOrientableInterface *orientable)
+ags_indicator_orientable_interface_init(GtkOrientableIface *orientable)
 {
   //empty
 }
@@ -135,17 +138,6 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
 
   g_object_class_override_property(gobject, PROP_ORIENTATION, "orientation");
   
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) indicator;
-
-  widget->snapshot = ags_indicator_snapshot;
-  
-  widget->realize = ags_indicator_realize;
-  widget->size_allocate = ags_indicator_size_allocate;
-  widget->get_preferred_width = ags_indicator_get_preferred_width;
-  widget->get_preferred_height = ags_indicator_get_preferred_height;
-  widget->show = ags_indicator_show;
-
   /* properties */
   /**
    * AgsIndicator:segment-width:
@@ -234,16 +226,28 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   g_object_class_install_property(gobject,
 				  PROP_ADJUSTMENT,
 				  param_spec);
+  
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) indicator;
+
+  widget->realize = ags_indicator_realize;
+  
+  widget->measure = ags_indicator_measure;
+  widget->size_allocate = ags_indicator_size_allocate;
+  
+  widget->snapshot = ags_indicator_snapshot;
 }
 
 void
 ags_indicator_init(AgsIndicator *indicator)
 {
-  g_object_set(G_OBJECT(indicator),
-	       "app-paintable", TRUE,
-	       NULL);
-
   indicator->orientation = GTK_ORIENTATION_VERTICAL;
+
+  gtk_widget_set_hexpand(indicator,
+			 TRUE);
+  
+  gtk_widget_set_vexpand(indicator,
+			 TRUE);
   
   /* segment alignment */
   indicator->segment_width = AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH;
@@ -276,26 +280,12 @@ ags_indicator_set_property(GObject *gobject,
     orientation = g_value_get_enum(value);
 
     if(orientation != indicator->orientation){
-      GtkLayoutManager *layout;
-
-      layout = gtk_widget_get_layout_manager(GTK_WIDGET(indicator));
-      
-      gtk_orientable_set_orientation(GTK_ORIENTABLE(layout),
-				     orientation);
-
       indicator->orientation = orientation;
-      
-      gtk_widget_update_orientation(GTK_WIDGET(indicator),
-				    indicator->orientation);
       
       gtk_widget_queue_resize(GTK_WIDGET(indicator));
 
       g_object_notify_by_pspec(gobject,
-			       pspec);
-      
-      gtk_accessible_update_property(GTK_ACCESSIBLE(indicator),
-				     GTK_ACCESSIBLE_PROPERTY_ORIENTATION, orientation,
-				     -1);
+			       param_spec);
     }
   }
   break;
@@ -394,112 +384,70 @@ ags_indicator_get_property(GObject *gobject,
 }
 
 void
-ags_indicator_map(GtkWidget *widget)
+ags_indicator_realize(GtkWidget *widget)
+{  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->realize(widget);
+}
+
+void
+ags_indicator_measure(GtkWidget *widget,
+		      GtkOrientation orientation,
+		      int for_size,
+		      int *minimum,
+		      int *natural,
+		      int *minimum_baseline,
+		      int *natural_baseline)
 {
-  if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
-    GTK_WIDGET_CLASS (ags_indicator_parent_class)->map(widget);
-    
-    gdk_window_show(gtk_widget_get_window(widget));
-    //    ags_indicator_draw(widget);
+  AgsIndicator *indicator;
+
+  indicator = (AgsIndicator *) widget;
+  
+  if(orientation == GTK_ORIENTATION_VERTICAL){
+    if(gtk_orientable_get_orientation(GTK_ORIENTABLE(indicator)) == GTK_ORIENTATION_VERTICAL){
+      minimum[0] =
+	natural[0] = indicator->segment_count * indicator->segment_height + (indicator->segment_count - 1) * indicator->segment_padding;
+    }else{
+      minimum[0] = 
+	natural[0] = indicator->segment_height;
+    }
+  }else{
+    if(gtk_orientable_get_orientation(GTK_ORIENTABLE(indicator)) == GTK_ORIENTATION_VERTICAL){
+      minimum[0] = 
+	natural[0] = indicator->segment_width;
+    }else{
+      minimum[0] = 
+	natural[0] = indicator->segment_count * indicator->segment_width + (indicator->segment_count - 1) * indicator->segment_padding;
+    }
   }
 }
 
 void
-ags_indicator_realize(GtkWidget *widget)
+ags_indicator_size_allocate(GtkWidget *widget,
+			    int width,
+			    int height,
+			    int baseline)
 {
   AgsIndicator *indicator;
 
-  GdkWindow *window;
+  indicator = (AgsIndicator *) widget;
 
-  GtkAllocation allocation;
-  GdkWindowAttr attributes;
+  if(gtk_orientable_get_orientation(GTK_ORIENTABLE(indicator)) == GTK_ORIENTATION_VERTICAL){
+    width = indicator->segment_width;
+    height = indicator->segment_count * indicator->segment_height + (indicator->segment_count - 1) * indicator->segment_padding;
+  }else{
+    width = indicator->segment_count * indicator->segment_width + (indicator->segment_count - 1) * indicator->segment_padding;
+    height = indicator->segment_height;
+  }
   
-  gint attributes_mask;
-  gint buttons_width;
-  gint border_left, border_top;
-
-  g_return_if_fail(widget != NULL);
-  g_return_if_fail(AGS_IS_INDICATOR(widget));
-
-  indicator = AGS_INDICATOR(widget);
-
-  gtk_widget_set_realized(widget, TRUE);
-
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  /*  */
-  attributes.window_type = GDK_WINDOW_CHILD;
-  
-  attributes.x = allocation.x;
-  attributes.y = allocation.y;
-  attributes.width = allocation.width;
-  attributes.height = allocation.height;
-
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
-
-  attributes.window_type = GDK_WINDOW_CHILD;
-
-  attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK |
-                            GDK_BUTTON_PRESS_MASK |
-                            GDK_BUTTON_RELEASE_MASK |
-                            GDK_BUTTON1_MOTION_MASK |
-                            GDK_BUTTON3_MOTION_MASK |
-                            GDK_POINTER_MOTION_HINT_MASK |
-                            GDK_POINTER_MOTION_MASK |
-                            GDK_ENTER_NOTIFY_MASK |
-                            GDK_LEAVE_NOTIFY_MASK);
-
-  window = gdk_window_new(gtk_widget_get_parent_window (widget),
-			  &attributes, attributes_mask);
-
-  gtk_widget_register_window(widget, window);
-  gtk_widget_set_window(widget, window);
-
-  gtk_widget_queue_resize(widget);
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->size_allocate(widget,
+							      width,
+							      height,
+							      baseline);
 }
 
 void
-ags_indicator_size_allocate(GtkWidget *widget,
-			    GtkAllocation *allocation)
-{
-  GTK_WIDGET_CLASS(ags_indicator_parent_class)->size_allocate(widget, allocation);
-
-  /* implement me */
-  //TODO:JK:
-}
-
-void
-ags_indicator_get_preferred_width(GtkWidget *widget,
-				  gint *minimal_width,
-				  gint *natural_width)
-{
-  GTK_WIDGET_CLASS(ags_indicator_parent_class)->get_preferred_width(widget,
-								    minimal_width,
-								    natural_width);
-}
-
-void
-ags_indicator_get_preferred_height(GtkWidget *widget,
-				   gint *minimal_height,
-				   gint *natural_height)
-{
-  GTK_WIDGET_CLASS(ags_indicator_parent_class)->get_preferred_height(widget,
-								     minimal_height,
-								     natural_height);
-}
-
-void
-ags_indicator_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_indicator_parent_class)->show(widget);
-}
-
-void
-ags_indicator_snapshot(AgsVIndicator *indicator,
+ags_indicator_snapshot(GtkWidget *indicator,
 		       GtkSnapshot *snapshot)
 {
   cairo_t *cr;
@@ -508,8 +456,8 @@ ags_indicator_snapshot(AgsVIndicator *indicator,
   
   int width, height;
 
-  width = gtk_widget_get_width((GtkWidget *) indicator);
-  height = gtk_widget_get_height((GtkWidget *) indicator);
+  width = gtk_widget_get_width(indicator);
+  height = gtk_widget_get_height(indicator);
   
   graphene_rect_init(&rect,
 		     0.0, 0.0,
@@ -518,15 +466,15 @@ ags_indicator_snapshot(AgsVIndicator *indicator,
   cr = gtk_snapshot_append_cairo(snapshot,
 				 &rect);
 
-  ags_indicator_draw(indicator,
+  ags_indicator_draw((AgsIndicator *) indicator,
 		     cr,
-		     FALSE);
+		     TRUE);
   
   cairo_destroy(cr);
 }
 
 void
-ags_indicator_draw(AgsVIndicator *indicator,
+ags_indicator_draw(AgsIndicator *indicator,
 		   cairo_t *cr,
 		   gboolean is_animation)
 {
@@ -537,6 +485,7 @@ ags_indicator_draw(AgsVIndicator *indicator,
 
   GdkRGBA fg_color;
   GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   GtkOrientation orientation;
 
@@ -549,6 +498,7 @@ ags_indicator_draw(AgsVIndicator *indicator,
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
+  gboolean shadow_success;
   
   style_context = gtk_widget_get_style_context((GtkWidget *) indicator);
   
@@ -556,7 +506,7 @@ ags_indicator_draw(AgsVIndicator *indicator,
 
   dark_theme = TRUE;
   
-  g_object_set(settings,
+  g_object_get(settings,
 	       "gtk-application-prefer-dark-theme", &dark_theme,
 	       NULL);
 
@@ -574,7 +524,7 @@ ags_indicator_draw(AgsVIndicator *indicator,
 
   segment_count = ags_indicator_get_segment_count(indicator);
   
-  if(orientation = GTK_ORIENTATION_VERTICAL){
+  if(orientation == GTK_ORIENTATION_VERTICAL){
     padding_top = (height - (segment_count * segment_height + (segment_count - 1) * segment_padding)) / 2;
     padding_left = (width - segment_width) / 2;
   }else{
@@ -589,14 +539,22 @@ ags_indicator_draw(AgsVIndicator *indicator,
   bg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_bg_color",
 					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
 
   if(!fg_success ||
-     !bg_success){
+     !bg_success ||
+     !shadow_success){
     gdk_rgba_parse(&fg_color,
 		   "#101010");
 
     gdk_rgba_parse(&bg_color,
 		   "#cbd5d9");
+
+    gdk_rgba_parse(&shadow_color,
+		   "#ffffff40");
   }
 
   cairo_push_group(cr);
@@ -610,26 +568,56 @@ ags_indicator_draw(AgsVIndicator *indicator,
   }
 
   cairo_set_source_rgba(cr,
-			bg_color->red,
-			bg_color->green,
-			bg_color->blue,
-			bg_color->alpha);
+			bg_color.red,
+			bg_color.green,
+			bg_color.blue,
+			bg_color.alpha);
     
-  if(orientation = GTK_ORIENTATION_VERTICAL){
+  if(orientation == GTK_ORIENTATION_VERTICAL){
     for(i = 0; i < segment_count; i++){
       cairo_rectangle(cr,
-		      (double) padding_left, (double) padding_top + (height - i * (segment_height + padding) - segment_height),
+		      (double) padding_left, (double) padding_top + (i * (segment_height + segment_padding)),
 		      (double) segment_width, (double) segment_height);	
 
       cairo_fill(cr);
     }
-  }else{
+
+    /* outline */
+    cairo_set_source_rgba(cr,
+			  shadow_color.red,
+			  shadow_color.green,
+			  shadow_color.blue,
+			  shadow_color.alpha);
+      
     for(i = 0; i < segment_count; i++){
       cairo_rectangle(cr,
-		      (double) padding_top + (width - i * (segment_width + padding) - segment_width), (double) padding_top,
+		      (double) padding_left, (double) padding_top + (i * (segment_height + segment_padding)),
+		      (double) segment_width, (double) segment_height);	
+	
+      cairo_stroke(cr);
+    }
+  }else{    
+    for(i = 0; i < segment_count; i++){
+      cairo_rectangle(cr,
+		      (double) padding_left + (i * (segment_width + segment_padding)), (double) padding_top,
 		      (double) segment_width, (double) segment_height);
 
       cairo_fill(cr);
+    }
+
+    /* outline */
+    cairo_set_source_rgba(cr,
+			  shadow_color.red,
+			  shadow_color.green,
+			  shadow_color.blue,
+			  shadow_color.alpha);
+      
+    for(i = 0; i < segment_count; i++){
+      cairo_rectangle(cr,
+		      (double) padding_left + (i * (segment_width + segment_padding)), (double) padding_top,
+		      (double) segment_width, (double) segment_height);
+	
+      cairo_stroke(cr);
     }
   }
 
@@ -637,8 +625,8 @@ ags_indicator_draw(AgsVIndicator *indicator,
     gdouble value;
 
     value = gtk_adjustment_get_value(adjustment);
-        
-    if(!dark_theme){
+    
+    if(!dark_theme){      
       cairo_set_source_rgba(cr,
 			    0.0,
 			    0.0,
@@ -652,23 +640,25 @@ ags_indicator_draw(AgsVIndicator *indicator,
 			    1.0 / 3.0);
     }
     
-    if(orientation = GTK_ORIENTATION_VERTICAL){
+    if(orientation == GTK_ORIENTATION_VERTICAL){
+      /* value fill */
       for(i = 0; i < segment_count; i++){
 	if(value > 0.0 &&
 	   1.0 / value * i < segment_count){
 	  cairo_rectangle(cr,
-			  (double) padding_left, (double) padding_top + (height - i * (segment_height + padding) - segment_height),
-			  (double) segment_width, (double) segment_height);	
+			  (double) padding_left, (double) padding_top + (segment_count * (segment_height + segment_padding) - i * (segment_height + segment_padding)),
+			  (double) segment_width, (double) segment_height);
 	
 	  cairo_fill(cr);
 	}
       }
     }else{
+      /* value fill */
       for(i = 0; i < segment_count; i++){
 	if(value > 0.0 &&
 	   1.0 / value * i < segment_count){
 	  cairo_rectangle(cr,
-			  (double) padding_top + (width - i * (segment_width + padding) - segment_width), (double) padding_top,
+			  (double) padding_left + (i * (segment_width + segment_padding)), (double) padding_top,
 			  (double) segment_width, (double) segment_height);
 
 	  cairo_fill(cr);
@@ -927,10 +917,9 @@ ags_indicator_set_adjustment(AgsIndicator *indicator,
  * @segment_width: the width of one segment
  * @segment_height: the height of one segment
  *
- * Creates an #AgsIndicator. Note, use rather its implementation #AgsVIndicator or
- * #AgsHIndicator.
+ * Creates a new instance of #AgsIndicator.
  *
- * Returns: a new #AgsIndicator
+ * Returns: the new #AgsIndicator
  *
  * Since: 3.0.0
  */
