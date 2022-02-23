@@ -22,17 +22,16 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_indicator.h>
+#include <ags/widget/ags_cartesian.h>
 
 #include <stdlib.h>
 
-gboolean timeout(AgsIndicator *indicator);
+gboolean timeout(AgsCartesian *cartesian);
 
 gboolean
-timeout(AgsIndicator *indicator)
+timeout(AgsCartesian *cartesian)
 {
-  gtk_adjustment_set_value(indicator->adjustment,
-			   1.0 / RAND_MAX * rand());
+  //TODO:JK: implement me
   
   return(G_SOURCE_CONTINUE);
 }
@@ -43,7 +42,7 @@ activate(GtkApplication *app,
 {
   GtkWindow *window;
   GtkGrid *grid;
-  AgsIndicator *indicator;
+  AgsCartesian *cartesian;
 
   window = gtk_application_window_new(app);
 
@@ -51,11 +50,9 @@ activate(GtkApplication *app,
   gtk_window_set_child(window,
 		       grid);
 
-  indicator = ags_indicator_new(GTK_ORIENTATION_VERTICAL,
-				16,
-				7);
+  cartesian = ags_cartesian_new();
   gtk_grid_attach(grid,
-		  indicator,
+		  cartesian,
 		  0, 0,
 		  1, 1);
   
@@ -63,7 +60,7 @@ activate(GtkApplication *app,
 
   g_timeout_add(100,
 		timeout,
-		indicator);
+		cartesian);
 }
 
 int
@@ -73,7 +70,7 @@ main(int argc, char **argv)
 
   int status;
   
-  app = gtk_application_new("org.nongnu.gsequencer.ags_indicator_test",
+  app = gtk_application_new("org.nongnu.gsequencer.ags_cartesian_test",
 			    G_APPLICATION_FLAGS_NONE);
   
   g_signal_connect(app, "activate",

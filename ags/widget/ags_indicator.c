@@ -55,7 +55,6 @@ void ags_indicator_draw(AgsIndicator *indicator,
 			cairo_t *cr,
 			gboolean is_animation);
 
-
 /**
  * SECTION:ags_indicator
  * @short_description: A indicator widget
@@ -561,6 +560,7 @@ ags_indicator_draw(AgsIndicator *indicator,
     padding_left = (width - (segment_count * segment_width + (segment_count - 1) * segment_padding)) / 2;
   }
   
+  /* colors */
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
 					      &fg_color);
