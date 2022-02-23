@@ -45,6 +45,9 @@ void ags_indicator_size_allocate(GtkWidget *widget,
 				 int height,
 				 int baseline);
 
+void ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					       AgsIndicator *indicator);
+
 void ags_indicator_snapshot(GtkWidget *indicator,
 			    GtkSnapshot *snapshot);
 
@@ -385,9 +388,18 @@ ags_indicator_get_property(GObject *gobject,
 
 void
 ags_indicator_realize(GtkWidget *widget)
-{  
+{
+  GdkFrameClock *frame_clock;
+  
   /* call parent */
   GTK_WIDGET_CLASS(ags_indicator_parent_class)->realize(widget);
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_signal_connect(frame_clock, "update", 
+		   G_CALLBACK(ags_indicator_frame_clock_update_callback), widget);
+
+  gdk_frame_clock_begin_updating(frame_clock);
 }
 
 void
@@ -447,14 +459,25 @@ ags_indicator_size_allocate(GtkWidget *widget,
 }
 
 void
+ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					  AgsIndicator *indicator)
+{
+  gtk_widget_queue_draw(indicator);
+}
+
+void
 ags_indicator_snapshot(GtkWidget *indicator,
 		       GtkSnapshot *snapshot)
 {
+  GtkStyleContext *style_context;
+
   cairo_t *cr;
 
   graphene_rect_t rect;
   
   int width, height;
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) indicator);  
 
   width = gtk_widget_get_width(indicator);
   height = gtk_widget_get_height(indicator);
@@ -465,6 +488,12 @@ ags_indicator_snapshot(GtkWidget *indicator,
   
   cr = gtk_snapshot_append_cairo(snapshot,
 				 &rect);
+  
+  /* clear bg */
+  gtk_render_background(style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) width, (gdouble) height);
 
   ags_indicator_draw((AgsIndicator *) indicator,
 		     cr,
@@ -558,14 +587,6 @@ ags_indicator_draw(AgsIndicator *indicator,
   }
 
   cairo_push_group(cr);
-
-  /* clear bg */
-  if(!is_animation){
-    gtk_render_background(style_context,
-			  cr,
-			  0.0, 0.0,
-			  (gdouble) width, (gdouble) height);
-  }
 
   cairo_set_source_rgba(cr,
 			bg_color.red,

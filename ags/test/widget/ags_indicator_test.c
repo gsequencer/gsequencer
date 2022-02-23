@@ -14,8 +14,6 @@ timeout(AgsIndicator *indicator)
 {
   gtk_adjustment_set_value(indicator->adjustment,
 			   1.0 / RAND_MAX * rand());
-
-  gtk_widget_queue_draw(indicator);
   
   return(G_SOURCE_CONTINUE);
 }
