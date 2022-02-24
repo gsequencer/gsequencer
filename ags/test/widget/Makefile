@@ -6,3 +6,6 @@ ags_cartesian_test: ags_cartesian_test.c ../../widget/ags_cartesian.c
 
 ags_dial_test: ags_dial_test.c ../../widget/ags_dial.c
 	gcc -g -o ags_dial_test ags_dial_test.c ../../widget/ags_dial.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_expander_set_test: ags_expander_set_test.c ../../widget/ags_expander_set.c
+	gcc -g -o ags_expander_set_test ags_expander_set_test.c ../../widget/ags_expander_set.c -I../../.. `pkg-config --cflags --libs gtk4` -lm

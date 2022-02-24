@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,21 +34,6 @@ void ags_expander_set_get_property(GObject *gobject,
 void ags_expander_set_finalize(GObject *gobject);
 void ags_expander_set_show(GtkWidget *widget);
 
-void ags_expander_set_realize(GtkWidget *widget);
-void ags_expander_set_size_request(GtkWidget *widget,
-				   GtkRequisition   *requisition);
-void ags_expander_set_size_allocate(GtkWidget *widget,
-				    GtkAllocation *allocation);
-gboolean ags_expander_set_expose(GtkWidget *widget,
-				 GdkEventExpose *event);
-
-void ags_expander_set_width_changed(GObject *gobject,
-				    GParamSpec *pspec,
-				    AgsExpanderSet *expander_set);
-void ags_expander_set_height_changed(GObject *gobject,
-				     GParamSpec *pspec,
-				     AgsExpanderSet *expander_set);
-
 void ags_expander_set_draw(AgsExpanderSet *expander_set);
 void ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 				   AgsExpanderSetChild *child,
@@ -64,7 +49,7 @@ void ags_expander_set_remove_child(AgsExpanderSet *expander_set,
  * @section_id:
  * @include: ags/widget/ags_expander_set.h
  *
- * #AgsExpanderSet is a composite widget containing a #GtkTable.
+ * #AgsExpanderSet is a composite widget containing a #GtkGrid.
  */
 
 enum{
@@ -95,7 +80,7 @@ ags_expander_set_get_type(void)
       (GInstanceInitFunc) ags_expander_set_init,
     };
 
-    ags_type_expander_set = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_expander_set = g_type_register_static(GTK_TYPE_GRID,
 						   "AgsExpanderSet", &ags_expander_set_info,
 						   0);
 
@@ -124,27 +109,15 @@ ags_expander_set_class_init(AgsExpanderSetClass *expander_set)
 
   /* GtkWidgetClass */
   //  widget = (GtkWidgetClass *) expander_set;
-
-  //  widget->realize = ags_expander_set_realize;
-  //  widget->expose_event = ags_expander_set_expose;
-  //  widget->size_request = ags_expander_set_size_request;
-  //  widget->size_allocate = ags_expander_set_size_allocate;
 }
 
 void
 ags_expander_set_init(AgsExpanderSet *expander_set)
 {
   g_object_set(G_OBJECT(expander_set),
-	       "app-paintable\0", TRUE,
-	       "homogeneous", FALSE,
+	       "row-homogeneous", FALSE,
+	       "column-homogeneous", FALSE,
 	       NULL);
-
-  g_signal_connect(expander_set, "notify::n-columns\0",
-		   G_CALLBACK(ags_expander_set_width_changed),
-		   expander_set);
-  g_signal_connect(expander_set, "notify::n-rows\0",
-		   G_CALLBACK(ags_expander_set_height_changed),
-		   expander_set);
 
   expander_set->flags = 0;
 
@@ -233,58 +206,6 @@ ags_expander_set_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_expander_set_parent_class)->finalize(gobject);
-}
-
-void
-ags_expander_set_realize(GtkWidget *widget)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_expander_set_size_request(GtkWidget *widget,
-			      GtkRequisition   *requisition)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_expander_set_size_allocate(GtkWidget *widget,
-			       GtkAllocation *allocation)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_expander_set_expose(GtkWidget *widget,
-			GdkEventExpose *event)
-{
-  //TODO:JK: implement me
-
-  return(FALSE);
-}
-
-void
-ags_expander_set_width_changed(GObject *gobject,
-			       GParamSpec *pspec,
-			       AgsExpanderSet *expander_set)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_expander_set_height_changed(GObject *gobject,
-				GParamSpec *pspec,
-				AgsExpanderSet *expander_set)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_expander_set_set_flags(AgsExpanderSet *expander_set,
-			   guint flags)
-{
-  //TODO:JK: implement me
 }
 
 /**
@@ -424,16 +345,21 @@ ags_expander_set_insert_child(AgsExpanderSet *expander_set,
     list = list->next;
   }
 
-  gtk_table_attach(GTK_TABLE(expander_set),
-		   child->child,
-		   child->x, child->x + child->width,
-		   child->y, child->y + child->height,
-		   GTK_FILL |
-		   GTK_EXPAND,
-		   GTK_FILL |
-		   GTK_EXPAND,
-		   0, 0);
+  gtk_grid_attach((GtkGrid *) expander_set,
+		  child->child,
+		  child->x, child->y,
+		  child->width, child->height);
+  
+  gtk_widget_set_vexpand(child->child,
+			 TRUE);
+  gtk_widget_set_hexpand(child->child,
+			 TRUE);
 
+  gtk_widget_set_valign(child->child,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(child->child,
+			GTK_ALIGN_FILL);
+  
   if(ghost){
     expander_set->ghost = g_list_insert(expander_set->ghost,
 					child,
@@ -455,8 +381,8 @@ ags_expander_set_remove_child(AgsExpanderSet *expander_set,
     return;
   }
 
-  gtk_container_remove(GTK_CONTAINER(expander_set),
-		       child->child);
+  gtk_grid_remove((GtkGrid *) expander_set,
+		  child->child);
 
   if(ghost){
     expander_set->ghost = g_list_remove(expander_set->ghost,
@@ -536,8 +462,6 @@ ags_expander_set_remove(AgsExpanderSet *expander_set,
 
 /**
  * ags_expander_set_new:
- * @height: the table's height
- * @width: the table's width
  *
  * Creates an #AgsExpanderSet
  *
@@ -546,13 +470,11 @@ ags_expander_set_remove(AgsExpanderSet *expander_set,
  * Since: 3.0.0
  */
 AgsExpanderSet*
-ags_expander_set_new(guint width, guint height)
+ags_expander_set_new()
 {
   AgsExpanderSet *expander_set;
 
   expander_set = (AgsExpanderSet *) g_object_new(AGS_TYPE_EXPANDER_SET,
-						 "n-columns\0", width,
-						 "n-rows\0", height,
 						 NULL);
   
   return(expander_set);

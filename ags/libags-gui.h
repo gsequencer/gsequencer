@@ -21,7 +21,6 @@
 #define __LIBAGS_GUI_H__
 
 #include <ags/widget/ags_cartesian.h>
-#include <ags/widget/ags_container.h>
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>

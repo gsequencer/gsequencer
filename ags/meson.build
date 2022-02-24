@@ -927,7 +927,6 @@ endif
 
 libags_gui_sources = files(
   'widget/ags_cartesian.c',
-  'widget/ags_container.c',
   'widget/ags_dial.c',
   'widget/ags_expander.c',
   'widget/ags_expander_set.c',
@@ -2240,7 +2239,6 @@ libags_gui_widget_headers = [
   'widget/ags_scrolled_scale_box.h',
   'widget/ags_expander_set.h',
   'widget/ags_cartesian.h',
-  'widget/ags_container.h',
   'widget/ags_expander.h',
   'widget/ags_led_array.h',
   'widget/ags_led.h',
