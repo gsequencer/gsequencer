@@ -9,3 +9,6 @@ ags_dial_test: ags_dial_test.c ../../widget/ags_dial.c
 
 ags_expander_set_test: ags_expander_set_test.c ../../widget/ags_expander_set.c
 	gcc -g -o ags_expander_set_test ags_expander_set_test.c ../../widget/ags_expander_set.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_expander_test: ags_expander_test.c ../../widget/ags_expander.c
+	gcc -g -o ags_expander_test ags_expander_test.c ../../widget/ags_expander.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
