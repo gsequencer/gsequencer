@@ -825,9 +825,11 @@ ags_level_draw(AgsLevel *level,
 
   gchar *font_name;
   gchar *text;
+  gchar *format_str;
 
   guint width, height;
   guint x_start, y_start;
+  guint i;
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
@@ -909,10 +911,162 @@ ags_level_draw(AgsLevel *level,
   cairo_stroke(cr);
 
   /* draw level */
-  //TODO:JK: implement me
+  cairo_set_line_width(cr,
+		       2.0);
 
-  /* show samplerate */
-  text = g_strdup_printf("%u [Hz]", level->samplerate);
+  cairo_set_source_rgb(cr,
+		       0.5, 0.4, 0.0);
+
+  if(level->orientation == GTK_ORIENTATION_VERTICAL){
+    /* upper */
+    cairo_move_to(cr,
+		  (double) width - 11.0,
+		  1.0);
+  
+    cairo_line_to(cr,
+		  (double) width - 1.0,
+		  1.0);
+
+    /* center */
+    cairo_move_to(cr,
+		  (double) width - 11.0,
+		  (double) height / 2.0 - 1.0);
+  
+    cairo_line_to(cr,
+		  (double) width - 1.0,
+		  (double) height / 2.0 - 1.0);
+
+    /* lower */  
+    cairo_move_to(cr,
+		  (double) width - 11.0,
+		  height - 1.0);
+  
+    cairo_line_to(cr,
+		  (double) width - 1.0,
+		  height - 1.0);
+  
+    /* small level */
+    cairo_set_line_width(cr,
+			 1.0);
+
+    /* upper center */
+    cairo_move_to(cr,
+		  (double) width - 6.0,
+		  (double) height * 0.25 - 0.5);
+  
+    cairo_line_to(cr,
+		  (double) width - 1.0,
+		  (double) height * 0.25 - 0.5);
+  
+    /* lower center */
+    cairo_move_to(cr,
+		  (double) width - 6.0,
+		  (double) height * 0.75 - 0.5);
+  
+    cairo_line_to(cr,
+		  (double) width - 1.0,
+		  (double) height * 0.75 - 0.5);
+  }else{
+    /* upper */
+    cairo_move_to(cr,
+		  1.0,
+		  (double) height - 11.0);
+  
+    cairo_line_to(cr,
+		  1.0,
+		  (double) height - 1.0);
+
+    /* center */
+    cairo_move_to(cr,
+		  (double) width / 2.0 - 1.0,
+		  (double) height - 11.0);
+  
+    cairo_line_to(cr,
+		  (double) width / 2.0 - 1.0,
+		  (double) height - 1.0);
+
+    /* lower */  
+    cairo_move_to(cr,
+		  width - 1.0,
+		  (double) height - 11.0);
+  
+    cairo_line_to(cr,
+		  width - 1.0,
+		  (double) height - 1.0);
+  
+    /* small level */
+    cairo_set_line_width(cr,
+			 1.0);
+
+    /* upper center */
+    cairo_move_to(cr,
+		  (double) width * 0.25 - 0.5,
+		  (double) height - 6.0);
+  
+    cairo_line_to(cr,
+		  (double) width * 0.25 - 0.5,
+		  (double) height - 1.0);
+  
+    /* lower center */
+    cairo_move_to(cr,
+		  (double) width * 0.75 - 0.5,
+		  (double) height - 6.0);
+  
+    cairo_line_to(cr,
+		  (double) width * 0.75 - 0.5,
+		  (double) height - 1.0);
+  }
+  
+  cairo_stroke(cr);
+
+  /* format string */
+  switch(level->data_format){
+  case AGS_LEVEL_PCM_S8:
+    {
+      format_str = "signed 8 bit";
+    }
+    break;
+  case AGS_LEVEL_PCM_S16:
+    {
+      format_str = "signed 16 bit";
+    }
+    break;
+  case AGS_LEVEL_PCM_S24:
+    {
+      format_str = "signed 24 bit";
+    }
+    break;
+  case AGS_LEVEL_PCM_S32:
+    {
+      format_str = "signed 32 bit";
+    }
+    break;
+  case AGS_LEVEL_PCM_S64:
+    {
+      format_str = "signed 64 bit";
+    }
+    break;
+  case AGS_LEVEL_PCM_FLOAT:
+    {
+      format_str = "float";
+    }
+    break;
+  case AGS_LEVEL_PCM_DOUBLE:
+    {
+      format_str = "double";
+    }
+    break;
+  case AGS_LEVEL_PCM_COMPLEX:
+    {
+      format_str = "complex";
+    }
+    break;
+  }
+
+  /* show text */
+  text = g_strdup_printf("%u [Hz]\n%s",
+			 level->samplerate,
+			 format_str);
 
   layout = pango_cairo_create_layout(cr);
   pango_layout_set_text(layout,
@@ -934,14 +1088,14 @@ ags_level_draw(AgsLevel *level,
 
   if(level->orientation == GTK_ORIENTATION_VERTICAL){
     cairo_move_to(cr,
-		  x_start + (logical_rect.height / PANGO_SCALE) / 2.0,
+		  x_start + (logical_rect.height / PANGO_SCALE) / 4.0,
 		  y_start + height - 1.0);
     cairo_rotate(cr,
-		 2 * M_PI * 0.75);
+		 2.0 * M_PI * 0.75);
   }else{
     cairo_move_to(cr,
 		  x_start,
-		  y_start + (logical_rect.height / PANGO_SCALE) / 2.0 + 1.0);
+		  y_start + (logical_rect.height / PANGO_SCALE) / 4.0 + 1.0);
   }
 
   pango_cairo_show_layout(cr,
@@ -1141,6 +1295,7 @@ ags_level_new(GtkOrientation orientation,
   AgsLevel *level;
 
   level = (AgsLevel *) g_object_new(AGS_TYPE_LEVEL,
+				    "orientation", orientation,
 				    "width-request", width_request,
 				    "height-request", height_request,
 				    NULL);
