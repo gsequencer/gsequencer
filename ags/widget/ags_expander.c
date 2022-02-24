@@ -135,34 +135,10 @@ ags_expander_init(AgsExpander *expander)
   expander->expander = gtk_expander_new("pad");
   gtk_box_append(expander,
 		 expander->expander);
-
-  gtk_widget_set_vexpand(expander->expander,
-			 TRUE);  
-  gtk_widget_set_hexpand(expander->expander,
-			 TRUE);  
-
-  gtk_widget_set_valign(expander->expander,
-			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(expander->expander,
-			GTK_ALIGN_FILL);
-  
-  gtk_widget_show(expander->expander);
   
   expander->grid = (GtkGrid *) gtk_grid_new();
   gtk_expander_set_child(expander->expander,
 			 expander->grid);  
-  
-  gtk_widget_set_vexpand(expander->grid,
-			 TRUE);  
-  gtk_widget_set_hexpand(expander->grid,
-			 TRUE);  
-
-  gtk_widget_set_valign(expander->grid,
-			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(expander->grid,
-			GTK_ALIGN_FILL);
-
-  gtk_widget_show(expander->grid);
 
   expander->children = NULL;
 

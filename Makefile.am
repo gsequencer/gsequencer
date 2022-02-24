@@ -2538,8 +2538,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_led_array.h \
 	ags/widget/ags_level.h \
 	ags/widget/ags_level_box.h \
-	ags/widget/ags_hlevel_box.h \
-	ags/widget/ags_vlevel_box.h \
 	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
@@ -2569,8 +2567,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_led_array.c \
 	ags/widget/ags_level.c \
 	ags/widget/ags_level_box.c \
-	ags/widget/ags_hlevel_box.c \
-	ags/widget/ags_vlevel_box.c \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \

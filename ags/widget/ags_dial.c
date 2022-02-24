@@ -19,6 +19,12 @@
 
 #include "ags_dial.h"
 
+#include <pango/pango.h>
+
+#ifndef __APPLE__
+#include <pango/pangofc-fontmap.h>
+#endif
+
 #include <gdk/gdkkeysyms.h>
 
 #include <stdlib.h>

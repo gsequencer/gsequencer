@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,7 +61,7 @@ struct _AgsLevelBoxClass
 
 GType ags_level_box_get_type(void);
 
-AgsLevelBox* ags_level_box_new();
+AgsLevelBox* ags_level_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 

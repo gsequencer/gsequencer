@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,8 +31,6 @@ void ags_level_box_get_property(GObject *gobject,
 				GValue *value,
 				GParamSpec *param_spec);
 void ags_level_box_finalize(GObject *gobject);
-
-GType ags_level_box_child_type(GtkContainer *container);
 
 /**
  * SECTION:ags_level_box
@@ -87,7 +85,6 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
-  GtkContainerClass *container;
 
   GParamSpec *param_spec;
 
@@ -140,11 +137,6 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) level_box;
-
-  /* GtkContainerClass */
-  container = (GtkWidgetClass *) level_box;
-
-  container->child_type = ags_level_box_child_type;
 }
 
 void
@@ -224,14 +216,9 @@ ags_level_box_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_level_box_parent_class)->finalize(gobject);
 }
 
-GType
-ags_level_box_child_type(GtkContainer *container)
-{
-  return(AGS_TYPE_LEVEL);
-}
-
 /**
  * ags_level_box_new:
+ * @orientation: the #GtkOrientation
  * 
  * Create a new instance of #AgsLevelBox.
  * 
@@ -240,11 +227,12 @@ ags_level_box_child_type(GtkContainer *container)
  * Since: 3.0.0
  */
 AgsLevelBox*
-ags_level_box_new()
+ags_level_box_new(GtkOrientation orientation)
 {
   AgsLevelBox *level_box;
 
   level_box = (AgsLevelBox *) g_object_new(AGS_TYPE_LEVEL_BOX,
+					   "orientation", orientation,
 					   NULL);
   
   return(level_box);
