@@ -19,18 +19,24 @@
 
 #include <ags/widget/ags_level_box.h>
 #include <ags/widget/ags_level.h>
+#include <ags/widget/ags_widget_marshal.h>
+
+#include <ags/i18n.h>
 
 void ags_level_box_class_init(AgsLevelBoxClass *level_box);
 void ags_level_box_init(AgsLevelBox *level_box);
-void ags_level_box_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
 void ags_level_box_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
 void ags_level_box_finalize(GObject *gobject);
+
+void ags_level_box_notify_width_request_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 AgsLevelBox *level_box);
+void ags_level_box_notify_height_request_callback(GObject *gobject,
+						  GParamSpec *pspec,
+						  AgsLevelBox *level_box);
 
 /**
  * SECTION:ags_level_box
@@ -43,12 +49,18 @@ void ags_level_box_finalize(GObject *gobject);
  */
 
 enum{
+  CHILD_WIDTH_REQUEST,
+  CHILD_HEIGHT_REQUEST,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
-  PROP_FIXED_LEVEL_WIDTH,
-  PROP_FIXED_LEVEL_HEIGHT,
+  PROP_LEVEL_COUNT,
 };
 
 static gpointer ags_level_box_parent_class = NULL;
+static guint level_box_signals[LAST_SIGNAL];
 
 GType
 ags_level_box_get_type(void)
@@ -93,50 +105,71 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
   /* GObjectClass */
   gobject = (GObjectClass *) level_box;
 
-  gobject->set_property = ags_level_box_set_property;
   gobject->get_property = ags_level_box_get_property;
 
   gobject->finalize = ags_level_box_finalize;
 
   /* properties */
   /**
-   * AgsLevelBox:fixed-level-width:
+   * AgsLevelBox:level-count:
    *
-   * The fixed width of a level.
+   * The level-count.
    * 
-   * Since: 3.0.0
+   * Since: 4.0.0
    */
-  param_spec = g_param_spec_uint("fixed-level-width",
-				 "fixed level width",
-				 "The fixed width of a level",
+  param_spec = g_param_spec_uint("level-count",
+				 i18n_pspec("level count"),
+				 i18n_pspec("The level count"),
 				 0,
-				 G_MAXUINT,
-				 AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FIXED_LEVEL_WIDTH,
-				  param_spec);
-
-  /**
-   * AgsLevelBox:fixed-level-height:
-   *
-   * The fixed height of a level.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_uint("fixed-level-height",
-				 "fixed level height",
-				 "The fixed height of a level",
+				 G_MAXUINT32,
 				 0,
-				 G_MAXUINT,
-				 AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_FIXED_LEVEL_HEIGHT,
+				  PROP_LEVEL_COUNT,
 				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) level_box;
+
+  /* AgsLevelBox */
+  level_box->child_width_request = NULL;
+  level_box->child_height_request = NULL;
+  
+  /**
+   * AgsLevelBox::child-width-request:
+   * @level_box: the #AgsLevelBox.
+   *
+   * The ::child-width-request
+   *
+   * Since: 4.0.0
+   */
+  level_box_signals[CHILD_WIDTH_REQUEST] = 
+    g_signal_new("child-width-request",
+		 G_TYPE_FROM_CLASS(level_box),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLevelBoxClass, child_width_request),
+		 NULL, NULL,
+		 ags_widget_cclosure_marshal_VOID__OBJECT_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_INT);
+
+  /**
+   * AgsLevelBox::child-height-request:
+   * @level_box: the #AgsLevelBox.
+   *
+   * The ::child-height-request
+   *
+   * Since: 4.0.0
+   */
+  level_box_signals[CHILD_HEIGHT_REQUEST] = 
+    g_signal_new("child-height-request",
+		 G_TYPE_FROM_CLASS(level_box),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLevelBoxClass, child_height_request),
+		 NULL, NULL,
+		 ags_widget_cclosure_marshal_VOID__OBJECT_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_INT);
 }
 
 void
@@ -146,38 +179,10 @@ ags_level_box_init(AgsLevelBox *level_box)
 	       "homogeneous", FALSE,
 	       "spacing", AGS_LEVEL_BOX_DEFAULT_SPACING,
 	       NULL);
+
+  level_box->level_count = 0;
   
-  level_box->flags = 0;
-
-  level_box->fixed_level_width = AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH;
-  level_box->fixed_level_height = AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT;
-}
-
-void
-ags_level_box_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec)
-{
-  AgsLevelBox *level_box;
-
-  level_box = AGS_LEVEL_BOX(gobject);
-
-  switch(prop_id){
-  case PROP_FIXED_LEVEL_WIDTH:
-    {
-      level_box->fixed_level_width = g_value_get_uint(value);
-    }
-    break;
-  case PROP_FIXED_LEVEL_HEIGHT:
-    {
-      level_box->fixed_level_height = g_value_get_uint(value);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  level_box->level = NULL;
 }
 
 void
@@ -191,21 +196,14 @@ ags_level_box_get_property(GObject *gobject,
   level_box = AGS_LEVEL_BOX(gobject);
 
   switch(prop_id){
-  case PROP_FIXED_LEVEL_WIDTH:
-    {
-      g_value_set_uint(value,
-		       level_box->fixed_level_width);
-    }
-    break;
-  case PROP_FIXED_LEVEL_HEIGHT:
-    {
-      g_value_set_uint(value,
-		       level_box->fixed_level_height);
-    }
-    break;
+  case PROP_LEVEL_COUNT:
+  {
+    g_value_set_uint(value,
+		     level_box->level_count);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
   }
 }
 
@@ -214,6 +212,193 @@ ags_level_box_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_level_box_parent_class)->finalize(gobject);
+}
+
+void
+ags_level_box_notify_width_request_callback(GObject *gobject,
+					    GParamSpec *pspec,
+					    AgsLevelBox *level_box)
+{
+  gint width_request;
+
+  width_request = -1;
+  
+  g_object_get(gobject,
+	       "width-request", &width_request,
+	       NULL);
+  
+  ags_level_box_child_width_request(level_box,
+				    AGS_LEVEL(gobject),
+				    width_request);
+}
+
+void
+ags_level_box_notify_height_request_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     AgsLevelBox *level_box)
+{
+  gint height_request;
+
+  height_request = -1;
+  
+  g_object_get(gobject,
+	       "height-request", &height_request,
+	       NULL);
+  
+  ags_level_box_child_height_request(level_box,
+				     AGS_LEVEL(gobject),
+				     height_request);
+}
+
+/**
+ * ags_level_box_add:
+ * @level_box: the #AgsLevelBox
+ * 
+ * Get level count of @level_box.
+ * 
+ * Returns: the count of levels added
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_level_box_get_level_count(AgsLevelBox *level_box)
+{
+  guint level_count;
+
+  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+
+  level_count = 0;
+
+  g_object_get(level_box,
+	       "level-count", &level_count,
+	       NULL);
+  
+  return(level_count);
+}
+
+/**
+ * ags_level_box_add:
+ * @level_box: the #AgsLevelBox
+ * @level: the #AgsLevel
+ * 
+ * Add @level to @level_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_level_box_add(AgsLevelBox *level_box,
+		  GtkWidget *level)
+{
+  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+  g_return_if_fail(AGS_IS_LEVEL(level));
+
+  if(g_list_find(level_box->level, level) == NULL){
+    level_box->level = g_list_prepend(level_box->level,
+				      level);
+    
+    g_signal_connect(level, "notify::width-request",
+		     G_CALLBACK(ags_level_box_notify_width_request_callback), level_box);
+    
+    g_signal_connect(level, "notify::height-request",
+		     G_CALLBACK(ags_level_box_notify_height_request_callback), level_box);
+    
+    gtk_box_append(level_box,
+		   level);
+  }else{
+    g_warning("level already added to level box");
+  }
+}
+
+/**
+ * ags_level_box_remove:
+ * @level_box: the #AgsLevelBox
+ * @position: the level at position to remove
+ * 
+ * Remove level at @position of @level_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_level_box_remove(AgsLevelBox *level_box,
+		     guint position)
+{
+  GList *start_level, *level;
+  
+  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+
+  start_level = g_list_reverse(g_list_copy(level_box));
+  
+  level = g_list_nth(start_level,
+		     position);
+
+  if(level != NULL){
+    g_object_disconnect(level,
+			"any_signal::notify::width-request",
+			G_CALLBACK(ags_level_box_notify_width_request_callback),
+			level_box,
+			"any_signal::notify::height-request",
+			G_CALLBACK(ags_level_box_notify_height_request_callback),
+			level_box,
+			NULL);
+    
+    level_box->level = g_list_remove(level_box->level,
+				     level->data);
+
+    gtk_box_remove(level_box,
+		   level->data);
+  }else{
+    g_warning("no level at position [%d] in level box", position);
+  }
+
+  g_list_free(start_level);
+}
+
+/**
+ * ags_level_box_child_width_request:
+ * @level_box: the #AgsLevelBox
+ * @level: the #AgsLevel
+ * @width_request: the level's width-request
+ * 
+ * Notify about child level width request.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_level_box_child_width_request(AgsLevelBox *level_box,
+				  GtkWidget *level,
+				  gint width_request)
+{
+  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+
+  g_object_ref((GObject *) level_box);
+  g_signal_emit(G_OBJECT(level_box),
+		level_box_signals[CHILD_WIDTH_REQUEST], 0,
+		level, width_request);
+  g_object_unref((GObject *) level_box);
+}
+
+/**
+ * ags_level_box_child_height_request:
+ * @level_box: the #AgsLevelBox
+ * @level: the #AgsLevel
+ * @height_request: the level's height-request
+ * 
+ * Notify about child level height request.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_level_box_child_height_request(AgsLevelBox *level_box,
+				   GtkWidget *level,
+				   gint height_request)
+{
+  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+
+  g_object_ref((GObject *) level_box);
+  g_signal_emit(G_OBJECT(level_box),
+		level_box_signals[CHILD_HEIGHT_REQUEST], 0,
+		level, height_request);
+  g_object_unref((GObject *) level_box);
 }
 
 /**

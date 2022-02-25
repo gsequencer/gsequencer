@@ -387,6 +387,7 @@ void
 ags_audio_class_init(AgsAudioClass *audio)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_audio_parent_class = g_type_class_peek_parent(audio);

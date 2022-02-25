@@ -36,9 +36,6 @@ G_BEGIN_DECLS
 
 #define AGS_LEVEL_BOX_DEFAULT_SPACING (8)
 
-#define AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH (60)
-#define AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT (128)
-
 typedef struct _AgsLevelBox AgsLevelBox;
 typedef struct _AgsLevelBoxClass AgsLevelBoxClass;
 
@@ -46,18 +43,39 @@ struct _AgsLevelBox
 {
   GtkBox box;
 
-  guint flags;
-
-  guint fixed_level_width;
-  guint fixed_level_height;
+  /* private */
+  guint level_count;
+  
+  GList *level;
 };
 
 struct _AgsLevelBoxClass
 {
   GtkBoxClass box;
+
+  void (*child_width_request)(AgsLevelBox *level_box,
+			      GtkWidget *level,
+			      gint width_request);
+  void (*child_height_request)(AgsLevelBox *level_box,
+			       GtkWidget *level,
+			       gint height_request);
 };
 
 GType ags_level_box_get_type(void);
+
+guint ags_level_box_get_level_count(AgsLevelBox *level_box);
+
+void ags_level_box_add(AgsLevelBox *level_box,
+		       GtkWidget *level);
+void ags_level_box_remove(AgsLevelBox *level_box,
+			  guint nth);
+
+void ags_level_box_child_width_request(AgsLevelBox *level_box,
+				       GtkWidget *level,
+				       gint width_request);
+void ags_level_box_child_height_request(AgsLevelBox *level_box,
+					GtkWidget *level,
+					gint height_request);
 
 AgsLevelBox* ags_level_box_new(GtkOrientation orientation);
 
