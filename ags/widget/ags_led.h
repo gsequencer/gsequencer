@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,21 +34,20 @@ G_BEGIN_DECLS
 #define AGS_IS_LED_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_LED))
 #define AGS_LED_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_LED, AgsLedClass))
 
-#define AGS_LED_DEFAULT_WIDTH (12)
-#define AGS_LED_DEFAULT_HEIGHT (8)
+#define AGS_LED_DEFAULT_SEGMENT_WIDTH (12)
+#define AGS_LED_DEFAULT_SEGMENT_HEIGHT (8)
 
 typedef struct _AgsLed AgsLed;
 typedef struct _AgsLedClass AgsLedClass;
-
-typedef enum{
-  AGS_LED_ACTIVE        = 1,
-}AgsLedFlags;
 
 struct _AgsLed
 {
   GtkWidget widget;
 
-  guint flags;
+  guint segment_width;
+  guint segment_height;
+
+  gboolean active;
 };
 
 struct _AgsLedClass
@@ -58,12 +57,21 @@ struct _AgsLedClass
 
 GType ags_led_get_type(void);
 
+guint ags_led_get_segment_width(AgsLed *led);
+void ags_led_set_segment_width(AgsLed *led,
+			       guint segment_width);
+
+guint ags_led_get_segment_height(AgsLed *led);
+void ags_led_set_segment_height(AgsLed *led,
+				guint segment_height);
+
 gboolean ags_led_is_active(AgsLed *led);
 
-void ags_led_set_active(AgsLed *led);
-void ags_led_unset_active(AgsLed *led);
+void ags_led_set_active(AgsLed *led,
+			gboolean active);
 
-AgsLed* ags_led_new();
+AgsLed* ags_led_new(guint segment_width,
+		    guint segment_height);
 
 G_END_DECLS
 

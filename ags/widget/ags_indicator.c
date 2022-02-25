@@ -128,6 +128,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_indicator_parent_class = g_type_class_peek_parent(indicator);
