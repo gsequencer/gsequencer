@@ -24,3 +24,6 @@ ags_level_box_test: ags_level_box_test.c ../../widget/ags_level_box.c ../../widg
 
 ags_level_test: ags_level_test.c ../../widget/ags_level.c
 	gcc -g -o ags_level_test ags_level_test.c ../../widget/ags_level.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_scale_test: ags_scale_test.c ../../widget/ags_scale.c
+	gcc -g -o ags_scale_test ags_scale_test.c ../../widget/ags_scale.c -I../../.. `pkg-config --cflags --libs gtk4` -lm

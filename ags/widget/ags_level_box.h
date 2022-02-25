@@ -68,7 +68,7 @@ guint ags_level_box_get_level_count(AgsLevelBox *level_box);
 void ags_level_box_add(AgsLevelBox *level_box,
 		       GtkWidget *level);
 void ags_level_box_remove(AgsLevelBox *level_box,
-			  guint nth);
+			  guint position);
 
 void ags_level_box_child_width_request(AgsLevelBox *level_box,
 				       GtkWidget *level,

@@ -177,7 +177,6 @@ ags_level_class_init(AgsLevelClass *level)
 
   g_object_class_override_property(gobject, PROP_ORIENTATION, "orientation");
   
-
   /* properties */
   /**
    * AgsLevel:data-format:
@@ -331,10 +330,10 @@ ags_level_init(AgsLevel *level)
 
   level->flags = 0;
 
+  level->orientation = GTK_ORIENTATION_VERTICAL;
+
   level->key_mask = 0;
   level->button_state = 0;
-
-  level->orientation = GTK_ORIENTATION_VERTICAL;
 
   level->data_format = AGS_LEVEL_DEFAULT_DATA_FORMAT;
   
@@ -670,7 +669,6 @@ ags_level_key_released_callback(GtkEventControllerKey *event_controller,
 
   return(FALSE);
 }
-
 
 gboolean
 ags_level_modifiers_callback(GtkEventControllerKey *event_controller,
@@ -1278,8 +1276,9 @@ ags_level_value_changed(AgsLevel *level,
 
 /**
  * ags_level_new:
- * width_request: the level's width
- * height_request: the level's height
+ * @orientation: the #GtkOrientation
+ * @width_request: the level's width
+ * @height_request: the level's height
  * 
  * Create a new instance of #AgsLevel.
  * 
