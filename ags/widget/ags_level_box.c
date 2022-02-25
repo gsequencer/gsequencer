@@ -34,12 +34,12 @@ void ags_level_box_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_level_box
- * @short_description: abstract box widget
+ * @short_description: box widget
  * @title: AgsLevelBox
  * @section_id:
  * @include: ags/widget/ags_level_box.h
  *
- * The #AgsLevelBox is an abstract box widget containing #AgsLevel.
+ * The #AgsLevelBox is a box widget containing #AgsLevel.
  */
 
 enum{
@@ -144,7 +144,7 @@ ags_level_box_init(AgsLevelBox *level_box)
 {
   g_object_set(level_box,
 	       "homogeneous", FALSE,
-	       "spacing", 0,
+	       "spacing", AGS_LEVEL_BOX_DEFAULT_SPACING,
 	       NULL);
   
   level_box->flags = 0;

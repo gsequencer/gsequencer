@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,30 +19,12 @@
 
 #include <ags/widget/ags_scrolled_level_box.h>
 
-#include <ags/widget/ags_viewport.h>
+#include <ags/widget/ags_level_box.h>
 #include <ags/widget/ags_level.h>
-#include <ags/widget/ags_vlevel_box.h>
 
 void ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box);
 void ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box);
-void ags_scrolled_level_box_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_scrolled_level_box_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
 void ags_scrolled_level_box_finalize(GObject *gobject);
-
-void ags_scrolled_level_get_preferred_width(GtkWidget *widget,
-					    gint *minimal_width,
-					    gint *natural_width);
-void ags_scrolled_level_get_preferred_height(GtkWidget *widget,
-					     gint *minimal_height,
-					     gint *natural_height);
-void ags_scrolled_level_box_size_allocate(GtkWidget *widget,
-					  GtkAllocation *allocation);
 
 /**
  * SECTION:ags_scrolled_level_box
@@ -53,14 +35,6 @@ void ags_scrolled_level_box_size_allocate(GtkWidget *widget,
  *
  * The #AgsScrolledLevelBox lets you to have a scrolled level box widget.
  */
-
-enum{
-  PROP_0,
-  PROP_MARGIN_TOP,
-  PROP_MARGIN_BOTTOM,
-  PROP_MARGIN_LEFT,
-  PROP_MARGIN_RIGHT,
-};
 
 static gpointer ags_scrolled_level_box_parent_class = NULL;
 
@@ -84,7 +58,7 @@ ags_scrolled_level_box_get_type(void)
       (GInstanceInitFunc) ags_scrolled_level_box_init,
     };
 
-    ags_type_scrolled_level_box = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_scrolled_level_box = g_type_register_static(GTK_TYPE_GRID,
 							 "AgsScrolledLevelBox", &ags_scrolled_level_box_info,
 							 0);
 
@@ -98,200 +72,39 @@ void
 ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
-  GParamSpec *param_spec;
 
   ags_scrolled_level_box_parent_class = g_type_class_peek_parent(scrolled_level_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) scrolled_level_box;
 
-  gobject->set_property = ags_scrolled_level_box_set_property;
-  gobject->get_property = ags_scrolled_level_box_get_property;
-
   gobject->finalize = ags_scrolled_level_box_finalize;
-
-  /* properties */  
-  /**
-   * AgsScrolledLevelBox:margin-top:
-   *
-   * The margin top.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_uint("margin-top",
-				 "margin top",
-				 "The margin top",
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MARGIN_TOP,
-				  param_spec);
-
-  /**
-   * AgsScrolledLevelBox:margin-bottom:
-   *
-   * The margin bottom.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_uint("margin-bottom",
-				 "margin bottom",
-				 "The margin bottom",
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MARGIN_BOTTOM,
-				  param_spec);
-
-  /**
-   * AgsScrolledLevelBox:margin-left:
-   *
-   * The margin left.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_uint("margin-left",
-				 "margin left",
-				 "The margin left",
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MARGIN_LEFT,
-				  param_spec);
-
-  /**
-   * AgsScrolledLevelBox:margin-right:
-   *
-   * The margin right.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_uint("margin-right",
-				 "margin right",
-				 "The margin right",
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MARGIN_RIGHT,
-				  param_spec);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) scrolled_level_box;
-
-//  widget->get_preferred_width = ags_scrolled_level_get_preferred_width;
-//  widget->get_preferred_height = ags_scrolled_level_get_preferred_height;
-  widget->size_allocate = ags_scrolled_level_box_size_allocate;
 }
 
 void
 ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box)
 {
-  scrolled_level_box->margin_top = 0;
-  scrolled_level_box->margin_bottom = 0;
-  scrolled_level_box->margin_left = 0;
-  scrolled_level_box->margin_right = 0;
+  /* scrolled window */
+  scrolled_level_box->scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_grid_attatch((GtkGrid *) scrolled_level_box,
+		   (GtkWidget *) scrolled_level_box->scrolled_window,
+		   0, 0,
+		   1, 1);
 
-  /* viewport */
-  scrolled_level_box->viewport = (AgsViewport *) ags_viewport_new();
-  gtk_container_add((GtkContainer *) scrolled_level_box,
-		    (GtkWidget *) scrolled_level_box->viewport);
+  gtk_scrolled_window_set_policy(scrolled_level_box->scrolled_window,
+  				 GTK_POLICY_EXTERNAL,
+  				 GTK_POLICY_EXTERNAL);
+
+  gtk_widget_set_vexpand(scrolled_level_box->scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_size_request(scrolled_window,
+			      AGS_LEVEL_DEFAULT_WIDTH_REQUEST, -1);
 
   /* level box */
-  scrolled_level_box->level_box = NULL;
-  
-#if 0
-  scrolled_level_box->level_box = ags_vlevel_box_new();
-  gtk_container_add((GtkContainer *) scrolled_level_box->viewport,
-		    (GtkWidget *) scrolled_level_box->level_box);
-#endif
-}
-
-void
-ags_scrolled_level_box_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec)
-{
-  AgsScrolledLevelBox *scrolled_level_box;
-
-  scrolled_level_box = AGS_SCROLLED_LEVEL_BOX(gobject);
-
-  switch(prop_id){
-  case PROP_MARGIN_TOP:
-    {
-      scrolled_level_box->margin_top = g_value_get_uint(value);
-    }
-    break;
-  case PROP_MARGIN_BOTTOM:
-    {
-      scrolled_level_box->margin_bottom = g_value_get_uint(value);
-    }
-    break;
-  case PROP_MARGIN_LEFT:
-    {
-      scrolled_level_box->margin_left = g_value_get_uint(value);
-    }
-    break;
-  case PROP_MARGIN_RIGHT:
-    {
-      scrolled_level_box->margin_right = g_value_get_uint(value);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_scrolled_level_box_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec)
-{
-  AgsScrolledLevelBox *scrolled_level_box;
-
-  scrolled_level_box = AGS_SCROLLED_LEVEL_BOX(gobject);
-
-  switch(prop_id){
-  case PROP_MARGIN_TOP:
-    {
-      g_value_set_uint(value,
-		       scrolled_level_box->margin_top);
-    }
-    break;
-  case PROP_MARGIN_BOTTOM:
-    {
-      g_value_set_uint(value,
-		       scrolled_level_box->margin_bottom);
-    }
-    break;
-  case PROP_MARGIN_LEFT:
-    {
-      g_value_set_uint(value,
-		       scrolled_level_box->margin_left);
-    }
-    break;
-  case PROP_MARGIN_RIGHT:
-    {
-      g_value_set_uint(value,
-		       scrolled_level_box->margin_right);
-    }
-    break;  
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  scrolled_level_box->level_box = ags_level_box_new(GTK_ORIENTATION_VERTICAL);
+  gtk_scrolled_window_set_child(scrolled_level_box->scrolled_window,
+				scrolled_level_box->level_box);
 }
 
 void
@@ -304,74 +117,6 @@ ags_scrolled_level_box_finalize(GObject *gobject)
   /* call parent */
   G_OBJECT_CLASS(ags_scrolled_level_box_parent_class)->finalize(gobject);
 }
-
-
-void
-ags_scrolled_level_get_preferred_width(GtkWidget *widget,
-				       gint *minimal_width,
-				       gint *natural_width)
-{
-  minimal_width[0] =
-    natural_width[0] = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
-}
-
-void
-ags_scrolled_level_get_preferred_height(GtkWidget *widget,
-					gint *minimal_height,
-					gint *natural_height)
-{
-  minimal_height[0] =
-      natural_height[0] = 1;
-}
-
-void
-ags_scrolled_level_box_size_allocate(GtkWidget *widget,
-				     GtkAllocation *allocation)
-{
-  AgsScrolledLevelBox *scrolled_level_box;
-
-  GtkAllocation child_allocation;
-  GtkRequisition child_requisition;
-  
-  scrolled_level_box = AGS_SCROLLED_LEVEL_BOX(widget);
-  
-  //GTK_WIDGET_CLASS(ags_scrolled_level_box_parent_class)->size_allocate(widget, allocation);
-  
-  gtk_widget_set_allocation(widget,
-			    allocation);
-  
-  gtk_widget_set_allocation(scrolled_level_box->viewport,
-			    allocation);
-
-  /* viewport allocation */
-  gtk_widget_get_child_requisition((GtkWidget *) scrolled_level_box->viewport,
-				   &child_requisition);
-
-  child_allocation.x = allocation->x;
-  child_allocation.y = allocation->y;
-
-  child_allocation.width = allocation->width;
-  child_allocation.height = allocation->height;
-
-  gtk_widget_size_allocate((GtkWidget *) scrolled_level_box->viewport,
-			   &child_allocation);
-  
-  /* box */
-  if(scrolled_level_box->level_box != NULL){
-    gtk_widget_get_child_requisition((GtkWidget *) scrolled_level_box->level_box,
-				     &child_requisition);
-
-    child_allocation.x = 0;
-    child_allocation.y = 0;
-
-    child_allocation.width = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
-    child_allocation.height = allocation->height;
-  
-    gtk_widget_size_allocate((GtkWidget *) scrolled_level_box->level_box,
-			     &child_allocation);
-  }
-}
-
 
 /**
  * ags_scrolled_level_box_new:

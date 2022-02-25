@@ -22,6 +22,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_scrolled_level_box.h>
+
 #include <stdlib.h>
 
 void
@@ -30,62 +32,21 @@ activate(GtkApplication *app,
 {
   GtkWindow *window;
   GtkGrid *grid;
-  GtkScrolledWindow *scrolled_window;
-  GtkGrid *block;
+  AgsScrolledLevelBox *scrolled_level_box;
 
-  guint i;
-  guint j;
-  
   window = gtk_application_window_new(app);
 
   grid = gtk_grid_new();
   gtk_window_set_child(window,
 		       grid);
 
-  scrolled_window = gtk_scrolled_window_new();  
+  scrolled_level_box = ags_scrolled_level_box_new();
   gtk_grid_attach(grid,
-		  scrolled_window,
+		  scrolled_level_box,
 		  0, 0,
 		  1, 1);
-
-  gtk_scrolled_window_set_policy(scrolled_window,
-  				 GTK_POLICY_EXTERNAL,
-  				 GTK_POLICY_EXTERNAL);
-  
-  gtk_widget_set_vexpand(scrolled_window,
-			 TRUE);
-
-  gtk_widget_set_margin_top(scrolled_window,
-			    20);
-
-  gtk_widget_set_size_request(scrolled_window,
-			      60, -1);
-
-  block = gtk_grid_new();
-  gtk_scrolled_window_set_child(scrolled_window,
-				block);
-
-  for(i = 0; i < 10; i++){
-    for(j = 0; j < 10; j++){
-      GtkButton *button;
-
-      gchar *str;
-
-      str = g_strdup_printf("%d", i * 10 + j);
-      
-      button = gtk_button_new_with_label(str);
-
-      gtk_grid_attach(block,
-		      button,
-		      i, j,
-		      1, 1);
-
-      g_free(str);
-    }
-  }
   
   gtk_widget_show(window);
-  gtk_widget_show(block);
 }
 
 int
@@ -95,7 +56,7 @@ main(int argc, char **argv)
 
   int status;
   
-  app = gtk_application_new("org.nongnu.gsequencer.ags_viewport_test",
+  app = gtk_application_new("org.nongnu.gsequencer.ags_scrolled_level_box_test",
 			    G_APPLICATION_FLAGS_NONE);
   
   g_signal_connect(app, "activate",

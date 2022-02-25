@@ -22,6 +22,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_level_box.h>
+#include <ags/widget/ags_level.h>
+
 #include <stdlib.h>
 
 void
@@ -30,11 +33,8 @@ activate(GtkApplication *app,
 {
   GtkWindow *window;
   GtkGrid *grid;
-  GtkScrolledWindow *scrolled_window;
-  GtkGrid *block;
-
-  guint i;
-  guint j;
+  AgsLevelBox *level_box;
+  AgsLevel *level;
   
   window = gtk_application_window_new(app);
 
@@ -42,50 +42,25 @@ activate(GtkApplication *app,
   gtk_window_set_child(window,
 		       grid);
 
-  scrolled_window = gtk_scrolled_window_new();  
+  level_box = ags_level_box_new(GTK_ORIENTATION_VERTICAL);
   gtk_grid_attach(grid,
-		  scrolled_window,
+		  level_box,
 		  0, 0,
 		  1, 1);
 
-  gtk_scrolled_window_set_policy(scrolled_window,
-  				 GTK_POLICY_EXTERNAL,
-  				 GTK_POLICY_EXTERNAL);
-  
-  gtk_widget_set_vexpand(scrolled_window,
-			 TRUE);
+  level = ags_level_new(GTK_ORIENTATION_VERTICAL,
+			AGS_LEVEL_DEFAULT_WIDTH_REQUEST,
+			AGS_LEVEL_DEFAULT_HEIGHT_REQUEST);
+  gtk_box_append((GtkBox *) level_box,
+		 (GtkWidget *) level);
 
-  gtk_widget_set_margin_top(scrolled_window,
-			    20);
-
-  gtk_widget_set_size_request(scrolled_window,
-			      60, -1);
-
-  block = gtk_grid_new();
-  gtk_scrolled_window_set_child(scrolled_window,
-				block);
-
-  for(i = 0; i < 10; i++){
-    for(j = 0; j < 10; j++){
-      GtkButton *button;
-
-      gchar *str;
-
-      str = g_strdup_printf("%d", i * 10 + j);
-      
-      button = gtk_button_new_with_label(str);
-
-      gtk_grid_attach(block,
-		      button,
-		      i, j,
-		      1, 1);
-
-      g_free(str);
-    }
-  }
+  level = ags_level_new(GTK_ORIENTATION_VERTICAL,
+			AGS_LEVEL_DEFAULT_WIDTH_REQUEST,
+			AGS_LEVEL_DEFAULT_HEIGHT_REQUEST);
+  gtk_box_append((GtkBox *) level_box,
+		 (GtkWidget *) level);
   
   gtk_widget_show(window);
-  gtk_widget_show(block);
 }
 
 int
@@ -95,7 +70,7 @@ main(int argc, char **argv)
 
   int status;
   
-  app = gtk_application_new("org.nongnu.gsequencer.ags_viewport_test",
+  app = gtk_application_new("org.nongnu.gsequencer.ags_level_box_test",
 			    G_APPLICATION_FLAGS_NONE);
   
   g_signal_connect(app, "activate",

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,21 +42,16 @@ typedef struct _AgsScrolledLevelBoxClass AgsScrolledLevelBoxClass;
 
 struct _AgsScrolledLevelBox
 {
-  GtkBin bin;
+  GtkGrid grid;
 
-  guint margin_top;
-  guint margin_bottom;
-  guint margin_left;
-  guint margin_right;
-
-  AgsViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
 
   AgsLevelBox *level_box;
 };
 
 struct _AgsScrolledLevelBoxClass
 {
-  GtkBinClass bin;
+  GtkGridClass grid;
 };
 
 GType ags_scrolled_level_box_get_type(void);

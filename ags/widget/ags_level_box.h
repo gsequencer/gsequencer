@@ -34,15 +34,13 @@ G_BEGIN_DECLS
 #define AGS_IS_LEVEL_BOX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LEVEL_BOX))
 #define AGS_LEVEL_BOX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_LEVEL_BOX, AgsLevelBoxClass))
 
+#define AGS_LEVEL_BOX_DEFAULT_SPACING (8)
+
 #define AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH (60)
 #define AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT (128)
 
 typedef struct _AgsLevelBox AgsLevelBox;
 typedef struct _AgsLevelBoxClass AgsLevelBoxClass;
-
-typedef enum{
-  AGS_LEVEL_BOX_FIXED_LEVEL_SIZE  = 1,
-}AgsLevelBoxFlags;
 
 struct _AgsLevelBox
 {

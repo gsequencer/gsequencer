@@ -2550,7 +2550,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_scrolled_scale_box.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_vled_array.h \
-	ags/widget/ags_viewport.h \
 	ags/widget/ags_widget_marshal.h
 
 deprecated_libags_gui_c_sources =
@@ -2578,7 +2577,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_scrolled_level_box.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_vled_array.c \
-	ags/widget/ags_viewport.c \
 	ags/widget/ags_widget_marshal.c
 
 # libgsequencer all files
