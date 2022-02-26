@@ -39,7 +39,6 @@
 #include <ags/widget/ags_scrolled_level_box.h>
 #include <ags/widget/ags_scrolled_scale_box.h>
 #include <ags/widget/ags_ruler.h>
-#include <ags/widget/ags_vscale_box.h>
 #include <ags/widget/ags_widget_marshal.h>
 
 #endif /*__LIBAGS_GUI_H__*/

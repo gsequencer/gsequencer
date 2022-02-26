@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,20 +21,15 @@
 
 #include <ags/widget/ags_widget_marshal.h>
 
-#include <atk/atk.h>
-
 #include <gdk/gdkkeysyms.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-static GType ags_accessible_piano_get_type(void);
 void ags_piano_class_init(AgsPianoClass *piano);
+void ags_piano_orientable_interface_init(GtkOrientableIface *orientable);
 void ags_piano_init(AgsPiano *piano);
-void ags_accessible_piano_class_init(AtkObject *object);
-void ags_accessible_piano_value_interface_init(AtkValueIface *value);
-void ags_accessible_piano_action_interface_init(AtkActionIface *action);
 void ags_piano_set_property(GObject *gobject,
 			    guint prop_id,
 			    const GValue *value,
@@ -44,55 +39,61 @@ void ags_piano_get_property(GObject *gobject,
 			    GValue *value,
 			    GParamSpec *param_spec);
 void ags_piano_finalize(GObject *gobject);
-AtkObject* ags_piano_get_accessible(GtkWidget *widget);
-void ags_piano_show(GtkWidget *widget);
 
-void ags_accessible_piano_get_value_and_text(AtkValue *value,
-					     gdouble *current_value,
-					     gchar **text);
-#ifdef HAVE_ATK_2_12  
-AtkRange* ags_accessible_piano_get_range(AtkValue *value);
-#endif
-gdouble ags_accessible_piano_get_increment(AtkValue *value);
-void ags_accessible_piano_set_value(AtkValue *value,
-				    gdouble new_value);
-
-gboolean ags_accessible_piano_do_action(AtkAction *action,
-					gint i);
-gint ags_accessible_piano_get_n_actions(AtkAction *action);
-const gchar* ags_accessible_piano_get_description(AtkAction *action,
-						  gint i);
-const gchar* ags_accessible_piano_get_name(AtkAction *action,
-					   gint i);
-const gchar* ags_accessible_piano_get_keybinding(AtkAction *action,
-						 gint i);
-gboolean ags_accessible_piano_set_description(AtkAction *action,
-					      gint i);
-gchar* ags_accessible_piano_get_localized_name(AtkAction *action,
-					       gint i);
-
-void ags_piano_map(GtkWidget *widget);
 void ags_piano_realize(GtkWidget *widget);
-void ags_piano_get_preferred_width(GtkWidget *widget,
-				   gint *minimal_width,
-				   gint *natural_width);
-void ags_piano_get_preferred_height(GtkWidget *widget,
-				    gint *minimal_height,
-				    gint *natural_height);
-void ags_piano_size_allocate(GtkWidget *widget,
-			     GtkAllocation *allocation);
-gboolean ags_piano_button_press(GtkWidget *widget,
-				GdkEventButton *event);
-gboolean ags_piano_button_release(GtkWidget *widget,
-				  GdkEventButton *event);
-gboolean ags_piano_key_press(GtkWidget *widget,
-			     GdkEventKey *event);
-gboolean ags_piano_key_release(GtkWidget *widget,
-			       GdkEventKey *event);
-gboolean ags_piano_motion_notify(GtkWidget *widget,
-				 GdkEventMotion *event);
 
-gboolean ags_piano_draw(AgsPiano *piano, cairo_t *cr);
+void ags_piano_measure(GtkWidget *widget,
+		       GtkOrientation orientation,
+		       int for_size,
+		       int *minimum,
+		       int *natural,
+		       int *minimum_baseline,
+		       int *natural_baseline);
+void ags_piano_size_allocate(GtkWidget *widget,
+			     int width,
+			     int height,
+			     int baseline);
+
+void ags_piano_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					   AgsPiano *piano);
+
+void ags_piano_snapshot(GtkWidget *widget,
+			GtkSnapshot *snapshot);
+
+gboolean ags_piano_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+						  gint n_press,
+						  gdouble x,
+						  gdouble y,
+						  AgsPiano *piano);
+gboolean ags_piano_gesture_click_released_callback(GtkGestureClick *event_controller,
+						   gint n_press,
+						   gdouble x,
+						   gdouble y,
+						   AgsPiano *piano);
+
+gboolean ags_piano_key_pressed_callback(GtkEventControllerKey *event_controller,
+					guint keyval,
+					guint keycode,
+					GdkModifierType state,
+					AgsPiano *piano);
+gboolean ags_piano_key_released_callback(GtkEventControllerKey *event_controller,
+					 guint keyval,
+					 guint keycode,
+					 GdkModifierType state,
+					 AgsPiano *piano);
+gboolean ags_piano_modifiers_callback(GtkEventControllerKey *event_controller,
+				      GdkModifierType keyval,
+				      AgsPiano *piano);
+
+gboolean ags_piano_motion_callback(GtkEventControllerMotion *event_controller,
+				   gdouble x,
+				   gdouble y,
+				   AgsPiano *piano);
+
+void ags_piano_draw(AgsPiano *piano,
+		    cairo_t *cr,
+		    gboolean is_animation);
+
 
 void ags_piano_real_key_pressed(AgsPiano *piano,
 				gchar *note, gint key_code);
@@ -121,6 +122,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_ORIENTATION,
   PROP_BASE_NOTE,
   PROP_BASE_KEY_CODE,
   PROP_KEY_WIDTH,
@@ -130,8 +132,6 @@ enum{
 
 static gpointer ags_piano_parent_class = NULL;
 static guint piano_signals[LAST_SIGNAL];
-
-static GQuark quark_accessible_object = 0;
 
 GType
 ags_piano_get_type(void)
@@ -153,9 +153,19 @@ ags_piano_get_type(void)
       (GInstanceInitFunc) ags_piano_init,
     };
 
+    static const GInterfaceInfo ags_orientable_interface_info = {
+      (GInterfaceInitFunc) ags_piano_orientable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_piano = g_type_register_static(GTK_TYPE_WIDGET,
 					    "AgsPiano", &ags_piano_info,
 					    0);
+    
+    g_type_add_interface_static(ags_type_piano,
+				GTK_TYPE_ORIENTABLE,
+				&ags_orientable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_piano);
   }
@@ -163,50 +173,10 @@ ags_piano_get_type(void)
   return g_define_type_id__volatile;
 }
 
-static GType
-ags_accessible_piano_get_type(void)
+void
+ags_piano_orientable_interface_init(GtkOrientableIface *orientable)
 {
-  static GType ags_type_accessible_piano = 0;
-
-  if(!ags_type_accessible_piano){
-    const GTypeInfo ags_accesssible_piano_info = {
-      sizeof(GtkAccessibleClass),
-      NULL,           /* base_init */
-      NULL,           /* base_finalize */
-      (GClassInitFunc) ags_accessible_piano_class_init,
-      NULL,           /* class_finalize */
-      NULL,           /* class_data */
-      sizeof(GtkAccessible),
-      0,             /* n_preallocs */
-      NULL, NULL
-    };
-
-    static const GInterfaceInfo atk_value_interface_info = {
-      (GInterfaceInitFunc) ags_accessible_piano_value_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-    
-    static const GInterfaceInfo atk_action_interface_info = {
-      (GInterfaceInitFunc) ags_accessible_piano_action_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    ags_type_accessible_piano = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-						       "AgsAccessiblePiano", &ags_accesssible_piano_info,
-						       0);
-
-    g_type_add_interface_static(ags_type_accessible_piano,
-				ATK_TYPE_VALUE,
-				&atk_value_interface_info);
-
-    g_type_add_interface_static(ags_type_accessible_piano,
-				ATK_TYPE_ACTION,
-				&atk_action_interface_info);
-  }
-  
-  return(ags_type_accessible_piano);
+  //empty
 }
 
 void
@@ -214,11 +184,10 @@ ags_piano_class_init(AgsPianoClass *piano)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_piano_parent_class = g_type_class_peek_parent(piano);
-
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 
   /* GObjectClass */
   gobject = (GObjectClass *) piano;
@@ -227,6 +196,8 @@ ags_piano_class_init(AgsPianoClass *piano)
   gobject->get_property = ags_piano_get_property;
 
   gobject->finalize = ags_piano_finalize;
+
+  g_object_class_override_property(gobject, PROP_ORIENTATION, "orientation");
 
   /* properties */
   /**
@@ -320,19 +291,12 @@ ags_piano_class_init(AgsPianoClass *piano)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) piano;
 
-  widget->get_accessible = ags_piano_get_accessible;
-  //  widget->map = ags_piano_map;
   widget->realize = ags_piano_realize;
-  widget->get_preferred_width = ags_piano_get_preferred_width;
-  widget->get_preferred_height = ags_piano_get_preferred_height;
+  
+  widget->measure = ags_piano_measure;
   widget->size_allocate = ags_piano_size_allocate;
-  widget->button_press_event = ags_piano_button_press;
-  widget->button_release_event = ags_piano_button_release;
-  widget->key_press_event = ags_piano_key_press;
-  widget->key_release_event = ags_piano_key_release;
-  widget->motion_notify_event = ags_piano_motion_notify;
-  widget->draw = ags_piano_draw;
-  widget->show = ags_piano_show;
+  
+  widget->snapshot = ags_piano_snapshot;
 
   /* AgsPianoClass */
   piano->key_pressed = ags_piano_real_key_pressed;
@@ -406,64 +370,50 @@ ags_piano_class_init(AgsPianoClass *piano)
 }
 
 void
-ags_accessible_piano_class_init(AtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_accessible_piano_value_interface_init(AtkValueIface *value)
-{
-  value->get_current_value = NULL;
-  value->get_maximum_value = NULL;
-  value->get_minimum_value = NULL;
-  value->set_current_value = NULL;
-  value->get_minimum_increment = NULL;
-
-#ifdef HAVE_ATK_2_12  
-  value->get_value_and_text = ags_accessible_piano_get_value_and_text;
-  value->get_range = ags_accessible_piano_get_range;
-  value->get_increment = ags_accessible_piano_get_increment;
-  value->get_sub_ranges = NULL;
-  value->set_value = ags_accessible_piano_set_value;
-#endif
-}
-
-void
-ags_accessible_piano_action_interface_init(AtkActionIface *action)
-{
-  action->do_action = ags_accessible_piano_do_action;
-  action->get_n_actions = ags_accessible_piano_get_n_actions;
-  action->get_description = ags_accessible_piano_get_description;
-  action->get_name = ags_accessible_piano_get_name;
-  action->get_keybinding = ags_accessible_piano_get_keybinding;
-  action->set_description = ags_accessible_piano_set_description;
-  action->get_localized_name = ags_accessible_piano_get_localized_name;
-}
-
-void
 ags_piano_init(AgsPiano *piano)
 {
-  AtkObject *accessible;
+  GtkEventController *event_controller;
+  
+  gtk_widget_set_can_focus((GtkWidget *) piano,
+			   TRUE);
 
-  g_object_set(G_OBJECT(piano),
-	       "app-paintable", TRUE,
-	       "can-focus", TRUE,
-	       NULL);
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) piano,
+			    event_controller);
 
-  accessible = gtk_widget_get_accessible((GtkWidget *) piano);
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_piano_key_pressed_callback), piano);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_piano_key_released_callback), piano);
 
-  g_object_set(accessible,
-	       "accessible-name", "piano",
-	       "accessible-description", "Hit a key at cursor position",
-	       NULL);
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_piano_modifiers_callback), piano);
+
+  event_controller = gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) piano,
+			    event_controller);
+
+  g_signal_connect(event_controller, "pressed",
+		   G_CALLBACK(ags_piano_gesture_click_pressed_callback), piano);
+
+  g_signal_connect(event_controller, "released",
+		   G_CALLBACK(ags_piano_gesture_click_released_callback), piano);
+
+  event_controller = gtk_event_controller_motion_new();
+  gtk_widget_add_controller((GtkWidget *) piano,
+			    event_controller);
+
+  g_signal_connect(event_controller, "motion",
+		   G_CALLBACK(ags_piano_motion_callback), piano);
 
   piano->flags = 0;
 
-  piano->button_state = 0;
-  piano->layout = AGS_PIANO_LAYOUT_VERTICAL;
+  piano->orientation = GTK_ORIENTATION_VERTICAL;
 
-  piano->font_size = 12;
+  piano->button_state = 0;
+
+  piano->font_size = AGS_PIANO_DEFAULT_FONT_SIZE;
   
   piano->base_note = g_strdup(AGS_PIANO_DEFAULT_BASE_NOTE);
   piano->base_key_code = AGS_PIANO_DEFAULT_BASE_KEY_CODE;
@@ -491,41 +441,57 @@ ags_piano_set_property(GObject *gobject,
   piano = AGS_PIANO(gobject);
 
   switch(prop_id){
-  case PROP_BASE_NOTE:
-    {
-      gchar *base_note;
+  case PROP_ORIENTATION:
+  {
+    GtkOrientation orientation;
 
-      base_note = g_value_get_string(value);
+    orientation = g_value_get_enum(value);
 
-      if(base_note == piano->base_note){
-	return;
-      }
-
-      g_free(piano->base_note);
+    if(orientation != piano->orientation){
+      piano->orientation = orientation;
       
-      piano->base_note = g_strdup(base_note);
+      gtk_widget_queue_resize(GTK_WIDGET(piano));
+
+      g_object_notify_by_pspec(gobject,
+			       param_spec);
     }
-    break;
+  }
+  break;
+  case PROP_BASE_NOTE:
+  {
+    gchar *base_note;
+
+    base_note = g_value_get_string(value);
+
+    if(base_note == piano->base_note){
+      return;
+    }
+
+    g_free(piano->base_note);
+      
+    piano->base_note = g_strdup(base_note);
+  }
+  break;
   case PROP_BASE_KEY_CODE:
-    {
-      piano->base_key_code = g_value_get_uint(value);
-    }
-    break;
+  {
+    piano->base_key_code = g_value_get_uint(value);
+  }
+  break;
   case PROP_KEY_WIDTH:
-    {
-      piano->key_width = g_value_get_uint(value);
-    }
-    break;
+  {
+    piano->key_width = g_value_get_uint(value);
+  }
+  break;
   case PROP_KEY_HEIGHT:
-    {
-      piano->key_height = g_value_get_uint(value);
-    }
-    break;
+  {
+    piano->key_height = g_value_get_uint(value);
+  }
+  break;
   case PROP_KEY_COUNT:
-    {
-      piano->key_count = g_value_get_uint(value);
-    }
-    break;
+  {
+    piano->key_count = g_value_get_uint(value);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -543,31 +509,36 @@ ags_piano_get_property(GObject *gobject,
   piano = AGS_PIANO(gobject);
 
   switch(prop_id){
+  case PROP_ORIENTATION:
+  {
+    g_value_set_enum(value, piano->orientation);
+  }
+  break;
   case PROP_BASE_NOTE:
-    {
-      g_value_set_string(value, piano->base_note);
-    }
-    break;
+  {
+    g_value_set_string(value, piano->base_note);
+  }
+  break;
   case PROP_BASE_KEY_CODE:
-    {
-      g_value_set_uint(value, piano->base_key_code);
-    }
-    break;
+  {
+    g_value_set_uint(value, piano->base_key_code);
+  }
+  break;
   case PROP_KEY_WIDTH:
-    {
-      g_value_set_uint(value, piano->key_width);
-    }
-    break;
+  {
+    g_value_set_uint(value, piano->key_width);
+  }
+  break;
   case PROP_KEY_HEIGHT:
-    {
-      g_value_set_uint(value, piano->key_height);
-    }
-    break;
+  {
+    g_value_set_uint(value, piano->key_height);
+  }
+  break;
   case PROP_KEY_COUNT:
-    {
-      g_value_set_uint(value, piano->key_count);
-    }
-    break;
+  {
+    g_value_set_uint(value, piano->key_count);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -588,468 +559,239 @@ ags_piano_finalize(GObject *gobject)
 }
 
 void
-ags_accessible_piano_get_value_and_text(AtkValue *value,
-					gdouble *current_value,
-					gchar **text)
-{
-  AgsPiano *piano;
-  
-  piano = (AgsPiano *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
-
-  if(current_value != NULL){
-    *current_value = (gdouble) piano->cursor_position;
-  }
-
-  if(text != NULL){
-    *text = g_strdup_printf("%d",
-			    piano->cursor_position);
-  }
-}
-
-#ifdef HAVE_ATK_2_12
-AtkRange*
-ags_accessible_piano_get_range(AtkValue *value)
-{
-  AgsPiano *piano;
-  AtkRange *range;
-  
-  piano = (AgsPiano *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
-
-  range = atk_range_new((gdouble) piano->base_key_code,
-			(gdouble) (piano->base_key_code + piano->key_count),
-			"Valid lower and upper input range of this piano");
-
-  return(range);
-}
-#endif
-
-gdouble
-ags_accessible_piano_get_increment(AtkValue *value)
-{
-  AgsPiano *piano;
-
-  piano = (AgsPiano *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
-
-  return(1.0);
-}
-
-void
-ags_accessible_piano_set_value(AtkValue *value,
-			       gdouble new_value)
-{
-  AgsPiano *piano;
-
-  piano = (AgsPiano *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
-  piano->cursor_position = (gint) new_value;
-  gtk_widget_queue_draw((GtkWidget *) piano);
-}
-
-gboolean
-ags_accessible_piano_do_action(AtkAction *action,
-			       gint i)
-{
-  AgsPiano *piano;
-  
-  GdkEventKey *key_press, *key_release;
-  
-  if(!(i >= 0 && i < 3)){
-    return(FALSE);
-  }
-
-  piano = (AgsPiano *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
-  
-  key_press = gdk_event_new(GDK_KEY_PRESS);
-  key_release = gdk_event_new(GDK_KEY_RELEASE);
-
-  switch(i){
-  case AGS_PIANO_MOVE_CURSOR_UP:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Up;
-    
-      /* send event */
-      gtk_widget_event((GtkWidget *) piano,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) piano,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PIANO_MOVE_CURSOR_DOWN:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Down;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) piano,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) piano,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PIANO_HIT_KEY:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_space;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) piano,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) piano,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  }
-
-  return(TRUE);
-}
-
-gint
-ags_accessible_piano_get_n_actions(AtkAction *action)
-{
-  return(3);
-}
-
-const gchar*
-ags_accessible_piano_get_description(AtkAction *action,
-				     gint i)
-{
-  static const gchar *actions[] = {
-    "move up one piano key",
-    "move down one piano key",
-    "hit current piano key",
-  };
-
-  if(i >= 0 && i < 3){
-    return(actions[i]);
-  }else{
-    return(NULL);
-  }
-}
-
-const gchar*
-ags_accessible_piano_get_name(AtkAction *action,
-			      gint i)
-{
-  static const gchar *actions[] = {
-    "move-up",
-    "move-down",
-    "hit-key",
-  };
-  
-  if(i >= 0 && i < 3){
-    return(actions[i]);
-  }else{
-    return(NULL);
-  }
-}
-
-const gchar*
-ags_accessible_piano_get_keybinding(AtkAction *action,
-				    gint i)
-{
-  static const gchar *actions[] = {
-    "up",
-    "down",
-    "space"
-  };
-  
-  if(i >= 0 && i < 3){
-    return(actions[i]);
-  }else{
-    return(NULL);
-  }
-}
-
-gboolean
-ags_accessible_piano_set_description(AtkAction *action,
-				     gint i)
-{
-  //TODO:JK: implement me
-
-  return(FALSE);
-}
-
-gchar*
-ags_accessible_piano_get_localized_name(AtkAction *action,
-					gint i)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
-}
-
-void
-ags_piano_map(GtkWidget *widget)
-{
-  if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
-    GTK_WIDGET_CLASS(ags_piano_parent_class)->map(widget);
-    
-    gdk_window_show(gtk_widget_get_window(widget));
-  }
-}
-
-void
 ags_piano_realize(GtkWidget *widget)
 {
-  AgsPiano *piano;
-
-  GdkWindow *window;
+  GdkFrameClock *frame_clock;
   
-  GtkAllocation allocation;
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_piano_parent_class)->realize(widget);
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
   
-  GdkWindowAttr attributes;
+  g_signal_connect(frame_clock, "update", 
+		   G_CALLBACK(ags_piano_frame_clock_update_callback), widget);
 
-  gint attributes_mask;
-
-  g_return_if_fail(widget != NULL);
-  g_return_if_fail(AGS_IS_PIANO(widget));
-
-  piano = AGS_PIANO(widget);
-
-  gtk_widget_set_realized(widget, TRUE);
-
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  /*  */
-  attributes.window_type = GDK_WINDOW_CHILD;
-  
-  attributes.x = allocation.x;
-  attributes.y = allocation.y;
-  attributes.width = allocation.width;
-  attributes.height = allocation.height;
-
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
-
-  attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual(widget);
-  attributes.event_mask = gtk_widget_get_events(widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK |
-                            GDK_BUTTON_PRESS_MASK |
-                            GDK_BUTTON_RELEASE_MASK |
-			    GDK_KEY_PRESS_MASK | 
-			    GDK_KEY_RELEASE_MASK |
-                            GDK_BUTTON1_MOTION_MASK |
-                            GDK_BUTTON3_MOTION_MASK |
-                            GDK_POINTER_MOTION_HINT_MASK |
-                            GDK_POINTER_MOTION_MASK |
-                            GDK_ENTER_NOTIFY_MASK |
-                            GDK_LEAVE_NOTIFY_MASK);
-
-  window = gdk_window_new(gtk_widget_get_parent_window(widget),
-			  &attributes, attributes_mask);
-
-  gtk_widget_register_window(widget, window);
-  gtk_widget_set_window(widget, window);
-
-  gtk_widget_queue_resize(widget);
+  gdk_frame_clock_begin_updating(frame_clock);
 }
 
-AtkObject*
-ags_piano_get_accessible(GtkWidget *widget)
-{
-  AtkObject* accessible;
-
-  accessible = g_object_get_qdata(G_OBJECT(widget),
-				  quark_accessible_object);
-  
-  if(!accessible){
-    accessible = g_object_new(ags_accessible_piano_get_type(),
-			      NULL);
-    
-    g_object_set_qdata(G_OBJECT(widget),
-		       quark_accessible_object,
-		       accessible);
-    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
-			      widget);
-  }
-  
-  return(accessible);
-}
 
 void
-ags_piano_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_piano_parent_class)->show(widget);
-}
-
-void
-ags_piano_get_preferred_width(GtkWidget *widget,
-			      gint *minimal_width,
-			      gint *natural_width)
+ags_piano_measure(GtkWidget *widget,
+		  GtkOrientation orientation,
+		  int for_size,
+		  int *minimum,
+		  int *natural,
+		  int *minimum_baseline,
+		  int *natural_baseline)
 {
   AgsPiano *piano;
 
-  piano = AGS_PIANO(widget);
-
-  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    minimal_width[0] =
-      natural_width[0] = piano->key_width;
-  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    minimal_width[0] =
-      natural_width[0] = piano->key_count * piano->key_height;
-  }
-}
-
-void
-ags_piano_get_preferred_height(GtkWidget *widget,
-			       gint *minimal_height,
-			       gint *natural_height)
-{
-  AgsPiano *piano;
-
-  piano = AGS_PIANO(widget);
-
-  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    minimal_height[0] =
-      natural_height[0] = piano->key_count * piano->key_height;
-  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    minimal_height[0] =
-      natural_height[0] = piano->key_width;
+  piano = (AgsPiano *) widget;
+  
+  if(orientation == GTK_ORIENTATION_VERTICAL){
+    if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_VERTICAL){
+      minimum[0] =
+	natural[0] = piano->key_count * piano->key_height;
+    }else{
+      minimum[0] = 
+	natural[0] = piano->key_width;
+    }
+  }else{
+    if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_VERTICAL){
+      minimum[0] = 
+	natural[0] = piano->key_width;
+    }else{
+      minimum[0] = 
+	natural[0] = piano->key_count * piano->key_height;
+    }
   }
 }
 
 void
 ags_piano_size_allocate(GtkWidget *widget,
-			GtkAllocation *allocation)
+			int width,
+			int height,
+			int baseline)
 {
   AgsPiano *piano;
 
-  piano = AGS_PIANO(widget);
+  piano = (AgsPiano *) widget;
 
-  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    allocation->width = piano->key_width;
-    allocation->height = piano->key_count * piano->key_height;
-  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    allocation->width = piano->key_count * piano->key_height;
-    allocation->height = piano->key_width;
+  if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_VERTICAL){
+    width = piano->key_height;
+    height = piano->key_count * piano->key_width;
+  }else{
+    width = piano->key_count * piano->key_width;
+    height = piano->key_height;
   }
+  
+  GTK_WIDGET_CLASS(ags_piano_parent_class)->size_allocate(widget,
+							  width,
+							  height,
+							  baseline);
+}
 
-  gtk_widget_set_allocation(widget,
-			    allocation);
+void
+ags_piano_frame_clock_update_callback(GdkFrameClock *frame_clock,
+				      AgsPiano *piano)
+{
+  gtk_widget_queue_draw((GtkWidget *) piano);
+}
+
+void
+ags_piano_snapshot(GtkWidget *widget,
+		   GtkSnapshot *snapshot)
+{
+  GtkStyleContext *style_context;
+
+  cairo_t *cr;
+
+  graphene_rect_t rect;
+  
+  int width, height;
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+  width = gtk_widget_get_width(widget);
+  height = gtk_widget_get_height(widget);
+  
+  graphene_rect_init(&rect,
+		     0.0, 0.0,
+		     (float) width, (float) height);
+  
+  cr = gtk_snapshot_append_cairo(snapshot,
+				 &rect);
+  
+  /* clear bg */
+  gtk_render_background(style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) width, (gdouble) height);
+
+  ags_piano_draw((AgsPiano *) widget,
+		 cr,
+		 TRUE);
+  
+  cairo_destroy(cr);
 }
 
 gboolean
-ags_piano_button_press(GtkWidget *widget,
-		       GdkEventButton *event)
+ags_piano_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+					 gint n_press,
+					 gdouble x,
+					 gdouble y,
+					 AgsPiano *piano)
 {
-  AgsPiano *piano;
-
-  GtkAllocation allocation;
-
   guint width, height;
   guint x_start, y_start;
 
-  piano = AGS_PIANO(widget);
-
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-
-  width = allocation.width;
-  height = allocation.height;
+  width = gtk_widget_get_width((AgsPiano *) piano);
+  height = gtk_widget_get_height((AgsPiano *) piano);
 
   x_start = 0;
   y_start = 0;
 
-  if(event->x >= x_start &&
-     event->x < width &&
-     event->y >= y_start &&
-     event->y < height){
-    if(event->button == 1){
-      gchar *note;
-      
-      piano->button_state |= AGS_PIANO_BUTTON_1_PRESSED;
-
-      if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-	piano->current_key = floor(event->y / piano->key_height);
-      }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-	piano->current_key = floor(event->x / piano->key_height);
-      }
-
-      note = ags_piano_key_code_to_note(piano->current_key);
-
-      ags_piano_key_pressed(piano,
-			    note, piano->current_key);
-
-      g_free(note);
-    }
-  }
-  
-  return(FALSE);
-}
-
-gboolean
-ags_piano_button_release(GtkWidget *widget,
-			 GdkEventButton *event)
-{
-  AgsPiano *piano;
-
-  gtk_widget_grab_focus(widget);
-
-  piano = AGS_PIANO(widget);
-  
-  if(event->button == 1){
-    if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
-      gchar *note;
-
-      note = ags_piano_key_code_to_note(piano->current_key);
-      
-      ags_piano_key_released(piano,
-			    note, piano->current_key);
-      ags_piano_key_clicked(piano,
-			    note, piano->current_key);
-      
-      g_free(note);
-    }
+  if(x >= x_start &&
+     x < width &&
+     y >= y_start &&
+     y < height){
+    gchar *note;
     
-    piano->button_state &= (~AGS_PIANO_BUTTON_1_PRESSED);
+    piano->button_state |= AGS_PIANO_BUTTON_1_PRESSED;
+
+    if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_VERTICAL){
+      piano->current_key = floor(y / piano->key_height);
+    }else if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_HORIZONTAL){
+      piano->current_key = floor(x / piano->key_height);
+    }
+
+    note = ags_piano_key_code_to_note(piano->current_key);
+
+    ags_piano_key_pressed(piano,
+			  note, piano->current_key);
+
+    g_free(note);
   }
 
   return(FALSE);
 }
 
 gboolean
-ags_piano_key_press(GtkWidget *widget,
-		    GdkEventKey *event)
+ags_piano_gesture_click_released_callback(GtkGestureClick *event_controller,
+					  gint n_press,
+					  gdouble x,
+					  gdouble y,
+					  AgsPiano *piano)
 {
-  if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_KEY_ISO_Left_Tab ||
-     event->keyval == GDK_KEY_Shift_L ||
-     event->keyval == GDK_KEY_Shift_R ||
-     event->keyval == GDK_KEY_Alt_L ||
-     event->keyval == GDK_KEY_Alt_R ||
-     event->keyval == GDK_KEY_Control_L ||
-     event->keyval == GDK_KEY_Control_R ){
-    return(GTK_WIDGET_CLASS(ags_piano_parent_class)->key_press_event(widget, event));
-  }
+  gtk_widget_grab_focus((GtkWidget *) piano);
 
-  return(TRUE);
+  if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
+    gchar *note;
+
+    note = ags_piano_key_code_to_note(piano->current_key);
+      
+    ags_piano_key_released(piano,
+			   note, piano->current_key);
+    ags_piano_key_clicked(piano,
+			  note, piano->current_key);
+      
+    g_free(note);
+  }
+    
+  piano->button_state &= (~AGS_PIANO_BUTTON_1_PRESSED);
+
+  return(FALSE);
 }
 
 gboolean
-ags_piano_key_release(GtkWidget *widget,
-		      GdkEventKey *event)
+ags_piano_key_pressed_callback(GtkEventControllerKey *event_controller,
+			       guint keyval,
+			       guint keycode,
+			       GdkModifierType state,
+			       AgsPiano *piano)
 {
-  AgsPiano *piano;
+  gboolean key_handled;
 
-  //TODO:JK: implement me
-  
-  if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_KEY_ISO_Left_Tab ||
-     event->keyval == GDK_KEY_Shift_L ||
-     event->keyval == GDK_KEY_Shift_R ||
-     event->keyval == GDK_KEY_Alt_L ||
-     event->keyval == GDK_KEY_Alt_R ||
-     event->keyval == GDK_KEY_Control_L ||
-     event->keyval == GDK_KEY_Control_R ){
-    return(GTK_WIDGET_CLASS(ags_piano_parent_class)->key_release_event(widget, event));
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
   }
-
-  piano = AGS_PIANO(widget);
   
-  switch(event->keyval){
-  case GDK_KEY_Up:
-  case GDK_KEY_uparrow:
+  return(key_handled);
+}
+
+gboolean
+ags_piano_key_released_callback(GtkEventControllerKey *event_controller,
+				guint keyval,
+				guint keycode,
+				GdkModifierType state,
+				AgsPiano *piano)
+{
+  gboolean key_handled;
+
+  key_handled = TRUE;
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab ||
+     keyval == GDK_KEY_Shift_L ||
+     keyval == GDK_KEY_Shift_R ||
+     keyval == GDK_KEY_Alt_L ||
+     keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Control_L ||
+     keyval == GDK_KEY_Control_R){
+    key_handled = FALSE;
+  }else{
+    switch(keyval){
+    case GDK_KEY_Up:
+    case GDK_KEY_uparrow:
     {
       guint value, step, upper;
 
@@ -1063,11 +805,11 @@ ags_piano_key_release(GtkWidget *widget,
 	piano->cursor_position = value + step;
       }
 
-      gtk_widget_queue_draw(widget);
+      gtk_widget_queue_draw((GtkWidget *) piano);
     }
     break;
-  case GDK_KEY_Down:
-  case GDK_KEY_downarrow:
+    case GDK_KEY_Down:
+    case GDK_KEY_downarrow:
     {
       guint value, step, lower;
 
@@ -1081,10 +823,10 @@ ags_piano_key_release(GtkWidget *widget,
 	piano->cursor_position = value - step;
       }
 
-      gtk_widget_queue_draw(widget);
+      gtk_widget_queue_draw((GtkWidget *) piano);
     }
     break;
-  case GDK_KEY_space:
+    case GDK_KEY_space:
     {
       gchar *note;
       guint key_code;
@@ -1101,31 +843,33 @@ ags_piano_key_release(GtkWidget *widget,
 			    note, key_code);
     }
     break;
+    }
   }
   
-  return(TRUE);
+  return(key_handled);
 }
 
 gboolean
-ags_piano_motion_notify(GtkWidget *widget,
-			GdkEventMotion *event)
+ags_piano_modifiers_callback(GtkEventControllerKey *event_controller,
+			     GdkModifierType keyval,
+			     AgsPiano *piano)
 {
-  AgsPiano *piano;
+  return(FALSE);
+}
 
-  GtkAllocation allocation;
-
+gboolean
+ags_piano_motion_callback(GtkEventControllerMotion *event_controller,
+			  gdouble x,
+			  gdouble y,
+			  AgsPiano *piano)
+{
   guint width, height;
   guint x_start, y_start;
 
   gint new_current_key;
-  
-  piano = AGS_PIANO(widget);
 
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-
-  width = allocation.width;
-  height = allocation.height;
+  width = gtk_widget_get_width((AgsPiano *) piano);
+  height = gtk_widget_get_height((AgsPiano *) piano);
 
   x_start = 0;
   y_start = 0;
@@ -1133,10 +877,10 @@ ags_piano_motion_notify(GtkWidget *widget,
   if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
     new_current_key = 0;
     
-    if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-      new_current_key = floor(event->y / piano->key_height);
-    }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-      new_current_key = floor(event->x / piano->key_height);
+    if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_VERTICAL){
+      new_current_key = floor(y / piano->key_height);
+    }else if(gtk_orientable_get_orientation(GTK_ORIENTABLE(piano)) == GTK_ORIENTATION_HORIZONTAL){
+      new_current_key = floor(x / piano->key_height);
     }
 
     /* emit released */
@@ -1154,10 +898,10 @@ ags_piano_motion_notify(GtkWidget *widget,
     }
 
     /* emit pressed */
-    if(event->x >= x_start &&
-       event->x < width &&
-       event->y >= y_start &&
-       event->y < height){
+    if(x >= x_start &&
+       x < width &&
+       y >= y_start &&
+       y < height){
       gchar *note;
 
       piano->current_key = new_current_key;
@@ -1170,17 +914,21 @@ ags_piano_motion_notify(GtkWidget *widget,
       g_free(note);      
     }
   }
-    
+
   return(FALSE);
 }
 
-gboolean
-ags_piano_draw(AgsPiano *piano, cairo_t *cr)
+void
+ags_piano_draw(AgsPiano *piano,
+	       cairo_t *cr,
+	       gboolean is_animation)
 {  
-  GtkStyleContext *piano_style_context;
+  GtkStyleContext *style_context;
+  GtkSettings *settings;
 
-  GtkAllocation allocation;
+  GtkOrientation orientation;
 
+  guint widget_width, widget_height;
   guint width, height;
   guint x_start, y_start;
 
@@ -1193,39 +941,45 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   guint active_key_count;
   gint active_position;
   gboolean current_is_active;
-  guint i, j;
-  
+  guint i, j;  
+  gboolean dark_theme;
+
   static const guint bitmap = 0x52a52a;
 
-  if(!AGS_IS_PIANO(piano)){
-    return(FALSE);
-  }
+  style_context = gtk_widget_get_style_context((GtkWidget *) piano);
+  
+  settings = gtk_settings_get_default();
 
-  gtk_widget_get_allocation(piano,
-			    &allocation);
+  dark_theme = TRUE;
+  
+  g_object_get(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
 
-  /* style context */
-  piano_style_context = gtk_widget_get_style_context(GTK_WIDGET(piano));
+  widget_width = gtk_widget_get_width((GtkWidget *) piano);
+  widget_height = gtk_widget_get_height((GtkWidget *) piano);
+
+  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(piano));
 
   width  = 0;
   height = 0;
 
-  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    width = allocation.width;
+  if(orientation == GTK_ORIENTATION_VERTICAL){
+    width = widget_width;
 
-    if(piano->key_count * piano->key_height < allocation.height){
+    if(piano->key_count * piano->key_height < widget_height){
       height = piano->key_count * piano->key_height;
     }else{
-      height = allocation.height;
+      height = widget_height;
     }
-  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    if(piano->key_count * piano->key_height < allocation.width){
+  }else if(orientation == GTK_ORIENTATION_HORIZONTAL){
+    if(piano->key_count * piano->key_height < widget_width){
       width = piano->key_count * piano->key_height;
     }else{
-      width = allocation.width;
+      width = widget_width;
     }
 
-    height = allocation.height;
+    height = widget_height;
   }
   
   x_start = 0;
@@ -1235,17 +989,10 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   cairo_push_group(cr);
   
   /* clear bg */
-  gtk_render_background(piano_style_context,
-			cr,
-			0.0, 0.0,
-			(gdouble) x_start, (gdouble) y_start);
-
-  gtk_render_background(piano_style_context,
-			cr,
-			(double) x_start + width, (double) y_start + height,
-			(gdouble) allocation.width, (gdouble) allocation.height);
-
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgb(cr,
+		       1.0,
+		       1.0,
+		       1.0);
   cairo_rectangle(cr,
 		  (double) x_start, (double) y_start,
 		  (double) width, (double) height);
@@ -1261,13 +1008,13 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   small_control_width = 0;
   small_control_height = 0;
   
-  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+  if(orientation == GTK_ORIENTATION_VERTICAL){
     big_control_width = piano->key_width;
     big_control_height = piano->key_height;
     
     small_control_width = (2.0 / 3.0) * piano->key_width;
     small_control_height = piano->key_height;
-  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+  }else if(orientation == GTK_ORIENTATION_HORIZONTAL){
     big_control_width = piano->key_height;
     big_control_height = piano->key_width;
     
@@ -1311,41 +1058,47 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
       cairo_set_source_rgb(cr,
 			   0.68, 0.68, 0.68);
 
-      cairo_move_to(cr,
-		    (double) (control_x0 + small_control_width), (double) (control_y0 + small_control_height / 2));
-      cairo_line_to(cr,
-		    (double) (control_x0 + big_control_width), (double) (control_y0 + small_control_height / 2));
-      cairo_stroke(cr);
-
-      cairo_move_to(cr,
-		    (double) (control_x0 + big_control_width), (double) control_y0);
-      cairo_line_to(cr,
-		    (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
-      cairo_stroke(cr);
+      if(orientation == GTK_ORIENTATION_VERTICAL){
+	cairo_move_to(cr,
+		      (double) (control_x0 + small_control_width), (double) (control_y0 + small_control_height / 2));
+	cairo_line_to(cr,
+		      (double) (control_x0 + big_control_width), (double) (control_y0 + small_control_height / 2));
+	cairo_stroke(cr);
+      }else{
+	cairo_move_to(cr,
+		      (double) control_x0 + small_control_width / 2, (double) small_control_height);
+	cairo_line_to(cr,
+		      (double) control_x0 + small_control_width / 2, (double) big_control_height);
+	cairo_stroke(cr);
+      }
     }else{
       /* draw no semi tone key */
       cairo_set_source_rgb(cr,
 			   0.68, 0.68, 0.68);
 
-      if(((1 << (j + 1)) & bitmap) == 0){
-	cairo_move_to(cr,
-		      (double) control_x0, (double) (control_y0 + big_control_height));
-	cairo_line_to(cr,
-		      (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
-	cairo_stroke(cr);
+      if(orientation == GTK_ORIENTATION_VERTICAL){
+	if(((1 << (j + 1)) & bitmap) == 0){
+	  cairo_move_to(cr,
+			(double) control_x0, (double) (control_y0 + big_control_height));
+	  cairo_line_to(cr,
+			(double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
+	  cairo_stroke(cr);
+	}
+      }else{
+	if(((1 << (j + 1)) & bitmap) == 0){
+	  cairo_move_to(cr,
+			(double) control_x0 + big_control_width, (double) 0.0);
+	  cairo_line_to(cr,
+			(double) control_x0 + big_control_width, (double) big_control_height);
+	  cairo_stroke(cr);
+	}
       }
-
-      cairo_move_to(cr,
-		    (double) (control_x0 + big_control_width), (double) control_y0);
-      cairo_line_to(cr,
-		    (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
-      cairo_stroke(cr);
     }
 
     /* iterate - offset */
-    if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    if(orientation == GTK_ORIENTATION_VERTICAL){
       control_y0 += piano->key_height;
-    }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    }else if(orientation == GTK_ORIENTATION_HORIZONTAL){
       control_x0 += piano->key_height;
     }
 
@@ -1361,10 +1114,6 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
-
-//  cairo_surface_mark_dirty(cairo_get_target(cr));
-
-  return(FALSE);
 }
 
 /**
@@ -1405,46 +1154,6 @@ ags_piano_get_button_state(AgsPiano *piano)
   }
 
   return(piano->button_state);
-}
-
-/**
- * ags_piano_set_layout:
- * @piano: the #AgsPiano
- * @layout: the #AgsPianoButtonState-enum
- * 
- * Set @layout of @piano.
- * 
- * Since: 3.6.6
- */
-void
-ags_piano_set_layout(AgsPiano *piano,
-		     guint layout)
-{
-  if(!AGS_IS_PIANO(piano)){
-    return;
-  }
-
-  piano->layout = layout;
-}
-
-/**
- * ags_piano_get_layout:
- * @piano: the #AgsPiano
- * 
- * Get vertical or horizontal layout of @piano.
- * 
- * Returns: the layout
- * 
- * Since: 3.6.6
- */
-guint
-ags_piano_get_layout(AgsPiano *piano)
-{
-  if(!AGS_IS_PIANO(piano)){
-    return(0);
-  }
-
-  return(piano->layout);
 }
 
 /**
@@ -1965,6 +1674,9 @@ ags_piano_get_active_key(AgsPiano *piano,
 
 /**
  * ags_piano_new:
+ * @orientation: the #GtkOrientation
+ * @key_width: the width of one key
+ * @key_height: the height of one key
  * 
  * Create a new instance of #AgsPiano.
  * 
@@ -1973,11 +1685,16 @@ ags_piano_get_active_key(AgsPiano *piano,
  * Since: 3.0.0
  */
 AgsPiano*
-ags_piano_new()
+ags_piano_new(GtkOrientation orientation,
+	      guint key_width,
+	      guint key_height)
 {
   AgsPiano *piano;
 
   piano = (AgsPiano *) g_object_new(AGS_TYPE_PIANO,
+				    "orientation", orientation,
+				    "key-width", key_width,
+				    "key-height", key_height,
 				    NULL);
   
   return(piano);

@@ -42,6 +42,7 @@ void ags_dial_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 
 void ags_dial_realize(GtkWidget *widget);
+
 void ags_dial_measure(GtkWidget *widget,
 		      GtkOrientation orientation,
 		      int for_size,
@@ -59,7 +60,6 @@ void ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
 
 void ags_dial_snapshot(GtkWidget *widget,
 		       GtkSnapshot *snapshot);
-
 
 gboolean ags_dial_button_press_is_down_event(AgsDial *dial,
 					     gdouble x, gdouble y,
