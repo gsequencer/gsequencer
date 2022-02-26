@@ -42,3 +42,6 @@ ags_led_array_test: ags_led_array_test.c ../../widget/ags_led_array.c ../../widg
 
 ags_piano_test: ags_piano_test.c ../../widget/ags_piano.c ../../widget/ags_widget_marshal.c
 	gcc -g -o ags_piano_test ags_piano_test.c ../../widget/ags_piano.c ../../widget/ags_widget_marshal.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_ruler_test: ags_ruler_test.c ../../widget/ags_ruler.c
+	gcc -g -o ags_ruler_test ags_ruler_test.c ../../widget/ags_ruler.c -I../../.. `pkg-config --cflags --libs gtk4` -lm

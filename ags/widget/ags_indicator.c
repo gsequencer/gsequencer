@@ -518,7 +518,7 @@ ags_indicator_draw(AgsIndicator *indicator,
 
   GtkOrientation orientation;
 
-  int width, height;
+  gint width, height;
   gint padding_top, padding_left;
   guint segment_width, segment_height;
   guint segment_padding;

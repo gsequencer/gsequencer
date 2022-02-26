@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,7 @@
 #include <math.h>
 
 void ags_ruler_class_init(AgsRulerClass *ruler);
+void ags_ruler_orientable_interface_init(GtkOrientableIface *orientable);
 void ags_ruler_init(AgsRuler *ruler);
 void ags_ruler_set_property(GObject *gobject,
 			    guint prop_id,
@@ -40,14 +41,16 @@ void ags_ruler_get_property(GObject *gobject,
 void ags_ruler_show(GtkWidget *widget);
 
 void ags_ruler_realize(GtkWidget *widget);
-void ags_ruler_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
-void ags_ruler_get_preferred_height(GtkWidget *widget,
-				    gint *minimal_height,
-				    gint *natural_height);
 
-void ags_ruler_send_configure(AgsRuler *ruler);
+void ags_ruler_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					   AgsRuler *ruler);
 
-gboolean ags_ruler_draw(AgsRuler *ruler, cairo_t *cr);
+void ags_ruler_snapshot(GtkWidget *widget,
+			GtkSnapshot *snapshot);
+
+void ags_ruler_draw(AgsRuler *ruler,
+		    cairo_t *cr,
+		    gboolean is_animation);
 
 /**
  * SECTION:ags_ruler
@@ -61,9 +64,13 @@ gboolean ags_ruler_draw(AgsRuler *ruler, cairo_t *cr);
 
 enum{
   PROP_0,
+  PROP_ORIENTATION,
   PROP_STEP,
   PROP_LARGE_STEP,
   PROP_SMALL_STEP,
+  PROP_FACTOR,
+  PROP_PRECISION,
+  PROP_SCALE_PRECISION,
   PROP_ADJUSTMENT,
   PROP_FONT_SIZE,
 };
@@ -90,9 +97,19 @@ ags_ruler_get_type()
       (GInstanceInitFunc) ags_ruler_init,
     };
 
+    static const GInterfaceInfo ags_orientable_interface_info = {
+      (GInterfaceInitFunc) ags_ruler_orientable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_ruler = g_type_register_static(GTK_TYPE_WIDGET,
 					    "AgsRuler", &ags_ruler_info,
 					    0);
+
+    g_type_add_interface_static(ags_type_ruler,
+				GTK_TYPE_ORIENTABLE,
+				&ags_orientable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_ruler);
   }
@@ -101,10 +118,17 @@ ags_ruler_get_type()
 }
 
 void
+ags_ruler_orientable_interface_init(GtkOrientableIface *orientable)
+{
+  //empty
+}
+
+void
 ags_ruler_class_init(AgsRulerClass *ruler)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_ruler_parent_class = g_type_class_peek_parent(ruler);
@@ -115,14 +139,14 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   gobject->set_property = ags_ruler_set_property;
   gobject->get_property = ags_ruler_get_property;
 
+  g_object_class_override_property(gobject, PROP_ORIENTATION, "orientation");
+
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) ruler;
 
   widget->realize = ags_ruler_realize;
-  widget->size_allocate = ags_ruler_size_allocate;
-  widget->get_preferred_height = ags_ruler_get_preferred_height;
-  widget->draw = ags_ruler_draw;
-  widget->show = ags_ruler_show;
+    
+  widget->snapshot = ags_ruler_snapshot;
 
   /* properties */
   /**
@@ -212,28 +236,85 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   g_object_class_install_property(gobject,
 				  PROP_SMALL_STEP,
 				  param_spec);
+
+  /**
+   * AgsRuler:factor:
+   *
+   * The factor.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("factor",
+				   "factor",
+				   "The factor",
+				   0.0,
+				   G_MAXDOUBLE,
+				   16.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsRuler:precision:
+   *
+   * The precision.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("precision",
+				   "precision",
+				   "The precision",
+				   0.0,
+				   G_MAXDOUBLE,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRECISION,
+				  param_spec);
+
+  /**
+   * AgsRuler:scale-precision:
+   *
+   * The scale precision.
+   * 
+   * Since: 4.0.0
+   */
+  param_spec = g_param_spec_double("scale-precision",
+				   "scale precision",
+				   "The scale precision",
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_RULER_DEFAULT_SCALE_PRECISION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCALE_PRECISION,
+				  param_spec);
 }
 
 void
 ags_ruler_init(AgsRuler *ruler)
-{
-  g_object_set(G_OBJECT(ruler),
-  	       "app-paintable", TRUE,
-  	       NULL);
+{  
+  ruler->orientation = GTK_ORIENTATION_HORIZONTAL;
 
-  ruler->flags = 0;
+  gtk_widget_set_hexpand(ruler,
+			 TRUE);
+
+  g_object_set(ruler,
+	       "height-request", 24,
+	       NULL);
 
   ruler->font_size = AGS_RULER_FONT_SIZE;
 
-  ruler->adjustment = NULL;
+  ruler->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 64.0, 0.1, 0.1, 0.0);
 
   ruler->step = AGS_RULER_DEFAULT_STEP;
   ruler->large_step = AGS_RULER_DEFAULT_LARGE_STEP;
   ruler->small_step = AGS_RULER_DEFAULT_SMALL_STEP;
 
-  ruler->factor = 16.0;
-  ruler->precision = 1.0;
-  ruler->scale_precision = 1.0;
+  ruler->factor = AGS_RULER_DEFAULT_FACTOR;
+  ruler->precision = AGS_RULER_DEFAULT_PRECISION;
+  ruler->scale_precision = AGS_RULER_DEFAULT_SCALE_PRECISION;
 }
 
 
@@ -248,6 +329,36 @@ ags_ruler_set_property(GObject *gobject,
   ruler = AGS_RULER(gobject);
 
   switch(prop_id){
+  case PROP_ORIENTATION:
+  {
+    GtkOrientation orientation;
+
+    orientation = g_value_get_enum(value);
+
+    if(orientation != ruler->orientation){
+      ruler->orientation = orientation;
+
+      if(orientation == GTK_ORIENTATION_VERTICAL){
+	gtk_widget_set_hexpand(ruler,
+			       FALSE);
+  
+	gtk_widget_set_vexpand(ruler,
+			       TRUE);
+      }else{
+	gtk_widget_set_hexpand(ruler,
+			       TRUE);
+  
+	gtk_widget_set_vexpand(ruler,
+			       FALSE);
+      }
+      
+      gtk_widget_queue_resize(GTK_WIDGET(ruler));
+
+      g_object_notify_by_pspec(gobject,
+			       param_spec);
+    }
+  }
+  break;
   case PROP_FONT_SIZE:
   {
     ruler->font_size = g_value_get_uint(value);
@@ -256,6 +367,21 @@ ags_ruler_set_property(GObject *gobject,
   case PROP_STEP:
   {
     ruler->step = g_value_get_uint(value);
+  }
+  break;
+  case PROP_FACTOR:
+  {
+    ruler->factor = g_value_get_double(value);
+  }
+  break;
+  case PROP_PRECISION:
+  {
+    ruler->precision = g_value_get_double(value);
+  }
+  break;
+  case PROP_SCALE_PRECISION:
+  {
+    ruler->scale_precision = g_value_get_double(value);
   }
   break;
   case PROP_LARGE_STEP:
@@ -269,25 +395,25 @@ ags_ruler_set_property(GObject *gobject,
   }
   break;
   case PROP_ADJUSTMENT:
-    {
-      GtkAdjustment *adjustment;
+  {
+    GtkAdjustment *adjustment;
 
-      adjustment = (GtkAdjustment *) g_value_get_object(value);
+    adjustment = (GtkAdjustment *) g_value_get_object(value);
 
-      if(ruler->adjustment == adjustment)
-	return;
+    if(ruler->adjustment == adjustment)
+      return;
 
-      if(ruler->adjustment != NULL){
-	g_object_unref(G_OBJECT(ruler->adjustment));
-      }
-
-      if(adjustment != NULL){
-	g_object_ref(G_OBJECT(adjustment));
-      }
-
-      ruler->adjustment = adjustment;
+    if(ruler->adjustment != NULL){
+      g_object_unref(G_OBJECT(ruler->adjustment));
     }
-    break;
+
+    if(adjustment != NULL){
+      g_object_ref(G_OBJECT(adjustment));
+    }
+
+    ruler->adjustment = adjustment;
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -305,6 +431,11 @@ ags_ruler_get_property(GObject *gobject,
   ruler = AGS_RULER(gobject);
 
   switch(prop_id){
+  case PROP_ORIENTATION:
+  {
+    g_value_set_enum(value, ruler->orientation);
+  }
+  break;
   case PROP_FONT_SIZE:
   {
     g_value_set_uint(value, ruler->font_size);
@@ -313,6 +444,21 @@ ags_ruler_get_property(GObject *gobject,
   case PROP_STEP:
   {
     g_value_set_uint(value, ruler->step);
+  }
+  break;
+  case PROP_FACTOR:
+  {
+    g_value_set_double(value, ruler->factor);
+  }
+  break;
+  case PROP_PRECISION:
+  {
+    g_value_set_double(value, ruler->precision);
+  }
+  break;
+  case PROP_SCALE_PRECISION:
+  {
+    g_value_set_double(value, ruler->scale_precision);
   }
   break;
   case PROP_LARGE_STEP:
@@ -339,145 +485,86 @@ ags_ruler_get_property(GObject *gobject,
 void
 ags_ruler_realize(GtkWidget *widget)
 {
-  AgsRuler *ruler;
-
-  GdkWindow *window;
-
-  GtkAllocation allocation;
-  GdkWindowAttr attributes;
-
-  gint attributes_mask;
-  gint border_left, border_top;
-
-  g_return_if_fail(widget != NULL);
-  g_return_if_fail(AGS_IS_RULER(widget));
-
-  ruler = AGS_RULER(widget);
-
-//  GTK_WIDGET_CLASS(ags_ruler_parent_class)->realize(widget);
+  GdkFrameClock *frame_clock;
   
-  gtk_widget_set_realized(widget, TRUE);
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_ruler_parent_class)->realize(widget);
 
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-
-  /*  */
-  attributes.window_type = GDK_WINDOW_CHILD;
+  frame_clock = gtk_widget_get_frame_clock(widget);
   
-  attributes.x = allocation.x;
-  attributes.y = allocation.y;
-  attributes.width = allocation.width;
-  attributes.height = allocation.height;
+  g_signal_connect(frame_clock, "update", 
+		   G_CALLBACK(ags_ruler_frame_clock_update_callback), widget);
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
-
-  attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual(widget);
-  attributes.event_mask = gtk_widget_get_events(widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK |
-                            GDK_BUTTON_PRESS_MASK |
-                            GDK_BUTTON_RELEASE_MASK |
-                            GDK_BUTTON1_MOTION_MASK |
-                            GDK_BUTTON3_MOTION_MASK |
-                            GDK_POINTER_MOTION_HINT_MASK |
-                            GDK_POINTER_MOTION_MASK |
-                            GDK_ENTER_NOTIFY_MASK |
-                            GDK_LEAVE_NOTIFY_MASK);
-
-  window = gdk_window_new(gtk_widget_get_parent_window(widget),
-			  &attributes, attributes_mask);
-
-  gtk_widget_register_window(widget, window);
-  gtk_widget_set_window(widget, window);
-
-  ags_ruler_send_configure(ruler);
+  gdk_frame_clock_begin_updating(frame_clock);
 }
 
 void
-ags_ruler_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
+ags_ruler_frame_clock_update_callback(GdkFrameClock *frame_clock,
+				      AgsRuler *ruler)
 {
-  AgsRuler *ruler;
+  gtk_widget_queue_draw((GtkWidget *) ruler);
+}
+
+void
+ags_ruler_snapshot(GtkWidget *widget,
+		   GtkSnapshot *snapshot)
+{
+  GtkStyleContext *style_context;
+
+  cairo_t *cr;
+
+  graphene_rect_t rect;
   
-  g_return_if_fail(AGS_IS_RULER(widget));
-  g_return_if_fail(allocation != NULL);
-
-  ruler = AGS_RULER(widget);
+  int width, height;
   
-  gtk_widget_set_allocation(widget, allocation);
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 
-  if(gtk_widget_get_realized(widget)){
-    gdk_window_move_resize(gtk_widget_get_window(widget),
-			   allocation->x, allocation->y,
-			   allocation->width, allocation->height);
+  width = gtk_widget_get_width(widget);
+  height = gtk_widget_get_height(widget);
+  
+  graphene_rect_init(&rect,
+		     0.0, 0.0,
+		     (float) width, (float) height);
+  
+  cr = gtk_snapshot_append_cairo(snapshot,
+				 &rect);
+  
+  /* clear bg */
+  gtk_render_background(style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) width, (gdouble) height);
 
-    ags_ruler_send_configure(ruler);
-  }
-}
-
-void
-ags_ruler_send_configure(AgsRuler *ruler)
-{
-  GtkAllocation allocation;
-  GtkWidget *widget;
-  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
-
-  widget = GTK_WIDGET(ruler);
-  gtk_widget_get_allocation(widget, &allocation);
-
-  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
-  event->configure.send_event = TRUE;
-  event->configure.x = allocation.x;
-  event->configure.y = allocation.y;
-  event->configure.width = allocation.width;
-  event->configure.height = allocation.height;
-
-  gtk_widget_event(widget, event);
-  gdk_event_free(event);
-}
-
-void
-ags_ruler_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_ruler_parent_class)->show(widget);
-}
-
-void
-ags_ruler_get_preferred_height(GtkWidget *widget,
-			       gint *minimal_height,
-			       gint *natural_height)
-{
-  gint height_request;
-
-  height_request = -1;
-
-  g_object_get(widget,
-	       "height-request", &height_request,
-	       NULL);
-
-  if(height_request != -1){
-    minimal_height[0] =
-      natural_height[0] = height_request;
-  }else{
-    minimal_height[0] =
-      natural_height[0] = (gint) AGS_RULER_DEFAULT_HEIGHT;
-  }
+  ags_ruler_draw((AgsRuler *) widget,
+		 cr,
+		 TRUE);
+  
+  cairo_destroy(cr);
 }
 
 /**
  * ags_ruler_draw:
- * @ruler an #AgsRuler
+ * @ruler: an #AgsRuler
  *
  * draws the widget
  */
-gboolean
-ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
+void
+ags_ruler_draw(AgsRuler *ruler,
+	       cairo_t *cr,
+	       gboolean is_animation)
 {
-  GtkWidget *widget;
-    
-  GtkAllocation allocation;
+  GtkStyleContext *style_context;
+  GtkSettings *settings;
+
+  GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
 
   gchar *font_name;
 
+  GtkOrientation orientation;
+
+  gint width, height;
   gdouble tact_factor, zoom_factor;
   gdouble tact;
 
@@ -487,18 +574,55 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   guint z;
   guint i, i_stop;
   
-  widget = GTK_WIDGET(ruler);
+  gboolean dark_theme;
+  gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) ruler);
+  
+  settings = gtk_settings_get_default();
 
-//  GTK_WIDGET_CLASS(ags_ruler_parent_class)->draw(widget, cr);
+  font_name = NULL;  
 
-  g_object_get(gtk_settings_get_default(),
+  dark_theme = TRUE;
+  
+  g_object_get(settings,
 	       "gtk-font-name", &font_name,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
 	       NULL);
 
-  gtk_widget_get_allocation(widget,
-			    &allocation);
+  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(ruler));
+
+  width = gtk_widget_get_width((GtkWidget *) ruler);
+  height = gtk_widget_get_height((GtkWidget *) ruler);
+
+  /* colors */
+  fg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_fg_color",
+					      &fg_color);
     
-  //  cairo_surface_flush(cairo_get_target(cr));
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    gdk_rgba_parse(&fg_color,
+		   "#101010");
+
+    gdk_rgba_parse(&bg_color,
+		   "#cbd5d9");
+
+    gdk_rgba_parse(&shadow_color,
+		   "#ffffff40");
+  }
+
   cairo_push_group(cr);
 
   /* calculate base step */
@@ -514,7 +638,7 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 			1.0);
   cairo_rectangle(cr,
 		  0.0, 0.0,
-		  (double) allocation.width, (double) allocation.height);
+		  (double) width, (double) height);
   cairo_fill(cr);
 
   cairo_set_source_rgba(cr,
@@ -531,60 +655,15 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   
   z = (guint) floor((offset - x0) / step);
   
-  i_stop = (guint) ceil((double) (allocation.width + (step + x0)) / (double) step);
-  
-  for(i = 0; i < i_stop; i++, z++){
-    cairo_move_to(cr,
-		  (double) (i * step - x0),
-		  (double) (allocation.height));
-    
-    if(tact < 1.0){
-      PangoLayout *layout;
-      PangoFontDescription *desc;
+  if(orientation == GTK_ORIENTATION_HORIZONTAL){
+    i_stop = (guint) ceil((double) (width + (step + x0)) / (double) step);
 
-      PangoRectangle ink_rect, logical_rect;
-
-      gchar *text;
-
-      text = g_strdup_printf("%u",
-			     (guint) ((gdouble) z / tact));
-
-      layout = pango_cairo_create_layout(cr);
-      pango_layout_set_text(layout,
-			    text,
-			    -1);
-      desc = pango_font_description_from_string(font_name);
-      pango_font_description_set_size(desc,
-				      ruler->font_size * PANGO_SCALE);
-      pango_layout_set_font_description(layout,
-					desc);
-      pango_font_description_free(desc);    
-
-      pango_layout_get_extents(layout,
-			       &ink_rect,
-			       &logical_rect);  
-      
-      /* draw large step */
-      cairo_set_line_width(cr,
-			   1.75);
-
-      cairo_line_to(cr,
-		    (double) (i * step - x0),
-		    (double) (allocation.height - ruler->large_step));
-
-      /* draw scale step */
+    for(i = 0; i < i_stop; i++, z++){
       cairo_move_to(cr,
 		    (double) (i * step - x0),
-		    (double) (allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
-      
-      pango_cairo_show_layout(cr,
-			      layout);
-      
-      g_object_unref(layout);
-      
-      g_free(text);
-    }else{
-      if(z % (guint) floor(tact) == 0){
+		    (double) (height));
+    
+      if(tact < 1.0){
 	PangoLayout *layout;
 	PangoFontDescription *desc;
 
@@ -594,7 +673,7 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 
 	text = g_strdup_printf("%u",
 			       (guint) ((gdouble) z / tact));
-	
+
 	layout = pango_cairo_create_layout(cr);
 	pango_layout_set_text(layout,
 			      text,
@@ -608,20 +687,20 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 
 	pango_layout_get_extents(layout,
 				 &ink_rect,
-				 &logical_rect);
-
+				 &logical_rect);  
+      
 	/* draw large step */
 	cairo_set_line_width(cr,
 			     1.75);
 
 	cairo_line_to(cr,
 		      (double) (i * step - x0),
-		      (double) (allocation.height - ruler->large_step));
+		      (double) (height - ruler->large_step));
 
 	/* draw scale step */
 	cairo_move_to(cr,
 		      (double) (i * step - x0),
-		      (double) (allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
+		      (double) (height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
 	pango_cairo_show_layout(cr,
 				layout);
@@ -630,27 +709,194 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
       
 	g_free(text);
       }else{
-	/* draw small step */
+	if(z % (guint) floor(tact) == 0){
+	  PangoLayout *layout;
+	  PangoFontDescription *desc;
+
+	  PangoRectangle ink_rect, logical_rect;
+
+	  gchar *text;
+
+	  text = g_strdup_printf("%u",
+				 (guint) ((gdouble) z / tact));
+	
+	  layout = pango_cairo_create_layout(cr);
+	  pango_layout_set_text(layout,
+				text,
+				-1);
+	  desc = pango_font_description_from_string(font_name);
+	  pango_font_description_set_size(desc,
+					  ruler->font_size * PANGO_SCALE);
+	  pango_layout_set_font_description(layout,
+					    desc);
+	  pango_font_description_free(desc);    
+
+	  pango_layout_get_extents(layout,
+				   &ink_rect,
+				   &logical_rect);
+
+	  /* draw large step */
+	  cairo_set_line_width(cr,
+			       1.75);
+
+	  cairo_line_to(cr,
+			(double) (i * step - x0),
+			(double) (height - ruler->large_step));
+
+	  /* draw scale step */
+	  cairo_move_to(cr,
+			(double) (i * step - x0),
+			(double) (height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
+      
+	  pango_cairo_show_layout(cr,
+				  layout);
+      
+	  g_object_unref(layout);
+      
+	  g_free(text);
+	}else{
+	  /* draw small step */
+	  cairo_set_line_width(cr,
+			       1.25);
+
+	  cairo_line_to(cr,
+			(double) (i * step - x0),
+			(double) (height - ruler->small_step));
+	}
+      }
+
+      cairo_stroke(cr);
+    }
+  }else{
+    i_stop = (guint) ceil((double) (height + (step + x0)) / (double) step);
+
+    for(i = 0; i < i_stop; i++, z++){
+      cairo_move_to(cr,
+		    (double) (width),
+		    (double) (i * step - x0));
+    
+      if(tact < 1.0){
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+
+	PangoRectangle ink_rect, logical_rect;
+
+	gchar *text;
+
+	text = g_strdup_printf("%u",
+			       (guint) ((gdouble) z / tact));
+
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      text,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					ruler->font_size * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);  
+      
+	/* draw large step */
 	cairo_set_line_width(cr,
-			     1.25);
+			     1.75);
 
 	cairo_line_to(cr,
-		      (double) (i * step - x0),
-		      (double) (allocation.height - ruler->small_step));
-      }
-    }
+		      (double) (width - ruler->large_step),
+		      (double) (i * step - x0));
 
-    cairo_stroke(cr);
+	/* draw scale step */
+	cairo_move_to(cr,
+		      (double) (width - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)),
+		      (double) (i * step - x0));
+      
+	cairo_rotate(cr,
+		     2.0 * M_PI * 0.75);
+
+	pango_cairo_show_layout(cr,
+				layout);
+      
+	g_object_unref(layout);
+      
+	g_free(text);
+
+	cairo_rotate(cr,
+		     2.0 * M_PI * 1.25);
+      }else{
+	if(z % (guint) floor(tact) == 0){
+	  PangoLayout *layout;
+	  PangoFontDescription *desc;
+
+	  PangoRectangle ink_rect, logical_rect;
+
+	  gchar *text;
+
+	  text = g_strdup_printf("%u",
+				 (guint) ((gdouble) z / tact));
+	
+	  layout = pango_cairo_create_layout(cr);
+	  pango_layout_set_text(layout,
+				text,
+				-1);
+	  desc = pango_font_description_from_string(font_name);
+	  pango_font_description_set_size(desc,
+					  ruler->font_size * PANGO_SCALE);
+	  pango_layout_set_font_description(layout,
+					    desc);
+	  pango_font_description_free(desc);    
+
+	  pango_layout_get_extents(layout,
+				   &ink_rect,
+				   &logical_rect);
+
+	  /* draw large step */
+	  cairo_set_line_width(cr,
+			       1.75);
+
+	  cairo_line_to(cr,
+			(double) (width - ruler->large_step),
+			(double) (i * step - x0));
+
+	  /* draw scale step */
+	  cairo_move_to(cr,
+			(double) (width - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)),
+			(double) (i * step - x0) + (logical_rect.width / PANGO_SCALE));
+      
+	  cairo_rotate(cr,
+		       2.0 * M_PI * 0.75);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+      
+	  g_object_unref(layout);
+      
+	  g_free(text);
+
+	  cairo_rotate(cr,
+		       2.0 * M_PI * 1.25);
+	}else{
+	  /* draw small step */
+	  cairo_set_line_width(cr,
+			       1.25);
+
+	  cairo_line_to(cr,
+			(double) (width - ruler->small_step),
+			(double) (i * step - x0));
+	}
+      }
+
+      cairo_stroke(cr);
+    }
   }
 
   g_free(font_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
-
-//  cairo_surface_mark_dirty(cairo_get_target(cr));
-
-  return(FALSE);
 }
 
 /**
@@ -846,6 +1092,150 @@ ags_ruler_set_small_step(AgsRuler *ruler,
 }
 
 /**
+ * ags_ruler_get_factor:
+ * @ruler: the #AgsRuler
+ * 
+ * Get factor of @ruler.
+ * 
+ * Returns: the factor
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_ruler_get_factor(AgsRuler *ruler)
+{
+  gdouble factor;
+
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "factor", &factor,
+	       NULL);
+
+  return(factor);
+}
+
+/**
+ * ags_ruler_set_factor:
+ * @ruler: the #AgsRuler
+ * @factor: the factor
+ * 
+ * Set factor of @ruler.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_ruler_set_factor(AgsRuler *ruler,
+		     gdouble factor)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "factor", factor,
+	       NULL);
+}
+
+/**
+ * ags_ruler_get_precision:
+ * @ruler: the #AgsRuler
+ * 
+ * Get precision of @ruler.
+ * 
+ * Returns: the precision
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_ruler_get_precision(AgsRuler *ruler)
+{
+  gdouble precision;
+
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "precision", &precision,
+	       NULL);
+
+  return(precision);
+}
+
+/**
+ * ags_ruler_set_precision:
+ * @ruler: the #AgsRuler
+ * @precision: the precision
+ * 
+ * Set precision of @ruler.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_ruler_set_precision(AgsRuler *ruler,
+			gdouble precision)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "precision", precision,
+	       NULL);
+}
+
+/**
+ * ags_ruler_get_scale_precision:
+ * @ruler: the #AgsRuler
+ * 
+ * Get scale precision of @ruler.
+ * 
+ * Returns: the scale precision
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_ruler_get_scale_precision(AgsRuler *ruler)
+{
+  gdouble scale_precision;
+
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "scale-precision", &scale_precision,
+	       NULL);
+
+  return(scale_precision);
+}
+
+/**
+ * ags_ruler_set_scale_precision:
+ * @ruler: the #AgsRuler
+ * @scale_precision: the scale precision
+ * 
+ * Set scale precision of @ruler.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_ruler_set_scale_precision(AgsRuler *ruler,
+			      gdouble scale_precision)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "scale-precision", scale_precision,
+	       NULL);
+}
+
+/**
  * ags_ruler_get_adjustment:
  * @ruler: the #AgsRuler
  * 
@@ -895,6 +1285,8 @@ ags_ruler_set_adjustment(AgsRuler *ruler,
 
 /**
  * ags_ruler_new:
+ * @orientation: the #GtkOrientation
+ * @step: the step size
  *
  * Create a new instance of #AgsRuler
  *
@@ -903,15 +1295,20 @@ ags_ruler_set_adjustment(AgsRuler *ruler,
  * Since: 3.0.0
  */
 AgsRuler*
-ags_ruler_new()
+ags_ruler_new(GtkOrientation orientation,
+	      guint step,
+	      gdouble factor,
+	      gdouble precision,
+	      gdouble scale_precision)
 {
   AgsRuler *ruler;
-  GtkAdjustment *adjustment;
-
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   ruler = (AgsRuler *) g_object_new(AGS_TYPE_RULER,
-				    "adjustment", adjustment,
+				    "orientation", orientation,
+				    "step", step,
+				    "factor", factor,
+				    "precision", precision,
+				    "scale-precision", scale_precision,
 				    NULL);
 
   return(ruler);
