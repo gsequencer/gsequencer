@@ -30,3 +30,6 @@ ags_scale_test: ags_scale_test.c ../../widget/ags_scale.c
 
 ags_led_test: ags_led_test.c ../../widget/ags_led.c
 	gcc -g -o ags_led_test ags_led_test.c ../../widget/ags_led.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_led_array_test: ags_led_array_test.c ../../widget/ags_led_array.c ../../widget/ags_led.c
+	gcc -g -o ags_led_array_test ags_led_array_test.c ../../widget/ags_led_array.c ../../widget/ags_led.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
