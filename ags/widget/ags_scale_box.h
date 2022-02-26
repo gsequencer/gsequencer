@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,34 +34,50 @@ G_BEGIN_DECLS
 #define AGS_IS_SCALE_BOX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCALE_BOX))
 #define AGS_SCALE_BOX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SCALE_BOX, AgsScaleBoxClass))
 
-#define AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH (60)
-#define AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT (128)
+#define AGS_SCALE_BOX_DEFAULT_SPACING (8)
 
 typedef struct _AgsScaleBox AgsScaleBox;
 typedef struct _AgsScaleBoxClass AgsScaleBoxClass;
-
-typedef enum{
-  AGS_SCALE_BOX_FIXED_SCALE_SIZE  = 1,
-}AgsScaleBoxFlags;
 
 struct _AgsScaleBox
 {
   GtkBox box;
 
-  guint flags;
-
-  guint fixed_scale_width;
-  guint fixed_scale_height;
+  /* private */
+  guint scale_count;
+  
+  GList *scale;
 };
 
 struct _AgsScaleBoxClass
 {
   GtkBoxClass box;
+
+  void (*child_width_request)(AgsScaleBox *scale_box,
+			      GtkWidget *scale,
+			      gint width_request);
+  void (*child_height_request)(AgsScaleBox *scale_box,
+			       GtkWidget *scale,
+			       gint height_request);
 };
 
 GType ags_scale_box_get_type(void);
 
-AgsScaleBox* ags_scale_box_new();
+guint ags_scale_box_get_scale_count(AgsScaleBox *scale_box);
+
+void ags_scale_box_add(AgsScaleBox *scale_box,
+		       GtkWidget *scale);
+void ags_scale_box_remove(AgsScaleBox *scale_box,
+			  guint position);
+
+void ags_scale_box_child_width_request(AgsScaleBox *scale_box,
+				       GtkWidget *scale,
+				       gint width_request);
+void ags_scale_box_child_height_request(AgsScaleBox *scale_box,
+					GtkWidget *scale,
+					gint height_request);
+
+AgsScaleBox* ags_scale_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 

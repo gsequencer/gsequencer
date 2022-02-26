@@ -86,10 +86,10 @@ ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box)
 {
   /* scrolled window */
   scrolled_level_box->scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
-  gtk_grid_attatch((GtkGrid *) scrolled_level_box,
-		   (GtkWidget *) scrolled_level_box->scrolled_window,
-		   0, 0,
-		   1, 1);
+  gtk_grid_attach((GtkGrid *) scrolled_level_box,
+		  (GtkWidget *) scrolled_level_box->scrolled_window,
+		  0, 0,
+		  1, 1);
 
   gtk_scrolled_window_set_policy(scrolled_level_box->scrolled_window,
   				 GTK_POLICY_EXTERNAL,
@@ -98,7 +98,7 @@ ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box)
   gtk_widget_set_vexpand(scrolled_level_box->scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_size_request(scrolled_window,
+  gtk_widget_set_size_request(scrolled_level_box->scrolled_window,
 			      AGS_LEVEL_DEFAULT_WIDTH_REQUEST, -1);
 
   /* level box */

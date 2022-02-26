@@ -930,7 +930,6 @@ libags_gui_sources = files(
   'widget/ags_dial.c',
   'widget/ags_expander.c',
   'widget/ags_expander_set.c',
-  'widget/ags_hled_array.c',
   'widget/ags_hscale_box.c',
   'widget/ags_indicator.c',
   'widget/ags_led_array.c',
@@ -945,7 +944,6 @@ libags_gui_sources = files(
   'widget/ags_scrolled_level_box.c',
   'widget/ags_scrolled_piano.c',
   'widget/ags_scrolled_scale_box.c',
-  'widget/ags_vled_array.c',
   'widget/ags_vscale_box.c',
   'widget/ags_widget_marshal.c',
 )
@@ -2222,7 +2220,6 @@ libags_gui_widget_headers = [
   'widget/ags_level_box.h',
   'widget/ags_scale_box.h',
   'widget/ags_indicator.h',
-  'widget/ags_vled_array.h',
   'widget/ags_level.h',
   'widget/ags_ruler.h',
   'widget/ags_hscale_box.h',
@@ -2238,7 +2235,6 @@ libags_gui_widget_headers = [
   'widget/ags_led_array.h',
   'widget/ags_led.h',
   'widget/ags_scrolled_piano.h',
-  'widget/ags_hled_array.h',
   'widget/ags_notebook.h',
   'widget/ags_piano.h',
 ]

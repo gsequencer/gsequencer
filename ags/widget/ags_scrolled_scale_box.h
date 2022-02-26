@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_viewport.h>
-#include <ags/widget/ags_scale_box.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SCROLLED_SCALE_BOX                (ags_scrolled_scale_box_get_type())
@@ -42,21 +39,16 @@ typedef struct _AgsScrolledScaleBoxClass AgsScrolledScaleBoxClass;
 
 struct _AgsScrolledScaleBox
 {
-  GtkBin bin;
+  GtkGrid grid;
 
-  guint margin_top;
-  guint margin_bottom;
-  guint margin_left;
-  guint margin_right;
-  
-  AgsViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
 
-  AgsScaleBox *scale_box;
+  GtkBox *scale_box;
 };
 
 struct _AgsScrolledScaleBoxClass
 {
-  GtkBinClass bin;
+  GtkGridClass grid;
 };
 
 GType ags_scrolled_scale_box_get_type(void);

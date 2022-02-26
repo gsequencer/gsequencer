@@ -22,8 +22,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_scrolled_level_box.h>
-#include <ags/widget/ags_level.h>
+#include <ags/widget/ags_scrolled_scale_box.h>
+#include <ags/widget/ags_scale.h>
 
 #include <stdlib.h>
 
@@ -33,8 +33,8 @@ activate(GtkApplication *app,
 {
   GtkWindow *window;
   GtkGrid *grid;
-  AgsScrolledLevelBox *scrolled_level_box;
-  AgsLevel *level;
+  AgsScrolledScaleBox *scrolled_scale_box;
+  AgsScale *scale;
   
   window = gtk_application_window_new(app);
 
@@ -42,24 +42,24 @@ activate(GtkApplication *app,
   gtk_window_set_child(window,
 		       grid);
 
-  scrolled_level_box = ags_scrolled_level_box_new();
+  scrolled_scale_box = ags_scrolled_scale_box_new();
   gtk_grid_attach(grid,
-		  scrolled_level_box,
+		  scrolled_scale_box,
 		  0, 0,
-		  1, 1);
+		  1, 1);  
 
-  level = ags_level_new(GTK_ORIENTATION_VERTICAL,
-			AGS_LEVEL_DEFAULT_WIDTH_REQUEST,
-			AGS_LEVEL_DEFAULT_HEIGHT_REQUEST);
-  gtk_box_append(scrolled_level_box->level_box,
-		 level);
+  scale = ags_scale_new(GTK_ORIENTATION_VERTICAL,
+			AGS_SCALE_DEFAULT_WIDTH_REQUEST,
+			AGS_SCALE_DEFAULT_HEIGHT_REQUEST);
+  gtk_box_append(scrolled_scale_box->scale_box,
+		 scale);
 
-  level = ags_level_new(GTK_ORIENTATION_VERTICAL,
-			AGS_LEVEL_DEFAULT_WIDTH_REQUEST,
-			AGS_LEVEL_DEFAULT_HEIGHT_REQUEST);
-  gtk_box_append(scrolled_level_box->level_box,
-		 level);
-  
+  scale = ags_scale_new(GTK_ORIENTATION_VERTICAL,
+			AGS_SCALE_DEFAULT_WIDTH_REQUEST,
+			AGS_SCALE_DEFAULT_HEIGHT_REQUEST);
+  gtk_box_append(scrolled_scale_box->scale_box,
+		 scale);
+
   gtk_widget_show(window);
 }
 
@@ -70,7 +70,7 @@ main(int argc, char **argv)
 
   int status;
   
-  app = gtk_application_new("org.nongnu.gsequencer.ags_scrolled_level_box_test",
+  app = gtk_application_new("org.nongnu.gsequencer.ags_scrolled_scale_box_test",
 			    G_APPLICATION_FLAGS_NONE);
   
   g_signal_connect(app, "activate",

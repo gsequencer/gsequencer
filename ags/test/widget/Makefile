@@ -16,11 +16,17 @@ ags_expander_test: ags_expander_test.c ../../widget/ags_expander.c
 ags_viewport_test: ags_viewport_test.c
 	gcc -g -o ags_viewport_test ags_viewport_test.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
 
-ags_scrolled_level_box_test: ags_scrolled_level_box_test.c ../../widget/ags_scrolled_level_box.c ../../widget/ags_level_box.c ../../widget/ags_level.c
-	gcc -g -o ags_scrolled_level_box_test ags_scrolled_level_box_test.c ../../widget/ags_scrolled_level_box.c ../../widget/ags_level_box.c ../../widget/ags_level.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+ags_scrolled_level_box_test: ags_scrolled_level_box_test.c ../../widget/ags_scrolled_level_box.c ../../widget/ags_level_box.c ../../widget/ags_level.c ../../widget/ags_widget_marshal.c
+	gcc -g -o ags_scrolled_level_box_test ags_scrolled_level_box_test.c ../../widget/ags_scrolled_level_box.c ../../widget/ags_level_box.c ../../widget/ags_level.c ../../widget/ags_widget_marshal.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_scrolled_scale_box_test: ags_scrolled_scale_box_test.c ../../widget/ags_scrolled_scale_box.c ../../widget/ags_scale_box.c ../../widget/ags_scale.c ../../widget/ags_widget_marshal.c
+	gcc -g -o ags_scrolled_scale_box_test ags_scrolled_scale_box_test.c ../../widget/ags_scrolled_scale_box.c ../../widget/ags_scale_box.c ../../widget/ags_scale.c ../../widget/ags_widget_marshal.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
 
 ags_level_box_test: ags_level_box_test.c ../../widget/ags_level_box.c ../../widget/ags_level.c ../../widget/ags_widget_marshal.c
 	gcc -g -o ags_level_box_test ags_level_box_test.c ../../widget/ags_level_box.c ../../widget/ags_level.c ../../widget/ags_widget_marshal.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
+
+ags_scale_box_test: ags_scale_box_test.c ../../widget/ags_scale_box.c ../../widget/ags_scale.c ../../widget/ags_widget_marshal.c
+	gcc -g -o ags_scale_box_test ags_scale_box_test.c ../../widget/ags_scale_box.c ../../widget/ags_scale.c ../../widget/ags_widget_marshal.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
 
 ags_level_test: ags_level_test.c ../../widget/ags_level.c
 	gcc -g -o ags_level_test ags_level_test.c ../../widget/ags_level.c -I../../.. `pkg-config --cflags --libs gtk4` -lm
