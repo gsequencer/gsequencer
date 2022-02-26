@@ -39,8 +39,8 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_TOOLBAR))
 #define AGS_COMPOSITE_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_COMPOSITE_TOOLBAR, AgsCompositeToolbarClass))
 
-#define AGS_COMPOSITE_TOOLBAR_DEFAULT_VERSION "3.8.0"
-#define AGS_COMPOSITE_TOOLBAR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
+#define AGS_COMPOSITE_TOOLBAR_DEFAULT_VERSION "4.0.0"
+#define AGS_COMPOSITE_TOOLBAR_DEFAULT_BUILD_ID "Sat Feb 26 21:09:50 UTC 2022"
 
 #define AGS_COMPOSITE_TOOLBAR_DIALOG_SCOPE_COUNT (5)
 
@@ -133,7 +133,7 @@ typedef enum{
 
 struct _AgsCompositeToolbar
 {
-  GtkToolbar toolbar;
+  GtkBox box;
 
   guint flags;
 
@@ -147,25 +147,25 @@ struct _AgsCompositeToolbar
   AgsUUID *uuid;
 
   gboolean block_selected_tool;
-  GtkToggleToolButton *selected_tool;
+  GtkButton *selected_tool;
 
-  GtkToggleToolButton *position;
-  GtkToggleToolButton *edit;
-  GtkToggleToolButton *clear;
-  GtkToggleToolButton *select;
+  GtkToggleButton *position;
+  GtkToggleButton *edit;
+  GtkToggleButton *clear;
+  GtkToggleButton *select;
 
-  GtkToolButton *invert;
-  GtkToolButton *copy;
-  GtkToolButton *cut;
+  GtkButton *invert;
+  GtkButton *copy;
+  GtkButton *cut;
 
   guint paste_mode;
-  GtkMenuToolButton *paste;
-  GtkMenu *paste_popup;
+  GtkMenuButton *paste;
+  GMenu *paste_popup;
 
   gchar **menu_tool_dialog;
   GValue *menu_tool_value;
-  GtkMenuToolButton *menu_tool;
-  GtkMenu *menu_tool_popup;
+  GtkMenuButton *menu_tool;
+  GMenu *menu_tool_popup;
 
   GtkComboBox *beats;
   GtkComboBox *beats_type;
@@ -198,7 +198,7 @@ struct _AgsCompositeToolbar
 
 struct _AgsCompositeToolbarClass
 {
-  GtkToolbarClass toolbar;
+  GtkBoxClass box;
 };
 
 GType ags_composite_toolbar_get_type(void);
@@ -219,14 +219,14 @@ gboolean ags_composite_toolbar_test_option(AgsCompositeToolbar *composite_toolba
 void ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint option);
 void ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint option);
 
-GtkMenu* ags_composite_toolbar_paste_popup_new(guint paste_mode);
-GtkMenu* ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
-						   GValue *value);
+GMenu* ags_composite_toolbar_paste_popup_new(guint paste_mode);
+GMenu* ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
+						 GValue *value);
 
 void ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar);
 
 void ags_composite_toolbar_set_selected_tool(AgsCompositeToolbar *composite_toolbar,
-					     GtkToggleToolButton *selected_tool);
+					     GtkToggleButton *selected_tool);
 
 void ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_toolbar,
 						    gchar *scope);

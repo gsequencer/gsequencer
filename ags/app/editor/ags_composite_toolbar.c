@@ -106,7 +106,7 @@ ags_composite_toolbar_get_type(void)
 	NULL, /* interface_data */
     };
 
-    ags_type_composite_toolbar = g_type_register_static(GTK_TYPE_TOOLBAR,
+    ags_type_composite_toolbar = g_type_register_static(GTK_TYPE_BOX,
 							"AgsCompositeToolbar", &ags_composite_toolbar_info,
 							0);
     

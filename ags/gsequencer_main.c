@@ -256,7 +256,7 @@ main(int argc, char **argv)
   
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
-  gtk_init(&argc, &argv);
+  gtk_init();
 
   settings = gtk_settings_get_default();
 
@@ -474,11 +474,10 @@ main(int argc, char **argv)
   
   css_provider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(css_provider,
-				  css_filename,
-				  NULL);
-  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-					    GTK_STYLE_PROVIDER(css_provider),
-					    GTK_STYLE_PROVIDER_PRIORITY_USER);    
+				  css_filename);
+  gtk_style_context_add_provider_for_display(gdk_display_get_default(),
+					     GTK_STYLE_PROVIDER(css_provider),
+					     GTK_STYLE_PROVIDER_PRIORITY_USER);    
     
   g_free(css_filename);
 

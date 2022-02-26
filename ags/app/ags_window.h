@@ -29,14 +29,9 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_context_menu.h>
-#include <ags/app/ags_menu_bar.h>
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_navigation.h>
 #include <ags/app/ags_export_window.h>
-#include <ags/app/ags_automation_window.h>
-#include <ags/app/ags_wave_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_composite_editor.h>
 
@@ -81,32 +76,15 @@ struct _AgsWindow
   GtkMenuButton *add_button;
   GtkMenuButton *edit_button;
   
-  AgsMenuBar *menu_bar;
-  AgsContextMenu *context_menu;
-  
   GtkPaned *paned;
 
   GtkBox *machines;
   GList *machine_counter;
   AgsMachine *selected;
 
-  AgsNotationEditor *notation_editor;
-  AgsNavigation *navigation;
-
-  GList *dialog;
-  
-  AgsAutomationWindow *automation_window;
-  AgsWaveWindow *wave_window;
-
-  AgsExportWindow *export_window;
-
-  GtkWidget *midi_import_wizard;
-  GtkWidget *midi_export_wizard;
-  GtkWidget *midi_file_chooser;
-  
-  AgsPreferences *preferences;
-
   AgsCompositeEditor *composite_editor;
+
+  AgsNavigation *navigation;
 };
 
 struct _AgsWindowClass

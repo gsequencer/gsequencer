@@ -121,10 +121,6 @@ if get_option('gstreamer')
 ags_config.set('AGS_WITH_GSTREAMER', true)
 endif
 
-if get_option('webkit')
-ags_config.set('AGS_WITH_WEBKIT', true)
-endif
-
 if get_option('poppler')
 ags_config.set('AGS_WITH_POPPLER', true)
 endif
@@ -977,7 +973,6 @@ libgsequencer_sources = files(
   'app/ags_composite_editor_callbacks.c',
   'app/ags_connection_editor.c',
   'app/ags_connection_editor_callbacks.c',
-  'app/ags_context_menu.c',
   'app/ags_dssi_browser.c',
   'app/ags_dssi_browser_callbacks.c',
   'app/ags_effect_bridge.c',
@@ -1029,7 +1024,6 @@ libgsequencer_sources = files(
   'app/ags_machine_editor_callbacks.c',
   'app/ags_machine_util.c',
   'app/ags_menu_action_callbacks.c',
-  'app/ags_menu_bar.c',
   'app/ags_meta_data_window.c',
   'app/ags_midi_dialog.c',
   'app/ags_midi_dialog_callbacks.c',
@@ -1301,10 +1295,6 @@ endif
 libgsequencer_compiler_flags = compiler_flags
 if get_option('poppler')
   libgsequencer_dependencies += poppler_dependency
-endif
-
-if get_option('webkit')
-  libgsequencer_dependencies += webkit_dependency
 endif
 
 if get_option('poppler')

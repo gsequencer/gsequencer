@@ -22,8 +22,6 @@ option('quartz', type: 'boolean', value: false,
        description: 'Enable quartz')
 option('gstreamer', type: 'boolean', value: false,
        description: 'Enable gstreamer')
-option('webkit', type: 'boolean', value: false,
-       description: 'Enable webkit')
 option('poppler', type: 'boolean', value: false,
        description: 'Enable poppler')
 

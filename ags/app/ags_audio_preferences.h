@@ -51,7 +51,10 @@ struct _AgsAudioPreferences
 
   guint flags;
   
-  GtkBox *soundcard_editor;
+  GList *soundcard_editor;
+  
+  GtkBox *soundcard_editor_box;
+  
   GtkButton *add;
   
   GtkComboBoxText *jack_driver;

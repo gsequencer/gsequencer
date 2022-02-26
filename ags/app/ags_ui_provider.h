@@ -83,18 +83,6 @@ struct _AgsUiProviderInterface
   GtkWidget* (*get_window)(AgsUiProvider *ui_provider);
   void (*set_window)(AgsUiProvider *ui_provider,
 		     GtkWidget *window);
-
-  GtkWidget* (*get_automation_window)(AgsUiProvider *ui_provider);
-  void (*set_automation_window)(AgsUiProvider *ui_provider,
-				GtkWidget *automation_window);
-
-  GtkWidget* (*get_wave_window)(AgsUiProvider *ui_provider);
-  void (*set_wave_window)(AgsUiProvider *ui_provider,
-			  GtkWidget *wave_window);
-  
-  GtkWidget* (*get_sheet_window)(AgsUiProvider *ui_provider);
-  void (*set_sheet_window)(AgsUiProvider *ui_provider,
-			   GtkWidget *sheet_window);
   
   GtkWidget* (*get_export_window)(AgsUiProvider *ui_provider);
   void (*set_export_window)(AgsUiProvider *ui_provider,
@@ -132,8 +120,6 @@ struct _AgsUiProviderInterface
   void (*set_machine)(AgsUiProvider *ui_provider,
 		      GList *machine);
 
-  gboolean (*use_composite_editor)(AgsUiProvider *ui_provider);
-  
   GtkWidget* (*get_composite_editor)(AgsUiProvider *ui_provider);
   void (*set_composite_editor)(AgsUiProvider *ui_provider,
 			       GtkWidget *composite_editor);  
@@ -186,18 +172,6 @@ void ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
 GtkWidget* ags_ui_provider_get_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_window(AgsUiProvider *ui_provider,
 				GtkWidget *window);
-
-GtkWidget* ags_ui_provider_get_automation_window(AgsUiProvider *ui_provider);
-void ags_ui_provider_set_automation_window(AgsUiProvider *ui_provider,
-					   GtkWidget *automation_window);
-
-GtkWidget* ags_ui_provider_get_wave_window(AgsUiProvider *ui_provider);
-void ags_ui_provider_set_wave_window(AgsUiProvider *ui_provider,
-				     GtkWidget *wave_window);
-  
-GtkWidget* ags_ui_provider_get_sheet_window(AgsUiProvider *ui_provider);
-void ags_ui_provider_set_sheet_window(AgsUiProvider *ui_provider,
-				      GtkWidget *sheet_window);
   
 GtkWidget* ags_ui_provider_get_export_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_export_window(AgsUiProvider *ui_provider,
@@ -238,8 +212,6 @@ void ags_ui_provider_set_machine(AgsUiProvider *ui_provider,
 GtkWidget* ags_ui_provider_get_composite_editor(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_composite_editor(AgsUiProvider *ui_provider,
 					  GtkWidget *composite_editor);  
-
-gboolean ags_ui_provider_use_composite_editor(AgsUiProvider *ui_provider);
 
 GtkWidget* ags_ui_provider_get_navigation(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,

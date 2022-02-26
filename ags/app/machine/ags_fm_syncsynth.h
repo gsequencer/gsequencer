@@ -80,7 +80,7 @@ struct _AgsFMSyncsynth
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
-  GtkVBox *fm_oscillator;
+  GtkBox *fm_oscillator;
   GtkButton *add;
   GtkButton *remove;
 

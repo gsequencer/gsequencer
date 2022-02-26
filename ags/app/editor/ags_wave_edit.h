@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,7 +97,7 @@ typedef enum{
 
 struct _AgsWaveEdit
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   guint mode;
@@ -135,13 +135,13 @@ struct _AgsWaveEdit
   unsigned char *wave_data;
   int stride;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsWaveEditClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_wave_edit_get_type(void);

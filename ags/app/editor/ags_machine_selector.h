@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,15 +59,15 @@ typedef enum{
 
 struct _AgsMachineSelector
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   guint edit;
   
   GtkLabel *label;
 
-  GtkMenuToolButton *menu_button;
-  GtkMenu *popup;
+  GtkMenuButton *menu_button;
+  GMenu *popup;
 
   GtkWidget *shift_piano;
   
@@ -78,7 +78,7 @@ struct _AgsMachineSelector
 
 struct _AgsMachineSelectorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*changed)(AgsMachineSelector *machine_selector, AgsMachine *machine);
 };
@@ -96,7 +96,7 @@ void ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
 
 void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
 
-GtkMenu* ags_machine_selector_popup_new(AgsMachineSelector *machine_selector);
+GMenu* ags_machine_selector_popup_new(AgsMachineSelector *machine_selector);
 
 AgsMachineSelector* ags_machine_selector_new();
 

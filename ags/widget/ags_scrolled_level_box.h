@@ -53,6 +53,10 @@ struct _AgsScrolledLevelBoxClass
 
 GType ags_scrolled_level_box_get_type(void);
 
+GtkScrolledWindow* ags_scrolled_level_box_get_scrolled_window(AgsScrolledLevelBox *scrolled_level_box);
+
+AgsLevelBox* ags_scrolled_level_box_get_level_box(AgsScrolledLevelBox *scrolled_level_box);
+
 AgsScrolledLevelBox* ags_scrolled_level_box_new();
 
 G_END_DECLS

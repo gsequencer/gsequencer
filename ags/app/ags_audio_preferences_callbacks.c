@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,8 +39,7 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_pare
     preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							     AGS_TYPE_PREFERENCES);
     
-    audio_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-									 GTK_ICON_SIZE_BUTTON);
+    audio_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
     gtk_dialog_add_action_widget((GtkDialog *) preferences,
 				 (GtkWidget *) audio_preferences->add,
 				 GTK_RESPONSE_NONE);
@@ -86,26 +85,24 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 									  AGS_TYPE_SOUNDCARD_THREAD);
    }
   
-  list =
-    start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
-
-  if(list != NULL){
+  if(audio_preferences->soundcard_editor != NULL){
     gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
 			     FALSE);
   }
+
+  audio_preferences->soundcard_editor = g_list_prepend(audio_preferences->soundcard_editor,
+						       soundcard_editor);
   
-  g_list_free(start_list);
-  
-  gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
-		     (GtkWidget *) soundcard_editor,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) audio_preferences->soundcard_editor_box,
+		 (GtkWidget *) soundcard_editor);
   
   ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
+
   g_signal_connect(soundcard_editor->remove, "clicked",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
-  gtk_widget_show_all((GtkWidget *) soundcard_editor);
+
+  gtk_widget_show((GtkWidget *) soundcard_editor);
 
   /* reset default card */  
   g_object_unref(main_loop);  
@@ -126,20 +123,18 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
     ags_soundcard_editor_remove_soundcard(soundcard_editor,
 					  soundcard_editor->soundcard);
   }
+
+  gtk_box_remove(audio_preferences->soundcard_editor_box,
+		 soundcard_editor);
   
-  gtk_widget_destroy((GtkWidget *) soundcard_editor);
+  g_object_run_dispose(soundcard_editor);
+  g_object_unref(soundcard_editor);
 
   /* reset default card */
-  /*  */
-  list =
-    start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
-
-  if(list != NULL){
-    gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(list->data)->buffer_size,
+  if(audio_preferences->soundcard_editor != NULL){
+    gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(audio_preferences->soundcard_editor->data)->buffer_size,
 			     TRUE);
   }
-  
-  g_list_free(start_list);
 }
 
 void

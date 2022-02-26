@@ -121,7 +121,7 @@ ags_machine_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_machine = g_type_register_static(GTK_TYPE_GRID,
 					      "AgsMachine", &ags_machine_info,
 					      0);
     

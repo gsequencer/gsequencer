@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,7 +84,7 @@ ags_notebook_get_type(void)
       (GInstanceInitFunc) ags_notebook_init,
     };
 
-    ags_type_notebook = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_notebook = g_type_register_static(GTK_TYPE_BOX,
 					       "AgsNotebook", &ags_notebook_info,
 					       0);
 
@@ -141,6 +141,9 @@ ags_notebook_init(AgsNotebook *notebook)
 {
   GtkArrow *arrow;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(notebook),
+				 GTK_ORIENTATION_VERTICAL);
+  
   notebook->flags = 0;
 
   notebook->tab_width = AGS_NOTEBOOK_TAB_DEFAULT_WIDTH;
@@ -149,12 +152,14 @@ ags_notebook_init(AgsNotebook *notebook)
   notebook->prefix = g_strdup(AGS_NOTEBOOK_TAB_DEFAULT_PREFIX);
 
   /* navigation */
-  notebook->navigation = (GtkHBox *) gtk_hbox_new(FALSE,
-						  0);
-  gtk_box_pack_start(GTK_BOX(notebook),
-		     GTK_WIDGET(notebook->navigation),
-		     FALSE, FALSE,
-		     0);
+  notebook->navigation = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						 0);
+  
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(notebook->navigation),
+				 GTK_ORIENTATION_HORIZONTAL);
+  
+  gtk_box_append(GTK_BOX(notebook),
+		 GTK_WIDGET(notebook->navigation));
 
   /* arrow left */
   arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_LEFT,
@@ -163,10 +168,8 @@ ags_notebook_init(AgsNotebook *notebook)
 				       "child", arrow,
 				       "relief", GTK_RELIEF_NONE,
 				       NULL);
-  gtk_box_pack_start(GTK_BOX(notebook->navigation),
-		     GTK_WIDGET(notebook->scroll_prev),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(GTK_BOX(notebook->navigation),
+		 GTK_WIDGET(notebook->scroll_prev));
 
   g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked",
 		   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
@@ -178,10 +181,8 @@ ags_notebook_init(AgsNotebook *notebook)
 				       "child", arrow,
 				       "relief", GTK_RELIEF_NONE,
 				       NULL);
-  gtk_box_pack_start(GTK_BOX(notebook->navigation),
-		     GTK_WIDGET(notebook->scroll_next),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(GTK_BOX(notebook->navigation),
+		 GTK_WIDGET(notebook->scroll_next));
 
   g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked",
 		   G_CALLBACK(ags_notebook_scroll_next_callback), notebook);
@@ -192,8 +193,8 @@ ags_notebook_init(AgsNotebook *notebook)
   gtk_container_add(GTK_CONTAINER(notebook->navigation),
 		    GTK_WIDGET(notebook->viewport));
   
-  notebook->hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					    0);
+  notebook->hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					  0);
   gtk_container_add((GtkContainer *) notebook->viewport,
 		    (GtkWidget *) notebook->hbox);
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,10 +26,6 @@
 #include <gtk/gtk.h>
 
 #include <ags/ags_api_config.h>
-
-#if defined(AGS_WITH_WEBKIT)
-#include <webkit2/webkit2.h>
-#endif
 
 #if defined(AGS_WITH_POPPLER)
 #include <poppler.h>
@@ -71,17 +67,11 @@ struct _AgsOnlineHelpWindow
 
   gchar *start_filename;
   
-#if defined(AGS_WITH_WEBKIT)
-  WebKitWebView *web_view;
-#else
-  gpointer web_view;
-#endif
-  
   gint max_width;
   gint max_height;
 
-  GtkVScrollbar *pdf_vscrollbar;
-  GtkHScrollbar *pdf_hscrollbar;
+  GtkScrollbar *pdf_vscrollbar;
+  GtkScrollbar *pdf_hscrollbar;
   
   GtkWidget *pdf_drawing_area;
   

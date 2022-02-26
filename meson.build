@@ -29,7 +29,7 @@ compiler = meson.get_compiler('c')
 # REMINDER: all dependencies have to be defined here globally
 # Just to prevent double check
 common_dependencies = []
-gtk_dependency = dependency('gtk+-3.0')
+gtk_dependency = dependency('gtk4')
 glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
 gthread_dependency = dependency('gthread-2.0', version: '>= 2.56.0')

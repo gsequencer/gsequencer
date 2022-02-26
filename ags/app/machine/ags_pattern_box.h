@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,7 +85,7 @@ struct _AgsPatternBox
   guint cursor_y;
   
   guint active_led;
-  AgsHLedArray *hled_array;
+  AgsLedArray *hled_array;
 
   GtkBox *pattern;
 

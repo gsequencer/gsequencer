@@ -96,7 +96,6 @@ void
 ags_level_box_class_init(AgsLevelBoxClass *level_box)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   GParamSpec *param_spec;
 
@@ -127,9 +126,6 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
   g_object_class_install_property(gobject,
 				  PROP_LEVEL_COUNT,
 				  param_spec);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) level_box;
 
   /* AgsLevelBox */
   level_box->child_width_request = NULL;
@@ -399,6 +395,24 @@ ags_level_box_child_height_request(AgsLevelBox *level_box,
 		level_box_signals[CHILD_HEIGHT_REQUEST], 0,
 		level, height_request);
   g_object_unref((GObject *) level_box);
+}
+
+/**
+ * ags_level_box_get_level:
+ * @level_box: the #AgsLevelBox
+ * 
+ * Get level.
+ * 
+ * Returns: the #GList-struct containing #AgsLevel
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_level_box_get_level(AgsLevelBox *level_box)
+{
+  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+
+  return(g_list_copy(level_box->level));
 }
 
 /**

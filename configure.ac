@@ -181,12 +181,6 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
               [],
               [enable_experimental=no])
 
-AC_ARG_WITH([webkit],
-            [AS_HELP_STRING([--without-webkit],
-                            [disable support for webkit])],
-            [],
-            [with_webkit=yes])
-
 AC_ARG_WITH([poppler],
             [AS_HELP_STRING([--with-poppler],
                             [enable support for poppler])],
@@ -497,18 +491,10 @@ PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
-PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.18.0])
+PKG_CHECK_MODULES([GTK], [gtk4 >= 4.0.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-AS_IF([test "x$with_webkit" != xno],
-      [PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
-       AC_SUBST(WEBKITGTK_CFLAGS)
-       AC_SUBST(WEBKITGTK_LIBS)
-       AC_DEFINE([AGS_WITH_WEBKIT], [1],
-                 [Define if you have webkit])
-      ])
-      
 AS_IF([test "x$with_poppler" != xno],
       [PKG_CHECK_MODULES([POPPLER], [poppler-glib >= 0.71.0])
        AC_SUBST(POPPLER_CFLAGS)

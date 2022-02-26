@@ -119,6 +119,46 @@ ags_scrolled_scale_box_finalize(GObject *gobject)
 }
 
 /**
+ * ags_scrolled_scale_box_get_scrolled_window:
+ * @scrolled_scale_box: the #AgsScrolledScale_Box
+ * 
+ * Get scrolled_window of @scrolled_scale_box.
+ * 
+ * Returns: (transfer none): the #GtkScrolled_Window
+ *
+ * Since: 4.0.0
+ */
+GtkScrolled_Window*
+ags_scrolled_scale_box_get_scrolled_window(AgsScrolledScaleBox *scrolled_scale_box)
+{
+  if(!AGS_IS_SCROLLED_SCALE_BOX(scrolled_scale_box)){
+    return(NULL);
+  }
+  
+  return(scrolled_scale_box->scrolled_window);
+}
+
+/**
+ * ags_scrolled_scale_box_get_scale_box:
+ * @scrolled_scale_box: the #AgsScrolledScale_Box
+ * 
+ * Get scale box of @scrolled_scale_box.
+ * 
+ * Returns: (transfer none): the #AgsScaleBox
+ *
+ * Since: 4.0.0
+ */
+AgsScaleBox*
+ags_scrolled_scale_box_get_scale_box(AgsScrolledScaleBox *scrolled_scale_box)
+{
+  if(!AGS_IS_SCROLLED_SCALE_BOX(scrolled_scale_box)){
+    return(NULL);
+  }
+  
+  return(scrolled_scale_box->scale_box);
+}
+
+/**
  * ags_scrolled_scale_box_new:
  *
  * Create a new #AgsScrolledScaleBox.

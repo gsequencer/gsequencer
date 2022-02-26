@@ -77,6 +77,8 @@ void ags_level_box_child_height_request(AgsLevelBox *level_box,
 					GtkWidget *level,
 					gint height_request);
 
+GList* ags_level_box_get_level(AgsLevelBox *level_box);
+
 AgsLevelBox* ags_level_box_new(GtkOrientation orientation);
 
 G_END_DECLS

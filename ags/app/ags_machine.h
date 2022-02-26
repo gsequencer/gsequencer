@@ -43,8 +43,8 @@ G_BEGIN_DECLS
 
 #define AGS_MACHINE_AUTOMATION_PORT(ptr) ((AgsMachineAutomationPort *)(ptr))
 
-#define AGS_MACHINE_DEFAULT_VERSION "2.1.60"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "Wed Feb 20 18:38:17 UTC 2019"
+#define AGS_MACHINE_DEFAULT_VERSION "4.0.0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "Sat Feb 26 21:01:24 UTC 2022"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineInputLine AgsMachineInputLine;
@@ -108,7 +108,7 @@ typedef enum{
 
 struct _AgsMachine
 {
-  GtkBin bin;
+  GtkGrid grid;
 
   guint flags;
   guint file_input_flags;
@@ -145,25 +145,25 @@ struct _AgsMachine
 
   GType output_pad_type;
   GType output_line_type;
-  GtkContainer *output;
+  GtkGrid *output;
 
   GtkWidget *selected_output_pad;
   
   GType input_pad_type;
   GType input_line_type;
-  GtkContainer *input;
+  GtkGrid *input;
   
   GtkWidget *selected_input_pad;
 
   GList *machine_input_line;
   
-  GtkContainer *bridge;
+  GtkGrid *bridge;
 
   GList *port;
   GList *enabled_automation_port;
 
-  GtkMenuToolButton *menu_tool_button;
-  GtkMenu *popup;
+  GtkMenuButton *menu_button;
+  GMenu *popup;
   
   GtkDialog *properties;
   GtkDialog *rename;
@@ -191,7 +191,7 @@ struct _AgsMachineInputLine
 
 struct _AgsMachineClass
 {
-  GtkBinClass bin;
+  GtkGridClass grid;
 
   void (*samplerate_changed)(AgsMachine *machine,
 			     guint samplerate, guint old_samplerate);

@@ -89,11 +89,11 @@ struct _AgsCellPattern
   
   GtkDrawingArea *drawing_area;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 
   guint active_led;
-  AgsHLedArray *hled_array;
+  AgsLedArray *hled_array;
 };
 
 struct _AgsCellPatternClass

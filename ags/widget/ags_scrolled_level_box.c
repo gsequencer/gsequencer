@@ -119,6 +119,46 @@ ags_scrolled_level_box_finalize(GObject *gobject)
 }
 
 /**
+ * ags_scrolled_level_box_get_scrolled_window:
+ * @scrolled_level_box: the #AgsScrolledLevel_Box
+ * 
+ * Get scrolled window of @scrolled_level_box.
+ * 
+ * Returns: (transfer none): the #GtkScrolledWindow
+ *
+ * Since: 4.0.0
+ */
+GtkScrolledWindow*
+ags_scrolled_level_box_get_scrolled_window(AgsScrolledLevelBox *scrolled_level_box)
+{
+  if(!AGS_IS_SCROLLED_LEVEL_BOX(scrolled_level_box)){
+    return(NULL);
+  }
+  
+  return(scrolled_level_box->scrolled_window);
+}
+
+/**
+ * ags_scrolled_level_box_get_level_box:
+ * @scrolled_level_box: the #AgsScrolledLevel_Box
+ * 
+ * Get level box of @scrolled_level_box.
+ * 
+ * Returns: (transfer none): the #AgsLevelBox
+ *
+ * Since: 4.0.0
+ */
+AgsLevelBox*
+ags_scrolled_level_box_get_level_box(AgsScrolledLevelBox *scrolled_level_box)
+{
+  if(!AGS_IS_SCROLLED_LEVEL_BOX(scrolled_level_box)){
+    return(NULL);
+  }
+  
+  return(scrolled_level_box->level_box);
+}
+
+/**
  * ags_scrolled_level_box_new:
  *
  * Create a new #AgsScrolledLevelBox.

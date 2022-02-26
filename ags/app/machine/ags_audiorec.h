@@ -77,9 +77,9 @@ struct _AgsAudiorec
   gint position;
   GtkSpinner *wave_loader_spinner;  
   
-  GtkRadioButton *keep_data;
-  GtkRadioButton *mix_data;
-  GtkRadioButton *replace_data;
+  GtkToggleButton *keep_data;
+  GtkToggleButton *mix_data;
+  GtkToggleButton *replace_data;
 
   GtkBox *hindicator_vbox;
 

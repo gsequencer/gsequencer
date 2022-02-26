@@ -842,9 +842,9 @@ libgsequencer_la_CPPFLAGS = -std=gnu99
 endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
-libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 $(PIC_FLAGS) -pthread
-libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(WEBKITGTK_LIBS) $(POPPLER_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(POPPLER_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libgsequencer_la_CPPFLAGS += -DAGS_LIBRARY_SUFFIX=\".dll\"
@@ -889,9 +889,9 @@ endif
 
 gsequencer_CPPFLAGS += $(CPPFLAGS)
 
-gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
 gsequencer_LDFLAGS += -pthread
-gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(WEBKITGTK_LIBS) $(POPPLER_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
+gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(POPPLER_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
 
 if WITH_OSXAPI
 gsequencer_LDFLAGS += -framework Cocoa
@@ -2582,10 +2582,6 @@ libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
 	ags/app/ags_animation_window.h \
 	ags/app/ags_app_action_util.h \
-	ags/app/ags_automation_editor_callbacks.h \
-	ags/app/ags_automation_editor.h \
-	ags/app/ags_automation_window_callbacks.h \
-	ags/app/ags_automation_window.h \
 	ags/app/ags_audio_preferences_callbacks.h \
 	ags/app/ags_audio_preferences.h \
 	ags/app/ags_bulk_member_callbacks.h \
@@ -2594,7 +2590,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_composite_editor_callbacks.h \
 	ags/app/ags_connection_editor_callbacks.h \
 	ags/app/ags_connection_editor.h \
-	ags/app/ags_context_menu.h \
 	ags/app/ags_dssi_browser_callbacks.h \
 	ags/app/ags_dssi_browser.h \
 	ags/app/ags_effect_bridge_callbacks.h \
@@ -2642,7 +2637,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine.h \
 	ags/app/ags_machine_util.h \
 	ags/app/ags_menu_action_callbacks.h \
-	ags/app/ags_menu_bar.h \
 	ags/app/ags_meta_data_window.h \
 	ags/app/ags_midi_dialog_callbacks.h \
 	ags/app/ags_midi_dialog.h \
@@ -2650,8 +2644,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_midi_preferences_callbacks.h \
 	ags/app/ags_navigation_callbacks.h \
 	ags/app/ags_navigation.h \
-	ags/app/ags_notation_editor_callbacks.h \
-	ags/app/ags_notation_editor.h \
 	ags/app/ags_online_help_window.h \
 	ags/app/ags_online_help_window_callbacks.h \
 	ags/app/ags_osc_server_preferences_callbacks.h \
@@ -2688,17 +2680,9 @@ libgsequencer_h_sources = \
 	ags/app/ags_sequencer_editor.h \
 	ags/app/ags_server_preferences_callbacks.h \
 	ags/app/ags_server_preferences.h \
-	ags/app/ags_sheet_window.h \
-	ags/app/ags_sheet_window_callbacks.h \
-	ags/app/ags_sheet_editor.h \
-	ags/app/ags_sheet_editor_callbacks.h \
 	ags/app/ags_soundcard_editor_callbacks.h \
 	ags/app/ags_soundcard_editor.h \
 	ags/app/ags_ui_provider.h \
-	ags/app/ags_wave_window_callbacks.h \
-	ags/app/ags_wave_window.h \
-	ags/app/ags_wave_editor_callbacks.h \
-	ags/app/ags_wave_editor.h \
 	ags/app/ags_window.h \
 	ags/app/ags_window_callbacks.h \
 	ags/app/ags_gsequencer_application.h \
@@ -2721,10 +2705,6 @@ libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
 	ags/app/ags_animation_window.c \
 	ags/app/ags_app_action_util.c \
-	ags/app/ags_automation_editor.c \
-	ags/app/ags_automation_editor_callbacks.c \
-	ags/app/ags_automation_window.c \
-	ags/app/ags_automation_window_callbacks.c \
 	ags/app/ags_audio_preferences.c \
 	ags/app/ags_audio_preferences_callbacks.c \
 	ags/app/ags_bulk_member.c \
@@ -2733,7 +2713,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_composite_editor_callbacks.c \
 	ags/app/ags_connection_editor_callbacks.c \
 	ags/app/ags_connection_editor.c \
-	ags/app/ags_context_menu.c \
 	ags/app/ags_dssi_browser_callbacks.c \
 	ags/app/ags_dssi_browser.c \
 	ags/app/ags_effect_bridge.c \
@@ -2782,7 +2761,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor.c \
 	ags/app/ags_machine_editor_callbacks.c \
 	ags/app/ags_menu_action_callbacks.c \
-	ags/app/ags_menu_bar.c \
 	ags/app/ags_meta_data_window.c \
 	ags/app/ags_midi_dialog.c \
 	ags/app/ags_midi_dialog_callbacks.c \
@@ -2790,8 +2768,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_midi_preferences_callbacks.c \
 	ags/app/ags_navigation.c \
 	ags/app/ags_navigation_callbacks.c \
-	ags/app/ags_notation_editor.c \
-	ags/app/ags_notation_editor_callbacks.c \
 	ags/app/ags_online_help_window.c \
 	ags/app/ags_online_help_window_callbacks.c \
 	ags/app/ags_osc_server_preferences_callbacks.c \
@@ -2828,15 +2804,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_sequencer_editor.c \
 	ags/app/ags_server_preferences.c \
 	ags/app/ags_server_preferences_callbacks.c \
-	ags/app/ags_sheet_window.c \
-	ags/app/ags_sheet_window_callbacks.c \
-	ags/app/ags_sheet_editor.c \
-	ags/app/ags_sheet_editor_callbacks.c \
 	ags/app/ags_ui_provider.c \
-	ags/app/ags_wave_window_callbacks.c \
-	ags/app/ags_wave_window.c \
-	ags/app/ags_wave_editor.c \
-	ags/app/ags_wave_editor_callbacks.c \
 	ags/app/ags_window.c \
 	ags/app/ags_soundcard_editor_callbacks.c \
 	ags/app/ags_soundcard_editor.c \
@@ -3213,8 +3181,6 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_automation_edit.h \
 	ags/app/editor/ags_automation_meta_callbacks.h \
 	ags/app/editor/ags_automation_meta.h \
-	ags/app/editor/ags_automation_toolbar_callbacks.h \
-	ags/app/editor/ags_automation_toolbar.h \
 	ags/app/editor/ags_composite_edit.h \
 	ags/app/editor/ags_composite_edit_callbacks.h \
 	ags/app/editor/ags_composite_toolbar.h \
@@ -3238,8 +3204,6 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_notation_edit.h \
 	ags/app/editor/ags_notation_meta_callbacks.h \
 	ags/app/editor/ags_notation_meta.h \
-	ags/app/editor/ags_notation_toolbar_callbacks.h \
-	ags/app/editor/ags_notation_toolbar.h \
 	ags/app/editor/ags_pattern_envelope_callbacks.h \
 	ags/app/editor/ags_pattern_envelope.h \
 	ags/app/editor/ags_position_automation_cursor_dialog.h \
@@ -3264,8 +3228,6 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_select_note_dialog_callbacks.h \
 	ags/app/editor/ags_sheet_edit.h \
 	ags/app/editor/ags_sheet_edit_callbacks.h \
-	ags/app/editor/ags_sheet_toolbar.h \
-	ags/app/editor/ags_sheet_toolbar_callbacks.h \
 	ags/app/editor/ags_time_stretch_buffer_dialog.h \
 	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.h \
 	ags/app/editor/ags_vautomation_edit_box.h \
@@ -3274,9 +3236,7 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_wave_edit.h \
 	ags/app/editor/ags_wave_edit_box.h \
 	ags/app/editor/ags_wave_meta_callbacks.h \
-	ags/app/editor/ags_wave_meta.h \
-	ags/app/editor/ags_wave_toolbar_callbacks.h \
-	ags/app/editor/ags_wave_toolbar.h
+	ags/app/editor/ags_wave_meta.h
 
 deprecated_libgsequencer_editor_c_sources =
 
@@ -3289,8 +3249,6 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_automation_edit_callbacks.c \
 	ags/app/editor/ags_automation_meta.c \
 	ags/app/editor/ags_automation_meta_callbacks.c \
-	ags/app/editor/ags_automation_toolbar.c \
-	ags/app/editor/ags_automation_toolbar_callbacks.c \
 	ags/app/editor/ags_composite_edit.c \
 	ags/app/editor/ags_composite_edit_callbacks.c \
 	ags/app/editor/ags_composite_toolbar.c \
@@ -3314,8 +3272,6 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_notation_edit_callbacks.c \
 	ags/app/editor/ags_notation_meta.c \
 	ags/app/editor/ags_notation_meta_callbacks.c \
-	ags/app/editor/ags_notation_toolbar.c \
-	ags/app/editor/ags_notation_toolbar_callbacks.c \
 	ags/app/editor/ags_pattern_envelope_callbacks.c \
 	ags/app/editor/ags_pattern_envelope.c \
 	ags/app/editor/ags_position_automation_cursor_dialog.c \
@@ -3340,8 +3296,6 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_select_note_dialog_callbacks.c \
 	ags/app/editor/ags_sheet_edit.c \
 	ags/app/editor/ags_sheet_edit_callbacks.c \
-	ags/app/editor/ags_sheet_toolbar.c \
-	ags/app/editor/ags_sheet_toolbar_callbacks.c \
 	ags/app/editor/ags_time_stretch_buffer_dialog.c \
 	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.c \
 	ags/app/editor/ags_vautomation_edit_box.c \
@@ -3350,9 +3304,7 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_wave_edit_box.c \
 	ags/app/editor/ags_wave_edit_callbacks.c \
 	ags/app/editor/ags_wave_meta.c \
-	ags/app/editor/ags_wave_meta_callbacks.c \
-	ags/app/editor/ags_wave_toolbar.c \
-	ags/app/editor/ags_wave_toolbar_callbacks.c
+	ags/app/editor/ags_wave_meta_callbacks.c
 
 # libags-vst
 deprecated_libags_vst_h_sources =
