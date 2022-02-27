@@ -30,6 +30,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_export_soundcard.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_EXPORT_WINDOW                (ags_export_window_get_type())
@@ -62,9 +64,13 @@ struct _AgsExportWindow
   GtkSpinButton *tact;
   GtkLabel *duration;
 
-  GtkBox *export_soundcard;
+  GList *export_soundcard;
+  
+  GtkBox *export_soundcard_box;
   GtkButton *add;
 
+  GList *remove_filename;
+  
   GtkToggleButton *export;
 };
 
@@ -75,11 +81,16 @@ struct _AgsExportWindowClass
 
 GType ags_export_window_get_type(void);
 
-void ags_export_window_add_export_soundcard(AgsExportWindow *export_window);
+GList* ags_export_window_get_export_soundcard(AgsExportWindow *export_window);
+void ags_export_window_add_export_soundcard(AgsExportWindow *export_window,
+					    AgsExportSoundcard *export_soundcard);
 void ags_export_window_remove_export_soundcard(AgsExportWindow *export_window,
-					       gint nth);
+					       AgsExportSoundcard *export_soundcard);
 
 void ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window);
+
+void ags_export_window_start_export(AgsExportWindow *export_window);
+void ags_export_window_stop_export(AgsExportWindow *export_window);
 
 AgsExportWindow* ags_export_window_new();
 

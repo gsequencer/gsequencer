@@ -136,56 +136,44 @@ ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applic
 void
 ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(generic_preferences),
 				 GTK_ORIENTATION_VERTICAL);
 
   generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("autosave thread"));
-  gtk_box_pack_start((GtkBox *) generic_preferences,
-		     (GtkWidget *) generic_preferences->autosave_thread,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) generic_preferences,
+		 (GtkWidget *) generic_preferences->autosave_thread);
 		     
   /* segmentation */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) generic_preferences,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) generic_preferences,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("segmentation"));
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
   
   generic_preferences->segmentation = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_combo_box_set_model(generic_preferences->segmentation,
 			  (GtkTreeModel *) ags_generic_preferences_create_segmentation());
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->segmentation),
 			   2);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) generic_preferences->segmentation,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) generic_preferences->segmentation);
 
   /* engine mode */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) generic_preferences,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) generic_preferences,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("engine mode"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
-
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
+  
   generic_preferences->engine_mode = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
 				 "deterministic");
@@ -194,31 +182,23 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
 			   0);
   
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) generic_preferences->engine_mode,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) generic_preferences->engine_mode);
 
   /* rt-safe */
   generic_preferences->rt_safe = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("rt-safe"));
-  gtk_box_pack_start((GtkBox *) generic_preferences,
-		     (GtkWidget *) generic_preferences->rt_safe,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
-
+  gtk_box_append((GtkBox *) generic_preferences,
+		 (GtkWidget *) generic_preferences->rt_safe);
+  
   /* GUI scale factor */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) generic_preferences,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) generic_preferences,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("GUI scale factor"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   generic_preferences->gui_scale = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(generic_preferences->gui_scale,
@@ -230,10 +210,8 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->gui_scale),
 			   0);
   
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) generic_preferences->gui_scale,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) generic_preferences->gui_scale);
 }
 
 static void

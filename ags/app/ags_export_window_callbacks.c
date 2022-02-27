@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,42 +22,36 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_navigation.h>
-#include <ags/app/ags_export_soundcard.h>
 
 #include <glib/gstdio.h>
 
-void ags_export_window_stop_callback(AgsThread *thread,
-				     AgsExportWindow *export_window);
+void ags_export_window_replace_files_response_callback(GtkDialog *dialog,
+						       gint response,
+						       AgsExportWindow *export_window);
 
 void
 ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 						AgsExportWindow *export_window)
 {
-  ags_export_window_add_export_soundcard(export_window);
+  AgsExportSoundcard *export_soundcard;
+
+  export_soundcard = ags_export_soundcard_new();
+  
+  ags_export_window_add_export_soundcard(export_window,
+					 export_soundcard);
 }
 
 void
 ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 						   AgsExportWindow *export_window)
 {
-  GtkBox *hbox;
+  AgsExportSoundcard *export_soundcard;
 
-  GList *start_list;
-
-  gint nth;
-
-  hbox = (GtkBox *) gtk_widget_get_ancestor(button,
-					    GTK_TYPE_BOX);
-
-  start_list = gtk_container_get_children((GtkContainer *) export_window->export_soundcard);
-
-  nth = g_list_index(start_list,
-		     hbox);
+  export_soundcard = (AgsExportSoundcard *) gtk_widget_get_ancestor(button,
+								    AGS_TYPE_EXPORT_SOUNDCARD);
   
   ags_export_window_remove_export_soundcard(export_window,
-					    nth);
-
-  g_list_free(start_list);
+					    export_soundcard);
 }
 
 void
@@ -97,85 +91,68 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 }
 
 void
+ags_export_window_replace_files_response_callback(GtkDialog *dialog,
+						  gint response,
+						  AgsExportWindow *export_window)
+{
+  GList *start_remove_filename, *remove_filename;
+
+  remove_filename =
+    start_remove_filename = export_window->remove_filename;
+
+  export_window->remove_filename = NULL;
+
+  if(response == GTK_RESPONSE_ACCEPT ||
+     response == GTK_RESPONSE_OK){
+    /* remove files */
+    remove_filename = remove_filename;
+      
+    while(remove_filename != NULL){
+      g_remove(remove_filename->data);
+
+      remove_filename = remove_filename->next;
+    }
+
+    ags_export_window_start_export(export_window);
+  }  
+  
+  g_list_free_full(start_remove_filename,
+		   (GDestroyNotify) g_free);
+  
+  gtk_window_destroy((GtkWidget *) dialog);
+}
+
+void
 ags_export_window_export_callback(GtkWidget *toggle_button,
 				  AgsExportWindow *export_window)
 {
-  AgsWindow *window;
-  AgsMachine *machine;
-  
-  AgsThread *main_loop;
-  
-  AgsApplicationContext *application_context;
-  
-  GObject *default_soundcard;
-
-  GList *machines_start;
-
   gboolean success;
-
-  application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-    
-  /* collect */  
-  machines_start = NULL;
 
   success = FALSE;
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
-    AgsExportOutput *export_output;
-
-    AgsExportThread *export_thread, *current_export_thread;
-
-    GList *export_soundcard, *export_soundcard_start;
-    GList *child, *child_start;
-    GList *machines;
+    GList *start_export_soundcard, *export_soundcard;
     GList *all_filename;
-    GList *remove_filename;
-    GList *task;
-    GList *list;
+    GList *start_remove_filename;
     
     gchar *filename;
 
     gboolean file_exists;
-    gboolean live_performance;
-
-    export_thread = (AgsExportThread *) ags_thread_find_type(main_loop,
-							     AGS_TYPE_EXPORT_THREAD);
 
     export_soundcard =
-      export_soundcard_start = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+      start_export_soundcard = ags_export_window_get_export_soundcard(export_window);
     
     all_filename = NULL;
-    remove_filename = NULL;
+    start_remove_filename = NULL;
     
     file_exists = FALSE;
 
     while(export_soundcard != NULL){
-      child = 
-	child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
+      GtkEntryBuffer *entry_buffer;
 
-      while(child != NULL){
-	if(AGS_IS_EXPORT_SOUNDCARD(child->data)){
-	  break;
-	}
+      entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
 
-	child = child->next;
-      }
-	
-      if(child == NULL ||
-	 !AGS_IS_EXPORT_SOUNDCARD(child->data)){
-	export_soundcard = export_soundcard->next;
-	g_list_free(child_start);
-	  
-	continue;
-      }
-      
-      filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child->data)->filename);
+      filename = gtk_entry_buffer_get_text(entry_buffer);
       all_filename = g_list_prepend(all_filename,
 				    filename);
       
@@ -183,7 +160,6 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       if(filename == NULL ||
 	 strlen(filename) == 0){
 	export_soundcard = export_soundcard->next;
-	g_list_free(child_start);
 	  
 	continue;
       }
@@ -193,223 +169,37 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	if(g_file_test(filename,
 		       (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
 	  export_soundcard = export_soundcard->next;
-	  g_list_free(child_start);
 	  
 	  continue;
 	}
 
-	remove_filename = g_list_prepend(remove_filename,
-					 filename);
+	start_remove_filename = g_list_prepend(start_remove_filename,
+					       filename);
 	file_exists = TRUE;
       }
-
-      g_list_free(child_start);
       
       export_soundcard = export_soundcard->next;
     }
 
     if(file_exists){
       GtkDialog *dialog;
-      gint response;
 
       dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) export_window,
 						    GTK_DIALOG_MODAL,
 						    GTK_MESSAGE_QUESTION,
 						    GTK_BUTTONS_OK_CANCEL,
 						    "Replace existing file(s)?");
-      response = gtk_dialog_run(dialog);
-      gtk_widget_destroy((GtkWidget *) dialog);
 
-      if(response == GTK_RESPONSE_REJECT ||
-	 response == GTK_RESPONSE_CANCEL){
-	goto ags_export_window_export_callback_END;
-      }
-
-      /* remove files */
-      list = remove_filename;
+      export_window->remove_filename = start_remove_filename;
       
-      while(list != NULL){
-	g_remove(list->data);
-
-	list = list->next;
-      }
-
-      g_list_free(remove_filename);
-    }
-
-    /* get some preferences */
-    if(export_window->live_export != NULL){
-      live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
+      g_signal_connect((GObject *) dialog, "response",
+		       G_CALLBACK(ags_export_window_replace_files_response_callback), export_window);
     }else{
-      live_performance = TRUE;
+      ags_export_window_start_export(export_window);
     }
-    
-    machines_start = 
-      machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
-
-    /* start machines */
-    while(machines != NULL){
-      machine = AGS_MACHINE(machines->data);
-
-      if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	g_message("found machine to play!");
-
-	ags_machine_set_run_extended(machine,
-				     TRUE,
-				     !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
-	success = TRUE;
-      }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
-	g_message("found machine to play!");
-
-	ags_machine_set_run_extended(machine,
-				     TRUE,
-				     FALSE, TRUE, FALSE, FALSE);
-	success = TRUE;
-      }
-
-      machines = machines->next;
-    }
-
-    /* start export thread */
-    if(success){
-      gchar *str;
-      
-      guint tic;
-      guint format;
-      
-      gdouble delay;
-      
-      /* create task */
-      delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
-
-      /*  */
-      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
-      
-      export_soundcard = export_soundcard_start;
-      task = NULL;
-      
-      while(export_soundcard != NULL){
-	child =
-	  child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
-
-	while(child != NULL){
-	  if(AGS_IS_EXPORT_SOUNDCARD(child->data)){
-	    break;
-	  }
-
-	  child = child->next;
-	}
-	
-	if(child == NULL ||
-	   !AGS_IS_EXPORT_SOUNDCARD(child->data)){
-	  export_soundcard = export_soundcard->next;
-	  g_list_free(child_start);
-	  
-	  continue;
-	}
-
-	current_export_thread = ags_export_thread_find_soundcard(export_thread,
-								 AGS_EXPORT_SOUNDCARD(child->data)->soundcard);
-	
-	
-	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child->data)->filename);
-
-	export_output = ags_export_output_new(current_export_thread,
-					      AGS_EXPORT_SOUNDCARD(child->data)->soundcard,
-					      filename,
-					      tic,
-					      live_performance);
-
-	str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(child->data)->output_format);
-	format = 0;
-
-	if(!g_ascii_strncasecmp(str,
-				"wav",
-				4)){
-	  format = AGS_EXPORT_OUTPUT_FORMAT_WAV;
-	}else if(!g_ascii_strncasecmp(str,
-				      "flac",
-				      5)){
-	  format = AGS_EXPORT_OUTPUT_FORMAT_FLAC;
-	}else if(!g_ascii_strncasecmp(str,
-				      "ogg",
-				      4)){
-	  format = AGS_EXPORT_OUTPUT_FORMAT_OGG;
-	}
-
-	g_object_set(G_OBJECT(export_output),
-		     "format", format,
-		     NULL);
-	
-	task = g_list_prepend(task,
-			      export_output);
-	
-	if(AGS_EXPORT_SOUNDCARD(child->data)->soundcard == default_soundcard){
-	  g_signal_connect(current_export_thread, "stop",
-			   G_CALLBACK(ags_export_window_stop_callback), export_window);
-	}
-
-	g_list_free(child_start);
-	
-      	export_soundcard = export_soundcard->next;
-      }
-      
-      /* append AgsStartSoundcard */
-      task = g_list_reverse(task);
-      
-      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
-					task);
-      
-      ags_navigation_set_seeking_sensitive(window->navigation,
-					   FALSE);
-    }
-
-    g_list_free(export_soundcard_start);
   }else{
-    GList *machines;
-
-    machines_start = 
-      machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
-
-    /* stop machines */
-    while(machines != NULL){
-      machine = AGS_MACHINE(machines->data);
-
-      if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
-	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	g_message("found machine to stop!");
-    
-	ags_machine_set_run_extended(machine,
-				     FALSE,
-				     TRUE, TRUE, FALSE, FALSE);
-	
-	success = TRUE;
-      }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
-	g_message("found machine to stop!");
-	
-	ags_machine_set_run_extended(machine,
-				     FALSE,
-				     FALSE, TRUE, FALSE, FALSE);
-	success = TRUE;
-      }
-
-      machines = machines->next;
-    }
-
-    /* disable auto-seeking */
-    if(success){
-      ags_navigation_set_seeking_sensitive(window->navigation,
-					   TRUE);
-    }
+    ags_export_window_stop_export(export_window);
   }
-
- ags_export_window_export_callback_END:
-
-  /* free machine list */
-  g_list_free(machines_start);
-
-  g_object_unref(main_loop);
 }
 
 void

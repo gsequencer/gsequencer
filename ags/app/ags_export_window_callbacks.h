@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,9 @@ void ags_export_window_tact_callback(GtkWidget *spin_button,
 
 void ags_export_window_export_callback(GtkWidget *toggle_button,
 				       AgsExportWindow *export_window);
+
+void ags_export_window_stop_callback(AgsThread *thread,
+				     AgsExportWindow *export_window);
 
 G_END_DECLS
 

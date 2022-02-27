@@ -43,7 +43,6 @@ void ags_export_soundcard_connect(AgsConnectable *connectable);
 void ags_export_soundcard_disconnect(AgsConnectable *connectable);
 
 void ags_export_soundcard_show(GtkWidget *widget);
-gboolean ags_export_soundcard_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_export_soundcard
@@ -149,10 +148,11 @@ ags_export_soundcard_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkGrid *grid;
   GtkLabel *label;
-
+  GtkEntryBuffer *entry_buffer;
+  
   gtk_orientable_set_orientation(GTK_ORIENTABLE(export_soundcard),
 				 GTK_ORIENTATION_VERTICAL);
 
@@ -160,10 +160,8 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) export_soundcard,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) export_soundcard,
+		 (GtkWidget *) grid);
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -282,8 +280,8 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		  0, 2,
 		  1, 1);
   
-  hbox = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   
   gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_FILL);
@@ -295,19 +293,20 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		  1, 2,
 		  1, 1);
 
-  export_soundcard->filename = (GtkEntry *) gtk_entry_new();
-  gtk_entry_set_text(export_soundcard->filename,
-		     "out.wav");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) export_soundcard->filename,
-		     TRUE, TRUE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  entry_buffer = gtk_entry_buffer_new("out.wav",
+				      -1);
+  
+  export_soundcard->filename = (GtkEntry *) gtk_entry_new_with_buffer(entry_buffer);
+
+  gtk_widget_set_hexpand(export_soundcard->filename,
+			 TRUE);
+  
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) export_soundcard->filename);
 
   export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) export_soundcard->file_chooser_button,
-		     TRUE, TRUE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) export_soundcard->file_chooser_button);
 
   /* output format */
   label = (GtkLabel *) gtk_label_new(i18n("output format"));
@@ -367,6 +366,12 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_grid_attach(grid,
 		  (GtkWidget *) export_soundcard->output_format,
 		  1, 3,
+		  1, 1);
+
+  export_soundcard->remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) export_soundcard->remove_button,
+		  2, 3,
 		  1, 1);
 }
 
@@ -770,8 +775,13 @@ void
 ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
 				  gchar *filename)
 {
-  gtk_entry_set_text(export_soundcard->filename,
-		     filename);
+  GtkEntryBuffer *entry_buffer;
+
+  entry_buffer = gtk_entry_get_buffer(export_soundcard->filename);
+  
+  gtk_entry_buffer_set_text(entry_buffer,
+			    filename,
+			    -1);
 }
 
 /**

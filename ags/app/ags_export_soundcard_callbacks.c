@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,10 @@
 #include <ags/app/ags_export_window.h>
 
 #include <ags/i18n.h>
+
+void ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_chooser,
+						 gint response,
+						 AgsExportSoundcard *export_soundcard);
 
 void
 ags_export_soundcard_backend_callback(GtkWidget *combo_box,
@@ -390,6 +394,34 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   }
 }
 
+void ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_chooser,
+						 gint response,
+						 AgsExportSoundcard *export_soundcard)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    GtkEntryBuffer *entry_buffer;
+    
+    GFile *file;
+    
+    char *filename;
+
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser));;
+
+    filename = g_file_get_path(file);
+
+    entry_buffer = gtk_entry_get_buffer(export_soundcard->filename);
+    gtk_entry_buffer_set_text(entry_buffer,
+			      filename,
+			      -1);
+
+    g_object_unref(file);
+    
+    g_free(file);
+  }
+  
+  gtk_window_destroy((GtkWindow *) file_chooser);
+}
+
 void
 ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button,
 						  AgsExportSoundcard *export_soundcard)
@@ -400,19 +432,12 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...",
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Export to file ..."),
 								      GTK_WINDOW(export_window),
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
 								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 								      i18n("_Open"), GTK_RESPONSE_ACCEPT,
 								      NULL);
-  if(gtk_dialog_run(GTK_DIALOG(file_chooser)) == GTK_RESPONSE_ACCEPT){
-    char *filename;
-
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
-    gtk_entry_set_text(export_soundcard->filename,
-		       filename);
-  }
-  
-  gtk_widget_destroy((GtkWidget *) file_chooser);
+  g_signal_connect((GObject *) file_chooser, "response",
+		   G_CALLBACK(ags_export_soundcard_open_response_callback), export_soundcard);
 }
