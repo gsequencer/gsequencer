@@ -77,6 +77,8 @@ void ags_scale_box_child_height_request(AgsScaleBox *scale_box,
 					GtkWidget *scale,
 					gint height_request);
 
+GList* ags_scale_box_get_scale(AgsScaleBox *scale_box);
+
 AgsScaleBox* ags_scale_box_new(GtkOrientation orientation);
 
 G_END_DECLS

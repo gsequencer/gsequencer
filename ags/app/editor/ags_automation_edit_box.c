@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,37 +21,46 @@
 
 #include <ags/app/editor/ags_automation_edit.h>
 
+#include <ags/i18n.h>
+
 void ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box);
 void ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box);
-void ags_automation_edit_box_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
 void ags_automation_edit_box_get_property(GObject *gobject,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *param_spec);
 void ags_automation_edit_box_finalize(GObject *gobject);
 
-GType ags_automation_edit_box_child_type(GtkContainer *container);
+void ags_automation_edit_box_notify_width_request_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   AgsAutomationEditBox *automation_edit_box);
+void ags_automation_edit_box_notify_height_request_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    AgsAutomationEditBox *automation_edit_box);
 
 /**
  * SECTION:ags_automation_edit_box
- * @short_description: abstract box widget
+ * @short_description: box widget
  * @title: AgsAutomationEditBox
  * @section_id:
  * @include: ags/widget/ags_automation_edit_box.h
  *
- * The #AgsAutomationEditBox is an abstract box widget containing #AgsAutomationEdit.
+ * The #AgsAutomationEditBox is a box widget containing #AgsAutomationEdit.
  */
 
 enum{
+  CHILD_WIDTH_REQUEST,
+  CHILD_HEIGHT_REQUEST,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
-  PROP_FIXED_EDIT_WIDTH,
-  PROP_FIXED_EDIT_HEIGHT,
+  PROP_AUTOMATION_EDIT_COUNT,
 };
 
 static gpointer ags_automation_edit_box_parent_class = NULL;
+static guint automation_edit_box_signals[LAST_SIGNAL];
 
 GType
 ags_automation_edit_box_get_type(void)
@@ -87,7 +96,7 @@ void
 ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box)
 {
   GObjectClass *gobject;
-  GtkContainerClass *container;
+  GtkWidgetClass *widget;
 
   GParamSpec *param_spec;
 
@@ -96,34 +105,71 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
   /* GObjectClass */
   gobject = (GObjectClass *) automation_edit_box;
 
-  gobject->set_property = ags_automation_edit_box_set_property;
   gobject->get_property = ags_automation_edit_box_get_property;
 
   gobject->finalize = ags_automation_edit_box_finalize;
 
   /* properties */
   /**
-   * AgsAutomationEditBox:fixed-edit-height:
+   * AgsAutomationEditBox:automation_edit-count:
    *
-   * The fixed height of a edit.
+   * The automation_edit-count.
    * 
-   * Since: 3.0.0
+   * Since: 4.0.0
    */
-  param_spec = g_param_spec_uint("fixed-edit-height",
-				 "fixed edit height",
-				 "The fixed height of a edit",
+  param_spec = g_param_spec_uint("automation_edit-count",
+				 i18n_pspec("automation_edit count"),
+				 i18n_pspec("The automation_edit count"),
 				 0,
-				 G_MAXUINT,
-				 AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_FIXED_EDIT_HEIGHT,
+				  PROP_AUTOMATION_EDIT_COUNT,
 				  param_spec);
 
-  /* GtkContainerClass */
-  container = (GtkContainerClass *) automation_edit_box;
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) automation_edit_box;
 
-  container->child_type = ags_automation_edit_box_child_type;
+  /* AgsAutomationEditBox */
+  automation_edit_box->child_width_request = NULL;
+  automation_edit_box->child_height_request = NULL;
+  
+  /**
+   * AgsAutomationEditBox::child-width-request:
+   * @automation_edit_box: the #AgsAutomationEditBox.
+   *
+   * The ::child-width-request
+   *
+   * Since: 4.0.0
+   */
+  automation_edit_box_signals[CHILD_WIDTH_REQUEST] = 
+    g_signal_new("child-width-request",
+		 G_TYPE_FROM_CLASS(automation_edit_box),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAutomationEditBoxClass, child_width_request),
+		 NULL, NULL,
+		 ags_widget_cclosure_marshal_VOID__OBJECT_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_INT);
+
+  /**
+   * AgsAutomationEditBox::child-height-request:
+   * @automation_edit_box: the #AgsAutomationEditBox.
+   *
+   * The ::child-height-request
+   *
+   * Since: 4.0.0
+   */
+  automation_edit_box_signals[CHILD_HEIGHT_REQUEST] = 
+    g_signal_new("child-height-request",
+		 G_TYPE_FROM_CLASS(automation_edit_box),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAutomationEditBoxClass, child_height_request),
+		 NULL, NULL,
+		 ags_widget_cclosure_marshal_VOID__OBJECT_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_INT);
 }
 
 void
@@ -131,34 +177,12 @@ ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box)
 {
   g_object_set(automation_edit_box,
 	       "homogeneous", FALSE,
-	       "spacing", 0,
+	       "spacing", AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING,
 	       NULL);
+
+  automation_edit_box->automation_edit_count = 0;
   
-  automation_edit_box->flags = 0;
-
-  automation_edit_box->fixed_edit_height = AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT;
-}
-
-void
-ags_automation_edit_box_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec)
-{
-  AgsAutomationEditBox *automation_edit_box;
-
-  automation_edit_box = AGS_AUTOMATION_EDIT_BOX(gobject);
-
-  switch(prop_id){
-  case PROP_FIXED_EDIT_HEIGHT:
-    {
-      automation_edit_box->fixed_edit_height = g_value_get_uint(value);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  automation_edit_box->automation_edit = NULL;
 }
 
 void
@@ -172,15 +196,14 @@ ags_automation_edit_box_get_property(GObject *gobject,
   automation_edit_box = AGS_AUTOMATION_EDIT_BOX(gobject);
 
   switch(prop_id){
-  case PROP_FIXED_EDIT_HEIGHT:
+  case PROP_AUTOMATION_EDIT_COUNT:
     {
       g_value_set_uint(value,
-		       automation_edit_box->fixed_edit_height);
+		       automation_edit_box->automation_edit_count);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
   }
 }
 
@@ -191,13 +214,214 @@ ags_automation_edit_box_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_automation_edit_box_parent_class)->finalize(gobject);
 }
 
-GType ags_automation_edit_box_child_type(GtkContainer *container)
+void
+ags_automation_edit_box_notify_width_request_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      AgsAutomationEditBox *automation_edit_box)
 {
-  return(AGS_TYPE_AUTOMATION_EDIT);
+  gint width_request;
+
+  width_request = -1;
+  
+  g_object_get(gobject,
+	       "width-request", &width_request,
+	       NULL);
+  
+  ags_automation_edit_box_child_width_request(automation_edit_box,
+					      AGS_AUTOMATION_EDIT(gobject),
+					      width_request);
+}
+
+void
+ags_automation_edit_box_notify_height_request_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       AgsAutomationEditBox *automation_edit_box)
+{
+  gint height_request;
+
+  height_request = -1;
+  
+  g_object_get(gobject,
+	       "height-request", &height_request,
+	       NULL);
+  
+  ags_automation_edit_box_child_height_request(automation_edit_box,
+					       AGS_AUTOMATION_EDIT(gobject),
+					       height_request);
+}
+
+/**
+ * ags_automation_edit_box_add:
+ * @automation_edit_box: the #AgsAutomationEditBox
+ * 
+ * Get automation_edit count of @automation_edit_box.
+ * 
+ * Returns: the count of automation_edits added
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_automation_edit_box_get_automation_edit_count(AgsAutomationEditBox *automation_edit_box)
+{
+  guint automation_edit_count;
+
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+
+  automation_edit_count = 0;
+
+  g_object_get(automation_edit_box,
+	       "automation_edit-count", &automation_edit_count,
+	       NULL);
+  
+  return(automation_edit_count);
+}
+
+/**
+ * ags_automation_edit_box_add:
+ * @automation_edit_box: the #AgsAutomationEditBox
+ * @automation_edit: the #AgsAutomationEdit
+ * 
+ * Add @automation_edit to @automation_edit_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
+			    GtkWidget *automation_edit)
+{
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT(automation_edit));
+
+  if(g_list_find(automation_edit_box->automation_edit, automation_edit) == NULL){
+    automation_edit_box->automation_edit = g_list_prepend(automation_edit_box->automation_edit,
+							  automation_edit);
+    
+    g_signal_connect(automation_edit, "notify::width-request",
+		     G_CALLBACK(ags_automation_edit_box_notify_width_request_callback), automation_edit_box);
+    
+    g_signal_connect(automation_edit, "notify::height-request",
+		     G_CALLBACK(ags_automation_edit_box_notify_height_request_callback), automation_edit_box);
+    
+    gtk_box_append(automation_edit_box,
+		   automation_edit);
+  }else{
+    g_warning("automation_edit already added to automation_edit box");
+  }
+}
+
+/**
+ * ags_automation_edit_box_remove:
+ * @automation_edit_box: the #AgsAutomationEditBox
+ * @position: the automation_edit at position to remove
+ * 
+ * Remove automation_edit at @position of @automation_edit_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
+			       guint position)
+{
+  GList *start_automation_edit, *automation_edit;
+  
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+
+  start_automation_edit = g_list_reverse(g_list_copy(automation_edit_box));
+  
+  automation_edit = g_list_nth(start_automation_edit,
+			       position);
+
+  if(automation_edit != NULL){
+    g_object_disconnect(automation_edit,
+			"any_signal::notify::width-request",
+			G_CALLBACK(ags_automation_edit_box_notify_width_request_callback),
+			automation_edit_box,
+			"any_signal::notify::height-request",
+			G_CALLBACK(ags_automation_edit_box_notify_height_request_callback),
+			automation_edit_box,
+			NULL);
+    
+    automation_edit_box->automation_edit = g_list_remove(automation_edit_box->automation_edit,
+							 automation_edit->data);
+
+    gtk_box_remove(automation_edit_box,
+		   automation_edit->data);
+  }else{
+    g_warning("no automation_edit at position [%d] in automation_edit box", position);
+  }
+
+  g_list_free(start_automation_edit);
+}
+
+/**
+ * ags_automation_edit_box_child_width_request:
+ * @automation_edit_box: the #AgsAutomationEditBox
+ * @automation_edit: the #AgsAutomationEdit
+ * @width_request: the automation_edit's width-request
+ * 
+ * Notify about child automation_edit width request.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_automation_edit_box_child_width_request(AgsAutomationEditBox *automation_edit_box,
+					    GtkWidget *automation_edit,
+					    gint width_request)
+{
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+
+  g_object_ref((GObject *) automation_edit_box);
+  g_signal_emit(G_OBJECT(automation_edit_box),
+		automation_edit_box_signals[CHILD_WIDTH_REQUEST], 0,
+		automation_edit, width_request);
+  g_object_unref((GObject *) automation_edit_box);
+}
+
+/**
+ * ags_automation_edit_box_child_height_request:
+ * @automation_edit_box: the #AgsAutomationEditBox
+ * @automation_edit: the #AgsAutomationEdit
+ * @height_request: the automation_edit's height-request
+ * 
+ * Notify about child automation_edit height request.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_automation_edit_box_child_height_request(AgsAutomationEditBox *automation_edit_box,
+					     GtkWidget *automation_edit,
+					     gint height_request)
+{
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+
+  g_object_ref((GObject *) automation_edit_box);
+  g_signal_emit(G_OBJECT(automation_edit_box),
+		automation_edit_box_signals[CHILD_HEIGHT_REQUEST], 0,
+		automation_edit, height_request);
+  g_object_unref((GObject *) automation_edit_box);
+}
+
+/**
+ * ags_automation_edit_box_get_automation_edit:
+ * @automation_edit_box: the #AgsAutomationEditBox
+ * 
+ * Get automation_edit.
+ * 
+ * Returns: the #GList-struct containing #AgsAutomationEdit
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box)
+{
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+
+  return(g_list_copy(automation_edit_box->automation_edit));
 }
 
 /**
  * ags_automation_edit_box_new:
+ * @orientation: the #GtkOrientation
  * 
  * Create a new instance of #AgsAutomationEditBox.
  * 
@@ -206,11 +430,12 @@ GType ags_automation_edit_box_child_type(GtkContainer *container)
  * Since: 3.0.0
  */
 AgsAutomationEditBox*
-ags_automation_edit_box_new()
+ags_automation_edit_box_new(GtkOrientation orientation)
 {
   AgsAutomationEditBox *automation_edit_box;
 
   automation_edit_box = (AgsAutomationEditBox *) g_object_new(AGS_TYPE_AUTOMATION_EDIT_BOX,
+							      "orientation", orientation,
 							      NULL);
   
   return(automation_edit_box);

@@ -85,6 +85,13 @@ struct _AgsMachineSelectorClass
 
 GType ags_machine_selector_get_type(void);
 
+gboolean ags_machine_selector_test_flags(AgsMachineSelector *machine_selector,
+					 guint flags);
+void ags_machine_selector_set_flags(AgsMachineSelector *machine_selector,
+				    guint flags);
+void ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
+				    guint flags);
+
 void ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit);
 
 void ags_machine_selector_add_index(AgsMachineSelector *machine_selector);

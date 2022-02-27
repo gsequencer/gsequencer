@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 
 #include <ags/libags-gui.h>
+
+#include <ags/app/ags_effect_line.h>
 
 G_BEGIN_DECLS
 
@@ -74,7 +76,10 @@ struct _AgsEffectPad
   AgsChannel *channel;
   
   guint cols;
-  GtkGrid *grid;
+
+  GList *effect_line;
+  
+  GtkGrid *effect_line_grid;
 };
 
 struct _AgsEffectPadClass
@@ -110,6 +115,12 @@ void ags_effect_pad_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel);
 
 void ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 				 guint audio_channels, guint audio_channels_old);
+
+GList* ags_effect_pad_get_effect_line(AgsEffectPad *effect_pad);
+void ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
+				    AgsEffectLine *effect_line);
+void ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
+				       AgsEffectLine *effect_line);
 
 void ags_effect_pad_map_recall(AgsEffectPad *effect_pad);
 GList* ags_effect_pad_find_port(AgsEffectPad *effect_pad);

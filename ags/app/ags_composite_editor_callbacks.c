@@ -50,7 +50,7 @@ ags_composite_editor_edit_viewport_vadjustment_changed_callback(GtkAdjustment *a
 	       "value", &value,
 	       NULL);
 
-  if(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->viewport->vadjustment == adjustment){
+  if(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window) == adjustment){
     g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->automation_edit->vscrollbar),
 		 "lower", lower,
 		 "upper", upper,
@@ -61,7 +61,7 @@ ags_composite_editor_edit_viewport_vadjustment_changed_callback(GtkAdjustment *a
 		 NULL);
   }
 
-  if(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->viewport->vadjustment == adjustment){
+  if(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window) == adjustment){
     g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->wave_edit->vscrollbar),
 		 "lower", lower,
 		 "upper", upper,
@@ -81,23 +81,23 @@ ags_composite_editor_edit_vadjustment_value_changed_callback(GtkAdjustment *adju
 
   value = gtk_adjustment_get_value(adjustment);
 
-  if(gtk_range_get_adjustment(composite_editor->automation_edit->vscrollbar) == adjustment){
+  if(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar) == adjustment){
     /* edit */
-    gtk_adjustment_set_value(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->viewport->vadjustment,
+    gtk_adjustment_set_value(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window),
 			     value);
     
     /* edit control */
-    gtk_adjustment_set_value(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->viewport->vadjustment,
+    gtk_adjustment_set_value(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scrolled_window),
 			     value);
   }
   
-  if(gtk_range_get_adjustment(composite_editor->wave_edit->vscrollbar) == adjustment){
+  if(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar) == adjustment){
     /* edit */
-    gtk_adjustment_set_value(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->viewport->vadjustment,
+    gtk_adjustment_set_value(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window),
 			     value);
     
     /* edit control */
-    gtk_adjustment_set_value(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->viewport->vadjustment,
+    gtk_adjustment_set_value(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->scrolled_window),
 			     value);
   }
 }
@@ -166,15 +166,15 @@ ags_composite_editor_edit_hadjustment_value_changed_callback(GtkAdjustment *adju
 
   value = gtk_adjustment_get_value(adjustment);
 
-  if(gtk_range_get_adjustment(composite_editor->automation_edit->hscrollbar) == adjustment){
+  if(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar) == adjustment){
     GList *start_list, *list;
 
     list = 
-      start_list = gtk_container_get_children(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
 
     while(list != NULL){
-      gtk_range_set_value(AGS_AUTOMATION_EDIT(list->data)->hscrollbar,
-			  value);
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_AUTOMATION_EDIT(list->data)->hscrollbar),
+			       value);
       
       list = list->next;
     }
@@ -182,15 +182,15 @@ ags_composite_editor_edit_hadjustment_value_changed_callback(GtkAdjustment *adju
     g_list_free(start_list);
   }
   
-  if(gtk_range_get_adjustment(composite_editor->wave_edit->hscrollbar) == adjustment){
+  if(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar) == adjustment){
     GList *start_list, *list;
 
     list = 
-      start_list = gtk_container_get_children(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
 
     while(list != NULL){
-      gtk_range_set_value(AGS_WAVE_EDIT(list->data)->hscrollbar,
-			  value);
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_WAVE_EDIT(list->data)->hscrollbar),
+			       value);
       
       list = list->next;
     }
@@ -290,32 +290,29 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 	  AgsLevel *level;
 	  
 	  /* level */
-	  level = ags_level_new();
-	  g_object_set(level,
-		       "level-width", (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_WIDTH),
-		       "level-height", (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT),
-		       NULL);
-	  gtk_box_pack_start(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
-			     GTK_WIDGET(level),
-			     FALSE, TRUE,
-			     AGS_WAVE_EDIT_DEFAULT_PADDING);
+	  level = ags_level_new(GTK_ORIENTATION_VERTICAL,
+				(guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_WIDTH_REQUEST),
+				(guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_HEIGHT_REQUEST));
 
-	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
-				GTK_WIDGET(level),
-				i * audio_channels + j);
+	  ags_level_box_add(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
+			    GTK_WIDGET(level));
+
+	  //FIXME:JK: safe to remove?
+	  //	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
+	  //			GTK_WIDGET(level),
+	  //			i * audio_channels + j);
 	
 	  gtk_widget_show(GTK_WIDGET(level));
 
 	  /* wave edit */
 	  wave_edit = ags_wave_edit_new(i * audio_channels + j);
-	  gtk_box_pack_start(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
-			     GTK_WIDGET(wave_edit),
-			     FALSE, FALSE,
-			     AGS_WAVE_EDIT_DEFAULT_PADDING);
+	  ags_wave_edit_box_add(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
+				GTK_WIDGET(wave_edit));
 
-	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
-				GTK_WIDGET(wave_edit),
-				i * audio_channels + j);	
+	  //FIXME:JK: safe to remove?
+	  //	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
+	  //			GTK_WIDGET(wave_edit),
+	  //			i * audio_channels + j);	
 	
 	  ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
 	  gtk_widget_show(GTK_WIDGET(wave_edit));
@@ -363,7 +360,7 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
       }
       
       list = 
-	start_list = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box));
+	start_list = ags_level_box_get_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box);
       
       for(i = 0; i < input_pads && list != NULL; i++){
 	for(j = 0; j < audio_channels && list != NULL; j++){
@@ -371,7 +368,11 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 	}
 
 	for(; j < audio_channels_old && list != NULL; j++){
-	  gtk_widget_destroy(list->data);
+	  ags_level_box_remove(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
+			       list->data);
+
+	  g_object_run_dispose(list->data);
+	  g_object_unref(list->data);
 	  
 	  list = list->next;
 	}
@@ -380,7 +381,7 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
       g_list_free(start_list);
 
       list = 
-	start_list = gtk_container_get_children(GTK_CONTAINER(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
+	start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
       
       for(i = 0; i < input_pads && list != NULL; i++){
 	for(j = 0; j < audio_channels && list != NULL; j++){
@@ -388,8 +389,12 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 	}
 
 	for(; j < audio_channels_old && list != NULL; j++){
-	  gtk_widget_destroy(list->data);
-	  
+	  ags_wave_edit_box_remove(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
+				   list->data);
+
+	  g_object_run_dispose(list->data);
+	  g_object_unref(list->data);
+	  	  
 	  list = list->next;
 	}
       }

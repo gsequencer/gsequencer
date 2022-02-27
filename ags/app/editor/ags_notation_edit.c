@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -106,7 +106,7 @@ ags_notation_edit_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_notation_edit = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_notation_edit = g_type_register_static(GTK_TYPE_GRID,
 						    "AgsNotationEdit", &ags_notation_edit_info,
 						    0);
     

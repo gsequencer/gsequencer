@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,9 @@
 #include <ags/libags-audio.h>
 
 #include <ags/libags-gui.h>
+
+#include <ags/app/ags_effect_pad.h>
+#include <ags/app/ags_effect_bulk.h>
 
 G_BEGIN_DECLS
 
@@ -84,14 +87,20 @@ struct _AgsEffectBridge
   
   GType output_pad_type;
   GType output_line_type;
-  GtkHBox *output;
+
+  GList *output_effect_pad;
+  
+  GtkBox *output;
   
   GType bulk_input_type;
   GtkWidget *bulk_input;
 
   GType input_pad_type;
   GType input_line_type;
-  GtkHBox *input;
+
+  GList *input_effect_pad;
+  
+  GtkBox *input;
 };
 
 struct _AgsEffectBridgeClass
@@ -123,6 +132,18 @@ void ags_effect_bridge_buffer_size_changed(AgsEffectBridge *effect_bridge,
 					   guint buffer_size, guint old_buffer_size);
 void ags_effect_bridge_format_changed(AgsEffectBridge *effect_bridge,
 				      guint format, guint old_format);
+
+GList* ags_effect_bridge_get_output_effect_pad(AgsEffectBridge *effect_bridge);
+void ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
+					     AgsEffectPad *effect_pad);
+void ags_effect_bridge_remove_output_effect_pad(AgsEffectBridge *effect_bridge,
+						AgsEffectPad *effect_pad);
+
+GList* ags_effect_bridge_get_input_effect_pad(AgsEffectBridge *effect_bridge);
+void ags_effect_bridge_add_input_effect_pad(AgsEffectBridge *effect_bridge,
+					    AgsEffectPad *effect_pad);
+void ags_effect_bridge_remove_input_effect_pad(AgsEffectBridge *effect_bridge,
+					       AgsEffectPad *effect_pad);
 
 void ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint new_size, guint old_size);

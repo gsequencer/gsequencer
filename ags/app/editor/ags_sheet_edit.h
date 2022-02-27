@@ -111,8 +111,8 @@ struct _AgsSheetEdit
   
   GtkDrawingArea *drawing_area;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsSheetEditClass

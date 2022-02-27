@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,6 @@
 #include <ags/app/ags_effect_pad_callbacks.h>
 
 #include <ags/app/ags_effect_bridge.h>
-#include <ags/app/ags_effect_line.h>
 
 #include <ags/i18n.h>
 
@@ -869,6 +868,78 @@ ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 		line_type,
 		audio_channels, audio_channels_old);
   g_object_unref((GObject *) effect_pad);
+}
+
+/**
+ * ags_effect_pad_get_effect_line:
+ * @effect_pad: the #AgsEffectPad
+ * 
+ * Get effect line of @effect_pad.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectLine
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_pad_get_effect_line(AgsEffectPad *effect_pad)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_PAD(effect_pad), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_pad->effect_line)));
+}
+
+/**
+ * ags_effect_pad_add_effect_line:
+ * @effect_pad: the #AgsEffectPad
+ * @effect_line: the #AgsEffectLine
+ * 
+ * Add @effect_line to @effect_pad.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectLine
+ *
+ * Since: 4.0.0
+ */
+void
+ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
+			       AgsEffectLine *effect_line)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  if(g_list_find(effect_pad->effect_line, effect_line) == NULL){
+    effect_pad->effect_line = g_list_prepend(effect_pad->effect_line,
+					     effect_line);
+    
+    gtk_box_append(effect_pad->effect_line_grid,
+		   effect_line);
+  }
+}
+
+/**
+ * ags_effect_pad_remove_effect_line:
+ * @effect_pad: the #AgsEffectPad
+ * @effect_line: the #AgsEffectLine
+ * 
+ * Remove @effect_line to @effect_pad.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectLine
+ *
+ * Since: 4.0.0
+ */
+void
+ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
+				  AgsEffectLine *effect_line)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  if(g_list_find(effect_pad->effect_line, effect_line) != NULL){
+    effect_pad->effect_line = g_list_remove(effect_pad->effect_line,
+					    effect_line);
+    
+    gtk_box_remove(effect_pad->effect_line_grid,
+		   effect_line);
+  }
 }
 
 void

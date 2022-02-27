@@ -227,19 +227,19 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   /* output listing editor */
   connection_editor->output_listing_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
   /* input listing editor */
   connection_editor->input_listing_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
   /* output connection editor */
   connection_editor->output_connection_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
   /* input connection editor */
   connection_editor->input_connection_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
   /* GtkButton's in GtkDialog->action_area  */
   connection_editor->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
@@ -445,8 +445,8 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
 			     (GtkWidget *) gtk_label_new(i18n("output")));
   }
 
-  gtk_container_add((GtkContainer *) connection_editor->output_listing_editor_scrolled_window,
-		    (GtkWidget *) connection_editor->output_listing_editor);
+  gtk_scrolled_window_set_child(connection_editor->output_listing_editor_scrolled_window,
+				(GtkWidget *) connection_editor->output_listing_editor);
 
   ags_listing_editor_add_children(connection_editor->output_listing_editor,
 				  connection_editor->machine->audio, 0,
@@ -471,8 +471,8 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
 			     (GtkWidget *) gtk_label_new(i18n("input")));
   }
 
-  gtk_container_add((GtkContainer *) connection_editor->input_listing_editor_scrolled_window,
-		    (GtkWidget *) connection_editor->input_listing_editor);
+  gtk_scrolled_window_set_child(connection_editor->input_listing_editor_scrolled_window,
+				(GtkWidget *) connection_editor->input_listing_editor);
   
 
   ags_listing_editor_add_children(connection_editor->input_listing_editor,
@@ -512,11 +512,17 @@ void
 ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
 {
   if(connection_editor->machine != NULL){
-    gtk_widget_destroy(GTK_WIDGET(connection_editor->output_listing_editor));
-    gtk_widget_destroy(GTK_WIDGET(connection_editor->input_listing_editor));
-
-    gtk_widget_destroy(GTK_WIDGET(connection_editor->output_connection_editor));
-    gtk_widget_destroy(GTK_WIDGET(connection_editor->input_connection_editor));
+    g_object_run_dispose(GTK_WIDGET(connection_editor->output_listing_editor));
+    g_object_unref(GTK_WIDGET(connection_editor->output_listing_editor));
+    
+    g_object_run_dispose(GTK_WIDGET(connection_editor->input_listing_editor));
+    g_object_unref(GTK_WIDGET(connection_editor->input_listing_editor));
+    
+    g_object_run_dispose(GTK_WIDGET(connection_editor->output_connection_editor));
+    g_object_unref(GTK_WIDGET(connection_editor->output_connection_editor));
+    
+    g_object_run_dispose(GTK_WIDGET(connection_editor->input_connection_editor));
+    g_object_unref(GTK_WIDGET(connection_editor->input_connection_editor));
   }
   
   connection_editor->machine = machine;

@@ -402,6 +402,24 @@ ags_scale_box_child_height_request(AgsScaleBox *scale_box,
 }
 
 /**
+ * ags_scale_box_get_scale:
+ * @scale_box: the #AgsScaleBox
+ * 
+ * Get scale.
+ * 
+ * Returns: the #GList-struct containing #AgsScale
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_scale_box_get_scale(AgsScaleBox *scale_box)
+{
+  g_return_if_fail(AGS_IS_SCALE_BOX(scale_box));
+
+  return(g_list_copy(scale_box->scale));
+}
+
+/**
  * ags_scale_box_new:
  * @orientation: the #GtkOrientation
  * 

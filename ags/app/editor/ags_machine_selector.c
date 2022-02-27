@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -262,6 +262,35 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   }
   
   g_list_free(list_start);
+}
+
+gboolean
+ags_machine_selector_test_flags(AgsMachineSelector *machine_selector,
+				guint flags)
+{
+  gboolean retval;
+
+  retval = (flags & (machine_selector->flags)) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+void
+ags_machine_selector_set_flags(AgsMachineSelector *machine_selector,
+			       guint flags)
+{
+  //TODO:JK: implement me
+  
+  machine_selector->flags |= flags;
+}
+
+void
+ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
+				 guint flags)
+{
+  //TODO:JK: implement me
+  
+  machine_selector->flags &= (~flags);
 }
 
 void

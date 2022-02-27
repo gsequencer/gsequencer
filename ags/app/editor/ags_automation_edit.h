@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -105,7 +105,7 @@ typedef enum{
 
 struct _AgsAutomationEdit
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   guint mode;
@@ -154,13 +154,13 @@ struct _AgsAutomationEdit
   
   GtkDrawingArea *drawing_area;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsAutomationEditClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_automation_edit_get_type(void);

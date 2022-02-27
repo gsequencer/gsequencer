@@ -84,7 +84,7 @@ void ags_wave_edit_box_child_height_request(AgsWaveEditBox *wave_edit_box,
 
 GList* ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box);
 
-AgsWaveEditBox* ags_wave_edit_box_new();
+AgsWaveEditBox* ags_wave_edit_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 

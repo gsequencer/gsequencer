@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,24 +45,23 @@ typedef struct _AgsScrolledAutomationEditBoxClass AgsScrolledAutomationEditBoxCl
 
 struct _AgsScrolledAutomationEditBox
 {
-  GtkBin bin;
+  GtkGrid grid;
 
-  guint margin_top;
-  guint margin_bottom;
-  guint margin_left;
-  guint margin_right;
-  
-  AgsViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
 
-  AgsAutomationEditBox *automation_edit_box;
+  GtkBox *automation_edit_box;
 };
 
 struct _AgsScrolledAutomationEditBoxClass
 {
-  GtkBinClass bin;
+  GtkGridClass grid;
 };
 
 GType ags_scrolled_automation_edit_box_get_type(void);
+
+GtkScrolledWindow* ags_scrolled_automation_edit_box_get_scrolled_window(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
+
+AgsAutomationEditBox* ags_scrolled_automation_edit_box_get_automation_edit_box(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
 
 AgsScrolledAutomationEditBox* ags_scrolled_automation_edit_box_new();
 

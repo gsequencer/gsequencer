@@ -416,6 +416,7 @@ ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box)
 
 /**
  * ags_wave_edit_box_new:
+ * @orientation: the #GtkOrientation
  * 
  * Create a new instance of #AgsWaveEditBox.
  * 

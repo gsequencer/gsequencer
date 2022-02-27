@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,27 +43,47 @@ G_BEGIN_DECLS
 typedef struct _AgsAutomationEditBox AgsAutomationEditBox;
 typedef struct _AgsAutomationEditBoxClass AgsAutomationEditBoxClass;
 
-typedef enum{
-  AGS_AUTOMATION_EDIT_BOX_FIXED_EDIT_SIZE  = 1,
-}AgsAutomationEditBoxFlags;
-
 struct _AgsAutomationEditBox
 {
   GtkBox box;
 
-  guint flags;
-
-  guint fixed_edit_height;
+  /* private */
+  guint automation_edit_count;
+  
+  GList *automation_edit;
 };
 
 struct _AgsAutomationEditBoxClass
 {
   GtkBoxClass box;
+
+  void (*child_width_request)(AgsAutomationEditBox *automation_edit_box,
+			      GtkWidget *automation_edit,
+			      gint width_request);
+  void (*child_height_request)(AgsAutomationEditBox *automation_edit_box,
+			       GtkWidget *automation_edit,
+			       gint height_request);
 };
 
 GType ags_automation_edit_box_get_type(void);
 
-AgsAutomationEditBox* ags_automation_edit_box_new();
+guint ags_automation_edit_box_get_automation_edit_count(AgsAutomationEditBox *automation_edit_box);
+
+void ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
+				 GtkWidget *automation_edit);
+void ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
+				    guint position);
+
+void ags_automation_edit_box_child_width_request(AgsAutomationEditBox *automation_edit_box,
+						 GtkWidget *automation_edit,
+						 gint width_request);
+void ags_automation_edit_box_child_height_request(AgsAutomationEditBox *automation_edit_box,
+						  GtkWidget *automation_edit,
+						  gint height_request);
+
+GList* ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box);
+
+AgsAutomationEditBox* ags_automation_edit_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 
