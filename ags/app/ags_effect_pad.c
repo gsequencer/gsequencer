@@ -394,11 +394,12 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
   effect_pad->channel = NULL;
 
   effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
-  effect_pad->grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) effect_pad,
-		     (GtkWidget *) effect_pad->grid,
-		     FALSE, TRUE,
-		     0);
+
+  effect_pad->effect_line = NULL;
+  
+  effect_pad->effect_line_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append((GtkBox *) effect_pad,
+		 (GtkWidget *) effect_pad->effect_line_grid);
 }
 
 void
@@ -892,16 +893,20 @@ ags_effect_pad_get_effect_line(AgsEffectPad *effect_pad)
  * ags_effect_pad_add_effect_line:
  * @effect_pad: the #AgsEffectPad
  * @effect_line: the #AgsEffectLine
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
  * 
  * Add @effect_line to @effect_pad.
- * 
- * Returns: the #GList-struct containing #AgsEffectLine
  *
  * Since: 4.0.0
  */
 void
 ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
-			       AgsEffectLine *effect_line)
+			       AgsEffectLine *effect_line,
+			       guint x, guint y,
+			       guint width, guint height)
 {
   g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
   g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
@@ -910,8 +915,10 @@ ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
     effect_pad->effect_line = g_list_prepend(effect_pad->effect_line,
 					     effect_line);
     
-    gtk_box_append(effect_pad->effect_line_grid,
-		   effect_line);
+    gtk_grid_attach(effect_pad->effect_line_grid,
+		    effect_line,
+		    x, y,
+		    width, height);
   }
 }
 
@@ -921,8 +928,6 @@ ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
  * @effect_line: the #AgsEffectLine
  * 
  * Remove @effect_line to @effect_pad.
- * 
- * Returns: the #GList-struct containing #AgsEffectLine
  *
  * Since: 4.0.0
  */
@@ -937,8 +942,8 @@ ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
     effect_pad->effect_line = g_list_remove(effect_pad->effect_line,
 					    effect_line);
     
-    gtk_box_remove(effect_pad->effect_line_grid,
-		   effect_line);
+    gtk_grid_remove(effect_pad->effect_line_grid,
+		    effect_line);
   }
 }
 

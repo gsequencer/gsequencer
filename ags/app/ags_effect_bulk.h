@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,9 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
+
+#include <ags/app/ags_effect_bulk_entry.h>
+#include <ags/app/ags_bulk_member.h>
 
 G_BEGIN_DECLS
 
@@ -75,8 +78,13 @@ struct _AgsEffectBulk
   GtkButton *add;
   GtkButton *remove;
 
-  GtkBox *bulk_member;
-  GtkGrid *grid;
+  GList *bulk_member_entry;
+  
+  GtkBox *bulk_member_entry_box;
+  
+  GList *bulk_member;
+  
+  GtkGrid *bulk_member_grid;
 
   GList *plugin;
   GtkDialog *plugin_browser;
@@ -147,6 +155,20 @@ void ags_effect_bulk_add_plugin(AgsEffectBulk *effect_bulk,
 				guint create_flags, guint recall_flags);
 void ags_effect_bulk_remove_plugin(AgsEffectBulk *effect_bulk,
 				   guint nth);
+
+GList* ags_effect_bulk_get_bulk_member_entry(AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_add_bulk_member_entry(AgsEffectBulk *effect_bulk,
+					   AgsEffectBulkEntry *effect_bulk_entry);
+void ags_effect_bulk_remove_bulk_member_entry(AgsEffectBulk *effect_bulk,
+					      AgsEffectBulkEntry *effect_bulk_entry);
+
+GList* ags_effect_bulk_get_bulk_member(AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_add_bulk_member(AgsEffectBulk *effect_bulk,
+				     AgsBulkMember *bulk_member,
+				     guint x, guint y,
+				     guint width, guint height);
+void ags_effect_bulk_remove_bulk_member(AgsEffectBulk *effect_bulk,
+					AgsBulkMember *bulk_member);
 
 void ags_effect_bulk_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint new_size,

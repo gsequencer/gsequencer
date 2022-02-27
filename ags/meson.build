@@ -977,6 +977,7 @@ libgsequencer_sources = files(
   'app/ags_effect_bridge_callbacks.c',
   'app/ags_effect_bulk.c',
   'app/ags_effect_bulk_callbacks.c',
+  'app/ags_effect_bulk_entry.c',
   'app/ags_effect_line.c',
   'app/ags_effect_line_callbacks.c',
   'app/ags_effect_pad.c',

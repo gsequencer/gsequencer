@@ -2594,6 +2594,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_effect_bridge.h \
 	ags/app/ags_effect_bulk_callbacks.h \
 	ags/app/ags_effect_bulk.h \
+	ags/app/ags_effect_bulk_entry.h \
 	ags/app/ags_effect_line_callbacks.h \
 	ags/app/ags_effect_line.h \
 	ags/app/ags_effect_pad_callbacks.h \
@@ -2714,6 +2715,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_effect_bridge.c \
 	ags/app/ags_effect_bridge_callbacks.c \
 	ags/app/ags_effect_bulk.c \
+	ags/app/ags_effect_bulk_entry.c \
 	ags/app/ags_effect_bulk_callbacks.c \
 	ags/app/ags_effect_line.c \
 	ags/app/ags_effect_line_callbacks.c \

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,6 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_plugin_browser.h>
-#include <ags/app/ags_bulk_member.h>
 
 #include <ags/config.h>
 
@@ -438,16 +437,14 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-								 GTK_ICON_SIZE_BUTTON);
+  effect_bulk->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) effect_bulk->add,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show((GtkWidget *) effect_bulk->add);
   
-  effect_bulk->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-								    GTK_ICON_SIZE_BUTTON);
+  effect_bulk->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) effect_bulk->remove,
 		     FALSE, FALSE,
@@ -461,18 +458,22 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->bulk_member = (GtkVBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						     0);
-  gtk_widget_set_no_show_all((GtkWidget *) effect_bulk->bulk_member,
+  effect_bulk->bulk_member_entry = NULL;
+  
+  effect_bulk->bulk_member_entry_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							      0);
+  gtk_widget_set_no_show_all((GtkWidget *) effect_bulk->bulk_member_entry_box,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->bulk_member,
+		     (GtkWidget *) effect_bulk->bulk_member_entry_box,
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->grid = (GtkGrid *) gtk_grid_new();
+  effect_bulk->bulk_member = NULL;
+  
+  effect_bulk->bulk_member_grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->grid,
+		     (GtkWidget *) effect_bulk->bulk_member_grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -640,7 +641,7 @@ ags_effect_bulk_finalize(GObject *gobject)
 		   (GDestroyNotify) ags_effect_bulk_plugin_free);
 
   /* destroy plugin browser */
-  gtk_widget_destroy(GTK_WIDGET(effect_bulk->plugin_browser));
+  gtk_window_destroy(GTK_WINDOW(effect_bulk->plugin_browser));
 
   /* remove of the queued drawing hash */
   list = effect_bulk->queued_drawing;
@@ -662,7 +663,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   AgsMachine *machine;
   AgsEffectBulk *effect_bulk;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
   
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
@@ -694,7 +695,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
 
   list =
-    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
 
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -704,7 +705,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -713,7 +714,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   AgsMachine *machine;
   AgsEffectBulk *effect_bulk;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
@@ -756,7 +757,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   list =
-    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
 
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -766,7 +767,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -901,6 +902,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
+  guint i;
   guint k;
 
   pads = 0;
@@ -962,20 +964,30 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
 
+  i = 0;
+  
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_bulk->bulk_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
+    i++;
+
+    if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
+      i = 0;
+      y++;
+    }
+    
     list = list->next;
   }
 
@@ -1008,6 +1020,8 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       gchar *control_port;
       gchar *port_name;
 
+      GtkOrientation widget_orientation;
+
       guint unique_id;
       guint scale_precision;
       guint port_index;
@@ -1026,6 +1040,8 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 	x = 0;
 	y++;
       }
+
+      widget_orientation = GTK_ORIENTATION_VERTICAL;	
       
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
@@ -1037,7 +1053,9 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+	
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -1270,12 +1288,12 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       gtk_widget_set_valign((GtkWidget *) bulk_member,
 			    GTK_ALIGN_FILL);
       
-      gtk_grid_attach(effect_bulk->grid,
-		      (GtkWidget *) bulk_member,
-		      x, y,
-		      1, 1);
+      ags_effect_bulk_add_bulk_member(effect_bulk,
+				      (GtkWidget *) bulk_member,
+				      x, y,
+				      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
+      gtk_widget_show((GtkWidget *) bulk_member);
 
       /* iterate */
       x++;
@@ -1321,6 +1339,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
+  guint i;
   guint k;
   
   pads = 0;
@@ -1386,20 +1405,30 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
+
+  i = 0;
 
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_bulk->bulk_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
+    i++;
+
+    if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
+      i = 0;
+      y++;
+    }
+    
     list = list->next;
   }
 
@@ -1430,6 +1459,8 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
       gchar *port_name;
       gchar *control_port;
 
+      GtkOrientation widget_orientation;
+
       guint scale_precision;
       guint port_index;
       gdouble step_count;
@@ -1448,6 +1479,8 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 	y++;
       }
 
+      widget_orientation = GTK_ORIENTATION_VERTICAL;	
+
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 	
@@ -1458,7 +1491,9 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+	
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -1683,12 +1718,12 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
       gtk_widget_set_valign(bulk_member,
 			    GTK_ALIGN_FILL);
 
-      gtk_grid_attach(effect_bulk->grid,
-		      (GtkWidget *) bulk_member,
-		      x, y,
-		      1, 1);
+      ags_effect_bulk_add_bulk_member(effect_bulk,
+				      (GtkWidget *) bulk_member,
+				      x, y,
+				      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
+      gtk_widget_show((GtkWidget *) bulk_member);
 
       /* iterate */
       x++;
@@ -1739,6 +1774,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
+  guint i;
   guint k;
   
   GRecMutex *lv2_manager_mutex;
@@ -1887,20 +1923,30 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
 
+  i = 0;
+  
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_bulk->bulk_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
+    i++;
+
+    if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
+      i = 0;
+      y++;
+    }
+    
     list = list->next;
   }
 
@@ -1930,6 +1976,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       gchar *plugin_name;
       gchar *control_port;
 
+      GtkOrientation widget_orientation;
+
       guint port_index;
       guint scale_precision;
       gdouble step_count;
@@ -1948,6 +1996,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 	y++;
       }
 
+      widget_orientation = GTK_ORIENTATION_VERTICAL;	
+
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 	
@@ -1958,7 +2008,9 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+	
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -2164,12 +2216,12 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       gtk_widget_set_valign(bulk_member,
 			    GTK_ALIGN_FILL);
       
-      gtk_grid_attach(effect_bulk->grid,
-		      (GtkWidget *) bulk_member,
-		      x, y,
-		      1, 1);
+      ags_effect_bulk_add_bulk_member(effect_bulk,
+				      (GtkWidget *) bulk_member,
+				      x, y,
+				      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
+      gtk_widget_show((GtkWidget *) bulk_member);
 
       /* iterate */
       x++;
@@ -2220,6 +2272,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
+  guint i;
   guint k;
   
   GRecMutex *vst3_manager_mutex;
@@ -2291,20 +2344,30 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
+
+  i = 0;
 
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_bulk->bulk_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
+    i++;
+
+    if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
+      i = 0;
+      y++;
+    }
+    
     list = list->next;
   }
 
@@ -2335,6 +2398,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
       gchar *plugin_name;
       gchar *control_port;
 
+      GtkOrientation widget_orientation;
+      
       guint port_index;
       guint scale_precision;
       gdouble step_count;
@@ -2353,6 +2418,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 	y++;
       }
 
+      widget_orientation = GTK_ORIENTATION_VERTICAL;	
+
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 	
@@ -2363,7 +2430,9 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+	
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -2420,6 +2489,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				     port_count);
 
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
@@ -2573,12 +2643,12 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
       gtk_widget_set_valign(bulk_member,
 			    GTK_ALIGN_FILL);
       
-      gtk_grid_attach(effect_bulk->grid,
-		      (GtkWidget *) bulk_member,
-		      x, y,
-		      1, 1);
+      ags_effect_bulk_add_bulk_member(effect_bulk,
+				      (GtkWidget *) bulk_member,
+				      x, y,
+				      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
+      gtk_widget_show((GtkWidget *) bulk_member);
 
       /* iterate */
       x++;
@@ -2732,8 +2802,8 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 		     (GDestroyNotify) g_object_unref);
 
     /*  */
-    list = 
-      start_list = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
+    list =
+      start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
 
     while(list != NULL){
       if(AGS_IS_BULK_MEMBER(list->data) &&
@@ -3012,19 +3082,23 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   }
 
   /* destroy controls - bulk member */
-  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
+  start_list = ags_effect_bulk_get_bulk_member_entry(effect_bulk);
 
   list = g_list_nth(start_list,
 		    nth);
 
   if(list != NULL){
-    gtk_widget_destroy(list->data);
+    ags_effect_bulk_remove_bulk_member_entry(effect_bulk,
+					     list->data);
+    
+    g_object_run_dispose(list->data);
+    g_object_unref(list->data);
   }
 
   g_list_free(start_list);
 
   /* destroy controls - table */
-  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
+  start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
 
   list = start_list;
 
@@ -3033,15 +3107,19 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
        AGS_BULK_MEMBER(list->data)->play_container == effect_bulk_plugin->play_container){
       GtkWidget *child_widget;
 
-      child_widget = gtk_bin_get_child(list->data);
+      child_widget = ags_bulk_member_get_widget(list->data);
       
       if(AGS_IS_INDICATOR(child_widget) ||
 	 AGS_IS_LED(child_widget)){
 	g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
 			    child_widget);
       }
+
+      ags_effect_bulk_remove_bulk_member(effect_bulk,
+					 list->data);
       
-      gtk_widget_destroy(list->data);
+      g_object_run_dispose(list->data);
+      g_object_unref(list->data);
     }
     
     list = list->next;
@@ -3051,6 +3129,150 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   
   /* free AgsEffectBulkPlugin */
   ags_effect_bulk_plugin_free(effect_bulk_plugin);
+}
+
+/**
+ * ags_effect_bulk_get_bulk_member_entry:
+ * @effect_bulk: the #AgsEffectBulk
+ * 
+ * Get effect bulk entry of @effect_bulk.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectBulkEntry
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_bulk_get_bulk_member_entry(AgsEffectBulk *effect_bulk)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_BULK(effect_bulk), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_bulk->bulk_member_entry)));
+}
+
+/**
+ * ags_effect_bulk_add_bulk_member_entry:
+ * @effect_bulk: the #AgsEffectBulk
+ * @effect_bulk_entry: the #AgsEffectBulkEntry
+ * 
+ * Add @effect_bulk_entry to @effect_bulk.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bulk_add_bulk_member_entry(AgsEffectBulk *effect_bulk,
+				      AgsEffectBulkEntry *effect_bulk_entry)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+  g_return_if_fail(GTK_IS_EFFECT_BULK_ENTRY(effect_bulk_entry));
+
+  if(g_list_find(effect_bulk->bulk_member, effect_bulk_entry) == NULL){
+    effect_bulk->bulk_member_entry = g_list_prepend(effect_bulk->bulk_member_entry,
+						    effect_bulk_entry);
+    
+    gtk_box_append(effect_bulk->bulk_member_entry_box,
+		   effect_bulk_entry);
+  }
+}
+
+/**
+ * ags_effect_bulk_remove_bulk_member_entry:
+ * @effect_bulk: the #AgsEffectBulk
+ * @effect_bulk_entry: the #AgsEffectBulkEntry
+ * 
+ * Remove @effect_bulk_entry from @effect_bulk.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bulk_remove_bulk_member_entry(AgsEffectBulk *effect_bulk,
+					 AgsEffectBulkEntry *effect_bulk_entry)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+  g_return_if_fail(GTK_IS_EFFECT_BULK_ENTRY(effect_bulk_entry));
+
+  if(g_list_find(effect_bulk->bulk_member, effect_bulk_entry) != NULL){
+    effect_bulk->bulk_member_entry = g_list_remove(effect_bulk->bulk_member_entry,
+						   effect_bulk_entry);
+    
+    gtk_box_remove(effect_bulk->bulk_member_entry_box,
+		   effect_bulk_entry);
+  }
+}
+
+/**
+ * ags_effect_bulk_get_bulk_member:
+ * @effect_bulk: the #AgsEffectBulk
+ * 
+ * Get bulk member of @effect_bulk.
+ * 
+ * Returns: the #GList-struct containing #AgsBulkMember
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_bulk_get_bulk_member(AgsEffectBulk *effect_bulk)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_BULK(effect_bulk), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_bulk->bulk_member)));
+}
+
+/**
+ * ags_effect_bulk_add_bulk_member:
+ * @effect_bulk: the #AgsEffectBulk
+ * @bulk_member: the #AgsBulkMember
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @bulk_member to @effect_bulk.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bulk_add_bulk_member(AgsEffectBulk *effect_bulk,
+				AgsBulkMember *bulk_member,
+				guint x, guint y,
+				guint width, guint height)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+  g_return_if_fail(AGS_IS_BULK_MEMBER(bulk_member));
+
+  if(g_list_find(effect_bulk->bulk_member, bulk_member) == NULL){
+    effect_bulk->bulk_member = g_list_prepend(effect_bulk->bulk_member,
+					      bulk_member);
+    
+    gtk_grid_attach(effect_bulk->bulk_member_grid,
+		    bulk_member,
+		    x, y,
+		    width, height);
+  }
+}
+
+/**
+ * ags_effect_bulk_remove_bulk_member:
+ * @effect_bulk: the #AgsEffectBulk
+ * @bulk_member: the #AgsBulkMember
+ * 
+ * Remove @bulk_member from @effect_bulk.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bulk_remove_bulk_member(AgsEffectBulk *effect_bulk,
+				   AgsBulkMember *bulk_member)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+  g_return_if_fail(AGS_IS_BULK_MEMBER(bulk_member));
+
+  if(g_list_find(effect_bulk->bulk_member, bulk_member) != NULL){
+    effect_bulk->bulk_member = g_list_remove(effect_bulk->bulk_member,
+					     bulk_member);
+    
+    gtk_grid_remove(effect_bulk->bulk_member_grid,
+		    bulk_member);
+  }
 }
 
 /**
@@ -3164,7 +3386,7 @@ ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk)
 
   /* find output ports */
   bulk_member_start = 
-    bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
+    bulk_member = ags_effect_bulk_get_bulk_member(effect_bulk);
 
   if(bulk_member != NULL){
     while(bulk_member != NULL){
@@ -3278,9 +3500,11 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
 
     if(AGS_IS_LED(widget)){
       if(val != 0.0){
-	ags_led_set_active((AgsLed *) widget);
+	ags_led_set_active((AgsLed *) widget,
+			   TRUE);
       }else{
-	ags_led_unset_active((AgsLed *) widget);
+	ags_led_set_active((AgsLed *) widget,
+			   FALSE);
       }
     }else if(AGS_IS_INDICATOR(widget)){
       gtk_adjustment_set_value(AGS_INDICATOR(widget)->adjustment,

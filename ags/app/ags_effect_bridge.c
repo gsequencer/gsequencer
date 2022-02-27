@@ -397,22 +397,26 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   effect_bridge->audio = NULL;
 
   /* output */
-  effect_bridge->output_pad_type = G_TYPE_NONE;
-  effect_bridge->output_line_type = G_TYPE_NONE;
-  
   effect_bridge->bulk_output_type = G_TYPE_NONE;
 
   effect_bridge->bulk_output = NULL;
 
+  effect_bridge->output_pad_type = G_TYPE_NONE;
+  effect_bridge->output_line_type = G_TYPE_NONE;
+  
+  effect_bridge->output_effect_pad = NULL;
+
   effect_bridge->output = NULL;
   
   /* input */
+  effect_bridge->bulk_input_type = G_TYPE_NONE;
+
   effect_bridge->input_pad_type = G_TYPE_NONE;
   effect_bridge->input_line_type = G_TYPE_NONE;  
 
-  effect_bridge->bulk_input_type = G_TYPE_NONE;
-
   effect_bridge->bulk_input = NULL;
+
+  effect_bridge->input_effect_pad = NULL;
 
   effect_bridge->input = NULL;
 }
@@ -944,7 +948,7 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
   /* AgsEffectPad - output */
   if(effect_bridge->output != NULL){
     effect_pad_list =
-      start_effect_pad_list = ags_effect_bridge_get_effect_pad(effect_bridge);
+      start_effect_pad_list = ags_effect_bridge_get_output_effect_pad(effect_bridge);
     
     while(effect_pad_list != NULL){
       ags_connectable_connect(AGS_CONNECTABLE(effect_pad_list->data));

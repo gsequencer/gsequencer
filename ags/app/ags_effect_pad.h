@@ -118,7 +118,8 @@ void ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 
 GList* ags_effect_pad_get_effect_line(AgsEffectPad *effect_pad);
 void ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
-				    AgsEffectLine *effect_line);
+				    AgsEffectLine *effect_line,
+				    guint width, guint height);
 void ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
 				       AgsEffectLine *effect_line);
 
