@@ -987,6 +987,10 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       i = 0;
       y++;
     }
+
+    if(child != list->data){
+      g_critical("unexpected child");
+    }
     
     list = list->next;
   }
@@ -1427,6 +1431,10 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
     if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
       i = 0;
       y++;
+    }
+
+    if(child != list->data){
+      g_critical("unexpected child");
     }
     
     list = list->next;
@@ -1946,6 +1954,10 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       i = 0;
       y++;
     }
+
+    if(child != list->data){
+      g_critical("unexpected child");
+    }
     
     list = list->next;
   }
@@ -2366,6 +2378,10 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
     if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
       i = 0;
       y++;
+    }
+
+    if(child != list->data){
+      g_critical("unexpected child");
     }
     
     list = list->next;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 
 #include <ags/libags-gui.h>
+
+#include <ags/app/ags_line_member.h>
 
 G_BEGIN_DECLS
 
@@ -77,8 +79,10 @@ struct _AgsEffectLine
 
   GtkLabel *label;
   GtkToggleButton *group;
+
+  GList *line_member;
   
-  GtkGrid *grid;
+  GtkGrid *line_member_grid;
 
   GList *plugin;
 
@@ -150,6 +154,14 @@ void ags_effect_line_format_changed(AgsEffectLine *effect_line,
 				    guint format, guint old_format);
 
 void ags_effect_line_set_channel(AgsEffectLine *effect_line, AgsChannel *channel);
+
+GList* ags_effect_line_get_line_member(AgsEffectLine *effect_line);
+void ags_effect_line_add_line_member(AgsEffectLine *effect_line,
+				     AgsLineMember *line_member,
+				     guint x, guint y,
+				     guint width, guint height);
+void ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
+					AgsLineMember *line_member);
 
 void ags_effect_line_add_plugin(AgsEffectLine *effect_line,
 				GList *control_type_name,

@@ -1353,7 +1353,7 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 GtkWidget*
 ags_line_member_get_widget(AgsLineMember *line_member)
 {
-  return(gtk_bin_get_child(GTK_BIN(line_member)));
+  return(gtk_frame_get_child((GtkFrame *) line_member));
 }
 
 /**
