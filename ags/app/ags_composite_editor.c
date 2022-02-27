@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,11 +28,11 @@
 #include <ags/app/editor/ags_sheet_edit.h>
 
 #include <ags/app/editor/ags_scrolled_automation_edit_box.h>
-#include <ags/app/editor/ags_vautomation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit_box.h>
 #include <ags/app/editor/ags_automation_edit.h>
 
 #include <ags/app/editor/ags_scrolled_wave_edit_box.h>
-#include <ags/app/editor/ags_vwave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit_box.h>
 #include <ags/app/editor/ags_wave_edit.h>
 
 #include <ags/app/machine/ags_panel.h>
