@@ -24,14 +24,6 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_pad.h>
-#include <ags/app/ags_machine_editor.h>
-#include <ags/app/ags_pad_editor.h>
-#include <ags/app/ags_line_editor.h>
-#include <ags/app/ags_line_member_editor.h>
-#include <ags/app/ags_plugin_browser.h>
-#include <ags/app/ags_ladspa_browser.h>
-#include <ags/app/ags_lv2_browser.h>
-#include <ags/app/ags_vst3_browser.h>
 
 #include <ags/config.h>
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,8 +29,6 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_property_editor.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_RESIZE_EDITOR                (ags_resize_editor_get_type())
@@ -45,8 +43,8 @@ typedef struct _AgsResizeEditorClass AgsResizeEditorClass;
 
 struct _AgsResizeEditor
 {
-  AgsPropertyEditor property_editor;
-
+  GtkGrid grid;
+  
   GtkSpinButton *audio_channels;
 
   GtkSpinButton *input_pads;
@@ -55,7 +53,7 @@ struct _AgsResizeEditor
 
 struct _AgsResizeEditorClass
 {
-  AgsPropertyEditorClass property_editor;
+  GtkGridClass grid;
 };
 
 AgsResizeEditor* ags_resize_editor_new();

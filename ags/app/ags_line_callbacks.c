@@ -25,7 +25,6 @@
 
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_listing_editor.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line_member.h>
 

@@ -2588,8 +2588,18 @@ libgsequencer_h_sources = \
 	ags/app/ags_bulk_member.h \
 	ags/app/ags_composite_editor.h \
 	ags/app/ags_composite_editor_callbacks.h \
-	ags/app/ags_connection_editor_callbacks.h \
 	ags/app/ags_connection_editor.h \
+	ags/app/ags_connection_editor_callbacks.h \
+	ags/app/ags_connection_editor_listing.h \
+	ags/app/ags_connection_editor_listing_callbacks.h \
+	ags/app/ags_connection_editor_pad.h \
+	ags/app/ags_connection_editor_pad_callbacks.h \
+	ags/app/ags_connection_editor_line.h \
+	ags/app/ags_connection_editor_line_callbacks.h \
+	ags/app/ags_connection_editor_collection.h \
+	ags/app/ags_connection_editor_collection_callbacks.h \
+	ags/app/ags_connection_editor_bulk.h \
+	ags/app/ags_connection_editor_bulk_callbacks.h \
 	ags/app/ags_effect_bridge_callbacks.h \
 	ags/app/ags_effect_bridge.h \
 	ags/app/ags_effect_bulk_callbacks.h \
@@ -2606,36 +2616,34 @@ libgsequencer_h_sources = \
 	ags/app/ags_export_window.h \
 	ags/app/ags_generic_preferences_callbacks.h \
 	ags/app/ags_generic_preferences.h \
-	ags/app/ags_input_collection_editor_callbacks.h \
-	ags/app/ags_input_collection_editor.h \
-	ags/app/ags_input_editor_callbacks.h \
-	ags/app/ags_input_editor.h \
-	ags/app/ags_input_listing_editor_callbacks.h \
-	ags/app/ags_input_listing_editor.h \
 	ags/app/ags_ladspa_browser_callbacks.h \
 	ags/app/ags_ladspa_browser.h \
 	ags/app/ags_lv2_browser_callbacks.h \
 	ags/app/ags_lv2_browser.h \
 	ags/app/ags_line_callbacks.h \
-	ags/app/ags_line_editor_callbacks.h \
-	ags/app/ags_line_editor.h \
 	ags/app/ags_line.h \
 	ags/app/ags_line_member.h \
 	ags/app/ags_line_member_callbacks.h \
 	ags/app/ags_line_member_editor.h \
 	ags/app/ags_line_member_editor_callbacks.h \
 	ags/app/ags_line_member_editor_entry.h \
-	ags/app/ags_link_collection_editor_callbacks.h \
-	ags/app/ags_link_collection_editor.h \
-	ags/app/ags_link_editor_callbacks.h \
 	ags/app/ags_link_editor.h \
-	ags/app/ags_listing_editor_callbacks.h \
-	ags/app/ags_listing_editor.h \
-	ags/app/ags_machine_callbacks.h \
-	ags/app/ags_machine_editor_callbacks.h \
-	ags/app/ags_machine_editor.h \
+	ags/app/ags_link_editor_callbacks.h \
 	ags/app/ags_machine.h \
 	ags/app/ags_machine_util.h \
+	ags/app/ags_machine_callbacks.h \
+	ags/app/ags_machine_editor.h \
+	ags/app/ags_machine_editor_callbacks.h \
+	ags/app/ags_machine_editor_listing.h \
+	ags/app/ags_machine_editor_listing_callbacks.h \
+	ags/app/ags_machine_editor_pad.h \
+	ags/app/ags_machine_editor_pad_callbacks.h \
+	ags/app/ags_machine_editor_line.h \
+	ags/app/ags_machine_editor_line_callbacks.h \
+	ags/app/ags_machine_editor_collection.h \
+	ags/app/ags_machine_editor_collection_callbacks.h \
+	ags/app/ags_machine_editor_bulk.h \
+	ags/app/ags_machine_editor_bulk_callbacks.h \
 	ags/app/ags_menu_action_callbacks.h \
 	ags/app/ags_meta_data_window.h \
 	ags/app/ags_midi_dialog_callbacks.h \
@@ -2648,12 +2656,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_online_help_window_callbacks.h \
 	ags/app/ags_osc_server_preferences_callbacks.h \
 	ags/app/ags_osc_server_preferences.h \
-	ags/app/ags_output_collection_editor_callbacks.h \
-	ags/app/ags_output_collection_editor.h \
-	ags/app/ags_output_editor_callbacks.h \
-	ags/app/ags_output_editor.h \
-	ags/app/ags_output_listing_editor_callbacks.h \
-	ags/app/ags_output_listing_editor.h \
 	ags/app/ags_pad_callbacks.h \
 	ags/app/ags_pad_editor_callbacks.h \
 	ags/app/ags_pad_editor.h \
@@ -2670,11 +2672,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_port_editor.h \
 	ags/app/ags_preferences_callbacks.h \
 	ags/app/ags_preferences.h \
-	ags/app/ags_property_collection_editor_callbacks.h \
-	ags/app/ags_property_collection_editor.h \
-	ags/app/ags_property_editor_callbacks.h \
-	ags/app/ags_property_editor.h \
-	ags/app/ags_property_listing_editor.h \
 	ags/app/ags_quit_dialog_callbacks.h \
 	ags/app/ags_quit_dialog.h \
 	ags/app/ags_resize_editor.h \
@@ -2713,8 +2710,18 @@ libgsequencer_c_sources = \
 	ags/app/ags_bulk_member_callbacks.c \
 	ags/app/ags_composite_editor.c \
 	ags/app/ags_composite_editor_callbacks.c \
-	ags/app/ags_connection_editor_callbacks.c \
 	ags/app/ags_connection_editor.c \
+	ags/app/ags_connection_editor_callbacks.c \
+	ags/app/ags_connection_editor_listing.c \
+	ags/app/ags_connection_editor_listing_callbacks.c \
+	ags/app/ags_connection_editor_pad.c \
+	ags/app/ags_connection_editor_pad_callbacks.c \
+	ags/app/ags_connection_editor_line.c \
+	ags/app/ags_connection_editor_line_callbacks.c \
+	ags/app/ags_connection_editor_collection.c \
+	ags/app/ags_connection_editor_collection_callbacks.c \
+	ags/app/ags_connection_editor_bulk.c \
+	ags/app/ags_connection_editor_bulk_callbacks.c \
 	ags/app/ags_effect_bridge.c \
 	ags/app/ags_effect_bridge_callbacks.c \
 	ags/app/ags_effect_bulk.c \
@@ -2736,32 +2743,26 @@ libgsequencer_c_sources = \
 	ags/app/ags_ladspa_browser_callbacks.c \
 	ags/app/ags_lv2_browser.c \
 	ags/app/ags_lv2_browser_callbacks.c \
-	ags/app/ags_input_collection_editor_callbacks.c \
-	ags/app/ags_input_collection_editor.c \
-	ags/app/ags_input_editor_callbacks.c \
-	ags/app/ags_input_editor.c \
-	ags/app/ags_input_listing_editor_callbacks.c \
-	ags/app/ags_input_listing_editor.c \
 	ags/app/ags_line.c \
 	ags/app/ags_line_callbacks.c \
-	ags/app/ags_line_editor.c \
-	ags/app/ags_line_editor_callbacks.c \
 	ags/app/ags_line_member.c \
 	ags/app/ags_line_member_callbacks.c \
 	ags/app/ags_line_member_editor.c \
 	ags/app/ags_line_member_editor_callbacks.c \
 	ags/app/ags_line_member_editor_entry.c \
-	ags/app/ags_link_collection_editor.c \
-	ags/app/ags_link_collection_editor_callbacks.c \
 	ags/app/ags_link_editor.c \
 	ags/app/ags_link_editor_callbacks.c \
-	ags/app/ags_listing_editor.c \
-	ags/app/ags_listing_editor_callbacks.c \
 	ags/app/ags_machine.c \
 	ags/app/ags_machine_util.c \
 	ags/app/ags_machine_callbacks.c \
 	ags/app/ags_machine_editor.c \
 	ags/app/ags_machine_editor_callbacks.c \
+	ags/app/ags_machine_editor_listing.c \
+	ags/app/ags_machine_editor_listing_callbacks.c \
+	ags/app/ags_machine_editor_pad.c \
+	ags/app/ags_machine_editor_pad_callbacks.c \
+	ags/app/ags_machine_editor_line.c \
+	ags/app/ags_machine_editor_line_callbacks.c \
 	ags/app/ags_menu_action_callbacks.c \
 	ags/app/ags_meta_data_window.c \
 	ags/app/ags_midi_dialog.c \
@@ -2774,12 +2775,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_online_help_window_callbacks.c \
 	ags/app/ags_osc_server_preferences_callbacks.c \
 	ags/app/ags_osc_server_preferences.c \
-	ags/app/ags_output_collection_editor_callbacks.c \
-	ags/app/ags_output_collection_editor.c \
-	ags/app/ags_output_editor_callbacks.c \
-	ags/app/ags_output_editor.c \
-	ags/app/ags_output_listing_editor_callbacks.c \
-	ags/app/ags_output_listing_editor.c \
 	ags/app/ags_pad.c \
 	ags/app/ags_pad_callbacks.c \
 	ags/app/ags_pad_editor.c \
@@ -2796,11 +2791,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_port_editor.c \
 	ags/app/ags_preferences.c \
 	ags/app/ags_preferences_callbacks.c \
-	ags/app/ags_property_collection_editor.c \
-	ags/app/ags_property_collection_editor_callbacks.c \
-	ags/app/ags_property_editor.c \
-	ags/app/ags_property_editor_callbacks.c \
-	ags/app/ags_property_listing_editor.c \
 	ags/app/ags_quit_dialog_callbacks.c \
 	ags/app/ags_quit_dialog.c \
 	ags/app/ags_resize_editor.c \

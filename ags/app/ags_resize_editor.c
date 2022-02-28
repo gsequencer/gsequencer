@@ -82,7 +82,7 @@ ags_resize_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_resize_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
+    ags_type_resize_editor = g_type_register_static(GTK_TYPE_GRID,
 						    "AgsResizeEditor",
 						    &ags_resize_editor_info,
 						    0);

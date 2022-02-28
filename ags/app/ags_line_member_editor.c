@@ -23,7 +23,6 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_machine_editor.h>
-#include <ags/app/ags_line_editor.h>
 
 #include <ags/i18n.h>
 

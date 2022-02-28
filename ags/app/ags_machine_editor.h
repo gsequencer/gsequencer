@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,8 +31,8 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_listing_editor.h>
-#include <ags/app/ags_property_collection_editor.h>
+#include <ags/app/ags_machine_editor_listing.h>
+#include <ags/app/ags_machine_editor_collection.h>
 #include <ags/app/ags_resize_editor.h>
 
 G_BEGIN_DECLS
@@ -44,22 +44,15 @@ G_BEGIN_DECLS
 #define AGS_IS_MACHINE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MACHINE_EDITOR))
 #define AGS_MACHINE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE_EDITOR, AgsMachineEditorClass))
 
-#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "0.4.2"
-#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36"
+#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "4.0.0"
+#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "Mon Feb 28 05:07:54 UTC 2022"
 
 typedef struct _AgsMachineEditor AgsMachineEditor;
 typedef struct _AgsMachineEditorClass AgsMachineEditorClass;
 
-typedef enum{
-  AGS_MACHINE_EDITOR_CONNECTED   =  1,
-  AGS_MACHINE_EDITOR_CLOSING     =  1 << 1,
-}AgsMachineEditorFlags;
-
 struct _AgsMachineEditor
 {
-  GtkDialog dialog;
-
-  guint flags;
+  GtkGrid grid;
 
   gchar *version;
   gchar *build_id;
@@ -68,31 +61,18 @@ struct _AgsMachineEditor
 
   GtkNotebook *notebook;
 
-  GtkScrolledWindow *output_scrolled_window;
-  AgsListingEditor *output_editor;
+  AgsMachineEditorListing *output_editor_listing;
+  AgsMachineEditorCollection *output_editor_collection;
 
-  GtkScrolledWindow *input_scrolled_window;
-  AgsListingEditor *input_editor;
+  AgsMachineEditorListing *input_editor_listing;
+  AgsMachineEditorCollection *input_editor_collection;
 
-  GtkScrolledWindow *output_link_editor_scrolled_window;
-  AgsPropertyCollectionEditor *output_link_editor;
-
-  GtkScrolledWindow *input_link_editor_scrolled_window;
-  AgsPropertyCollectionEditor *input_link_editor;
-
-  GtkScrolledWindow *resize_editor_scrolled_window;
   AgsResizeEditor *resize_editor;
-
-  GtkButton *add;
-  GtkButton *remove;
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
 };
 
 struct _AgsMachineEditorClass
 {
-  GtkDialogClass dialog;
+  GtkGridClass grid;
 
   void (*set_machine)(AgsMachineEditor *machine_editor,
 		      AgsMachine *machine);
