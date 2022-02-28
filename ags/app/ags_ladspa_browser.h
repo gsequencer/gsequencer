@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 
 #include <ags/libags-gui.h>
+
+#include <ags/app/ags_port_editor.h>
 
 G_BEGIN_DECLS
 
@@ -65,7 +67,9 @@ struct _AgsLadspaBrowser
   GtkLabel *maker;
   GtkLabel *copyright;
 
-  GtkGrid *port_grid;
+  GList *port_editor;
+  
+  GtkGrid *port_editor_grid;
 
   GtkWidget *preview;
 };
@@ -80,11 +84,15 @@ GType ags_ladspa_browser_get_type(void);
 gchar* ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser);
 gchar* ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser);
 
-GtkWidget* ags_ladspa_browser_combo_box_output_boolean_controls_new();
-GtkWidget* ags_ladspa_browser_combo_box_output_controls_new();
+GList* ags_ladspa_browser_get_port_editor(AgsLadspaBrowser *ladspa_browser);
+void ags_ladspa_browser_add_port_editor(AgsLadspaBrowser *ladspa_browser,
+					AgsPortEditor *port_editor,
+					guint x, guint y,
+					guint width, guint height);
+void ags_ladspa_browser_remove_port_editor(AgsLadspaBrowser *ladspa_browser,
+					   AgsPortEditor *port_editor);
 
-GtkWidget* ags_ladspa_browser_combo_box_boolean_controls_new();
-GtkWidget* ags_ladspa_browser_combo_box_controls_new();
+void ags_ladspa_browser_clear(AgsLadspaBrowser *ladspa_browser);
 
 GtkWidget* ags_ladspa_browser_preview_new();
 

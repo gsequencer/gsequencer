@@ -249,11 +249,11 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
-  ladspa_browser->port_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
-		     (GtkWidget *) ladspa_browser->port_grid,
-		     FALSE, FALSE,
-		     0);
+  ladspa_browser->port_editor = NULL;
+  
+  ladspa_browser->port_editor_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append((GtkBox *) ladspa_browser->description,
+		 (GtkWidget *) ladspa_browser->port_editor_grid);
 
   ladspa_browser->preview = NULL;
 }
@@ -321,14 +321,10 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 {
   AgsLadspaBrowser *ladspa_browser;
   GtkComboBoxText *filename;
-  GList *list;
 
   ladspa_browser = AGS_LADSPA_BROWSER(applicable);
 
-  list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
-
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  g_list_free(list);
+  filename = GTK_COMBO_BOX_TEXT(ladspa_browser->filename);
 
   gtk_combo_box_set_active((GtkComboBox *) filename,
 			   0);
@@ -482,6 +478,140 @@ ags_ladspa_browser_combo_box_controls_new()
 			   1);
 
   return((GtkWidget *) combo_box);
+}
+
+/**
+ * ags_ladspa_browser_get_port_editor:
+ * @ladspa_browser: the #AgsLadspaBrowser
+ * 
+ * Get bulk member of @ladspa_browser.
+ * 
+ * Returns: the #GList-struct containing #AgsPortEditor
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_ladspa_browser_get_port_editor(AgsLadspaBrowser *ladspa_browser)
+{
+  g_return_val_if_fail(AGS_IS_LADSPA_BROWSER(ladspa_browser), NULL);
+
+  return(g_list_reverse(g_list_copy(ladspa_browser->port_editor)));
+}
+
+/**
+ * ags_ladspa_browser_add_port_editor:
+ * @ladspa_browser: the #AgsLadspaBrowser
+ * @port_editor: the #AgsPortEditor
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @port_editor to @ladspa_browser.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_ladspa_browser_add_port_editor(AgsLadspaBrowser *ladspa_browser,
+				   AgsPortEditor *port_editor,
+				   guint x, guint y,
+				   guint width, guint height)
+{
+  g_return_if_fail(AGS_IS_LADSPA_BROWSER(ladspa_browser));
+  g_return_if_fail(AGS_IS_PORT_EDITOR(port_editor));
+
+  if(g_list_find(ladspa_browser->port_editor, port_editor) == NULL){
+    ladspa_browser->port_editor = g_list_prepend(ladspa_browser->port_editor,
+						 port_editor);
+    
+    gtk_grid_attach(ladspa_browser->port_editor_grid,
+		    port_editor,
+		    x, y,
+		    width, height);
+  }
+}
+
+/**
+ * ags_ladspa_browser_remove_port_editor:
+ * @ladspa_browser: the #AgsLadspaBrowser
+ * @port_editor: the #AgsPortEditor
+ * 
+ * Remove @port_editor from @ladspa_browser.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_ladspa_browser_remove_port_editor(AgsLadspaBrowser *ladspa_browser,
+				      AgsPortEditor *port_editor)
+{
+  g_return_if_fail(AGS_IS_LADSPA_BROWSER(ladspa_browser));
+  g_return_if_fail(AGS_IS_PORT_EDITOR(port_editor));
+
+  if(g_list_find(ladspa_browser->port_editor, port_editor) != NULL){
+    ladspa_browser->port_editor = g_list_remove(ladspa_browser->port_editor,
+						port_editor);
+    
+    gtk_grid_remove(ladspa_browser->port_editor_grid,
+		    port_editor);
+  }
+}
+
+/**
+ * ags_ladspa_browser_clear:
+ * @ladspa_browser: the #AgsLadspaBrowser
+ * 
+ * Clear @ladspa_browser.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_ladspa_browser_clear(AgsLadspaBrowser *ladspa_browser)
+{
+  GList *start_port_editor, *port_editor;
+
+  gchar *str;
+
+  g_return_if_fail(AGS_IS_LADSPA_BROWSER(ladspa_browser));
+
+  /* update ui - reading plugin file */
+  str = g_strconcat(i18n("Label"),
+		    ": ",
+		    NULL);
+  gtk_label_set_text(ladspa_browser->label,
+		     str);
+
+  g_free(str);
+
+  str = g_strconcat(i18n("Maker"),
+		    ": ",
+		    NULL);
+  gtk_label_set_text(ladspa_browser->maker,
+		     str);
+
+  g_free(str);
+
+  str = g_strconcat(i18n("Copyright"),
+		    ": ",
+		    NULL);
+  gtk_label_set_text(ladspa_browser->copyright,
+		     str);
+
+  g_free(str);
+
+  port_editor =
+    start_port_editor = ags_ladspa_browser_get_port_editor(ladspa_browser);
+    
+  while(port_editor != NULL){
+    ags_ladspa_browser_remove_port_editor(ladspa_browser,
+					  port_editor->data);
+      
+    g_object_run_dispose(port_editor->data);
+    g_object_unref(port_editor->data);
+
+    port_editor = port_editor->next;
+  }
+
+  g_list_free(start_port_editor);
 }
 
 GtkWidget*

@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_PREFERENCES_CALLBACKS_H__
-#define __AGS_PREFERENCES_CALLBACKS_H__
+#ifndef __AGS_PORT_EDITOR_CALLBACKS_H__
+#define __AGS_PORT_EDITOR_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -29,17 +29,11 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_preferences.h>
+#include <ags/app/ags_port_editor.h>
 
 G_BEGIN_DECLS
 
-void ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data);
-
-void ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
-						   gpointer page,
-						   guint page_n,
-						   AgsPreferences *preferences);
 
 G_END_DECLS
 
-#endif /*__AGS_PREFERENCES_CALLBACKS_H__*/
+#endif /*__AGS_PORT_EDITOR_CALLBACKS_H__*/

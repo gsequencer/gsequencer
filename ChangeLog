@@ -5,6 +5,10 @@ ags (4.0.0)
 	* TODO:JK: migrated libgsequencer.so to Gtk-4
 	* migrated libags_gui.so to Gtk-4
 	* implemented AgsCartesian properties
+	* TODO:JK: implemented AgsVector
+	* TODO:JK: implemented AgsSoundDirection
+	* TODO:JK: implemented AgsAudioManager with ui-scope
+	* TODO:JK: improved AgsMessageEnvelope with ui-scope
 	* fixed typo in ags_function.h
 
 ags (3.18.2)

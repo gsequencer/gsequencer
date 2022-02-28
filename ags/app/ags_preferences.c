@@ -36,6 +36,8 @@ void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_preferences_init(AgsPreferences *preferences);
+void ags_preferences_dispose(GObject *gobject);
+void ags_preferences_finalize(GObject *gobject);
 
 void ags_preferences_connect(AgsConnectable *connectable);
 void ags_preferences_disconnect(AgsConnectable *connectable);
@@ -112,10 +114,17 @@ ags_preferences_get_type(void)
 void
 ags_preferences_class_init(AgsPreferencesClass *preferences)
 {
+  GObjectClass *gobject;
   GtkWidgetClass *widget;
 
   ags_preferences_parent_class = g_type_class_peek_parent(preferences);
 
+  /* GtkGobjectClass */
+  gobject = (GObjectClass *) preferences;
+
+  gobject->dispose = ags_preferences_dispose;
+  gobject->finalize = ags_preferences_finalize;
+  
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) preferences;
 
@@ -228,6 +237,34 @@ ags_preferences_init(AgsPreferences *preferences)
 }
 
 void
+ags_preferences_dispose(GObject *gobject)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				  NULL);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_preferences_parent_class)->finalize(gobject);
+}
+
+void
+ags_preferences_finalize(GObject *gobject)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
+				  NULL);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_preferences_parent_class)->finalize(gobject);
+}
+
+void
 ags_preferences_connect(AgsConnectable *connectable)
 {
   AgsPreferences *preferences;
@@ -249,9 +286,6 @@ ags_preferences_connect(AgsConnectable *connectable)
   if(preferences->server_preferences != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(preferences->server_preferences));
   }
-
-  g_signal_connect(G_OBJECT(preferences), "delete-event",
-		   G_CALLBACK(ags_preferences_delete_event_callback), NULL);
   
   g_signal_connect_after(G_OBJECT(preferences), "response",
 			 G_CALLBACK(ags_preferences_response_callback), NULL);
@@ -284,9 +318,6 @@ ags_preferences_disconnect(AgsConnectable *connectable)
   }
 
   g_object_disconnect(G_OBJECT(preferences),
-		      "any_signal::delete-event",
-		      G_CALLBACK(ags_preferences_delete_event_callback),
-		      NULL,
 		      "any_signal::response",
 		      G_CALLBACK(ags_preferences_response_callback),
 		      NULL,

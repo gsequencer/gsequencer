@@ -2665,6 +2665,8 @@ libgsequencer_h_sources = \
 	ags/app/ags_plugin_browser.h \
 	ags/app/ags_plugin_preferences_callbacks.h \
 	ags/app/ags_plugin_preferences.h \
+	ags/app/ags_port_editor_callbacks.h \
+	ags/app/ags_port_editor.h \
 	ags/app/ags_preferences_callbacks.h \
 	ags/app/ags_preferences.h \
 	ags/app/ags_property_collection_editor_callbacks.h \
@@ -2788,6 +2790,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_plugin_browser_callbacks.c \
 	ags/app/ags_plugin_preferences.c \
 	ags/app/ags_plugin_preferences_callbacks.c \
+	ags/app/ags_port_editor_callbacks.c \
+	ags/app/ags_port_editor.c \
 	ags/app/ags_preferences.c \
 	ags/app/ags_preferences_callbacks.c \
 	ags/app/ags_property_collection_editor.c \

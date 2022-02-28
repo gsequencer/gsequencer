@@ -21,20 +21,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 
-gboolean
-ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
-				      gpointer user_data)
-{
-  AgsApplicationContext *application_context;
-
-  application_context = ags_application_context_get_instance();
-  
-  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				  NULL);
-  
-  return(FALSE);
-}
-
 void
 ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data)
 {

@@ -105,11 +105,10 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					  AgsLadspaBrowser *ladspa_browser)
 {
   GtkComboBoxText *filename, *effect;
-  GtkGrid *grid;
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  GList *child, *child_start;
+  GList *start_port_editor, *port_editor;
 
   gchar *str;
 
@@ -129,44 +128,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   effect = (GtkComboBoxText *) ladspa_browser->effect;
 
   if(gtk_combo_box_get_active(effect) == -1){
-    /* update ui - reading plugin file */
-    str = g_strconcat(i18n("Label"),
-		      ": ",
-		      NULL);
-    gtk_label_set_text(ladspa_browser->label,
-		       str);
-
-    g_free(str);
-
-    str = g_strconcat(i18n("Maker"),
-		      ": ",
-		      NULL);
-    gtk_label_set_text(ladspa_browser->maker,
-		       str);
-
-    g_free(str);
-
-    str = g_strconcat(i18n("Copyright"),
-		      ": ",
-		      NULL);
-    gtk_label_set_text(ladspa_browser->copyright,
-		       str);
-
-    g_free(str);
-
-    grid = ladspa_browser->port_grid;
-
-    child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(grid));
+    ags_ladspa_browser_clear(ladspa_browser);
     
-    while(child != NULL){
-      gtk_widget_destroy(GTK_WIDGET(child->data));
-
-      child = child->next;
-    }
-
-    g_list_free(child_start);
-
     return;
   }
 
@@ -225,21 +188,28 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     /* update ui - port information */
     port_count = plugin_descriptor->PortCount;
 
-    grid = ladspa_browser->port_grid;
+    port_editor =
+      start_port_editor = ags_ladspa_browser_get_port_editor(ladspa_browser);
     
-    child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(grid));
-    
-    while(child != NULL){
-      gtk_widget_destroy(GTK_WIDGET(child->data));
+    while(port_editor != NULL){
+      ags_ladspa_browser_remove_port_editor(ladspa_browser,
+					    port_editor->data);
+      
+      g_object_run_dispose(port_editor->data);
+      g_object_unref(port_editor->data);
 
-      child = child->next;
+      port_editor = port_editor->next;
     }
 
-    g_list_free(child_start);
+    g_list_free(start_port_editor);
 
     for(i = 0, y = 0; i < port_count; i++){
-      GtkLabel *label;
+      AgsPortEditor *port_editor;
+
+      const LADSPA_PortRangeHint *range_hint;
+      LADSPA_PortRangeHintDescriptor hint_descriptor;
+
+      guint flags;
       
       if(!(LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 	   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
@@ -247,67 +217,43 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	continue;
       }
 
-      str = g_strdup(plugin_descriptor->PortNames[i]);
+      port_editor = ags_port_editor_new();
 
-      label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-					"xalign", 0.0,
-					"label", str,
-					NULL);
+      gtk_label_set_text(port_editor->port_name,
+			 plugin_descriptor->PortNames[i]);
 
-      gtk_widget_set_margin_end((GtkWidget *) label,
-				AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
-  
-      gtk_grid_attach(grid,
-		      (GtkWidget *) label,
-		      0, y,
-		      1, 1);
+      flags = 0;
 
-      gtk_grid_attach(grid,
-		      (GtkWidget *) ags_ladspa_browser_combo_box_controls_new(),
-		      1, y,
-		      1, 1);
+      if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	flags |= AGS_PORT_EDITOR_IS_OUTPUT;
+      }else{
+	flags |= AGS_PORT_EDITOR_IS_INPUT;
+      }
 
+      range_hint = &(AGS_LADSPA_PLUGIN_DESCRIPTOR(plugin_descriptor)->PortRangeHints[i]);
+      hint_descriptor = range_hint->HintDescriptor;
+
+      if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
+	flags |= AGS_PORT_EDITOR_IS_BOOLEAN;
+      }else{
+	flags |= AGS_PORT_EDITOR_IS_ADJUSTMENT;
+      }
+      
+      ags_port_editor_set_flags(port_editor,
+				flags);
+
+      ags_ladspa_browser_add_port_editor(ladspa_browser,
+					 port_editor,
+					 0, y,
+					 1, 1);
+      
       y++;
     }
 
     g_rec_mutex_unlock(base_plugin_mutex);
 
-    gtk_widget_show_all((GtkWidget *) grid);
+    gtk_widget_show((GtkWidget *) port_editor);
   }else{
-    /* update ui - empty */
-    str = g_strdup_printf("%s: ",
-			  i18n("Label"));
-    gtk_label_set_text(ladspa_browser->label,
-		       str);
-
-    g_free(str);
-    
-    str = g_strdup_printf("%s: ",
-			  i18n("Maker"));
-    gtk_label_set_text(ladspa_browser->maker,
-		       str);
-
-    g_free(str);
-
-    str = g_strdup_printf("%s: ",
-			  i18n("Copyright"));
-    gtk_label_set_text(ladspa_browser->copyright,
-		       str);
-
-    g_free(str);
-
-    /* update ui - no ports */
-    grid = ladspa_browser->port_grid;
-    
-    child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(grid));
-    
-    while(child != NULL){
-      gtk_widget_destroy(GTK_WIDGET(child->data));
-
-      child = child->next;
-    }
-
-    g_list_free(child_start);
+    ags_ladspa_browser_clear(ladspa_browser);
   }
 }
