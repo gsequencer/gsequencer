@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,9 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_line_member.h>
+#include <ags/app/ags_effect_separator.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_LINE                (ags_line_get_type())
@@ -40,8 +43,8 @@ G_BEGIN_DECLS
 
 #define AGS_LINE_PLUGIN(ptr) ((AgsLinePlugin *)(ptr))
 
-#define AGS_LINE_DEFAULT_VERSION "0.7.0"
-#define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49"
+#define AGS_LINE_DEFAULT_VERSION "4.0.0"
+#define AGS_LINE_DEFAULT_BUILD_ID "Mon Feb 28 01:22:56 UTC 2022"
 
 #define AGS_LINE_COLUMNS_COUNT (2)
 #define AGS_LINE_SEPARATOR_FILENAME "ags-line-separator-filename"
@@ -80,7 +83,10 @@ struct _AgsLine
   GtkLabel *label;
   GtkToggleButton *group;
 
-  AgsExpander *expander;
+  GList *line_member;
+  GList *effect_separator;
+
+  AgsExpander *line_member_expander;
 
   GtkWidget *indicator;
 
@@ -158,6 +164,22 @@ void ags_line_format_changed(AgsLine *line,
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 void ags_line_group_changed(AgsLine *line);
+
+GList* ags_line_get_line_member(AgsLine *line);
+void ags_line_add_line_member(AgsLine *line,
+			      AgsLineMember *line_member,
+			      guint x, guint y,
+			      guint width, guint height);
+void ags_line_remove_line_member(AgsLine *line,
+				 AgsLineMember *line_member);
+
+GList* ags_line_get_effect_separator(AgsLine *line);
+void ags_line_add_effect_separator(AgsLine *line,
+				   AgsEffectSeparator *effect_separator,
+				   guint x, guint y,
+				   guint width, guint height);
+void ags_line_remove_effect_separator(AgsLine *line,
+				      AgsEffectSeparator *effect_separator);
 
 void ags_line_add_plugin(AgsLine *line,
 			 GList *control_type_name,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,7 +75,10 @@ struct _AgsPad
   AgsChannel *channel;
 
   guint cols;
-  AgsExpanderSet *expander_set;
+  
+  GList *line;
+  
+  AgsExpanderSet *line_expander_set;
 
   GtkToggleButton *group;
   GtkToggleButton *mute;
@@ -114,6 +117,14 @@ void ags_pad_format_changed(AgsPad *pad,
 			    guint format, guint old_format);
 
 void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
+
+GList* ags_pad_get_line(AgsPad *pad);
+void ags_pad_add_line(AgsPad *pad,
+		      AgsLine *line,
+		      guint x, guint y,
+		      guint width, guint height);
+void ags_pad_remove_line(AgsPad *pad,
+			 AgsLine *line);
 
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old);

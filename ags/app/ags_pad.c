@@ -398,11 +398,11 @@ ags_pad_init(AgsPad *pad)
   
   pad->cols = 2;
 
-  pad->expander_set = ags_expander_set_new(1, 1);
-  gtk_box_pack_start((GtkBox *) pad,
-		     (GtkWidget *) pad->expander_set,
-		     TRUE, TRUE,
-		     0);
+  pad->line = NULL;
+  
+  pad->line_expander_set = ags_expander_set_new();
+  gtk_box_append((GtkBox *) pad,
+		 (GtkWidget *) pad->line_expander_set);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
@@ -832,6 +832,82 @@ ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 		pad_signals[SET_CHANNEL], 0,
 		channel);
   g_object_unref((GObject *) pad);
+}
+
+/**
+ * ags_pad_get_line:
+ * @pad: the #AgsPad
+ * 
+ * Get bulk member of @pad.
+ * 
+ * Returns: the #GList-struct containing #AgsLine
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_pad_get_line(AgsPad *pad)
+{
+  g_return_val_if_fail(AGS_IS_PAD(pad), NULL);
+
+  return(g_list_reverse(g_list_copy(pad->line)));
+}
+
+/**
+ * ags_pad_add_line:
+ * @pad: the #AgsPad
+ * @line: the #AgsLine
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @line to @pad.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_pad_add_line(AgsPad *pad,
+		 AgsLine *line,
+		 guint x, guint y,
+		 guint width, guint height)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  if(g_list_find(pad->line, line) == NULL){
+    pad->line = g_list_prepend(pad->line,
+			       line);
+    
+    ags_expander_set_add(pad->line_expander_set,
+			 line,
+			 x, y,
+			 width, height);
+  }
+}
+
+/**
+ * ags_pad_remove_line:
+ * @pad: the #AgsPad
+ * @line: the #AgsLine
+ * 
+ * Remove @line from @pad.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_pad_remove_line(AgsPad *pad,
+		    AgsLine *line)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  if(g_list_find(pad->line, line) != NULL){
+    pad->line = g_list_remove(pad->line,
+			      line);
+    
+    ags_expander_set_remove(pad->line_expander_set,
+			    line);
+  }
 }
 
 void

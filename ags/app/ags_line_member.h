@@ -114,6 +114,8 @@ struct _AgsLineMemberClass
 
 GType ags_line_member_get_type(void);
 
+void ags_line_member_set_widget(AgsLineMember *line_member,
+				GtkWidget *widget);
 GtkWidget* ags_line_member_get_widget(AgsLineMember *line_member);
 
 void ags_line_member_set_label(AgsLineMember *line_member,

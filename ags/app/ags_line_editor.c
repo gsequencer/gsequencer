@@ -386,11 +386,33 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
 			    AgsChannel *channel)
 {
   if(line_editor->link_editor != NULL){
-    line_editor->link_editor = NULL;
-    gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
-    gtk_widget_destroy(GTK_WIDGET(line_editor->output_editor));
-    gtk_widget_destroy(GTK_WIDGET(line_editor->input_editor));
-    gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
+    /* link editor */
+    gtk_box_remove((GtkBox *) line_editor,
+		   (GtkWidget *) line_editor->link_editor);
+    
+    g_object_run_dispose(line_editor->link_editor);
+    g_object_unref(line_editor->link_editor);
+    
+    /* output editor */
+    gtk_box_remove((GtkBox *) line_editor,
+		   (GtkWidget *) line_editor->output_editor);
+    
+    g_object_run_dispose(line_editor->output_editor);
+    g_object_unref(line_editor->output_editor);
+
+    /* input editor */
+    gtk_box_remove((GtkBox *) line_editor,
+		   (GtkWidget *) line_editor->input_editor);
+    
+    g_object_run_dispose(line_editor->input_editor);
+    g_object_unref(line_editor->input_editor);
+
+    /* member editor */
+    gtk_box_remove((GtkBox *) line_editor,
+		   (GtkWidget *) line_editor->member_editor);
+    
+    g_object_run_dispose(line_editor->member_editor);
+    g_object_unref(line_editor->member_editor);
   }
 
   if(line_editor->channel != channel){
@@ -412,37 +434,29 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
       /* link */
       if(line_editor->editor_type[i] == AGS_TYPE_LINK_EDITOR){
 	line_editor->link_editor = ags_link_editor_new();
-	gtk_box_pack_start(GTK_BOX(line_editor),
-			   GTK_WIDGET(line_editor->link_editor),
-			   FALSE, FALSE,
-			   0);
+	gtk_box_append((GtkBox *) line_editor,
+		       (GtkWidget *) line_editor->link_editor);
       }
 
       /* output */
       if(line_editor->editor_type[i] == AGS_TYPE_OUTPUT_EDITOR){
 	line_editor->output_editor = ags_output_editor_new();
-	gtk_box_pack_start(GTK_BOX(line_editor),
-			   GTK_WIDGET(line_editor->output_editor),
-			   FALSE, FALSE,
-			   0);
+	gtk_box_append((GtkBox *) line_editor,
+		       (GtkWidget *) line_editor->output_editor);
       }
       
       /* input */
       if(line_editor->editor_type[i] == AGS_TYPE_INPUT_EDITOR){
 	line_editor->input_editor = ags_input_editor_new();
-	gtk_box_pack_start(GTK_BOX(line_editor),
-			   GTK_WIDGET(line_editor->input_editor),
-			   FALSE, FALSE,
-			   0);
+	gtk_box_append((GtkBox *) line_editor,
+		       (GtkWidget *) line_editor->input_editor);
       }
 
       /* recall */
       if(line_editor->editor_type[i] == AGS_TYPE_LINE_MEMBER_EDITOR){
 	line_editor->member_editor = ags_line_member_editor_new();
-	gtk_box_pack_start(GTK_BOX(line_editor),
-			   GTK_WIDGET(line_editor->member_editor),
-			   FALSE, FALSE,
-			   0);
+	gtk_box_append((GtkBox *) line_editor,
+		       (GtkWidget *) line_editor->member_editor);
       }
     }
   }

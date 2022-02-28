@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,17 +41,13 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
   AgsPad *pad;
   AgsLine *current;
 
-  GtkContainer *container;
-
-  GList *list, *list_start;
+  GList *start_list, *list;
 
   pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line),
 					   AGS_TYPE_PAD);
 
-  container = (GtkContainer *) pad->expander_set;
-
-  list_start =
-    list = gtk_container_get_children(container);
+  list =
+    start_list = ags_pad_get_line(pad);
 
   if(gtk_toggle_button_get_active(line->group)){
     ags_line_group_changed(line);
@@ -60,7 +56,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
       current = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(current->group)){
-	g_list_free(list_start);
+	g_list_free(start_list);
 
 	return;
       }
@@ -80,7 +76,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
 	if(gtk_toggle_button_get_active(current->group)){
 	  ags_line_group_changed(line);
-	  g_list_free(list_start);
+	  g_list_free(start_list);
 
 	  return;
 	}
@@ -92,7 +88,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
     gtk_toggle_button_set_active(line->group, TRUE);
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
