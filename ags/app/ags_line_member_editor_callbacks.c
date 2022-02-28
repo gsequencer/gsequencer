@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,43 +60,31 @@ ags_line_member_editor_add_callback(GtkWidget *button,
 		     G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
   }
   
-  gtk_widget_show_all((GtkWidget *) line_member_editor->plugin_browser);
+  gtk_widget_show((GtkWidget *) line_member_editor->plugin_browser);
 }
 
 void
 ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
 							    gchar *filename, gchar *effect)
 {
-  GtkBox *hbox;
-  GtkCheckButton *check_button;
-  GtkLabel *label;
+  AgsLineMemberEditorEntry *entry;
 
   gchar *str;
   
   /* create entry */
-  hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
-				 0);
-  gtk_box_pack_start(line_member_editor->line_member,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
-      
-  check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) check_button,
-		     FALSE, FALSE,
-		     0);
+  entry = ags_line_member_editor_entry_new();
 
   str = g_strdup_printf("%s - %s",
 			filename,
 			effect);
-    
-  label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
-  gtk_widget_show_all((GtkWidget *) hbox);
+
+  gtk_label_set_text(entry->label,
+		     str);
+  
+  ags_line_member_editor_add_entry(line_member_editor,
+				   entry);
+  
+  gtk_widget_show((GtkWidget *) entry);
 
   g_free(str);
 }
