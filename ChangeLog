@@ -9,7 +9,12 @@ ags (4.0.0)
 	* TODO:JK: implemented AgsSoundDirection
 	* TODO:JK: implemented AgsAudioManager with ui-scope
 	* TODO:JK: improved AgsMessageEnvelope with ui-scope
+	* TODO:JK: refactored AgsConnectableFlags
 	* fixed typo in ags_function.h
+	* TODO:JK: implemented pitch selection of ags-synth
+	* TODO:JK: implemented pitch selection of ags-fm-synth
+	* TODO:JK: implemented pitch selection of ags-sf2-synth
+	* TODO:JK: implemented pitch selection of ags-sfz-synth
 
 ags (3.18.2)
 

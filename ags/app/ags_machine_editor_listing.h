@@ -63,7 +63,7 @@ struct _AgsMachineEditorListingClass
 
 GType ags_machine_editor_listing_get_type(void);
 
-AgsMachineEditorListing* ags_machine_editor_listing_new();
+AgsMachineEditorListing* ags_machine_editor_listing_new(GType channel_type);
 
 G_END_DECLS
 

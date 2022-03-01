@@ -54,7 +54,7 @@ struct _AgsMachineEditor
 {
   GtkGrid grid;
 
-  AgsConnectableFlags connnectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   gchar *version;
   gchar *build_id;

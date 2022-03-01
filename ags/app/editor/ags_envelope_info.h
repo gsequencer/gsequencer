@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ENVELOPE_INFO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_INFO))
 #define AGS_ENVELOPE_INFO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_INFO, AgsEnvelopeInfoClass))
 
-#define AGS_ENVELOPE_INFO_DEFAULT_VERSION "0.8.2"
-#define AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID "CEST 24-05-2017 10:19"
+#define AGS_ENVELOPE_INFO_DEFAULT_VERSION "4.0.0"
+#define AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID "Tue Mar 01 12:27:51 UTC 2022"
 
 typedef struct _AgsEnvelopeInfo AgsEnvelopeInfo;
 typedef struct _AgsEnvelopeInfoClass AgsEnvelopeInfoClass;
@@ -59,7 +59,7 @@ typedef enum{
 
 struct _AgsEnvelopeInfo
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -75,7 +75,7 @@ struct _AgsEnvelopeInfo
 
 struct _AgsEnvelopeInfoClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_envelope_info_get_type(void);

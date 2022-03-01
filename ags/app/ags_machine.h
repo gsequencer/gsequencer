@@ -65,9 +65,8 @@ typedef enum{
   AGS_MACHINE_BLOCK_PLAY              = 1 <<  8,
   AGS_MACHINE_BLOCK_STOP              = 1 <<  9,
   AGS_MACHINE_BLOCK_STOP_CALLBACK     = 1 << 10,
-  AGS_MACHINE_CONNECTED               = 1 << 11,
-  AGS_MACHINE_REVERSE_NOTATION        = 1 << 12,
-  AGS_MACHINE_STICKY_CONTROLS         = 1 << 13,
+  AGS_MACHINE_REVERSE_NOTATION        = 1 << 11,
+  AGS_MACHINE_STICKY_CONTROLS         = 1 << 12,
 }AgsMachineFlags;
 
 typedef enum{
@@ -113,6 +112,7 @@ struct _AgsMachine
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint file_input_flags;
   guint mapping_flags;
   guint connection_flags;

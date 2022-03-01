@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,7 +91,7 @@ ags_envelope_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_envelope_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_envelope_editor = g_type_register_static(GTK_TYPE_BOX,
 						      "AgsEnvelopeEditor", &ags_envelope_editor_info,
 						      0);
 
@@ -136,7 +136,7 @@ void
 ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 {
   GtkFrame *frame;
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkVBox *control;
   GtkTable *table;
   GtkLabel *label;
@@ -170,10 +170,10 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) hbox);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) hbox);
   
   envelope_editor->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
@@ -299,7 +299,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
   
-  envelope_editor->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->attack_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_x,
@@ -309,7 +309,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  envelope_editor->attack_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
@@ -341,7 +341,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
-  envelope_editor->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->decay_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_x,
@@ -351,7 +351,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  envelope_editor->decay_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
@@ -383,7 +383,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
-  envelope_editor->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->sustain_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_x,
@@ -393,7 +393,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  envelope_editor->sustain_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
@@ -425,7 +425,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
-  envelope_editor->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->release_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_x,
@@ -435,7 +435,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  envelope_editor->release_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
@@ -458,7 +458,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  envelope_editor->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->ratio = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,

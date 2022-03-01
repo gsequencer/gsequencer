@@ -35,8 +35,6 @@ void ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window);
 void ags_online_help_window_connect(AgsConnectable *connectable);
 void ags_online_help_window_disconnect(AgsConnectable *connectable);
 
-gboolean ags_online_help_window_delete_event(GtkWidget *widget, GdkEventAny *event);
-
 static gpointer ags_online_help_window_parent_class = NULL;
 
 GType
@@ -81,15 +79,8 @@ ags_online_help_window_get_type()
 
 void
 ags_online_help_window_class_init(AgsOnlineHelpWindowClass *online_help_window)
-{
-  GtkWidgetClass *widget;
-  
+{  
   ags_online_help_window_parent_class = g_type_class_peek_parent(online_help_window);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) online_help_window;
-
-  widget->delete_event = ags_online_help_window_delete_event;
 }
 
 void
@@ -119,7 +110,7 @@ void
 ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 {
 #if defined(AGS_WITH_POPPLER)
-  GtkVBox *vbox;
+  GtkBox *vbox;
   GtkGrid *grid;
 
   GtkAdjustment *vadjustment, *hadjustment;
@@ -138,9 +129,12 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   GError *error;
 
   g_object_set(online_help_window,
-	       "title", i18n("online help"),
+	       "title", i18n("Online help"),
 	       NULL);
 
+  gtk_window_set_hide_on_close((GtkWindow *) online_help_window,
+			       TRUE);
+  
   width = 800.0;
   height = 600.0;
   
@@ -149,8 +143,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 	       "default-height", (gint) height,
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_container_add((GtkContainer *) online_help_window,
 		    (GtkWidget *) vbox);
 
@@ -305,11 +299,11 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 
   online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
 
-  if((AGS_ONLINE_HELP_WINDOW_CONNECTED & (online_help_window->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) != 0){
     return;
   }
 
-  online_help_window->flags |= AGS_ONLINE_HELP_WINDOW_CONNECTED;
+  online_help_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
 #if defined(AGS_WITH_POPPLER)
   g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "draw",
@@ -333,11 +327,11 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 
   online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
 
-  if((AGS_ONLINE_HELP_WINDOW_CONNECTED & (online_help_window->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) == 0){
     return;
   }
 
-  online_help_window->flags &= (~AGS_ONLINE_HELP_WINDOW_CONNECTED);
+  online_help_window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
 #if defined(AGS_WITH_POPPLER)
   g_object_disconnect(G_OBJECT(online_help_window->pdf_drawing_area),
@@ -361,14 +355,6 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 		      online_help_window,
 		      NULL);
 #endif  
-}
-
-gboolean
-ags_online_help_window_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  return(TRUE);
 }
 
 /**

@@ -47,6 +47,8 @@ struct _AgsMachineEditorPad
 {
   GtkBox box;
 
+  AgsChannel *channel;
+  
   GtkExpander *expander;
   
   GList *line;
@@ -61,7 +63,7 @@ struct _AgsMachineEditorPadClass
 
 GType ags_machine_editor_pad_get_type(void);
 
-AgsMachineEditorPad* ags_machine_editor_pad_new();
+AgsMachineEditorPad* ags_machine_editor_pad_new(AgsChannel *channel);
 
 G_END_DECLS
 

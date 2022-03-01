@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -143,20 +143,24 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   g_signal_connect_after((GObject *) midi_preferences, "parent-set",
 			 G_CALLBACK(ags_midi_preferences_parent_set_callback), (gpointer) midi_preferences);
 
-  midi_preferences->flags = 0;
+  midi_preferences->connectable_flags = 0;
 
   /* scrolled window */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-								  NULL);
-  gtk_box_pack_start((GtkBox *) midi_preferences,
-		     (GtkWidget *) scrolled_window,
-		     TRUE, TRUE,
-		     0);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
+			 TRUE);
   
-  midi_preferences->sequencer_editor = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							      0);
-  gtk_container_add((GtkContainer *) scrolled_window,
-		    (GtkWidget *) midi_preferences->sequencer_editor);
+  gtk_box_append((GtkBox *) midi_preferences,
+		 (GtkWidget *) scrolled_window);
+  
+  midi_preferences->sequencer_editor_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+								  0);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) midi_preferences->sequencer_editor_box);
 
   /*  */
   midi_preferences->add = NULL;  
@@ -176,11 +180,11 @@ ags_midi_preferences_connect(AgsConnectable *connectable)
 
   midi_preferences = AGS_MIDI_PREFERENCES(connectable);
 
-  if((AGS_MIDI_PREFERENCES_CONNECTED & (midi_preferences->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_preferences->connectable_flags)) != 0){
     return;
   }
 
-  midi_preferences->flags |= AGS_MIDI_PREFERENCES_CONNECTED;
+  midi_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   if(midi_preferences->add != NULL){
     g_signal_connect(G_OBJECT(midi_preferences->add), "clicked",
@@ -195,11 +199,11 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
 
   midi_preferences = AGS_MIDI_PREFERENCES(connectable);
 
-  if((AGS_MIDI_PREFERENCES_CONNECTED & (midi_preferences->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_preferences->connectable_flags)) == 0){
     return;
   }
 
-  midi_preferences->flags &= (~AGS_MIDI_PREFERENCES_CONNECTED);
+  midi_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   if(midi_preferences->add != NULL){
     g_object_disconnect(G_OBJECT(midi_preferences->add),
@@ -221,12 +225,12 @@ ags_midi_preferences_apply(AgsApplicable *applicable)
 {
   AgsMidiPreferences *midi_preferences;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   midi_preferences = AGS_MIDI_PREFERENCES(applicable);
 
   list =
-    list_start = gtk_container_get_children((GtkContainer *) midi_preferences->sequencer_editor);
+    start_list = ags_midi_preferences_get_sequencer_editor(midi_preferences);
 
   while(list != NULL){
     ags_applicable_apply(AGS_APPLICABLE(list->data));
@@ -234,7 +238,7 @@ ags_midi_preferences_apply(AgsApplicable *applicable)
     list = list->next;
   }
   
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -248,7 +252,7 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   
   AgsApplicationContext *application_context;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   midi_preferences = AGS_MIDI_PREFERENCES(applicable);
   
@@ -261,19 +265,23 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
 
   /* clear */
   list =
-    list_start = gtk_container_get_children((GtkContainer *) midi_preferences->sequencer_editor);
+    start_list = ags_midi_preferences_get_sequencer_editor(midi_preferences);
 
   while(list != NULL){
-    gtk_widget_destroy(GTK_WIDGET(list->data));
+    ags_midi_preferences_remove_sequencer_editor(midi_preferences,
+						 list->data);
 
+    g_object_run_dispose(list->data);
+    g_object_unref(list->data);
+    
     list = list->next;
   }
   
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* reset */
   list =
-    list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+    start_list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     sequencer_editor = ags_sequencer_editor_new();    
@@ -281,26 +289,98 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
     sequencer_editor->sequencer = list->data;
     sequencer_editor->sequencer_thread = (GObject *) ags_sequencer_thread_find_sequencer((AgsSequencerThread *) sequencer_thread,
 											 list->data);
-    gtk_box_pack_start((GtkBox *) midi_preferences->sequencer_editor,
-		       (GtkWidget *) sequencer_editor,
-		       FALSE, FALSE,
-		       0);
+
+    ags_midi_preferences_remove_sequencer_editor(midi_preferences,
+						 sequencer_editor);
     
     ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
     ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
+
     g_signal_connect(sequencer_editor->remove, "clicked",
 		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
+
+    gtk_widget_show((GtkWidget *) sequencer_editor);
     
     list = list->next;
   }
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);
   
-  gtk_widget_show_all((GtkWidget *) midi_preferences->sequencer_editor);
-
   /* unref */
   g_object_unref(main_loop);
+}
+
+/**
+ * ags_midi_preferences_get_sequencer_editor:
+ * @midi_preferences: the #AgsMidi_Preferences
+ * 
+ * Get line member of @midi_preferences.
+ * 
+ * Returns: the #GList-struct containing #AgsSequencerEditor
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_midi_preferences_get_sequencer_editor(AgsMidiPreferences *midi_preferences)
+{
+  g_return_val_if_fail(AGS_IS_MIDI_PREFERENCES(midi_preferences), NULL);
+
+  return(g_list_reverse(g_list_copy(midi_preferences->sequencer_editor)));
+}
+
+/**
+ * ags_midi_preferences_add_sequencer_editor:
+ * @midi_preferences: the #AgsMidi_Preferences
+ * @sequencer_editor: the #AgsSequencerEditor
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @sequencer_editor to @midi_preferences.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_midi_preferences_add_sequencer_editor(AgsMidiPreferences *midi_preferences,
+					  AgsSequencerEditor *sequencer_editor)
+{
+  g_return_if_fail(AGS_IS_MIDI_PREFERENCES(midi_preferences));
+  g_return_if_fail(AGS_IS_SEQUENCER_EDITOR(sequencer_editor));
+
+  if(g_list_find(midi_preferences->sequencer_editor, sequencer_editor) == NULL){
+    midi_preferences->sequencer_editor = g_list_prepend(midi_preferences->sequencer_editor,
+							sequencer_editor);
+    
+    gtk_box_append(midi_preferences->sequencer_editor_box,
+		   sequencer_editor);
+  }
+}
+
+/**
+ * ags_midi_preferences_remove_sequencer_editor:
+ * @midi_preferences: the #AgsMidi_Preferences
+ * @sequencer_editor: the #AgsSequencerEditor
+ * 
+ * Remove @sequencer_editor from @midi_preferences.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_midi_preferences_remove_sequencer_editor(AgsMidiPreferences *midi_preferences,
+					     AgsSequencerEditor *sequencer_editor)
+{
+  g_return_if_fail(AGS_IS_MIDI_PREFERENCES(midi_preferences));
+  g_return_if_fail(AGS_IS_SEQUENCER_EDITOR(sequencer_editor));
+
+  if(g_list_find(midi_preferences->sequencer_editor, sequencer_editor) != NULL){
+    midi_preferences->sequencer_editor = g_list_remove(midi_preferences->sequencer_editor,
+						       sequencer_editor);
+    
+    gtk_box_remove(midi_preferences->sequencer_editor_box,
+		   sequencer_editor);
+  }
 }
 
 /**

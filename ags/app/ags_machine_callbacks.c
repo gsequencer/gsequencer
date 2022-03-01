@@ -22,8 +22,6 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_pad.h>
-#include <ags/app/ags_automation_editor.h>
-#include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_connection_editor.h>
 #include <ags/app/ags_midi_dialog.h>
@@ -461,25 +459,38 @@ ags_machine_midi_import_callback(GAction *action, GVariant *parameter,
 void
 ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine)
 {
-  GtkFileChooserDialog *file_chooser;
-  GtkCheckButton *overwrite;
-  GtkCheckButton *create;
-  GSList *filenames;
+  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
-  file_chooser = GTK_FILE_CHOOSER_DIALOG(dialog);
+  pcm_file_chooser_dialog = AGS_PCM_FILE_CHOOSER_DIALOG(dialog);
 
   if(response == GTK_RESPONSE_ACCEPT){
-    filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data(G_OBJECT(dialog), "overwrite");
-    create = g_object_get_data(G_OBJECT(dialog), "create");
+    GListModel *file;
+    
+    GSList *filename;
 
+    guint i, i_stop;
+    
+    file = gtk_file_chooser_get_files(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
+
+    i_stop = g_list_model_get_n_items(file);
+    
+    for(i = 0; i < i_stop; i++){
+      GFile *current_file;
+      
+      current_file = g_list_model_get_item(file,
+					   i);
+      
+      filename = g_slist_append(filename,
+				g_file_get_path(file));
+    }
+    
     ags_machine_open_files(machine,
-			   filenames,
-			   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(overwrite)),
-			   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(create)));
+			   filename,
+			   gtk_check_button_get_active(pcm_file_chooser_dialog->existing_channel),
+			   gtk_check_button_get_active(pcm_file_chooser_dialog->new_channel));
   }
 
-  gtk_widget_destroy(GTK_WIDGET(file_chooser));
+  gtk_window_destroy((GtkWindow *) pcm_file_chooser_dialog);
 }
 
 void
@@ -531,8 +542,8 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
   AgsChannel *start_input;
   AgsChannel *channel, *next_pad, *next_channel;
 
-  GList *pad_list;
-  GList *line_list;
+  GList *start_pad, *pad;
+  GList *start_line, *line;
   
   guint i;
 
@@ -694,42 +705,52 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
   }
   
   /* resize */
-  if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
     if(audio_channels > audio_channels_old){
-      if(machine->input != NULL){
-	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+      if(machine->input_pad != NULL){
+	pad =
+	  start_pad = ags_machine_get_input_pad(machine);
       
-	while(pad_list != NULL){
-	  line_list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad_list->data)->expander_set);
-	  line_list = g_list_nth(line_list,
-				 audio_channels_old);
+	while(pad != NULL){
+	  start_line = ags_pad_get_line(PAD(pad->data));
+	  line = g_list_nth(start_line,
+			    audio_channels_old);
 	
 	  for(i = 0; i < audio_channels - audio_channels_old; i++){
-	    ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
+	    ags_connectable_connect(AGS_CONNECTABLE(line->data));
 
-	    line_list = line_list->next;
+	    line = line->next;
 	  }
+
+	  g_list_free(start_line);
 	
-	  pad_list = pad_list->next;
+	  pad = pad->next;
 	}
+
+	g_list_free(start_pad);
       }
 
-      if(machine->output != NULL){
-	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+      if(machine->output_pad != NULL){
+	pad =
+	  start_pad = ags_machine_get_output_pad(machine);
       
-	while(pad_list != NULL){
-	  line_list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad_list->data)->expander_set);
-	  line_list = g_list_nth(line_list,
-				 audio_channels_old);
+	while(pad != NULL){
+	  start_line = ags_pad_get_line(PAD(pad->data));
+	  line = g_list_nth(start_line,
+			    audio_channels_old);
 	
 	  for(i = 0; i < audio_channels - audio_channels_old; i++){
-	    ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
+	    ags_connectable_connect(AGS_CONNECTABLE(line->data));
 
-	    line_list = line_list->next;
+	    line = line->next;
 	  }
+
+	  g_list_free(start_line);
 	  
-	  pad_list = pad_list->next;
+	  pad = pad->next;
 	}
+
+	g_list_free(start_pad);
       }
     }
   }
@@ -747,7 +768,7 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
 
-  GList *pad_list;
+  GList *start_pad, *pad;
 
   guint audio_channels;
   guint i;
@@ -876,34 +897,34 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
   }
   
   /* resize */
-  if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
     if(pads > pads_old){
       if(g_type_is_a(channel_type,
 		     AGS_TYPE_INPUT)){
-	if(machine->input != NULL){
-	  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-	  pad_list = g_list_nth(pad_list,
-				pads_old);
+	if(machine->input_pad != NULL){
+	  start_pad = ags_machine_get_input_pad(machine);
+	  pad = g_list_nth(start_pad,
+			   pads_old);
       
-	  while(pad_list != NULL){
-	    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+	  while(pad != NULL){
+	    ags_connectable_connect(AGS_CONNECTABLE(pad->data));
 	
-	    pad_list = pad_list->next;
+	    pad = pad->next;
 	  }
 	}
       }
 
       if(g_type_is_a(channel_type,
 		     AGS_TYPE_OUTPUT)){
-	if(machine->output != NULL){
-	  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-	  pad_list = g_list_nth(pad_list,
-				pads_old);
+	if(machine->output_pad != NULL){
+	  start_pad = ags_machine_get_output_pad(machine);
+	  pad = g_list_nth(pad,
+			   pads_old);
       
-	  while(pad_list != NULL){
-	    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+	  while(pad != NULL){
+	    ags_connectable_connect(AGS_CONNECTABLE(pad->data));
 	
-	    pad_list = pad_list->next;
+	    pad = pad->next;
 	  }
 	}
       }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_PATTERN_ENVELOPE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PATTERN_ENVELOPE))
 #define AGS_PATTERN_ENVELOPE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PATTERN_ENVELOPE, AgsPatternEnvelopeClass))
 
-#define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "0.8.5"
-#define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "CEST 16-06-2017 11:29"
+#define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "4.0.0"
+#define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "Tue Mar 01 12:27:51 UTC 2022"
 
 typedef struct _AgsPatternEnvelope AgsPatternEnvelope;
 typedef struct _AgsPatternEnvelopeClass AgsPatternEnvelopeClass;
@@ -64,7 +64,7 @@ typedef enum{
 
 struct _AgsPatternEnvelope
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -86,19 +86,19 @@ struct _AgsPatternEnvelope
   GtkSpinButton *x_start;
   GtkSpinButton *x_end;
   
-  GtkHScale *attack_x;
-  GtkHScale *attack_y;
+  GtkScale *attack_x;
+  GtkScale *attack_y;
   
-  GtkHScale *decay_x;
-  GtkHScale *decay_y;
+  GtkScale *decay_x;
+  GtkScale *decay_y;
 
-  GtkHScale *sustain_x;
-  GtkHScale *sustain_y;
+  GtkScale *sustain_x;
+  GtkScale *sustain_y;
 
-  GtkHScale *release_x;
-  GtkHScale *release_y;
+  GtkScale *release_x;
+  GtkScale *release_y;
 
-  GtkHScale *ratio;
+  GtkScale *ratio;
 
   GtkDialog *rename;
   
@@ -110,7 +110,7 @@ struct _AgsPatternEnvelope
 
 struct _AgsPatternEnvelopeClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_pattern_envelope_get_type(void);

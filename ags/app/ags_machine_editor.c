@@ -20,11 +20,6 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_machine_editor_callbacks.h>
 
-#include <ags/app/ags_listing_editor.h>
-#include <ags/app/ags_property_collection_editor.h>
-#include <ags/app/ags_link_collection_editor.h>
-#include <ags/app/ags_resize_editor.h>
-
 #include <ags/i18n.h>
 
 void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
@@ -127,6 +122,7 @@ void
 ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   /* GObjectClass */
@@ -214,10 +210,10 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   gtk_grid_attach((GtkGrid *) machine_editor,
 		  (GtkWidget *) notebook,
 		  0, 0,
-		  1, 1,);
+		  1, 1);
 
   /* AgsOutput */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("output")));
@@ -227,7 +223,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 				machine_editor->output_editor_listing);
   
   /* AgsInput */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("input")));
@@ -237,7 +233,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 				machine_editor->input_editor_listing);
 
   /* AgsOutput link editor */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("link output")));
@@ -247,7 +243,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 				machine_editor->output_editor_collection);
 
   /* AgsInput link editor */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("link input")));
@@ -257,7 +253,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 				machine_editor->input_editor_collection);
 
   /* resize editor */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_notebook_append_page(notebook, (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 
@@ -319,11 +315,11 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  if((AGS_MACHINE_EDITOR_CONNECTED & (machine_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) != 0){
     return;
   }
 
-  machine_editor->flags |= AGS_MACHINE_EDITOR_CONNECTED;
+  machine_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   /* AgsMachineEditor tabs */
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor->output_editor_listing));
@@ -342,11 +338,11 @@ ags_machine_editor_disconnect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  if((AGS_MACHINE_EDITOR_CONNECTED & (machine_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) == 0){
     return;
   }
   
-  machine_editor->flags &= (~AGS_MACHINE_EDITOR_CONNECTED);
+  machine_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   /* AgsMachineEditor tabs */
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_editor_listing));
@@ -381,11 +377,11 @@ ags_machine_editor_apply(AgsApplicable *applicable)
 
   machine_editor = AGS_MACHINE_EDITOR(applicable);
 
-  ags_applicable_set_apply(AGS_APPLICABLE(machine_editor->output_editor_listing));
-  ags_applicable_set_apply(AGS_APPLICABLE(machine_editor->output_editor_collection));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_editor_listing));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_editor_collection));
 
-  ags_applicable_set_apply(AGS_APPLICABLE(machine_editor->input_editor_listing));
-  ags_applicable_set_apply(AGS_APPLICABLE(machine_editor->input_editor_collection));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_editor_listing));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_editor_collection));
 
   ags_applicable_apply(AGS_APPLICABLE(machine_editor->resize_editor));
 }
@@ -397,11 +393,11 @@ ags_machine_editor_reset(AgsApplicable *applicable)
 
   machine_editor = AGS_MACHINE_EDITOR(applicable);
 
-  ags_applicable_set_reset(AGS_APPLICABLE(machine_editor->output_editor_listing));
-  ags_applicable_set_reset(AGS_APPLICABLE(machine_editor->output_editor_collection));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_editor_listing));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_editor_collection));
 
-  ags_applicable_set_reset(AGS_APPLICABLE(machine_editor->input_editor_listing));
-  ags_applicable_set_reset(AGS_APPLICABLE(machine_editor->input_editor_collection));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_editor_listing));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_editor_collection));
 
   ags_applicable_reset(AGS_APPLICABLE(machine_editor->resize_editor));
 }

@@ -20,15 +20,11 @@
 
 #include "ags_meta_data_window.h"
 
-gboolean ags_meta_data_window_delete_event(GtkWidget *widget, GdkEventAny *event);
-
 G_DEFINE_TYPE(AgsMetaDataWindow, ags_meta_data_window, GTK_TYPE_WINDOW)
 
 static void
 ags_meta_data_window_class_init(AgsMetaDataWindowClass *klass)
 {
-  GtkWidgetClass *widget;
-
   gtk_widget_class_set_template_from_resource(klass,
                                               "/org/nongnu/gsequencer/ags/app/ui/ags_meta_data_window.ui");
   gtk_widget_class_bind_template_child(klass, AgsMetaDataWindow, author);
@@ -42,25 +38,15 @@ ags_meta_data_window_class_init(AgsMetaDataWindowClass *klass)
                                         license);
   gtk_widget_class_bind_template_child(klass, AgsMetaDataWindow,
                                         comment);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) klass;
-
-  widget->delete_event = ags_meta_data_window_delete_event;
 }
 
 static void
 ags_meta_data_window_init(AgsMetaDataWindow *self)
 {
+  gtk_window_set_hide_on_close(self,
+			       TRUE);
+  
   gtk_widget_init_template(self);
-}
-
-gboolean
-ags_meta_data_window_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  return(TRUE);
 }
 
 AgsMetaDataWindow* ags_meta_data_window_new()

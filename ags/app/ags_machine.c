@@ -615,6 +615,7 @@ ags_machine_init(AgsMachine *machine)
   machine->build_id = AGS_MACHINE_DEFAULT_BUILD_ID;
 
   machine->flags = 0;
+  machine->connectable_flags = 0;
   machine->file_input_flags = 0;
   machine->mapping_flags = 0;
   machine->connection_flags = 0;
@@ -1084,11 +1085,11 @@ ags_machine_connect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
-  if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
     return;
   }
 
-  machine->flags |= AGS_MACHINE_CONNECTED;
+  machine->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect_after(G_OBJECT(machine), "map-recall",
 			 G_CALLBACK(ags_machine_map_recall_callback), NULL);
@@ -1158,11 +1159,11 @@ ags_machine_disconnect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
-  if((AGS_MACHINE_CONNECTED & (machine->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) == 0){
     return;
   }
 
-  machine->flags &= (~AGS_MACHINE_CONNECTED);
+  machine->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(machine),
 		      "any_signal::map-recall",

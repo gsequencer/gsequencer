@@ -61,7 +61,7 @@ struct _AgsMachineEditorLineClass
 
 GType ags_machine_editor_line_get_type(void);
 
-AgsMachineEditorLine* ags_machine_editor_line_new();
+AgsMachineEditorLine* ags_machine_editor_line_new(AgsChannel *channel);
 
 G_END_DECLS
 

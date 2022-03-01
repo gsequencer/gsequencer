@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,7 +91,7 @@ ags_envelope_info_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_envelope_info = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_envelope_info = g_type_register_static(GTK_TYPE_BOX,
 						    "AgsEnvelopeInfo", &ags_envelope_info_info,
 						    0);
 

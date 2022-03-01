@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_sequencer_editor.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_PREFERENCES                (ags_midi_preferences_get_type())
@@ -41,17 +43,16 @@ G_BEGIN_DECLS
 typedef struct _AgsMidiPreferences AgsMidiPreferences;
 typedef struct _AgsMidiPreferencesClass AgsMidiPreferencesClass;
 
-typedef enum{
-  AGS_MIDI_PREFERENCES_CONNECTED    = 1,
-}AgsMidiPreferencesFlags;
-
 struct _AgsMidiPreferences
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
+
+  GList *sequencer_editor;
   
-  GtkBox *sequencer_editor;
+  GtkBox *sequencer_editor_box;
+
   GtkButton *add;
 };
 
@@ -61,6 +62,12 @@ struct _AgsMidiPreferencesClass
 };
 
 GType ags_midi_preferences_get_type(void);
+
+GList* ags_midi_preferences_get_sequencer_editor(AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_sequencer_editor(AgsMidiPreferences *midi_preferences,
+					       AgsSequencerEditor *sequencer_editor);
+void ags_midi_preferences_remove_sequencer_editor(AgsMidiPreferences *midi_preferences,
+						  AgsSequencerEditor *sequencer_editor);
 
 AgsMidiPreferences* ags_midi_preferences_new();
 

@@ -38,11 +38,13 @@ G_BEGIN_DECLS
 #define AGS_IS_NAVIGATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_NAVIGATION))
 #define AGS_NAVIGATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NAVIGATION, AgsNavigationClass))
 
+#define AGS_NAVIGATION_DEFAULT_BPM (120.0)
 #define AGS_NAVIGATION_DEFAULT_TACT_STEP (1.0)
 #define AGS_NAVIGATION_SEEK_STEPS (1.0)
 #define AGS_NAVIGATION_REWIND_STEPS (4.0)
 
-#define AGS_NAVIGATION_MEDIA_CONTROL_PADDING (6)
+#define AGS_NAVIGATION_DURATION_ZERO "0000:00.000"
+#define AGS_NAVIGATION_MAX_POSITION_TACT (16 * 1200)
 
 typedef struct _AgsNavigation AgsNavigation;
 typedef struct _AgsNavigationClass AgsNavigationClass;
@@ -64,7 +66,6 @@ struct _AgsNavigation
   gdouble start_tact;
   gdouble note_offset;
 
-  GtkImage *expander_image;
   GtkToggleButton *expander;
 
   GtkSpinButton *bpm;
@@ -85,6 +86,8 @@ struct _AgsNavigation
   GtkLabel *duration_time;
   GtkSpinButton *duration_tact;
 
+  GtkBox *expansion_box;
+  
   GtkSpinButton *loop_left_tact;
   GtkSpinButton *loop_right_tact;
 

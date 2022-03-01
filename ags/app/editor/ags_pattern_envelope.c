@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -93,7 +93,7 @@ ags_pattern_envelope_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_pattern_envelope = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_pattern_envelope = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsPatternEnvelope", &ags_pattern_envelope_info,
 						       0);
 
@@ -470,7 +470,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
   
-  pattern_envelope->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->attack_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_x,
@@ -480,7 +480,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     FALSE, FALSE,
 		     0);
 
-  pattern_envelope->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->attack_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
@@ -512,7 +512,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
-  pattern_envelope->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->decay_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_x,
@@ -522,7 +522,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     FALSE, FALSE,
 		     0);
 
-  pattern_envelope->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->decay_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
@@ -554,7 +554,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
-  pattern_envelope->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->sustain_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_x,
@@ -564,7 +564,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     FALSE, FALSE,
 		     0);
 
-  pattern_envelope->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->sustain_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
@@ -596,7 +596,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
-  pattern_envelope->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->release_x = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_x,
@@ -606,7 +606,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     FALSE, FALSE,
 		     0);
 
-  pattern_envelope->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->release_y = (GtkScale *) gtk_scale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
@@ -629,7 +629,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  pattern_envelope->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->ratio = (GtkScale *) gtk_scale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,

@@ -37,6 +37,7 @@ void ags_midi_dialog_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_midi_dialog_dispose(GObject *gobject);
 
 void ags_midi_dialog_connect(AgsConnectable *connectable);
 void ags_midi_dialog_disconnect(AgsConnectable *connectable);
@@ -44,7 +45,7 @@ void ags_midi_dialog_disconnect(AgsConnectable *connectable);
 void ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_dialog_apply(AgsApplicable *applicable);
 void ags_midi_dialog_reset(AgsApplicable *applicable);
-void ags_midi_dialog_show_all(GtkWidget *widget);
+void ags_midi_dialog_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_midi_dialog
@@ -128,6 +129,8 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   gobject->set_property = ags_midi_dialog_set_property;
   gobject->get_property = ags_midi_dialog_get_property;
 
+  gobject->dispose = ags_midi_dialog_dispose;
+  
   /* properties */
   /**
    * AgsMachine:machine:
@@ -148,8 +151,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) midi_dialog;
 
-  widget->show_all = ags_midi_dialog_show_all;
-  //  widget->delete_event = ags_midi_dialog_delete_event;
+  widget->show = ags_midi_dialog_show;
 }
 
 void
@@ -180,6 +182,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		       i18n("MIDI connection"));
 
   midi_dialog->flags = 0;
+  midi_dialog->connectable_flags = 0;
 
   midi_dialog->version = AGS_MIDI_DIALOG_DEFAULT_VERSION;
   midi_dialog->build_id = AGS_MIDI_DIALOG_DEFAULT_BUILD_ID;
@@ -516,20 +519,32 @@ ags_midi_dialog_get_property(GObject *gobject,
 }
 
 void
+ags_midi_dialog_dispose(GObject *gobject)
+{
+  AgsMidiDialog *midi_dialog;
+
+  midi_dialog = AGS_MIDI_DIALOG(gobject);
+
+  if(midi_dialog->machine != NULL){
+    midi_dialog->machine->midi_dialog = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_midi_dialog_parent_class)->dispose(gobject);
+}
+
+void
 ags_midi_dialog_connect(AgsConnectable *connectable)
 {
   AgsMidiDialog *midi_dialog;
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
-  if((AGS_MIDI_DIALOG_CONNECTED & (midi_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_dialog->connectable_flags)) != 0){
     return;
   }
 
-  midi_dialog->flags |= AGS_MIDI_DIALOG_CONNECTED;
-
-  g_signal_connect((GObject *) midi_dialog, "delete-event",
-		   G_CALLBACK(ags_midi_dialog_delete_event), (gpointer) midi_dialog);
+  midi_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* applicable */
   g_signal_connect((GObject *) midi_dialog->apply, "clicked",
@@ -549,11 +564,11 @@ ags_midi_dialog_disconnect(AgsConnectable *connectable)
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
-  if((AGS_MIDI_DIALOG_CONNECTED & (midi_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_dialog->connectable_flags)) == 0){
     return;
   }
 
-  midi_dialog->flags &= (~AGS_MIDI_DIALOG_CONNECTED);
+  midi_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* applicable */
   g_object_disconnect((GObject *) midi_dialog->apply,
@@ -758,22 +773,22 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 }
 
 void
-ags_midi_dialog_show_all(GtkWidget *widget)
+ags_midi_dialog_show(GtkWidget *widget)
 {
   AgsMidiDialog *midi_dialog;
 
   midi_dialog = (AgsMidiDialog *) widget;
   
   if((AGS_MIDI_DIALOG_IO_OPTIONS & (midi_dialog->flags)) != 0){
-    gtk_widget_show_all((GtkWidget *) midi_dialog->io_options);
+    gtk_widget_show((GtkWidget *) midi_dialog->io_options);
   }
 
   if((AGS_MIDI_DIALOG_MAPPING & (midi_dialog->flags)) != 0){
-    gtk_widget_show_all((GtkWidget *) midi_dialog->mapping);
+    gtk_widget_show((GtkWidget *) midi_dialog->mapping);
   }
 
   if((AGS_MIDI_DIALOG_DEVICE & (midi_dialog->flags)) != 0){
-    gtk_widget_show_all((GtkWidget *) midi_dialog->device);
+    gtk_widget_show((GtkWidget *) midi_dialog->device);
   }
 
   gtk_widget_show(widget);

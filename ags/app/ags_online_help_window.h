@@ -48,15 +48,11 @@ G_BEGIN_DECLS
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
 
-typedef enum{
-  AGS_ONLINE_HELP_WINDOW_CONNECTED     = 1,
-}AgsOnlineHelpWindowFlags;
-
 struct _AgsOnlineHelpWindow
 {
   GtkWindow window;
 
-  guint flags;
+  guint connectable_flags;
   
   GtkButton *home;
 

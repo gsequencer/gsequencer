@@ -37,7 +37,7 @@ ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_edit
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor));
   ags_applicable_apply(AGS_APPLICABLE(machine_editor));
 
-  gtk_widget_destroy((GtkWidget *) machine_editor);
+  gtk_window_destroy((GtkWindow *) machine_editor);
 
   return(0);
 }
@@ -45,7 +45,7 @@ ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_edit
 int
 ags_machine_editor_cancel_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
-  gtk_widget_destroy((GtkWidget *) machine_editor);
+  gtk_window_destroy((GtkWindow *) machine_editor);
 
   return(0);
 }
