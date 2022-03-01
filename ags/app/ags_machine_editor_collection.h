@@ -65,7 +65,7 @@ struct _AgsMachineEditorCollectionClass
 
 GType ags_machine_editor_collection_get_type(void);
 
-AgsMachineEditorCollection* ags_machine_editor_collection_new();
+AgsMachineEditorCollection* ags_machine_editor_collection_new(GType channel_type);
 
 G_END_DECLS
 

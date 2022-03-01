@@ -2656,10 +2656,11 @@ libgsequencer_h_sources = \
 	ags/app/ags_online_help_window_callbacks.h \
 	ags/app/ags_osc_server_preferences_callbacks.h \
 	ags/app/ags_osc_server_preferences.h \
+	ags/app/ags_pad.h \
 	ags/app/ags_pad_callbacks.h \
 	ags/app/ags_pad_editor_callbacks.h \
 	ags/app/ags_pad_editor.h \
-	ags/app/ags_pad.h \
+	ags/app/ags_pcm_file_chooser_dialog.h \
 	ags/app/ags_performance_preferences_callbacks.h \
 	ags/app/ags_performance_preferences.h \
 	ags/app/ags_playback_window_callbacks.h \
@@ -2779,6 +2780,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_pad_callbacks.c \
 	ags/app/ags_pad_editor.c \
 	ags/app/ags_pad_editor_callbacks.c \
+	ags/app/ags_pcm_file_chooser_dialog.c \
 	ags/app/ags_performance_preferences.c \
 	ags/app/ags_performance_preferences_callbacks.c \
 	ags/app/ags_playback_window.c \

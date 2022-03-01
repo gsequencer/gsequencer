@@ -293,6 +293,78 @@ ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
   machine_selector->flags &= (~flags);
 }
 
+/**
+ * ags_machine_selector_get_machine_radio_button:
+ * @machine_selector: the #AgsMachineSelector
+ * 
+ * Get effect line of @machine_selector.
+ * 
+ * Returns: the #GList-struct containing #AgsMachineRadioButton
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_selector)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector), NULL);
+
+  return(g_list_reverse(g_list_copy(machine_selector->machine_radio_button)));
+}
+
+/**
+ * ags_machine_selector_add_machine_radio_button:
+ * @machine_selector: the #AgsMachineSelector
+ * @machine_radio_button: the #AgsMachineRadioButton
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @machine_radio_button to @machine_selector.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_machine_selector_add_machine_radio_button(AgsMachineSelector *machine_selector,
+					      AgsMachineRadioButton *machine_radio_button)
+{
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  g_return_if_fail(AGS_IS_MACHINE_RADIO_BUTTON(machine_radio_button));
+
+  if(g_list_find(machine_selector->machine_radio_button, machine_radio_button) == NULL){
+    machine_selector->machine_radio_button = g_list_prepend(machine_selector->machine_radio_button,
+							    machine_radio_button);
+    
+    gtk_box_append(machine_selector,
+		   machine_radio_button);
+  }
+}
+
+/**
+ * ags_machine_selector_remove_machine_radio_button:
+ * @machine_selector: the #AgsMachineSelector
+ * @machine_radio_button: the #AgsMachineRadioButton
+ * 
+ * Remove @machine_radio_button to @machine_selector.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_selector,
+						 AgsMachineRadioButton *machine_radio_button)
+{
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  g_return_if_fail(AGS_IS_MACHINE_RADIO_BUTTON(machine_radio_button));
+
+  if(g_list_find(machine_selector->machine_radio_button, machine_radio_button) != NULL){
+    machine_selector->machine_radio_button = g_list_remove(machine_selector->machine_radio_button,
+							   machine_radio_button);
+    
+    gtk_box_remove(machine_selector,
+		   machine_radio_button);
+  }
+}
+
 void
 ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit)
 {

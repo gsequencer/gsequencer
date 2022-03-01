@@ -78,8 +78,12 @@ struct _AgsWindow
   
   GtkPaned *paned;
 
-  GtkBox *machines;
+  GList *machine;
+  
+  GtkBox *machine_box;
+
   GList *machine_counter;
+
   AgsMachine *selected;
 
   AgsCompositeEditor *composite_editor;
@@ -109,6 +113,12 @@ GType ags_window_get_type(void);
 GList* ags_window_standard_machine_counter_alloc();
 AgsMachineCounter* ags_window_find_machine_counter(AgsWindow *window,
 						   GType machine_type);
+
+GList* ags_window_get_machine(AgsWindow *window);
+void ags_window_add_machine(AgsWindow *window,
+			    AgsMachine *machine);
+void ags_window_remove_machine(AgsWindow *window,
+			       AgsMachine *machine);
 
 void ags_window_increment_machine_counter(AgsWindow *window,
 					  GType machine_type);

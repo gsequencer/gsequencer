@@ -24,7 +24,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_machine_editor.h>
-#include <ags/app/ags_line_editor.h>
+#include <ags/app/ags_machine_editor_line.h>
 
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
 void ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -46,7 +46,7 @@ void ags_link_editor_reset(AgsApplicable *applicable);
  * @include: ags/app/ags_link_editor.h
  *
  * #AgsLinkEditor is a composite widget to modify links. A link editor 
- * should be packed by a #AgsLineEditor.
+ * should be packed by a #AgsMachineEditorLine.
  */
 
 static gpointer ags_link_editor_parent_class = NULL;
@@ -162,7 +162,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 
   link_editor->audio_file = NULL;
 
-  link_editor->file_chooser = NULL;
+  link_editor->pcm_file_chooser_dialog = NULL;
 }
 
 void
@@ -223,7 +223,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
 				   &iter)){
     AgsMachine *link_machine, *machine;
     AgsMachineEditor *machine_editor;
-    AgsLineEditor *line_editor;
+    AgsMachineEditorLine *machine_editor_line;
 
     GtkTreeModel *model;
 
@@ -236,16 +236,16 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     AgsApplicationContext *application_context;
     
-    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
-							  AGS_TYPE_LINE_EDITOR));
+    machine_editor_line = AGS_MACHINE_EDITOR_LINE(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+									  AGS_TYPE_MACHINE_EDITOR_LINE));
 
-    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(line_editor),
+    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(machine_editor_line),
 								AGS_TYPE_MACHINE_EDITOR));
 
     machine = machine_editor->machine;
     
     /* get channel */
-    channel = line_editor->channel;
+    channel = machine_editor_line->channel;
  
     /* get audio */
     g_object_get(channel,
@@ -348,7 +348,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 {
   AgsLinkEditor *link_editor;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;
 
   GtkTreeModel *model;
 
@@ -356,10 +356,10 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
   link_editor = AGS_LINK_EDITOR(applicable);
 
-  line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
-							AGS_TYPE_LINE_EDITOR));
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+									AGS_TYPE_MACHINE_EDITOR_LINE));
 
-  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(line_editor),
+  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(machine_editor_line),
 							      AGS_TYPE_MACHINE_EDITOR));
 
   if(machine_editor == NULL){
@@ -380,7 +380,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
     machine = machine_editor->machine;
 
-    channel = line_editor->channel;
+    channel = machine_editor_line->channel;
  
     /* get audio and channel's link */
     g_object_get(channel,
@@ -449,8 +449,8 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
     /* set file link */
     if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
-     ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
-      (AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0) &&
+       ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
+	(AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0) &&
        AGS_IS_INPUT(channel)){
       AgsFileLink *file_link;
       

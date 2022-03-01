@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,31 +42,48 @@ void ags_machine_map_recall_callback(AgsMachine *machine,
 				     gpointer user_data);
 
 /* controls */
-int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);
+void ags_machine_move_up_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine);
+void ags_machine_move_down_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine);
+void ags_machine_hide_callback(GAction *action, GVariant *parameter,
+			       AgsMachine *machine);
+void ags_machine_show_callback(GAction *action, GVariant *parameter,
+			       AgsMachine *machine);
+void ags_machine_destroy_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine);
+void ags_machine_rename_callback(GAction *action, GVariant *parameter,
+				 AgsMachine *machine);
+void ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
+				       AgsMachine *machine);
+void ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
+					   AgsMachine *machine);
+void ags_machine_properties_callback(GAction *action, GVariant *parameter,
+				     AgsMachine *machine);
+void ags_machine_sticky_controls_callback(GAction *action, GVariant *parameter,
+					  AgsMachine *machine);
 
-void ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_hide_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_reposition_audio_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_copy_pattern_callback(GAction *action, GVariant *parameter,
+				       AgsMachine *machine);
+void ags_machine_paste_pattern_callback(GAction *action, GVariant *parameter,
+					AgsMachine *machine);
+void ags_machine_envelope_callback(GAction *action, GVariant *parameter,
+				   AgsMachine *machine);
 
-void ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
+					   AgsMachine *machine);
+void ags_machine_midi_connection_callback(GAction *action, GVariant *parameter,
+					  AgsMachine *machine);
 
-void ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_audio_export_callback(GAction *action, GVariant *parameter,
+				       AgsMachine *machine);
+void ags_machine_midi_export_callback(GAction *action, GVariant *parameter,
+				      AgsMachine *machine);
 
-void ags_machine_popup_midi_export_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_wave_export_callback(GtkWidget *widget, AgsMachine *machine);
-
-void ags_machine_popup_midi_import_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_popup_wave_import_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_audio_import_callback(GAction *action, GVariant *parameter,
+				       AgsMachine *machine);
+void ags_machine_midi_import_callback(GAction *action, GVariant *parameter,
+				      AgsMachine *machine);
 
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 

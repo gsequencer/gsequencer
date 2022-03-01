@@ -79,7 +79,7 @@ ags_line_member_editor_entry_init(AgsLineMemberEditorEntry *line_member_editor_e
   gtk_box_append(line_member_editor_entry,
 		 (GtkWidget *) line_member_editor_entry->check_button);
 
-  line_member_editor_entry->label = (GtkLabel *) gtk_label_new(str);
+  line_member_editor_entry->label = (GtkLabel *) gtk_label_new(NULL);
   gtk_box_append(line_member_editor_entry,
 		 (GtkWidget *) line_member_editor_entry->label);
 }

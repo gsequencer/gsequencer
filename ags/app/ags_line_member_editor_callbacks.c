@@ -29,7 +29,7 @@
 #include <ags/app/ags_effect_line.h>
 #include <ags/app/ags_line_member.h>
 #include <ags/app/ags_machine_editor.h>
-#include <ags/app/ags_line_editor.h>
+#include <ags/app/ags_machine_editor_line.h>
 #include <ags/app/ags_lv2_browser.h>
 #if defined(AGS_WITH_VST3)
 #include <ags/app/ags_vst3_browser.h>
@@ -96,11 +96,11 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 {
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;
   AgsPluginBrowser *plugin_browser;
     
-  GList *pad, *pad_start;
-  GList *list, *list_start;
+  GList *start_pad, *pad;
+  GList *start_line, *line;
   GList *control_type_name;
 
   gchar *plugin_name;
@@ -118,8 +118,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
     {
       machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								    AGS_TYPE_MACHINE_EDITOR);
-      line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
-							      AGS_TYPE_LINE_EDITOR);
+      machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
+									     AGS_TYPE_MACHINE_EDITOR_LINE);
 
       machine = machine_editor->machine;
 
@@ -132,7 +132,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	position = 1;
       }
       
-      if(AGS_IS_OUTPUT(line_editor->channel)){
+      if(AGS_IS_OUTPUT(machine_editor_line->channel)){
 	is_output = TRUE;
       }else{
 	is_output = FALSE;
@@ -162,98 +162,53 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       if(plugin_browser != NULL &&
 	 plugin_browser->active_browser != NULL){
-	GList *description, *description_start;
-	GList *port_control, *port_control_start;
+	GList *start_port_editor, *port_editor;
 
-	gchar *controls;
-
-	/* get plugin browser */
-	description = 
-	  description_start = NULL;
-	port_control_start = NULL;
+	/* get port editor */
+	start_port_editor = NULL;
 		
 	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-	  description_start = 
-	    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	  port_editor =
+	    start_port_editor = ags_ladspa_browser_get_port_editor(plugin_browser->active_browser);
 	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-	  description_start = 
-	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
+	  port_editor =
+	    start_port_editor = ags_lv2_browser_get_port_editor(plugin_browser->active_browser);
 #if defined(AGS_WITH_VST3)
 	}else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
-	  description_start = 
-	    description = gtk_container_get_children((GtkContainer *) AGS_VST3_BROWSER(plugin_browser->active_browser)->description);
+	  port_editor =
+	    start_port_editor = ags_vst3_browser_get_port_editor(plugin_browser->active_browser);
 #endif
 	}else{
 	  g_message("ags_line_member_editor_callbacks.c unsupported plugin browser");
 	}
-
-	/* get port description */
-	if(description != NULL){
-	  description = g_list_last(description);
 	  
-	  port_control_start =
-	    port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
+	while(port_editor != NULL){
+	  GtkTreeModel *model;
 	  
-	  if(port_control != NULL){
-	    while(port_control != NULL){
-	      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
+	  GtkTreeIter iter;
 
-	      if(!g_ascii_strncasecmp(controls,
-				      "led",
-				      4)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsLed");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "vertical indicator",
-					    19)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsVIndicator");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "horizontal indicator",
-					    19)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsHIndicator");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "spin button",
-					    12)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkSpinButton");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "dial",
-					    5)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsDial");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "vertical scale",
-					    15)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkVScale");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "horizontal scale",
-					    17)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkHScale");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "check-button",
-					    13)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkCheckButton");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "toggle button",
-					    14)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkToggleButton");
-	      }
+	  gchar *control;
+
+	  model = gtk_combo_box_get_model(AGS_PORT_EDITOR(port_editor->data)->port_control);
+
+	  gtk_combo_box_get_active_iter(AGS_PORT_EDITOR(port_editor->data)->port_control,
+					&iter);
+
+	  control = NULL;
+
+	  gtk_tree_model_get(model,
+			     &iter,
+			     0, &control,
+			     -1);
+	  
+	  control_type_name = g_list_prepend(control_type_name,
+					     control);
 	      
-	      port_control = port_control->next;
-	      port_control = port_control->next;
-	    }
-	  }
-
-	  /* free lists */
-	  g_list_free(description_start);
-	  g_list_free(port_control_start);
+	  port_editor = port_editor->next;
 	}
+
+	/* free lists */
+	g_list_free(start_port_editor);
       }
 
       /* retrieve plugin */
@@ -261,54 +216,54 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
       effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
       
       if(!has_bridge){	
-	AgsLine *line;
+	AgsLine *current_line;
 	
 	/* find pad and line */
-	line = NULL;
+	current_line = NULL;
 	
 	if(is_output){
-	  pad_start = 
-	    pad = gtk_container_get_children((GtkContainer *) machine_editor->machine->output);
+	    pad =
+	      start_pad = ags_machine_get_output_pad(machine_editor->machine);
 	}else{
-	  pad_start = 
-	    pad = gtk_container_get_children((GtkContainer *) machine_editor->machine->input);
+	    pad =
+	      start_pad = ags_machine_get_input_pad(machine_editor->machine);
 	}
 
 	pad = g_list_nth(pad,
-			 line_editor->channel->pad);
+			 machine_editor_line->channel->pad);
 
 	if(pad != NULL){
-	  list_start =
-	    list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
+	  line =
+	    start_line = ags_pad_get_line(AGS_PAD(pad->data));
 
-	  while(list != NULL){
-	    if(AGS_LINE(list->data)->channel == line_editor->channel){
+	  while(line != NULL){
+	    if(AGS_LINE(line->data)->channel == machine_editor_line->channel){
 	      break;
 	    }
 
-	    list = list->next;
+	    line = line->next;
 	  }
 
-	  if(list != NULL){
-	    line = AGS_LINE(list->data);
-	    g_list_free(list_start);
+	  if(line != NULL){
+	    current_line = AGS_LINE(line->data);
+	    g_list_free(start_line);
 	  }
 	}
 
-	g_list_free(pad_start);
+	g_list_free(start_pad);
 
 	if(filename != NULL &&
 	   effect != NULL &&
-	   line != NULL){
+	   current_line != NULL){
 	  guint audio_channel;
 	  guint pad;
 
-	  g_object_get(line->channel,
+	  g_object_get(current_line->channel,
 		       "audio-channel", &audio_channel,
 		       "pad", &pad,
 		       NULL);
 	  
-	  ags_line_add_plugin(line,
+	  ags_line_add_plugin(current_line,
 			      control_type_name,
 			      ags_recall_container_new(), ags_recall_container_new(),
 			      plugin_name,
@@ -324,55 +279,55 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	g_free(effect);
       }else{
 	AgsEffectBridge *effect_bridge;
-	AgsEffectLine *effect_line;
+	AgsEffectLine *current_effect_line;
 	
 	effect_bridge = (AgsEffectBridge *) machine->bridge;
-	effect_line = NULL;
+	current_effect_line = NULL;
 	
 	/* find effect pad and effect line */
 	if(is_output){
-	  pad_start = 
-	    pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	  pad =
+	    start_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
 	}else{
-	  pad_start = 
-	    pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	  pad =
+	    start_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 	}
 
 	pad = g_list_nth(pad,
-			 line_editor->channel->pad);
+			 machine_editor_line->channel->pad);
 
 	if(pad != NULL){
-	  list_start =
-	    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->grid);
+	  line =
+	    start_line = ags_effect_pad_get_effect_line(AGS_EFFECT_PAD(pad->data));
 
-	  while(list != NULL){
-	    if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
+	  while(line != NULL){
+	    if(AGS_EFFECT_LINE(line->data)->channel == machine_editor_line->channel){
 	      break;
 	    }
 
-	    list = list->next;
+	    line = line->next;
 	  }
 
-	  if(list != NULL){
-	    effect_line = AGS_EFFECT_LINE(list->data);
-	    g_list_free(list_start);
+	  if(line != NULL){
+	    current_effect_line = AGS_EFFECT_LINE(line->data);
+	    g_list_free(start_line);
 	  }
 	}
 
-	g_list_free(pad_start);
+	g_list_free(start_pad);
 
 	if(filename != NULL &&
 	   effect != NULL &&
-	   effect_line != NULL){
+	   current_effect_line != NULL){
 	  guint audio_channel;
 	  guint pad;
 
-	  g_object_get(effect_line->channel,
+	  g_object_get(current_effect_line->channel,
 		       "audio-channel", &audio_channel,
 		       "pad", &pad,
 		       NULL);
 
-	  ags_effect_line_add_plugin(effect_line,
+	  ags_effect_line_add_plugin(current_effect_line,
 				     control_type_name,
 				     ags_recall_container_new(), ags_recall_container_new(),
 				     plugin_name,
@@ -416,11 +371,11 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 {
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;
 
-  GList *start_line_member, *line_member;
-  GList *list, *list_start, *pad, *pad_start;
-  GList *children;
+  GList *start_entry, *entry;
+  GList *start_pad, *pad;
+  GList *start_line, *line;
 
   guint nth;
   gboolean has_bridge;
@@ -433,15 +388,15 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								AGS_TYPE_MACHINE_EDITOR);
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
-							  AGS_TYPE_LINE_EDITOR);
+  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
+									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  line_member =
-    start_line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
+  entry =
+    start_entry = ags_line_member_editor_get_entry(line_member_editor);
 
   machine = machine_editor->machine;
 
-  if(AGS_IS_OUTPUT(line_editor->channel)){
+  if(AGS_IS_OUTPUT(machine_editor_line->channel)){
     is_output = TRUE;
   }else{
     is_output = FALSE;
@@ -454,114 +409,106 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   }
 
   if(!has_bridge){	
-    AgsLine *line;
+    AgsLine *current_line;
     
     /* retrieve line and pad */
-    line = NULL;
+    current_line = NULL;
 
-    if(AGS_IS_OUTPUT(line_editor->channel)){
-      pad_start = 
-	pad = gtk_container_get_children((GtkContainer *) machine->output);
+    if(AGS_IS_OUTPUT(machine_editor_line->channel)){
+      pad =
+	start_pad = ags_machine_get_output_pad(machine);
     }else{
-      pad_start = 
-	pad = gtk_container_get_children((GtkContainer *) machine->input);
+      pad =
+	start_pad = ags_machine_get_input_pad(machine);
     }
 
     pad = g_list_nth(pad,
-		     line_editor->channel->pad);
+		     machine_editor_line->channel->pad);
 
     if(pad != NULL){
-      list_start =
-	list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
+      line =
+	start_line = ags_pad_get_line(AGS_PAD(pad->data));
 
-      while(list != NULL){
-	if(AGS_LINE(list->data)->channel == line_editor->channel){
+      while(line != NULL){
+	if(AGS_LINE(line->data)->channel == machine_editor_line->channel){
 	  break;
 	}
 
-	list = list->next;
+	line = line->next;
       }
 
-      if(list != NULL){
-	line = AGS_LINE(list->data);
-	g_list_free(list_start);
+      if(line != NULL){
+	current_line = AGS_LINE(line->data);
+	g_list_free(start_line);
       }
     }
 
-    g_list_free(pad_start);
+    g_list_free(start_pad);
 
     /* iterate line member */
-    if(line != NULL){
-      for(nth = 0; line_member != NULL;){
-	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
-
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
+    if(current_line != NULL){
+      for(nth = 0; entry != NULL;){
+	if(gtk_check_button_get_active(AGS_LINE_MEMBER_EDITOR_ENTRY(entry->data))){
 	  /* remove effect */
-	  ags_line_remove_plugin(line,
+	  ags_line_remove_plugin(current_line,
 				 nth);
 	}
 
-	g_list_free(children);
-
 	nth++;
 	
-	line_member = line_member->next;
+	entry = entry->next;
       }
     }
   }else{
     AgsEffectBridge *effect_bridge;
-    AgsEffectLine *effect_line;
+    AgsEffectLine *current_effect_line;
 	
     effect_bridge = AGS_EFFECT_BRIDGE(machine->bridge);
 
-    effect_line = NULL;
+    current_effect_line = NULL;
     
     /* retrieve effect line and effect pad */
     if(is_output){
-      pad_start = 
-	pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+      pad =
+	start_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
     }else{
-      pad_start = 
-	pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+      pad =
+	start_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
     }
 
     pad = g_list_nth(pad,
-		     line_editor->channel->pad);
+		     machine_editor_line->channel->pad);
 
     if(pad != NULL){
-      list_start =
-	list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->grid);
+      line =
+	start_line = ags_effect_pad_get_effect_line(AGS_EFFECT_PAD(pad->data));
 
-      while(list != NULL){
-	if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
+      while(line != NULL){
+	if(AGS_EFFECT_LINE(line->data)->channel == machine_editor_line->channel){
 	  break;
 	}
 
-	list = list->next;
+	line = line->next;
       }
 
-      if(list != NULL){
-	effect_line = AGS_EFFECT_LINE(list->data);
-	g_list_free(list_start);
+      if(line != NULL){
+	current_effect_line = AGS_EFFECT_LINE(line->data);
+	g_list_free(start_line);
       }
     }
 
-    g_list_free(pad_start);
+    g_list_free(start_pad);
 
     /* iterate line member */
-    if(effect_line != NULL){
-      for(nth = 0; line_member != NULL;){
-	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
-
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
+    if(current_effect_line != NULL){
+      for(nth = 0; entry != NULL;){
+	if(gtk_check_button_get_active(AGS_LINE_MEMBER_EDITOR_ENTRY(entry->data))){
 	  /* remove effect */
-	  ags_effect_line_remove_plugin(effect_line,
+	  ags_effect_line_remove_plugin(current_effect_line,
 					nth);
 	}
 
-	g_list_free(children);
-
-	line_member = line_member->next;
+	entry = entry->next;
 	
 	nth++;
       }
@@ -570,5 +517,5 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
   ags_applicable_reset(AGS_APPLICABLE(line_member_editor));
 
-  g_list_free(start_line_member);
+  g_list_free(start_entry);
 }

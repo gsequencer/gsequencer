@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,7 +29,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_machine.h>
+#include <ags/app/ags_pcm_file_chooser_dialog.h>
 
 G_BEGIN_DECLS
 
@@ -60,7 +60,7 @@ struct _AgsLinkEditor
 
   AgsAudioFile *audio_file;
 
-  GtkFileChooserDialog *file_chooser;
+  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 };
 
 struct _AgsLinkEditorClass

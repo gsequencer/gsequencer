@@ -134,30 +134,33 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   GtkLabel *label;
 
   GList *start_list, *list;
-  gchar **filenames, **filenames_start;
 
+  gchar **filenames, **filenames_start;
+  gchar *str;
+  
   gtk_orientable_set_orientation(GTK_ORIENTABLE(ladspa_browser),
 				 GTK_ORIENTATION_VERTICAL);
   
   /* plugin */
   ladspa_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						  0);
-  gtk_box_pack_start((GtkBox *) ladspa_browser,
-		     (GtkWidget *) ladspa_browser->plugin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) ladspa_browser,
+		 (GtkWidget *) ladspa_browser->plugin);
 
-  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(ladspa_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  /* filename */
+  str = g_strconcat(i18n("Filename"),
+		    ": ",
+		    NULL);  
 
+  label = (GtkLabel *) gtk_label_new(str);
+  gtk_box_append(ladspa_browser->plugin,
+		 (GtkWidget *) label);
+  
   ladspa_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(ladspa_browser->plugin,
-		     (GtkWidget *) ladspa_browser->filename,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(ladspa_browser->plugin,
+		 (GtkWidget *) ladspa_browser->filename);
+
+  g_free(str);
 
   ladspa_browser->path = NULL;
 
@@ -189,72 +192,90 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
     g_strfreev(filenames_start);
   }
-    
-  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
-  gtk_box_pack_start(ladspa_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+
+  /* effect */
+  str = g_strconcat(i18n("Effect"),
+		    ": ",
+		    NULL);  
+  
+  label = (GtkLabel *) gtk_label_new(str);
+  gtk_box_append(ladspa_browser->plugin,
+		 (GtkWidget *) label);
+
+  g_free(str);
 
   ladspa_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(ladspa_browser->plugin,
-		     (GtkWidget *) ladspa_browser->effect,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(ladspa_browser->plugin,
+		 (GtkWidget *) ladspa_browser->effect);
 
   /* description */
   ladspa_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						       0);
-  gtk_box_pack_start((GtkBox *) ladspa_browser,
-		     (GtkWidget *) ladspa_browser->description,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) ladspa_browser,
+		 (GtkWidget *) ladspa_browser->description);
 
-  ladspa_browser->label =
-    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				      "xalign", 0.0,
-				      "label", i18n("Label: "),
-				      NULL);
-  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  /* label */
+  str = g_strconcat(i18n("Label"),
+		    ": ",
+		    NULL);
+  
+  ladspa_browser->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						    "xalign", 0.0,
+						    "label", str,
+						    NULL);
+  gtk_box_append((GtkBox *) ladspa_browser->description,
+		 (GtkWidget *) ladspa_browser->label);
 
-  ladspa_browser->maker = 
-    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				      "xalign", 0.0,
-				      "label", i18n("Maker: "),
-				      NULL);
-  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  g_free(str);
 
-  ladspa_browser->copyright = 
-    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				      "xalign", 0.0,
-				      "label", i18n("Copyright: "),
-				      NULL);
-  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  /* maker */
+  str = g_strconcat(i18n("Maker"),
+		    ": ",
+		    NULL);
+
+  ladspa_browser->maker = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						    "xalign", 0.0,
+						    "label", str,
+						    NULL);
+  gtk_box_append((GtkBox *) ladspa_browser->description,
+		 (GtkWidget *) ladspa_browser->maker);
+
+  g_free(str);
+
+  /* copyright */
+  str = g_strconcat(i18n("Copyright"),
+		    ": ",
+		    NULL);
+
+  ladspa_browser->copyright = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+							"xalign", 0.0,
+							"label", str,
+							NULL);
+  gtk_box_append((GtkBox *) ladspa_browser->description,
+		 (GtkWidget *) ladspa_browser->copyright);
+
+  g_free(str);
+
+  /* ports */
+  str = g_strconcat(i18n("Ports"),
+		    ": ",
+		    NULL);  
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", i18n("Ports: "),
+				    "label", str,
 				    NULL);
-  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) ladspa_browser->description,
+		 (GtkWidget *) label);
 
+  /* port editor */
   ladspa_browser->port_editor = NULL;
   
   ladspa_browser->port_editor_grid = (GtkGrid *) gtk_grid_new();
   gtk_box_append((GtkBox *) ladspa_browser->description,
 		 (GtkWidget *) ladspa_browser->port_editor_grid);
 
+  /* preview */
   ladspa_browser->preview = NULL;
 }
 
@@ -368,116 +389,6 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   }
 
   return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ladspa_browser->effect)));
-}
-
-/**
- * ags_ladspa_browser_combo_box_output_boolean_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
- */
-GtkWidget*
-ags_ladspa_browser_combo_box_output_boolean_controls_new()
-{
-  GtkComboBoxText *combo_box;
-
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "led");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
-}
-
-/**
- * ags_ladspa_browser_combo_box_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
- */
-GtkWidget*
-ags_ladspa_browser_combo_box_output_controls_new()
-{
-  GtkComboBoxText *combo_box;
-
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "vertical indicator");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal indicator");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
-}
-
-/**
- * ags_ladspa_browser_combo_box_boolean_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
- */
-GtkWidget*
-ags_ladspa_browser_combo_box_boolean_controls_new()
-{
-  GtkComboBoxText *combo_box;
-
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "check-button");
-  gtk_combo_box_text_append_text(combo_box,
-				 "toggle button");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
-}
-
-/**
- * ags_ladspa_browser_combo_box_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
- */
-GtkWidget*
-ags_ladspa_browser_combo_box_controls_new()
-{
-  GtkComboBoxText *combo_box;
-
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "spin button");
-  gtk_combo_box_text_append_text(combo_box,
-				 "dial");
-  gtk_combo_box_text_append_text(combo_box,
-				 "vertical scale");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal scale");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
 }
 
 /**

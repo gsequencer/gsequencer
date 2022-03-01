@@ -31,6 +31,8 @@
 
 #include <ags/app/ags_machine.h>
 
+#include <ags/app/editor/ags_machine_radio_button.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_SELECTOR                (ags_machine_selector_get_type())
@@ -91,6 +93,12 @@ void ags_machine_selector_set_flags(AgsMachineSelector *machine_selector,
 				    guint flags);
 void ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
 				    guint flags);
+
+GList* ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_selector);
+void ags_machine_selector_add_machine_radio_button(AgsMachineSelector *machine_selector,
+						   AgsMachineRadioButton *machine_radio_button);
+void ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_selector,
+						      AgsMachineRadioButton *machine_radio_button);
 
 void ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit);
 

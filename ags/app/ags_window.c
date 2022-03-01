@@ -654,6 +654,74 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 }
 
 /**
+ * ags_window_get_machine:
+ * @window: the #AgsWindow
+ * 
+ * Get bulk member of @window.
+ * 
+ * Returns: the #GList-struct containing #AgsMachine
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_window_get_machine(AgsWindow *window)
+{
+  g_return_val_if_fail(AGS_IS_WINDOW(window), NULL);
+
+  return(g_list_reverse(g_list_copy(window->machine)));
+}
+
+/**
+ * ags_window_add_machine:
+ * @window: the #AgsWindow
+ * @machine: the #AgsMachine
+ * 
+ * Add @machine to @window.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_window_add_machine(AgsWindow *window,
+		       AgsMachine *machine)
+{
+  g_return_if_fail(AGS_IS_WINDOW(window));
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  if(g_list_find(window->machine, machine) == NULL){
+    window->machine = g_list_prepend(window->machine,
+				     machine);
+    
+    gtk_box_append(window->machine,
+		   machine);
+  }
+}
+
+/**
+ * ags_window_remove_machine:
+ * @window: the #AgsWindow
+ * @machine: the #AgsMachine
+ * 
+ * Remove @machine from @window.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_window_remove_machine(AgsWindow *window,
+			  AgsMachine *machine)
+{
+  g_return_if_fail(AGS_IS_WINDOW(window));
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  if(g_list_find(window->machine, machine) != NULL){
+    window->machine = g_list_remove(window->machine,
+				    machine);
+    
+    gtk_box_remove(window->machine,
+		   machine);
+  }
+}
+
+/**
  * ags_window_standard_machine_counter_alloc:
  *
  * Keep track of count of machines. Allocates a #GList of well

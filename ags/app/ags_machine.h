@@ -30,6 +30,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_pad.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE                (ags_machine_get_type())
@@ -138,6 +140,8 @@ struct _AgsMachine
 
   gchar *base_note;
   gint base_key_code;
+
+  GtkFrame *frame;
   
   GList *active_playback;
   
@@ -145,13 +149,19 @@ struct _AgsMachine
 
   GType output_pad_type;
   GType output_line_type;
-  GtkGrid *output;
+
+  GList *output_pad;
+
+  GtkGrid *output_pad_grid;
 
   GtkWidget *selected_output_pad;
   
   GType input_pad_type;
   GType input_line_type;
-  GtkGrid *input;
+
+  GList *input_pad;
+  
+  GtkGrid *input_pad_grid;
   
   GtkWidget *selected_input_pad;
 
@@ -162,8 +172,10 @@ struct _AgsMachine
   GList *port;
   GList *enabled_automation_port;
 
-  GtkMenuButton *menu_button;
-  GMenu *popup;
+  GtkLabel *context_label;
+  
+  GtkMenuButton *context_menu_button;
+  GMenu *context_menu;
   
   GtkDialog *properties;
   GtkDialog *rename;
@@ -233,6 +245,22 @@ void ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
 
 GList* ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
 								       GType channel_type, gchar *control_name);
+
+GList* ags_machine_get_output_pad(AgsMachine *machine);
+void ags_machine_add_output_pad(AgsMachine *machine,
+				AgsPad *output_pad,
+				guint x, guint y,
+				guint width, guint height);
+void ags_machine_remove_output_pad(AgsMachine *machine,
+				   AgsPad *output_pad);
+
+GList* ags_machine_get_input_pad(AgsMachine *machine);
+void ags_machine_add_input_pad(AgsMachine *machine,
+			       AgsPad *input_pad,
+			       guint x, guint y,
+			       guint width, guint height);
+void ags_machine_remove_input_pad(AgsMachine *machine,
+				  AgsPad *input_pad);
 
 void ags_machine_samplerate_changed(AgsMachine *machine,
 				    guint samplerate, guint old_samplerate);

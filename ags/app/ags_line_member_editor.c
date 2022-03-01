@@ -46,7 +46,7 @@ void ags_line_member_editor_reset(AgsApplicable *applicable);
  * @include: ags/app/ags_line_member_editor.h
  *
  * #AgsLineMemberEditor is a composite widget to modify line member. A line member
- * editor should be packed by a #AgsLineEditor. You may add/remove plugins with this
+ * editor should be packed by a #AgsMachineEditorLine. You may add/remove plugins with this
  * editor.
  */
 
@@ -223,7 +223,7 @@ ags_line_member_editor_apply(AgsApplicable *applicable)
 void
 ags_line_member_editor_reset(AgsApplicable *applicable)
 {
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *line_member_editor;
   GtkBox *hbox;
   GtkCheckButton *check_button;
@@ -252,10 +252,10 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   g_list_free((GDestroyNotify) start_list);
   
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
-							  AGS_TYPE_LINE_EDITOR);
+  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
+									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  g_object_get(line_editor->channel,
+  g_object_get(machine_editor_line->channel,
 	       "play", &start_recall,
 	       NULL);
 

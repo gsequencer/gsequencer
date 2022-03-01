@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -236,144 +236,122 @@ ags_machine_map_recall_callback(AgsMachine *machine,
 		   (GDestroyNotify) g_object_unref);
 }
 
-int
-ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
-{
-  if(event->button == 3){
-    gtk_menu_popup_at_widget(GTK_MENU(machine->popup),
-			     handle_box,
-			     GDK_GRAVITY_SOUTH_EAST,
-			     GDK_GRAVITY_NORTH_WEST,
-			     NULL);
-  }else if(event->button == 1){
-    AgsWindow *window;
-
-    AgsApplicationContext *application_context;
-
-    application_context = ags_application_context_get_instance();
-    
-    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-    
-    window->selected = machine;
-  }
-
-  return(0);
-}
-
 void
-ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  GValue val = G_VALUE_INIT;
-
-  g_value_init(&val,
-	       G_TYPE_INT);
-
-  gtk_container_child_get_property(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(machine))),
-				   GTK_WIDGET(machine),
-				   "position", &val);
-
-  if(g_value_get_int (&val) > 0){
-    gtk_box_reorder_child(GTK_BOX(gtk_widget_get_parent(GTK_WIDGET(machine))),
-			  GTK_WIDGET(machine),
-			  g_value_get_int (&val) - 1);
-  }
-
-  g_value_unset (&val);
-}
-
-void
-ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  GList *start_list;
-  
-  GValue val={0,};
-
-  g_value_init (&val, G_TYPE_INT);
-
-  gtk_container_child_get_property(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(machine))),
-				   GTK_WIDGET(machine),
-				   "position", &val);
-
-  start_list = gtk_container_get_children((GtkContainer *) gtk_widget_get_parent(GTK_WIDGET(machine)));
-  
-  if(g_value_get_int (&val) < g_list_length(start_list) - 1){
-    gtk_box_reorder_child(GTK_BOX(gtk_widget_get_parent(GTK_WIDGET(machine))),
-			  GTK_WIDGET(machine),
-			  g_value_get_int (&val) + 1);
-  }
-
-  g_value_unset (&val);
-
-  g_list_free(start_list);
-}
-
-void
-ags_machine_popup_hide_activate_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  GList *start_list;
-
-  start_list = gtk_container_get_children((GtkContainer *) machine);
-  
-  gtk_widget_hide(gtk_bin_get_child(GTK_BIN(start_list->data)));
-
-  g_list_free(start_list);
-}
-
-void
-ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  GList *start_list;
-
-  start_list = gtk_container_get_children((GtkContainer *) machine);  
-
-  gtk_widget_show(gtk_bin_get_child(GTK_BIN(start_list->data)));
-
-  g_list_free(start_list);
-}
-
-void
-ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_move_up_callback(GAction *action, GVariant *parameter,
+			     AgsMachine *machine)
 {
   AgsWindow *window;
 
-  AgsAudio *audio;
+  GList *start_list, *list;
   
-  AgsRemoveAudio *remove_audio;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  start_list = ags_window_get_machine(window);
+
+  list = g_list_find(start_list,
+		     machine);
+
+  if(list->prev != NULL && list->prev->prev != NULL){
+    gtk_box_reorder_child_after(window->machine_box,
+				machine,
+				list->prev->prev->data);
+  }
+
+  g_list_free(start_list);
+}
+
+void
+ags_machine_move_down_callback(GAction *action, GVariant *parameter,
+			       AgsMachine *machine)
+{
+  AgsWindow *window;
+
+  GList *start_list, *list;
+  
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  start_list = ags_window_get_machine(window);
+
+  list = g_list_find(start_list,
+		     machine);
+
+  if(list->next != NULL){
+    gtk_box_reorder_child_after(window->machine_box,
+				machine,
+				list->next->data);
+  }
+
+  g_list_free(start_list);
+}
+
+void
+ags_machine_hide_callback(GAction *action, GVariant *parameter,
+			  AgsMachine *machine)
+{
+  gtk_widget_hide(machine->frame);
+}
+
+void
+ags_machine_show_callback(GAction *action, GVariant *parameter,
+			  AgsMachine *machine)
+{
+  gtk_widget_show(machine->frame);
+}
+
+void
+ags_machine_destroy_callback(GAction *action, GVariant *parameter,
+			     AgsMachine *machine)
+{
+  AgsWindow *window;
 
   AgsApplicationContext *application_context;
+
+  AgsAudio *audio;  
+
+  AgsRemoveAudio *remove_audio;
+
+  GList *start_list, *list;
   
-  GList *list, *list_start;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-
   application_context = ags_application_context_get_instance();
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
 
   ags_machine_set_run(machine,
 		      FALSE);
-  
-  /* destroy editor */
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) window->composite_editor->machine_selector);
 
-  list = list->next;
+  list = 
+    start_list = ags_machine_selector_get_machine_radio_button(window->composite_editor->machine_selector);
 
   while(list != NULL){
-    if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) && AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-      gtk_widget_destroy(list->data);
+    if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+      ags_machine_selector_remove_machine_radio_button(window->composite_editor->machine_selector,
+						       list->data);
+      
+      g_object_run_dispose(list->data);
+      g_object_unref(list->data);
+      
       break;
     }
     
     list = list->next;
   }
 
-  g_list_free(list_start);
-
+  g_list_free(start_list);
+  
   /* destroy machine */
   audio = machine->audio;
   g_object_ref(audio);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
-  gtk_widget_destroy((GtkWidget *) machine);
+
+  ags_window_remove_machine(window,
+			    machine);
+  
+  g_object_run_dispose(machine);
+  g_object_unref(machine);
 
   /* get task thread */
   remove_audio = ags_remove_audio_new(audio);
@@ -383,387 +361,99 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 }
 
 void
-ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_rename_callback(GAction *action, GVariant *parameter,
+			    AgsMachine *machine)
 {
-  GtkDialog *dialog;
-  GtkEntry *entry;
-
-  if(machine->rename != NULL){
-    return;
-  }
-  
-  machine->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename"),
-						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
-						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       "_OK", GTK_RESPONSE_ACCEPT,
-						       "_Cancel", GTK_RESPONSE_REJECT,
-						       NULL);
-
-  entry = (GtkEntry *) gtk_entry_new();
-  gtk_entry_set_text(entry, machine->machine_name);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
-		     (GtkWidget *) entry,
-		     FALSE, FALSE,
-		     0);
-
-  gtk_widget_show_all((GtkWidget *) dialog);
-
-  g_signal_connect((GObject *) dialog, "response",
-		   G_CALLBACK(ags_machine_popup_rename_response_callback), (gpointer) machine);
-}
-
-int
-ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
-{
-  if(response == GTK_RESPONSE_ACCEPT){
-    GList *children;
-
-    gchar *str;
-
-    children = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
-    
-    str = gtk_editable_get_chars(GTK_EDITABLE(children->data),
-				 0, -1);
-    g_object_set(machine,
-		 "machine-name", str,
-		 NULL);        
-    
-    g_list_free(children);
-  }
-  
-  machine->rename = NULL;
-  gtk_widget_destroy(widget);
-
-  return(0);
+  //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine)
 {
-  GtkDialog *dialog;
-  GtkEntry *entry;
-
-  AgsAudio *audio;
-
-  gchar *audio_name;
-    
-  if(machine->rename_audio != NULL){
-    return;
-  }
-
-  audio = machine->audio;
-  
-  machine->rename_audio =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename audio"),
-						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
-						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       "_OK", GTK_RESPONSE_ACCEPT,
-						       "_Cancel", GTK_RESPONSE_REJECT,
-						       NULL);
-
-  g_object_get(audio,
-	       "audio-name", &audio_name,
-	       NULL);
-
-  entry = (GtkEntry *) gtk_entry_new();
-  gtk_entry_set_text(entry, audio_name);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
-		     (GtkWidget *) entry,
-		     FALSE, FALSE,
-		     0);
-
-  g_free(audio_name);
-  
-  gtk_widget_show_all((GtkWidget *) dialog);
-
-  g_signal_connect((GObject *) dialog, "response",
-		   G_CALLBACK(ags_machine_popup_rename_audio_response_callback), (gpointer) machine);
-}
-
-int
-ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
-{
-  if(response == GTK_RESPONSE_ACCEPT){
-    GList *children;
-
-    gchar *str;
-
-    children = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
-    
-    str = gtk_editable_get_chars(GTK_EDITABLE(children->data),
-				 0, -1);
-    g_object_set(machine->audio,
-		 "audio-name", str,
-		 NULL);
-    
-    g_list_free(children);
-  }
-  
-  machine->rename_audio = NULL;
-  gtk_widget_destroy(widget);
-
-  return(0);
+  //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_reposition_audio_activate_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
+				      AgsMachine *machine)
 {
-  GtkDialog *dialog;
-  GtkSpinButton *spin_button;
-
-  AgsAudio *audio;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_list;
-
-  gint length;
-  gint position;
-    
-  if(machine->reposition_audio != NULL){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-  
-  audio = machine->audio;
-
-  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-
-  length = g_list_length(start_list);
-  position = g_list_index(start_list,
-			  audio);
-  
-  machine->reposition_audio =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("reposition audio"),
-						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
-						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       "_OK", GTK_RESPONSE_ACCEPT,
-						       "_Cancel", GTK_RESPONSE_REJECT,
-						       NULL);
-
-  if(position >= 0){
-    spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) (length - 1), 1.0);
-  }else{
-    spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0, -1.0, 0.0);
-  }
-  
-  gtk_spin_button_set_value(spin_button,
-			    (gdouble) position);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
-		     (GtkWidget *) spin_button,
-		     FALSE, FALSE,
-		     0);
-  
-  gtk_widget_show_all((GtkWidget *) dialog);
-
-  g_signal_connect((GObject *) dialog, "response",
-		   G_CALLBACK(ags_machine_popup_reposition_audio_response_callback), (gpointer) machine);
-
-  g_list_free_full(start_list,
-		   g_object_unref);
-}
-
-int
-ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
-{
-  if(response == GTK_RESPONSE_ACCEPT){
-    AgsAudio *audio;
-
-    AgsApplicationContext *application_context;
-
-    GList *children;
-    GList *start_list;
-  
-    gint new_position;
-    
-    application_context = ags_application_context_get_instance();
-    
-    audio = machine->audio;
-    
-    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-
-    children = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
-    
-    new_position = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(children->data));
-    
-    start_list = g_list_remove(start_list,
-			       audio);
-    start_list = g_list_insert(start_list,
-			       audio,
-			       new_position);
-
-    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-				 start_list);
-    g_list_foreach(start_list,
-		   (GFunc) g_object_unref,
-		   NULL);
-
-    g_list_free(children);
-  }
-  
-  machine->reposition_audio = NULL;
-  gtk_widget_destroy(widget);
-
-  return(0);
+  //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_properties_callback(GAction *action, GVariant *parameter,
+				AgsMachine *machine)
 {
-  machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
-  g_signal_connect_after(machine->properties, "destroy",
-			 G_CALLBACK(ags_machine_popup_properties_destroy_callback), machine);
-
-  gtk_window_set_default_size((GtkWindow *) machine->properties, -1, 400);
-  
-  ags_connectable_connect(AGS_CONNECTABLE(machine->properties));
-
-  ags_applicable_reset(AGS_APPLICABLE(machine->properties));
-
-  gtk_widget_show_all((GtkWidget *) machine->properties);
+  //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_sticky_controls_callback(GAction *action, GVariant *parameter,
+				     AgsMachine *machine)
 {
-  if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget))){
-    machine->flags |= AGS_MACHINE_STICKY_CONTROLS;
-  }else{
-    machine->flags &= (~AGS_MACHINE_STICKY_CONTROLS);
-  }
-}
-
-int
-ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  machine->properties = NULL;
-
-  return(0);
+  //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_copy_pattern_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine)
 {
   ags_machine_copy_pattern(machine);
 }
 
 void
-ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_paste_pattern_callback(GAction *action, GVariant *parameter,
+				   AgsMachine *machine)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  AgsEnvelopeDialog *envelope_dialog;
-  
-  if(machine->envelope_dialog == NULL){
-    envelope_dialog = ags_envelope_dialog_new(machine);
-
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
-      ags_envelope_dialog_add_pattern_tab(envelope_dialog);
-    }
-    
-    machine->envelope_dialog = (GtkDialog *) envelope_dialog;
-    
-    ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog));
-    ags_applicable_reset(AGS_APPLICABLE(envelope_dialog));
-
-    gtk_widget_show_all((GtkWidget *) envelope_dialog);
-  }
-}
-
-void
-ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  AgsConnectionEditor *connection_editor;
-  
-  if(machine->connection_editor == NULL){
-    connection_editor = ags_connection_editor_new(NULL);
-
-    if((AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION & (machine->connection_flags)) != 0){
-      connection_editor->flags |= AGS_CONNECTION_EDITOR_SHOW_OUTPUT;
-    }
-
-    if((AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION & (machine->connection_flags)) != 0){
-      connection_editor->flags |= AGS_CONNECTION_EDITOR_SHOW_INPUT;
-    }
-
-    ags_connection_editor_set_machine(connection_editor, machine);
-	  
-    machine->connection_editor = (GtkDialog *) connection_editor;
-    
-    ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
-    ags_applicable_reset(AGS_APPLICABLE(connection_editor));
-
-    gtk_widget_show_all((GtkWidget *) connection_editor);
-  }else{
-    connection_editor = (AgsConnectionEditor *) machine->connection_editor;
-  }
-
-  gtk_widget_show_all((GtkWidget *) connection_editor);
-}
-
-void
-ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  AgsMidiDialog *midi_dialog;
-  
-  if(machine->midi_dialog == NULL){
-    midi_dialog = ags_midi_dialog_new(machine);
-    machine->midi_dialog = (GtkDialog *) midi_dialog;
-    midi_dialog->flags |= (AGS_MIDI_DIALOG_IO_OPTIONS |
-			   AGS_MIDI_DIALOG_MAPPING |
-			   AGS_MIDI_DIALOG_DEVICE);
-
-    ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
-    ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
-
-    gtk_widget_show_all((GtkWidget *) midi_dialog);
-  }else{
-    midi_dialog = (AgsMidiDialog *) machine->midi_dialog;
-  }
-
-  gtk_widget_show_all((GtkWidget *) midi_dialog);
-}
-
-void
-ags_machine_popup_midi_export_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_envelope_callback(GAction *action, GVariant *parameter,
+			      AgsMachine *machine)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_wave_export_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  AgsWaveExportDialog *wave_export_dialog;
-  
-  if(machine->wave_export_dialog == NULL){
-    wave_export_dialog = ags_wave_export_dialog_new(machine);
-    machine->wave_export_dialog = (GtkDialog *) wave_export_dialog;
-
-    ags_connectable_connect(AGS_CONNECTABLE(wave_export_dialog));
-    ags_applicable_reset(AGS_APPLICABLE(wave_export_dialog));
-
-    gtk_widget_show_all((GtkWidget *) wave_export_dialog);
-  }else{
-    wave_export_dialog = (AgsWaveExportDialog *) machine->wave_export_dialog;
-  }
-
-  gtk_widget_show_all((GtkWidget *) wave_export_dialog);
-}
-
-void
-ags_machine_popup_midi_import_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
+				      AgsMachine *machine)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_machine_popup_wave_import_callback(GtkWidget *widget, AgsMachine *machine)
+ags_machine_midi_connection_callback(GAction *action, GVariant *parameter,
+				     AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_audio_export_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_midi_export_callback(GAction *action, GVariant *parameter,
+				 AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_audio_import_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_midi_import_callback(GAction *action, GVariant *parameter,
+				 AgsMachine *machine)
 {
   //TODO:JK: implement me
 }

@@ -112,7 +112,6 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   gchar *str;
 
-  guint effect_index;
   guint port_count;
   guint y;
   unsigned long i;
@@ -138,11 +137,9 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 							gtk_combo_box_text_get_active_text(effect));
 
   plugin_so = NULL;
-  effect_index = 0;
   
   g_object_get(ladspa_plugin,
 	       "plugin-so", &plugin_so,
-	       "effect-index", &effect_index,
 	       NULL);
   
   /* update description */
@@ -247,12 +244,12 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					 0, y,
 					 1, 1);
       
+      gtk_widget_show((GtkWidget *) port_editor);
+      
       y++;
     }
 
     g_rec_mutex_unlock(base_plugin_mutex);
-
-    gtk_widget_show((GtkWidget *) port_editor);
   }else{
     ags_ladspa_browser_clear(ladspa_browser);
   }

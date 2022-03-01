@@ -84,7 +84,7 @@ ags_machine_radio_button_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_radio_button = g_type_register_static(GTK_TYPE_RADIO_BUTTON,
+    ags_type_machine_radio_button = g_type_register_static(GTK_TYPE_CHECK_BUTTON,
 							   "AgsMachineRadioButton", &ags_machine_radio_button_info,
 							   0);
     

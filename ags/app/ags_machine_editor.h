@@ -54,6 +54,8 @@ struct _AgsMachineEditor
 {
   GtkGrid grid;
 
+  AgsConnectableFlags connnectable_flags;
+  
   gchar *version;
   gchar *build_id;
 
@@ -80,16 +82,8 @@ struct _AgsMachineEditorClass
 
 GType ags_machine_editor_get_type(void);
 
-void ags_machine_editor_add_children(AgsMachineEditor *machine_editor);
-
 void ags_machine_editor_set_machine(AgsMachineEditor *machine_editor,
 				    AgsMachine *machine);
-
-void ags_machine_editor_add_input(AgsMachineEditor *machine_editor);
-void ags_machine_editor_add_output(AgsMachineEditor *machine_editor);
-
-void ags_machine_editor_remove_input(AgsMachineEditor *machine_editor);
-void ags_machine_editor_remove_output(AgsMachineEditor *machine_editor);
 
 AgsMachineEditor* ags_machine_editor_new(AgsMachine *machine);
 
