@@ -87,7 +87,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
   
   content_area = gtk_dialog_get_content_area((GtkDialog *) pcm_file_chooser_dialog);
 
-  pcm_file_chooser_dialog->file_chooser = gtk_file_chooser_widget_new();
+  pcm_file_chooser_dialog->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
   gtk_box_append(content_area,
 		 (GtkWidget *) pcm_file_chooser_dialog->file_chooser);
 
@@ -137,10 +137,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 		  0, 2,
 		  1, 1);
 
-  /* file chooser */
-  gtk_file_chooser_set_action(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
-			      GTK_FILE_CHOOSER_ACTION_OPEN);
-  
+  /* file chooser */  
   gtk_dialog_add_buttons((GtkDialog *) pcm_file_chooser_dialog,
 			 GTK_FILE_CHOOSER_ACTION_OPEN,
 			 "_Cancel", GTK_RESPONSE_CANCEL,

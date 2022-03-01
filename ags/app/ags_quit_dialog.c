@@ -135,23 +135,19 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 {
   GtkBox *vbox;
   
-  quit_dialog->flags = 0;
+  quit_dialog->connectable_flags = 0;
 
-  vbox = gtk_dialog_get_content_area((GtkDialog *) quit_dialog);
+  vbox = (GtkBox *) gtk_dialog_get_content_area((GtkDialog *) quit_dialog);
   
   quit_dialog->accept_all = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("accept all"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) quit_dialog->accept_all,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(vbox,
+		 (GtkWidget *) quit_dialog->accept_all);
 
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
   
   quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) quit_dialog->question,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(vbox,
+		 (GtkWidget *) quit_dialog->question);
 
   quit_dialog->nth_wave_export_machine = 0;
 
@@ -179,11 +175,11 @@ ags_quit_dialog_connect(AgsConnectable *connectable)
 
   quit_dialog = AGS_QUIT_DIALOG(connectable);
 
-  if((AGS_QUIT_DIALOG_CONNECTED & (quit_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (quit_dialog->connectable_flags)) != 0){
     return;
   }
 
-  quit_dialog->flags |= AGS_QUIT_DIALOG_CONNECTED;
+  quit_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(G_OBJECT(quit_dialog), "response",
 		   G_CALLBACK(ags_quit_dialog_response_callback), NULL);
@@ -196,11 +192,11 @@ ags_quit_dialog_disconnect(AgsConnectable *connectable)
 
   quit_dialog = AGS_QUIT_DIALOG(connectable);
 
-  if((AGS_QUIT_DIALOG_CONNECTED & (quit_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (quit_dialog->connectable_flags)) == 0){
     return;
   }
 
-  quit_dialog->flags &= (~AGS_QUIT_DIALOG_CONNECTED);
+  quit_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(quit_dialog),
 		      "any_signal::response",
@@ -232,8 +228,6 @@ void
 ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 			    AgsMachine *machine)
 {
-  AgsApplicationContext *application_context;
-
   GList *start_wave, *end_wave;
     
   guint64 start_frame, end_frame;
@@ -243,8 +237,6 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
      !AGS_IS_MACHINE(machine)){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
 
   /* get some fields */
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -284,9 +276,13 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
   }
 
   if(AGS_IS_AUDIOREC(machine)){
-    gchar *filename;
+    GtkEntryBuffer *entry_buffer;
     
-    filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+    gchar *filename;
+
+    entry_buffer = gtk_entry_get_buffer(AGS_AUDIOREC(machine)->filename);
+
+    filename = gtk_entry_buffer_get_text(entry_buffer);
   
     ags_audiorec_fast_export((AgsAudiorec *) machine,
 			     filename,

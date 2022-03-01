@@ -71,6 +71,7 @@ struct _AgsPortEditor
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   
   GtkLabel *port_name;
 

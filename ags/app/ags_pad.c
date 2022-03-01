@@ -460,10 +460,10 @@ ags_pad_set_property(GObject *gobject,
 				 samplerate, old_samplerate);
 
       list =
-	start_list = gtk_container_get_children((GtkContainer *) pad->expander_set);
+	start_list = ags_pad_get_line(pad);
 
       while(list != NULL){
-	if(AGS_LINE(list->data)){
+	if(AGS_IS_LINE(list->data)){
 	  g_object_set(list->data,
 		       "samplerate", samplerate,
 		       NULL);
@@ -494,10 +494,10 @@ ags_pad_set_property(GObject *gobject,
 				  buffer_size, old_buffer_size);
 
       list =
-	start_list = gtk_container_get_children((GtkContainer *) pad->expander_set);
+	start_list = ags_pad_get_line(pad);
 
       while(list != NULL){
-	if(AGS_LINE(list->data)){
+	if(AGS_IS_LINE(list->data)){
 	  g_object_set(list->data,
 		       "buffer-size", buffer_size,
 		       NULL);
@@ -528,10 +528,10 @@ ags_pad_set_property(GObject *gobject,
 			     format, old_format);
 
       list =
-	start_list = gtk_container_get_children((GtkContainer *) pad->expander_set);
+	start_list = ags_pad_get_line(pad);
 
       while(list != NULL){
-	if(AGS_LINE(list->data)){
+	if(AGS_IS_LINE(list->data)){
 	  g_object_set(list->data,
 		       "format", format,
 		       NULL);
@@ -602,7 +602,8 @@ void
 ags_pad_connect(AgsConnectable *connectable)
 {
   AgsPad *pad;
-  GList *line_list, *line_list_start;
+
+  GList *start_line, *line;
 
   /* AgsPad */
   pad = AGS_PAD(connectable);
@@ -635,23 +636,24 @@ ags_pad_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
 
   /* AgsLine */
-  line_list_start =  
-    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+  line =
+    start_line = ags_pad_get_line(pad);
 
-  while(line_list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
+  while(line != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line->data));
 
-    line_list = line_list->next;
+    line = line->next;
   }
 
-  g_list_free(line_list_start);
+  g_list_free(start_line);
 }
 
 void
 ags_pad_disconnect(AgsConnectable *connectable)
 {
   AgsPad *pad;
-  GList *line_list, *line_list_start;
+
+  GList *start_line, *line;
 
   /* AgsPad */
   pad = AGS_PAD(connectable);
@@ -663,16 +665,16 @@ ags_pad_disconnect(AgsConnectable *connectable)
   pad->flags &= (~AGS_PAD_CONNECTED);
 
   /* AgsLine */
-  line_list_start =  
-    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+  line =
+    start_line = ags_pad_get_line(pad);
 
-  while(line_list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(line_list->data));
+  while(line != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line->data));
 
-    line_list = line_list->next;
+    line = line->next;
   }
 
-  g_list_free(line_list_start);
+  g_list_free(start_line);
 
   g_signal_handlers_disconnect_by_data(pad->channel,
 				       pad);
@@ -755,7 +757,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AgsChannel *current, *next_current;
 
-  GList *line, *line_start;
+  GList *start_line, *line;
 
   if(pad->channel == channel){
     return;
@@ -777,8 +779,8 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   pad->channel = channel;
 
-  line_start = 
-    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
+  line =
+    start_line = ags_pad_get_line(pad);
 
   current = channel;
 
@@ -810,7 +812,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
     g_object_unref(next_current);
   }
   
-  g_list_free(line_start);
+  g_list_free(start_line);
 }
 
 /**
@@ -963,21 +965,23 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 	channel->line_widget = (GObject *) line;
       }
 
-      ags_expander_set_add(pad->expander_set,
-			   (GtkWidget *) line,
-			   i % pad->cols, floor(i / pad->cols),
-			   1, 1);
+      ags_pad_add_line(pad,
+		       line,
+		       i % pad->cols, floor(i / pad->cols),
+		       1, 1);
 	
       if(channel != NULL){
 	g_object_unref(channel);
       }
     }
   }else if(audio_channels < audio_channels_old){
-    GList *list, *list_start;
+    GList *start_list, *list;
 
-    list_start =
-      list = g_list_nth(g_list_reverse(gtk_container_get_children(GTK_CONTAINER(pad->expander_set))),
-			audio_channels);
+    list =
+      start_list = ags_pad_get_line(pad);
+    
+    list = g_list_nth(start_list,
+		      audio_channels);
     
     while(list != NULL){
       ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -985,15 +989,17 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       list = list->next;
     }
 
-    list = list_start;
+    list = g_list_nth(start_list,
+		      audio_channels);
 
     while(list != NULL){
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+      ags_pad_remove_line(pad,
+			  AGS_LINE(list->data));
 
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free(start_list);
   }
 
   if(audio != NULL){
@@ -1071,9 +1077,9 @@ ags_pad_real_find_port(AgsPad *pad)
   port = NULL;
 
   /* find output ports */
-  if(pad->expander_set != NULL){
+  if(pad->line != NULL){
     line =
-      start_line = gtk_container_get_children((GtkContainer *) pad->expander_set);
+      start_line = ags_pad_get_line(pad);
 
     while(line != NULL){
       tmp_port = ags_line_find_port(AGS_LINE(line->data));
@@ -1143,7 +1149,7 @@ ags_pad_play(AgsPad *pad)
 						   AGS_TYPE_MACHINE);
 
   list = 
-    start_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+    start_list = ags_pad_get_line(pad);
 
   /*  */
   play_all = gtk_toggle_button_get_active(pad->group);

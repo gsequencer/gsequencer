@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_lv2_browser.h>
-#include <ags/app/ags_dssi_browser.h>
 #include <ags/app/ags_ladspa_browser.h>
 
 #if defined(AGS_WITH_VST3)
@@ -36,7 +35,6 @@ void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
 void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
 
-gboolean ags_plugin_browser_delete_event(GtkWidget *widget, GdkEventAny *event);
 void ags_plugin_browser_show(GtkWidget *widget);
 
 void ags_plugin_browser_connect(AgsConnectable *connectable);
@@ -119,7 +117,6 @@ ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) plugin_browser;
   
-  widget->delete_event = ags_plugin_browser_delete_event;
   widget->show = ags_plugin_browser_show;
 }
 
@@ -146,37 +143,39 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
-  
-  plugin_browser->flags = 0;
 
+  gchar *str;
+  
+  plugin_browser->connectable_flags = 0;
+
+  gtk_window_set_hide_on_close((GtkWindow *) plugin_browser,
+			       TRUE);
+  
   gtk_window_set_title((GtkWindow *) plugin_browser,
 		       i18n("Plugin browser"));
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
+		 (GtkWidget *) vbox);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
-  label = (GtkLabel *) gtk_label_new(i18n("Plugin type:"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  str = g_strdup_printf("%s: ",
+			i18n("Plugin type"));
+  
+  label = (GtkLabel *) gtk_label_new(str);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
+  g_free(str);
+  
   plugin_browser->plugin_type = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) plugin_browser->plugin_type,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) plugin_browser->plugin_type);
   
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "lv2");
@@ -192,25 +191,19 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   plugin_browser->active_browser = NULL;
   
   plugin_browser->lv2_browser = (GtkWidget *) ags_lv2_browser_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) plugin_browser->lv2_browser,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) plugin_browser->lv2_browser);
 
   plugin_browser->dssi_browser = NULL;
   
   plugin_browser->ladspa_browser = (GtkWidget *) ags_ladspa_browser_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) plugin_browser->ladspa_browser,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) plugin_browser->ladspa_browser);
 
 #if defined(AGS_WITH_VST3)
   plugin_browser->vst3_browser = (GtkWidget *) ags_vst3_browser_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) plugin_browser->vst3_browser,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) plugin_browser->vst3_browser);
 #else
   plugin_browser->vst3_browser = NULL;
 #endif
@@ -220,14 +213,6 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
 			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
 			 NULL);
-}
-
-gboolean
-ags_plugin_browser_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  return(TRUE);
 }
 
 void
@@ -255,11 +240,11 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  if((AGS_PLUGIN_BROWSER_CONNECTED & (plugin_browser->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) != 0){
     return;
   }
 
-  plugin_browser->flags |= AGS_PLUGIN_BROWSER_CONNECTED;
+  plugin_browser->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect(plugin_browser->plugin_type, "changed",
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
@@ -284,11 +269,11 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  if((AGS_PLUGIN_BROWSER_CONNECTED & (plugin_browser->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) == 0){
     return;
   }
 
-  plugin_browser->flags &= (~AGS_PLUGIN_BROWSER_CONNECTED);
+  plugin_browser->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect(plugin_browser->plugin_type,
 		      "any_signal::changed",

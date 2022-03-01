@@ -134,27 +134,40 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 
   GtkTreeIter iter;
 
+  gchar *str;
+  
   port_editor->flags = 0;
+  port_editor->connectable_flags = 0;
   
   /* port name */
-  label = gtk_label_new(i18n("Port name:"));
-  gtk_grid_attach(grid,
+  str = g_strdup_printf("%s: ",
+			i18n("Port name"));
+  
+  label = gtk_label_new(str);
+  gtk_grid_attach(port_editor,
 		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
+
+  g_free(str);
   
   port_editor->port_name = gtk_label_new(NULL);  
-  gtk_grid_attach(grid,
+  gtk_grid_attach(port_editor,
 		  (GtkWidget *) port_editor->port_name,
 		  1, 0,
 		  1, 1);
 
   /* port control */
-  label = gtk_label_new(i18n("Port control:"));
-  gtk_grid_attach(grid,
+  str = g_strdup_printf("%s: ",
+			i18n("Port control"));
+  
+  label = gtk_label_new(str);
+  gtk_grid_attach(port_editor,
 		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
+
+  g_free(str);
   
   port_editor->port_control = gtk_combo_box_new();
   
@@ -174,17 +187,22 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   gtk_combo_box_set_model(port_editor->port_control,
 			  GTK_TREE_MODEL(list_store));
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach(port_editor,
 		  (GtkWidget *) port_editor->port_control,
 		  1, 1,
 		  1, 1);  
 
   /* port control orientation */
-  label = gtk_label_new(i18n("Port control orientation:"));
-  gtk_grid_attach(grid,
+  str = g_strdup_printf("%s: ",
+			i18n("Port control orientation"));
+
+  label = gtk_label_new(str);
+  gtk_grid_attach(port_editor,
 		  (GtkWidget *) label,
 		  0, 2,
 		  1, 1);
+
+  g_free(str);
   
   port_editor->port_control_orientation = gtk_combo_box_new();
   
@@ -224,7 +242,7 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 			  GTK_TREE_MODEL(list_store));
 
   /* attach */
-  gtk_grid_attach(grid,
+  gtk_grid_attach(port_editor,
 		  (GtkWidget *) port_editor->port_control_orientation,
 		  1, 2,
 		  1, 1);  
@@ -237,11 +255,11 @@ ags_port_editor_connect(AgsConnectable *connectable)
 
   port_editor = AGS_PORT_EDITOR(connectable);
 
-  if((AGS_PORT_EDITOR_CONNECTED & (port_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (port_editor->connectable_flags)) != 0){
     return;
   }
 
-  port_editor->flags |= AGS_PORT_EDITOR_CONNECTED;
+  port_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 }
 
 void
@@ -251,11 +269,11 @@ ags_port_editor_disconnect(AgsConnectable *connectable)
 
   port_editor = AGS_PORT_EDITOR(connectable);
 
-  if((AGS_PORT_EDITOR_CONNECTED & (port_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (port_editor->connectable_flags)) == 0){
     return;
   }
 
-  port_editor->flags &= (~AGS_PORT_EDITOR_CONNECTED);
+  port_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 }
 
 void
@@ -320,7 +338,7 @@ ags_port_editor_fill_controls(AgsPortEditor *port_editor)
   //TODO:JK: implement more
   
   if((AGS_PORT_EDITOR_IS_OUTPUT & (port_editor->flags)) != 0){
-    if((AGS_PORT_EDITOR_BOOLEAN & (port_editor->flags)) != 0){
+    if((AGS_PORT_EDITOR_IS_BOOLEAN & (port_editor->flags)) != 0){
       /* led */
       gtk_list_store_append(list_store,
 			    &iter);
@@ -342,7 +360,7 @@ ags_port_editor_fill_controls(AgsPortEditor *port_editor)
 			 -1);
     }
   }else{
-    if((AGS_PORT_EDITOR_BOOLEAN & (port_editor->flags)) != 0){
+    if((AGS_PORT_EDITOR_IS_BOOLEAN & (port_editor->flags)) != 0){
       /* toggle button */
       gtk_list_store_append(list_store,
 			    &iter);

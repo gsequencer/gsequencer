@@ -47,7 +47,6 @@ void ags_preferences_apply(AgsApplicable *applicable);
 void ags_preferences_reset(AgsApplicable *applicable);
 
 void ags_preferences_show(GtkWidget *widget);
-void ags_preferences_show_all(GtkWidget *widget);
 
 /**
  * SECTION:ags_preferences
@@ -129,7 +128,6 @@ ags_preferences_class_init(AgsPreferencesClass *preferences)
   widget = (GtkWidgetClass *) preferences;
 
   widget->show = ags_preferences_show;
-  widget->show_all = ags_preferences_show_all;
 }
 
 void
@@ -155,9 +153,11 @@ ags_preferences_init(AgsPreferences *preferences)
   gchar *str;
 
   preferences->flags = 0;
+  preferences->connectable_flags = 0;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       i18n("Preferences"));
+
   gtk_window_set_deletable(GTK_WINDOW(preferences),
 			   TRUE);
 
@@ -165,8 +165,8 @@ ags_preferences_init(AgsPreferences *preferences)
   g_object_set(G_OBJECT(preferences->notebook),
 	       "tab-pos", GTK_POS_LEFT,
 	       NULL);
-  gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(preferences))),
-		    GTK_WIDGET(preferences->notebook));
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(preferences)),
+		 (GtkWidget *) preferences->notebook);
 
   preferences->generic_preferences = ags_generic_preferences_new();
   gtk_widget_set_hexpand((GtkWidget *) preferences->generic_preferences,
@@ -271,11 +271,11 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
-  if((AGS_PREFERENCES_CONNECTED & (preferences->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (preferences->connectable_flags)) != 0){
     return;
   }
 
-  preferences->flags |= AGS_PREFERENCES_CONNECTED;
+  preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   ags_connectable_connect(AGS_CONNECTABLE(preferences->generic_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->audio_preferences));
@@ -301,11 +301,11 @@ ags_preferences_disconnect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
-  if((AGS_PREFERENCES_CONNECTED & (preferences->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (preferences->connectable_flags)) == 0){
     return;
   }
 
-  preferences->flags &= (~AGS_PREFERENCES_CONNECTED);
+  preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(preferences->generic_preferences));
   ags_connectable_disconnect(AGS_CONNECTABLE(preferences->audio_preferences));
@@ -392,9 +392,11 @@ ags_preferences_apply(AgsApplicable *applicable)
 						GTK_MESSAGE_INFO,
 						GTK_BUTTONS_OK,
 						"After finished your modifications you should safe your file");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all((GtkWidget *) dialog);
+
+  gtk_window_set_deletable((GtkWindow *) dialog,
+			   TRUE);
+  
+  gtk_widget_show((GtkWidget *) dialog);
 }
 
 void
@@ -423,20 +425,6 @@ ags_preferences_show(GtkWidget *widget)
   preferences = (AgsPreferences *) widget;
   
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
-
-  gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
-
-  gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
-}
-
-void
-ags_preferences_show_all(GtkWidget *widget)
-{
-  AgsPreferences *preferences;
-
-  preferences = (AgsPreferences *) widget;
-  
-  GTK_WIDGET_CLASS(ags_preferences_parent_class)->show_all(widget);
 
   gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
 
