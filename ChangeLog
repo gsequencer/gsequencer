@@ -15,6 +15,7 @@ ags (4.0.0)
 	* TODO:JK: implemented pitch selection of ags-fm-synth
 	* TODO:JK: implemented pitch selection of ags-sf2-synth
 	* TODO:JK: implemented pitch selection of ags-sfz-synth
+	* TODO:JK: refactor use GFile instead of FILE
 
 ags (3.18.2)
 

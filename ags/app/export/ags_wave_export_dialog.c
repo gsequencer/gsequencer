@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,7 @@
 #include <ags/app/export/ags_wave_export_dialog_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_notation_editor.h>
+#include <ags/app/ags_navigation.h>
 
 #include <ags/app/machine/ags_audiorec.h>
 
@@ -217,8 +217,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 		     0);
 
   wave_export_dialog->filename = (GtkEntry *) gtk_entry_new();
-  gtk_entry_set_text(wave_export_dialog->filename,
-		     "out.wav");
+  gtk_editable_set_text(GTK_EDITABLE(wave_export_dialog->filename),
+			"out.wav");
   gtk_box_pack_start(hbox,
 		     GTK_WIDGET(wave_export_dialog->filename),
 		     TRUE, TRUE,
@@ -247,7 +247,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     TRUE, TRUE,
   		     0);
   
-  wave_export_dialog->start_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
+  wave_export_dialog->start_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT, 1.0);
   gtk_spin_button_set_digits(wave_export_dialog->start_tact,
 			     3);
   gtk_spin_button_set_value(wave_export_dialog->start_tact,
@@ -274,7 +274,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     TRUE, TRUE,
   		     0);
   
-  wave_export_dialog->end_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS / 16.0, 1.0);
+  wave_export_dialog->end_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT / 16.0, 1.0);
   gtk_spin_button_set_digits(wave_export_dialog->end_tact,
 			     3);
   gtk_spin_button_set_value(wave_export_dialog->end_tact,
@@ -430,6 +430,10 @@ ags_wave_export_dialog_finalize(GObject *gobject)
 
   wave_export_dialog = (AgsWaveExportDialog *) gobject;
 
+  if(wave_export_dialog->machine != NULL){
+    wave_export_dialog->machine->wave_export_dialog = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_wave_export_dialog_parent_class)->finalize(gobject);
 }
@@ -446,9 +450,6 @@ ags_wave_export_dialog_connect(AgsConnectable *connectable)
   }
 
   wave_export_dialog->flags |= AGS_WAVE_EXPORT_DIALOG_CONNECTED;
-
-  g_signal_connect((GObject *) wave_export_dialog, "delete-event",
-		   G_CALLBACK(ags_wave_export_dialog_delete_event), (gpointer) wave_export_dialog);
   
   g_signal_connect(G_OBJECT(wave_export_dialog->file_chooser_button), "clicked",
 		   G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback), wave_export_dialog);
@@ -568,7 +569,7 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
 	       "buffer-size", &buffer_size,	       
 	       NULL);
   
-  filename = gtk_entry_get_text(wave_export_dialog->filename);
+  filename = gtk_editable_get_text(GTK_EDITABLE(wave_export_dialog->filename));
   
   start_tact = gtk_spin_button_get_value(wave_export_dialog->start_tact);
   end_tact = gtk_spin_button_get_value(wave_export_dialog->end_tact);
@@ -582,7 +583,7 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
 
   if(AGS_IS_AUDIOREC(machine)){
     if(filename == NULL){
-      filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+      filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
     }
     
     ags_audiorec_fast_export((AgsAudiorec *) machine,

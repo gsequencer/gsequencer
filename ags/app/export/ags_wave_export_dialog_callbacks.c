@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,31 @@
 
 #include <ags/i18n.h>
 
+void ags_wave_export_dialog_file_chooser_response_callback(GtkDialog *file_chooser,
+							   gint response,
+							   AgsWaveExportDialog *wave_export_dialog);
+
+void
+ags_wave_export_dialog_file_chooser_response_callback(GtkDialog *file_chooser,
+						      gint response,
+						      AgsWaveExportDialog *wave_export_dialog)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    GFile *file;
+    
+    char *filename;
+
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser));
+
+    filename = g_file_get_path(file);
+    
+    gtk_editable_set_text(GTK_EDITABLE(wave_export_dialog->filename),
+			  filename);
+  }
+  
+  gtk_window_destroy((GtkWindow *) file_chooser);
+}
+
 void
 ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_button,
 						    AgsWaveExportDialog *wave_export_dialog)
@@ -33,15 +58,8 @@ ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_butt
 								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
 								      NULL);
-  if(gtk_dialog_run(GTK_DIALOG(file_chooser)) == GTK_RESPONSE_ACCEPT){
-    char *filename;
 
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
-    gtk_entry_set_text(wave_export_dialog->filename,
-		       filename);
-  }
-  
-  gtk_widget_destroy((GtkWidget *) file_chooser);
+  gtk_widget_show(file_chooser);
 }
 
 void
@@ -75,7 +93,7 @@ ags_wave_export_dialog_ok_callback(GtkWidget *widget, AgsWaveExportDialog *wave_
   ags_applicable_apply(AGS_APPLICABLE(wave_export_dialog));
  
   wave_export_dialog->machine->wave_export_dialog = NULL;
-  gtk_widget_destroy((GtkWidget *) wave_export_dialog);
+  gtk_window_destroy((GtkWindow *) wave_export_dialog);
 
   return(0);
 }
@@ -84,16 +102,7 @@ int
 ags_wave_export_dialog_cancel_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog)
 {
   wave_export_dialog->machine->wave_export_dialog = NULL;
-  gtk_widget_destroy((GtkWidget *) wave_export_dialog);
+  gtk_window_destroy((GtkWindow *) wave_export_dialog);
 
   return(0);
-}
-
-gboolean
-ags_wave_export_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
-				    AgsWaveExportDialog *wave_export_dialog)
-{
-  wave_export_dialog->machine->wave_export_dialog = NULL;
-
-  return(TRUE);
 }

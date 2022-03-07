@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,6 @@
 #include <ags/app/ags_window.h>
 
 #include <ags/app/export/ags_midi_export_wizard.h>
-#include <ags/app/export/ags_machine_collection_entry.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -146,24 +145,21 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
 
   machine_collection->flags = 0;
 
-  machine_collection->child_type = G_TYPE_NONE;
+  machine_collection->machine_mapper_type = G_TYPE_NONE;
 
-  machine_collection->child_n_properties = 0;
+  machine_collection->machine_mapper_n_properties = 0;
 
-  machine_collection->child_strv = NULL;
-  machine_collection->child_value = NULL;
+  machine_collection->machine_mapper_strv = NULL;
+  machine_collection->machine_mapper_value = NULL;
   
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-								  NULL);
-  gtk_box_pack_start(GTK_BOX(machine_collection),
-		     (GtkWidget *) scrolled_window,
-		     TRUE, TRUE,
-		     0);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_box_append(GTK_BOX(machine_collection),
+		 (GtkWidget *) scrolled_window);
   
-  machine_collection->child = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						     0);
-  gtk_container_add((GtkContainer *) scrolled_window,
-		    (GtkWidget *) machine_collection->child);
+  machine_collection->machine_mapper_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+								  0);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) machine_collection->machine_mapper_box);
 }
 
 void
@@ -171,7 +167,7 @@ ags_machine_collection_connect(AgsConnectable *connectable)
 {
   AgsMachineCollection *machine_collection;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
   
   machine_collection = AGS_MACHINE_COLLECTION(connectable);
 
@@ -182,8 +178,8 @@ ags_machine_collection_connect(AgsConnectable *connectable)
   machine_collection->flags |= AGS_MACHINE_COLLECTION_CONNECTED;
   
   /* children */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) machine_collection->child);
+  list =
+    start_list = ags_machine_collection_get_machine_mapper(machine_collection);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -191,15 +187,16 @@ ags_machine_collection_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
 ags_machine_collection_disconnect(AgsConnectable *connectable)
 {
   AgsMachineCollection *machine_collection;
-  GList *list, *list_start;
-  
+
+  GList *start_list, *list;
+    
   machine_collection = AGS_MACHINE_COLLECTION(connectable);
 
   if((AGS_MACHINE_COLLECTION_CONNECTED & (machine_collection->flags)) == 0){
@@ -209,8 +206,8 @@ ags_machine_collection_disconnect(AgsConnectable *connectable)
   machine_collection->flags &= (~AGS_MACHINE_COLLECTION_CONNECTED);
 
   /* children */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) machine_collection->child);
+  list =
+    start_list = ags_machine_collection_get_machine_mapper(machine_collection);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -218,19 +215,20 @@ ags_machine_collection_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
 ags_machine_collection_set_update(AgsApplicable *applicable, gboolean update)
 {
   AgsMachineCollection *machine_collection;
-  GList *list, *list_start;
-  
+
+  GList *start_list, *list;
+
   machine_collection = AGS_MACHINE_COLLECTION(applicable);
 
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) machine_collection->child);
+  list =
+    start_list = ags_machine_collection_get_machine_mapper(machine_collection);
 
   while(list != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(list->data), update);
@@ -238,19 +236,20 @@ ags_machine_collection_set_update(AgsApplicable *applicable, gboolean update)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
 ags_machine_collection_apply(AgsApplicable *applicable)
 {
   AgsMachineCollection *machine_collection;
-  GList *list, *list_start;
   
+  GList *start_list, *list;
+
   machine_collection = AGS_MACHINE_COLLECTION(applicable);
 
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) machine_collection->child);
+  list =
+    start_list = ags_machine_collection_get_machine_mapper(machine_collection);
 
   while(list != NULL){
     ags_applicable_apply(AGS_APPLICABLE(list->data));
@@ -258,7 +257,7 @@ ags_machine_collection_apply(AgsApplicable *applicable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -266,12 +265,12 @@ ags_machine_collection_reset(AgsApplicable *applicable)
 {
   AgsMachineCollection *machine_collection;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
   
   machine_collection = AGS_MACHINE_COLLECTION(applicable);
 
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) machine_collection->child);
+  list =
+    start_list = ags_machine_collection_get_machine_mapper(machine_collection);
 
   while(list != NULL){
     ags_applicable_reset(AGS_APPLICABLE(list->data));
@@ -279,7 +278,75 @@ ags_machine_collection_reset(AgsApplicable *applicable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
+}
+
+/**
+ * ags_machine_collection_get_machine_mapper:
+ * @machine_collection: the #AgsMachineCollection
+ * 
+ * Get effect pad output.
+ * 
+ * Returns: the #GList-struct containing #AgsMachineMapper
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_collection_get_machine_mapper(AgsMachineCollection *machine_collection)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE_COLLECTION(machine_collection), NULL);
+
+  return(g_list_reverse(g_list_copy(machine_collection->machine_mapper)));
+}
+
+/**
+ * ags_machine_collection_add_machine_mapper:
+ * @machine_collection: the #AgsMachineCollection
+ * @machine_mapper: the #AgsMachineMapper
+ * 
+ * Add @machine_mapper to output.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_collection_add_machine_mapper(AgsMachineCollection *machine_collection,
+					  AgsMachineMapper *machine_mapper)
+{
+  g_return_if_fail(AGS_IS_MACHINE_COLLECTION(machine_collection));
+  g_return_if_fail(AGS_IS_MACHINE_MAPPER(machine_mapper));
+
+  if(g_list_find(machine_collection->machine_mapper, machine_mapper) == NULL){
+    machine_collection->machine_mapper = g_list_prepend(machine_collection->machine_mapper,
+							machine_mapper);
+    
+    gtk_box_append(machine_collection->machine_mapper_box,
+		   machine_mapper);
+  }
+}
+
+/**
+ * ags_machine_collection_remove_machine_mapper:
+ * @machine_collection: the #AgsMachineCollection
+ * @machine_mapper: the #AgsMachineMapper
+ * 
+ * Remove @machine_mapper from output.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_collection_remove_machine_mapper(AgsMachineCollection *machine_collection,
+					     AgsMachineMapper *machine_mapper)
+{
+  g_return_if_fail(AGS_IS_MACHINE_COLLECTION(machine_collection));
+  g_return_if_fail(AGS_IS_MACHINE_MAPPER(machine_mapper));
+
+  if(g_list_find(machine_collection->machine_mapper, machine_mapper) != NULL){
+    machine_collection->machine_mapper = g_list_remove(machine_collection->machine_mapper,
+						       machine_mapper);
+    
+    gtk_box_remove(machine_collection->machine_mapper_box,
+		   machine_mapper);
+  }
 }
 
 void
@@ -291,8 +358,9 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
 
   AgsApplicationContext *application_context;
   
-  GList *machine, *machine_start;
-
+  GList *start_machine, *machine;
+  GList *start_list, *list;
+  
   application_context = ags_application_context_get_instance();
   
   midi_export_wizard = (AgsMidiExportWizard *) gtk_widget_get_ancestor((GtkWidget *) machine_collection,
@@ -302,17 +370,24 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   /* destroy old */
-  parent = gtk_widget_get_parent(GTK_WIDGET(machine_collection->child));
-  gtk_widget_destroy((GtkWidget *) machine_collection->child);
-  
-  machine_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
-						       0);
-  gtk_container_add((GtkContainer *) parent,
-		    (GtkWidget *) machine_collection->child);
+  list =
+    start_list = ags_machine_collection_get_machine_mapper(machine_collection);
+
+  while(list != NULL){
+    ags_machine_collection_remove_machine_mapper(machine_collection,
+						 list->data);
+
+    g_object_run_dispose(list->data);
+    g_object_unref(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
   
   /* add entry */
   machine =
-    machine_start = gtk_container_get_children((GtkContainer *) window->machines);
+    start_machine = ags_window_get_machine(window);
   
   while(machine != NULL){
     if(AGS_MACHINE(machine->data)->audio != NULL &&
@@ -324,38 +399,36 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
     machine = machine->next;
   }
 
-  g_list_free(machine_start);
+  g_list_free(start_machine);
 }
 
 void
 ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 				 GtkWidget *machine)
 {
-  AgsMachineCollectionEntry *machine_collection_entry;
+  AgsMachineMapper *machine_mapper;
 
   if(machine == NULL){
     return;
   }
 
-  machine_collection_entry = (AgsMachineCollectionEntry *) g_object_new_with_properties(machine_collection->child_type,
-											machine_collection->child_n_properties,
-											machine_collection->child_strv,
-											machine_collection->child_value);
-  g_object_set(machine_collection_entry,
+  machine_mapper = (AgsMachineMapper *) g_object_new_with_properties(machine_collection->machine_mapper_type,
+								     machine_collection->machine_mapper_n_properties,
+								     machine_collection->machine_mapper_strv,
+								     machine_collection->machine_mapper_value);
+  g_object_set(machine_mapper,
 	       "machine", machine,
 	       NULL);
-  gtk_box_pack_start(GTK_BOX(machine_collection->child),
-		     GTK_WIDGET(machine_collection_entry),
-		     FALSE, FALSE,
-		     0);
+  ags_machine_collection_add_machine_mapper(machine_collection,
+					    (AgsMachineMapper *) machine_mapper);
 }
 
 /**
  * ags_machine_collection_new:
- * @child_type: the child type
- * @child_n_properties: the child properties count
- * @child_strv: the child string vector
- * @child_value: the child value array
+ * @machine_mapper_type: the machine mapper type
+ * @machine_mapper_n_properties: the machine mapper properties count
+ * @machine_mapper_strv: the machine mapper string vector
+ * @machine_mapper_value: the machine mapper value array
  *
  * Creates an #AgsMachineCollection
  *
@@ -364,20 +437,20 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
  * Since: 3.0.0
  */
 AgsMachineCollection*
-ags_machine_collection_new(GType child_type,
-			   guint child_n_properties,
-			   gchar **child_strv,
-			   GValue *child_value)
+ags_machine_collection_new(GType machine_mapper_type,
+			   guint machine_mapper_n_properties,
+			   gchar **machine_mapper_strv,
+			   GValue *machine_mapper_value)
 {
   AgsMachineCollection *machine_collection;
 
   machine_collection = (AgsMachineCollection *) g_object_new(AGS_TYPE_MACHINE_COLLECTION,
 							     NULL);
 
-  machine_collection->child_type = child_type;
-  machine_collection->child_n_properties = child_n_properties;
-  machine_collection->child_strv = child_strv;
-  machine_collection->child_value = child_value;
+  machine_collection->machine_mapper_type = machine_mapper_type;
+  machine_collection->machine_mapper_n_properties = machine_mapper_n_properties;
+  machine_collection->machine_mapper_strv = machine_mapper_strv;
+  machine_collection->machine_mapper_value = machine_mapper_value;
   
   return(machine_collection);
 }

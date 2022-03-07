@@ -2884,8 +2884,8 @@ libgsequencer_export_h_sources = \
 	ags/app/export/ags_midi_export_wizard_callbacks.h \
 	ags/app/export/ags_machine_collection.h \
 	ags/app/export/ags_machine_collection_callbacks.h \
-	ags/app/export/ags_machine_collection_entry.h \
-	ags/app/export/ags_machine_collection_entry_callbacks.h \
+	ags/app/export/ags_machine_mapper.h \
+	ags/app/export/ags_machine_mapper_callbacks.h \
 	ags/app/export/ags_wave_export_dialog.h \
 	ags/app/export/ags_wave_export_dialog_callbacks.h
 
@@ -2897,8 +2897,8 @@ libgsequencer_export_c_sources = \
 	ags/app/export/ags_midi_export_wizard_callbacks.c \
 	ags/app/export/ags_machine_collection.c \
 	ags/app/export/ags_machine_collection_callbacks.c \
-	ags/app/export/ags_machine_collection_entry.c \
-	ags/app/export/ags_machine_collection_entry_callbacks.c \
+	ags/app/export/ags_machine_mapper.c \
+	ags/app/export/ags_machine_mapper_callbacks.c \
 	ags/app/export/ags_wave_export_dialog.c \
 	ags/app/export/ags_wave_export_dialog_callbacks.c
 
