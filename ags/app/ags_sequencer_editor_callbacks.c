@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,7 @@ ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 			    5)){
       ags_sequencer_editor_load_jack_card(sequencer_editor);
 
-      gtk_widget_show_all((GtkWidget *) sequencer_editor->jack_hbox);
+      gtk_widget_show((GtkWidget *) sequencer_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){

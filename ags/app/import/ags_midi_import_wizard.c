@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 #include <ags/app/ags_window.h>
 
 #include <ags/app/import/ags_track_collection.h>
-#include <ags/app/import/ags_track_collection_mapper.h>
+#include <ags/app/import/ags_track_mapper.h>
 
 #include <ags/i18n.h>
 
@@ -47,9 +47,7 @@ void ags_midi_import_wizard_set_update(AgsApplicable *applicable, gboolean updat
 void ags_midi_import_wizard_apply(AgsApplicable *applicable);
 void ags_midi_import_wizard_reset(AgsApplicable *applicable);
 
-gboolean ags_midi_import_wizard_delete_event(GtkWidget *widget, GdkEventAny *event);
 void ags_midi_import_wizard_show(GtkWidget *widget);
-void ags_midi_import_wizard_show_all(GtkWidget *widget);
 
 /**
  * SECTION:ags_midi_import_wizard
@@ -138,9 +136,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
   /* properties */
 
   /* GtkWidget */
-  widget->delete_event = ags_midi_import_wizard_delete_event;
   widget->show = ags_midi_import_wizard_show;
-  widget->show_all = ags_midi_import_wizard_show_all;
 }
 
 void
@@ -163,6 +159,9 @@ ags_midi_import_wizard_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 {
+  gtk_window_set_hide_on_close(midi_import_wizard,
+			       TRUE);
+  
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 
   /* file chooser */  
@@ -177,7 +176,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		     0);
 
   /* track collection */
-  midi_import_wizard->track_collection = (GtkWidget *) ags_track_collection_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
+  midi_import_wizard->track_collection = (GtkWidget *) ags_track_collection_new(AGS_TYPE_TRACK_MAPPER,
 										0,
 										NULL,
 										NULL);
@@ -239,11 +238,11 @@ ags_midi_import_wizard_connect(AgsConnectable *connectable)
 
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
 
-  if((AGS_MIDI_IMPORT_WIZARD_CONNECTED & (midi_import_wizard->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_import_wizard->connectable_flags)) != 0){
     return;
   }
 
-  midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_CONNECTED;
+  midi_import_wizard->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect(midi_import_wizard, "response",
 		   G_CALLBACK(ags_midi_import_wizard_response_callback), NULL);
@@ -258,11 +257,11 @@ ags_midi_import_wizard_disconnect(AgsConnectable *connectable)
 
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
 
-  if((AGS_MIDI_IMPORT_WIZARD_CONNECTED & (midi_import_wizard->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (midi_import_wizard->connectable_flags)) == 0){
     return;
   }
 
-  midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_CONNECTED);
+  midi_import_wizard->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(midi_import_wizard->track_collection));
 }
@@ -297,13 +296,6 @@ ags_midi_import_wizard_reset(AgsApplicable *applicable)
   ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard->track_collection));
 }
 
-gboolean
-ags_midi_import_wizard_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  return(TRUE);
-}
 
 void
 ags_midi_import_wizard_show(GtkWidget *widget)
@@ -313,24 +305,6 @@ ags_midi_import_wizard_show(GtkWidget *widget)
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(widget);
 
   GTK_WIDGET_CLASS(ags_midi_import_wizard_parent_class)->show(widget);
-  
-  if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) == 0){
-    gtk_widget_hide(midi_import_wizard->file_chooser);
-  }
-
-  if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (midi_import_wizard->flags)) == 0){
-    gtk_widget_hide(midi_import_wizard->track_collection);
-  }
-}
-
-void
-ags_midi_import_wizard_show_all(GtkWidget *widget)
-{
-  AgsMidiImportWizard *midi_import_wizard;
-
-  midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(widget);
-
-  GTK_WIDGET_CLASS(ags_midi_import_wizard_parent_class)->show_all(widget);
   
   if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) == 0){
     gtk_widget_hide(midi_import_wizard->file_chooser);
@@ -385,11 +359,11 @@ ags_midi_import_wizard_set_flags(AgsMidiImportWizard *midi_import_wizard,
   }
 
   if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
-    gtk_widget_show_all(midi_import_wizard->file_chooser);
+    gtk_widget_show(midi_import_wizard->file_chooser);
   }
 
   if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (flags)) != 0){
-    gtk_widget_show_all(midi_import_wizard->track_collection);
+    gtk_widget_show(midi_import_wizard->track_collection);
   }
 
   midi_import_wizard->flags |= flags;

@@ -80,8 +80,6 @@ void ags_window_get_property(GObject *gobject,
 void ags_window_finalize(GObject *gobject);
 void ags_window_connect(AgsConnectable *connectable);
 void ags_window_disconnect(AgsConnectable *connectable);
-void ags_window_show(GtkWidget *widget);
-gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_window
@@ -172,10 +170,7 @@ ags_window_class_init(AgsWindowClass *window)
   /* properties */
 
   /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) window;
-  
-  widget->show = ags_window_show;
-  widget->delete_event = ags_window_delete_event;
+  widget = (GtkWidgetClass *) window;  
 }
 
 void
@@ -190,9 +185,9 @@ ags_window_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_window_init(AgsWindow *window)
 {
+  GtkLabel *label;
   GtkMenuButton *menu_button;
   GtkBox *vbox;
-  GtkViewport *viewport;
   GtkWidget *scrolled_window;
 
   GtkBuilder *builder;
@@ -206,8 +201,6 @@ ags_window_init(AgsWindow *window)
   gchar *window_title;
   gchar *app_icon;
 
-  gboolean use_composite_editor;
-  
   GError *error;
 
   application_context = ags_application_context_get_instance();
@@ -257,6 +250,7 @@ ags_window_init(AgsWindow *window)
   window->name = g_strdup("unnamed");
 
   window_title = g_strdup_printf("GSequencer - %s", window->name);
+  
   gtk_window_set_title(window,
 		       window_title);
 
@@ -266,10 +260,16 @@ ags_window_init(AgsWindow *window)
 
   gtk_header_bar_set_decoration_layout(window->header_bar,
 				       "menu:minimize,maximize,close");
-  gtk_header_bar_set_title(window->header_bar,
-			   "GSequencer");
-  gtk_header_bar_set_subtitle(window->header_bar,
-			      window->name);
+
+  label = gtk_header_bar_get_title_widget(window->header_bar);
+
+  window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
+				 window->name);
+
+  gtk_label_set_text(label,
+		     window_title);
+
+  g_free(window_title);
   
   /* app menu buttton */
   window->app_button = gtk_menu_button_new();
@@ -288,17 +288,19 @@ ags_window_init(AgsWindow *window)
 
   /* add menu button */
   window->add_button = gtk_menu_button_new();
-  gtk_container_add(window->add_button,
-		    gtk_image_new_from_icon_name("list-add-symbolic",
-						 GTK_ICON_SIZE_BUTTON));
+
+  gtk_button_set_icon_name(window->add_button,
+			   "list-add-symbolic");
+
   gtk_header_bar_pack_end(window->header_bar,
 			  window->add_button);  
 
   /* app edit buttton */
   window->edit_button = gtk_menu_button_new();
-  gtk_container_add(window->edit_button,
-		    gtk_image_new_from_icon_name("document-edit-symbolic",
-						 GTK_ICON_SIZE_BUTTON));
+
+  gtk_button_set_icon_name(window->edit_button,
+			   "document-edit-symbolic");
+
   gtk_header_bar_pack_end(window->header_bar,
 			  window->edit_button);
   
@@ -310,31 +312,18 @@ ags_window_init(AgsWindow *window)
 				 menu);
 
   /* vbox */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_window_set_child((GtkWindow *) window,
+		       (GtkWidget *) vbox);
   
   /* menubar */
-  window->context_menu = ags_context_menu_new();
-  gtk_widget_set_events(GTK_WIDGET(window), 
-			(GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK));
-  gtk_widget_show_all(GTK_WIDGET(window->context_menu));
-
-  g_signal_connect((GObject *) window, "button-press-event",
-		   G_CALLBACK(ags_window_button_press_event), (gpointer) window);
-  
-  window->menu_bar = ags_menu_bar_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-  		     (GtkWidget *) window->menu_bar,
-  		     FALSE, FALSE, 0);
-
+  //TODO:JK: implement me
   //FIXME:JK: the header bar is actually not working properly on Xorg
 #if 0
   if(window->shows_menu_bar){
-    gtk_widget_show_all((GtkWidget *) window->menu_bar);
+    gtk_widget_show((GtkWidget *) window->menu_bar);
   }
-#else
-  gtk_widget_show_all((GtkWidget *) window->menu_bar);
 #endif
   
   /* vpaned and scrolled window */
@@ -343,40 +332,27 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget*) window->paned,
 		     TRUE, TRUE,
 		     0);
-
-  viewport = (GtkViewport *) gtk_viewport_new(NULL,
-					      NULL);
-  g_object_set(viewport,
-	       "shadow-type", GTK_SHADOW_NONE,
-	       NULL);
-  gtk_paned_pack1((GtkPaned *) window->paned,
-		  (GtkWidget *) viewport,
-		  TRUE, TRUE);
   
-  scrolled_window = (GtkWidget *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add((GtkContainer *) viewport,
-		    (GtkWidget *) scrolled_window);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_paned_set_start_child(window->paned,
+			    (GtkWidget *) scrolled_window);
 
   /* machines rack */
-  window->machines = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					    0);
-  gtk_container_add((GtkContainer *) scrolled_window,
-		    (GtkWidget *) window->machines);
+  window->machine = NULL;
+  
+  window->machine_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+					       0);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) window->machine_box);
 
   window->machine_counter = ags_window_standard_machine_counter_alloc();
   window->selected = NULL;
 
   /* composite editor */
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
-  viewport = (GtkViewport *) gtk_viewport_new(NULL,
-					      NULL);
-  g_object_set(viewport,
-	       "shadow-type", GTK_SHADOW_NONE,
-	       NULL);
-  gtk_paned_pack2((GtkPaned *) window->paned,
-		  (GtkWidget *) viewport,
-		  TRUE, TRUE);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  
+  gtk_paned_set_end_child(window->paned,
+			  (GtkWidget *) scrolled_window);
 
   window->composite_editor = ags_composite_editor_new();
   ags_ui_provider_set_composite_editor(AGS_UI_PROVIDER(application_context),
@@ -385,64 +361,16 @@ ags_window_init(AgsWindow *window)
 	       "homogeneous", FALSE,
 	       "spacing", 0,
 	       NULL);
-  gtk_container_add((GtkContainer *) viewport,
-		    (GtkWidget *) window->composite_editor);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) window->composite_editor);
 
-  /* editor */
-  if(!use_composite_editor){
-    viewport = (GtkViewport *) gtk_viewport_new(NULL,
-						NULL);
-    g_object_set(viewport,
-		 "shadow-type", GTK_SHADOW_NONE,
-		 NULL);
-    gtk_paned_pack2((GtkPaned *) window->paned,
-		    (GtkWidget *) viewport,
-		    TRUE, TRUE);
-
-    window->notation_editor = g_object_new(AGS_TYPE_NOTATION_EDITOR,
-					   "homogeneous", FALSE,
-					   "spacing", 0,
-					   NULL);
-    gtk_container_add((GtkContainer *) viewport,
-		      (GtkWidget *) window->notation_editor);
-  }else{
-    window->notation_editor = NULL;
-  }
-  
-    /* navigation */
+  /* navigation */
   window->navigation = g_object_new(AGS_TYPE_NAVIGATION,
 				    "homogeneous", FALSE,
 				    "spacing", 0,
 				    NULL);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) window->navigation,
-		     FALSE, FALSE,
-		     0);
-
-  /* windows and dialogs */
-  window->dialog = NULL;
-
-  if(!use_composite_editor){
-    window->automation_window = ags_automation_window_new((GtkWidget *) window);
-
-    window->wave_window = ags_wave_window_new((GtkWidget *) window);
-  }else{
-    window->automation_window = NULL;
-    window->wave_window = NULL;
-  }
-  
-  window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
-							   NULL);
-  ags_export_window_add_export_soundcard(window->export_window);
-  
-  ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
-				    window->export_window);
-  
-  window->midi_import_wizard = NULL;
-  window->midi_export_wizard = NULL;
-  window->midi_file_chooser = NULL;
-  
-  window->preferences = NULL;
+  gtk_box_append(vbox,
+		 (GtkWidget *) window->navigation);
   
   /* load file */
   if(ags_window_load_file == NULL){
@@ -498,28 +426,20 @@ ags_window_connect(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
   
-  GList *list, *list_start;
-
-  gboolean use_composite_editor;
+  GList *start_list, *list;
 
   window = AGS_WINDOW(connectable);
 
-  if((AGS_WINDOW_CONNECTED & (window->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (window->connectable_flags)) != 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
 
-  window->flags |= AGS_WINDOW_CONNECTED;
-  
-  g_signal_connect(G_OBJECT(window), "delete_event",
-		   G_CALLBACK(ags_window_delete_event_callback), NULL);
+  window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  ags_connectable_connect(AGS_CONNECTABLE(window->context_menu));
-  ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
-
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) window->machines);
+  list =
+    start_list = ags_window_get_machine(window);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -527,27 +447,11 @@ ags_window_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
-  if(use_composite_editor){
-    ags_connectable_connect(AGS_CONNECTABLE(window->composite_editor));
-  }
-  
-  if(!use_composite_editor){
-    ags_connectable_connect(AGS_CONNECTABLE(window->notation_editor));
-  }
+  ags_connectable_connect(AGS_CONNECTABLE(window->composite_editor));
   
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
-
-  if(!use_composite_editor){
-    ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
-    
-    ags_connectable_connect(AGS_CONNECTABLE(window->wave_window));
-  }
-  
-  ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
 
 void
@@ -557,31 +461,20 @@ ags_window_disconnect(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
   
-  GList *list, *list_start;
-
-  gboolean use_composite_editor;
+  GList *start_list, *list;
 
   window = AGS_WINDOW(connectable);
 
-  if((AGS_WINDOW_CONNECTED & (window->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (window->connectable_flags)) == 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
 
-  window->flags &= (~AGS_WINDOW_CONNECTED);
+  window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  g_object_disconnect(window,
-		      "any_signal::delete_event",
-		      G_CALLBACK(ags_window_delete_event_callback),
-		      NULL,
-		      NULL);
-
-  ags_connectable_disconnect(AGS_CONNECTABLE(window->context_menu));
-  ags_connectable_disconnect(AGS_CONNECTABLE(window->menu_bar));
-
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) window->machines);
+  list =
+    start_list = ags_window_get_machine(window);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -589,27 +482,11 @@ ags_window_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
-  if(use_composite_editor){
-    ags_connectable_disconnect(AGS_CONNECTABLE(window->composite_editor));
-  }
-  
-  if(!use_composite_editor){
-    ags_connectable_disconnect(AGS_CONNECTABLE(window->notation_editor));
-  }
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->composite_editor));
   
   ags_connectable_disconnect(AGS_CONNECTABLE(window->navigation));
-
-  if(!use_composite_editor){
-    ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
-    
-    ags_connectable_disconnect(AGS_CONNECTABLE(window->wave_window));
-  }
-  
-  ags_connectable_disconnect(AGS_CONNECTABLE(window->export_window));
 }
 
 void
@@ -623,34 +500,12 @@ ags_window_finalize(GObject *gobject)
   g_hash_table_remove(ags_window_load_file,
 		      window);
 
-  g_object_unref(G_OBJECT(window->export_window));
-
   if(window->name != NULL){
-    free(window->name);
+    g_free(window->name);
   }
   
   /* call parent */
   G_OBJECT_CLASS(ags_window_parent_class)->finalize(gobject);
-}
-
-void
-ags_window_show(GtkWidget *widget)
-{
-  AgsWindow *window;
-
-  window = (AgsWindow *) widget;
-
-  GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
-}
-
-gboolean
-ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_destroy(widget);
-
-  GTK_WIDGET_CLASS(ags_window_parent_class)->delete_event(widget, event);
-
-  return(FALSE);
 }
 
 /**
@@ -691,7 +546,7 @@ ags_window_add_machine(AgsWindow *window,
     window->machine = g_list_prepend(window->machine,
 				     machine);
     
-    gtk_box_append(window->machine,
+    gtk_box_append(window->machine_box,
 		   machine);
   }
 }
@@ -716,7 +571,7 @@ ags_window_remove_machine(AgsWindow *window,
     window->machine = g_list_remove(window->machine,
 				    machine);
     
-    gtk_box_remove(window->machine,
+    gtk_box_remove(window->machine_box,
 		   machine);
   }
 }
@@ -1359,7 +1214,7 @@ ags_window_show_error(AgsWindow *window,
 						GTK_MESSAGE_ERROR,
 						GTK_BUTTONS_OK,
 						"%s", message);
-  gtk_widget_show_all((GtkWidget *) dialog);
+  gtk_widget_show((GtkWidget *) dialog);
 }
 
 /**
@@ -1388,6 +1243,8 @@ ags_window_load_file_timeout(AgsWindow *window)
   if(g_hash_table_lookup(ags_window_load_file,
 			 window) != NULL){
     if(window->filename != NULL){
+      GtkLabel *label;
+      
       AgsSimpleFile *simple_file;
 
       gchar *window_title;
@@ -1443,13 +1300,21 @@ ags_window_load_file_timeout(AgsWindow *window)
       window->name = g_strdup(window->filename);
 
       window_title = g_strdup_printf("GSequencer - %s", window->name);
+      
       gtk_window_set_title(window,
 			   window_title);
 
       g_free(window_title);
-      
-      gtk_header_bar_set_subtitle(window->header_bar,
-				  window->name);
+
+      label = gtk_header_bar_get_title_widget(window->header_bar);
+
+      window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
+				     window->name);
+
+      gtk_label_set_text(label,
+			 window_title);
+
+      g_free(window_title);
       
       window->filename = NULL;
 

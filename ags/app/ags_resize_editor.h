@@ -44,6 +44,8 @@ typedef struct _AgsResizeEditorClass AgsResizeEditorClass;
 struct _AgsResizeEditor
 {
   GtkGrid grid;
+
+  GtkCheckButton *enabled;
   
   GtkSpinButton *audio_channels;
 

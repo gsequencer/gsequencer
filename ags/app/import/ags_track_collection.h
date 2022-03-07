@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/import/ags_track_mapper.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_TRACK_COLLECTION                (ags_track_collection_get_type())
@@ -58,14 +60,16 @@ struct _AgsTrackCollection
   
   guint default_length;
   
-  GType child_type;
+  GType track_mapper_type;
   
-  guint child_n_properties;
+  guint track_mapper_n_properties;
 
-  gchar **child_strv;
-  GValue *child_value;
+  gchar **track_mapper_strv;
+  GValue *track_mapper_value;
 
-  GtkBox *child;
+  GList *track_mapper;
+  
+  GtkBox *track_mapper_box;
 };
 
 struct _AgsTrackCollectionClass
@@ -75,15 +79,21 @@ struct _AgsTrackCollectionClass
 
 GType ags_track_collection_get_type();
 
+GList* ags_track_collection_get_track_mapper(AgsTrackCollection *track_collection);
+void ags_track_collection_add_track_mapper(AgsTrackCollection *track_collection,
+					   AgsTrackMapper *track_mapper);
+void ags_track_collection_remove_track_mapper(AgsTrackCollection *track_collection,
+					      AgsTrackMapper *track_mapper);
+
 void ags_track_collection_parse(AgsTrackCollection *track_collection);
 void ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 				     xmlNode *track,
 				     gchar *instrument, gchar *sequence);
 
-AgsTrackCollection* ags_track_collection_new(GType child_type,
-					     guint child_n_properties,
-					     gchar **child_strv,
-					     GValue *child_value);
+AgsTrackCollection* ags_track_collection_new(GType track_mapper_type,
+					     guint track_mapper_n_properties,
+					     gchar **track_mapper_strv,
+					     GValue *track_mapper_value);
 
 G_END_DECLS
 

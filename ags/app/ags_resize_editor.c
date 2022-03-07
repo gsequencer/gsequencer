@@ -132,11 +132,18 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   GtkGrid *grid;
   GtkLabel *label;
 
+  resize_editor->enabled = gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_grid_attach((GtkGrid *) resize_editor,
+		  (GtkWidget *) resize_editor->enabled,
+		  0, 0,
+		  1, 1);
+  
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(GTK_BOX(resize_editor),
-		     GTK_WIDGET(grid),
-		     FALSE, FALSE,
-		     0);
+
+  gtk_grid_attach((GtkGrid *) resize_editor,
+		  (GtkWidget *) grid,
+		  0, 1,
+		  1, 1);
 
   /* audio channels */
   label = (GtkLabel *) gtk_label_new(i18n("audio channels count"));
@@ -257,7 +264,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
-  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0){
+  if(!gtk_check_button_get_active(resize_editor->enabled)){
     return;
   }
   

@@ -435,6 +435,78 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 }
 
 /**
+ * ags_audio_preferences_get_soundcard_editor:
+ * @audio_preferences: the #AgsAudio_Preferences
+ * 
+ * Get line member of @audio_preferences.
+ * 
+ * Returns: the #GList-struct containing #AgsSoundcardEditor
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_audio_preferences_get_soundcard_editor(AgsAudioPreferences *audio_preferences)
+{
+  g_return_val_if_fail(AGS_IS_AUDIO_PREFERENCES(audio_preferences), NULL);
+
+  return(g_list_reverse(g_list_copy(audio_preferences->soundcard_editor)));
+}
+
+/**
+ * ags_audio_preferences_add_soundcard_editor:
+ * @audio_preferences: the #AgsAudio_Preferences
+ * @soundcard_editor: the #AgsSoundcardEditor
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @soundcard_editor to @audio_preferences.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_audio_preferences_add_soundcard_editor(AgsAudioPreferences *audio_preferences,
+					   AgsSoundcardEditor *soundcard_editor)
+{
+  g_return_if_fail(AGS_IS_AUDIO_PREFERENCES(audio_preferences));
+  g_return_if_fail(AGS_IS_SOUNDCARD_EDITOR(soundcard_editor));
+
+  if(g_list_find(audio_preferences->soundcard_editor, soundcard_editor) == NULL){
+    audio_preferences->soundcard_editor = g_list_prepend(audio_preferences->soundcard_editor,
+							 soundcard_editor);
+    
+    gtk_box_append(audio_preferences->soundcard_editor_box,
+		   soundcard_editor);
+  }
+}
+
+/**
+ * ags_audio_preferences_remove_soundcard_editor:
+ * @audio_preferences: the #AgsAudio_Preferences
+ * @soundcard_editor: the #AgsSoundcardEditor
+ * 
+ * Remove @soundcard_editor from @audio_preferences.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_audio_preferences_remove_soundcard_editor(AgsAudioPreferences *audio_preferences,
+					      AgsSoundcardEditor *soundcard_editor)
+{
+  g_return_if_fail(AGS_IS_AUDIO_PREFERENCES(audio_preferences));
+  g_return_if_fail(AGS_IS_SOUNDCARD_EDITOR(soundcard_editor));
+
+  if(g_list_find(audio_preferences->soundcard_editor, soundcard_editor) != NULL){
+    audio_preferences->soundcard_editor = g_list_remove(audio_preferences->soundcard_editor,
+							soundcard_editor);
+    
+    gtk_box_remove(audio_preferences->soundcard_editor_box,
+		   soundcard_editor);
+  }
+}
+
+/**
  * ags_audio_preferences_new:
  *
  * Create a new instance of #AgsAudioPreferences

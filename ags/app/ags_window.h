@@ -31,8 +31,6 @@
 
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_navigation.h>
-#include <ags/app/ags_export_window.h>
-#include <ags/app/ags_preferences.h>
 #include <ags/app/ags_composite_editor.h>
 
 G_BEGIN_DECLS
@@ -51,11 +49,9 @@ typedef struct _AgsWindowClass AgsWindowClass;
 typedef struct _AgsMachineCounter AgsMachineCounter;
 
 typedef enum{
-  AGS_WINDOW_CONNECTED        = 1,
-  AGS_WINDOW_READY            = 1 << 1,
-  AGS_WINDOW_LOADING          = 1 << 2,
-  AGS_WINDOW_SAVING           = 1 << 3,
-  AGS_WINDOW_TERMINATING      = 1 << 4,
+  AGS_WINDOW_LOADING          = 1,
+  AGS_WINDOW_SAVING           = 1 <<  1,
+  AGS_WINDOW_TERMINATING      = 1 <<  2,
 }AgsWindowFlags;
 
 struct _AgsWindow
@@ -63,7 +59,8 @@ struct _AgsWindow
   GtkApplicationWindow application_window;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gboolean no_config;
   gboolean shows_menu_bar;
   

@@ -155,6 +155,10 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(open_action));
 
+  gtk_application_set_accels_for_action(gsequencer_app,
+					"app.open",
+					"<Ctrl>o");
+  
   /* save */
   save_action = g_simple_action_new("save",
 				    NULL);
@@ -163,6 +167,10 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(save_action));
 
+  gtk_application_set_accels_for_action(gsequencer_app,
+					"app.save",
+					"<Ctrl>s");
+
   /* save as */
   save_as_action = g_simple_action_new("save_as",
 				       NULL);
@@ -170,6 +178,10 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_save_as_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(save_as_action));
+
+  gtk_application_set_accels_for_action(gsequencer_app,
+					"app.save_as",
+					"<Ctrl><Shift>s");
 
   /* meta-data */
   meta_data_action = g_simple_action_new("meta_data",
@@ -227,6 +239,10 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(help_action));
 
+  gtk_application_set_accels_for_action(gsequencer_app,
+					"app.help",
+					"<Ctrl>h");
+
   /* quit */
   quit_action = g_simple_action_new("quit",
 				    NULL);
@@ -234,6 +250,10 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_quit_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(quit_action));
+
+  gtk_application_set_accels_for_action(gsequencer_app,
+					"app.quit",
+					"<Ctrl>q");
 
   /* panel */
   add_panel_action = g_simple_action_new("add_panel",
@@ -585,12 +605,14 @@ ags_gsequencer_application_open(GApplication *application,
 
       /* destroy editor */
       list =
-	start_list = gtk_container_get_children((GtkContainer *) AGS_WINDOW(window)->composite_editor->machine_selector);
-
-      list = list->next;
+	start_list = ags_machine_selector_get_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector);
 
       while(list != NULL){
-	gtk_widget_destroy(list->data);
+	ags_machine_selector_remove_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector,
+							 list->data);
+
+	g_object_run_dispose(list->data);
+	g_object_unref(list->data);
     
 	list = list->next;
       }

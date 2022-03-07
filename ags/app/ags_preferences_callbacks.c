@@ -55,7 +55,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
       ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
 				      NULL);
       
-      gtk_widget_destroy(GTK_WIDGET(dialog));
+      gtk_window_destroy(GTK_WINDOW(dialog));
     }
   }
 }

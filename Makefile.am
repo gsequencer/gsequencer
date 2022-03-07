@@ -2861,8 +2861,8 @@ libgsequencer_import_h_sources = \
 	ags/app/import/ags_midi_import_wizard_callbacks.h \
 	ags/app/import/ags_track_collection.h \
 	ags/app/import/ags_track_collection_callbacks.h \
-	ags/app/import/ags_track_collection_mapper.h \
-	ags/app/import/ags_track_collection_mapper_callbacks.h
+	ags/app/import/ags_track_mapper.h \
+	ags/app/import/ags_track_mapper_callbacks.h
 
 deprecated_libgsequencer_import_c_sources =
 
@@ -2872,8 +2872,8 @@ libgsequencer_import_c_sources = \
 	ags/app/import/ags_midi_import_wizard_callbacks.c \
 	ags/app/import/ags_track_collection.c \
 	ags/app/import/ags_track_collection_callbacks.c \
-	ags/app/import/ags_track_collection_mapper.c \
-	ags/app/import/ags_track_collection_mapper_callbacks.c
+	ags/app/import/ags_track_mapper.c \
+	ags/app/import/ags_track_mapper_callbacks.c
 
 # libgsequencer - export
 deprecated_libgsequencer_export_h_sources =

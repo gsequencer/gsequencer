@@ -191,7 +191,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(machine)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
 	}
 
 	machine_name = NULL;
@@ -225,7 +225,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(quit_dialog->wave_export_machine->data)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename));
 	}
 
 	str = g_strdup_printf("%s\n\nmachine: %s:%s\nfilename: %s",
@@ -293,7 +293,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(machine)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
 	}
 
 	machine_name = NULL;
@@ -327,7 +327,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(quit_dialog->wave_export_machine->data)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename));
 	}
 	
 	str = g_strdup_printf("%s\n\n%s:%s\nfilename: %s",

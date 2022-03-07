@@ -352,7 +352,7 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
     
   AgsConfig *config;
 
-  GList *list;	
+  GList *start_list;	
 
   gchar *sequencer_group;
   gchar *backend;
@@ -365,22 +365,24 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
 
   sequencer_editor = AGS_SEQUENCER_EDITOR(applicable);
   midi_preferences = (AgsMidiPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-								      AGS_TYPE_MIDI_PREFERENCES);
+								    AGS_TYPE_MIDI_PREFERENCES);
 
   config = ags_config_get_instance();
 
-  list = gtk_container_get_children((GtkContainer *) midi_preferences->sequencer_editor);
-  nth = g_list_index(list,
+  start_list = ags_midi_preferences_get_sequencer_editor(midi_preferences);
+
+  nth = g_list_index(start_list,
 		     sequencer_editor);
 
-  if(nth < 0){
+  g_list_free(start_list);
+
+  if(nth < 0){    
     return;
   }
   
   sequencer_group = g_strdup_printf("%s-%d",
 				    AGS_CONFIG_SEQUENCER,
 				    nth);
-  g_list_free(list);
   
   /* backend */
   use_jack = TRUE;

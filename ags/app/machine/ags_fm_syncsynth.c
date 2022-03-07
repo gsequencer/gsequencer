@@ -146,7 +146,8 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   GtkFrame *frame;
   GtkBox *volume_hbox;
   GtkLabel *label;
-
+  AgsFMOscillator *fm_oscillator;
+  
   AgsAudio *audio;
 
   AgsApplicationContext *application_context;   
@@ -248,16 +249,20 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 				0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) fm_syncsynth)), (GtkWidget *) hbox);
 
-  fm_syncsynth->fm_oscillator = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  fm_syncsynth->fm_oscillator = NULL;
+  
+  fm_syncsynth->fm_oscillator_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							   0);
   gtk_box_pack_start(hbox,
-		     (GtkWidget *) fm_syncsynth->fm_oscillator,
+		     (GtkWidget *) fm_syncsynth->fm_oscillator_box,
 		     FALSE,
 		     FALSE,
 		     0);
 
   /* add fm oscillator */
+  fm_oscillator = ags_fm_oscillator_new();
   ags_fm_syncsynth_add_fm_oscillator(fm_syncsynth,
-				     ags_fm_oscillator_new());
+				     fm_oscillator);
   
   /* add and remove buttons */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -939,6 +944,24 @@ ags_fm_syncsynth_unset_flags(AgsFMSyncsynth *fm_syncsynth, guint flags)
 }
 
 /**
+ * ags_fm_syncsynth_get_fm_oscillator:
+ * @fm_syncsynth: the #AgsFMSyncsynth
+ * 
+ * Get bulk member of @fm_syncsynth.
+ * 
+ * Returns: the #GList-struct containing #AgsFMOscillator
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_fm_syncsynth_get_fm_oscillator(AgsFMSyncsynth *fm_syncsynth)
+{
+  g_return_val_if_fail(AGS_IS_FM_SYNCSYNTH(fm_syncsynth), NULL);
+
+  return(g_list_reverse(g_list_copy(fm_syncsynth->fm_oscillator)));
+}
+
+/**
  * ags_fm_syncsynth_add_fm_oscillator:
  * @fm_syncsynth: the #AgsFMSyncsynth
  * @fm_oscillator: the #AgsFMOscillator
@@ -951,37 +974,16 @@ void
 ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 				   AgsFMOscillator *fm_oscillator)
 {
-  AgsAudio *audio;
-  
-  GtkBox *hbox;
-  GtkCheckButton *check_button;
+  g_return_if_fail(AGS_IS_FM_SYNCSYNTH(fm_syncsynth));
+  g_return_if_fail(AGS_IS_FM_OSCILLATOR(fm_oscillator));
 
-  audio = AGS_MACHINE(fm_syncsynth)->audio;
-  ags_audio_add_synth_generator(audio,
-				(GObject *) ags_synth_generator_new());
-  
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+  if(g_list_find(fm_syncsynth->fm_oscillator, fm_oscillator) == NULL){
+    fm_syncsynth->fm_oscillator = g_list_prepend(fm_syncsynth->fm_oscillator,
+						 fm_oscillator);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) check_button,
-		     FALSE,
-		     FALSE,
-		     0);
-  
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) fm_oscillator,
-		     FALSE,
-		     FALSE,
-		     0);
-
-  gtk_box_pack_start(fm_syncsynth->fm_oscillator,
-		     (GtkWidget *) hbox,
-		     FALSE,
-		     FALSE,
-		     0);
-  gtk_widget_show_all((GtkWidget *) hbox);
+    gtk_box_append(fm_syncsynth->fm_oscillator_box,
+		   (GtkWidget *) fm_oscillator);
+  }
 }
 
 /**
@@ -997,34 +999,16 @@ void
 ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 				      guint nth)
 {
-  AgsAudio *audio;
+  g_return_if_fail(AGS_IS_FM_SYNCSYNTH(fm_syncsynth));
+  g_return_if_fail(AGS_IS_FM_OSCILLATOR(fm_oscillator));
   
-  GList *list, *list_start;
-  GList *start_synth_generator;
-  
-  audio = AGS_MACHINE(fm_syncsynth)->audio;
-  g_object_get(audio,
-	       "synth-generator", &start_synth_generator,
-	       NULL);
-
-  start_synth_generator = g_list_reverse(start_synth_generator);
-  ags_audio_remove_synth_generator(audio,
-				   g_list_nth_data(start_synth_generator,
-						   nth));
-
-  g_list_free_full(start_synth_generator,
-		   g_object_unref);
-  
-  list_start = gtk_container_get_children(GTK_CONTAINER(fm_syncsynth->fm_oscillator));
-
-  list = g_list_nth(list_start,
-		    nth);
-
-  if(list != NULL){
-    gtk_widget_destroy(list->data);
+  if(g_list_find(syncsynth->oscillator, oscillator) != NULL){
+    fm_syncsynth->fm_oscillator = g_list_remove(fm_syncsynth->fm_oscillator,
+						fm_oscillator);
+    
+    gtk_box_remove(syncsynth->fm_oscillator,
+		   fm_oscillator);
   }
-
-  g_list_free(list_start);
 }
 
 /**
