@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,88 +145,68 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
 
   /* position */
   desk_pad->position_time = (GtkLabel *) gtk_label_new("00:00.000");
-  gtk_box_pack_start((GtkBox *) desk_pad,
-		     (GtkWidget *) desk_pad->position_time,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(desk_pad,
+		 (GtkWidget *) desk_pad->position_time);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) desk_pad,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(desk_pad,
+		 (GtkWidget *) hbox);
   
-  desk_pad->position = (GtkScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) desk_pad->position,
-		     TRUE, TRUE,
-		     0);
-
+  desk_pad->position = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+							     0.0, 1.0, 0.001);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk_pad->position);
+  
   /* filename */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) desk_pad,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(desk_pad,
+		 (GtkWidget *) hbox);
 
   /* play */
   desk_pad->play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-						    "image", (GtkWidget *) gtk_image_new_from_icon_name("media-playback-start",
-													GTK_ICON_SIZE_BUTTON),
+						    "icon-name", "media-playback-start",
 						    NULL);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) desk_pad->play,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk_pad->play);
 
   desk_pad->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) desk_pad->filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk_pad->filename);
   
   desk_pad->grab_filename = (GtkButton *) gtk_button_new_with_label(i18n("grab"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) desk_pad->grab_filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk_pad->grab_filename);
 
   /* controls/playlist */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) desk_pad,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(desk_pad,
+		 (GtkWidget *) hbox);
   
   /* controls */
   control_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) control_vbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) control_vbox);
 
   control_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					0);
-  gtk_box_pack_start(control_vbox,
-		     (GtkWidget *) control_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control_vbox,
+		 (GtkWidget *) control_hbox);
 
   /* indicator */
-  desk_pad->indicator = (AgsIndicator *) ags_vindicator_new();
+  desk_pad->indicator = (AgsIndicator *) ags_indicator_new(GTK_ORIENTATION_VERTICAL,
+							   gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH,
+							   gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT);
+
   g_object_set(desk_pad->indicator,
-	       "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
-	       "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 	       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 	       NULL);
-  gtk_box_pack_start(control_hbox,
-		     (GtkWidget *) desk_pad->indicator,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_box_append(control_hbox,
+		 (GtkWidget *) desk_pad->indicator);
 
   /* volume */
   desk_pad->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
@@ -237,18 +217,14 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) desk_pad->volume,
 			      gui_scale_factor * 16, gui_scale_factor * 100);
-  gtk_box_pack_start(control_hbox,
-		     (GtkWidget *) desk_pad->volume,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control_hbox,
+		 (GtkWidget *) desk_pad->volume);
 
   /* playlist */
   playlist_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					 0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) playlist_vbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) playlist_vbox);
 
   playlist_model = gtk_list_store_new(2,
 				      G_TYPE_STRING,
@@ -257,10 +233,8 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
   desk_pad->playlist = (GtkTreeView *) gtk_tree_view_new_with_model(GTK_TREE_MODEL(playlist_model));
   gtk_widget_set_size_request((GtkWidget *) desk_pad->playlist,
 			      240, 240);
-  gtk_box_pack_start(playlist_vbox,
-		     (GtkWidget *) desk_pad->playlist,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(playlist_vbox,
+		 (GtkWidget *) desk_pad->playlist);
   
   cell_renderer = gtk_cell_renderer_text_new();
 
@@ -282,38 +256,24 @@ ags_desk_pad_init(AgsDeskPad *desk_pad)
   
   playlist_button_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						0);
-  gtk_box_pack_start(playlist_vbox,
-		     (GtkWidget *) playlist_button_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(playlist_vbox,
+		 (GtkWidget *) playlist_button_hbox);
 
-  desk_pad->move_up = (GtkButton *) gtk_button_new_from_icon_name("go-up",
-								  GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(playlist_button_hbox,
-		     (GtkWidget *) desk_pad->move_up,
-		     FALSE, FALSE,
-		     0);
+  desk_pad->move_up = (GtkButton *) gtk_button_new_from_icon_name("go-up");
+  gtk_box_append(playlist_button_hbox,
+		 (GtkWidget *) desk_pad->move_up);
 
-  desk_pad->move_down = (GtkButton *) gtk_button_new_from_icon_name("go-down",
-								    GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(playlist_button_hbox,
-		     (GtkWidget *) desk_pad->move_down,
-		     FALSE, FALSE,
-		     0);
+  desk_pad->move_down = (GtkButton *) gtk_button_new_from_icon_name("go-down");
+  gtk_box_append(playlist_button_hbox,
+		 (GtkWidget *) desk_pad->move_down);
 
-  desk_pad->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-							      GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(playlist_button_hbox,
-		     (GtkWidget *) desk_pad->add,
-		     FALSE, FALSE,
-		     0);
+  desk_pad->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+  gtk_box_append(playlist_button_hbox,
+		 (GtkWidget *) desk_pad->add);
   
-  desk_pad->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-								 GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(playlist_button_hbox,
-		     (GtkWidget *) desk_pad->remove,
-		     FALSE, FALSE,
-		     0);
+  desk_pad->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove");
+  gtk_box_append(playlist_button_hbox,
+		 (GtkWidget *) desk_pad->remove);
 }
 
 static void

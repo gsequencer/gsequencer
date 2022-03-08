@@ -33,17 +33,30 @@
 
 G_BEGIN_DECLS
 
-gboolean ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern);
+gboolean ags_cell_pattern_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							 gint n_press,
+							 gdouble x,
+							 gdouble y,
+							 AgsCellPattern *cell_pattern);
+gboolean ags_cell_pattern_gesture_click_released_callback(GtkGestureClick *event_controller,
+							  gint n_press,
+							  gdouble x,
+							  gdouble y,
+							  AgsCellPattern *cell_pattern);
 
-/* controls */
-gboolean ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern);
-
-gboolean ags_cell_pattern_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsCellPattern *cell_pattern);
-gboolean ags_cell_pattern_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsCellPattern *cell_pattern);
-
-gboolean ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsCellPattern *cell_pattern);
-gboolean ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern);
-gboolean ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern);
+gboolean ags_cell_pattern_key_pressed_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsCellPattern *cell_pattern);
+gboolean ags_cell_pattern_key_released_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsCellPattern *cell_pattern);
+gboolean ags_cell_pattern_modifiers_callback(GtkEventControllerKey *event_controller,
+					     GdkModifierType keyval,
+					     AgsCellPattern *cell_pattern);
 
 void ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *cell_pattern);
 

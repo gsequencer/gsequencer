@@ -39,12 +39,14 @@ typedef struct _AgsDeskFileChooserClass AgsDeskFileChooserClass;
 
 struct _AgsDeskFileChooser
 {
-  GtkFileChooserWidget file_chooser_widget;
+  GtkGrid grid;
+  
+  GtkFileChooserWidget *file_chooser;
 };
 
 struct _AgsDeskFileChooserClass
 {
-  GtkFileChooserWidgetClass file_chooser_widget;
+  GtkGridClass grid;
 };
 
 GType ags_desk_file_chooser_get_type(void);

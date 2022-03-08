@@ -42,6 +42,8 @@ G_BEGIN_DECLS
 #define AGS_AUDIOREC_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUDIOREC, AgsAudiorecClass))
 
 #define AGS_AUDIOREC_INPUT_LINE(ptr) ((AgsAudiorecInputLine *)(ptr))
+#define AGS_AUDIOREC_DEFAULT_SEGMENT_WIDTH (7)
+#define AGS_AUDIOREC_DEFAULT_SEGMENT_HEIGHT (16)
 
 typedef struct _AgsAudiorec AgsAudiorec;
 typedef struct _AgsAudiorecInputLine AgsAudiorecInputLine;
@@ -77,11 +79,13 @@ struct _AgsAudiorec
   gint position;
   GtkSpinner *wave_loader_spinner;  
   
-  GtkToggleButton *keep_data;
-  GtkToggleButton *mix_data;
-  GtkToggleButton *replace_data;
+  GtkCheckButton *keep_data;
+  GtkCheckButton *mix_data;
+  GtkCheckButton *replace_data;
 
-  GtkBox *hindicator_vbox;
+  GList *indicator;
+  
+  GtkBox *indicator_vbox;
 
   GtkFileChooserDialog *open_dialog;
 };
@@ -103,6 +107,12 @@ struct _AgsAudiorecInputLine
 
 GType ags_audiorec_get_type(void);
 
+GList* ags_audiorec_get_indicator(AgsAudiorec *audiorec);
+void ags_audiorec_add_indicator(AgsAudiorec *audiorec,
+				AgsIndicator *indicator);
+void ags_audiorec_remove_indicator(AgsAudiorec *audiorec,
+				   AgsIndicator *indicator);
+
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);
 
@@ -113,7 +123,7 @@ void ags_audiorec_fast_export(AgsAudiorec *audiorec,
 gboolean ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec);
 gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
 
-AgsAudiorec* ags_audiorec_new(GObject *soundcard);
+AgsAudiorec* ags_audiorec_new(GObject *output_soundcard);
 
 G_END_DECLS
 

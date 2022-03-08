@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_menu_bar.h>
 #include <ags/app/ags_navigation.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line.h>
@@ -46,7 +45,6 @@ void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_disconnect(AgsConnectable *connectable);
 
 void ags_drum_show(GtkWidget *widget);
-void ags_drum_show_all(GtkWidget *widget);
 
 void ags_drum_resize_audio_channels(AgsMachine *machine,
 				    guint audio_channels, guint audio_channels_old,
@@ -130,7 +128,6 @@ ags_drum_class_init(AgsDrumClass *drum)
   widget = (GtkWidgetClass *) drum;
 
   widget->show = ags_drum_show;
-  widget->show_all = ags_drum_show_all;
 
   /*  */
   machine = (AgsMachineClass *) drum;
@@ -154,7 +151,6 @@ ags_drum_init(AgsDrum *drum)
   GtkBox *hbox;
   GtkFrame *frame;
   GtkGrid *grid0, *grid1;
-  GtkRadioButton *radio_button;
 
   AgsAudio *audio;
 
@@ -247,7 +243,8 @@ ags_drum_init(AgsDrum *drum)
   /* create widgets */
   drum->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				      0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) drum), (GtkWidget *) drum->vbox);
+  gtk_frame_set_child(AGS_MACHINE(drum)->frame,
+		      (GtkWidget *) drum->vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
@@ -257,22 +254,14 @@ ags_drum_init(AgsDrum *drum)
 		     0);
 
   /* input pad */
-  drum->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					   0);
-  AGS_MACHINE(drum)->input = (GtkContainer *) drum->input_pad;
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) drum->input_pad,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(drum)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append(hbox,
+		 (GtkWidget *) AGS_MACHINE(drum)->input_pad_grid);
 
   /* output pad */
-  drum->output_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					    0);
-  AGS_MACHINE(drum)->output = (GtkContainer *) drum->output_pad;
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) drum->output_pad,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(drum)->output_pad_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append(hbox,
+		 (GtkWidget *) AGS_MACHINE(drum)->output_pad_grid);
 
   /*  */
   drum->selected_pad = NULL;
@@ -294,8 +283,8 @@ ags_drum_init(AgsDrum *drum)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer*) frame,
-		    (GtkWidget *) vbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) vbox);
 
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) gtk_label_new(i18n("default")), 
@@ -323,8 +312,8 @@ ags_drum_init(AgsDrum *drum)
 		     0);
 
   grid0 = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer*) frame,
-		    (GtkWidget *) grid0);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) grid0);
 
   drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("loop"));
   gtk_grid_attach(grid0,
@@ -441,7 +430,7 @@ ags_drum_connect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -488,7 +477,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -558,14 +547,6 @@ ags_drum_show(GtkWidget *widget)
 }
 
 void
-ags_drum_show_all(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_drum_parent_class)->show_all(widget);
-
-  ags_pattern_box_set_pattern(AGS_DRUM(widget)->pattern_box);
-}
-
-void
 ags_drum_resize_audio_channels(AgsMachine *machine,
 			       guint audio_channels, guint audio_channels_old,
 			       gpointer data)
@@ -590,7 +571,7 @@ ags_drum_resize_pads(AgsMachine *machine,
     if(pads > pads_old){
       /* reset edit button */
       if(pads_old == 0){
-	start_list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+	start_list = ags_machine_get_input_pad(machine);
 
 	drum_input_pad = NULL;
 
@@ -599,7 +580,7 @@ ags_drum_resize_pads(AgsMachine *machine,
 	}
 	
 	drum->selected_pad = drum_input_pad;
-	AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum_input_pad;
+	machine->selected_input_pad = (GtkWidget *) drum_input_pad;
 
 	if(drum->selected_pad != NULL){
 	  drum->selected_edit_button = drum->selected_pad->edit;
@@ -624,7 +605,7 @@ ags_drum_resize_pads(AgsMachine *machine,
 		     NULL);
 	
 	if(pad > pads){
-	  start_list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+	  start_list = ags_machine_get_input_pad(machine);
 
 	  drum_input_pad = NULL;
 
@@ -633,7 +614,7 @@ ags_drum_resize_pads(AgsMachine *machine,
 	  }
 	  
 	  drum->selected_pad = drum_input_pad;
-	  AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum_input_pad;
+	  machine->selected_input_pad = (GtkWidget *) drum_input_pad;
 	  
 	  if(drum->selected_pad != NULL){
 	    drum->selected_edit_button = drum->selected_pad->edit;

@@ -52,7 +52,7 @@ ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_butt
 {
   GtkFileChooserDialog *file_chooser;
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...",
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Export to file ..."),
 								      GTK_WINDOW(wave_export_dialog),
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
 								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,

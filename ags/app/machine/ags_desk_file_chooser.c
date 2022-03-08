@@ -55,7 +55,7 @@ ags_desk_file_chooser_get_type(void)
       (GInstanceInitFunc) ags_desk_file_chooser_init,
     };
 
-    ags_type_desk_file_chooser = g_type_register_static(GTK_TYPE_FILE_CHOOSER_WIDGET,
+    ags_type_desk_file_chooser = g_type_register_static(GTK_TYPE_GRID,
 							"AgsDeskFileChooser", &ags_desk_file_chooser_info,
 							0);
 
@@ -85,10 +85,7 @@ ags_desk_file_chooser_class_init(AgsDeskFileChooserClass *desk_file_chooser)
 void
 ags_desk_file_chooser_init(AgsDeskFileChooser *desk_file_chooser)
 {
-  gtk_file_chooser_set_action(GTK_FILE_CHOOSER(desk_file_chooser),
-			      GTK_FILE_CHOOSER_ACTION_OPEN);
-  gtk_orientable_set_orientation(GTK_ORIENTABLE(desk_file_chooser),
-				 GTK_ORIENTATION_VERTICAL);
+  desk_file_chooser->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
 
   gtk_widget_set_hexpand((GtkWidget *) desk_file_chooser,
 			 TRUE);

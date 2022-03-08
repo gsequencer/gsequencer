@@ -43,7 +43,6 @@ void ags_audiorec_connect(AgsConnectable *connectable);
 void ags_audiorec_disconnect(AgsConnectable *connectable);
 
 void ags_audiorec_show(GtkWidget *widget);
-void ags_audiorec_show_all(GtkWidget *widget);
 
 void ags_audiorec_map_recall(AgsMachine *machine);
 
@@ -147,7 +146,6 @@ ags_audiorec_class_init(AgsAudiorecClass *audiorec)
   widget = (GtkWidgetClass *) audiorec;
 
   widget->show = ags_audiorec_show;
-  widget->show_all = ags_audiorec_show_all;
 
   /* AgsMachineClass */
   machine = (AgsMachineClass *) audiorec;
@@ -260,20 +258,18 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   /* hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) audiorec)),
-		    (GtkWidget *) hbox);
+  gtk_frame_set_child(AGS_MACHINE(audiorec)->frame,
+		      (GtkWidget *) hbox);
 
   /* frame - filename and open */
   frame = (GtkFrame *) gtk_frame_new(i18n("file"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) frame);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) vbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) vbox);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -322,26 +318,23 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->keep_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(NULL,
-										       "keep");
-  gtk_box_pack_start(radio_hbox,
-		     (GtkWidget *) audiorec->keep_data,
-		     FALSE, FALSE,
-		     0);
+  audiorec->keep_data = (GtkCheckButton *) gtk_check_button_new_with_label("keep");
+  gtk_check_button_set_group(audiorec->keep_data,
+			     audiorec->keep_data);
+  gtk_box_append(radio_hbox,
+		 (GtkWidget *) audiorec->keep_data);
 
-  audiorec->replace_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
-											  "replace");
-  gtk_box_pack_start(radio_hbox,
-		     (GtkWidget *) audiorec->replace_data,
-		     FALSE, FALSE,
-		     0);
+  audiorec->replace_data = (GtkCheckButton *) gtk_check_button_new_with_label("replace");
+  gtk_check_button_set_group(audiorec->keep_data,
+			     audiorec->replace_data);
+  gtk_box_append(radio_hbox,
+		 (GtkWidget *) audiorec->replace_data);
   
-  audiorec->mix_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
-										      "mix");
+  audiorec->mix_data = (GtkCheckButton *) gtk_check_button_new_with_label("mix");
+  gtk_check_button_set_group(audiorec->keep_data,
+			     audiorec->mix_data);
   gtk_box_pack_start(radio_hbox,
-		     (GtkWidget *) audiorec->mix_data,
-		     FALSE, FALSE,
-		     0);
+		     (GtkWidget *) audiorec->mix_data);
   
   /* frame - hindicator */
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
@@ -350,10 +343,10 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->hindicator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						     0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) audiorec->hindicator_vbox);
+  audiorec->indicator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						    0);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) audiorec->indicator_vbox);
 
   /* dialog */
   audiorec->open_dialog = NULL;
@@ -403,7 +396,7 @@ ags_audiorec_connect(AgsConnectable *connectable)
 {
   AgsAudiorec *audiorec;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -431,7 +424,7 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
 {
   AgsAudiorec *audiorec;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -474,14 +467,6 @@ ags_audiorec_show(GtkWidget *widget)
 }
 
 void
-ags_audiorec_show_all(GtkWidget *widget)
-{  
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_audiorec_parent_class)->show_all(widget);
-}
-
-
-void
 ags_audiorec_resize_audio_channels(AgsMachine *machine,
 				   guint audio_channels, guint audio_channels_old,
 				   gpointer data)
@@ -515,37 +500,39 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
     
     /* widgets */
     for(i = audio_channels_old; i < audio_channels; i++){
-      AgsHIndicator *hindicator;
+      AgsIndicator *hindicator;
 	
-      hindicator = ags_hindicator_new();
+      hindicator = ags_indicator_new(GTK_ORIENTATION_HORIZONTAL,
+				     gui_scale_factor * AGS_AUDIOREC_DEFAULT_SEGMENT_WIDTH,
+				     gui_scale_factor * AGS_AUDIOREC_DEFAULT_SEGMENT_HEIGHT);
       g_object_set(hindicator,
-		   "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
-		   "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		   "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		   NULL);
-      gtk_box_pack_start(audiorec->hindicator_vbox,
-			 (GtkWidget *) hindicator,
-			 FALSE, FALSE,
-			 8);
+      ags_audiorec_add_indicator(audiorec,
+				 hindicator);
+
+      gtk_widget_show((GtkWidget *) hindicator);
     }
-
-    gtk_widget_show_all((GtkWidget *) audiorec->hindicator_vbox);
   }else{
-    GList *list, *list_start;
-
-    list_start =
-      list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
-
-    list = g_list_nth(list_start,
+    GList *start_list, *list;
+    
+    list =
+      start_list = ags_audiorec_get_indicator(audiorec);
+    
+    list = g_list_nth(start_list,
 		      audio_channels);
     
     while(list != NULL){
-      gtk_widget_destroy((GtkWidget *) list->data);
+      ags_audiorec_remove_indicator(audiorec,
+				    list->data);
+      
+      g_object_run_dispose(list->data);
+      g_object_unref(list->data);
       
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free(start_list);
   }
 }
 
@@ -577,18 +564,22 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 				    0,
 				    pads_old);
     }else{
-      GList *list, *list_start;
+      GList *start_list, *list;
 
-      list_start = 
-	list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
+      list =
+	start_list = ags_audiorec_get_indicator(audiorec);
 
       while(list != NULL){
-	gtk_widget_destroy((GtkWidget *) list->data);
+	ags_audiorec_remove_indicator(audiorec,
+				      list->data);
+      
+	g_object_run_dispose(list->data);
+	g_object_unref(list->data);
       
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free(start_list);
 
       audiorec->mapped_input_pad = pads;
     }
@@ -800,6 +791,74 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
   
   audiorec->mapped_input_audio_channel = audio_channels;
   audiorec->mapped_input_pad = input_pads;
+}
+
+/**
+ * ags_audiorec_get_indicator:
+ * @audiorec: the #AgsAudiorec
+ * 
+ * Get indicator.
+ * 
+ * Returns: the #GList-struct containing #AgsIndicator
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_audiorec_get_indicator(AgsAudiorec *audiorec)
+{
+  g_return_val_if_fail(AGS_IS_AUDIOREC(audiorec), NULL);
+
+  return(g_list_reverse(g_list_copy(audiorec->indicator)));
+}
+
+/**
+ * ags_audiorec_add_indicator:
+ * @audiorec: the #AgsAudiorec
+ * @indicator: the #AgsIndicator
+ * 
+ * Add @indicator to @audiorec.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_audiorec_add_indicator(AgsAudiorec *audiorec,
+			   AgsIndicator *indicator)
+{
+  g_return_if_fail(AGS_IS_AUDIOREC(audiorec));
+  g_return_if_fail(AGS_IS_INDICATOR(indicator));
+
+  if(g_list_find(audiorec->indicator, indicator) == NULL){
+    audiorec->indicator = g_list_prepend(audiorec->indicator,
+					 indicator);
+    
+    gtk_box_append(audiorec->indicator_vbox,
+		   indicator);
+  }  
+}
+
+/**
+ * ags_audiorec_remove_indicator:
+ * @audiorec: the #AgsAudiorec
+ * @indicator: the #AgsIndicator
+ * 
+ * Remove @indicator from @audiorec.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_audiorec_remove_indicator(AgsAudiorec *audiorec,
+			      AgsIndicator *indicator)
+{
+  g_return_if_fail(AGS_IS_AUDIOREC(audiorec));
+  g_return_if_fail(AGS_IS_INDICATOR(indicator));
+
+  if(g_list_find(audiorec->indicator, indicator) != NULL){
+    audiorec->indicator = g_list_remove(audiorec->indicator,
+					indicator);
+    
+    gtk_box_remove(audiorec->indicator_vbox,
+		   indicator);
+  }  
 }
 
 /**
@@ -1100,7 +1159,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
     AgsChannel *start_channel;
     AgsChannel *channel, *next_channel;
     
-    GList *list, *list_start;
+    GList *start_list, *list;
 
     guint i;
 
@@ -1109,8 +1168,8 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 		 "input", &start_channel,
 		 NULL);
     
-    list_start = 
-      list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
+    list =
+      start_list = ags_audiorec_get_indicator(audiorec);
     
     /* check members */
     channel = start_channel;
@@ -1191,7 +1250,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       g_object_unref(channel);
     }
     
-    g_list_free(list_start);
+    g_list_free(start_list);
     
     return(TRUE);
   }else{
@@ -1201,7 +1260,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 
 /**
  * ags_audiorec_new:
- * @soundcard: the assigned soundcard.
+ * @output_soundcard: the assigned output soundcard.
  *
  * Create a new instance of #AgsAudiorec
  *
@@ -1210,7 +1269,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
  * Since: 3.0.0
  */
 AgsAudiorec*
-ags_audiorec_new(GObject *soundcard)
+ags_audiorec_new(GObject *output_soundcard)
 {
   AgsAudiorec *audiorec;
 
@@ -1218,7 +1277,7 @@ ags_audiorec_new(GObject *soundcard)
 					  NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(audiorec)->audio),
-	       "output-soundcard", soundcard,
+	       "output-soundcard", output_soundcard,
 	       NULL);
 
   return(audiorec);

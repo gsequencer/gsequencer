@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_pcm_file_chooser_dialog.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_navigation.h>
 
@@ -65,62 +66,69 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDrum *
 void
 ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum)
 {
-  GList *list, *list_start;
+  GList *start_list, *list;
 
   if(drum->open_dialog != NULL){
-    gtk_widget_destroy(drum->open_dialog);
+    gtk_window_destroy(GTK_WINDOW(drum->open_dialog));
   }
   
   list =
-    list_start = gtk_container_get_children(AGS_MACHINE(drum)->input);
+    start_list = ags_machine_get_input_pad(AGS_MACHINE(drum));
 
   while(list != NULL){
-
     if(AGS_DRUM_INPUT_PAD(list->data)->file_chooser != NULL){
-      gtk_widget_destroy(GTK_WIDGET(AGS_DRUM_INPUT_PAD(list->data)->file_chooser));
+      gtk_window_destroy(GTK_WINDOW(AGS_DRUM_INPUT_PAD(list->data)->file_chooser));
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
 ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
-  GtkFileChooserDialog *file_chooser;
-  GtkCheckButton *check_button;
+  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
+  GFile *file;
+  
+  GError *error;
+  
   if(drum->open_dialog != NULL){
     return;
   }
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
-								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
-								      i18n("_Cancel"), GTK_RESPONSE_CANCEL, 
-								      NULL);
-  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
-					   "file:///usr/share/hydrogen/data/drumkits",
-					   NULL);  
-  drum->open_dialog = (GtkWidget *) file_chooser;
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
+  pcm_file_chooser_dialog = ags_pcm_file_chooser_dialog_new(i18n("open audio files"),
+							    (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) drum,
+												  AGS_TYPE_WINDOW));
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
-  gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(file_chooser), "create", (gpointer) check_button);
+  file = g_file_new_for_path("/usr/share/hydrogen/data/drumkits");
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
-  gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(file_chooser), "overwrite", (gpointer) check_button);
+  error = NULL;
+  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
+				       file,
+				       &error);
 
-  gtk_widget_show_all(GTK_WIDGET(file_chooser));
+  if(error != NULL){
+    g_message("%s", error->message);
+    
+    g_error_free(error);
+  }
+  
+  drum->open_dialog = (GtkWidget *) pcm_file_chooser_dialog;
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
+				       TRUE);
 
-  g_signal_connect(G_OBJECT(file_chooser), "response",
+  pcm_file_chooser_dialog->flags &= ~(AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_AUDIO_CHANNEL);
+  pcm_file_chooser_dialog->flags |= (AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_NEW_CHANNEL |
+				     AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_EXISTING_CHANNEL);
+  
+  gtk_widget_show(GTK_WIDGET(pcm_file_chooser_dialog));
+
+  g_signal_connect(G_OBJECT(pcm_file_chooser_dialog), "response",
 		   G_CALLBACK(ags_drum_open_response_callback), drum);
-  g_signal_connect(G_OBJECT(file_chooser), "response",
+  g_signal_connect(G_OBJECT(pcm_file_chooser_dialog), "response",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
 }
 

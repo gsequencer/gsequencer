@@ -139,42 +139,31 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   /* toplevel functions */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) pad,
-		     (GtkWidget *) hbox,
-		     FALSE, TRUE,
-		     0);
-  gtk_box_reorder_child((GtkBox *) pad,
-			(GtkWidget *) hbox,
-			0);
+  gtk_box_append(pad,
+		 (GtkWidget *) hbox);
+  gtk_box_reorder_child_after((GtkBox *) pad,
+			      (GtkWidget *) hbox,
+			      NULL);
 
   /* open */
-  drum_input_pad->open = (GtkButton *) gtk_button_new();
-  gtk_container_add((GtkContainer *) drum_input_pad->open,
-		    (GtkWidget *) gtk_image_new_from_icon_name("document-open",
-							       GTK_ICON_SIZE_BUTTON));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) drum_input_pad->open,
-		     TRUE, TRUE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  drum_input_pad->open = (GtkButton *) gtk_button_new_from_icon_name("document-open");
+  gtk_box_append(hbox,
+		 (GtkWidget *) drum_input_pad->open);
 
   /* play */
   AGS_PAD(drum_input_pad)->play = 
     drum_input_pad->play = (GtkToggleButton *) gtk_toggle_button_new();
-  gtk_container_add((GtkContainer *) drum_input_pad->play,
-		    (GtkWidget *) gtk_image_new_from_icon_name("media-playback-start",
-							       GTK_ICON_SIZE_BUTTON));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) drum_input_pad->play,
-		     TRUE, TRUE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  g_object_set(drum_input_pad->play,
+	       "icon-name", "media-playback-start",
+	       NULL);
+  gtk_box_append(hbox,
+		 (GtkWidget *) drum_input_pad->play);
 
   /* bottom functions - edit */
   drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("edit"));
-  gtk_box_pack_start((GtkBox *) pad,
-		     (GtkWidget *) drum_input_pad->edit,
-		     FALSE, FALSE,
-		     0);
-
+  gtk_box_append((GtkBox *) pad,
+		 (GtkWidget *) drum_input_pad->edit);
+  
   /* recall specific */
   drum_input_pad->pad_open_play_ref = 0;
   drum_input_pad->pad_open_recalls = NULL;

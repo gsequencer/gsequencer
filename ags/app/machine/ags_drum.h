@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -86,9 +86,6 @@ struct _AgsDrum
   GtkToggleButton *run;
 
   GtkBox *vbox;
-
-  GtkBox *input_pad;
-  GtkBox *output_pad;
 
   GtkToggleButton *selected_edit_button;
 
