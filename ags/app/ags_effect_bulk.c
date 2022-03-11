@@ -506,7 +506,7 @@ ags_effect_bulk_set_property(GObject *gobject,
       }
 
       if(effect_bulk->audio != NULL){
-	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+	if((AGS_CONNECTABLE_CONNECTED & (effect_bulk->flags)) != 0){
 	  //TODO:JK: implement me
 	}
 	
@@ -537,7 +537,7 @@ ags_effect_bulk_set_property(GObject *gobject,
 
       effect_bulk->audio = audio;
 
-      if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+      if((AGS_CONNECTABLE_CONNECTED & (effect_bulk->flags)) != 0){
 	if(audio != NULL){
 	  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
 	    g_object_get(audio,
@@ -667,11 +667,11 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
-  if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_bulk->connectable_flags)) != 0){
     return;
   }
 
-  effect_bulk->flags |= AGS_EFFECT_BULK_CONNECTED;
+  effect_bulk->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						   AGS_TYPE_MACHINE);
@@ -718,11 +718,11 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
-  if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_bulk->connectable_flags)) == 0){
     return;
   }
 
-  effect_bulk->flags &= (~AGS_EFFECT_BULK_CONNECTED);
+  effect_bulk->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						   AGS_TYPE_MACHINE);

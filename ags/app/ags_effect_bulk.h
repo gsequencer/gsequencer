@@ -55,10 +55,9 @@ typedef struct _AgsEffectBulkClass AgsEffectBulkClass;
 typedef enum{
   AGS_EFFECT_BULK_MAPPED_RECALL       = 1,
   AGS_EFFECT_BULK_PREMAPPED_RECALL    = 1 <<  1,
-  AGS_EFFECT_BULK_CONNECTED           = 1 <<  2,
-  AGS_EFFECT_BULK_HIDE_BUTTONS        = 1 <<  3,
-  AGS_EFFECT_BULK_HIDE_ENTRIES        = 1 <<  4,
-  AGS_EFFECT_BULK_SHOW_LABELS         = 1 <<  5,
+  AGS_EFFECT_BULK_HIDE_BUTTONS        = 1 <<  2,
+  AGS_EFFECT_BULK_HIDE_ENTRIES        = 1 <<  3,
+  AGS_EFFECT_BULK_SHOW_LABELS         = 1 <<  4,
 }AgsEffectBulkFlags;
 
 struct _AgsEffectBulk
@@ -66,7 +65,8 @@ struct _AgsEffectBulk
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;

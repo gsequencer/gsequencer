@@ -139,10 +139,8 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 
   /* linking machine */
   link_editor->combo = (GtkComboBox *) gtk_combo_box_new();
-  gtk_box_pack_start(GTK_BOX(link_editor),
-		     GTK_WIDGET(link_editor->combo),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(link_editor),
+		 GTK_WIDGET(link_editor->combo));
   
   cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(link_editor->combo),
@@ -155,10 +153,8 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 
   /* link with line */
   link_editor->spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_box_pack_start(GTK_BOX(link_editor),
-		     GTK_WIDGET(link_editor->spin_button),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(link_editor),
+		 GTK_WIDGET(link_editor->spin_button));
 
   link_editor->audio_file = NULL;
 

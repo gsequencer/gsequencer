@@ -144,7 +144,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
     machine = AGS_MACHINE(audio->machine_widget);
     
     model = gtk_combo_box_get_model(link_editor->combo);
-
+    
     if(!((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
 	 ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
 	  ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0)) &&
@@ -187,37 +187,36 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 					   FALSE);
 
       /*  */
+      str = NULL;
+      
       gtk_tree_model_get(model,
 			 &iter,
 			 0, &str,
 			 -1);
-      
-      tmp = g_strdup(str + 7);
 
-      if(g_strcmp0(tmp, "")){
-	char *tmp0, *name, *dir;
+      if(str != NULL){
+	tmp = g_strdup(str + 7);
 
-	GError *error;
+	if(!g_strcmp0(tmp, "") == FALSE){
+	  GFile *file;
+
+	  GError *error;
+
+	  file = g_fie_new_for_path(tmp);
 	
-	tmp0 = g_strrstr(tmp, "/");
-	name = g_strdup(tmp0 + 1);
-	dir = g_strndup(tmp, tmp0 - tmp);
+	  error = NULL;
+	  gtk_file_chooser_set_file(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),
+				    file,
+				    &error);
 
-	error = NULL;
-	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),
-					    dir,
-					    &error);
-
-	if(error != NULL){
-	  g_message("%s", error->message);
+	  if(error != NULL){
+	    g_message("%s", error->message);
 	  
-	  g_error_free(error);
+	    g_error_free(error);
+	  }
 	}
-	
-	gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),
-					  name);
       }
-
+      
       g_signal_connect((GObject *) link_editor->pcm_file_chooser_dialog, "response",
 		       G_CALLBACK(ags_link_editor_file_chooser_response_callback), (gpointer) link_editor);
 

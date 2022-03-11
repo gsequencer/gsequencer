@@ -157,8 +157,8 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) equalizer10),
-		    (GtkWidget *) vbox);
+  gtk_frame_set_child(AGS_MACHINE(equalizer10)->frame,
+		      (GtkWidget *) vbox);
 
   /* controls */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -575,7 +575,7 @@ ags_equalizer10_connect(AgsConnectable *connectable)
 {
   AgsEqualizer10 *equalizer10;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -626,7 +626,7 @@ ags_equalizer10_disconnect(AgsConnectable *connectable)
 {
   AgsEqualizer10 *equalizer10;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

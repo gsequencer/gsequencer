@@ -53,19 +53,19 @@ typedef struct _AgsEffectBridgeClass AgsEffectBridgeClass;
 typedef enum{
   AGS_EFFECT_BRIDGE_MAPPED_RECALL     = 1,
   AGS_EFFECT_BRIDGE_PREMAPPED_RECALL  = 1 <<  1,
-  AGS_EFFECT_BRIDGE_CONNECTED         = 1 <<  2, 
-  AGS_EFFECT_BRIDGE_DISPLAY_INPUT     = 1 <<  3,
-  AGS_EFFECT_BRIDGE_BULK_OUTPUT       = 1 <<  4,
-  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT    = 1 <<  5,
-  AGS_EFFECT_BRIDGE_BULK_INPUT        = 1 <<  6,
+  AGS_EFFECT_BRIDGE_DISPLAY_INPUT     = 1 <<  2,
+  AGS_EFFECT_BRIDGE_BULK_OUTPUT       = 1 <<  3,
+  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT    = 1 <<  4,
+  AGS_EFFECT_BRIDGE_BULK_INPUT        = 1 <<  5,
 }AgsEffectBridgeFlags;
 
 struct _AgsEffectBridge
 {
-  GtkBox box;
+  GtkGrid grid;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;
@@ -105,7 +105,7 @@ struct _AgsEffectBridge
 
 struct _AgsEffectBridgeClass
 {
-  GtkBoxClass box;
+  GtkGridClass grid;
 
   void (*samplerate_changed)(AgsEffectBridge *effect_bridge,
 			     guint samplerate, guint old_samplerate);

@@ -105,7 +105,7 @@ ags_effect_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_effect_bridge = g_type_register_static(GTK_TYPE_BOX,
+    ags_type_effect_bridge = g_type_register_static(GTK_TYPE_GRID,
 						    "AgsEffectBridge", &ags_effect_bridge_info,
 						    0);
 
@@ -375,10 +375,8 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
-  gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_bridge),
-				 GTK_ORIENTATION_VERTICAL);
-
   effect_bridge->flags = 0;
+  effect_bridge->connectable_flags = 0;
 
   effect_bridge->name = NULL;
 
@@ -906,11 +904,11 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
 
   effect_bridge = AGS_EFFECT_BRIDGE(connectable);
 
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_bridge->connectable_flags)) != 0){
     return;
   }
 
-  effect_bridge->flags |= AGS_EFFECT_BRIDGE_CONNECTED;
+  effect_bridge->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(effect_bridge),
 						   AGS_TYPE_MACHINE);
@@ -970,11 +968,11 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
   effect_bridge = AGS_EFFECT_BRIDGE(connectable);
 
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_bridge->connectable_flags)) == 0){
     return;
   }
 
-  effect_bridge->flags &= (~AGS_EFFECT_BRIDGE_CONNECTED);
+  effect_bridge->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(effect_bridge),
 						   AGS_TYPE_MACHINE);
@@ -1400,7 +1398,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
     }
     
     /* connect and show */
-    if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+    if((AGS_CONNECTABLE_CONNECTED & (effect_bridge->connectable_flags)) != 0){
       GList *start_list, *list;
 
       start_list = NULL;
