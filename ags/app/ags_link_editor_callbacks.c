@@ -202,7 +202,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 
 	  GError *error;
 
-	  file = g_fie_new_for_path(tmp);
+	  file = g_file_new_for_path(tmp);
 	
 	  error = NULL;
 	  gtk_file_chooser_set_file(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),

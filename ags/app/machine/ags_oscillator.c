@@ -146,14 +146,17 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   config = ags_config_get_instance();
   
-  oscillator->flags = 0;
+  oscillator->flags = 0;  
+  oscillator->connectable_flags = 0;
 
   grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) oscillator,
 		    (GtkWidget *) grid);
 
   samplerate = ags_soundcard_helper_config_get_samplerate(config);
-  
+
+  oscillator->selector = gtk_check_button_new();
+    
   /* wave */
   gtk_grid_attach(grid,
 		  (GtkWidget *) gtk_label_new(i18n("wave")),
@@ -327,11 +330,11 @@ ags_oscillator_connect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
-  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (oscillator->connectable_flags)) != 0){
     return;
   }
 
-  oscillator->flags |= AGS_OSCILLATOR_CONNECTED;
+  oscillator->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(G_OBJECT(oscillator->wave), "changed",
 		   G_CALLBACK(ags_oscillator_wave_callback), oscillator);
@@ -369,11 +372,11 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
-  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (oscillator->connectable_flags)) == 0){
     return;
   }
 
-  oscillator->flags &= (~AGS_OSCILLATOR_CONNECTED);
+  oscillator->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect((GObject *) oscillator->wave,
 		      "any_signal::changed",

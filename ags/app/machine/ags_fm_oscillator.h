@@ -46,7 +46,7 @@ typedef struct _AgsFMOscillator AgsFMOscillator;
 typedef struct _AgsFMOscillatorClass AgsFMOscillatorClass;
 
 typedef enum{
-  AGS_FM_OSCILLATOR_CONNECTED   = 1,
+  AGS_FM_OSCILLATOR_SHOW_SELECTOR   = 1,
 }AgsFMOscillatorFlags;
 
 struct _AgsFMOscillator
@@ -54,7 +54,10 @@ struct _AgsFMOscillator
   GtkFrame frame;
 
   guint flags;
+  guint connectable_flags;
 
+  GtkCheckButton *selector;
+  
   GtkComboBox *wave;
 
   GtkSpinButton *attack;

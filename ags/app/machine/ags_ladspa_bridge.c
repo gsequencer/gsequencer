@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -204,8 +204,6 @@ ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 {
-  GtkGrid *grid;
-
   AgsAudio *audio;
 
   g_signal_connect_after((GObject *) ladspa_bridge, "parent-set",
@@ -244,15 +242,9 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->effect = NULL;
   ladspa_bridge->effect_index = 0;
 
-  AGS_MACHINE(ladspa_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) ladspa_bridge),
-		    (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
-
-  grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(ladspa_bridge)->bridge = ags_effect_bridge_new(audio);
+  gtk_frame_set_child(AGS_MACHINE(ladspa_bridge)->frame,
+		      (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 													AGS_TYPE_INPUT);
@@ -265,7 +257,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach((GtkGrid *) AGS_MACHINE(ladspa_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 		  0, 0,
 		  1, 1);
@@ -301,7 +293,8 @@ ags_ladspa_bridge_set_property(GObject *gobject,
 		      G_FILE_TEST_EXISTS)){
 	AgsWindow *window;
 
-	window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ladspa_bridge);
+	window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) ladspa_bridge,
+						       AGS_TYPE_WINDOW);
 
 	ags_window_show_error(window,
 			      g_strdup_printf("Plugin file not present %s",
@@ -406,7 +399,7 @@ ags_ladspa_bridge_finalize(GObject *gobject)
 void
 ags_ladspa_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -416,7 +409,7 @@ ags_ladspa_bridge_connect(AgsConnectable *connectable)
 void
 ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

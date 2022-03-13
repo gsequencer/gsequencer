@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -244,24 +244,24 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   /* widget */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) hybrid_synth),
-		    (GtkWidget *) vbox);
+  gtk_frame_set_child(AGS_MACHINE(hybrid_synth)->frame,
+		      (GtkWidget *) vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_container_add((GtkContainer *) vbox,
-		    (GtkWidget *) hbox);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   /* oscillator */
   osc_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				    0);
-  gtk_container_add((GtkContainer *) hbox,
-		    (GtkWidget *) osc_vbox);
+  gtk_box_append(hbox,
+		 (GtkWidget *) osc_vbox);
 
   /* grid */
   synth_0_grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) osc_vbox,
-		    (GtkWidget *) synth_0_grid);
+  gtk_box_append(osc_vbox,
+		 (GtkWidget *) synth_0_grid);
 
   /* OSC 1 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1"));
@@ -724,8 +724,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   /* grid */
   synth_1_grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) osc_vbox,
-		    (GtkWidget *) synth_1_grid);
+  gtk_box_append(osc_vbox,
+		 (GtkWidget *) synth_1_grid);
 
   /* OSC 2 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2"));
@@ -1187,8 +1187,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   /* grid */
   misc_grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) vbox,
-		    (GtkWidget *) misc_grid);
+  gtk_box_append(vbox,
+		 (GtkWidget *) misc_grid);
 
   /* sequencer */
   hybrid_synth->sequencer_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("sequencer enabled"));
@@ -1311,13 +1311,13 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   /* band */
   band_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				     0);
-  gtk_container_add((GtkContainer *) vbox,
-		    (GtkWidget *) band_hbox);
+  gtk_box_append(vbox,
+		 (GtkWidget *) band_hbox);
 
   /* low pass grid */
   low_pass_grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) band_hbox,
-		    (GtkWidget *) low_pass_grid);
+  gtk_box_append(band_hbox,
+		 (GtkWidget *) low_pass_grid);
 
   hybrid_synth->low_pass_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("low pass enabled"));
   gtk_grid_attach(low_pass_grid,
@@ -1395,8 +1395,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   /* high pass grid */
   high_pass_grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) band_hbox,
-		    (GtkWidget *) high_pass_grid);
+  gtk_box_append(band_hbox,
+		 (GtkWidget *) high_pass_grid);
 
   hybrid_synth->high_pass_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("high pass enabled"));
   gtk_grid_attach(high_pass_grid,
@@ -1474,8 +1474,8 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) vbox,
-		    (GtkWidget *) chorus_grid);
+  gtk_box_append(vbox,
+		 (GtkWidget *) chorus_grid);
 
   /* chorus input volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus input volume"));
@@ -1705,7 +1705,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
 {
   AgsHybridSynth *hybrid_synth;
   
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -1864,7 +1864,7 @@ ags_hybrid_synth_disconnect(AgsConnectable *connectable)
 {
   AgsHybridSynth *hybrid_synth;
   
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

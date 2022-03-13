@@ -369,7 +369,8 @@ ags_dssi_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) dssi_bridge);
+	  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) dssi_bridge,
+							 AGS_TYPE_WINDOW);
 
 	  str = g_strdup_printf("%s %s",
 				i18n("Plugin file not present"),

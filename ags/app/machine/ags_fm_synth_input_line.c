@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,7 +35,6 @@ void ags_fm_synth_input_line_connect(AgsConnectable *connectable);
 void ags_fm_synth_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_fm_synth_input_line_show(GtkWidget *line);
-void ags_fm_synth_input_line_show_all(GtkWidget *line);
 
 void ags_fm_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_fm_synth_input_line_map_recall(AgsLine *line,
@@ -106,7 +105,6 @@ ags_fm_synth_input_line_class_init(AgsFMSynthInputLineClass *fm_synth_input_line
   widget = (GtkWidgetClass *) fm_synth_input_line;
 
   widget->show = ags_fm_synth_input_line_show;
-  widget->show_all = ags_fm_synth_input_line_show_all;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(fm_synth_input_line);
@@ -127,18 +125,21 @@ ags_fm_synth_input_line_connectable_interface_init(AgsConnectableInterface *conn
 void
 ags_fm_synth_input_line_init(AgsFMSynthInputLine *fm_synth_input_line)
 {
-  AgsFMOscillator *fm_oscillator;
+  AgsLineMember *line_member;
 
   fm_synth_input_line->name = NULL;
   fm_synth_input_line->xml_type = "ags-fm-synth-input-line";
 
   /* fm_oscillator */
-  fm_oscillator = ags_fm_oscillator_new();
-  fm_synth_input_line->fm_oscillator = fm_oscillator;
-  ags_expander_add(AGS_LINE(fm_synth_input_line)->expander,
-		   GTK_WIDGET(fm_oscillator),
-		   0, 0,
-		   1, 1);
+  line_member = ags_line_member_new();
+  ags_line_add_line_member(AGS_LINE(fm_synth_input_line),
+			   line_member,
+			   0, 0,
+			   1, 1);
+  
+  fm_synth_input_line->fm_oscillator = ags_fm_oscillator_new();
+  ags_line_member_set_widget(line_member,
+			     (GtkWidget *) fm_synth_input_line->fm_oscillator);
 
   g_signal_connect((GObject *) fm_synth_input_line, "samplerate-changed",
 		   G_CALLBACK(ags_fm_synth_input_line_samplerate_changed_callback), NULL);
@@ -213,14 +214,6 @@ void
 ags_fm_synth_input_line_show(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_fm_synth_input_line_parent_class)->show(line);
-
-  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
-}
-
-void
-ags_fm_synth_input_line_show_all(GtkWidget *line)
-{
-  GTK_WIDGET_CLASS(ags_fm_synth_input_line_parent_class)->show_all(line);
 
   gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }

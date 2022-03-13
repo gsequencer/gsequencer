@@ -151,13 +151,16 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   config = ags_config_get_instance();
   
   fm_oscillator->flags = 0;
+  fm_oscillator->connectable_flags = 0;
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) fm_oscillator,
-		    (GtkWidget *) grid);
+  gtk_frame_set_child((GtkFrame *) fm_oscillator,
+		      (GtkWidget *) grid);
 
   samplerate = ags_soundcard_helper_config_get_samplerate(config);
 
+  fm_oscillator->selector = gtk_check_button_new();
+  
   /* wave */
   gtk_grid_attach(grid,
 		  (GtkWidget *) gtk_label_new(i18n("wave")),
@@ -418,11 +421,11 @@ ags_fm_oscillator_connect(AgsConnectable *connectable)
   
   fm_oscillator = AGS_FM_OSCILLATOR(connectable);
 
-  if((AGS_FM_OSCILLATOR_CONNECTED & (fm_oscillator->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (fm_oscillator->connectable_flags)) != 0){
     return;
   }
 
-  fm_oscillator->flags |= AGS_FM_OSCILLATOR_CONNECTED;
+  fm_oscillator->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(G_OBJECT(fm_oscillator->wave), "changed",
 		   G_CALLBACK(ags_fm_oscillator_wave_callback), fm_oscillator);
@@ -472,11 +475,11 @@ ags_fm_oscillator_disconnect(AgsConnectable *connectable)
   
   fm_oscillator = AGS_FM_OSCILLATOR(connectable);
 
-  if((AGS_FM_OSCILLATOR_CONNECTED & (fm_oscillator->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (fm_oscillator->connectable_flags)) == 0){
     return;
   }
 
-  fm_oscillator->flags &= (~AGS_FM_OSCILLATOR_CONNECTED);
+  fm_oscillator->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect((GObject *) fm_oscillator->wave,
 		      "any_signal::changed",

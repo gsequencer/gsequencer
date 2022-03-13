@@ -62,8 +62,6 @@ struct _AgsFMSynth
   guint mapped_input_pad;
   guint mapped_output_pad;
 
-  GtkBox *input_pad;
-
   GtkCheckButton *enable_lfo;
   
   GtkCheckButton *auto_update;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -171,39 +171,30 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) fm_synth)),
-		    (GtkWidget *) hbox);
+  gtk_frame_set_child(AGS_MACHINE(fm_synth)->frame,
+		      (GtkWidget *) hbox);
 
-  fm_synth->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					       0);
-  AGS_MACHINE(fm_synth)->input = (GtkContainer *) fm_synth->input_pad;
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) AGS_MACHINE(fm_synth)->input,
-		     FALSE,
-		     FALSE,
-		     0);
+  AGS_MACHINE(fm_synth)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append(hbox,
+		 (GtkWidget *) AGS_MACHINE(fm_synth)->input_pad_grid);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) vbox,
-		     FALSE, FALSE,
-		     0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) vbox);
 
   fm_synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) fm_synth->auto_update,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) fm_synth->auto_update);
 
   fm_synth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start(vbox, (GtkWidget *) fm_synth->update, FALSE, FALSE, 0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) fm_synth->update);
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) grid);
 
   /* frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -251,7 +242,7 @@ ags_fm_synth_connect(AgsConnectable *connectable)
 {
   AgsFMSynth *fm_synth;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -275,7 +266,7 @@ ags_fm_synth_disconnect(AgsConnectable *connectable)
 {
   AgsFMSynth *fm_synth;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -427,7 +418,7 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   start_frequency = (gdouble) gtk_spin_button_get_value(fm_synth->lower);
 
   /* clear output */
-  start_input_pad = gtk_container_get_children((GtkContainer *) fm_synth->input_pad);
+  start_input_pad = ags_machine_get_input_pad((AgsMachine *) fm_synth);
 
   g_object_get(audio,
 	       "output", &start_output,
@@ -491,8 +482,8 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   while(input_pad != NULL){
     guint current_frame_count;
     
-    start_input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
-    fm_oscillator = AGS_FM_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(start_input_line->data)->expander->table)->data);
+    start_input_line = ags_pad_get_line(AGS_PAD(input_pad->data));
+    fm_oscillator = AGS_FM_SYNTH_INPUT_LINE(start_input_line->data)->fm_oscillator;
 
     current_frame_count = gtk_spin_button_get_value(fm_oscillator->attack) + gtk_spin_button_get_value(fm_oscillator->frame_count);
     
@@ -518,8 +509,8 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
     guint i;
     gboolean do_sync;
     
-    start_input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
-    fm_oscillator = AGS_FM_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(start_input_line->data)->expander->table)->data);
+    start_input_line = ags_pad_get_line(AGS_PAD(input_pad->data));
+    fm_oscillator = AGS_FM_SYNTH_INPUT_LINE(start_input_line->data)->fm_oscillator;
 
     g_object_get(AGS_LINE(start_input_line->data),
 		 "channel", &input,
