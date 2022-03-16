@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,12 +122,12 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
 		     0);
 
   expander = (GtkExpander *) gtk_expander_new("show/hide");
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) expander);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) expander);
 
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *)  grid);
+  gtk_expander_set_child(expander,
+			 (GtkWidget *)  grid);
 
   AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input = (GtkWidget *) ags_matrix_bulk_input_new(NULL,
 											 AGS_TYPE_INPUT);
@@ -153,7 +153,7 @@ ags_matrix_bridge_finalize(GObject *gobject)
 void
 ags_matrix_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -165,7 +165,7 @@ ags_matrix_bridge_connect(AgsConnectable *connectable)
 void
 ags_matrix_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->connectable_flags)) == 0){
     return;
   }
 

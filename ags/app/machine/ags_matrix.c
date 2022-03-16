@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_menu_bar.h>
 #include <ags/app/ags_navigation.h>
 
 #include <math.h>
@@ -238,11 +237,9 @@ ags_matrix_init(AgsMatrix *matrix)
 				      AGS_MACHINE_POPUP_ENVELOPE));
   
   /* create widgets */
-  frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));
-
   matrix->grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) matrix->grid);
+  gtk_frame_set_child(AGS_MACHINE(matrix)->frame,
+		      (GtkWidget *) matrix->grid);
 
   AGS_MACHINE(matrix)->play = 
     matrix->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run");
@@ -359,8 +356,8 @@ ags_matrix_init(AgsMatrix *matrix)
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) volume_hbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) volume_hbox);
   
   matrix->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
 							 0.0,
@@ -400,7 +397,7 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -437,7 +434,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

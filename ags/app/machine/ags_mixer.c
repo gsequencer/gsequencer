@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -148,11 +148,9 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->peak_recall_container = ags_recall_container_new();
   
   /* input */
-  mixer->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					    0);
-  AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) mixer),
-		    (GtkWidget *) mixer->input_pad);
+  AGS_MACHINE(mixer)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+  gtk_frame_set_child(AGS_MACHINE(mixer)->frame,
+		      (GtkWidget *) AGS_MACHINE(mixer)->input_pad_grid);
 }
 
 void
@@ -165,7 +163,7 @@ ags_mixer_finalize(GObject *gobject)
 void
 ags_mixer_connect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -175,7 +173,7 @@ ags_mixer_connect(AgsConnectable *connectable)
 void
 ags_mixer_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

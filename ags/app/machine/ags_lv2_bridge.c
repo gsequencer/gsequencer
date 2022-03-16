@@ -296,8 +296,10 @@ ags_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 {
-  GtkGrid *grid;
-  GtkMenuItem *item;
+  GtkBox *hbox;
+  GtkLabel *label;
+      
+  GtkListStore *model;
 
   AgsAudio *audio;
 
@@ -387,24 +389,52 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   /**/
   lv2_bridge->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					    0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) lv2_bridge),
-		    (GtkWidget *) lv2_bridge->vbox);
+  gtk_frame_set_child(AGS_MACHINE(lv2_bridge)->frame,
+		      (GtkWidget *) lv2_bridge->vbox);
   
   lv2_bridge->program = NULL;
   lv2_bridge->preset = NULL;
+
+  /* program */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(lv2_bridge->vbox,
+		 (GtkWidget *) hbox);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("program"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
+
+  lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_append(hbox,
+		 (GtkWidget *) lv2_bridge->program);
+      
+  model = gtk_list_store_new(3,
+			     G_TYPE_STRING,
+			     G_TYPE_ULONG,
+			     G_TYPE_ULONG);
+      
+  gtk_combo_box_set_model(GTK_COMBO_BOX(lv2_bridge->program),
+			  GTK_TREE_MODEL(model));
+
+  /* preset */
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(lv2_bridge->vbox,
+		 (GtkWidget *) hbox);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("preset"));
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
+
+  lv2_bridge->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_append(hbox,
+		 (GtkWidget *) lv2_bridge->preset);
   
   /* effect bridge */  
-  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_box_pack_start(lv2_bridge->vbox,
-		     (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge,
-		     FALSE, FALSE,
-		     0);
-
-  grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(lv2_bridge)->bridge = ags_effect_bridge_new(audio);
+  gtk_box_append(lv2_bridge->vbox,
+		 (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 												     AGS_TYPE_INPUT);
@@ -417,27 +447,11 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach(AGS_MACHINE(lv2_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 		  0, 0,
 		  1, 1);
   
-  /* lv2 menu */
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label("Lv2");
-  gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
-			(GtkWidget *) item);
-  gtk_widget_show((GtkWidget *) item);
-  
-  lv2_bridge->lv2_menu = (GtkMenu *) gtk_menu_new();
-  gtk_menu_item_set_submenu((GtkMenuItem *) item,
-			    (GtkWidget *) lv2_bridge->lv2_menu);
-
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("show GUI"));
-  gtk_menu_shell_append((GtkMenuShell *) lv2_bridge->lv2_menu,
-			(GtkWidget *) item);
-
-  gtk_widget_show_all((GtkWidget *) lv2_bridge->lv2_menu);
-
   /* plugin widget */
   lv2_bridge->lv2_gui = NULL;
   lv2_bridge->ui_widget = NULL;
@@ -480,7 +494,8 @@ ags_lv2_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) lv2_bridge);
+	  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) lv2_bridge,
+							 AGS_TYPE_WINDOW);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s",
@@ -695,7 +710,8 @@ ags_lv2_bridge_finalize(GObject *gobject)
   }
 
   if(lv2_bridge->lv2_window != NULL){
-    gtk_widget_destroy(lv2_bridge->lv2_window);
+    g_object_run_dispose(lv2_bridge->lv2_window);
+    g_object_unref(lv2_bridge->lv2_window);
   }
   
   /* call parent */
@@ -710,24 +726,15 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   AgsBulkMember *bulk_member;
   GtkWidget *control;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
   
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
   ags_lv2_bridge_parent_connectable_interface->connect(connectable);
 
   lv2_bridge = AGS_LV2_BRIDGE(connectable);
-
-  /* menu */
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) lv2_bridge->lv2_menu);
-
-  g_signal_connect(G_OBJECT(list->data), "activate",
-		   G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
-
-  g_list_free(list_start);
   
   /* program */
   if(lv2_bridge->program != NULL){
@@ -739,12 +746,12 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge);
   
   list =
-    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->grid);
+    start_list = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   while(list != NULL){
     bulk_member = list->data;
 
-    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+    control = ags_bulk_member_get_widget(bulk_member);
 
     if(bulk_member->widget_type == AGS_TYPE_DIAL){
       g_signal_connect_after(GTK_WIDGET(control), "value-changed",
@@ -769,7 +776,7 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -780,27 +787,15 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
   AgsBulkMember *bulk_member;
   GtkWidget *control;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
   ags_lv2_bridge_parent_connectable_interface->disconnect(connectable);
 
   lv2_bridge = AGS_LV2_BRIDGE(connectable);
-
-  /* menu */
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) lv2_bridge->lv2_menu);
-
-  g_object_disconnect(G_OBJECT(list->data),
-		      "any_signal::activate",
-		      G_CALLBACK(ags_lv2_bridge_show_gui_callback),
-		      lv2_bridge,
-		      NULL);
-
-  g_list_free(list_start);
   
   /* program */
   if(lv2_bridge->program != NULL){
@@ -815,12 +810,12 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge);
   
   list =
-    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->grid);
+    start_list = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   while(list != NULL){
     bulk_member = list->data;
 
-    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+    control = ags_bulk_member_get_widget(bulk_member);
 
     if(bulk_member->widget_type == AGS_TYPE_DIAL){
       g_object_disconnect(GTK_WIDGET(control),
@@ -828,13 +823,7 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
 			  G_CALLBACK(ags_lv2_bridge_dial_changed_callback),
 			  lv2_bridge,
 			  NULL);
-    }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
-      g_object_disconnect(GTK_WIDGET(control),
-			  "any_signal::value-changed",
-			  G_CALLBACK(ags_lv2_bridge_scale_changed_callback),
-			  lv2_bridge,
-			  NULL);
-    }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
+    }else if(bulk_member->widget_type == GTK_TYPE_SCALE){
       g_object_disconnect(GTK_WIDGET(control),
 			  "any_signal::value-changed",
 			  G_CALLBACK(ags_lv2_bridge_scale_changed_callback),
@@ -869,7 +858,7 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -1299,44 +1288,10 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
       }
 
       if(lv2_bridge->program == NULL){
-	GtkBox *hbox;
-	GtkLabel *label;
-
-	/* program */
-	hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				      0);
-	gtk_box_pack_start(lv2_bridge->vbox,
-			   (GtkWidget *) hbox,
-			   FALSE, FALSE,
-			   0);
-	gtk_box_reorder_child(lv2_bridge->vbox,
-			      (GtkWidget *) hbox,
-			      0);
-  
-	label = (GtkLabel *) gtk_label_new(i18n("program"));
-	gtk_box_pack_start(hbox,
-			   (GtkWidget *) label,
-			   FALSE, FALSE,
-			   0);
-
-	lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
-	gtk_box_pack_start(hbox,
-			   (GtkWidget *) lv2_bridge->program,
-			   FALSE, FALSE,
-			   0);
-
-	if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+	if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(lv2_bridge)->connectable_flags)) != 0){
 	  g_signal_connect_after(G_OBJECT(lv2_bridge->program), "changed",
 				 G_CALLBACK(ags_lv2_bridge_program_changed_callback), lv2_bridge);
 	}
-      
-	model = gtk_list_store_new(3,
-				   G_TYPE_STRING,
-				   G_TYPE_ULONG,
-				   G_TYPE_ULONG);
-      
-	gtk_combo_box_set_model(GTK_COMBO_BOX(lv2_bridge->program),
-				GTK_TREE_MODEL(model));
       }else{
 	model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_bridge->program)));
       
@@ -1358,9 +1313,6 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
 void
 ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
 {
-  GtkBox *hbox;
-  GtkLabel *label;
-  
   AgsLv2Plugin *lv2_plugin;
 
   GList *list;  
@@ -1381,29 +1333,6 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   if(lv2_plugin == NULL){
     return;
   }
-
-  /* preset */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start(lv2_bridge->vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
-  gtk_box_reorder_child(lv2_bridge->vbox,
-  			(GtkWidget *) hbox,
-  			0);
-  
-  label = (GtkLabel *) gtk_label_new(i18n("preset"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
-
-  lv2_bridge->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) lv2_bridge->preset,
-		     FALSE, FALSE,
-		     0);
   
   /* preset */
   list = lv2_plugin->preset;
@@ -1416,8 +1345,6 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
     
     list = list->next;
   }
-
-  gtk_widget_show_all((GtkWidget *) hbox);
 
   /* connect preset */
   g_signal_connect_after(G_OBJECT(lv2_bridge->preset), "changed",

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,9 +38,6 @@ void ags_matrix_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, Ag
 
 /* controls */
 void ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix);
-gboolean ags_matrix_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsMatrix *matrix);
-gboolean ags_matrix_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsMatrix *matrix);
-gboolean ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix);
 void ags_matrix_adjustment_value_changed_callback(GtkWidget *widget, AgsMatrix *matrix);
 
 void ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix);

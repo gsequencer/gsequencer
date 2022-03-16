@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,7 +36,8 @@ ags_live_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_paren
     return;
   }
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
+					      AGS_TYPE_WINDOW));
 
   str = g_strdup_printf("Default %d",
 			ags_window_find_machine_counter(window, AGS_TYPE_LIVE_DSSI_BRIDGE)->counter);
@@ -60,7 +61,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 				   &iter)){
     AgsLadspaConversion *ladspa_conversion;
    
-    GList *bulk_member, *bulk_member_start;
+    GList *start_bulk_member, *bulk_member;
     GList *start_recall, *recall;
   
     gchar *name;
@@ -123,11 +124,11 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 		     g_object_unref);
 
     /* update UI */
-    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->grid);
+    start_bulk_member = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input));
   
     for(i = 0; i < live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
       /* find bulk member */
-      bulk_member = bulk_member_start;
+      bulk_member = start_bulk_member;
 
       specifier = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
 
@@ -143,7 +144,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 
 	  AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
 
-	  child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(bulk_member->data));
+	  child_widget = ags_bulk_member_get_widget(AGS_BULK_MEMBER(bulk_member->data));
 	  
 	  ladspa_conversion = (AgsLadspaConversion *) AGS_BULK_MEMBER(bulk_member->data)->conversion;
 	  
@@ -183,6 +184,6 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
       }
     }
 
-    g_list_free(bulk_member_start);
+    g_list_free(start_bulk_member);
   }
 }

@@ -85,7 +85,7 @@ ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
     
     gchar *filename;
 
-    file = gtk_file_chooser_get_filee(GTK_FILE_CHOOSER(widget));
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
     
     filename = g_file_get_path(file);
     gtk_editable_set_text(GTK_EDITABLE(audiorec->filename),

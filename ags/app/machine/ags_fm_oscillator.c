@@ -297,22 +297,16 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   for(i = 0; i < fm_oscillator->sync_point_count; i++){
     sync_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
-    gtk_box_pack_start(hbox,
-		       (GtkWidget *) sync_box,
-		       FALSE, FALSE,
-		       0);
+    gtk_box_append(hbox,
+		   (GtkWidget *) sync_box);
     
     fm_oscillator->sync_point[2 * i] = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-    gtk_box_pack_start(sync_box,
-		       (GtkWidget *) fm_oscillator->sync_point[2 * i],
-		       FALSE, FALSE,
-		       0);
+    gtk_box_append(sync_box,
+		   (GtkWidget *) fm_oscillator->sync_point[2 * i]);
 
     fm_oscillator->sync_point[2 * i + 1] = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-    gtk_box_pack_start(sync_box,
-		       (GtkWidget *) fm_oscillator->sync_point[2 * i + 1],
-		       FALSE, FALSE,
-		       0);
+    gtk_box_append(sync_box,
+		   (GtkWidget *) fm_oscillator->sync_point[2 * i + 1]);
   }
 
   /* LFO wave */

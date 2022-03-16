@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,6 @@
 G_BEGIN_DECLS
 
 void ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLv2Bridge *lv2_bridge);
-
-void ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge);
-gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge);
 
 void ags_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle);
 void ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,7 +32,8 @@ ags_mixer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMixer
     return;
   }
 
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
+  window = (AgsWindow *) gtk_widget_get_ancestor(widget,
+						 AGS_TYPE_WINDOW);
 
   str = g_strdup_printf("Default %d",
 			ags_window_find_machine_counter(window, AGS_TYPE_MIXER)->counter);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -225,7 +225,6 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
-  GtkGrid *grid;
 
   AgsAudio *audio;
 
@@ -296,16 +295,14 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_dssi_bridge),
-		    (GtkWidget *) vbox);
+  gtk_frame_set_child(AGS_MACHINE(live_dssi_bridge)->frame,
+		      (GtkWidget *) vbox);
 
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("program"));
   gtk_box_pack_start(hbox,
@@ -320,18 +317,12 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		     0);
 
   /* effect bridge */
-  AGS_MACHINE(live_dssi_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  AGS_MACHINE(live_dssi_bridge)->bridge = ags_effect_bridge_new(audio);
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge,
 		     FALSE, FALSE,
 		     0);
   
-  grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
-
   AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 													   AGS_TYPE_INPUT);
   AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
@@ -343,7 +334,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach(AGS_MACHINE(live_dssi_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 		  0, 0,
 		  1, 1);
@@ -380,7 +371,8 @@ ags_live_dssi_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) live_dssi_bridge);
+	  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) live_dssi_bridge,
+							 AGS_TYPE_WINDOW);
 
 	  str = g_strdup_printf("%s %s",
 				i18n("Plugin file not present"),
@@ -491,7 +483,7 @@ ags_live_dssi_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -508,7 +500,7 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

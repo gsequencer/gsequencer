@@ -635,7 +635,9 @@ ags_gsequencer_application_open(GApplication *application,
 	g_object_ref(audio);
 
 	ags_connectable_disconnect(AGS_CONNECTABLE(machine->data));
-	gtk_widget_destroy((GtkWidget *) machine->data);
+
+	g_object_run_dispose(machine->data);
+	g_object_unref(machine->data);
 
 	/* get task thread */
 	remove_audio = ags_remove_audio_new(audio);
