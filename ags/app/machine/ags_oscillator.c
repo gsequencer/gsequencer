@@ -150,8 +150,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   oscillator->connectable_flags = 0;
 
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) oscillator,
-		    (GtkWidget *) grid);
+  gtk_frame_set_child((GtkFrame *) oscillator,
+		      (GtkWidget *) grid);
 
   samplerate = ags_soundcard_helper_config_get_samplerate(config);
 

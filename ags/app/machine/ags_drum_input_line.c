@@ -198,7 +198,7 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_input_line)->connectable_flags)) != 0){
     return;
   }
   
@@ -214,7 +214,7 @@ ags_drum_input_line_disconnect(AgsConnectable *connectable)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_input_line)->connectable_flags)) != 0){
     return;
   }
   

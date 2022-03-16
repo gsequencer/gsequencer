@@ -542,6 +542,7 @@ ags_line_init(AgsLine *line)
   }
   
   line->flags = 0;
+  line->connectable_flags = 0;
 
   line->version = AGS_VERSION;
   line->build_id = AGS_BUILD_ID;
@@ -802,12 +803,12 @@ ags_line_connect(AgsConnectable *connectable)
 
   line = AGS_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (line->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (line->connectable_flags)) != 0){
     return;
   }
 
   /* set connected flag */
-  line->flags |= AGS_LINE_CONNECTED;
+  line->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
 #ifdef AGS_DEBUG
   g_message("line connect");
@@ -850,12 +851,12 @@ ags_line_disconnect(AgsConnectable *connectable)
 
   line = AGS_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (line->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (line->connectable_flags)) == 0){
     return;
   }
 
   /* unset connected flag */
-  line->flags &= (~AGS_LINE_CONNECTED);
+  line->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
 #ifdef AGS_DEBUG
   g_message("line disconnect");

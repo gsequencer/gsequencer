@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -128,7 +128,7 @@ ags_mixer_input_pad_connect(AgsConnectable *connectable)
   /* AgsMixerInputPad */
   mixer_input_pad = AGS_MIXER_INPUT_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (AGS_PAD(mixer_input_pad)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PAD(mixer_input_pad)->connectable_flags)) != 0){
     return;
   }
 

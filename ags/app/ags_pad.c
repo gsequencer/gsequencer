@@ -382,6 +382,7 @@ ags_pad_init(AgsPad *pad)
 				 GTK_ORIENTATION_VERTICAL);  
   
   pad->flags = 0;
+  pad->connectable_flags = 0;
 
   pad->name = NULL;
 
@@ -608,11 +609,11 @@ ags_pad_connect(AgsConnectable *connectable)
   /* AgsPad */
   pad = AGS_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (pad->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (pad->connectable_flags)) != 0){
     return;
   }
   
-  pad->flags |= AGS_PAD_CONNECTED;
+  pad->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   if((AGS_PAD_PREMAPPED_RECALL & (pad->flags)) == 0){
     if((AGS_PAD_MAPPED_RECALL & (pad->flags)) == 0){
@@ -658,11 +659,11 @@ ags_pad_disconnect(AgsConnectable *connectable)
   /* AgsPad */
   pad = AGS_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (pad->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (pad->connectable_flags)) == 0){
     return;
   }
   
-  pad->flags &= (~AGS_PAD_CONNECTED);
+  pad->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* AgsLine */
   line =
@@ -840,7 +841,7 @@ ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
  * ags_pad_get_line:
  * @pad: the #AgsPad
  * 
- * Get bulk member of @pad.
+ * Get line of @pad.
  * 
  * Returns: the #GList-struct containing #AgsLine
  *

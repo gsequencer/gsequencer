@@ -47,14 +47,13 @@ typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
 
 typedef enum{
-  AGS_PAD_CONNECTED           = 1,
-  AGS_PAD_SHOW_GROUPING       = 1 << 1,
-  AGS_PAD_GROUP_ALL           = 1 << 2,
-  AGS_PAD_GROUP_LINE          = 1 << 3,
-  AGS_PAD_MAPPED_RECALL       = 1 << 4,
-  AGS_PAD_PREMAPPED_RECALL    = 1 << 5,
-  AGS_PAD_BLOCK_PLAY          = 1 << 6,
-  AGS_PAD_BLOCK_STOP          = 1 << 7,
+  AGS_PAD_SHOW_GROUPING       = 1,
+  AGS_PAD_GROUP_ALL           = 1 <<  1,
+  AGS_PAD_GROUP_LINE          = 1 <<  2,
+  AGS_PAD_MAPPED_RECALL       = 1 <<  3,
+  AGS_PAD_PREMAPPED_RECALL    = 1 <<  4,
+  AGS_PAD_BLOCK_PLAY          = 1 <<  5,
+  AGS_PAD_BLOCK_STOP          = 1 <<  6,
 }AgsPadFlags;
 
 struct _AgsPad
@@ -62,7 +61,8 @@ struct _AgsPad
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;

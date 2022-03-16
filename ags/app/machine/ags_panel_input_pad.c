@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,21 +130,7 @@ ags_panel_input_pad_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_panel_input_pad_init(AgsPanelInputPad *panel_input_pad)
 {
-  AgsPad *pad;
-  GtkBox *vbox;
-
-  pad = (AgsPad *) panel_input_pad;
-  pad->cols = 1;
-
-  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-  gtk_box_pack_start((GtkBox *) pad,
-		     (GtkWidget *) vbox,
-		     FALSE, TRUE,
-		     0);
-  gtk_box_reorder_child((GtkBox *) pad,
-			(GtkWidget *) vbox,
-			0);
+  //TODO:JK: implement me
 }
 
 void
@@ -162,7 +148,7 @@ ags_panel_input_pad_connect(AgsConnectable *connectable)
 
   panel_input_pad = AGS_PANEL_INPUT_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (AGS_PAD(panel_input_pad)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PAD(panel_input_pad)->connectable_flags)) != 0){
     return;
   }
 

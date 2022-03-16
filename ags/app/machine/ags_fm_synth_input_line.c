@@ -152,7 +152,7 @@ ags_fm_synth_input_line_connect(AgsConnectable *connectable)
 
   fm_synth_input_line = AGS_FM_SYNTH_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(fm_synth_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(fm_synth_input_line)->connectable_flags)) != 0){
     return;
   }
 
@@ -171,7 +171,7 @@ ags_fm_synth_input_line_disconnect(AgsConnectable *connectable)
 
   fm_synth_input_line = AGS_FM_SYNTH_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(fm_synth_input_line)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(fm_synth_input_line)->connectable_flags)) == 0){
     return;
   }
 

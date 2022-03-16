@@ -170,15 +170,13 @@ ags_panel_init(AgsPanel *panel)
   
   panel->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				       0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)),
-		    (GtkWidget *) panel->vbox);
+  gtk_frame_set_child(AGS_MACHINE(panel)->frame,
+		      (GtkWidget *) panel->vbox);
 
   /* input */
-  AGS_MACHINE(panel)->input = (GtkContainer *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(panel->vbox,
-		     (GtkWidget *) AGS_MACHINE(panel)->input,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(panel)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append(panel->vbox,
+		 (GtkWidget *) AGS_MACHINE(panel)->input_pad_grid);
 }
 
 static void
@@ -191,7 +189,7 @@ ags_panel_finalize(GObject *gobject)
 void
 ags_panel_connect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -203,7 +201,7 @@ ags_panel_connect(AgsConnectable *connectable)
 void
 ags_panel_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

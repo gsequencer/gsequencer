@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -127,7 +127,7 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_output_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_output_line)->connectable_flags)) != 0){
     return;
   }
   
@@ -148,7 +148,7 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_output_line)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_output_line)->connectable_flags)) == 0){
     return;
   }
 

@@ -55,10 +55,9 @@ typedef struct _AgsLinePlugin AgsLinePlugin;
 typedef struct _AgsLineClass AgsLineClass;
 
 typedef enum{
-  AGS_LINE_CONNECTED         = 1,
-  AGS_LINE_GROUPED           = 1 << 1,
-  AGS_LINE_MAPPED_RECALL     = 1 << 2,
-  AGS_LINE_PREMAPPED_RECALL  = 1 << 3,
+  AGS_LINE_GROUPED           = 1,
+  AGS_LINE_MAPPED_RECALL     = 1 << 1,
+  AGS_LINE_PREMAPPED_RECALL  = 1 << 2,
 }AgsLineFlags;
 
 struct _AgsLine
@@ -66,6 +65,7 @@ struct _AgsLine
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
 
   gchar *version;
   gchar *build_id;

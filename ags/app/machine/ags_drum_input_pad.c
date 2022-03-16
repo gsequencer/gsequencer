@@ -196,7 +196,7 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
 
   drum_input_pad = AGS_DRUM_INPUT_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (AGS_PAD(drum_input_pad)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PAD(drum_input_pad)->connectable_flags)) != 0){
     return;
   }
 
@@ -216,9 +216,34 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
 void
 ags_drum_input_pad_disconnect(AgsConnectable *connectable)
 {
+  AgsDrumInputPad *drum_input_pad;
+
+  drum_input_pad = AGS_DRUM_INPUT_PAD(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PAD(drum_input_pad)->connectable_flags)) == 0){
+    return;
+  }
+
   ags_drum_input_pad_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
+  /* AgsDrumInputPad */
+  g_object_disconnect(G_OBJECT(drum_input_pad->open),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_drum_input_pad_open_callback),
+		      (gpointer) drum_input_pad,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(drum_input_pad->play),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_drum_input_pad_play_callback),
+		      (gpointer) drum_input_pad,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(drum_input_pad->edit),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_drum_input_pad_edit_callback),
+		      (gpointer) drum_input_pad,
+		      NULL);
 }
 
 void
