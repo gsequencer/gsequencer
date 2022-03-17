@@ -121,12 +121,12 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 		     0);
 
   expander = (GtkExpander *) gtk_expander_new("show/hide");
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) expander);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) expander);
 
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *) grid);
+  gtk_expander_set_child(expander,
+			 (GtkWidget *) grid);
 
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
 									      NULL);
@@ -163,7 +163,7 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 void
 ags_ffplayer_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -175,7 +175,7 @@ ags_ffplayer_bridge_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->connectable_flags)) == 0){
     return;
   }
 

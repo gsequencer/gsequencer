@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,8 @@ ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, 
     return;
   }
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) pitch_sampler, AGS_TYPE_WINDOW));
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) pitch_sampler,
+					      AGS_TYPE_WINDOW));
 
   str = g_strdup_printf("Default %d",
 			ags_window_find_machine_counter(window, AGS_TYPE_PITCH_SAMPLER)->counter);
@@ -63,14 +64,15 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
   
   pitch_sampler->open_dialog = 
     dialog = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
-								  (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) pitch_sampler),
+								  (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) pitch_sampler,
+													AGS_TYPE_WINDOW),
 								  GTK_FILE_CHOOSER_ACTION_OPEN,
 								  i18n("_OK"), GTK_RESPONSE_ACCEPT,
 								  i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
-  gtk_widget_show_all((GtkWidget *) dialog);
+  gtk_widget_show((GtkWidget *) dialog);
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_pitch_sampler_open_response_callback), pitch_sampler);
@@ -81,17 +83,22 @@ ags_pitch_sampler_open_response_callback(GtkWidget *widget, gint response,
 					 AgsPitchSampler *pitch_sampler)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    GFile *file;
+    
     gchar *filename;
 
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
-    gtk_entry_set_text(pitch_sampler->filename,
-		       filename);
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
+    
+    filename = g_file_get_path(file);
+    
+    gtk_editable_set_text(GTK_EDITABLE(pitch_sampler->filename),
+			  filename);
     ags_pitch_sampler_open_filename(pitch_sampler,
 				    filename);
   }
 
   pitch_sampler->open_dialog = NULL;
-  gtk_widget_destroy(widget);
+  gtk_window_destroy(widget);
 }
 
 void

@@ -130,7 +130,7 @@ ags_fm_synth_input_line_init(AgsFMSynthInputLine *fm_synth_input_line)
   fm_synth_input_line->name = NULL;
   fm_synth_input_line->xml_type = "ags-fm-synth-input-line";
 
-  /* fm_oscillator */
+  /* fm oscillator */
   line_member = ags_line_member_new();
   ags_line_add_line_member(AGS_LINE(fm_synth_input_line),
 			   line_member,

@@ -247,18 +247,15 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   /* create widgets */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) syncsynth)),
-		    (GtkWidget *) hbox);
+  gtk_frame_set_child(AGS_MACHINE(syncsynth)->frame,
+		      (GtkWidget *) hbox);
 
   syncsynth->oscillator = NULL;  
 
   syncsynth->oscillator_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						     0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) syncsynth->oscillator_box,
-		     FALSE,
-		     FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) syncsynth->oscillator_box);
 
   /* add 2 oscillators */
   oscillator = ags_oscillator_new();
@@ -272,51 +269,35 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   /* add and remove buttons */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) vbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) vbox);
 
-  syncsynth->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-							       GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) syncsynth->add,
-		     FALSE, FALSE,
-		     0);
+  syncsynth->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+  gtk_box_append(vbox,
+		 (GtkWidget *) syncsynth->add);
 
-  syncsynth->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-								  GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) syncsynth->remove,
-		     FALSE, FALSE,
-		     0);
+  syncsynth->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove");
+  gtk_box_append(vbox,
+		 (GtkWidget *) syncsynth->remove);
   
   /* update */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) vbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) vbox);
 
   syncsynth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) syncsynth->auto_update,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) syncsynth->auto_update);
 
   syncsynth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) syncsynth->update,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) syncsynth->update);
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) grid);
 
   /* lower - frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -419,15 +400,13 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   gtk_widget_set_halign((GtkWidget *) frame,
 			GTK_ALIGN_FILL);
   
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) frame);
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) volume_hbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) volume_hbox);
   
   syncsynth->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
 							    0.0,
@@ -437,10 +416,8 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   gtk_widget_set_size_request(syncsynth->volume,
 			      gui_scale_factor * 16, gui_scale_factor * 100);
   
-  gtk_box_pack_start(volume_hbox,
-		     (GtkWidget *) syncsynth->volume,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(volume_hbox,
+		 (GtkWidget *) syncsynth->volume);
 
   gtk_scale_set_digits(syncsynth->volume,
 		       3);
@@ -467,7 +444,7 @@ ags_syncsynth_connect(AgsConnectable *connectable)
 
   GList *list_start, *list;
   
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -513,7 +490,7 @@ ags_syncsynth_disconnect(AgsConnectable *connectable)
 
   GList *list_start, *list;
   
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

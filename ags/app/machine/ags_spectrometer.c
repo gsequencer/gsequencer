@@ -186,8 +186,8 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) spectrometer),
-		    (GtkWidget *) vbox);
+  gtk_frame_set_child(AGS_MACHINE(spectrometer)->frame,
+		      (GtkWidget *) vbox);
 
   /* cartesian */
   cartesian = 
@@ -283,7 +283,7 @@ ags_spectrometer_connect(AgsConnectable *connectable)
 {
   AgsSpectrometer *spectrometer;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -298,7 +298,7 @@ ags_spectrometer_disconnect(AgsConnectable *connectable)
 {
   AgsSpectrometer *spectrometer;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

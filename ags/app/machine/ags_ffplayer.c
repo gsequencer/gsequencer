@@ -148,7 +148,6 @@ void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
   GtkBox *vbox;
-  GtkAlignment *alignment;
   GtkGrid *grid;
   GtkBox *hbox;
   GtkBox *filename_hbox;
@@ -283,20 +282,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* create widgets */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)),
-		    (GtkWidget *) vbox);
-
-  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
-					    "xalign", 0.0,
-					    NULL);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) alignment,
-		     FALSE, FALSE,
-		     0);
+  gtk_frame_set_child(AGS_MACHINE(ffplayer)->frame,
+		      (GtkWidget *) vbox);
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) alignment,
-		    (GtkWidget *) grid);
+  gtk_box_append(vbox,
+		 (GtkWidget *) grid);
   
   /* preset and instrument */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -316,55 +307,41 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 				    "label", i18n("preset"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   ffplayer->preset = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) ffplayer->preset,
-		     TRUE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) ffplayer->preset);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("instrument"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   ffplayer->instrument = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) ffplayer->instrument,
-		     TRUE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) ffplayer->instrument);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					 0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) filename_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) filename_hbox);
 
 #if 0
   ffplayer->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) ffplayer->filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(filename_hbox,
+		 (GtkWidget *) ffplayer->filename);
 #else
   ffplayer->filename = NULL;
 #endif
   
   ffplayer->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"));
-  gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) ffplayer->open,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(filename_hbox,
+		 (GtkWidget *) ffplayer->open);
 
   ffplayer->sf2_loader = NULL;
 
@@ -374,10 +351,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->position = -1;
 
   ffplayer->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
-  gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) ffplayer->sf2_loader_spinner,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(filename_hbox,
+		 (GtkWidget *) ffplayer->sf2_loader_spinner);
   gtk_widget_set_no_show_all((GtkWidget *) ffplayer->sf2_loader_spinner,
 			     TRUE);
   gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
@@ -403,16 +378,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
 			      16 * ffplayer->control_width,
 			      ffplayer->control_width * 8 + ffplayer->control_height);
-  gtk_widget_set_events((GtkWidget *) ffplayer->drawing_area,
-			GDK_EXPOSURE_MASK
-			| GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK
-			| GDK_POINTER_MOTION_MASK
-			| GDK_POINTER_MOTION_HINT_MASK);
-  gtk_box_pack_start(piano_vbox,
-		     (GtkWidget *) ffplayer->drawing_area,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(piano_vbox,
+		 (GtkWidget *) ffplayer->drawing_area);
 
   gtk_widget_get_allocation(GTK_WIDGET(ffplayer->drawing_area), &allocation);
   
@@ -424,10 +391,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       (double) (16 * ffplayer->control_width));
   ffplayer->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 							    ffplayer->hadjustment);
-  gtk_box_pack_start(piano_vbox,
-		     (GtkWidget *) ffplayer->hscrollbar,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(piano_vbox,
+		 (GtkWidget *) ffplayer->hscrollbar);
 
   /* synth generator */
   frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
@@ -444,28 +409,22 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   synth_generator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) synth_generator_vbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) synth_generator_vbox);
   
   ffplayer->enable_synth_generator = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start(synth_generator_vbox,
-		     (GtkWidget *) ffplayer->enable_synth_generator,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(synth_generator_vbox,
+		 (GtkWidget *) ffplayer->enable_synth_generator);
 
   /* pitch function */
   pitch_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
-  gtk_box_pack_start(synth_generator_vbox,
-		     (GtkWidget *) pitch_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(synth_generator_vbox,
+		 (GtkWidget *) pitch_hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("pitch"));
-  gtk_box_pack_start(pitch_hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(pitch_hbox,
+		 (GtkWidget *) label);
   
   ffplayer->pitch_function = (GtkComboBox *) gtk_combo_box_text_new();
 
@@ -490,24 +449,18 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_combo_box_set_active(ffplayer->pitch_function,
 			   4);
   
-  gtk_box_pack_start(pitch_hbox,
-		     (GtkWidget *) ffplayer->pitch_function,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(pitch_hbox,
+		 (GtkWidget *) ffplayer->pitch_function);
   
   /* base note */
   base_note_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
-  gtk_box_pack_start(synth_generator_vbox,
-		     (GtkWidget *) base_note_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(synth_generator_vbox,
+		 (GtkWidget *) base_note_hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("lower"));
-  gtk_box_pack_start(base_note_hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(base_note_hbox,
+		 (GtkWidget *) label);
 
   ffplayer->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
 								     70.0,
@@ -516,34 +469,26 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			     2);
   gtk_spin_button_set_value(ffplayer->lower,
 			    -48.0);
-  gtk_box_pack_start(base_note_hbox,
-		     (GtkWidget *) ffplayer->lower,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(base_note_hbox,
+		 (GtkWidget *) ffplayer->lower);
 
   /* key count */
   key_count_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
-  gtk_box_pack_start(synth_generator_vbox,
-		     (GtkWidget *) key_count_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(synth_generator_vbox,
+		 (GtkWidget *) key_count_hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("key count"));
-  gtk_box_pack_start(key_count_hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(key_count_hbox,
+		 (GtkWidget *) label);
 
   ffplayer->key_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									 128.0,
 									 1.0);
   gtk_spin_button_set_value(ffplayer->key_count,
 			    78.0);
-  gtk_box_pack_start(key_count_hbox,
-		     (GtkWidget *) ffplayer->key_count,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(key_count_hbox,
+		 (GtkWidget *) ffplayer->key_count);
 
   /* update */
   ffplayer->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
@@ -573,14 +518,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) aliase_hbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) aliase_hbox);
   
   ffplayer->enable_aliase = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start(aliase_hbox,
-		     (GtkWidget *) ffplayer->enable_aliase,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(aliase_hbox,
+		 (GtkWidget *) ffplayer->enable_aliase);
 
   step = 2.0 * M_PI / 100.0;
   page = 2.0 * M_PI / AGS_DIAL_DEFAULT_PRECISION;
@@ -600,10 +543,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_adjustment_set_upper(adjustment,
 			   2.0 * M_PI);
   
-  gtk_box_pack_start(aliase_hbox,
-		     (GtkWidget *) ffplayer->aliase_a_amount,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(aliase_hbox,
+		 (GtkWidget *) ffplayer->aliase_a_amount);
 
   ffplayer->aliase_a_phase = (AgsDial *) ags_dial_new();
 
@@ -619,10 +560,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_adjustment_set_upper(adjustment,
 			   2.0 * M_PI);
   
-  gtk_box_pack_start(aliase_hbox,
-		     (GtkWidget *) ffplayer->aliase_a_phase,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(aliase_hbox,
+		 (GtkWidget *) ffplayer->aliase_a_phase);
 
   /* aliase b */
   ffplayer->aliase_b_amount = (AgsDial *) ags_dial_new();
@@ -639,10 +578,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_adjustment_set_upper(adjustment,
 			   2.0 * M_PI);
   
-  gtk_box_pack_start(aliase_hbox,
-		     (GtkWidget *) ffplayer->aliase_b_amount,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(aliase_hbox,
+		 (GtkWidget *) ffplayer->aliase_b_amount);
 
   ffplayer->aliase_b_phase = (AgsDial *) ags_dial_new();
 
@@ -658,10 +595,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_adjustment_set_upper(adjustment,
 			   2.0 * M_PI);
   
-  gtk_box_pack_start(aliase_hbox,
-		     (GtkWidget *) ffplayer->aliase_b_phase,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(aliase_hbox,
+		 (GtkWidget *) ffplayer->aliase_b_phase);
 
   /* volume */
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
@@ -678,8 +613,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) volume_hbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) volume_hbox);
   
   ffplayer->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
 							   0.0,
@@ -689,10 +624,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_widget_set_size_request(ffplayer->volume,
 			      gui_scale_factor * 16, gui_scale_factor * 100);
   
-  gtk_box_pack_start(volume_hbox,
-		     (GtkWidget *) ffplayer->volume,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(volume_hbox,
+		 (GtkWidget *) ffplayer->volume);
 
   gtk_scale_set_digits(ffplayer->volume,
 		       3);
@@ -705,11 +638,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			 TRUE);  
 
   /* effect bridge */
-  AGS_MACHINE(ffplayer)->bridge = (GtkContainer *) ags_ffplayer_bridge_new(audio);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
+  gtk_box_append(vbox,
+		 (GtkWidget *) AGS_MACHINE(ffplayer)->bridge);
+
   /* dialog */
   ffplayer->open_dialog = NULL;
 
@@ -740,7 +672,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 {
   AgsFFPlayer *ffplayer;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -798,7 +730,7 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 {
   AgsFFPlayer *ffplayer;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

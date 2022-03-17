@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,7 +35,6 @@ void ags_synth_input_line_connect(AgsConnectable *connectable);
 void ags_synth_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_synth_input_line_show(GtkWidget *line);
-void ags_synth_input_line_show_all(GtkWidget *line);
 
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_synth_input_line_map_recall(AgsLine *line,
@@ -106,7 +105,6 @@ ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line)
   widget = (GtkWidgetClass *) synth_input_line;
 
   widget->show = ags_synth_input_line_show;
-  widget->show_all = ags_synth_input_line_show_all;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(synth_input_line);
@@ -127,21 +125,24 @@ ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_synth_input_line_init(AgsSynthInputLine *synth_input_line)
 {
-  AgsOscillator *oscillator;
-
-  g_signal_connect((GObject *) synth_input_line, "samplerate-changed",
-		   G_CALLBACK(ags_synth_input_line_samplerate_changed_callback), NULL);
+  AgsLineMember *line_member;
 
   synth_input_line->name = NULL;
   synth_input_line->xml_type = "ags-synth-input-line";
 
   /* oscillator */
-  oscillator = ags_oscillator_new();
-  synth_input_line->oscillator = oscillator;
-  ags_expander_add(AGS_LINE(synth_input_line)->expander,
-		   GTK_WIDGET(oscillator),
-		   0, 0,
-		   1, 1);
+  line_member = ags_line_member_new();
+  ags_line_add_line_member(AGS_LINE(synth_input_line),
+			   line_member,
+			   0, 0,
+			   1, 1);
+  
+  synth_input_line->oscillator = ags_oscillator_new();
+  ags_line_member_set_widget(line_member,
+			     (GtkWidget *) synth_input_line->oscillator);
+
+  g_signal_connect((GObject *) synth_input_line, "samplerate-changed",
+		   G_CALLBACK(ags_synth_input_line_samplerate_changed_callback), NULL);
 }
 
 void
@@ -151,7 +152,7 @@ ags_synth_input_line_connect(AgsConnectable *connectable)
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(synth_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(synth_input_line)->connectable_flags)) != 0){
     return;
   }
 
@@ -170,7 +171,7 @@ ags_synth_input_line_disconnect(AgsConnectable *connectable)
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(synth_input_line)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(synth_input_line)->connectable_flags)) == 0){
     return;
   }
 
@@ -213,14 +214,6 @@ void
 ags_synth_input_line_show(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_synth_input_line_parent_class)->show(line);
-
-  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
-}
-
-void
-ags_synth_input_line_show_all(GtkWidget *line)
-{
-  GTK_WIDGET_CLASS(ags_synth_input_line_parent_class)->show_all(line);
 
   gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }

@@ -89,7 +89,8 @@ struct _AgsPitchSampler
 
   AgsAudioContainer *audio_container;
 
-  GtkBox *file;
+  GList *pitch_sampler_file;
+  GtkBox *pitch_sampler_file_box;
 
   GtkEntry *filename;
   GtkButton *open;
@@ -136,10 +137,11 @@ struct _AgsPitchSamplerClass
 
 GType ags_pitch_sampler_get_type(void);
 
+GList* ags_pitch_sampler_get_file(AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_add_file(AgsPitchSampler *pitch_sampler,
-				AgsPitchSamplerFile *file);
+				AgsPitchSamplerFile *pitch_sampler_file);
 void ags_pitch_sampler_remove_file(AgsPitchSampler *pitch_sampler,
-				   guint nth);
+				   AgsPitchSamplerFile *pitch_sampler_file);
 
 void ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
 				     gchar *filename);

@@ -137,6 +137,8 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
   GtkBox *filename_hbox;
   GtkLabel *label;
 
+  pitch_sampler_file->connectable_flags = 0;
+  
   gtk_orientable_set_orientation(GTK_ORIENTABLE(pitch_sampler_file),
 				 GTK_ORIENTATION_VERTICAL);
   
@@ -298,11 +300,11 @@ ags_pitch_sampler_file_connect(AgsConnectable *connectable)
   
   pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
 
-  if((AGS_PITCH_SAMPLER_FILE_CONNECTED & (pitch_sampler_file->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) != 0){
     return;
   }
 
-  pitch_sampler_file->flags |= AGS_PITCH_SAMPLER_FILE_CONNECTED;
+  pitch_sampler_file->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 }
 
 void
@@ -312,11 +314,11 @@ ags_pitch_sampler_file_disconnect(AgsConnectable *connectable)
   
   pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
 
-  if((AGS_PITCH_SAMPLER_FILE_CONNECTED & (pitch_sampler_file->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) == 0){
     return;
   }
 
-  pitch_sampler_file->flags &= (~AGS_PITCH_SAMPLER_FILE_CONNECTED);
+  pitch_sampler_file->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 }
 
 /**
