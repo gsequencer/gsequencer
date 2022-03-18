@@ -22,10 +22,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_sheet_editor.h>
 #include <ags/app/ags_machine.h>
 
-#include <ags/app/editor/ags_sheet_toolbar.h>
 #include <ags/app/editor/ags_sheet_edit.h>
 
 #include <ags/i18n.h>
@@ -40,7 +38,6 @@ void ags_add_sheet_page_dialog_disconnect(AgsConnectable *connectable);
 void ags_add_sheet_page_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_add_sheet_page_dialog_apply(AgsApplicable *applicable);
 void ags_add_sheet_page_dialog_reset(AgsApplicable *applicable);
-gboolean ags_add_sheet_page_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_add_sheet_page_dialog
@@ -121,8 +118,6 @@ ags_add_sheet_page_dialog_class_init(AgsAddSheetPageDialogClass *add_sheet_page_
   
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) add_sheet_page_dialog;
-
-  widget->delete_event = ags_add_sheet_page_dialog_delete_event;
 }
 
 void
@@ -148,17 +143,18 @@ ags_add_sheet_page_dialog_init(AgsAddSheetPageDialog *add_sheet_page_dialog)
   GtkGrid *grid;
   GtkLabel *label;
   
-  add_sheet_page_dialog->flags = 0;
+  add_sheet_page_dialog->connectable_flags = 0;
 
   g_object_set(add_sheet_page_dialog,
 	       "title", i18n("Add sheet page"),
 	       NULL);
 
+  gtk_window_set_hide_on_close(add_sheet_page_dialog,
+			       TRUE);
+  
   grid = gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(add_sheet_page_dialog),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(add_sheet_page_dialog),
+		 (GtkWidget *) grid);  
 
   label = (GtkLabel *) gtk_label_new(i18n("sheet title"));
   gtk_grid_attach(grid,
@@ -217,11 +213,11 @@ ags_add_sheet_page_dialog_connect(AgsConnectable *connectable)
 
   add_sheet_page_dialog = AGS_ADD_SHEET_PAGE_DIALOG(connectable);
 
-  if((AGS_ADD_SHEET_PAGE_DIALOG_CONNECTED & (add_sheet_page_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (add_sheet_page_dialog->connectable_flags)) != 0){
     return;
   }
 
-  add_sheet_page_dialog->flags |= AGS_ADD_SHEET_PAGE_DIALOG_CONNECTED;
+  add_sheet_page_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(add_sheet_page_dialog, "response",
 		   G_CALLBACK(ags_add_sheet_page_dialog_response_callback), add_sheet_page_dialog);
@@ -234,11 +230,11 @@ ags_add_sheet_page_dialog_disconnect(AgsConnectable *connectable)
 
   add_sheet_page_dialog = AGS_ADD_SHEET_PAGE_DIALOG(connectable);
 
-  if((AGS_ADD_SHEET_PAGE_DIALOG_CONNECTED & (add_sheet_page_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (add_sheet_page_dialog->connectable_flags)) == 0){
     return;
   }
 
-  add_sheet_page_dialog->flags &= (~AGS_ADD_SHEET_PAGE_DIALOG_CONNECTED);
+  add_sheet_page_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(add_sheet_page_dialog),
 		      "any_signal::response",
@@ -273,16 +269,6 @@ void
 ags_add_sheet_page_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_add_sheet_page_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_add_sheet_page_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

@@ -67,7 +67,7 @@ ags_automation_meta_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_meta = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_automation_meta = g_type_register_static(GTK_TYPE_BOX,
 						      "AgsAutomationMeta", &ags_automation_meta_info,
 						      0);
     

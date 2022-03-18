@@ -27,6 +27,7 @@
 #include <ags/app/ags_sheet_editor.h>
 
 #include <gdk/gdkkeysyms.h>
+#include <cairo.h>
 
 #include <math.h>
 

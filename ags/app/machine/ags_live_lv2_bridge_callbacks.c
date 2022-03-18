@@ -151,7 +151,8 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
 	  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				       ((val != 0.0) ? TRUE: FALSE));
 	}else if(GTK_IS_BUTTON(child_widget)){
-	  gtk_button_clicked((GtkButton *) child_widget);
+	  g_signal_emit_by_name((GtkButton *) child_widget,
+				"clicked");
 	}
 	      
 	if(block_scope == NULL){
