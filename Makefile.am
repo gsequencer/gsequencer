@@ -3218,8 +3218,6 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_sheet_edit_callbacks.h \
 	ags/app/editor/ags_time_stretch_buffer_dialog.h \
 	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.h \
-	ags/app/editor/ags_vautomation_edit_box.h \
-	ags/app/editor/ags_vwave_edit_box.h \
 	ags/app/editor/ags_wave_edit_callbacks.h \
 	ags/app/editor/ags_wave_edit.h \
 	ags/app/editor/ags_wave_edit_box.h \
@@ -3286,8 +3284,6 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_sheet_edit_callbacks.c \
 	ags/app/editor/ags_time_stretch_buffer_dialog.c \
 	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.c \
-	ags/app/editor/ags_vautomation_edit_box.c \
-	ags/app/editor/ags_vwave_edit_box.c \
 	ags/app/editor/ags_wave_edit.c \
 	ags/app/editor/ags_wave_edit_box.c \
 	ags/app/editor/ags_wave_edit_callbacks.c \

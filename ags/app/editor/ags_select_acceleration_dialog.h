@@ -56,7 +56,7 @@ struct _AgsSelectAccelerationDialog
   
   GtkCheckButton *copy_selection;
 
-  GtkVBox *port;
+  GtkBox *port;
   GtkButton *add;
 
   GtkSpinButton *select_x0;

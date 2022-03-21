@@ -43,8 +43,7 @@ typedef struct _AgsAutomationMeta AgsAutomationMeta;
 typedef struct _AgsAutomationMetaClass AgsAutomationMetaClass;
 
 typedef enum{
-  AGS_AUTOMATION_META_CONNECTED   = 1,
-  AGS_AUTOMATION_META_ENABLED     = 1 <<  1,
+  AGS_AUTOMATION_META_ENABLED     = 1,
 }AgsAutomationMetaFlags;
 
 struct _AgsAutomationMeta
@@ -52,7 +51,8 @@ struct _AgsAutomationMeta
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GtkLabel *machine_type;
   GtkLabel *machine_name;
 

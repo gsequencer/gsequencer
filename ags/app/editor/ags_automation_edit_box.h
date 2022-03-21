@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/editor/ags_automation_edit.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUTOMATION_EDIT_BOX                (ags_automation_edit_box_get_type())
@@ -39,6 +41,7 @@ G_BEGIN_DECLS
 #define AGS_AUTOMATION_EDIT_BOX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_EDIT_BOX, AgsAutomationEditBoxClass))
 
 #define AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT (128)
+#define AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING (6)
 
 typedef struct _AgsAutomationEditBox AgsAutomationEditBox;
 typedef struct _AgsAutomationEditBoxClass AgsAutomationEditBoxClass;
@@ -47,9 +50,7 @@ struct _AgsAutomationEditBox
 {
   GtkBox box;
 
-  /* private */
-  guint automation_edit_count;
-  
+  /* private */  
   GList *automation_edit;
 };
 
@@ -67,12 +68,11 @@ struct _AgsAutomationEditBoxClass
 
 GType ags_automation_edit_box_get_type(void);
 
-guint ags_automation_edit_box_get_automation_edit_count(AgsAutomationEditBox *automation_edit_box);
-
+GList* ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box);
 void ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
-				 GtkWidget *automation_edit);
+				 AgsAutomationEdit *automation_edit);
 void ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
-				    guint position);
+				    AgsAutomationEdit *automation_edit);
 
 void ags_automation_edit_box_child_width_request(AgsAutomationEditBox *automation_edit_box,
 						 GtkWidget *automation_edit,
@@ -80,8 +80,6 @@ void ags_automation_edit_box_child_width_request(AgsAutomationEditBox *automatio
 void ags_automation_edit_box_child_height_request(AgsAutomationEditBox *automation_edit_box,
 						  GtkWidget *automation_edit,
 						  gint height_request);
-
-GList* ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box);
 
 AgsAutomationEditBox* ags_automation_edit_box_new(GtkOrientation orientation);
 

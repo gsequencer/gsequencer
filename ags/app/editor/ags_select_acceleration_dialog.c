@@ -144,8 +144,8 @@ ags_select_acceleration_dialog_applicable_interface_init(AgsApplicableInterface 
 void
 ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_acceleration_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
   select_acceleration_dialog->flags = 0;
@@ -154,50 +154,39 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 	       "title", i18n("select accelerations"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(select_acceleration_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_acceleration_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* copy selection */
   select_acceleration_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
   gtk_toggle_button_set_active((GtkToggleButton *) select_acceleration_dialog->copy_selection,
 			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_acceleration_dialog->copy_selection),
-		     FALSE, FALSE,
-		     0);  
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_acceleration_dialog->copy_selection));  
 
   /* automation */
-  select_acceleration_dialog->port = (GtkVBox *) gtk_vbox_new(FALSE,
-							      0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_acceleration_dialog->port),
-		     FALSE, FALSE,
-		     0);  
+  select_acceleration_dialog->port = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							    0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_acceleration_dialog->port));  
   
   /* add */
   select_acceleration_dialog->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_acceleration_dialog->add),
-		     FALSE, FALSE,
-		     0);  
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_acceleration_dialog->add));  
   
   /* select x0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x0 - spin button */
   select_acceleration_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -207,24 +196,19 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 			     2);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_acceleration_dialog->select_x0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_acceleration_dialog->select_x0));
   
   /* select x1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x1 - spin button */
   select_acceleration_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -234,10 +218,8 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 			     2);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_acceleration_dialog->select_x1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_acceleration_dialog->select_x1));
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_acceleration_dialog,

@@ -20,7 +20,9 @@
 #include <ags/app/editor/ags_automation_meta.h>
 #include <ags/app/editor/ags_automation_meta_callbacks.h>
 
-#include <ags/app/ags_automation_editor.h>
+#include <ags/app/ags_composite_editor.h>
+
+#include <ags/app/editor/ags_automation_edit.h>
 
 #include <ags/i18n.h>
 
@@ -106,13 +108,15 @@ ags_automation_meta_init(AgsAutomationMeta *automation_meta)
   guint j;
   
   automation_meta->flags = 0;
-
+  automation_meta->connectable_flags = 0;
+  
   grid = gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) automation_meta,
-		     (GtkWidget *) grid,
-		     FALSE,
-		     TRUE,
-		     0);
+
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_FILL);
+  
+  gtk_box_append((GtkBox *) automation_meta,
+		 (GtkWidget *) grid);
   
   /* machine type */
   i = 0;
@@ -415,22 +419,22 @@ ags_automation_meta_init(AgsAutomationMeta *automation_meta)
 void
 ags_automation_meta_connect(AgsConnectable *connectable)
 {
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsAutomationMeta *automation_meta;
   
   automation_meta = AGS_AUTOMATION_META(connectable);
 
-  if((AGS_AUTOMATION_META_CONNECTED & (automation_meta->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (automation_meta->connectable_flags)) != 0){
     return;
   }
 
-  automation_meta->flags |= AGS_AUTOMATION_META_CONNECTED;
+  automation_meta->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  automation_editor = gtk_widget_get_ancestor(automation_meta,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(automation_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(automation_editor != NULL){
-    g_signal_connect_after(automation_editor, "machine-changed",
+  if(composite_editor != NULL){
+    g_signal_connect_after(composite_editor, "machine-changed",
 			   G_CALLBACK(ags_automation_meta_machine_changed_callback), automation_meta);
   }
 }
@@ -438,21 +442,22 @@ ags_automation_meta_connect(AgsConnectable *connectable)
 void
 ags_automation_meta_disconnect(AgsConnectable *connectable)
 {
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsAutomationMeta *automation_meta;
   
   automation_meta = AGS_AUTOMATION_META(connectable);
 
-  if((AGS_AUTOMATION_META_CONNECTED & (automation_meta->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (automation_meta->connectable_flags)) == 0){
     return;
   }
 
-  automation_meta->flags &= (~AGS_AUTOMATION_META_CONNECTED);
+  automation_meta->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  automation_editor = gtk_widget_get_ancestor(automation_meta,
-					      AGS_TYPE_AUTOMATION_EDITOR);
-  if(automation_editor != NULL){
-    g_object_disconnect(automation_editor,
+  composite_editor = gtk_widget_get_ancestor(automation_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
+  
+  if(composite_editor != NULL){
+    g_object_disconnect(composite_editor,
 			"any_signal::machine-changed",
 			G_CALLBACK(ags_automation_meta_machine_changed_callback),
 			automation_meta,
@@ -471,20 +476,20 @@ ags_automation_meta_disconnect(AgsConnectable *connectable)
 void
 ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 {
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   
   if(!AGS_IS_AUTOMATION_META(automation_meta)){
     return;
   }
   
-  automation_editor = gtk_widget_get_ancestor(automation_meta,
-					    AGS_TYPE_AUTOMATION_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(automation_meta,
+					    AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(automation_editor == NULL){
+  if(composite_editor == NULL){
     return;
   }
 
-  if(automation_editor->selected_machine == NULL){
+  if(composite_editor->selected_machine == NULL){
     gtk_label_set_label(automation_meta->machine_type,
 			"(null)"); 
 
@@ -550,12 +555,12 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     guint j, j_stop;
     
     gtk_label_set_label(automation_meta->machine_type,
-			G_OBJECT_TYPE_NAME(automation_editor->selected_machine)); 
+			G_OBJECT_TYPE_NAME(composite_editor->selected_machine)); 
 
     gtk_label_set_label(automation_meta->machine_name,
-			automation_editor->selected_machine->machine_name); 
+			composite_editor->selected_machine->machine_name); 
 
-    g_object_get(automation_editor->selected_machine->audio,
+    g_object_get(composite_editor->selected_machine->audio,
 		 "audio-channels", &audio_channels,
 		 "output-pads", &output_pads,
 		 "input-pads", &input_pads,
@@ -584,13 +589,13 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 
     str = NULL;
 
-    if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->position){
+    if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
       str = i18n("position");
-    }else if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->edit){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->edit){
       str = i18n("edit");
-    }else if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->clear){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->clear){
       str = i18n("clear");
-    }else if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->select){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->select){
       str = i18n("select");
     }
 
@@ -603,13 +608,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     }
 
     /* active audio channels */
-    notebook = NULL;
-
-    if(gtk_notebook_get_current_page(automation_editor->notebook) == 1){
-      notebook = automation_editor->output_notebook;
-    }else if(gtk_notebook_get_current_page(automation_editor->notebook) == 2){
-      notebook = automation_editor->input_notebook;
-    }
+    notebook = composite_editor->automation_edit->channel_selector;
 
     str = NULL;
 
@@ -812,18 +811,18 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     start_port = NULL;
   
     if(notebook == NULL){
-      start_port = ags_audio_collect_all_audio_ports(automation_editor->selected_machine->audio);
+      start_port = ags_audio_collect_all_audio_ports(composite_editor->selected_machine->audio);
     }else{
       AgsChannel *start_channel, *channel;
 
       start_channel = NULL;
       
-      if(notebook == automation_editor->output_notebook){      
-	g_object_get(automation_editor->selected_machine->audio,
+      if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_OUTPUT_LINE){
+	g_object_get(composite_editor->selected_machine->audio,
 		     "output", &start_channel,
 		     NULL);
-      }else if(notebook == automation_editor->input_notebook){
-	g_object_get(automation_editor->selected_machine->audio,
+      }else if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_INPUT_LINE){
+	g_object_get(composite_editor->selected_machine->audio,
 		     "input", &start_channel,
 		     NULL);
       }
@@ -896,16 +895,16 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 	 !contains_control_name){
 	is_enabled = FALSE;
       
-	if(notebook == NULL){
-	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(automation_editor->selected_machine->enabled_automation_port,
+	if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_AUDIO_CHANNEL){
+	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(composite_editor->selected_machine->enabled_automation_port,
 											G_TYPE_NONE,
 											specifier)) ? TRUE: FALSE;
-	}else if(notebook == automation_editor->output_notebook){
-	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(automation_editor->selected_machine->enabled_automation_port,
+	}else if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_OUTPUT_LINE){
+	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(composite_editor->selected_machine->enabled_automation_port,
 											AGS_TYPE_OUTPUT,
 											specifier)) ? TRUE: FALSE;
-	}else if(notebook == automation_editor->input_notebook){
-	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(automation_editor->selected_machine->enabled_automation_port,
+	}else if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_INPUT_LINE){
+	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(composite_editor->selected_machine->enabled_automation_port,
 											AGS_TYPE_INPUT,
 											specifier)) ? TRUE: FALSE;
 	}
@@ -961,7 +960,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     }
 
     /* focus related */
-    if(automation_editor->focused_automation_edit == NULL){
+    if(composite_editor->automation_edit->focused_edit == NULL){
       gtk_label_set_label(automation_meta->focused_port,
 			  "(null)");
 
@@ -984,10 +983,10 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       
       /* focused port */
       gtk_label_set_label(automation_meta->focused_port,
-			  automation_editor->focused_automation_edit->control_specifier);
+			  AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_specifier);
 
       /* upper */
-      str = g_strdup_printf("%f", automation_editor->focused_automation_edit->upper);
+      str = g_strdup_printf("%f", AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->upper);
       
       gtk_label_set_label(automation_meta->range_upper,
 			  str);
@@ -995,7 +994,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       g_free(str);
 
       /* lower */
-      str = g_strdup_printf("%f", automation_editor->focused_automation_edit->lower);
+      str = g_strdup_printf("%f", AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->lower);
       
       gtk_label_set_label(automation_meta->range_lower,
 			  str);
@@ -1003,7 +1002,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       g_free(str);
 
       /* cursor x-position */
-      str = g_strdup_printf("%f", (double) automation_editor->focused_automation_edit->cursor_position_x / (double) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+      str = g_strdup_printf("%f", (double) AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->cursor_position_x / (double) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
       
       gtk_label_set_label(automation_meta->cursor_x_position,
 			  str);
@@ -1011,7 +1010,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       g_free(str);
 
       /* cursor y-position */
-      str = g_strdup_printf("%f", automation_editor->focused_automation_edit->cursor_position_y);
+      str = g_strdup_printf("%f", AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->cursor_position_y);
 
       gtk_label_set_label(automation_meta->cursor_y_position,
 			  str); 
@@ -1019,7 +1018,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       g_free(str);
 
       /* current acceleration */
-      g_object_get(automation_editor->selected_machine->audio,
+      g_object_get(composite_editor->selected_machine->audio,
 		   "automation", &start_automation,
 		   NULL);
 
@@ -1028,30 +1027,30 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
       timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-      x0 = automation_editor->focused_automation_edit->cursor_position_x;
-      y0 = automation_editor->focused_automation_edit->lower;
+      x0 = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->cursor_position_x;
+      y0 = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->lower;
     
-      x1 = x0 + (exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom)) * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
-      y1 = automation_editor->focused_automation_edit->upper;
+      x1 = x0 + (exp2(6.0 - (double) gtk_combo_box_get_active(composite_editor->toolbar->zoom)) * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+      y1 = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->upper;
 
       str = NULL;
 
       i_stop = 0;
       
-      if(notebook == NULL){
+      if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_AUDIO_CHANNEL){
 	i_stop = 1;
 	j_stop = 1;
 
 	channel_type = G_TYPE_NONE;
-      }else if(notebook == automation_editor->output_notebook){      
-	g_object_get(automation_editor->selected_machine->audio,
+      }else if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_OUTPUT_LINE){      
+	g_object_get(composite_editor->selected_machine->audio,
 		     "audio-channels", &i_stop,
 		     "output-pads", &j_stop,
 		     NULL);
 
 	channel_type = AGS_TYPE_OUTPUT;
-      }else if(notebook == automation_editor->input_notebook){
-	g_object_get(automation_editor->selected_machine->audio,
+      }else if(composite_editor->automation_edit->channel_selector_mode == AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_INPUT_LINE){
+	g_object_get(composite_editor->selected_machine->audio,
 		     "audio-channels", &i_stop,
 		     "input-pads", &j_stop,
 		     NULL);
@@ -1091,7 +1090,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 	  automation = start_automation;
 	  
 	  while((automation = ags_automation_find_near_timestamp_extended(automation, position,
-									  channel_type, automation_editor->focused_automation_edit->control_specifier,
+									  channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_specifier,
 									  timestamp)) != NULL){
 	    start_acceleration = ags_automation_find_region(automation->data,
 							    x0, y0,

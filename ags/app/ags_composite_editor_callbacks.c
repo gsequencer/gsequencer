@@ -24,10 +24,8 @@
 #include <ags/app/editor/ags_composite_edit.h>
 #include <ags/app/editor/ags_composite_edit_callbacks.h>
 #include <ags/app/editor/ags_scrolled_automation_edit_box.h>
-#include <ags/app/editor/ags_vautomation_edit_box.h>
 #include <ags/app/editor/ags_automation_edit.h>
 #include <ags/app/editor/ags_scrolled_wave_edit_box.h>
-#include <ags/app/editor/ags_vwave_edit_box.h>
 #include <ags/app/editor/ags_wave_edit.h>
 
 #include <ags/app/machine/ags_audiorec.h>

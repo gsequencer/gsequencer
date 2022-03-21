@@ -417,8 +417,6 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   g_object_set(automation_edit,
 	       "can-focus", FALSE,
-	       "n-columns", 3,
-	       "n-rows", 4,
 	       "homogeneous", FALSE,
 	       NULL);
 
@@ -453,6 +451,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   G_CALLBACK(ags_automation_edit_motion_callback), automation_edit);
 
   automation_edit->flags = 0;
+  automation_edit->connectable_flags = 0;
   automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
 
   automation_edit->button_mask = 0;

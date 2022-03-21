@@ -44,18 +44,14 @@ G_BEGIN_DECLS
 typedef struct _AgsMoveNoteDialog AgsMoveNoteDialog;
 typedef struct _AgsMoveNoteDialogClass AgsMoveNoteDialogClass;
 
-typedef enum{
-  AGS_MOVE_NOTE_DIALOG_CONNECTED   = 1,
-}AgsMoveNoteDialogFlags;
-
 struct _AgsMoveNoteDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
-  GtkRadioButton *relative;
-  GtkRadioButton *absolute;
+  GtkCheckButton *relative;
+  GtkCheckButton *absolute;
 
   GtkSpinButton *move_x;
   GtkSpinButton *move_y;

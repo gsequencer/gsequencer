@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/app/editor/ags_automation_edit_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_automation_editor.h>
 #include <ags/app/ags_composite_editor.h>
 
 #include <ags/app/editor/ags_composite_edit.h>
@@ -50,13 +49,10 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
   
   AgsApplicationContext *application_context;
      
-  gboolean use_composite_editor;
   gdouble gui_scale_factor;
   gdouble value;
 
   application_context = ags_application_context_get_instance();
-
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -66,14 +62,12 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
 			   gui_scale_factor * value);
   gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
 
-  if(use_composite_editor){
-    editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-				     AGS_TYPE_COMPOSITE_EDITOR);
+  editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+				   AGS_TYPE_COMPOSITE_EDITOR);
     
-    gtk_adjustment_set_value(AGS_COMPOSITE_EDITOR(editor)->automation_edit->ruler->adjustment,
-			     gui_scale_factor * value);
-    gtk_widget_queue_draw((GtkWidget *) AGS_COMPOSITE_EDITOR(editor)->automation_edit->ruler);
-  }
+  gtk_adjustment_set_value(AGS_COMPOSITE_EDITOR(editor)->automation_edit->ruler->adjustment,
+			   gui_scale_factor * value);
+  gtk_widget_queue_draw((GtkWidget *) AGS_COMPOSITE_EDITOR(editor)->automation_edit->ruler);
   
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);

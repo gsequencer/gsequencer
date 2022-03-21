@@ -137,7 +137,7 @@ ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
     gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
     
     list =
-      start_list = gtk_container_get_children(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->automation_edit_box);
+      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->automation_edit_box);
 
     while(list != NULL){
       gtk_range_set_value(AGS_AUTOMATION_EDIT(list->data)->hscrollbar,
@@ -167,7 +167,7 @@ ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
     gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
     list =
-      start_list = gtk_container_get_children(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->wave_edit_box);
+      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->wave_edit_box);
 
     while(list != NULL){
       gtk_range_set_value(AGS_WAVE_EDIT(list->data)->hscrollbar,

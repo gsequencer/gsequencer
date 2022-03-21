@@ -25,10 +25,6 @@
 
 void ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box);
 void ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box);
-void ags_automation_edit_box_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
 void ags_automation_edit_box_finalize(GObject *gobject);
 
 void ags_automation_edit_box_notify_width_request_callback(GObject *gobject,
@@ -52,11 +48,6 @@ enum{
   CHILD_WIDTH_REQUEST,
   CHILD_HEIGHT_REQUEST,
   LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_AUTOMATION_EDIT_COUNT,
 };
 
 static gpointer ags_automation_edit_box_parent_class = NULL;
@@ -105,28 +96,9 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
   /* GObjectClass */
   gobject = (GObjectClass *) automation_edit_box;
 
-  gobject->get_property = ags_automation_edit_box_get_property;
-
   gobject->finalize = ags_automation_edit_box_finalize;
 
   /* properties */
-  /**
-   * AgsAutomationEditBox:automation_edit-count:
-   *
-   * The automation_edit-count.
-   * 
-   * Since: 4.0.0
-   */
-  param_spec = g_param_spec_uint("automation_edit-count",
-				 i18n_pspec("automation_edit count"),
-				 i18n_pspec("The automation_edit count"),
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUTOMATION_EDIT_COUNT,
-				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_edit_box;
@@ -177,34 +149,12 @@ ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box)
 {
   g_object_set(automation_edit_box,
 	       "homogeneous", FALSE,
-	       "spacing", AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING,
 	       NULL);
 
-  automation_edit_box->automation_edit_count = 0;
-  
+  gtk_box_set_spacing(automation_edit_box,
+		      AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING);
+
   automation_edit_box->automation_edit = NULL;
-}
-
-void
-ags_automation_edit_box_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec)
-{
-  AgsAutomationEditBox *automation_edit_box;
-
-  automation_edit_box = AGS_AUTOMATION_EDIT_BOX(gobject);
-
-  switch(prop_id){
-  case PROP_AUTOMATION_EDIT_COUNT:
-    {
-      g_value_set_uint(value,
-		       automation_edit_box->automation_edit_count);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-  }
 }
 
 void
@@ -251,29 +201,21 @@ ags_automation_edit_box_notify_height_request_callback(GObject *gobject,
 }
 
 /**
- * ags_automation_edit_box_add:
+ * ags_automation_edit_box_get_automation_edit:
  * @automation_edit_box: the #AgsAutomationEditBox
  * 
- * Get automation_edit count of @automation_edit_box.
+ * Get automation_edit.
  * 
- * Returns: the count of automation_edits added
+ * Returns: the #GList-struct containing #AgsAutomationEdit
  * 
  * Since: 4.0.0
  */
-guint
-ags_automation_edit_box_get_automation_edit_count(AgsAutomationEditBox *automation_edit_box)
+GList*
+ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box)
 {
-  guint automation_edit_count;
-
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
 
-  automation_edit_count = 0;
-
-  g_object_get(automation_edit_box,
-	       "automation_edit-count", &automation_edit_count,
-	       NULL);
-  
-  return(automation_edit_count);
+  return(g_list_copy(automation_edit_box->automation_edit));
 }
 
 /**
@@ -287,7 +229,7 @@ ags_automation_edit_box_get_automation_edit_count(AgsAutomationEditBox *automati
  */
 void
 ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
-			    GtkWidget *automation_edit)
+			    AgsAutomationEdit *automation_edit)
 {
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT(automation_edit));
@@ -304,15 +246,13 @@ ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
     
     gtk_box_append(automation_edit_box,
 		   automation_edit);
-  }else{
-    g_warning("automation_edit already added to automation_edit box");
   }
 }
 
 /**
  * ags_automation_edit_box_remove:
  * @automation_edit_box: the #AgsAutomationEditBox
- * @position: the automation_edit at position to remove
+ * @automation_edit: the #AgsAutomationEdit
  * 
  * Remove automation_edit at @position of @automation_edit_box.
  * 
@@ -320,18 +260,12 @@ ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
  */
 void
 ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
-			       guint position)
+			       AgsAutomationEdit *automation_edit)
 {
-  GList *start_automation_edit, *automation_edit;
-  
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+  g_return_if_fail(AGS_IS_AUTOMATION_EDIT(automation_edit));
 
-  start_automation_edit = g_list_reverse(g_list_copy(automation_edit_box));
-  
-  automation_edit = g_list_nth(start_automation_edit,
-			       position);
-
-  if(automation_edit != NULL){
+  if(g_list_find(automation_edit_box->automation_edit, automation_edit) != NULL){
     g_object_disconnect(automation_edit,
 			"any_signal::notify::width-request",
 			G_CALLBACK(ags_automation_edit_box_notify_width_request_callback),
@@ -342,15 +276,11 @@ ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
 			NULL);
     
     automation_edit_box->automation_edit = g_list_remove(automation_edit_box->automation_edit,
-							 automation_edit->data);
+							 automation_edit);
 
     gtk_box_remove(automation_edit_box,
-		   automation_edit->data);
-  }else{
-    g_warning("no automation_edit at position [%d] in automation_edit box", position);
+		   automation_edit);
   }
-
-  g_list_free(start_automation_edit);
 }
 
 /**
@@ -399,24 +329,6 @@ ags_automation_edit_box_child_height_request(AgsAutomationEditBox *automation_ed
 		automation_edit_box_signals[CHILD_HEIGHT_REQUEST], 0,
 		automation_edit, height_request);
   g_object_unref((GObject *) automation_edit_box);
-}
-
-/**
- * ags_automation_edit_box_get_automation_edit:
- * @automation_edit_box: the #AgsAutomationEditBox
- * 
- * Get automation_edit.
- * 
- * Returns: the #GList-struct containing #AgsAutomationEdit
- * 
- * Since: 4.0.0
- */
-GList*
-ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box)
-{
-  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
-
-  return(g_list_copy(automation_edit_box->automation_edit));
 }
 
 /**

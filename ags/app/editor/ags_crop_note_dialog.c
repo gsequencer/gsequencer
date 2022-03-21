@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/i18n.h>
@@ -140,8 +139,8 @@ ags_crop_note_dialog_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
   crop_note_dialog->flags = 0;
@@ -150,48 +149,40 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 	       "title", i18n("crop notes"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(crop_note_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append(gtk_dialog_get_content_area(crop_note_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* absolute */
   crop_note_dialog->absolute = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("absolute"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(crop_note_dialog->absolute),
-		     FALSE, FALSE,
-		     0);  
+  gtk_box_append(vbox,
+		 GTK_WIDGET(crop_note_dialog->absolute));  
 
   /* radio - in place */
-  crop_note_dialog->in_place = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
-										  i18n("in-place"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(crop_note_dialog->in_place),
-		     FALSE, FALSE,
-		     0);  
+  crop_note_dialog->in_place = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("in-place"));
+  gtk_check_button_set_group(crop_note_dialog->in_place,
+			     crop_note_dialog->in_place);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(crop_note_dialog->in_place));  
   
   /* radio - do resize */
-  crop_note_dialog->do_resize = (GtkRadioButton *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(crop_note_dialog->in_place),
-										   i18n("do resize"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(crop_note_dialog->do_resize),
-		     FALSE, FALSE,
-		     0);  
+  crop_note_dialog->do_resize = (GtkCheckButton *) gtk_radio_button_new_with_label(i18n("do resize"));
+  gtk_check_button_set_group(crop_note_dialog->do_resize,
+			     crop_note_dialog->in_place);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(crop_note_dialog->do_resize));  
 
   /* crop note - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* crop note - label */
   label = (GtkLabel *) gtk_label_new(i18n("crop note"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* crop note - spin button */
   crop_note_dialog->crop_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
@@ -199,24 +190,19 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 										 1.0);
   gtk_spin_button_set_value(crop_note_dialog->crop_note,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(crop_note_dialog->crop_note),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(crop_note_dialog->crop_note));
 
   /* padding note - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* padding note - label */
   label = (GtkLabel *) gtk_label_new(i18n("padding note"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* padding note - spin button */
   crop_note_dialog->padding_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
@@ -224,10 +210,8 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 										    1.0);
   gtk_spin_button_set_value(crop_note_dialog->padding_note,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(crop_note_dialog->padding_note),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(crop_note_dialog->padding_note));
   
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) crop_note_dialog,

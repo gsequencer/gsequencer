@@ -140,51 +140,45 @@ ags_move_note_dialog_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  move_note_dialog->flags = 0;
+  move_note_dialog->connectable_flags = 0;
 
   g_object_set(move_note_dialog,
 	       "title", i18n("move notes"),
 	       NULL);
   
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(move_note_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(move_note_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* radio - relative */
-  move_note_dialog->relative = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
-										  i18n("relative"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) move_note_dialog->relative,
-		     FALSE, FALSE,
-		     0);
+  move_note_dialog->relative = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("relative"));
+  gtk_check_button_set_group(move_note_dialog->relative,
+			     move_note_dialog->relative);
+  gtk_box_append(vbox,
+		 (GtkWidget *) move_note_dialog->relative);
 
   /* radio - absolute */
-  move_note_dialog->absolute = (GtkRadioButton *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(move_note_dialog->relative),
-										  i18n("absolute"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) move_note_dialog->absolute,
-		     FALSE, FALSE,
-		     0);
+  move_note_dialog->absolute = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("absolute"));
+  gtk_check_button_set_group(move_note_dialog->absolute,
+			     move_note_dialog->relative);
+  gtk_box_append(vbox,
+		 (GtkWidget *) move_note_dialog->absolute);
 
   /* move x - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* move x - label */
   label = (GtkLabel *) gtk_label_new(i18n("move x"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* move x - spin button */
   move_note_dialog->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_DIALOG_MAX_X,
@@ -192,24 +186,19 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 									      1.0);
   gtk_spin_button_set_value(move_note_dialog->move_x,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) move_note_dialog->move_x,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) move_note_dialog->move_x);
 
   /* move y - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* move y - label */
   label = (GtkLabel *) gtk_label_new(i18n("move y"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* move y - spin button */
   move_note_dialog->move_y = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_DIALOG_MAX_Y,
@@ -217,10 +206,8 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 									      1.0);
   gtk_spin_button_set_value(move_note_dialog->move_y,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) move_note_dialog->move_y,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) move_note_dialog->move_y);
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) move_note_dialog,
@@ -237,11 +224,11 @@ ags_move_note_dialog_connect(AgsConnectable *connectable)
 
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(connectable);
 
-  if((AGS_MOVE_NOTE_DIALOG_CONNECTED & (move_note_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (move_note_dialog->connectable_flags)) != 0){
     return;
   }
 
-  move_note_dialog->flags |= AGS_MOVE_NOTE_DIALOG_CONNECTED;
+  move_note_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(move_note_dialog, "response",
 		   G_CALLBACK(ags_move_note_dialog_response_callback), move_note_dialog);
@@ -260,11 +247,11 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
 
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(connectable);
 
-  if((AGS_MOVE_NOTE_DIALOG_CONNECTED & (move_note_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (move_note_dialog->connectable_flags)) == 0){
     return;
   }
 
-  move_note_dialog->flags &= (~AGS_MOVE_NOTE_DIALOG_CONNECTED);
+  move_note_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(move_note_dialog),
 		      "any_signal::response",

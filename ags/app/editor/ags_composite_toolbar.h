@@ -56,11 +56,6 @@ typedef struct _AgsCompositeToolbar AgsCompositeToolbar;
 typedef struct _AgsCompositeToolbarClass AgsCompositeToolbarClass;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_ADDED_TO_REGISTRY     = 1,
-  AGS_COMPOSITE_TOOLBAR_CONNECTED             = 1 << 1,
-}AgsCompositeToolbarFlags;
-
-typedef enum{
   AGS_COMPOSITE_TOOLBAR_TOOL_POSITION  = 1,
   AGS_COMPOSITE_TOOLBAR_TOOL_EDIT      = 1 <<  1,
   AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR     = 1 <<  2,
@@ -136,6 +131,7 @@ struct _AgsCompositeToolbar
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
 
   guint tool;
   guint action;
@@ -160,12 +156,12 @@ struct _AgsCompositeToolbar
 
   guint paste_mode;
   GtkMenuButton *paste;
-  GMenu *paste_popup;
+  GMenuModel *paste_popup;
 
   gchar **menu_tool_dialog;
   GValue *menu_tool_value;
   GtkMenuButton *menu_tool;
-  GMenu *menu_tool_popup;
+  GMenuModel *menu_tool_popup;
 
   GtkComboBox *beats;
   GtkComboBox *beats_type;
@@ -219,9 +215,11 @@ gboolean ags_composite_toolbar_test_option(AgsCompositeToolbar *composite_toolba
 void ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint option);
 void ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint option);
 
-GMenu* ags_composite_toolbar_paste_popup_new(guint paste_mode);
-GMenu* ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
-						 GValue *value);
+GMenuModel* ags_composite_toolbar_paste_popup_new(AgsCompositeToolbar *composite_toolbar,
+						  guint paste_mode);
+GMenuModel* ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar,
+						      gchar **dialog,
+						      GValue *value);
 
 void ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar);
 
@@ -232,6 +230,8 @@ void ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composi
 						    gchar *scope);
 
 AgsCompositeToolbar* ags_composite_toolbar_new();
+
+GtkComboBox* ags_zoom_combo_box_new();
 
 G_END_DECLS
 
