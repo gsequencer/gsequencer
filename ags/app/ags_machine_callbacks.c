@@ -33,8 +33,6 @@
 
 #include <ags/i18n.h>
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry"
-
 void ags_machine_recall_set_loop(AgsMachine *machine,
 				 AgsRecall *recall);
 

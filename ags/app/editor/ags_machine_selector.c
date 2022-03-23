@@ -25,8 +25,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_composite_editor.h>
-#include <ags/app/ags_notation_editor.h>
-#include <ags/app/ags_automation_editor.h>
 
 #include <ags/app/editor/ags_machine_radio_button.h>
 

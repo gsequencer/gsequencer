@@ -45,8 +45,7 @@ typedef struct _AgsEnvelopeEditor AgsEnvelopeEditor;
 typedef struct _AgsEnvelopeEditorClass AgsEnvelopeEditorClass;
 
 typedef enum{
-  AGS_ENVELOPE_EDITOR_CONNECTED      = 1,
-  AGS_ENVELOPE_EDITOR_NO_UPDATE      = 1 <<  1,
+  AGS_ENVELOPE_EDITOR_NO_UPDATE      = 1,
 }AgsEnvelopeEditorFlags;
 
 struct _AgsEnvelopeEditor
@@ -54,6 +53,7 @@ struct _AgsEnvelopeEditor
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   
   gchar *version;
   gchar *build_id;

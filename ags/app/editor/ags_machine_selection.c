@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,6 +137,7 @@ void
 ags_machine_selection_init(AgsMachineSelection *machine_selection)
 {
   machine_selection->flags = 0;
+  machine_selection->connectable_flags = 0;
   
   g_object_set(G_OBJECT(machine_selection),
 	       "modal", TRUE,
@@ -182,24 +183,27 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 {
   AgsMachine *machine;
   AgsMachineRadioButton *machine_radio_button;
-  GtkVBox *vbox;
-  GtkRadioButton *group;
+  GtkBox *vbox;
+  GtkCheckButton *group;
 
-  GList *list, *list_start, *index, *index_start;
+  GList *start_list, *list;
+  GList *start_index, *index;
 
   gchar *str;
 
   gint response;
 
-  machine_selection->machine =
-    list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
+  list =
+    start_list = 
+    machine_selection->machine = ags_window_get_machine(machine_selection->window);
+  
   machine = NULL;
 
-  vbox = (GtkVBox *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
+  vbox = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
   group = NULL;
 
   while(list != NULL){
-    GtkRadioButton *radio_button;
+    GtkCheckButton *radio_button;
 
     gboolean success;
 
@@ -229,20 +233,21 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	str = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(list->data),
 			      AGS_MACHINE(list->data)->machine_name);
-	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
-										      str);
-	g_object_set_data((GObject *) radio_button,
-			  AGS_MACHINE_SELECTION_INDEX, list->data);
-	gtk_box_pack_start(GTK_BOX(vbox),
-			   GTK_WIDGET(radio_button),
-			   FALSE, FALSE,
-			   0);
-
-	g_free(str);
+	radio_button = (GtkCheckButton *) gtk_check_button_new_with_label(str);
 	      
 	if(group == NULL){
 	  group = radio_button;
 	}
+
+	gtk_check_button_set_group(radio_button,
+				   group);
+	
+	g_object_set_data((GObject *) radio_button,
+			  AGS_MACHINE_SELECTION_INDEX, list->data);
+	gtk_box_append(vbox,
+		       GTK_WIDGET(radio_button));
+
+	g_free(str);
 
 	success = TRUE;
       }
@@ -253,20 +258,21 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
       str = g_strdup_printf("%s: %s",
 			    G_OBJECT_TYPE_NAME(list->data),
 			    AGS_MACHINE(list->data)->machine_name);
-      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
-										    str);
-      g_object_set_data((GObject *) radio_button,
-			AGS_MACHINE_SELECTION_INDEX, list->data);
-      gtk_box_pack_start(GTK_BOX(vbox),
-			 GTK_WIDGET(radio_button),
-			 FALSE, FALSE,
-			 0);
-
-      g_free(str);
+      radio_button = (GtkCheckButton *) gtk_check_button_new_with_label(str);
       
       if(group == NULL){
 	group = radio_button;
       }
+
+      gtk_check_button_set_group(radio_button,
+				 group);
+
+      g_object_set_data((GObject *) radio_button,
+			AGS_MACHINE_SELECTION_INDEX, list->data);
+      gtk_box_append(vbox,
+		     GTK_WIDGET(radio_button));
+
+      g_free(str);
 
       success = TRUE;
     }
@@ -277,20 +283,21 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	str = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(list->data),
 			      AGS_MACHINE(list->data)->machine_name);
-	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
-										      str);
-	g_object_set_data((GObject *) radio_button,
-			  AGS_MACHINE_SELECTION_INDEX, list->data);
-	gtk_box_pack_start(GTK_BOX(vbox),
-			   GTK_WIDGET(radio_button),
-			   FALSE, FALSE,
-			   0);
-
-	g_free(str);
+	radio_button = (GtkCheckButton *) gtk_check_button_new_with_label(str);
       
 	if(group == NULL){
 	  group = radio_button;
 	}
+
+	gtk_check_button_set_group(radio_button,
+				   group);
+
+	g_object_set_data((GObject *) radio_button,
+			  AGS_MACHINE_SELECTION_INDEX, list->data);
+	gtk_box_append(vbox,
+		       GTK_WIDGET(radio_button));
+
+	g_free(str);
 
 	success = TRUE;
       }

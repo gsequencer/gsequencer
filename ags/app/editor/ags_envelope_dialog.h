@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,8 +51,7 @@ typedef struct _AgsEnvelopeDialog AgsEnvelopeDialog;
 typedef struct _AgsEnvelopeDialogClass AgsEnvelopeDialogClass;
 
 typedef enum{
-  AGS_ENVELOPE_DIALOG_CONNECTED     = 1,
-  AGS_ENVELOPE_DIALOG_PATTERN_TAB   = 1 <<  1,
+  AGS_ENVELOPE_DIALOG_PATTERN_TAB   = 1,
 }AgsEnvelopeDialogFlags;
 
 struct _AgsEnvelopeDialog
@@ -60,6 +59,7 @@ struct _AgsEnvelopeDialog
   GtkDialog dialog;
 
   guint flags;
+  guint connectable_flags;
   
   gchar *version;
   gchar *build_id;

@@ -36,7 +36,6 @@ void ags_crop_note_dialog_disconnect(AgsConnectable *connectable);
 void ags_crop_note_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_crop_note_dialog_apply(AgsApplicable *applicable);
 void ags_crop_note_dialog_reset(AgsApplicable *applicable);
-gboolean ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_crop_note_dialog
@@ -115,8 +114,6 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) crop_note_dialog;
-
-  widget->delete_event = ags_crop_note_dialog_delete_event;
 }
 
 void
@@ -143,12 +140,15 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
   GtkBox *hbox;
   GtkLabel *label;
 
-  crop_note_dialog->flags = 0;
+  crop_note_dialog->connectable_flags = 0;
 
   g_object_set(crop_note_dialog,
 	       "title", i18n("crop notes"),
 	       NULL);
 
+  gtk_window_set_hide_on_close((GtkWindow *) crop_note_dialog,
+			       TRUE);
+  
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
   gtk_box_append(gtk_dialog_get_content_area(crop_note_dialog),
@@ -167,7 +167,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 		 GTK_WIDGET(crop_note_dialog->in_place));  
   
   /* radio - do resize */
-  crop_note_dialog->do_resize = (GtkCheckButton *) gtk_radio_button_new_with_label(i18n("do resize"));
+  crop_note_dialog->do_resize = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("do resize"));
   gtk_check_button_set_group(crop_note_dialog->do_resize,
 			     crop_note_dialog->in_place);
   gtk_box_append(vbox,
@@ -228,11 +228,11 @@ ags_crop_note_dialog_connect(AgsConnectable *connectable)
 
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(connectable);
 
-  if((AGS_CROP_NOTE_DIALOG_CONNECTED & (crop_note_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (crop_note_dialog->connectable_flags)) != 0){
     return;
   }
 
-  crop_note_dialog->flags |= AGS_CROP_NOTE_DIALOG_CONNECTED;
+  crop_note_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(crop_note_dialog, "response",
 		   G_CALLBACK(ags_crop_note_dialog_response_callback), crop_note_dialog);
@@ -249,11 +249,11 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
 
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(connectable);
 
-  if((AGS_CROP_NOTE_DIALOG_CONNECTED & (crop_note_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (crop_note_dialog->connectable_flags)) == 0){
     return;
   }
 
-  crop_note_dialog->flags &= (~AGS_CROP_NOTE_DIALOG_CONNECTED);
+  crop_note_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(crop_note_dialog),
 		      "any_signal::response",
@@ -292,6 +292,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   AgsWindow *window;
   AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
 
   AgsCropNote *crop_note;  
 
@@ -305,7 +306,6 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   guint x_padding;
   guint x_crop;
   
-  gboolean use_composite_editor;
   gboolean absolute;
   gboolean in_place;
   gboolean do_resize;
@@ -315,25 +315,11 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  machine = NULL;
+  composite_editor = window->composite_editor;
 
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
-    
-    composite_editor = window->composite_editor;
-
-    machine = composite_editor->selected_machine;
-  }else{
-    AgsNotationEditor *notation_editor;
-    
-    notation_editor = window->notation_editor;
-
-    machine = notation_editor->selected_machine;
-  }
+  machine = composite_editor->selected_machine;
   
   if(machine == NULL){
     return;
@@ -403,16 +389,6 @@ void
 ags_crop_note_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_crop_note_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

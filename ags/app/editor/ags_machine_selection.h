@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,14 +40,10 @@ G_BEGIN_DECLS
 #define AGS_IS_MACHINE_SELECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MACHINE_SELECTION))
 #define AGS_MACHINE_SELECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MACHINE_SELECTION, AgsMachineSelectionClass))
 
-#define AGS_MACHINE_SELECTION_INDEX "ags-machine-selection-index\0"
+#define AGS_MACHINE_SELECTION_INDEX "ags-machine-selection-index"
 
 typedef struct _AgsMachineSelection AgsMachineSelection;
 typedef struct _AgsMachineSelectionClass AgsMachineSelectionClass;
-
-typedef enum{
-  AGS_MACHINE_SELECTION_CONNECTED     = 1,
-}AgsMachineSelectionFlags;
 
 typedef enum{
   AGS_MACHINE_SELECTION_EDIT_NOTATION    = 1,
@@ -61,6 +57,7 @@ struct _AgsMachineSelection
   GtkDialog dialog;
 
   guint flags;
+  guint connectable_flags;
   guint edit;
   
   AgsWindow *window;
