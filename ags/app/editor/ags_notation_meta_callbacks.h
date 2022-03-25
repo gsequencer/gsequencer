@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,13 +30,13 @@
 
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_notation_editor.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/app/editor/ags_notation_meta.h>
 
 G_BEGIN_DECLS
 
-void ags_notation_meta_machine_changed_callback(AgsNotationEditor *notation_editor, AgsMachine *machine,
+void ags_notation_meta_machine_changed_callback(AgsCompositeEditor *composite_editor, AgsMachine *machine,
 						AgsNotationMeta *notation_meta);
 
 G_END_DECLS

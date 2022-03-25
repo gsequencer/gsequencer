@@ -138,11 +138,14 @@ ags_machine_selection_init(AgsMachineSelection *machine_selection)
 {
   machine_selection->flags = 0;
   machine_selection->connectable_flags = 0;
+  machine_selection->edit = 0;
   
   g_object_set(G_OBJECT(machine_selection),
 	       "modal", TRUE,
 	       "title", i18n("select machines"),
 	       NULL);
+
+  machine_selection->radio_button = NULL;
 
   gtk_dialog_add_buttons(GTK_DIALOG(machine_selection),
 			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
@@ -178,13 +181,99 @@ ags_machine_selection_set_edit(AgsMachineSelection *machine_selection, guint edi
   machine_selection->edit |= edit;
 }
 
+/**
+ * ags_machine_selection_get_radio_button:
+ * @machine_selection: the #AgsMachineSelection
+ * 
+ * Get radio button of @machine_selection.
+ * 
+ * Returns: the #GList-struct containing #GtkCheckButton
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_selection_get_radio_button(AgsMachineSelection *machine_selection)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE_SELECTION(machine_selection), NULL);
+
+  return(g_list_reverse(g_list_copy(machine_selection->radio_button)));
+}
+
+/**
+ * ags_machine_selection_add_machine_radio_button:
+ * @machine_selection: the #AgsMachineSelection
+ * @radio_button: the #GtkCheckButton
+ * 
+ * Add @radio_button to @machine_selection.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_machine_selection_add_radio_button(AgsMachineSelection *machine_selection,
+				       GtkCheckButton *radio_button)
+{
+  g_return_if_fail(AGS_IS_MACHINE_SELECTION(machine_selection));
+  g_return_if_fail(GTK_IS_CHECK_BUTTON(radio_button));
+
+  if(g_list_find(machine_selection->radio_button, radio_button) == NULL){
+    GtkCheckButton *group;
+    
+    GList *start_list, *list;
+
+    list =
+      start_list = ags_machine_selection_get_radio_button(machine_selection);
+    
+    machine_selection->radio_button = g_list_prepend(machine_selection->radio_button,
+						     radio_button);
+  
+    if(list == NULL){
+      group = radio_button;
+    }else{
+      group = GTK_CHECK_BUTTON(list->data);
+    }
+
+    g_object_set(radio_button,
+		 "group", group,
+		 NULL);
+    
+    gtk_box_append((GtkBox *) gtk_dialog_get_content_area(machine_selection),
+		   radio_button);
+
+    g_list_free(start_list);
+  }
+}
+
+/**
+ * ags_machine_selection_remove_machine_radio_button:
+ * @machine_selection: the #AgsMachineSelection
+ * @radio_button: the #GtkCheckButton
+ * 
+ * Remove @radio_button to @machine_selection.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_machine_selection_remove_radio_button(AgsMachineSelection *machine_selection,
+					  GtkCheckButton *radio_button)
+{
+  g_return_if_fail(AGS_IS_MACHINE_SELECTION(machine_selection));
+  g_return_if_fail(GTK_IS_CHECK_BUTTON(radio_button));
+
+  if(g_list_find(machine_selection->radio_button, radio_button) != NULL){
+    machine_selection->radio_button = g_list_remove(machine_selection->radio_button,
+						    radio_button);
+    
+    gtk_box_remove((GtkBox *) gtk_dialog_get_content_area(machine_selection),
+		   radio_button);
+  }
+}
+
 void
 ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 {
+  AgsWindow *window;
   AgsMachine *machine;
-  AgsMachineRadioButton *machine_radio_button;
-  GtkBox *vbox;
-  GtkCheckButton *group;
+  AgsMachineRadioButton *radio_button;
 
   GList *start_list, *list;
   GList *start_index, *index;
@@ -193,14 +282,12 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 
   gint response;
 
+  window = gtk_window_get_transient_for(machine_selection);
+  
   list =
-    start_list = 
-    machine_selection->machine = ags_window_get_machine(machine_selection->window);
+    start_list = ags_window_get_machine(window);
   
   machine = NULL;
-
-  vbox = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
-  group = NULL;
 
   while(list != NULL){
     GtkCheckButton *radio_button;
@@ -234,18 +321,12 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 			      G_OBJECT_TYPE_NAME(list->data),
 			      AGS_MACHINE(list->data)->machine_name);
 	radio_button = (GtkCheckButton *) gtk_check_button_new_with_label(str);
-	      
-	if(group == NULL){
-	  group = radio_button;
-	}
-
-	gtk_check_button_set_group(radio_button,
-				   group);
-	
+	      	
 	g_object_set_data((GObject *) radio_button,
 			  AGS_MACHINE_SELECTION_INDEX, list->data);
-	gtk_box_append(vbox,
-		       GTK_WIDGET(radio_button));
+
+	ags_machine_selection_add_radio_button(machine_selection,
+					       radio_button);
 
 	g_free(str);
 
@@ -260,17 +341,11 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 			    AGS_MACHINE(list->data)->machine_name);
       radio_button = (GtkCheckButton *) gtk_check_button_new_with_label(str);
       
-      if(group == NULL){
-	group = radio_button;
-      }
-
-      gtk_check_button_set_group(radio_button,
-				 group);
-
       g_object_set_data((GObject *) radio_button,
 			AGS_MACHINE_SELECTION_INDEX, list->data);
-      gtk_box_append(vbox,
-		     GTK_WIDGET(radio_button));
+
+      ags_machine_selection_add_radio_button(machine_selection,
+					     radio_button);
 
       g_free(str);
 
@@ -285,17 +360,11 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 			      AGS_MACHINE(list->data)->machine_name);
 	radio_button = (GtkCheckButton *) gtk_check_button_new_with_label(str);
       
-	if(group == NULL){
-	  group = radio_button;
-	}
-
-	gtk_check_button_set_group(radio_button,
-				   group);
-
 	g_object_set_data((GObject *) radio_button,
 			  AGS_MACHINE_SELECTION_INDEX, list->data);
-	gtk_box_append(vbox,
-		       GTK_WIDGET(radio_button));
+
+	ags_machine_selection_add_radio_button(machine_selection,
+					       radio_button);
 
 	g_free(str);
 
@@ -323,8 +392,8 @@ ags_machine_selection_new(AgsWindow *window)
   AgsMachineSelection *machine_selection;
 
   machine_selection = (AgsMachineSelection *) g_object_new(AGS_TYPE_MACHINE_SELECTION,
+							   "transient-for", window,
 							   NULL);
-  machine_selection->window = window;
 
   return(machine_selection);
 }

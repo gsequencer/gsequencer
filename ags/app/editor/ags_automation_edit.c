@@ -1147,7 +1147,6 @@ ags_automation_edit_modifiers_callback(GtkEventControllerKey *event_controller,
   return(FALSE);
 }
 
-
 void
 ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
 							       GtkWidget *toolbar,

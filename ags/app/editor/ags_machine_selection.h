@@ -60,8 +60,7 @@ struct _AgsMachineSelection
   guint connectable_flags;
   guint edit;
   
-  AgsWindow *window;
-  GList *machine;
+  GList *radio_button;
 };
 
 struct _AgsMachineSelectionClass
@@ -72,6 +71,12 @@ struct _AgsMachineSelectionClass
 GType ags_machine_selection_get_type(void);
 
 void ags_machine_selection_set_edit(AgsMachineSelection *machine_selection, guint edit);
+
+GList* ags_machine_selection_get_radio_button(AgsMachineSelection *machine_selection);
+void ags_machine_selection_add_radio_button(AgsMachineSelection *machine_selection,
+					    GtkCheckButton *radio_button);
+void ags_machine_selection_remove_radio_button(AgsMachineSelection *machine_selection,
+					       GtkCheckButton *radio_button);
 
 void ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection);
 

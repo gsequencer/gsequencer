@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1913,7 +1913,8 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
 	      }else if(GTK_IS_BUTTON(child_widget)){
-		gtk_button_clicked((GtkButton *) child_widget);
+		g_signal_emit_by_name((GtkButton *) child_widget,
+				      "clicked");
 	      }
 	      
 	      AGS_LINE_MEMBER(list_line_member->data)->flags &= (~AGS_LINE_MEMBER_BLOCK_CHAINED);
@@ -1968,7 +1969,8 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
 	      }else if(GTK_IS_BUTTON(child_widget)){
-		gtk_button_clicked((GtkButton *) child_widget);
+		g_signal_emit_by_name((GtkButton *) child_widget,
+				      "clicked");
 	      }
 	      
 	      AGS_LINE_MEMBER(list_line_member->data)->flags &= (~AGS_LINE_MEMBER_BLOCK_CHAINED);

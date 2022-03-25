@@ -46,10 +46,9 @@ typedef struct _AgsMachineSelector AgsMachineSelector;
 typedef struct _AgsMachineSelectorClass AgsMachineSelectorClass;
 
 typedef enum{
-  AGS_MACHINE_SELECTOR_CONNECTED              = 1,
-  AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING   = 1 <<  1,
-  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO       = 1 <<  2,
-  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  3,
+  AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING   = 1,
+  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO       = 1 <<  1,
+  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  2,
 }AgsMachineSelectorFlags;
 
 typedef enum{
@@ -64,17 +63,22 @@ struct _AgsMachineSelector
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   guint edit;
   
   GtkLabel *label;
 
   GtkMenuButton *menu_button;
-  GMenu *popup;
 
-  GtkWidget *shift_piano;
+  GMenu *popup;
+  GMenu *shift_piano;
+
+  GSimpleAction *reverse_mapping_action;
   
   GtkWidget *current;
-
+  
+  GList *machine_radio_button;
+  
   GtkDialog *machine_selection;
 };
 
@@ -110,8 +114,6 @@ void ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
 				     AgsMachine *machine);
 
 void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
-
-GMenu* ags_machine_selector_popup_new(AgsMachineSelector *machine_selector);
 
 AgsMachineSelector* ags_machine_selector_new();
 

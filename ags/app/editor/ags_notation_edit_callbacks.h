@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,15 +33,10 @@
 
 G_BEGIN_DECLS
 
-gboolean ags_notation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsNotationEdit *notation_edit);
-
-gboolean ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNotationEdit *notation_edit);
-
-gboolean ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw_callback(GtkWidget *drawing_area,
+				     cairo_t *cr,
+				     int width, int height,
+				     AgsNotationEdit *notation_edit);
 
 void ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit);
 void ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit);

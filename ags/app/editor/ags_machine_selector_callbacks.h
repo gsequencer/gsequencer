@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,15 +33,42 @@
 
 G_BEGIN_DECLS
 
-void ags_machine_selector_popup_add_tab_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_remove_tab_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
+void ags_machine_selector_add_index_callback(GAction *action, GVariant *parameter,
+					     AgsMachineSelector *machine_selector);
+void ags_machine_selector_remove_index_callback(GAction *action, GVariant *parameter,
+						AgsMachineSelector *machine_selector);
+void ags_machine_selector_link_index_callback(GAction *action, GVariant *parameter,
+					      AgsMachineSelector *machine_selector);
 
 void ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *machine_selector);
+
+void ags_machine_selector_reverse_mapping_callback(GAction *action, GVariant *parameter,
+						   AgsMachineSelector *machine_selector);
+
+void ags_machine_selector_shift_a_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_a_sharp_callback(GAction *action, GVariant *parameter,
+						 AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_h_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_c_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_c_sharp_callback(GAction *action, GVariant *parameter,
+						 AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_d_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_d_sharp_callback(GAction *action, GVariant *parameter,
+						 AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_e_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_f_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_f_sharp_callback(GAction *action, GVariant *parameter,
+						 AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_g_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector);
+void ags_machine_selector_shift_g_sharp_callback(GAction *action, GVariant *parameter,
+						 AgsMachineSelector *machine_selector);
 
 G_END_DECLS
 

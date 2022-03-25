@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/i18n.h>
@@ -32,12 +31,13 @@ void ags_move_note_dialog_connectable_interface_init(AgsConnectableInterface *co
 void ags_move_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog);
 void ags_move_note_dialog_finalize(GObject *gobject);
+
 void ags_move_note_dialog_connect(AgsConnectable *connectable);
 void ags_move_note_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_move_note_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_move_note_dialog_apply(AgsApplicable *applicable);
 void ags_move_note_dialog_reset(AgsApplicable *applicable);
-gboolean ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_move_note_dialog
@@ -105,7 +105,6 @@ void
 ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_move_note_dialog_parent_class = g_type_class_peek_parent(move_note_dialog);
 
@@ -113,11 +112,6 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
   gobject = (GObjectClass *) move_note_dialog;
 
   gobject->finalize = ags_move_note_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) move_note_dialog;
-
-  widget->delete_event = ags_move_note_dialog_delete_event;
 }
 
 void
@@ -149,6 +143,9 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
   g_object_set(move_note_dialog,
 	       "title", i18n("move notes"),
 	       NULL);
+
+  gtk_window_set_hide_on_close(move_note_dialog,
+			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
@@ -190,8 +187,8 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		 (GtkWidget *) move_note_dialog->move_x);
 
   /* move y - hbox */
-  hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
-				 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_append(vbox,
 		 GTK_WIDGET(hbox));
 
@@ -292,9 +289,9 @@ void
 ags_move_note_dialog_apply(AgsApplicable *applicable)
 {
   AgsMoveNoteDialog *move_note_dialog;
-
   AgsWindow *window;
   AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
 
   AgsMoveNote *move_note;
   
@@ -310,7 +307,6 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   guint move_x;
   guint move_y;
   
-  gboolean use_composite_editor;
   gboolean relative;
   gboolean absolute;
   
@@ -319,25 +315,11 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
-
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
     
-    composite_editor = window->composite_editor;
+  composite_editor = window->composite_editor;
 
-    machine = composite_editor->selected_machine;
-  }else{
-    AgsNotationEditor *notation_editor;
-    
-    notation_editor = window->notation_editor;
-
-    machine = notation_editor->selected_machine;
-  }
+  machine = composite_editor->selected_machine;
   
   if(machine == NULL){
     return;
@@ -460,16 +442,6 @@ void
 ags_move_note_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_move_note_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

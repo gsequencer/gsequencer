@@ -45,6 +45,7 @@ G_BEGIN_DECLS
 
 #define AGS_NAVIGATION_DURATION_ZERO "0000:00.000"
 #define AGS_NAVIGATION_MAX_POSITION_TACT (16 * 1200)
+#define AGS_NAVIGATION_MAX_POSITION_TICS (16 * 16 * 1200)
 
 typedef struct _AgsNavigation AgsNavigation;
 typedef struct _AgsNavigationClass AgsNavigationClass;

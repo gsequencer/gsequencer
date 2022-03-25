@@ -92,6 +92,7 @@ struct _AgsNotationEdit
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;
