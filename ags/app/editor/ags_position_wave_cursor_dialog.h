@@ -39,19 +39,16 @@ G_BEGIN_DECLS
 #define AGS_POSITION_WAVE_CURSOR_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_POSITION_WAVE_CURSOR_DIALOG, AgsPositionWaveCursorDialogClass))
 
 #define AGS_POSITION_WAVE_CURSOR_MAX_BEATS (16 * 1200)
+#define AGS_POSITION_WAVE_CURSOR_MAX_CONTROLS (64 * 16 * 16 * 1200)
 
 typedef struct _AgsPositionWaveCursorDialog AgsPositionWaveCursorDialog;
 typedef struct _AgsPositionWaveCursorDialogClass AgsPositionWaveCursorDialogClass;
-
-typedef enum{
-  AGS_POSITION_WAVE_CURSOR_DIALOG_CONNECTED   = 1,
-}AgsPositionWaveCursorDialogFlags;
 
 struct _AgsPositionWaveCursorDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
   GtkCheckButton *set_focus;
 

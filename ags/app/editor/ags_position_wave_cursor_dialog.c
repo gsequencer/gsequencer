@@ -22,11 +22,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_wave_window.h>
-#include <ags/app/ags_wave_editor.h>
 #include <ags/app/ags_machine.h>
 
-#include <ags/app/editor/ags_wave_toolbar.h>
 #include <ags/app/editor/ags_wave_edit.h>
 
 #include <math.h>
@@ -38,12 +35,13 @@ void ags_position_wave_cursor_dialog_connectable_interface_init(AgsConnectableIn
 void ags_position_wave_cursor_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_cursor_dialog);
 void ags_position_wave_cursor_dialog_finalize(GObject *gobject);
+
 void ags_position_wave_cursor_dialog_connect(AgsConnectable *connectable);
 void ags_position_wave_cursor_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_position_wave_cursor_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable);
 void ags_position_wave_cursor_dialog_reset(AgsApplicable *applicable);
-gboolean ags_position_wave_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_position_wave_cursor_dialog
@@ -111,7 +109,6 @@ void
 ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *position_wave_cursor_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_position_wave_cursor_dialog_parent_class = g_type_class_peek_parent(position_wave_cursor_dialog);
 
@@ -119,11 +116,6 @@ ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *pos
   gobject = (GObjectClass *) position_wave_cursor_dialog;
 
   gobject->finalize = ags_position_wave_cursor_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) position_wave_cursor_dialog;
-
-  widget->delete_event = ags_position_wave_cursor_dialog_delete_event;
 }
 
 void
@@ -146,44 +138,41 @@ ags_position_wave_cursor_dialog_applicable_interface_init(AgsApplicableInterface
 void
 ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_cursor_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  position_wave_cursor_dialog->flags = 0;
+  position_wave_cursor_dialog->connectable_flags = 0;
 
   g_object_set(position_wave_cursor_dialog,
 	       "title", i18n("position wave cursor"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(position_wave_cursor_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(position_wave_cursor_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_wave_cursor_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* set focus */
   position_wave_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_toggle_button_set_active((GtkToggleButton *) position_wave_cursor_dialog->set_focus,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(position_wave_cursor_dialog->set_focus),
-		     FALSE, FALSE,
-		     0);  
+  gtk_check_button_set_active(position_wave_cursor_dialog->set_focus,
+			      TRUE);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(position_wave_cursor_dialog->set_focus));  
 
   /* position x - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* position x - label */
   label = (GtkLabel *) gtk_label_new(i18n("position x"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* position x - spin button */
   position_wave_cursor_dialog->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -191,10 +180,8 @@ ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_
 											     1.0);
   gtk_spin_button_set_value(position_wave_cursor_dialog->position_x,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(position_wave_cursor_dialog->position_x),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(position_wave_cursor_dialog->position_x));
   
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) position_wave_cursor_dialog,
@@ -211,11 +198,11 @@ ags_position_wave_cursor_dialog_connect(AgsConnectable *connectable)
 
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(connectable);
 
-  if((AGS_POSITION_WAVE_CURSOR_DIALOG_CONNECTED & (position_wave_cursor_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (position_wave_cursor_dialog->connectable_flags)) != 0){
     return;
   }
 
-  position_wave_cursor_dialog->flags |= AGS_POSITION_WAVE_CURSOR_DIALOG_CONNECTED;
+  position_wave_cursor_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(position_wave_cursor_dialog, "response",
 		   G_CALLBACK(ags_position_wave_cursor_dialog_response_callback), position_wave_cursor_dialog);
@@ -228,11 +215,11 @@ ags_position_wave_cursor_dialog_disconnect(AgsConnectable *connectable)
 
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(connectable);
 
-  if((AGS_POSITION_WAVE_CURSOR_DIALOG_CONNECTED & (position_wave_cursor_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (position_wave_cursor_dialog->connectable_flags)) == 0){
     return;
   }
 
-  position_wave_cursor_dialog->flags &= (~AGS_POSITION_WAVE_CURSOR_DIALOG_CONNECTED);
+  position_wave_cursor_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(position_wave_cursor_dialog),
 		      "any_signal::response",
@@ -261,9 +248,9 @@ void
 ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
 {
   AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
-
   AgsWindow *window;
-  AgsWaveWindow *wave_window;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;    
   AgsWaveEdit *focused_wave_edit;
   AgsMachine *machine;
   GtkWidget *widget;
@@ -272,7 +259,6 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
 
   AgsApplicationContext *application_context;
   
-  gboolean use_composite_editor;
   gdouble zoom;
   guint history;
   guint x;
@@ -282,39 +268,17 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
   
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
-    AgsCompositeToolbar *composite_toolbar;
+  composite_editor = window->composite_editor;
+
+  composite_toolbar = composite_editor->toolbar;
+
+  machine = composite_editor->selected_machine;
+
+  focused_wave_edit = composite_editor->wave_edit->focused_edit;
     
-    composite_editor = window->composite_editor;
-
-    composite_toolbar = composite_editor->toolbar;
-
-    machine = composite_editor->selected_machine;
-
-    focused_wave_edit = composite_editor->wave_edit->focused_edit;
-    
-    history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
-  }else{
-    AgsWaveEditor *wave_editor;
-    AgsWaveToolbar *wave_toolbar;
-    
-    wave_editor = window->wave_window->wave_editor;
-
-    wave_toolbar = wave_editor->wave_toolbar;
-    
-    machine = wave_editor->selected_machine;
-
-    focused_wave_edit = wave_editor->focused_wave_edit;
-
-    history = gtk_combo_box_get_active(GTK_COMBO_BOX(wave_toolbar->zoom));
-  }
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
   
   zoom = exp2((double) history - 2.0);
   
@@ -333,7 +297,7 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_WAVE_EDITOR_MAX_CONTROLS / zoom))));
+			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_POSITION_WAVE_CURSOR_MAX_CONTROLS / zoom))));
   }
   
   if(gtk_toggle_button_get_active((GtkToggleButton *) position_wave_cursor_dialog->set_focus)){
@@ -345,16 +309,6 @@ void
 ags_position_wave_cursor_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_position_wave_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_position_wave_cursor_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**
