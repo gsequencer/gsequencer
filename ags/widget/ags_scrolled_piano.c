@@ -99,7 +99,9 @@ ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano)
 			 TRUE);
 
   /* piano */
-  scrolled_piano->piano = ags_piano_new();
+  scrolled_piano->piano = ags_piano_new(GTK_ORIENTATION_VERTICAL,
+					AGS_PIANO_DEFAULT_KEY_WIDTH,
+					AGS_PIANO_DEFAULT_KEY_HEIGHT);
   gtk_scrolled_window_set_child(scrolled_piano->scrolled_window,
 				scrolled_piano->piano);
 }

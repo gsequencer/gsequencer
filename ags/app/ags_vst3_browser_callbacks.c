@@ -258,7 +258,7 @@ ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
     g_list_free(start_plugin_port);
     
-    gtk_widget_show_all((GtkWidget *) grid);
+    gtk_widget_show((GtkWidget *) grid);
   }else{
     /* update ui - empty */
     //TODO:JK: implement me

@@ -47,10 +47,9 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 #if defined(AGS_WITH_MAC_INTEGRATION)
   app = gtkosx_application_get();
 
-  gtk_widget_show_all(window->menu_bar);
+  gtk_widget_show(window->menu_bar);
   gtkosx_application_sync_menubar(app);
 
-  gtk_widget_set_no_show_all((GtkWidget *) window->menu_bar, TRUE);
   gtk_widget_hide((GtkWidget *) window->menu_bar);
 #endif
 

@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_scale_box.h>
+#include <ags/widget/ags_scale.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SCROLLED_SCALE_BOX                (ags_scrolled_scale_box_get_type())

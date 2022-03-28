@@ -407,26 +407,21 @@ ags_pad_init(AgsPad *pad)
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
+  gtk_box_append((GtkBox *) pad,
+		 (GtkWidget *) hbox);
 
   pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G");
   gtk_toggle_button_set_active(pad->group, TRUE);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pad->group,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) pad->group);
 
   pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label("M");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pad->mute,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) pad->mute);
 
   pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label("S");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pad->solo,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) pad->solo);
 
   pad->play = NULL;
 }

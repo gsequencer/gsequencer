@@ -330,9 +330,6 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   gtk_paned_set_end_child(composite_edit->composite_paned,
 			  (GtkWidget *) composite_edit->scrolled_edit_meta);
 
-  gtk_widget_set_no_show_all(composite_edit->scrolled_edit_meta,
-			     TRUE);
-    
   composite_edit->edit_meta = NULL;
 }
 
@@ -346,7 +343,7 @@ ags_composite_edit_show(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_composite_edit_parent_class)->show(widget);
   
-  gtk_widget_show_all((GtkWidget *) composite_edit->channel_selector);
+  gtk_widget_show((GtkWidget *) composite_edit->channel_selector);
   
   if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL)){
     gtk_widget_hide(composite_edit->hscrollbar);
@@ -355,6 +352,8 @@ ags_composite_edit_show(GtkWidget *widget)
   if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL)){
     gtk_widget_hide(composite_edit->vscrollbar);
   }
+
+  gtk_widget_hide(composite_edit->scrolled_edit_meta);
 }
 
 AgsUUID*

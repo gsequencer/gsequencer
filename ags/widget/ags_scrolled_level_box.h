@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_level_box.h>
+#include <ags/widget/ags_level.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SCROLLED_LEVEL_BOX                (ags_scrolled_level_box_get_type())

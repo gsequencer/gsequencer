@@ -209,7 +209,6 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   GtkLabel *label;
   GtkGrid *grid;
   GtkCellRenderer *cell_renderer;
-  GtkMenuItem *item;
 
   AgsAudio *audio;
 
@@ -343,23 +342,10 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   vst3_bridge->icomponent_handler = NULL;
   
   vst3_bridge->iplug_view = NULL;
-  
+
   /* vst3 menu */
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label("VST3");
-  gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(vst3_bridge)->popup,
-			(GtkWidget *) item);
-  gtk_widget_show((GtkWidget *) item);
+  //TODO:JK: implement me
   
-  vst3_bridge->vst3_menu = (GtkMenu *) gtk_menu_new();
-  gtk_menu_item_set_submenu((GtkMenuItem *) item,
-			    (GtkWidget *) vst3_bridge->vst3_menu);
-
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("show GUI"));
-  gtk_menu_shell_append((GtkMenuShell *) vst3_bridge->vst3_menu,
-			(GtkWidget *) item);
-
-  gtk_widget_show_all((GtkWidget *) vst3_bridge->vst3_menu);
-
   vst3_bridge->block_control = g_hash_table_new_full(g_direct_hash,
 						     g_direct_equal,
 						     NULL,

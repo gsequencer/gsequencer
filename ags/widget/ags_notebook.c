@@ -33,15 +33,6 @@ void ags_notebook_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notebook_finalize(GObject *gobject);
 
-void ags_notebook_get_preferred_width(GtkWidget *widget,
-				      gint *minimal_width,
-				      gint *natural_width);
-void ags_notebook_get_preferred_height(GtkWidget *widget,
-				       gint *minimal_height,
-				       gint *natural_height);
-void ags_notebook_size_allocate(AgsNotebook *notebook,
-				GtkAllocation *allocation);
-
 void ags_notebook_scroll_prev_callback(GtkWidget *button,
 				       AgsNotebook *notebook);
 void ags_notebook_scroll_next_callback(GtkWidget *button,
@@ -130,17 +121,11 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) notebook;
-
-  widget->get_preferred_width = ags_notebook_get_preferred_width;
-  widget->get_preferred_height = ags_notebook_get_preferred_height;
-  widget->size_allocate = ags_notebook_size_allocate;
 }
 
 void
 ags_notebook_init(AgsNotebook *notebook)
 {
-  GtkArrow *arrow;
-
   gtk_orientable_set_orientation(GTK_ORIENTABLE(notebook),
 				 GTK_ORIENTATION_VERTICAL);
   
@@ -152,8 +137,8 @@ ags_notebook_init(AgsNotebook *notebook)
   notebook->prefix = g_strdup(AGS_NOTEBOOK_TAB_DEFAULT_PREFIX);
 
   /* navigation */
-  notebook->navigation = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						 0);
+  notebook->navigation = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						0);
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(notebook->navigation),
 				 GTK_ORIENTATION_HORIZONTAL);
@@ -162,11 +147,8 @@ ags_notebook_init(AgsNotebook *notebook)
 		 GTK_WIDGET(notebook->navigation));
 
   /* arrow left */
-  arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_LEFT,
-				     GTK_SHADOW_NONE);
   notebook->scroll_prev = g_object_new(GTK_TYPE_BUTTON,
-				       "child", arrow,
-				       "relief", GTK_RELIEF_NONE,
+				       "icon-name", "pan-start",
 				       NULL);
   gtk_box_append(GTK_BOX(notebook->navigation),
 		 GTK_WIDGET(notebook->scroll_prev));
@@ -175,11 +157,8 @@ ags_notebook_init(AgsNotebook *notebook)
 		   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
 
   /* arrow right */
-  arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_RIGHT,
-				     GTK_SHADOW_NONE);
   notebook->scroll_next = g_object_new(GTK_TYPE_BUTTON,
-				       "child", arrow,
-				       "relief", GTK_RELIEF_NONE,
+				       "icon-name", "pan-end",
 				       NULL);
   gtk_box_append(GTK_BOX(notebook->navigation),
 		 GTK_WIDGET(notebook->scroll_next));
@@ -190,13 +169,13 @@ ags_notebook_init(AgsNotebook *notebook)
   /* viewport with selection */
   notebook->viewport = (GtkViewport *) gtk_viewport_new(NULL,
 							NULL);
-  gtk_container_add(GTK_CONTAINER(notebook->navigation),
-		    GTK_WIDGET(notebook->viewport));
+  gtk_box_append(notebook->navigation,
+		 GTK_WIDGET(notebook->viewport));
   
   notebook->hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
-  gtk_container_add((GtkContainer *) notebook->viewport,
-		    (GtkWidget *) notebook->hbox);
+  gtk_viewport_set_child(notebook->viewport,
+			 (GtkWidget *) notebook->hbox);
   
   notebook->tab = NULL;
   notebook->tab_free_func = ags_notebook_tab_free;
@@ -278,172 +257,12 @@ ags_notebook_finalize(GObject *gobject)
 }
 
 void
-ags_notebook_get_preferred_width(GtkWidget *widget,
-				 gint *minimal_width,
-				 gint *natural_width)
-{
-  minimal_width =
-    natural_width = NULL;
-}
-
-void
-ags_notebook_get_preferred_height(GtkWidget *widget,
-				  gint *minimal_height,
-				  gint *natural_height)
-{
-  minimal_height[0] =
-    natural_height[0] = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-}
-
-void
-ags_notebook_size_allocate(AgsNotebook *notebook,
-			   GtkAllocation *allocation)
-{
-  GtkAllocation child_allocation;
-  GtkRequisition child_requisition;
-
-  GList *list, *list_start;
-
-  guint x;
-
-  if(allocation->width < (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH)){
-    allocation->width = (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH);
-  }
-
-  allocation->height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-  GTK_WIDGET_CLASS(ags_notebook_parent_class)->size_allocate(notebook,
-							     allocation);
-
-  /*  */
-  gtk_widget_get_child_requisition((GtkWidget *) notebook->navigation,
-				   &child_requisition);
-
-  child_allocation.x = allocation->x;
-  child_allocation.y = allocation->y;
-
-  child_allocation.width = 2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-  gtk_widget_size_allocate((GtkWidget *) notebook->navigation,
-			   &child_allocation);
-  
-  /*  */
-  gtk_widget_get_child_requisition((GtkWidget *) notebook->scroll_prev,
-				   &child_requisition);
-
-  child_allocation.x = allocation->x;
-  child_allocation.y = allocation->y;
-
-  child_allocation.width = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-  gtk_widget_size_allocate((GtkWidget *) notebook->scroll_prev,
-			   &child_allocation);
-
-  gtk_widget_get_child_requisition(gtk_bin_get_child((GtkBin *) notebook->scroll_prev),
-				   &child_requisition);
-
-  child_allocation.x = allocation->x + 4;
-  child_allocation.y = allocation->y + 4;
-
-  child_allocation.width = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT - 8;
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT - 8;
-
-  gtk_widget_size_allocate(gtk_bin_get_child((GtkBin *) notebook->scroll_prev),
-			   &child_allocation);
-  
-  /*  */
-  gtk_widget_get_child_requisition((GtkWidget *) notebook->scroll_next,
-				   &child_requisition);
-
-  child_allocation.x = allocation->x + AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  child_allocation.y = allocation->y;
-
-  child_allocation.width = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-  gtk_widget_size_allocate((GtkWidget *) notebook->scroll_next,
-			   &child_allocation);
-
-  gtk_widget_get_child_requisition(gtk_bin_get_child((GtkBin *) notebook->scroll_next),
-				   &child_requisition);
-
-  child_allocation.x = allocation->x + AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT + 4;
-  child_allocation.y = allocation->y + 4;
-
-  child_allocation.width = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT - 8;
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT - 8;
-
-  gtk_widget_size_allocate(gtk_bin_get_child((GtkBin *) notebook->scroll_next),
-			   &child_allocation);
-
-  
-  /*  */
-  gtk_widget_get_child_requisition((GtkWidget *) notebook->viewport,
-				   &child_requisition);
-
-  child_allocation.x = allocation->x + 2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  child_allocation.y = allocation->y;
-
-  child_allocation.width = allocation->width - 2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-  gtk_widget_size_allocate((GtkWidget *) notebook->viewport,
-			   &child_allocation);
-
-  /*  */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) notebook->hbox);
-
-  /*  */
-  gtk_widget_get_child_requisition((GtkWidget *) notebook->hbox,
-				   &child_requisition);
-
-  child_allocation.x = 0;
-  child_allocation.y = 0;
-
-  child_allocation.width = g_list_length(list) * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH;
-
-  if(child_allocation.width < allocation->width - 2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT){
-    child_allocation.width = allocation->width - 2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  }
-  
-  child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-  gtk_widget_size_allocate((GtkWidget *) notebook->hbox,
-			   &child_allocation);
-
-  x = 0;
-  
-  while(list != NULL){
-    gtk_widget_get_child_requisition((GtkWidget *) list->data,
-				     &child_requisition);
-
-    child_allocation.x = x;
-    child_allocation.y = 0;
-
-    child_allocation.width = AGS_NOTEBOOK_TAB_DEFAULT_WIDTH;
-    child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-
-    gtk_widget_size_allocate(list->data,
-			     &child_allocation);
-
-    x += AGS_NOTEBOOK_TAB_DEFAULT_WIDTH;
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-  //  gtk_widget_size_allocate(notebook->hbox);
-}
-
-void
 ags_notebook_scroll_prev_callback(GtkWidget *button,
 				  AgsNotebook *notebook)
 {
   GtkAdjustment *adjustment;
     
-  adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
+  adjustment = gtk_scrollable_get_hadjustment(GTK_SCROLLABLE(notebook->viewport));
 
   if(gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment) > 0){
     gtk_adjustment_set_value(adjustment,
@@ -453,7 +272,7 @@ ags_notebook_scroll_prev_callback(GtkWidget *button,
 			     0.0);
   }
 
-  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+  gtk_widget_show((GtkWidget *) notebook->hbox);
 }
 
 void
@@ -462,7 +281,7 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
 {
   GtkAdjustment *adjustment;
   
-  adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
+  adjustment = gtk_scrollable_get_hadjustment(GTK_SCROLLABLE(notebook->viewport));
   
   if(gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment) < gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment)){
     gtk_adjustment_set_value(adjustment,
@@ -472,7 +291,7 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
 			     gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment));
   }
 
-  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+  gtk_widget_show((GtkWidget *) notebook->hbox);
 }
 
 /**
@@ -687,12 +506,11 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 						 NULL);
   gtk_widget_set_size_request((GtkWidget *) tab->toggle,
 			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);  
-  gtk_box_pack_start(GTK_BOX(notebook->hbox),
-		     GTK_WIDGET(tab->toggle),
-		     FALSE, FALSE,
-		     0);
 
-  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+  gtk_box_append(notebook->hbox,
+		 GTK_WIDGET(tab->toggle));
+
+  gtk_widget_show((GtkWidget *) notebook->hbox);
 
   g_free(str);
   
@@ -749,7 +567,10 @@ void
 ags_notebook_insert_tab(AgsNotebook *notebook,
 			gint position)
 {
+  GtkWidget *sibling;
+
   AgsNotebookTab *tab;
+  AgsNotebookTab *sibling_tab;
   
   GtkAdjustment *adjustment;
   
@@ -777,15 +598,22 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) tab->toggle,
 			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
-  gtk_box_pack_start(GTK_BOX(notebook->hbox),
-		     GTK_WIDGET(tab->toggle),
-		     FALSE, FALSE,
-		     0);
-  gtk_box_reorder_child(GTK_BOX(notebook->hbox),
-			GTK_WIDGET(tab->toggle),
-			position);
 
-  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+  sibling_tab = g_list_nth_data(notebook->tab,
+				position);
+
+  if(sibling_tab != NULL){
+    sibling = sibling_tab->toggle;
+    
+    gtk_box_insert_child_after(notebook->hbox,
+			       GTK_WIDGET(tab->toggle),
+			       sibling);
+  }else{
+    gtk_box_append(notebook->hbox,
+		   GTK_WIDGET(tab->toggle));
+  }
+
+  gtk_widget_show((GtkWidget *) notebook->hbox);
 }
 
 /**
@@ -851,9 +679,14 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
 			length - position - 1);
 
   if(tab != NULL){
+    gtk_box_remove(notebook->hbox,
+		   tab->toggle);
+    
     notebook->tab = g_list_remove(notebook->tab,
 				  tab);
-    gtk_widget_destroy(GTK_WIDGET(tab->toggle));
+    
+    g_object_run_dispose(GTK_WIDGET(tab->toggle));
+    g_object_unref(GTK_WIDGET(tab->toggle));
 
     if(notebook->tab_free_func != NULL){
       notebook->tab_free_func(tab);

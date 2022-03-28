@@ -19,9 +19,6 @@
 
 #include <ags/widget/ags_scrolled_scale_box.h>
 
-#include <ags/widget/ags_scale_box.h>
-#include <ags/widget/ags_scale.h>
-
 void ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box);
 void ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box);
 void ags_scrolled_scale_box_finalize(GObject *gobject);
@@ -128,7 +125,7 @@ ags_scrolled_scale_box_finalize(GObject *gobject)
  *
  * Since: 4.0.0
  */
-GtkScrolled_Window*
+GtkScrolledWindow*
 ags_scrolled_scale_box_get_scrolled_window(AgsScrolledScaleBox *scrolled_scale_box)
 {
   if(!AGS_IS_SCROLLED_SCALE_BOX(scrolled_scale_box)){

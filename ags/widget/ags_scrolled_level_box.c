@@ -19,9 +19,6 @@
 
 #include <ags/widget/ags_scrolled_level_box.h>
 
-#include <ags/widget/ags_level_box.h>
-#include <ags/widget/ags_level.h>
-
 void ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box);
 void ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box);
 void ags_scrolled_level_box_finalize(GObject *gobject);

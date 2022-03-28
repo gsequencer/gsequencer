@@ -68,7 +68,7 @@ struct _AgsNotebook
   GtkViewport *viewport;
 
   GtkBox *hbox;
-  
+
   GList *tab;
   GDestroyNotify tab_free_func;
 };

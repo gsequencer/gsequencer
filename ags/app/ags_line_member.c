@@ -639,9 +639,14 @@ ags_line_member_set_property(GObject *gobject,
       }
 
       line_member->widget_type = widget_type;
-      new_child = (GtkWidget *) g_object_new(widget_type,
-					     NULL);
 
+      new_child = NULL;
+
+      if(widget_type != G_TYPE_NONE){
+	new_child = (GtkWidget *) g_object_new(widget_type,
+					       NULL);
+      }
+      
       /* scale factor */
       gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -732,7 +737,8 @@ ags_line_member_set_property(GObject *gobject,
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
       }else{
-	if(!(AGS_IS_INDICATOR(new_child) ||
+	if(!(GTK_IS_LABEL(new_child) ||
+	     AGS_IS_INDICATOR(new_child) ||
 	     AGS_IS_LED(new_child))){
 	  g_warning("ags_line_member_set_property() - unknown child type %s", g_type_name(widget_type));
 	}
