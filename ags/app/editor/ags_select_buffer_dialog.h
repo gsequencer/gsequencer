@@ -44,15 +44,11 @@ G_BEGIN_DECLS
 typedef struct _AgsSelectBufferDialog AgsSelectBufferDialog;
 typedef struct _AgsSelectBufferDialogClass AgsSelectBufferDialogClass;
 
-typedef enum{
-  AGS_SELECT_BUFFER_DIALOG_CONNECTED   = 1,
-}AgsSelectBufferDialogFlags;
-
 struct _AgsSelectBufferDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
   
   GtkCheckButton *copy_selection;
 

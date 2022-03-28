@@ -44,15 +44,11 @@ G_BEGIN_DECLS
 typedef struct _AgsSelectNoteDialog AgsSelectNoteDialog;
 typedef struct _AgsSelectNoteDialogClass AgsSelectNoteDialogClass;
 
-typedef enum{
-  AGS_SELECT_NOTE_DIALOG_CONNECTED   = 1,
-}AgsSelectNoteDialogFlags;
-
 struct _AgsSelectNoteDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
   GtkCheckButton *copy_selection;
 

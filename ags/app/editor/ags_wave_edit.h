@@ -71,11 +71,10 @@ typedef struct _AgsWaveEdit AgsWaveEdit;
 typedef struct _AgsWaveEditClass AgsWaveEditClass;
 
 typedef enum{
-  AGS_WAVE_EDIT_CONNECTED                   = 1,
-  AGS_WAVE_EDIT_AUTO_SCROLL                 = 1 <<  1,
-  AGS_WAVE_EDIT_SHOW_RULER                  = 1 <<  2,
-  AGS_WAVE_EDIT_SHOW_VSCROLLBAR             = 1 <<  3,
-  AGS_WAVE_EDIT_SHOW_HSCROLLBAR             = 1 <<  4,
+  AGS_WAVE_EDIT_AUTO_SCROLL                 = 1,
+  AGS_WAVE_EDIT_SHOW_RULER                  = 1 <<  1,
+  AGS_WAVE_EDIT_SHOW_VSCROLLBAR             = 1 <<  2,
+  AGS_WAVE_EDIT_SHOW_HSCROLLBAR             = 1 <<  3,
 }AgsWaveEditFlags;
 
 typedef enum{
@@ -100,6 +99,7 @@ struct _AgsWaveEdit
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;

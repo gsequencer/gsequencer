@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,9 @@
 #include <ags/app/editor/ags_wave_meta.h>
 #include <ags/app/editor/ags_wave_meta_callbacks.h>
 
-#include <ags/app/ags_wave_editor.h>
+#include <ags/app/ags_composite_editor.h>
+
+#include <ags/app/editor/ags_wave_edit.h>
 
 #include <ags/i18n.h>
 
@@ -67,7 +69,7 @@ ags_wave_meta_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_wave_meta = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_wave_meta = g_type_register_static(GTK_TYPE_BOX,
 						"AgsWaveMeta", &ags_wave_meta_info,
 						0);
     
@@ -286,7 +288,7 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
 void
 ags_wave_meta_connect(AgsConnectable *connectable)
 {
-  AgsWaveEditor *wave_editor;
+  AgsCompositeEditor *composite_editor;
   AgsWaveMeta *wave_meta;
   
   wave_meta = AGS_WAVE_META(connectable);
@@ -297,11 +299,11 @@ ags_wave_meta_connect(AgsConnectable *connectable)
 
   wave_meta->flags |= AGS_WAVE_META_CONNECTED;
 
-  wave_editor = gtk_widget_get_ancestor(wave_meta,
-					AGS_TYPE_WAVE_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(wave_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(wave_editor != NULL){
-    g_signal_connect_after(wave_editor, "machine-changed",
+  if(composite_editor != NULL){
+    g_signal_connect_after(composite_editor, "machine-changed",
 			   G_CALLBACK(ags_wave_meta_machine_changed_callback), wave_meta);
   }
 }
@@ -309,7 +311,7 @@ ags_wave_meta_connect(AgsConnectable *connectable)
 void
 ags_wave_meta_disconnect(AgsConnectable *connectable)
 {
-  AgsWaveEditor *wave_editor;
+  AgsCompositeEditor *composite_editor;
   AgsWaveMeta *wave_meta;
   
   wave_meta = AGS_WAVE_META(connectable);
@@ -320,11 +322,11 @@ ags_wave_meta_disconnect(AgsConnectable *connectable)
 
   wave_meta->flags &= (~AGS_WAVE_META_CONNECTED);
 
-  wave_editor = gtk_widget_get_ancestor(wave_meta,
-					AGS_TYPE_WAVE_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(wave_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
   
-  if(wave_editor != NULL){
-    g_object_disconnect(wave_editor,
+  if(composite_editor != NULL){
+    g_object_disconnect(composite_editor,
 			"any_signal::machine-changed",
 			G_CALLBACK(ags_wave_meta_machine_changed_callback),
 			wave_meta,
@@ -343,20 +345,20 @@ ags_wave_meta_disconnect(AgsConnectable *connectable)
 void
 ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
 {
-  AgsWaveEditor *wave_editor;
+  AgsCompositeEditor *composite_editor;
   
   if(!AGS_IS_WAVE_META(wave_meta)){
     return;
   }
   
-  wave_editor = gtk_widget_get_ancestor(wave_meta,
-					AGS_TYPE_WAVE_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(wave_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(wave_editor == NULL){
+  if(composite_editor == NULL){
     return;
   }
 
-  if(wave_editor->selected_machine == NULL){
+  if(composite_editor->selected_machine == NULL){
     gtk_label_set_label(wave_meta->machine_type,
 			"(null)"); 
 
@@ -390,12 +392,12 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
     guint i;
 
     gtk_label_set_label(wave_meta->machine_type,
-			G_OBJECT_TYPE_NAME(wave_editor->selected_machine)); 
+			G_OBJECT_TYPE_NAME(composite_editor->selected_machine)); 
 
     gtk_label_set_label(wave_meta->machine_name,
-			wave_editor->selected_machine->machine_name); 
+			composite_editor->selected_machine->machine_name); 
 
-    g_object_get(wave_editor->selected_machine->audio,
+    g_object_get(composite_editor->selected_machine->audio,
 		 "audio-channels", &audio_channels,
 		 "output-pads", &output_pads,
 		 "input-pads", &input_pads,
@@ -424,9 +426,9 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
 
     str = NULL;
 
-    if(wave_editor->wave_toolbar->selected_edit_mode == wave_editor->wave_toolbar->position){
+    if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
       str = i18n("position");
-    }else if(wave_editor->wave_toolbar->selected_edit_mode == wave_editor->wave_toolbar->select){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->select){
       str = i18n("select");
     }
 
@@ -446,7 +448,7 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
 
     position = 0;
     
-    for(; (position = ags_notebook_next_active_tab(wave_editor->notebook, position)) != -1; position++){
+    for(; (position = ags_notebook_next_active_tab(composite_editor->wave_edit->channel_selector, position)) != -1; position++){
       if(active_start == -1){
 	active_start = position;
 	active_end = position;
@@ -545,11 +547,11 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
     }
 
     /* cursor position x */
-    if(wave_editor->focused_wave_edit == NULL){
+    if(composite_editor->wave_edit->focused_edit == NULL){
       gtk_label_set_label(wave_meta->cursor_x_position,
 			  "-1");
     }else{
-      str = g_strdup_printf("%u", wave_editor->focused_wave_edit->cursor_position_x);
+      str = g_strdup_printf("%u", AGS_WAVE_EDIT(composite_editor->wave_edit->focused_edit)->cursor_position_x);
       gtk_label_set_label(wave_meta->cursor_x_position,
 			  str);
       

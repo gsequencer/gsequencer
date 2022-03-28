@@ -60,7 +60,7 @@ ags_scrolled_automation_edit_box_get_type(void)
       (GInstanceInitFunc) ags_scrolled_automation_edit_box_init,
     };
 
-    ags_type_scrolled_automation_edit_box = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_scrolled_automation_edit_box = g_type_register_static(GTK_TYPE_GRID,
 								   "AgsScrolledAutomationEditBox", &ags_scrolled_automation_edit_box_info,
 								   0);
 
@@ -99,9 +99,6 @@ ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_aut
 
   gtk_widget_set_vexpand(scrolled_automation_edit_box->scrolled_window,
 			 TRUE);
-
-  gtk_widget_set_size_request(scrolled_automation_edit_box->scrolled_window,
-			      AGS_AUTOMATION_EDIT_DEFAULT_WIDTH_REQUEST, -1);
 
   /* automation_edit box */
   scrolled_automation_edit_box->automation_edit_box = ags_automation_edit_box_new(GTK_ORIENTATION_VERTICAL);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,9 +22,10 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_wave_window.h>
-#include <ags/app/ags_wave_editor.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_machine.h>
+
+#include <ags/app/editor/ags_wave_edit.h>
 
 #include <ags/i18n.h>
 
@@ -40,7 +41,6 @@ void ags_time_stretch_buffer_dialog_disconnect(AgsConnectable *connectable);
 void ags_time_stretch_buffer_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable);
 void ags_time_stretch_buffer_dialog_reset(AgsApplicable *applicable);
-gboolean ags_time_stretch_buffer_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_time_stretch_buffer_dialog
@@ -108,9 +108,6 @@ void
 ags_time_stretch_buffer_dialog_class_init(AgsTimeStretchBufferDialogClass *time_stretch_buffer_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
-  GParamSpec *param_spec;
 
   ags_time_stretch_buffer_dialog_parent_class = g_type_class_peek_parent(time_stretch_buffer_dialog);
 
@@ -120,11 +117,6 @@ ags_time_stretch_buffer_dialog_class_init(AgsTimeStretchBufferDialogClass *time_
   gobject->finalize = ags_time_stretch_buffer_dialog_finalize;
 
   /* properties */
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) time_stretch_buffer_dialog;
-
-  widget->delete_event = ags_time_stretch_buffer_dialog_delete_event;
 }
 
 void
@@ -147,37 +139,34 @@ ags_time_stretch_buffer_dialog_applicable_interface_init(AgsApplicableInterface 
 void
 ags_time_stretch_buffer_dialog_init(AgsTimeStretchBufferDialog *time_stretch_buffer_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  time_stretch_buffer_dialog->flags = 0;
+  time_stretch_buffer_dialog->connectable_flags = 0;
 
   g_object_set(time_stretch_buffer_dialog,
 	       "title", i18n("time stretch buffers"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(time_stretch_buffer_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(time_stretch_buffer_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(time_stretch_buffer_dialog),
+		 GTK_WIDGET(vbox));  
   
   /* frequency - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   /* frequency - label */
   label = (GtkLabel *) gtk_label_new(i18n("frequency"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   /* frequency - spin button */
   time_stretch_buffer_dialog->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -187,24 +176,19 @@ ags_time_stretch_buffer_dialog_init(AgsTimeStretchBufferDialog *time_stretch_buf
 			     3);
   gtk_spin_button_set_value(time_stretch_buffer_dialog->frequency,
 			    AGS_TIME_STRETCH_BUFFER_DEFAULT_FREQUENCY);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) time_stretch_buffer_dialog->frequency,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) time_stretch_buffer_dialog->frequency);
   
   /* orig BPM - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   /* orig BPM - label */
   label = (GtkLabel *) gtk_label_new(i18n("orig BPM"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   /* orig BPM - spin button */
   time_stretch_buffer_dialog->orig_bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -214,24 +198,19 @@ ags_time_stretch_buffer_dialog_init(AgsTimeStretchBufferDialog *time_stretch_buf
 			     2);
   gtk_spin_button_set_value(time_stretch_buffer_dialog->orig_bpm,
 			    AGS_TIME_STRETCH_BUFFER_DEFAULT_BPM);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) time_stretch_buffer_dialog->orig_bpm,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) time_stretch_buffer_dialog->orig_bpm);
   
   /* new BPM - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   /* new BPM - label */
   label = (GtkLabel *) gtk_label_new(i18n("new BPM"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   /* new BPM - spin button */
   time_stretch_buffer_dialog->new_bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -241,10 +220,8 @@ ags_time_stretch_buffer_dialog_init(AgsTimeStretchBufferDialog *time_stretch_buf
 			     2);
   gtk_spin_button_set_value(time_stretch_buffer_dialog->new_bpm,
 			    AGS_TIME_STRETCH_BUFFER_DEFAULT_BPM);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) time_stretch_buffer_dialog->new_bpm,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) time_stretch_buffer_dialog->new_bpm);
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) time_stretch_buffer_dialog,
@@ -261,11 +238,11 @@ ags_time_stretch_buffer_dialog_connect(AgsConnectable *connectable)
 
   time_stretch_buffer_dialog = AGS_TIME_STRETCH_BUFFER_DIALOG(connectable);
 
-  if((AGS_TIME_STRETCH_BUFFER_DIALOG_CONNECTED & (time_stretch_buffer_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (time_stretch_buffer_dialog->connectable_flags)) != 0){
     return;
   }
 
-  time_stretch_buffer_dialog->flags |= AGS_TIME_STRETCH_BUFFER_DIALOG_CONNECTED;
+  time_stretch_buffer_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(time_stretch_buffer_dialog, "response",
 		   G_CALLBACK(ags_time_stretch_buffer_dialog_response_callback), time_stretch_buffer_dialog);
@@ -278,11 +255,11 @@ ags_time_stretch_buffer_dialog_disconnect(AgsConnectable *connectable)
 
   time_stretch_buffer_dialog = AGS_TIME_STRETCH_BUFFER_DIALOG(connectable);
 
-  if((AGS_TIME_STRETCH_BUFFER_DIALOG_CONNECTED & (time_stretch_buffer_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (time_stretch_buffer_dialog->connectable_flags)) == 0){
     return;
   }
 
-  time_stretch_buffer_dialog->flags &= (~AGS_TIME_STRETCH_BUFFER_DIALOG_CONNECTED);
+  time_stretch_buffer_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(time_stretch_buffer_dialog),
 		      "any_signal::response",
@@ -310,9 +287,9 @@ ags_time_stretch_buffer_dialog_set_update(AgsApplicable *applicable, gboolean up
 void
 ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 {
-  AgsTimeStretchBufferDialog *time_stretch_buffer_dialog;
-    
+  AgsTimeStretchBufferDialog *time_stretch_buffer_dialog;  
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
   AgsWaveEdit *focused_wave_edit;
@@ -330,7 +307,6 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
   GList *start_wave, *wave;
   GList *start_new_wave, *new_wave;
   
-  gboolean use_composite_editor;
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -348,33 +324,15 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
-  
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
     
-    composite_editor = window->composite_editor;
+  composite_editor = window->composite_editor;
 
-    machine = composite_editor->selected_machine;
+  machine = composite_editor->selected_machine;
 
-    focused_wave_edit = composite_editor->wave_edit->focused_edit;
+  focused_wave_edit = composite_editor->wave_edit->focused_edit;
     
-    notebook = composite_editor->wave_edit->channel_selector;
-  }else{
-    AgsWaveEditor *wave_editor;
-    
-    wave_editor = window->wave_window->wave_editor;
-
-    machine = wave_editor->selected_machine;
-
-    focused_wave_edit = wave_editor->focused_wave_edit;
-
-    notebook = wave_editor->notebook;
-  }
+  notebook = composite_editor->wave_edit->channel_selector;
   
   audio = machine->audio;
 
@@ -669,16 +627,6 @@ void
 ags_time_stretch_buffer_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_time_stretch_buffer_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_time_stretch_buffer_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

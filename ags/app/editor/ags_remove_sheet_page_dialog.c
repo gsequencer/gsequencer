@@ -22,10 +22,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_sheet_editor.h>
 #include <ags/app/ags_machine.h>
 
-#include <ags/app/editor/ags_sheet_toolbar.h>
 #include <ags/app/editor/ags_sheet_edit.h>
 
 #include <ags/i18n.h>
@@ -35,12 +33,13 @@ void ags_remove_sheet_page_dialog_connectable_interface_init(AgsConnectableInter
 void ags_remove_sheet_page_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_remove_sheet_page_dialog_init(AgsRemoveSheetPageDialog *remove_sheet_page_dialog);
 void ags_remove_sheet_page_dialog_finalize(GObject *gobject);
+
 void ags_remove_sheet_page_dialog_connect(AgsConnectable *connectable);
 void ags_remove_sheet_page_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_remove_sheet_page_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_remove_sheet_page_dialog_apply(AgsApplicable *applicable);
 void ags_remove_sheet_page_dialog_reset(AgsApplicable *applicable);
-gboolean ags_remove_sheet_page_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_remove_sheet_page_dialog
@@ -108,9 +107,6 @@ void
 ags_remove_sheet_page_dialog_class_init(AgsRemoveSheetPageDialogClass *remove_sheet_page_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
-  GParamSpec *param_spec;
 
   ags_remove_sheet_page_dialog_parent_class = g_type_class_peek_parent(remove_sheet_page_dialog);
 
@@ -118,11 +114,6 @@ ags_remove_sheet_page_dialog_class_init(AgsRemoveSheetPageDialogClass *remove_sh
   gobject = (GObjectClass *) remove_sheet_page_dialog;
 
   gobject->finalize = ags_remove_sheet_page_dialog_finalize;
-  
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) remove_sheet_page_dialog;
-
-  widget->delete_event = ags_remove_sheet_page_dialog_delete_event;
 }
 
 void
@@ -145,12 +136,15 @@ ags_remove_sheet_page_dialog_applicable_interface_init(AgsApplicableInterface *a
 void
 ags_remove_sheet_page_dialog_init(AgsRemoveSheetPageDialog *remove_sheet_page_dialog)
 {
-  remove_sheet_page_dialog->flags = 0;
+  remove_sheet_page_dialog->connectable_flags = 0;
 
   g_object_set(remove_sheet_page_dialog,
 	       "title", i18n("remove sheet page"),
 	       NULL);
 
+  gtk_window_set_hide_on_close(remove_sheet_page_dialog,
+			       TRUE);
+  
   //TODO:JK: implement me
   
   /* dialog buttons */
@@ -168,11 +162,11 @@ ags_remove_sheet_page_dialog_connect(AgsConnectable *connectable)
 
   remove_sheet_page_dialog = AGS_REMOVE_SHEET_PAGE_DIALOG(connectable);
 
-  if((AGS_REMOVE_SHEET_PAGE_DIALOG_CONNECTED & (remove_sheet_page_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (remove_sheet_page_dialog->connectable_flags)) != 0){
     return;
   }
 
-  remove_sheet_page_dialog->flags |= AGS_REMOVE_SHEET_PAGE_DIALOG_CONNECTED;
+  remove_sheet_page_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(remove_sheet_page_dialog, "response",
 		   G_CALLBACK(ags_remove_sheet_page_dialog_response_callback), remove_sheet_page_dialog);
@@ -185,11 +179,11 @@ ags_remove_sheet_page_dialog_disconnect(AgsConnectable *connectable)
 
   remove_sheet_page_dialog = AGS_REMOVE_SHEET_PAGE_DIALOG(connectable);
 
-  if((AGS_REMOVE_SHEET_PAGE_DIALOG_CONNECTED & (remove_sheet_page_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (remove_sheet_page_dialog->connectable_flags)) == 0){
     return;
   }
 
-  remove_sheet_page_dialog->flags &= (~AGS_REMOVE_SHEET_PAGE_DIALOG_CONNECTED);
+  remove_sheet_page_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(remove_sheet_page_dialog),
 		      "any_signal::response",
@@ -224,16 +218,6 @@ void
 ags_remove_sheet_page_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_remove_sheet_page_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_remove_sheet_page_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

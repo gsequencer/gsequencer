@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,13 +33,6 @@
 
 G_BEGIN_DECLS
 
-gboolean ags_sheet_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsSheetEdit *sheet_edit);
-
-gboolean ags_sheet_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsSheetEdit *sheet_edit);
-gboolean ags_sheet_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsSheetEdit *sheet_edit);
-gboolean ags_sheet_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsSheetEdit *sheet_edit);
-gboolean ags_sheet_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsSheetEdit *sheet_edit);
-gboolean ags_sheet_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsSheetEdit *sheet_edit);
 
 G_END_DECLS
 

@@ -53,8 +53,7 @@ typedef struct _AgsSheetEdit AgsSheetEdit;
 typedef struct _AgsSheetEditClass AgsSheetEditClass;
 
 typedef enum{
-  AGS_SHEET_EDIT_CONNECTED             = 1,
-  AGS_SHEET_EDIT_AUTO_SCROLL           = 1 <<  1,
+  AGS_SHEET_EDIT_AUTO_SCROLL           = 1,
 }AgsSheetEditFlags;
 
 typedef enum{
@@ -81,6 +80,7 @@ struct _AgsSheetEdit
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;

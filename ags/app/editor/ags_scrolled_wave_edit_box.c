@@ -60,7 +60,7 @@ ags_scrolled_wave_edit_box_get_type(void)
       (GInstanceInitFunc) ags_scrolled_wave_edit_box_init,
     };
 
-    ags_type_scrolled_wave_edit_box = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_scrolled_wave_edit_box = g_type_register_static(GTK_TYPE_GRID,
 							     "AgsScrolledWaveEditBox", &ags_scrolled_wave_edit_box_info,
 							     0);
 
@@ -99,9 +99,6 @@ ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box)
 
   gtk_widget_set_vexpand(scrolled_wave_edit_box->scrolled_window,
 			 TRUE);
-
-  gtk_widget_set_size_request(scrolled_wave_edit_box->scrolled_window,
-			      AGS_WAVE_EDIT_DEFAULT_WIDTH_REQUEST, -1);
 
   /* wave_edit box */
   scrolled_wave_edit_box->wave_edit_box = ags_wave_edit_box_new(GTK_ORIENTATION_VERTICAL);
