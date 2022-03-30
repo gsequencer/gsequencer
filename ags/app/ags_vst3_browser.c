@@ -151,22 +151,16 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
   /* plugin */
   vst3_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						0);
-  gtk_box_pack_start((GtkBox *) vst3_browser,
-		     (GtkWidget *) vst3_browser->plugin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) vst3_browser,
+		 (GtkWidget *) vst3_browser->plugin);
 
   label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vst3_browser->plugin,
+		 (GtkWidget *) label);
 
   vst3_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) vst3_browser->filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vst3_browser->plugin,
+		 (GtkWidget *) vst3_browser->filename);
 
   vst3_browser->path = NULL;
 
@@ -205,24 +199,18 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
   }
   
   label = (GtkLabel *) gtk_label_new(i18n("effect: "));
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vst3_browser->plugin,
+		 (GtkWidget *) label);
 
   vst3_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) vst3_browser->effect,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vst3_browser->plugin,
+		 (GtkWidget *) vst3_browser->effect);
 
   /* description */
   vst3_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						     0);
-  gtk_box_pack_start((GtkBox *) vst3_browser,
-		     (GtkWidget *) vst3_browser->description,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) vst3_browser,
+		 (GtkWidget *) vst3_browser->description);
 
   //TODO:JK: implement me
   
@@ -232,18 +220,14 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
 				    "xalign", 0.0,
 				    "label", str,
 				    NULL);
-  gtk_box_pack_start(vst3_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vst3_browser->description,
+		 (GtkWidget *) label);
 
   g_free(str);
   
   vst3_browser->port_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(vst3_browser->description,
-		     (GtkWidget *) vst3_browser->port_grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vst3_browser->description,
+		 (GtkWidget *) vst3_browser->port_grid);
 }
 
 void

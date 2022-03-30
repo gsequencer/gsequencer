@@ -263,10 +263,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 
   /* file */
   expander = gtk_expander_new(i18n("file"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) expander,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) expander);
   
   pitch_sampler->pitch_sampler_file = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 							     0);

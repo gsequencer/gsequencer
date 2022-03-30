@@ -149,10 +149,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 		    (GtkWidget *) vbox);
 
   grid = gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) grid,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) vbox,
+		 (GtkWidget *) grid);
   
   online_help_window->pdf_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_vexpand(online_help_window->pdf_drawing_area,

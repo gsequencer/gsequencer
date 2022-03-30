@@ -202,121 +202,93 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   /* filename */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+		 GTK_WIDGET(hbox));
 
   label = (GtkLabel *) gtk_label_new(i18n("file"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(label),
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   wave_export_dialog->filename = (GtkEntry *) gtk_entry_new();
   gtk_editable_set_text(GTK_EDITABLE(wave_export_dialog->filename),
 			"out.wav");
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(wave_export_dialog->filename),
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(wave_export_dialog->filename));
 
   wave_export_dialog->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(wave_export_dialog->file_chooser_button),
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(wave_export_dialog->file_chooser_button));
 
   /* start tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
-		     GTK_WIDGET(hbox),
-  		     FALSE, FALSE,
-  		     0);
+  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+		 GTK_WIDGET(hbox));
   
   label = (GtkLabel *) gtk_label_new(i18n("start tact"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-  		     TRUE, TRUE,
-  		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(label));
   
   wave_export_dialog->start_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT, 1.0);
   gtk_spin_button_set_digits(wave_export_dialog->start_tact,
 			     3);
   gtk_spin_button_set_value(wave_export_dialog->start_tact,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(wave_export_dialog->start_tact),
-  		     FALSE, FALSE,
-  		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(wave_export_dialog->start_tact));
   
   /* end tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
-		     GTK_WIDGET(hbox),
-  		     FALSE, FALSE,
-  		     0);
+  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+		 GTK_WIDGET(hbox));
   
   label = (GtkLabel *) gtk_label_new(i18n("end tact"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-  		     TRUE, TRUE,
-  		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(label));
   
   wave_export_dialog->end_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT / 16.0, 1.0);
   gtk_spin_button_set_digits(wave_export_dialog->end_tact,
 			     3);
   gtk_spin_button_set_value(wave_export_dialog->end_tact,
 			    4.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(wave_export_dialog->end_tact),
-  		     FALSE, FALSE,
-  		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(wave_export_dialog->end_tact));
   
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
-		     GTK_WIDGET(hbox),
-  		     FALSE, FALSE,
-  		     0);
+  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+		 GTK_WIDGET(hbox));
 
   wave_export_dialog->duration = (GtkLabel *) gtk_label_new("0000:00.000");
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(wave_export_dialog->duration),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(wave_export_dialog->duration));
 
   /* output format */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
-		     GTK_WIDGET(hbox),
-  		     FALSE, FALSE,
-  		     0);
+  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+		 GTK_WIDGET(hbox));
 
   label = (GtkLabel *) gtk_label_new(i18n("output format"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(label),
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   wave_export_dialog->output_format = (GtkComboBoxText *) gtk_combo_box_text_new();
 
@@ -344,10 +316,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   gtk_combo_box_set_active((GtkComboBox *) wave_export_dialog->output_format,
 			   0);
 
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(wave_export_dialog->output_format),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(wave_export_dialog->output_format));
 
   /* GtkButton's in GtkDialog->action_area  */
   wave_export_dialog->apply = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,

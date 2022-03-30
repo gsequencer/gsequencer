@@ -212,18 +212,14 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   /* playback */
   midi_dialog->playback = NULL;
   //  midi_dialog->playback = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("playback"));
-  //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
-  //		     GTK_WIDGET(midi_dialog->playback),
-  //		     FALSE, FALSE,
-  //		     0);
+  //  gtk_box_append((GtkBox *) midi_dialog->io_options,
+  //		     GTK_WIDGET(midi_dialog->playback));
 
   /* record */
   midi_dialog->record = NULL;
   //  midi_dialog->record = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("record"));
-  //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
-  //		     GTK_WIDGET(midi_dialog->record),
-  //		     FALSE, FALSE,
-  //		     0);
+  //  gtk_box_append((GtkBox *) midi_dialog->io_options,
+  //		     GTK_WIDGET(midi_dialog->record));
 
   /* mapping */
   midi_dialog->mapping = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,

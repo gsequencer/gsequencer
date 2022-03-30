@@ -328,10 +328,8 @@ ags_window_init(AgsWindow *window)
   
   /* vpaned and scrolled window */
   window->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_VERTICAL);
-  gtk_box_pack_start((GtkBox*) vbox,
-		     (GtkWidget*) window->paned,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox*) vbox,
+		 (GtkWidget*) window->paned);
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_paned_set_start_child(window->paned,

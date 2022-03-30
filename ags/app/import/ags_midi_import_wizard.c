@@ -167,10 +167,8 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   /* file chooser */  
   midi_import_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
   
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
-		     (GtkWidget *) midi_import_wizard->file_chooser,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
+		     (GtkWidget *) midi_import_wizard->file_chooser);
 
   /* track collection */
   midi_import_wizard->track_collection = (GtkWidget *) ags_track_collection_new(AGS_TYPE_TRACK_MAPPER,
@@ -178,10 +176,8 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 										NULL,
 										NULL);
   
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
-		     (GtkWidget*) midi_import_wizard->track_collection,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
+		 (GtkWidget*) midi_import_wizard->track_collection);
   
   gtk_dialog_add_buttons((GtkDialog *) midi_import_wizard,
 			 i18n("_Back"), GTK_RESPONSE_REJECT,

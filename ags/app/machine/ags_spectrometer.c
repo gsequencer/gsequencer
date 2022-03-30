@@ -238,10 +238,8 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) (width + 2.0 * cartesian->x_margin), (gint) (height + 2.0 * cartesian->y_margin));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) cartesian,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) cartesian);
 
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 

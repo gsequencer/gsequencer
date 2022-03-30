@@ -182,24 +182,18 @@ ags_effect_separator_init(AgsEffectSeparator *effect_separator)
 
   /* heading separator */
   separator = (GtkSeparator *) gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-  gtk_box_pack_start((GtkBox *) effect_separator,
-		     (GtkWidget *) separator,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) effect_separator,
+		 (GtkWidget *) separator);
 
   /* label */
   effect_separator->label = (GtkLabel *) gtk_label_new(NULL);
-  gtk_box_pack_start((GtkBox *) effect_separator,
-		     (GtkWidget *) effect_separator->label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) effect_separator,
+		 (GtkWidget *) effect_separator->label);
 
   /* trailing separator */
   separator = (GtkSeparator *) gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-  gtk_box_pack_start((GtkBox *) effect_separator,
-		     (GtkWidget *) separator,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) effect_separator,
+		 (GtkWidget *) separator);
 }
 
 void

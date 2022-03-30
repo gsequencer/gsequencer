@@ -302,23 +302,17 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("program"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   live_dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) live_dssi_bridge->program,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) live_dssi_bridge->program);
 
   /* effect bridge */
   AGS_MACHINE(live_dssi_bridge)->bridge = ags_effect_bridge_new(audio);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge);
   
   AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 													   AGS_TYPE_INPUT);

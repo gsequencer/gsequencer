@@ -133,10 +133,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				 GTK_ORIENTATION_VERTICAL);  
 
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(GTK_BOX(server_preferences),
-		     GTK_WIDGET(grid),
-		     FALSE, FALSE,
-		     2);
+  gtk_box_append(GTK_BOX(server_preferences),
+		 GTK_WIDGET(grid));
 
   server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("start server"));
 

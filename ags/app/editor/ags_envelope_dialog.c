@@ -195,10 +195,8 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(envelope_dialog),
-		     (GtkWidget *) notebook,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(envelope_dialog),
+		 (GtkWidget *) notebook);
 
   /* envelope editor */
   envelope_dialog->envelope_editor_scrolled_window =

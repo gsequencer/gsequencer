@@ -140,10 +140,8 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   sequencer_editor->sequencer_thread = NULL;
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(GTK_BOX(sequencer_editor),
-		     GTK_WIDGET(grid),
-		     FALSE, FALSE,
-		     2);
+  gtk_box_append(GTK_BOX(sequencer_editor),
+		 GTK_WIDGET(grid));
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -242,16 +240,12 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		  1, 1);
 
   sequencer_editor->add_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
-		     (GtkWidget *) sequencer_editor->add_jack,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) sequencer_editor->jack_hbox,
+		 (GtkWidget *) sequencer_editor->add_jack);
   
   sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
-  gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
-		     (GtkWidget *) sequencer_editor->remove_jack,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) sequencer_editor->jack_hbox,
+		 (GtkWidget *) sequencer_editor->remove_jack);
   
   /*  */
   sequencer_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));

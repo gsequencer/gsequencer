@@ -167,10 +167,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   /* enabled */
   //NOTE:JK: it is edited in place since only preset is used
   pattern_envelope->enabled = NULL; // gtk_check_button_new_with_label(i18n("enabled"));
-  //  gtk_box_pack_start((GtkBox *) pattern_envelope,
-  //		     pattern_envelope->enabled,
-  //		     FALSE, FALSE,
-  //		     0);
+  //  gtk_box_append((GtkBox *) pattern_envelope,
+  //		     pattern_envelope->enabled);
 
   /* cartesian */
   cartesian = 
@@ -191,10 +189,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     (GtkWidget *) cartesian,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 (GtkWidget *) cartesian);
 
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 
@@ -284,10 +280,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 					      "text", AGS_PATTERN_ENVELOPE_COLUMN_X_END,
 					      NULL);
 
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     (GtkWidget *) pattern_envelope->tree_view,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 (GtkWidget *) pattern_envelope->tree_view);
 
   g_signal_connect(G_OBJECT(edit_renderer), "toggled",
 		   G_CALLBACK(ags_pattern_envelope_edit_callback), pattern_envelope);

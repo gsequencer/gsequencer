@@ -155,20 +155,16 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* enabled */
   envelope_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start((GtkBox *) envelope_editor,
-		     (GtkWidget *) envelope_editor->enabled,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) envelope_editor,
+		 (GtkWidget *) envelope_editor->enabled);
 
   /* rename dialog */
   envelope_editor->rename = NULL;
 
   /* frame - preset */
   frame = (GtkFrame *) gtk_frame_new(i18n("preset"));
-  gtk_box_pack_start((GtkBox *) envelope_editor,
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) envelope_editor,
+		 (GtkWidget *) frame);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);

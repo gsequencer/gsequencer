@@ -286,7 +286,7 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->cell_pattern = ags_cell_pattern_new();
 
   gtk_widget_set_valign((GtkWidget *) matrix->cell_pattern,
-			    GTK_ALIGN_FILL);
+			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) matrix->cell_pattern,
 			GTK_ALIGN_FILL);
   
@@ -300,7 +300,7 @@ ags_matrix_init(AgsMatrix *matrix)
 				0);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
-			    GTK_ALIGN_FILL);
+			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
 
@@ -311,28 +311,20 @@ ags_matrix_init(AgsMatrix *matrix)
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
-  gtk_box_pack_start(hbox,
-		     gtk_label_new("length"),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 gtk_label_new("length"));
 
   matrix->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 32.0, 1.0);
   gtk_spin_button_set_value(matrix->length_spin, 16.0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) matrix->length_spin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) matrix->length_spin);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop");
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) matrix->loop_button,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) matrix->loop_button);
 
   /* volume */
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
@@ -360,10 +352,8 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_widget_set_size_request(matrix->volume,
 			      gui_scale_factor * 16, gui_scale_factor * 100);
   
-  gtk_box_pack_start(volume_hbox,
-		     (GtkWidget *) matrix->volume,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(volume_hbox,
+		 (GtkWidget *) matrix->volume);
 
   gtk_scale_set_digits(matrix->volume,
 		       3);

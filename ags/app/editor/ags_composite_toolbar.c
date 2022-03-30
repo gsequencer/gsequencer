@@ -1208,10 +1208,8 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 			       sibling);
 
     label = (GtkLabel *) gtk_label_new(i18n("opacity"));
-    gtk_box_pack_start(box,
-		       (GtkWidget *) label,
-		       FALSE, FALSE,
-		       AGS_UI_PROVIDER_DEFAULT_PADDING);
+    gtk_box_append(box,
+		   (GtkWidget *) label);
 
     composite_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
     gtk_spin_button_set_digits(composite_toolbar->opacity, 4);

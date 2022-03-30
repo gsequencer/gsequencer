@@ -240,10 +240,8 @@ ags_drum_init(AgsDrum *drum)
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(drum->vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(drum->vbox,
+		 (GtkWidget *) hbox);
 
   /* input pad */
   AGS_MACHINE(drum)->input_pad_grid = (GtkGrid *) gtk_grid_new();
@@ -262,31 +260,23 @@ ags_drum_init(AgsDrum *drum)
   /*  */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(drum->vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(drum->vbox,
+		 (GtkWidget *) hbox);
 
   frame = (GtkFrame *) gtk_frame_new(i18n("kit"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) frame);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
   gtk_frame_set_child(frame,
 		      (GtkWidget *) vbox);
 
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) gtk_label_new(i18n("default")), 
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) gtk_label_new(i18n("default")));
  
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"))),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"))));
   drum->open_dialog = NULL;
   
   /* sequencer */
@@ -296,12 +286,10 @@ ags_drum_init(AgsDrum *drum)
 			 TRUE);
 
   gtk_widget_set_halign((GtkWidget *) frame,
-			 GTK_ALIGN_START);
+			GTK_ALIGN_START);
 
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) frame,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) frame);
 
   grid0 = (GtkGrid *) gtk_grid_new();
   gtk_frame_set_child(frame,
@@ -378,10 +366,8 @@ ags_drum_init(AgsDrum *drum)
 		  6, 0,
 		  1, 1);
   
-  gtk_box_pack_start(hbox,
-		     gtk_label_new(i18n("length")),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 gtk_label_new(i18n("length")));
   
   drum->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 64.0, 1.0);
   gtk_spin_button_set_value(drum->length_spin, 16.0);
@@ -389,10 +375,8 @@ ags_drum_init(AgsDrum *drum)
   gtk_widget_set_vexpand((GtkWidget *) drum->length_spin,
 			 FALSE);
 
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) drum->length_spin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) drum->length_spin);
 
   /* pattern box */
   drum->pattern_box = ags_pattern_box_new();

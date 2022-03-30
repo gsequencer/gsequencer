@@ -116,10 +116,10 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
   GtkGrid *grid;
 
   frame = (GtkFrame *) gtk_frame_new("input bridge");
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(matrix_bridge),
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_grid_attach((GtkGrid *) AGS_EFFECT_BRIDGE(matrix_bridge),
+		  (GtkWidget *) frame,
+		  0, 0,
+		  1, 1);
 
   expander = (GtkExpander *) gtk_expander_new("show/hide");
   gtk_frame_set_child(frame,

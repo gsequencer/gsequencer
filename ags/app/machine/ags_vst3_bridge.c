@@ -262,16 +262,12 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("program"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   vst3_bridge->program = (GtkComboBoxText *) gtk_combo_box_new();
 
@@ -299,23 +295,17 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 				 "text", 2,
 				 NULL);
 
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) vst3_bridge->program,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) vst3_bridge->program);
 
   /* effect bridge */
   AGS_MACHINE(vst3_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) AGS_MACHINE(vst3_bridge)->bridge,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) AGS_MACHINE(vst3_bridge)->bridge);
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge),
+		 (GtkWidget *) grid);
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 												      AGS_TYPE_INPUT);

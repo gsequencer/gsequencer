@@ -149,17 +149,13 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 				    "label", i18n("Note: the fields below are applied immediately"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_box_pack_start((GtkBox *) osc_server_preferences,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) osc_server_preferences,
+		 (GtkWidget *) label);
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) osc_server_preferences,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) osc_server_preferences,
+		 (GtkWidget *) grid);
 
   /* auto-start */
   osc_server_preferences->auto_start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-start OSC server"));
@@ -189,16 +185,12 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 		  2, 1);
   
   osc_server_preferences->start = (GtkButton *) gtk_button_new_with_label(i18n("start OSC server"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) osc_server_preferences->start,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) osc_server_preferences->start);
 
   osc_server_preferences->stop = (GtkButton *) gtk_button_new_with_label(i18n("stop OSC server"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) osc_server_preferences->stop,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) osc_server_preferences->stop);
   
   /* listen any address */
   osc_server_preferences->any_address = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("listen on any address"));

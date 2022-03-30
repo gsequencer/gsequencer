@@ -179,10 +179,8 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
-  gtk_box_pack_start((GtkBox *) envelope_info,
-		     (GtkWidget *) cartesian,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) envelope_info,
+		 (GtkWidget *) cartesian);
 
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 
@@ -239,10 +237,8 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_Y,
 					      NULL);
   
-  gtk_box_pack_start((GtkBox *) envelope_info,
-		     (GtkWidget *) envelope_info->tree_view,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) envelope_info,
+		 (GtkWidget *) envelope_info->tree_view);
   
   g_signal_connect(G_OBJECT(toggle_renderer), "toggled\0",
 		   G_CALLBACK(ags_envelope_info_plot_callback), envelope_info);

@@ -710,7 +710,7 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 	  start_pad = ags_machine_get_input_pad(machine);
       
 	while(pad != NULL){
-	  start_line = ags_pad_get_line(PAD(pad->data));
+	  start_line = ags_pad_get_line(AGS_PAD(pad->data));
 	  line = g_list_nth(start_line,
 			    audio_channels_old);
 	
@@ -733,7 +733,7 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 	  start_pad = ags_machine_get_output_pad(machine);
       
 	while(pad != NULL){
-	  start_line = ags_pad_get_line(PAD(pad->data));
+	  start_line = ags_pad_get_line(AGS_PAD(pad->data));
 	  line = g_list_nth(start_line,
 			    audio_channels_old);
 	

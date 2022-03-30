@@ -293,22 +293,16 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("program"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) dssi_bridge->program,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) dssi_bridge->program);
 
   /* effect bridge */
   AGS_MACHINE(dssi_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);

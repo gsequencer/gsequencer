@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -143,10 +143,8 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 				 GTK_ORIENTATION_VERTICAL);
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) pitch_sampler_file,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) pitch_sampler_file,
+		     (GtkWidget *) grid);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -163,10 +161,8 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		  2, 1); 
 
   pitch_sampler_file->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) pitch_sampler_file->filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(filename_hbox,
+		 (GtkWidget *) pitch_sampler_file->filename);
 
   /* frequency */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,

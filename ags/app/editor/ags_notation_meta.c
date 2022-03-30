@@ -110,11 +110,8 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
   notation_meta->connectable_flags = 0;
 
   grid = gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) notation_meta,
-		     (GtkWidget *) grid,
-		     FALSE,
-		     TRUE,
-		     0);
+  gtk_box_append((GtkBox *) notation_meta,
+		 (GtkWidget *) grid);
 
   /* machine type */
   i = 0;
