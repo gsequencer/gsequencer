@@ -200,10 +200,6 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   AGS_MACHINE(hybrid_synth)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(hybrid_synth)->output_line_type = G_TYPE_NONE;
 
-  /* context menu */
-  ags_machine_popup_add_connection_options((AgsMachine *) hybrid_synth,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   /* audio resize */
   g_signal_connect_after(G_OBJECT(hybrid_synth), "resize-audio-channels",
 			 G_CALLBACK(ags_hybrid_synth_resize_audio_channels), NULL);
@@ -232,11 +228,7 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
 
   hybrid_synth->buffer_play_container = ags_recall_container_new();
   hybrid_synth->buffer_recall_container = ags_recall_container_new();
- 
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) hybrid_synth,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
-  
+   
   /* name and xml type */
   hybrid_synth->name = NULL;
   hybrid_synth->xml_type = "ags-hybrid-synth"; 

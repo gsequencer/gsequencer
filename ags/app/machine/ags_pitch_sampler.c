@@ -207,10 +207,6 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   AGS_MACHINE(pitch_sampler)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(pitch_sampler)->output_line_type = G_TYPE_NONE;
 
-  /* context menu */
-  ags_machine_popup_add_connection_options((AgsMachine *) pitch_sampler,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   /* audio resize */
   g_signal_connect_after(G_OBJECT(pitch_sampler), "resize-audio-channels",
 			 G_CALLBACK(ags_pitch_sampler_resize_audio_channels), NULL);
@@ -245,10 +241,6 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 
   pitch_sampler->buffer_play_container = ags_recall_container_new();
   pitch_sampler->buffer_recall_container = ags_recall_container_new();
-
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) pitch_sampler,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
   
   /* name and xml type */
   pitch_sampler->name = NULL;
@@ -313,8 +305,6 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->sfz_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_append(filename_hbox,
 		 (GtkWidget *) pitch_sampler->sfz_loader_spinner);
-  gtk_widget_set_no_show_all((GtkWidget *) pitch_sampler->sfz_loader_spinner,
-			     TRUE);
   gtk_widget_hide((GtkWidget *) pitch_sampler->sfz_loader_spinner);
 
   /* synth generator */

@@ -48,6 +48,8 @@ struct _AgsMachineEditorLine
 {
   GtkBox box;
 
+  guint connectable_flags;
+  
   AgsChannel *channel;
   
   AgsLinkEditor *link_editor;

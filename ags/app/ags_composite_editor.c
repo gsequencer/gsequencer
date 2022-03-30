@@ -373,12 +373,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   
   gtk_label_set_label(composite_editor->machine_selector->label,
 		      i18n("selector"));
-  
-  composite_editor->machine_selector->popup = ags_machine_selector_popup_new(composite_editor->machine_selector);
-  g_object_set(composite_editor->machine_selector->menu_button,
-	       "menu", composite_editor->machine_selector->popup,
-	       NULL);
-  
+    
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) composite_editor->machine_selector);
 

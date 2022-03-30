@@ -133,9 +133,6 @@ ags_panel_init(AgsPanel *panel)
   g_signal_connect_after((GObject *) panel, "parent-set",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
-  ags_machine_popup_add_connection_options((AgsMachine *) panel,
-					   (AGS_MACHINE_POPUP_CONNECTION_EDITOR));
-
   AGS_MACHINE(panel)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION;
 
   ags_audio_set_flags(AGS_MACHINE(panel)->audio, (AGS_AUDIO_SYNC));

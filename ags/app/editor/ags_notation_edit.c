@@ -1556,6 +1556,13 @@ ags_notation_edit_show(GtkWidget *widget)
   ags_notation_edit_reset_hscrollbar(notation_edit);
 }
 
+void
+ags_notation_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
+					      AgsNotationEdit *notation_edit)
+{
+  gtk_widget_queue_draw((GtkWidget *) notation_edit);
+}
+
 gboolean
 ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
 {

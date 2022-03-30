@@ -232,10 +232,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
 
-  /* context menu */
-  ags_machine_popup_add_connection_options((AgsMachine *) ffplayer,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   /* audio resize */
   g_signal_connect_after(G_OBJECT(ffplayer), "resize-audio-channels",
 			 G_CALLBACK(ags_ffplayer_resize_audio_channels), NULL);
@@ -267,10 +263,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ffplayer->buffer_play_container = ags_recall_container_new();
   ffplayer->buffer_recall_container = ags_recall_container_new();
-
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) ffplayer,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
   
   /* name and xml type */
   ffplayer->name = NULL;
@@ -353,8 +345,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_append(filename_hbox,
 		 (GtkWidget *) ffplayer->sf2_loader_spinner);
-  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->sf2_loader_spinner,
-			     TRUE);
   gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
 
   /* piano */

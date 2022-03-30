@@ -21,6 +21,8 @@
 
 #include <ags/app/ags_window.h>
 
+#include <ags/i18n.h>
+
 #include <math.h>
 
 void ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
@@ -68,7 +70,13 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 
   GFile *file;
   
-  file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(sf2_synth));
+  file_chooser = gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
+					     gtk_widget_get_ancestor(sf2_synth,
+								     AGS_TYPE_WINDOW),
+					     GTK_FILE_CHOOSER_ACTION_OPEN,
+					     i18n("_OK"), GTK_RESPONSE_ACCEPT,
+					     i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+					     NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 

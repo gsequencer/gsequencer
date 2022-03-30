@@ -140,6 +140,23 @@ ags_machine_editor_line_class_init(AgsMachineEditorLineClass *machine_editor_lin
 }
 
 void
+ags_machine_editor_line_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_machine_editor_line_connect;
+  connectable->disconnect = ags_machine_editor_line_disconnect;
+}
+
+void
+ags_machine_editor_line_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_machine_editor_line_set_update;
+  applicable->apply = ags_machine_editor_line_apply;
+  applicable->reset = ags_machine_editor_line_reset;
+}
+
+void
 ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
 {
   //TODO:JK: implement me
@@ -199,6 +216,68 @@ ags_machine_editor_line_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_machine_editor_line_connect(AgsConnectable *connectable)
+{
+  AgsMachineEditorLine *machine_editor_line;
+
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor_line->connectable_flags)) != 0){
+    return;
+  }
+
+  machine_editor_line->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_line_disconnect(AgsConnectable *connectable)
+{
+  AgsMachineEditorLine *machine_editor_line;
+
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor_line->connectable_flags)) == 0){
+    return;
+  }
+  
+  machine_editor_line->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsMachineEditorLine *machine_editor_line;
+
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(applicable);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_line_apply(AgsApplicable *applicable)
+{
+  AgsMachineEditorLine *machine_editor_line;
+
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(applicable);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_line_reset(AgsApplicable *applicable)
+{
+  AgsMachineEditorLine *machine_editor_line;
+
+  machine_editor_line = AGS_MACHINE_EDITOR_LINE(applicable);
+
+  //TODO:JK: implement me
 }
 
 /**

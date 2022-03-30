@@ -475,8 +475,8 @@ ags_app_action_util_save_as()
 								      "_OK", GTK_RESPONSE_ACCEPT,
 								      NULL);
   
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
-  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(file_chooser), TRUE);  
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
+				       FALSE);
 
   g_signal_connect(file_chooser, "response",
 		   G_CALLBACK(ags_app_action_util_save_as_response_callback), NULL);

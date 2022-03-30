@@ -42,7 +42,8 @@ ags_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, Ag
     return;
   }
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
+					      AGS_TYPE_WINDOW));
 
   str = g_strdup_printf("Default %d",
 			ags_window_find_machine_counter(window, AGS_TYPE_VST3_BRIDGE)->counter);
@@ -276,7 +277,8 @@ ags_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handle
 	  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				       active);
 	}else if(GTK_IS_BUTTON(child_widget)){
-	  gtk_button_clicked((GtkButton *) child_widget);
+	  g_signal_emit_by_name((GtkButton *) child_widget,
+				"clicked");
 	}
 
 	if(block_scope == NULL){

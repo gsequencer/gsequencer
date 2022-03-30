@@ -308,11 +308,6 @@ void ags_machine_open_files(AgsMachine *machine,
 
 void ags_machine_copy_pattern(AgsMachine *machine);
 
-void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
-void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
-void ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options);
-void ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options);
-
 void ags_machine_check_message(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);

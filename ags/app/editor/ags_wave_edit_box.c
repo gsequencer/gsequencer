@@ -21,6 +21,8 @@
 
 #include <ags/app/editor/ags_wave_edit.h>
 
+#include <ags/i18n.h>
+
 void ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box);
 void ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box);
 void ags_wave_edit_box_get_property(GObject *gobject,

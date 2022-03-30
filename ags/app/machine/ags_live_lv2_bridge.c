@@ -340,10 +340,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 	       "midi-start-mapping", 0,
 	       "midi-end-mapping", 128,
 	       NULL);
-  
-  ags_machine_popup_add_connection_options((AgsMachine *) live_lv2_bridge,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-  
+    
   AGS_MACHINE(live_lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					  AGS_MACHINE_REVERSE_NOTATION);
 

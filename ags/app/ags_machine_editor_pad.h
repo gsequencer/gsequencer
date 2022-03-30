@@ -47,6 +47,8 @@ struct _AgsMachineEditorPad
 {
   GtkBox box;
 
+  guint connectable_flags;
+  
   AgsChannel *channel;
   
   GtkExpander *expander;

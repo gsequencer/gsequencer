@@ -249,9 +249,6 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 
   vst3_bridge->buffer_play_container = ags_recall_container_new();
   vst3_bridge->buffer_recall_container = ags_recall_container_new();
-
-  ags_machine_popup_add_edit_options((AgsMachine *) vst3_bridge,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
 				     
   vst3_bridge->filename = NULL;
   vst3_bridge->effect = NULL;
@@ -383,7 +380,8 @@ ags_vst3_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) vst3_bridge);
+	  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) vst3_bridge,
+							 AGS_TYPE_WINDOW);
 
 	  str = g_strdup_printf("%s %s",
 				i18n("Plugin file not present"),
@@ -1266,7 +1264,8 @@ ags_vst3_bridge_reload_port(AgsVst3Bridge *vst3_bridge)
 	    gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					 active);
 	  }else if(GTK_IS_BUTTON(child_widget)){
-	    gtk_button_clicked((GtkButton *) child_widget);
+	    g_signal_emit_by_name((GtkButton *) child_widget,
+				  "clicked");
 	  }
 
 	  g_hash_table_insert(vst3_bridge->block_control,

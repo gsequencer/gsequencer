@@ -177,8 +177,6 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 										    0,
 										    NULL,
 										    NULL);
-//  gtk_widget_set_no_show_all((GtkWidget *) midi_export_wizard->machine_collection,
-//			     TRUE);
 
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_export_wizard),
 		 (GtkWidget*) midi_export_wizard->machine_collection);
@@ -200,9 +198,6 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
     g_error_free(error);
   }
   
-//  gtk_widget_set_no_show_all((GtkWidget *) midi_export_wizard->file_chooser,
-//			     TRUE);
-
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_export_wizard),
 		 (GtkWidget*) midi_export_wizard->file_chooser);
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -240,9 +240,6 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   
   AGS_MACHINE(live_vst3_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					   AGS_MACHINE_REVERSE_NOTATION);
-
-  ags_machine_popup_add_connection_options((AgsMachine *) live_vst3_bridge,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   g_signal_connect_after(G_OBJECT(live_vst3_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_live_vst3_bridge_resize_audio_channels), NULL);
@@ -1291,7 +1288,8 @@ ags_live_vst3_bridge_reload_port(AgsLiveVst3Bridge *live_vst3_bridge)
 	    gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					 active);
 	  }else if(GTK_IS_BUTTON(child_widget)){
-	    gtk_button_clicked((GtkButton *) child_widget);
+	    g_signal_emit_by_name((GtkButton *) child_widget,
+				  "clicked");
 	  }
 
 	  g_hash_table_insert(live_vst3_bridge->block_control,

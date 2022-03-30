@@ -256,9 +256,6 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   AGS_MACHINE(live_dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					   AGS_MACHINE_REVERSE_NOTATION);
 
-  ags_machine_popup_add_connection_options((AgsMachine *) live_dssi_bridge,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   g_signal_connect_after(G_OBJECT(live_dssi_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels), NULL);
 

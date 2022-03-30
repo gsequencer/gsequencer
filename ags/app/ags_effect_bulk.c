@@ -430,52 +430,36 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 				0);
   gtk_widget_set_halign(hbox,
 			GTK_ALIGN_END);
-  gtk_widget_set_no_show_all((GtkWidget *) hbox,
-			     TRUE);
-  gtk_box_pack_start((GtkBox *) effect_bulk,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) effect_bulk,
+		 (GtkWidget *) hbox);
 
   effect_bulk->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->add,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) effect_bulk->add);
   gtk_widget_show((GtkWidget *) effect_bulk->add);
   
   effect_bulk->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->remove,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) effect_bulk->remove);
   gtk_widget_show((GtkWidget *) effect_bulk->remove);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) effect_bulk,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) effect_bulk,
+		 (GtkWidget *) hbox);
 
   effect_bulk->bulk_member_entry = NULL;
   
   effect_bulk->bulk_member_entry_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 							      0);
-  gtk_widget_set_no_show_all((GtkWidget *) effect_bulk->bulk_member_entry_box,
-			     TRUE);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->bulk_member_entry_box,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) effect_bulk->bulk_member_entry_box);
 
   effect_bulk->bulk_member = NULL;
   
   effect_bulk->bulk_member_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->bulk_member_grid,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) effect_bulk->bulk_member_grid);
 
   effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) effect_bulk);
 
@@ -3179,7 +3163,7 @@ ags_effect_bulk_add_bulk_member_entry(AgsEffectBulk *effect_bulk,
 				      AgsEffectBulkEntry *effect_bulk_entry)
 {
   g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
-  g_return_if_fail(GTK_IS_EFFECT_BULK_ENTRY(effect_bulk_entry));
+  g_return_if_fail(AGS_IS_EFFECT_BULK_ENTRY(effect_bulk_entry));
 
   if(g_list_find(effect_bulk->bulk_member, effect_bulk_entry) == NULL){
     effect_bulk->bulk_member_entry = g_list_prepend(effect_bulk->bulk_member_entry,
@@ -3204,7 +3188,7 @@ ags_effect_bulk_remove_bulk_member_entry(AgsEffectBulk *effect_bulk,
 					 AgsEffectBulkEntry *effect_bulk_entry)
 {
   g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
-  g_return_if_fail(GTK_IS_EFFECT_BULK_ENTRY(effect_bulk_entry));
+  g_return_if_fail(AGS_IS_EFFECT_BULK_ENTRY(effect_bulk_entry));
 
   if(g_list_find(effect_bulk->bulk_member, effect_bulk_entry) != NULL){
     effect_bulk->bulk_member_entry = g_list_remove(effect_bulk->bulk_member_entry,

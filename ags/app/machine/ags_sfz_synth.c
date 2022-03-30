@@ -184,10 +184,6 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 				    AGS_MACHINE_REVERSE_NOTATION);
   AGS_MACHINE(sfz_synth)->file_input_flags |= AGS_MACHINE_ACCEPT_SFZ;
 
-  /* context menu */
-  ags_machine_popup_add_connection_options((AgsMachine *) sfz_synth,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   /* audio resize */
   g_signal_connect_after(G_OBJECT(sfz_synth), "resize-audio-channels",
 			 G_CALLBACK(ags_sfz_synth_resize_audio_channels), NULL);
@@ -216,10 +212,6 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   sfz_synth->buffer_play_container = ags_recall_container_new();
   sfz_synth->buffer_recall_container = ags_recall_container_new();
-
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) sfz_synth,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
   
   /* name and xml type */
   sfz_synth->name = NULL;
@@ -263,8 +255,6 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   sfz_synth->sfz_loader_spinner = (GtkSpinner *) gtk_spinner_new();
   gtk_box_append(sfz_file_hbox,
 		 (GtkWidget *) sfz_synth->sfz_loader_spinner);
-  gtk_widget_set_no_show_all((GtkWidget *) sfz_synth->sfz_loader_spinner,
-			     TRUE);
   gtk_widget_hide((GtkWidget *) sfz_synth->sfz_loader_spinner);
 
   /* opcode */

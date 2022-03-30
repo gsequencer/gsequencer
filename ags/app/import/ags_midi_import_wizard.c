@@ -166,9 +166,6 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 
   /* file chooser */  
   midi_import_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
-
-//  gtk_widget_set_no_show_all((GtkWidget *) midi_import_wizard->file_chooser,
-//			     TRUE);
   
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
 		     (GtkWidget *) midi_import_wizard->file_chooser,
@@ -180,9 +177,6 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 										0,
 										NULL,
 										NULL);
-
-//  gtk_widget_set_no_show_all((GtkWidget *) midi_import_wizard->track_collection,
-//			     TRUE);
   
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
 		     (GtkWidget*) midi_import_wizard->track_collection,

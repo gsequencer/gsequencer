@@ -1945,7 +1945,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   y = 0;
 
   list =
-    start_list = ags_effect_line_get_bulk_member(effect_line);
+    start_list = ags_effect_line_get_line_member(effect_line);
 
   i = 0;
 

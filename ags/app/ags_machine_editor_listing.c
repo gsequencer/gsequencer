@@ -140,9 +140,26 @@ ags_machine_editor_listing_class_init(AgsMachineEditorListingClass *machine_edit
 }
 
 void
+ags_machine_editor_listing_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_machine_editor_listing_connect;
+  connectable->disconnect = ags_machine_editor_listing_disconnect;
+}
+
+void
+ags_machine_editor_listing_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_machine_editor_listing_set_update;
+  applicable->apply = ags_machine_editor_listing_apply;
+  applicable->reset = ags_machine_editor_listing_reset;
+}
+
+void
 ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing)
 {
-  //TODO:JK: implement me
+  machine_editor_listing->connectable_flags = 0;
 }
 
 void
@@ -185,6 +202,68 @@ ags_machine_editor_listing_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_machine_editor_listing_connect(AgsConnectable *connectable)
+{
+  AgsMachineEditorListing *machine_editor_listing;
+
+  machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor_listing->connectable_flags)) != 0){
+    return;
+  }
+
+  machine_editor_listing->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_listing_disconnect(AgsConnectable *connectable)
+{
+  AgsMachineEditorListing *machine_editor_listing;
+
+  machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor_listing->connectable_flags)) == 0){
+    return;
+  }
+  
+  machine_editor_listing->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_listing_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsMachineEditorListing *machine_editor_listing;
+
+  machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_listing_apply(AgsApplicable *applicable)
+{
+  AgsMachineEditorListing *machine_editor_listing;
+
+  machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_listing_reset(AgsApplicable *applicable)
+{
+  AgsMachineEditorListing *machine_editor_listing;
+
+  machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
+
+  //TODO:JK: implement me
 }
 
 /**

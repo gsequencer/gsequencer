@@ -198,14 +198,6 @@ ags_drum_init(AgsDrum *drum)
   AGS_MACHINE(drum)->output_pad_type = AGS_TYPE_DRUM_OUTPUT_PAD;
   AGS_MACHINE(drum)->output_line_type = AGS_TYPE_DRUM_OUTPUT_LINE;
 
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) drum,
-				     (AGS_MACHINE_POPUP_COPY_PATTERN |
-				      AGS_MACHINE_POPUP_ENVELOPE));
-  
-  ags_machine_popup_add_connection_options((AgsMachine *) drum,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   /* audio resize */
   g_signal_connect_after(G_OBJECT(drum), "resize-audio-channels",
 			 G_CALLBACK(ags_drum_resize_audio_channels), NULL);

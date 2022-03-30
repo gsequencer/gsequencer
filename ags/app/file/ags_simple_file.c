@@ -9404,7 +9404,8 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 		start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
 		list = g_list_last(start_list);
 
-		gtk_button_clicked(list->data);
+		g_signal_emit_by_name(list->data,
+				      "clicked");
 		ags_machine_selector_link_index(composite_editor->machine_selector,
 						machine);
 	      
@@ -9423,7 +9424,8 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 	start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
 
 	if(list != NULL){
-	  gtk_button_clicked(list->data);
+	  g_signal_emit_by_name(list->data,
+				"clicked");
 	}
 	
 	g_list_free(start_list);

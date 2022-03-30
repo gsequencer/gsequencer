@@ -27,6 +27,8 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+#include <ags/i18n.h>
+
 #include <math.h>
 
 #include <ags/config.h>
@@ -251,7 +253,13 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   GFile *file;
 
-  file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
+  file_chooser = gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
+					     gtk_widget_get_ancestor(ffplayer,
+								     AGS_TYPE_WINDOW),
+					     GTK_FILE_CHOOSER_ACTION_OPEN,
+					     i18n("_OK"), GTK_RESPONSE_ACCEPT,
+					     i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+					     NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 

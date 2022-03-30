@@ -31,15 +31,15 @@ void ags_machine_selector_selection_response(GtkWidget *machine_selection,
 					     AgsMachineSelector *machine_selector);
 
 void
-ags_machine_selector_popup_add_index_callback(GAction *action, GVariant *parameter,
-					      AgsMachineSelector *machine_selector)
+ags_machine_selector_add_index_callback(GAction *action, GVariant *parameter,
+					AgsMachineSelector *machine_selector)
 {
   ags_machine_selector_add_index(machine_selector);
 }
 
 void
-ags_machine_selector_popup_remove_index_callback(GAction *action, GVariant *parameter,
-						 AgsMachineSelector *machine_selector)
+ags_machine_selector_remove_index_callback(GAction *action, GVariant *parameter,
+					   AgsMachineSelector *machine_selector)
 {
   AgsMachineRadioButton *machine_radio_button;
   
@@ -73,8 +73,8 @@ ags_machine_selector_popup_remove_index_callback(GAction *action, GVariant *para
 }
 
 void
-ags_machine_selector_popup_link_index_callback(GAction *action, GVariant *parameter,
-					       AgsMachineSelector *machine_selector)
+ags_machine_selector_link_index_callback(GAction *action, GVariant *parameter,
+					 AgsMachineSelector *machine_selector)
 {
   AgsWindow *window;
   AgsMachine *machine;
@@ -157,8 +157,8 @@ ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *
 }
 
 void
-ags_machine_selector_popup_reverse_mapping_callback(GAction *action, GVariant *parameter,
-						    AgsMachineSelector *machine_selector)
+ags_machine_selector_reverse_mapping_callback(GAction *action, GVariant *parameter,
+					      AgsMachineSelector *machine_selector)
 {
   AgsMachine *machine;
   AgsCompositeEditor *composite_editor;

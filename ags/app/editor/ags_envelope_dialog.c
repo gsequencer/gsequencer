@@ -208,8 +208,8 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 			   (GtkWidget *) gtk_label_new(i18n("editor")));
 
   envelope_dialog->envelope_editor = ags_envelope_editor_new();
-  gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_editor_scrolled_window,
-					(GtkWidget *) envelope_dialog->envelope_editor);
+  gtk_scrolled_window_set_child(envelope_dialog->envelope_editor_scrolled_window,
+				(GtkWidget *) envelope_dialog->envelope_editor);
 
   /* envelope info */
   envelope_dialog->envelope_info_scrolled_window =
@@ -219,8 +219,8 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 			   (GtkWidget *) gtk_label_new(i18n("info")));
 
   envelope_dialog->envelope_info = ags_envelope_info_new();
-  gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_info_scrolled_window,
-					(GtkWidget *) envelope_dialog->envelope_info);
+  gtk_scrolled_window_set_child(envelope_dialog->envelope_info_scrolled_window,
+				(GtkWidget *) envelope_dialog->envelope_info);
 
   envelope_dialog->pattern_envelope_scrolled_window = NULL;
   envelope_dialog->pattern_envelope = NULL;
@@ -482,8 +482,8 @@ ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
 			   (GtkWidget *) gtk_label_new(i18n("pattern")));
 
   envelope_dialog->pattern_envelope = ags_pattern_envelope_new();
-  gtk_scrolled_window_add_with_viewport(envelope_dialog->pattern_envelope_scrolled_window,
-					(GtkWidget *) envelope_dialog->pattern_envelope);
+  gtk_scrolled_window_set_child(envelope_dialog->pattern_envelope_scrolled_window,
+				(GtkWidget *) envelope_dialog->pattern_envelope);
 }
 
 /**

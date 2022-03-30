@@ -200,10 +200,6 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   AGS_MACHINE(syncsynth)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(syncsynth)->output_line_type = G_TYPE_NONE;
 
-  /* context menu */
-  ags_machine_popup_add_connection_options((AgsMachine *) syncsynth,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   /* audio resize */
   g_signal_connect(syncsynth, "samplerate-changed",
 		   G_CALLBACK(ags_syncsynth_samplerate_changed_callback), NULL);
@@ -235,11 +231,7 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 
   syncsynth->buffer_play_container = ags_recall_container_new();
   syncsynth->buffer_recall_container = ags_recall_container_new();
- 
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) syncsynth,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
-  
+   
   /* name and xml type */
   syncsynth->name = NULL;
   syncsynth->xml_type = "ags-syncsynth";

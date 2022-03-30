@@ -1123,12 +1123,6 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
     
     AGS_MACHINE(vst3_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					AGS_MACHINE_REVERSE_NOTATION);
-
-    ags_machine_popup_add_connection_options((AgsMachine *) vst3_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-    ags_machine_popup_add_edit_options((AgsMachine *) vst3_bridge,
-				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
   
   ags_window_add_machine(window,
@@ -1292,12 +1286,6 @@ ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect)
     
     AGS_MACHINE(lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				       AGS_MACHINE_REVERSE_NOTATION);
-
-    ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-    ags_machine_popup_add_edit_options((AgsMachine *) lv2_bridge,
-				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
 
   ags_window_add_machine(window,

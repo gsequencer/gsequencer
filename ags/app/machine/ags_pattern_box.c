@@ -96,6 +96,25 @@ ags_pattern_box_get_type(void)
 }
 
 void
+ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
+{
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+
+  ags_pattern_box_parent_class = g_type_class_peek_parent(pattern_box);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) pattern_box;
+
+  gobject->finalize = ags_pattern_box_finalize;
+
+  /* GtkWidget */
+  widget = (GtkWidgetClass *) pattern_box;
+
+  widget->show = ags_pattern_box_show;
+}
+
+void
 ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_pattern_box_connect;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,33 +17,23 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/app/machine/ags_ladspa_bridge_callbacks.h>
+#ifndef __AGS_MACHINE_EDITOR_COLLECTION_CALLBACKS_H__
+#define __AGS_MACHINE_EDITOR_COLLECTION_CALLBACKS_H__
 
-#include <ags/app/ags_window.h>
+#include <glib.h>
+#include <glib-object.h>
 
-void
-ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLadspaBridge *ladspa_bridge)
-{
-  AgsWindow *window;
+#include <gtk/gtk.h>
 
-  gchar *str;
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-  if(old_parent != NULL){
-    return;
-  }
+#include <ags/app/ags_machine_editor_collection.h>
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
-					      AGS_TYPE_WINDOW));
+G_BEGIN_DECLS
 
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_LADSPA_BRIDGE)->counter);
 
-  g_object_set(AGS_MACHINE(ladspa_bridge),
-	       "machine-name", str,
-	       NULL);
+G_END_DECLS
 
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_LADSPA_BRIDGE);
-
-  g_free(str);
-}
+#endif /*__AGS_MACHINE_EDITOR_COLLECTION_CALLBACKS_H__*/

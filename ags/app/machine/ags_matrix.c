@@ -186,9 +186,6 @@ ags_matrix_init(AgsMatrix *matrix)
   audio->bank_dim[2] = 32;
 
   AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_REVERSE_NOTATION);
-
-  ags_machine_popup_add_connection_options((AgsMachine *) matrix,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;
@@ -231,10 +228,6 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->buffer_play_container = ags_recall_container_new();
   matrix->buffer_recall_container = ags_recall_container_new();
-
-  ags_machine_popup_add_edit_options((AgsMachine *) matrix,
-				     (AGS_MACHINE_POPUP_COPY_PATTERN |
-				      AGS_MACHINE_POPUP_ENVELOPE));
   
   /* create widgets */
   matrix->grid = (GtkGrid *) gtk_grid_new();

@@ -251,9 +251,6 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   AGS_MACHINE(dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				      AGS_MACHINE_REVERSE_NOTATION);
 
-  ags_machine_popup_add_connection_options((AgsMachine *) dssi_bridge,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
   g_signal_connect_after(G_OBJECT(dssi_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_dssi_bridge_resize_audio_channels), NULL);
 
@@ -280,9 +277,6 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 
   dssi_bridge->buffer_play_container = ags_recall_container_new();
   dssi_bridge->buffer_recall_container = ags_recall_container_new();
-
-  ags_machine_popup_add_edit_options((AgsMachine *) dssi_bridge,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
 				     
   dssi_bridge->filename = NULL;
   dssi_bridge->effect = NULL;

@@ -140,6 +140,23 @@ ags_machine_editor_pad_class_init(AgsMachineEditorPadClass *machine_editor_pad)
 }
 
 void
+ags_machine_editor_pad_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_machine_editor_pad_connect;
+  connectable->disconnect = ags_machine_editor_pad_disconnect;
+}
+
+void
+ags_machine_editor_pad_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_machine_editor_pad_set_update;
+  applicable->apply = ags_machine_editor_pad_apply;
+  applicable->reset = ags_machine_editor_pad_reset;
+}
+
+void
 ags_machine_editor_pad_init(AgsMachineEditorPad *machine_editor_pad)
 {
   //TODO:JK: implement me
@@ -199,6 +216,68 @@ ags_machine_editor_pad_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_machine_editor_pad_connect(AgsConnectable *connectable)
+{
+  AgsMachineEditorPad *machine_editor_pad;
+
+  machine_editor_pad = AGS_MACHINE_EDITOR_PAD(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor_pad->connectable_flags)) != 0){
+    return;
+  }
+
+  machine_editor_pad->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_pad_disconnect(AgsConnectable *connectable)
+{
+  AgsMachineEditorPad *machine_editor_pad;
+
+  machine_editor_pad = AGS_MACHINE_EDITOR_PAD(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor_pad->connectable_flags)) == 0){
+    return;
+  }
+  
+  machine_editor_pad->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_pad_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsMachineEditorPad *machine_editor_pad;
+
+  machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_pad_apply(AgsApplicable *applicable)
+{
+  AgsMachineEditorPad *machine_editor_pad;
+
+  machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_editor_pad_reset(AgsApplicable *applicable)
+{
+  AgsMachineEditorPad *machine_editor_pad;
+
+  machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
+
+  //TODO:JK: implement me
 }
 
 /**

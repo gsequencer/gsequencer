@@ -47,6 +47,8 @@ struct _AgsMachineEditorCollection
 {
   GtkBox box;
 
+  guint connectable_flags;
+  
   GType channel_type;
   
   GtkCheckButton *enabled;

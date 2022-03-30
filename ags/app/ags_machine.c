@@ -1668,7 +1668,7 @@ ags_machine_add_output_pad(AgsMachine *machine,
 			   guint width, guint height)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
-  g_return_if_fail(AGS_IS_OUTPUT_PAD(output_pad));
+  g_return_if_fail(AGS_IS_PAD(output_pad));
 
   if(g_list_find(machine->output_pad, output_pad) == NULL){
     machine->output_pad = g_list_prepend(machine->output_pad,
@@ -1695,7 +1695,7 @@ ags_machine_remove_output_pad(AgsMachine *machine,
 			      AgsPad *output_pad)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
-  g_return_if_fail(AGS_IS_OUTPUT_PAD(output_pad));
+  g_return_if_fail(AGS_IS_PAD(output_pad));
 
   if(g_list_find(machine->output_pad, output_pad) != NULL){
     machine->output_pad = g_list_remove(machine->output_pad,
@@ -1744,7 +1744,7 @@ ags_machine_add_input_pad(AgsMachine *machine,
 			  guint width, guint height)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
-  g_return_if_fail(AGS_IS_INPUT_PAD(input_pad));
+  g_return_if_fail(AGS_IS_PAD(input_pad));
 
   if(g_list_find(machine->input_pad, input_pad) == NULL){
     machine->input_pad = g_list_prepend(machine->input_pad,
@@ -1771,7 +1771,7 @@ ags_machine_remove_input_pad(AgsMachine *machine,
 			     AgsPad *input_pad)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
-  g_return_if_fail(AGS_IS_INPUT_PAD(input_pad));
+  g_return_if_fail(AGS_IS_PAD(input_pad));
 
   if(g_list_find(machine->input_pad, input_pad) != NULL){
     machine->input_pad = g_list_remove(machine->input_pad,
