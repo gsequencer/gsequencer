@@ -159,8 +159,8 @@ ags_export_window_init(AgsExportWindow *export_window)
     export_window->live_export = NULL;
   }else{
     export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("live export"));
-    gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
-				 TRUE);
+    gtk_check_button_set_active(export_window->live_export,
+				TRUE);
     gtk_box_append(vbox,
 		   (GtkWidget *) export_window->live_export);
   }
@@ -169,8 +169,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   /* exclude sequencer */
   export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
-  gtk_toggle_button_set_active((GtkToggleButton *) export_window->exclude_sequencer,
-			       TRUE);
+  gtk_check_button_set_active(export_window->exclude_sequencer,
+			      TRUE);
   gtk_box_append(vbox,
 		 (GtkWidget *) export_window->exclude_sequencer);
   

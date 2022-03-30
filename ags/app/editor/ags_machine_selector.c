@@ -203,12 +203,9 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 
   /* reverse mapping */
   action =
-    machine_selector->reverse_mapping_action = g_simple_action_new("reverse_mapping",
-								   NULL);
-  g_object_set(action,
-	       "state-type", g_variant_type_new("b"),
-	       "state", g_variant_new_boolean(TRUE),
-	       NULL);
+    machine_selector->reverse_mapping_action = g_simple_action_new_stateful("reverse_mapping",
+									    g_variant_type_new("b"),
+									    g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_machine_selector_reverse_mapping_callback), machine_selector);
   g_action_map_add_action(G_ACTION_MAP(action_group),
@@ -602,15 +599,13 @@ ags_machine_selector_add_machine_radio_button(AgsMachineSelector *machine_select
     machine_selector->machine_radio_button = g_list_prepend(machine_selector->machine_radio_button,
 							    machine_radio_button);
   
-    if(list == NULL){
-      group = machine_radio_button;
-    }else{
+    if(list != NULL){
       group = AGS_MACHINE_RADIO_BUTTON(list->data);
-    }
 
-    g_object_set(machine_radio_button,
-		 "group", group,
-		 NULL);
+      g_object_set(machine_radio_button,
+		   "group", group,
+		   NULL);
+    }
     
     gtk_box_append((GtkBox *) machine_selector,
 		   machine_radio_button);

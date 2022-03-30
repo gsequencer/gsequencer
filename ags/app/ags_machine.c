@@ -449,9 +449,6 @@ ags_machine_init(AgsMachine *machine)
   g_signal_connect(application_context, "check-message",
 		   G_CALLBACK(ags_machine_check_message_callback), machine);
   
-  g_signal_connect_after((GObject *) machine, "parent_set",
-			 G_CALLBACK(ags_machine_parent_set_callback), (gpointer) machine);
-
   action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) machine,
 				 "machine",

@@ -159,36 +159,27 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 				 action_group);
   
   /* match audio channel */
-  action = g_simple_action_new("paste_match_audio_channel",
-			       NULL);
-  g_object_set(action,
-	       "state-type", g_variant_type_new("b"),
-	       "state", g_variant_new_boolean(TRUE),
-	       NULL);
+  action = g_simple_action_new_stateful("paste_match_audio_channel",
+					g_variant_type_new("b"),
+					g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_composite_toolbar_paste_match_audio_channel_callback), composite_toolbar);
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
   
   /* match line */
-  action = g_simple_action_new("paste_match_line",
-			       NULL);
-  g_object_set(action,
-	       "state-type", g_variant_type_new("b"),
-	       "state", g_variant_new_boolean(TRUE),
-	       NULL);
+  action = g_simple_action_new_stateful("paste_match_line",
+					g_variant_type_new("b"),
+					g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_composite_toolbar_paste_match_line_callback), composite_toolbar);
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
   
   /* no duplicates */
-  action = g_simple_action_new("paste_no_duplicates",
-			       NULL);
-  g_object_set(action,
-	       "state-type", g_variant_type_new("b"),
-	       "state", g_variant_new_boolean(TRUE),
-	       NULL);
+  action = g_simple_action_new_stateful("paste_no_duplicates",
+					g_variant_type_new("b"),
+					g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_composite_toolbar_paste_no_duplicates_callback), composite_toolbar);
   g_action_map_add_action(G_ACTION_MAP(action_group),
@@ -985,7 +976,6 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 											  composite_toolbar->paste_mode);
     gtk_menu_button_set_menu_model(composite_toolbar->paste,
 				   composite_toolbar->paste_popup);
-    gtk_widget_show(composite_toolbar->paste_popup);
 
     sibling = composite_toolbar->paste;
   }else if(composite_toolbar->paste != NULL){
@@ -1160,7 +1150,6 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 												  composite_toolbar->menu_tool_value);
     gtk_menu_button_set_menu_model(composite_toolbar->menu_tool,
 				   composite_toolbar->menu_tool_popup);
-    gtk_widget_show((GtkWidget *) composite_toolbar->menu_tool_popup);
 
     sibling = composite_toolbar->menu_tool;
   }else if(composite_toolbar->menu_tool != NULL){

@@ -163,8 +163,8 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
   /* copy selection */
   select_acceleration_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active((GtkToggleButton *) select_acceleration_dialog->copy_selection,
-			       TRUE);
+  gtk_check_button_set_active(select_acceleration_dialog->copy_selection,
+			      TRUE);
   gtk_box_append(vbox,
 		 GTK_WIDGET(select_acceleration_dialog->copy_selection));  
 

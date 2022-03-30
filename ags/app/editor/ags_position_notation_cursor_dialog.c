@@ -156,8 +156,8 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 
   /* set focus */
   position_notation_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_toggle_button_set_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus,
-			       TRUE);
+  gtk_check_button_set_active(position_notation_cursor_dialog->set_focus,
+			      TRUE);
   gtk_box_append(vbox,
 		 GTK_WIDGET(position_notation_cursor_dialog->set_focus));  
 

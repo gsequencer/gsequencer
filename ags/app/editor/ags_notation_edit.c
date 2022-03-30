@@ -285,7 +285,6 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   g_object_set(notation_edit,
 	       "can-focus", FALSE,
-	       "homogeneous", FALSE,
 	       NULL);
 
   notation_edit->flags = (AGS_NOTATION_EDIT_SHOW_RULER |
@@ -346,9 +345,6 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 1.0);
   notation_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 								 adjustment);
-  g_object_set(notation_edit->vscrollbar,
-	       "no-show-all", TRUE,
-	       NULL);
   gtk_widget_set_size_request((GtkWidget *) notation_edit->vscrollbar,
 			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_HEIGHT_REQUEST));
   gtk_grid_attach(GTK_GRID(notation_edit),
@@ -360,9 +356,6 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
   notation_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 								 adjustment);
-  g_object_set(notation_edit->hscrollbar,
-	       "no-show-all", TRUE,
-	       NULL);
   gtk_widget_set_size_request((GtkWidget *) notation_edit->hscrollbar,
 			      -1, -1);
   gtk_grid_attach(GTK_GRID(notation_edit),

@@ -161,8 +161,6 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 
   /* radio - in place */
   crop_note_dialog->in_place = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("in-place"));
-  gtk_check_button_set_group(crop_note_dialog->in_place,
-			     crop_note_dialog->in_place);
   gtk_box_append(vbox,
 		 GTK_WIDGET(crop_note_dialog->in_place));  
   

@@ -139,6 +139,12 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *edit_sheet_action;
   
   AgsApplicationContext *application_context;  
+
+  const gchar * const open_accel[] = { "<Ctrl>o", NULL};
+  const gchar * const save_accel[] = { "<Ctrl>s", NULL};
+  const gchar * const save_as_accel[] = { "<Ctrl><Shift>s", NULL};
+  const gchar * const help_accel[] = { "<Ctrl>h", NULL};
+  const gchar * const quit_accel[] = { "<Ctrl>q", NULL};
   
   application_context = 
     ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
@@ -157,7 +163,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   gtk_application_set_accels_for_action(gsequencer_app,
 					"app.open",
-					"<Ctrl>o");
+					open_accel);
   
   /* save */
   save_action = g_simple_action_new("save",
@@ -169,7 +175,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   gtk_application_set_accels_for_action(gsequencer_app,
 					"app.save",
-					"<Ctrl>s");
+					save_accel);
 
   /* save as */
   save_as_action = g_simple_action_new("save_as",
@@ -181,7 +187,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   gtk_application_set_accels_for_action(gsequencer_app,
 					"app.save_as",
-					"<Ctrl><Shift>s");
+					save_as_accel);
 
   /* meta-data */
   meta_data_action = g_simple_action_new("meta_data",
@@ -241,7 +247,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   gtk_application_set_accels_for_action(gsequencer_app,
 					"app.help",
-					"<Ctrl>h");
+					help_accel);
 
   /* quit */
   quit_action = g_simple_action_new("quit",
@@ -253,7 +259,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   gtk_application_set_accels_for_action(gsequencer_app,
 					"app.quit",
-					"<Ctrl>q");
+					quit_accel);
 
   /* panel */
   add_panel_action = g_simple_action_new("add_panel",

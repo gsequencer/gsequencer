@@ -43,7 +43,7 @@
         <attribute name="action">machine.sticky_controls</attribute>
       </item>
       <submenu>
-        <attribute name="label" translatable="yes">Edit</attribute>
+        <attribute name="label" translatable="yes">edit</attribute>
 	<section>
 	  <item>
             <attribute name="label" translatable="yes">copy pattern</attribute>

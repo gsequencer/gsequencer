@@ -334,8 +334,8 @@ ags_navigation_init(AgsNavigation *navigation)
   */
   
   navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
-			       TRUE);
+  gtk_check_button_set_active(navigation->exclude_sequencer,
+			      TRUE);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->exclude_sequencer);
 }

@@ -225,6 +225,9 @@ void ags_gsequencer_application_context_set_midi_export_wizard(AgsUiProvider *ui
 GList* ags_gsequencer_application_context_get_machine(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
 						    GList *machine);
+GtkWidget* ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider);
+void ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
+							     GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_navigation(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
 						       GtkWidget *widget);
@@ -556,9 +559,12 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
   ui_provider->get_machine = ags_gsequencer_application_context_get_machine;
   ui_provider->set_machine = ags_gsequencer_application_context_set_machine;
 
+  ui_provider->get_composite_editor = ags_gsequencer_application_context_get_composite_editor;
+  ui_provider->set_composite_editor = ags_gsequencer_application_context_set_composite_editor;
+
   ui_provider->get_navigation = ags_gsequencer_application_context_get_navigation;
   ui_provider->set_navigation = ags_gsequencer_application_context_set_navigation;
-
+  
   ui_provider->get_app = ags_gsequencer_application_context_get_app;
   ui_provider->set_app = ags_gsequencer_application_context_set_app;
 
@@ -2468,6 +2474,33 @@ ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
 }
 
 GtkWidget*
+ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider)
+{
+  GtkWidget *composite_editor;
+  
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* get composite editor */
+  composite_editor = gsequencer_application_context->composite_editor;
+
+  return(composite_editor);
+}
+
+void
+ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
+						  GtkWidget *widget)
+{
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
+
+  /* set composite editor */
+  gsequencer_application_context->composite_editor = widget;
+}
+
+GtkWidget*
 ags_gsequencer_application_context_get_navigation(AgsUiProvider *ui_provider)
 {
   GtkWidget *navigation;
@@ -2791,9 +2824,9 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 					 export_soundcard);
   
   /* AgsMetaDataWindow */
-  widget = (GtkWidget *) ags_meta_data_window_new();
-  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
-				       widget);
+  //  widget = (GtkWidget *) ags_meta_data_window_new();
+  //  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
+  //				       widget);
 }
 
 void

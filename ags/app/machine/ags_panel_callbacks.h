@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_panel_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPanel *panel);
+void ags_panel_show_callback(GtkWidget *widget, AgsPanel *panel);
 
 G_END_DECLS
 

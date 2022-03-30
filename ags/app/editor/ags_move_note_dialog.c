@@ -154,8 +154,6 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 
   /* radio - relative */
   move_note_dialog->relative = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("relative"));
-  gtk_check_button_set_group(move_note_dialog->relative,
-			     move_note_dialog->relative);
   gtk_box_append(vbox,
 		 (GtkWidget *) move_note_dialog->relative);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,15 +22,11 @@
 #include <ags/app/ags_window.h>
 
 void
-ags_panel_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPanel *panel)
+ags_panel_show_callback(GtkWidget *widget, AgsPanel *panel)
 {
   AgsWindow *window;
 
   gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
 
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));

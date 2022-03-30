@@ -36,8 +36,6 @@ G_BEGIN_DECLS
 
 void ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine);
 
-void ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMachine *machine);
-
 void ags_machine_map_recall_callback(AgsMachine *machine,
 				     gpointer user_data);
 

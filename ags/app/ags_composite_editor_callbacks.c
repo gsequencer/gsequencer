@@ -49,7 +49,7 @@ ags_composite_editor_edit_viewport_vadjustment_changed_callback(GtkAdjustment *a
 	       NULL);
 
   if(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->scrolled_window) == adjustment){
-    g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->automation_edit->vscrollbar),
+    g_object_set(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->vscrollbar),
 		 "lower", lower,
 		 "upper", upper,
 		 "page-increment", page_increment,
@@ -60,7 +60,7 @@ ags_composite_editor_edit_viewport_vadjustment_changed_callback(GtkAdjustment *a
   }
 
   if(gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window) == adjustment){
-    g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->wave_edit->vscrollbar),
+    g_object_set(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->vscrollbar),
 		 "lower", lower,
 		 "upper", upper,
 		 "page-increment", page_increment,

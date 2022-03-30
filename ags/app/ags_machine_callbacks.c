@@ -41,8 +41,10 @@ int ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint res
 int ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
+//FIXME:JK: remove me
+#if 0
 void
-ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMachine *machine)
+ags_machine_show_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsAudio *audio;
   AgsPlaybackDomain *playback_domain;
@@ -52,10 +54,6 @@ ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMac
   static const guint staging_program[] = {
     (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
   };
-  
-  if(old_parent != NULL){
-    return;
-  }
 
   audio = machine->audio;
 
@@ -84,6 +82,7 @@ ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMac
     g_object_unref(playback_domain);
   }
 }
+#endif
 
 void
 ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)
