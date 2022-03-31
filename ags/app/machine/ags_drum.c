@@ -245,11 +245,27 @@ ags_drum_init(AgsDrum *drum)
 
   /* input pad */
   AGS_MACHINE(drum)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign(AGS_MACHINE(drum)->input_pad_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(AGS_MACHINE(drum)->input_pad_grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_hexpand(AGS_MACHINE(drum)->input_pad_grid,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) AGS_MACHINE(drum)->input_pad_grid);
 
   /* output pad */
   AGS_MACHINE(drum)->output_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_halign(AGS_MACHINE(drum)->output_pad_grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_hexpand(AGS_MACHINE(drum)->output_pad_grid,
+			 FALSE);
+  
   gtk_box_append(hbox,
 		 (GtkWidget *) AGS_MACHINE(drum)->output_pad_grid);
 

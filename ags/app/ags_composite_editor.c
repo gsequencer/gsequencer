@@ -424,28 +424,43 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 		 composite_editor->notation_edit);
   
   composite_editor->notation_edit->edit_control = ags_scrolled_piano_new();
-  g_object_set(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano,
-	       "key-width", (guint) (gui_scale_factor * AGS_PIANO_DEFAULT_KEY_WIDTH),
-	       "key-height", (guint) (gui_scale_factor * AGS_PIANO_DEFAULT_KEY_HEIGHT),
-	       NULL);
 
   gtk_widget_set_valign((GtkWidget *) composite_editor->notation_edit->edit_control,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) composite_editor->notation_edit->edit_control,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->notation_edit->edit_control,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) composite_editor->notation_edit->edit_control,
+			 FALSE);
+
+  gtk_widget_set_size_request((GtkWidget *) composite_editor->notation_edit->edit_control,
+			      AGS_PIANO_DEFAULT_KEY_WIDTH, -1);
+  
   gtk_grid_attach(composite_editor->notation_edit->composite_grid,
 		  (GtkWidget *) composite_editor->notation_edit->edit_control,
 		  0, 2,
 		  1, 1);
   
   composite_editor->notation_edit->edit = ags_notation_edit_new();
+
+  gtk_widget_set_valign((GtkWidget *) composite_editor->notation_edit->edit,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_editor->notation_edit->edit,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->notation_edit->edit,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) composite_editor->notation_edit->edit,
+			 TRUE);
+  
   gtk_box_append(composite_editor->notation_edit->edit_box,
 		 composite_editor->notation_edit->edit);
-  
+
   /* edit - sheet edit */
   composite_editor->sheet_edit = ags_composite_edit_new();
-
+  
   /* edit - automation edit */
   composite_editor->automation_edit = ags_composite_edit_new();
   
@@ -467,13 +482,23 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 
   /* automation edit */
   composite_editor->automation_edit->edit = ags_scrolled_automation_edit_box_new();
-    
+
+  gtk_widget_set_valign((GtkWidget *) composite_editor->automation_edit->edit,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_editor->automation_edit->edit,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->automation_edit->edit,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) composite_editor->automation_edit->edit,
+			 TRUE);
+  
   gtk_box_append(composite_editor->automation_edit->edit_box,
 		 composite_editor->automation_edit->edit);
 
   /* edit - wave edit */
   composite_editor->wave_edit = ags_composite_edit_new();
-
+  
   ags_composite_edit_set_scrollbar(composite_editor->wave_edit,
 				   AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL);
   ags_composite_edit_set_scrollbar(composite_editor->wave_edit,
@@ -495,6 +520,16 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   
   /* wave edit */
   composite_editor->wave_edit->edit = ags_scrolled_wave_edit_box_new();
+
+  gtk_widget_set_valign((GtkWidget *) composite_editor->wave_edit->edit,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_editor->wave_edit->edit,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->wave_edit->edit,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) composite_editor->wave_edit->edit,
+			 TRUE);
 
   adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->scrolled_window);
   g_signal_connect(adjustment, "changed",
@@ -522,6 +557,7 @@ ags_composite_editor_show(GtkWidget *widget)
   /* call parent */ 
   GTK_WIDGET_CLASS(ags_composite_editor_parent_class)->show(widget);
 
+  gtk_widget_hide(composite_editor->sheet_edit);
   gtk_widget_hide(composite_editor->automation_edit);
   gtk_widget_hide(composite_editor->wave_edit);
 }

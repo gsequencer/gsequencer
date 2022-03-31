@@ -212,6 +212,8 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		  1, 2);
 
   pattern_box->page_0_15 = gtk_check_button_new_with_label("0 - 15");
+  gtk_check_button_set_active(pattern_box->page_0_15,
+			      TRUE);
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_0_15);
 
