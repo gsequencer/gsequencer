@@ -36,8 +36,6 @@
 
 G_BEGIN_DECLS
 
-void ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLv2Bridge *lv2_bridge);
-
 void ags_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle);
 void ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);
 

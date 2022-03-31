@@ -32,33 +32,6 @@
 #endif
 
 void
-ags_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsVst3Bridge *vst3_bridge)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
-					      AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_VST3_BRIDGE)->counter);
-
-  g_object_set(AGS_MACHINE(vst3_bridge),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_VST3_BRIDGE);
-
-  g_free(str);
-}
-
-void
 ags_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsVst3Bridge *vst3_bridge)
 {
   AgsVst3Plugin *vst3_plugin;

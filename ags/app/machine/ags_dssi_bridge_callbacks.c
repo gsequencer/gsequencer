@@ -29,33 +29,6 @@
 #include <ags/app/ags_bulk_member.h>
 
 void
-ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDssiBridge *dssi_bridge)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
-					      AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_DSSI_BRIDGE)->counter);
-
-  g_object_set(AGS_MACHINE(dssi_bridge),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_DSSI_BRIDGE);
-
-  g_free(str);
-}
-
-void
 ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge)
 {
   GtkTreeIter iter;
@@ -82,7 +55,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     dssi_bridge->dssi_descriptor->select_program(dssi_bridge->ladspa_handle,
 						 (unsigned long) bank,
 						 (unsigned long) program);
-
 
 #ifdef AGS_DEBUG
     g_message("%d %d", bank, program);

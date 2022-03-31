@@ -63,6 +63,8 @@ struct _AgsMachineCounterClass
 
 GType ags_machine_counter_get_type(void);
 
+void ags_machine_counter_increment(AgsMachineCounter *machine_counter);
+
 AgsMachineCounter* ags_machine_counter_new(GType machine_type,
 					   gchar *filename, gchar *effect);
 

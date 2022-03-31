@@ -2631,6 +2631,8 @@ libgsequencer_h_sources = \
 	ags/app/ags_link_editor_callbacks.h \
 	ags/app/ags_input_dialog.h \
 	ags/app/ags_machine.h \
+	ags/app/ags_machine_counter.h \
+	ags/app/ags_machine_counter_manager.h \
 	ags/app/ags_machine_util.h \
 	ags/app/ags_machine_callbacks.h \
 	ags/app/ags_machine_editor.h \
@@ -2752,6 +2754,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_link_editor_callbacks.c \
 	ags/app/ags_input_dialog.c \
 	ags/app/ags_machine.c \
+	ags/app/ags_machine_counter.c \
+	ags/app/ags_machine_counter_manager.c \
 	ags/app/ags_machine_util.c \
 	ags/app/ags_machine_callbacks.c \
 	ags/app/ags_machine_editor.c \

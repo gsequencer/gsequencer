@@ -25,33 +25,6 @@
 #include <math.h>
 
 void
-ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSyncsynth *syncsynth)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_ancestor(widget,
-						 AGS_TYPE_WINDOW);
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_SYNCSYNTH)->counter);
-
-  g_object_set(AGS_MACHINE(syncsynth),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_SYNCSYNTH);
-
-  g_free(str);
-}
-
-void
 ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 					  guint samplerate, guint old_samplerate,
 					  gpointer user_data)

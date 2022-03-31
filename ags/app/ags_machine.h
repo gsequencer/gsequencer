@@ -30,6 +30,9 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_machine_counter_manager.h>
+#include <ags/app/ags_machine_counter.h>
+
 #include <ags/app/ags_pad.h>
 
 G_BEGIN_DECLS

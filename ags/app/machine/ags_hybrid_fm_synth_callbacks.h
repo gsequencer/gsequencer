@@ -33,8 +33,6 @@
 
 G_BEGIN_DECLS
 
-void ags_hybrid_fm_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsHybridFMSynth *hybrid_fm_synth);
-
 void ags_hybrid_fm_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsHybridFMSynth *hybrid_fm_synth);
 
 void ags_hybrid_fm_synth_synth_0_octave_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_fm_synth);

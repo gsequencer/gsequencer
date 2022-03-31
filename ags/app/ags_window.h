@@ -42,11 +42,8 @@ G_BEGIN_DECLS
 #define AGS_IS_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_WINDOW))
 #define AGS_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_WINDOW, AgsWindowClass))
 
-#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
-
 typedef struct _AgsWindow AgsWindow;
 typedef struct _AgsWindowClass AgsWindowClass;
-typedef struct _AgsMachineCounter AgsMachineCounter;
 
 typedef enum{
   AGS_WINDOW_LOADING          = 1,
@@ -93,37 +90,13 @@ struct _AgsWindowClass
   GtkApplicationWindowClass application_window;
 };
 
-struct _AgsMachineCounter
-{
-  gchar *version;
-  gchar *build_id;
-
-  GType machine_type;
-  gchar *filename;
-  gchar *effect;
-  
-  guint counter;
-};
-
 GType ags_window_get_type(void);
-
-GList* ags_window_standard_machine_counter_alloc();
-AgsMachineCounter* ags_window_find_machine_counter(AgsWindow *window,
-						   GType machine_type);
 
 GList* ags_window_get_machine(AgsWindow *window);
 void ags_window_add_machine(AgsWindow *window,
 			    AgsMachine *machine);
 void ags_window_remove_machine(AgsWindow *window,
 			       AgsMachine *machine);
-
-void ags_window_increment_machine_counter(AgsWindow *window,
-					  GType machine_type);
-void ags_window_decrement_machine_counter(AgsWindow *window,
-					  GType machine_type);
-
-AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
-					     GType machine_type, guint initial_value);
 
 void ags_window_load_add_menu_ladspa(AgsWindow *window,
 				     GMenu *menu);

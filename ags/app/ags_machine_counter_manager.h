@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_machine_counter.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_COUNTER_MANAGER                (ags_machine_counter_manager_get_type())
@@ -54,6 +56,11 @@ struct _AgsMachineCounterManagerClass
 };
 
 GType ags_machine_counter_manager_get_type(void);
+
+void ags_machine_counter_manager_load(AgsMachineCounterManager *machine_counter_manager);
+
+AgsMachineCounter* ags_machine_counter_manager_find_machine_counter(AgsMachineCounterManager *machine_counter_manager,
+								    GType machine_type);
 
 /*  */
 AgsMachineCounterManager* ags_machine_counter_manager_get_instance();

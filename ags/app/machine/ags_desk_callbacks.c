@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,31 +20,6 @@
 #include <ags/app/machine/ags_desk_callbacks.h>
 
 #include <ags/app/ags_window.h>
-
-void
-ags_desk_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDesk *desk)
-{
-  AgsWindow *window;
-
-  gchar *str;
-  
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) desk, AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_DESK)->counter);
-
-  g_object_set(AGS_MACHINE(desk),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_DESK);
-  g_free(str);
-}
 
 void
 ags_desk_resize_audio_channels_callback(AgsDesk *desk,

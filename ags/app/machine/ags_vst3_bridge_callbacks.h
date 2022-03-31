@@ -33,8 +33,6 @@
 
 G_BEGIN_DECLS
 
-void ags_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsVst3Bridge *vst3_bridge);
-
 void ags_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsVst3Bridge *vst3_bridge);
 
 void ags_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsVst3Bridge *vst3_bridge);

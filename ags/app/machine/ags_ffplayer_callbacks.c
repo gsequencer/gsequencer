@@ -37,33 +37,6 @@ void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response
 						AgsMachine *machine);
 
 void
-ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFFPlayer *ffplayer)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_ancestor(widget,
-						 AGS_TYPE_WINDOW);
-  
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
-
-  g_object_set(AGS_MACHINE(ffplayer),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_FFPLAYER);
-
-  g_free(str);
-}
-
-void
 ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   if(ffplayer->open_dialog != NULL){

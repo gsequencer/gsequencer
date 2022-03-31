@@ -144,15 +144,37 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   GtkBox *vbox;
   AgsCartesian *cartesian;
 
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+
   AgsPlot *fg_plot;
+  
+  gchar *machine_name;
 
   guint buffer_size;
   gdouble width, height;
   gdouble default_width, default_height;
-  
-  g_signal_connect_after((GObject *) spectrometer, "parent_set",
-			 G_CALLBACK(ags_spectrometer_parent_set_callback), (gpointer) spectrometer);
 
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_SPECTROMETER);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(spectrometer,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+  
   ags_audio_set_flags(AGS_MACHINE(spectrometer)->audio, (AGS_AUDIO_SYNC));
   g_object_set(AGS_MACHINE(spectrometer)->audio,
 	       "min-audio-channels", 1,

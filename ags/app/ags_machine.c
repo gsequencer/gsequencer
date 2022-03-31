@@ -438,7 +438,7 @@ ags_machine_init(AgsMachine *machine)
   GList *start_machine;
 
   application_context = ags_application_context_get_instance();
-
+  
   start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
   
   start_machine = g_list_prepend(start_machine,
@@ -696,7 +696,7 @@ ags_machine_init(AgsMachine *machine)
   machine->enabled_automation_port = NULL;
 
   context_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				       0);
+				       AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_frame_set_label_widget(machine->frame,
 			     (GtkWidget *) context_box);
 
@@ -942,11 +942,11 @@ ags_machine_set_property(GObject *gobject,
       str = g_strdup_printf("%s: %s",
 			    G_OBJECT_TYPE_NAME(machine),
 			    machine_name);
-      
-      g_object_set(machine->context_label,
-		   "label", str,
-		   NULL);
 
+      gtk_label_set_text(machine->context_label,
+			 str);
+      gtk_widget_show(machine->context_label);
+      
       g_free(str);
     }
     break;

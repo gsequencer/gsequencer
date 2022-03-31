@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,7 +33,6 @@
 
 G_BEGIN_DECLS
 
-void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFFPlayer *ffplayer);
 void ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
 gboolean ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,

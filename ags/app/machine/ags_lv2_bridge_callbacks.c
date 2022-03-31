@@ -40,33 +40,6 @@ extern GHashTable *ags_lv2_bridge_lv2ui_idle;
 gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge);
 
 void
-ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLv2Bridge *lv2_bridge)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
-					      AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_LV2_BRIDGE)->counter);
-
-  g_object_set(AGS_MACHINE(lv2_bridge),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_LV2_BRIDGE);
-
-  g_free(str);
-}
-
-void
 ags_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle)
 {
   AgsLv2Bridge *lv2_bridge;

@@ -303,8 +303,30 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   AgsAudio *audio;
 
-  g_signal_connect_after((GObject *) lv2_bridge, "parent-set",
-			 G_CALLBACK(ags_lv2_bridge_parent_set_callback), (gpointer) lv2_bridge);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
+
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_LV2_BRIDGE);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(lv2_bridge,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   if(ags_lv2_bridge_lv2ui_handle == NULL){
     ags_lv2_bridge_lv2ui_handle = g_hash_table_new_full(g_direct_hash, g_direct_equal,

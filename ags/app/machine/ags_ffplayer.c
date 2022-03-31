@@ -170,13 +170,34 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   
   AgsConfig *config;
 
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
   gchar *str;
   
   gdouble gui_scale_factor;
   gdouble page, step;
 
-  g_signal_connect_after((GObject *) ffplayer, "parent_set",
-			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_FFPLAYER);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(ffplayer,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   audio = AGS_MACHINE(ffplayer)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |

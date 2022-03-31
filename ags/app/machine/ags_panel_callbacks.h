@@ -33,10 +33,6 @@
 
 G_BEGIN_DECLS
 
-void ags_panel_notify_parent_callback(GObject *gobject,
-				      GParamSpec *pspec,
-				      gpointer user_data);
-
 G_END_DECLS
 
 #endif /*__AGS_PANEL_CALLBACKS_H__*/

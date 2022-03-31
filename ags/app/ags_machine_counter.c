@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_machine_counter.h>
 
+#include <ags/app/ags_machine.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_counter_class_init(AgsMachineCounterClass *machine_counter);
@@ -82,25 +84,6 @@ ags_machine_counter_get_type (void)
   }
 
   return g_define_type_id__volatile;
-}
-
-GType
-ags_machine_counter_flags_get_type()
-{
-  static volatile gsize g_flags_type_id__volatile;
-
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
-    static const GFlagsValue values[] = {
-      { AGS_MACHINE_COUNTER_IS_INSTRUMENT, "AGS_MACHINE_COUNTER_IS_INSTRUMENT", "base-plugin-is-instrument" },
-      { 0, NULL, NULL }
-    };
-
-    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsMachineCounterFlags"), values);
-
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
-  }
-  
-  return g_flags_type_id__volatile;
 }
 
 void
@@ -174,6 +157,9 @@ ags_machine_counter_class_init(AgsMachineCounterClass *machine_counter)
 void
 ags_machine_counter_init(AgsMachineCounter *machine_counter)
 {
+  machine_counter->version = NULL;
+  machine_counter->build_id = NULL;
+
   /*  */
   machine_counter->machine_type = G_TYPE_NONE;
   
@@ -295,6 +281,14 @@ ags_machine_counter_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_machine_counter_parent_class)->finalize(gobject);
+}
+
+void
+ags_machine_counter_increment(AgsMachineCounter *machine_counter)
+{
+  g_return_if_fail(AGS_IS_MACHINE_COUNTER(machine_counter));
+
+  machine_counter->counter += 1;
 }
 
 /**

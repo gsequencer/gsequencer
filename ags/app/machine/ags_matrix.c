@@ -147,16 +147,38 @@ ags_matrix_init(AgsMatrix *matrix)
 
   AgsApplicationContext *application_context;   
 
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
+
   gdouble gui_scale_factor;
   int i, j;
+
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_MATRIX);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(matrix,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   application_context = ags_application_context_get_instance();
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  g_signal_connect_after((GObject *) matrix, "parent_set",
-			 G_CALLBACK(ags_matrix_parent_set_callback), (gpointer) matrix);
 
   audio = AGS_MACHINE(matrix)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |

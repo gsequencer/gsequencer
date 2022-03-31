@@ -39,6 +39,7 @@
 void ags_drum_class_init(AgsDrumClass *drum);
 void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_init(AgsDrum *drum);
+void ags_drum_dispose(GObject *gobject);
 void ags_drum_finalize(GObject *gobject);
 
 void ags_drum_connect(AgsConnectable *connectable);
@@ -122,6 +123,7 @@ ags_drum_class_init(AgsDrumClass *drum)
   /* GObjectClass */
   gobject = (GObjectClass *) drum;
 
+  gobject->dispose = ags_drum_dispose;
   gobject->finalize = ags_drum_finalize;
 
   /* GtkWidget */
@@ -153,13 +155,34 @@ ags_drum_init(AgsDrum *drum)
   GtkGrid *grid0, *grid1;
 
   AgsAudio *audio;
-
+  
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
   gchar *str;
   
   int i, j;
 
-  g_signal_connect_after((GObject *) drum, "notify::parent",
-			 G_CALLBACK(ags_drum_notify_parent_callback), (gpointer) drum);
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_DRUM);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(drum,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   audio = AGS_MACHINE(drum)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -408,6 +431,36 @@ ags_drum_init(AgsDrum *drum)
 }
 
 void
+ags_drum_dispose(GObject *gobject)
+{
+  AgsDrum *drum;
+  
+  GList *start_list, *list;
+
+  drum = (AgsDrum *) gobject;
+  
+  if(drum->open_dialog != NULL){
+    gtk_window_destroy(GTK_WINDOW(drum->open_dialog));
+  }
+  
+  list =
+    start_list = ags_machine_get_input_pad(AGS_MACHINE(drum));
+
+  while(list != NULL){
+    if(AGS_DRUM_INPUT_PAD(list->data)->file_chooser != NULL){
+      gtk_window_destroy(GTK_WINDOW(AGS_DRUM_INPUT_PAD(list->data)->file_chooser));
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_drum_parent_class)->dispose(gobject);
+}
+
+void
 ags_drum_finalize(GObject *gobject)
 {
   /* call parent */
@@ -429,10 +482,6 @@ ags_drum_connect(AgsConnectable *connectable)
 
   /* call parent */
   ags_drum_parent_connectable_interface->connect(connectable);
-
-  /* GtkObject */
-  g_signal_connect((GObject *) drum, "destroy",
-		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
   
   /* AgsDrum */
   g_signal_connect((GObject *) drum->open, "clicked",
@@ -473,13 +522,6 @@ ags_drum_disconnect(AgsConnectable *connectable)
   }
 
   drum = AGS_DRUM(connectable);
-
-  /* GtkObject */
-  g_object_disconnect((GObject *) drum,
-		      "any_signal::destroy",
-		      G_CALLBACK(ags_drum_destroy_callback),
-		      (gpointer) drum,
-		      NULL);
   
   /* AgsDrum */
   g_object_disconnect((GObject *) drum->open,

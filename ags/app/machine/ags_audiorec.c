@@ -175,15 +175,37 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   AgsAudio *audio;
   AgsPlaybackDomain *playback_domain;
 
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
+
   guint i;
 
   static const guint staging_program[] = {
     (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
   };
-    
-  g_signal_connect_after((GObject *) audiorec, "parent_set",
-			 G_CALLBACK(ags_audiorec_parent_set_callback), (gpointer) audiorec);
 
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_AUDIOREC);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(audiorec,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+    
   audio = AGS_MACHINE(audiorec)->audio;
 
   playback_domain = NULL;

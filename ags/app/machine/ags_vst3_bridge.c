@@ -212,9 +212,31 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 
   AgsAudio *audio;
 
-  g_signal_connect_after((GObject *) vst3_bridge, "parent-set",
-			 G_CALLBACK(ags_vst3_bridge_parent_set_callback), (gpointer) vst3_bridge);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
 
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_VST3_BRIDGE);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(vst3_bridge,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+  
   audio = AGS_MACHINE(vst3_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
   g_object_set(audio,

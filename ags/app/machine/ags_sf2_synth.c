@@ -162,10 +162,32 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkAdjustment *adjustment;
   
   AgsAudio *audio;
+
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
   
-  g_signal_connect_after((GObject *) sf2_synth, "parent_set",
-			 G_CALLBACK(ags_sf2_synth_parent_set_callback), (gpointer) sf2_synth);
+  gchar *machine_name;
+
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_SF2_SYNTH);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
   
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(sf2_synth,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+    
   audio = AGS_MACHINE(sf2_synth)->audio;
 
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |

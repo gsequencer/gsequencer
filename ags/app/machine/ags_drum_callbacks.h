@@ -34,11 +34,6 @@
 
 G_BEGIN_DECLS
 
-void ags_drum_notify_parent_callback(GObject *gobject,
-				     GParamSpec *pspec,
-				     gpointer user_data);
-void ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum);
-
 /* controls */
 void ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum);
 

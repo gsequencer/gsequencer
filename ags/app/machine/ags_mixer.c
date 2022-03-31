@@ -121,8 +121,30 @@ ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_mixer_init(AgsMixer *mixer)
 {
-  g_signal_connect_after((GObject *) mixer, "parent_set",
-			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
+
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_MIXER);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(mixer,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   ags_audio_set_flags(AGS_MACHINE(mixer)->audio, (AGS_AUDIO_ASYNC));
   g_object_set(AGS_MACHINE(mixer)->audio,

@@ -145,11 +145,33 @@ ags_desk_init(AgsDesk *desk)
   GtkBox *file_hbox;
   
   AgsAudio *audio;
+  
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
 
   gint baseline_allocation;
+
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_DESK);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
   
-  g_signal_connect_after((GObject *) desk, "parent_set",
-			 G_CALLBACK(ags_desk_parent_set_callback), (gpointer) desk);
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(desk,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   audio = AGS_MACHINE(desk)->audio;
 

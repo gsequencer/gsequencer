@@ -34,8 +34,6 @@
 
 G_BEGIN_DECLS
 
-void ags_matrix_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMatrix *matrix);
-
 /* controls */
 void ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix);
 void ags_matrix_adjustment_value_changed_callback(GtkWidget *widget, AgsMatrix *matrix);

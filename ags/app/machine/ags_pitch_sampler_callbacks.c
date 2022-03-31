@@ -28,32 +28,6 @@ void ags_pitch_sampler_open_response_callback(GtkWidget *widget, gint response,
 					      AgsPitchSampler *pitch_sampler);
 
 void
-ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPitchSampler *pitch_sampler)
-{
-  AgsWindow *window;
-
-  gchar *str;
-  
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) pitch_sampler,
-					      AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_PITCH_SAMPLER)->counter);
-
-  g_object_set(AGS_MACHINE(pitch_sampler),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_PITCH_SAMPLER);
-  g_free(str);
-}
-
-void
 ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sampler)
 {
   GtkFileChooserDialog *dialog;

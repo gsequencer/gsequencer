@@ -160,15 +160,37 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   AgsApplicationContext *application_context;   
 
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
+
   gdouble gui_scale_factor;
+
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_HYBRID_FM_SYNTH);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(hybrid_fm_synth,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
 
   application_context = ags_application_context_get_instance();
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  g_signal_connect_after((GObject *) hybrid_fm_synth, "parent_set",
-			 G_CALLBACK(ags_hybrid_fm_synth_parent_set_callback), (gpointer) hybrid_fm_synth);
   
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_sfz_synth.h>
 
 G_BEGIN_DECLS
-
-void ags_sfz_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_destroy_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_fm_synth.h>
 
 G_BEGIN_DECLS
-
-void ags_fm_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFMSynth *fm_synth);
 
 void ags_fm_synth_auto_update_callback(GtkToggleButton *toggle, AgsFMSynth *fm_synth);
 void ags_fm_synth_update_callback(GtkButton *button, AgsFMSynth *fm_synth);

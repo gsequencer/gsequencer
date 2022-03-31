@@ -29,33 +29,6 @@ void ags_sfz_synth_open_dialog_response_callback(GtkWidget *widget, gint respons
 						 AgsMachine *machine);
 
 void
-ags_sfz_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSFZSynth *sfz_synth)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_ancestor(widget,
-						 AGS_TYPE_WINDOW);
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_SFZ_SYNTH)->counter);
-
-  g_object_set(AGS_MACHINE(sfz_synth),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_SFZ_SYNTH);
-
-  g_free(str);
-}
-
-void
 ags_sfz_synth_destroy_callback(GtkWidget *widget, AgsSFZSynth *sfz_synth)
 {
   if(sfz_synth->open_dialog != NULL){
