@@ -207,6 +207,7 @@ ags_window_init(AgsWindow *window)
   settings = gtk_settings_get_default();
   
   window->flags = 0;
+  window->connectable_flags = 0;
 
   g_signal_connect(application_context, "setup-completed",
 		   G_CALLBACK(ags_window_setup_completed_callback), window);

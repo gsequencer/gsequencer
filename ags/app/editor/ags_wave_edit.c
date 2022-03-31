@@ -473,14 +473,16 @@ ags_wave_edit_connect(AgsConnectable *connectable)
   wave_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* drawing area */
-  g_signal_connect(G_OBJECT(wave_edit->drawing_area), "draw",
-		   G_CALLBACK(ags_wave_edit_draw_callback), (gpointer) wave_edit);
+  gtk_drawing_area_set_draw_func(wave_edit->drawing_area,
+				 ags_wave_edit_draw_callback,
+				 wave_edit,
+				 NULL);
 
   /* scrollbars */
-  g_signal_connect_after((GObject *) wave_edit->vscrollbar, "value-changed",
+  g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(wave_edit->vscrollbar), "value-changed",
 			 G_CALLBACK(ags_wave_edit_vscrollbar_value_changed), (gpointer) wave_edit);
 
-  g_signal_connect_after((GObject *) wave_edit->hscrollbar, "value-changed",
+  g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "value-changed",
 			 G_CALLBACK(ags_wave_edit_hscrollbar_value_changed), (gpointer) wave_edit);
 }
 
@@ -498,20 +500,19 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
   wave_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* drawing area */
-  g_object_disconnect((GObject *) wave_edit->drawing_area,
-		      "any_signal::draw",
-		      G_CALLBACK(ags_wave_edit_draw_callback),
-		      (gpointer) wave_edit,
-		      NULL);
+  gtk_drawing_area_set_draw_func(wave_edit->drawing_area,
+				 NULL,
+				 NULL,
+				 NULL);
 
   /* scrollbars */
-  g_object_disconnect((GObject *) wave_edit->vscrollbar,
+  g_object_disconnect((GObject *) gtk_scrollbar_get_adjustment(wave_edit->vscrollbar),
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_wave_edit_vscrollbar_value_changed),
 		      (gpointer) wave_edit,
 		      NULL);
 
-  g_object_disconnect((GObject *) wave_edit->hscrollbar,
+  g_object_disconnect((GObject *) gtk_scrollbar_get_adjustment(wave_edit->hscrollbar),
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_wave_edit_hscrollbar_value_changed),
 		      (gpointer) wave_edit,

@@ -228,10 +228,10 @@ ags_move_note_dialog_connect(AgsConnectable *connectable)
   g_signal_connect(move_note_dialog, "response",
 		   G_CALLBACK(ags_move_note_dialog_response_callback), move_note_dialog);
 
-  g_signal_connect_after(move_note_dialog->relative, "clicked",
+  g_signal_connect_after(move_note_dialog->relative, "toggled",
 			 G_CALLBACK(ags_move_note_dialog_relative_callback), move_note_dialog);
 
-  g_signal_connect_after(move_note_dialog->absolute, "clicked",
+  g_signal_connect_after(move_note_dialog->absolute, "toggled",
 			 G_CALLBACK(ags_move_note_dialog_absolute_callback), move_note_dialog);
 }
 
@@ -255,13 +255,13 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->relative),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_move_note_dialog_relative_callback),
 		      move_note_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->absolute),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_move_note_dialog_absolute_callback),
 		      move_note_dialog,
 		      NULL);

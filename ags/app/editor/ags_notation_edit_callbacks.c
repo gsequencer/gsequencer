@@ -32,11 +32,12 @@ ags_notation_edit_draw_callback(GtkWidget *drawing_area,
 				int width, int height,
 				AgsNotationEdit *notation_edit)
 {
-  ags_notation_edit_draw(notation_edit, cr);
+  ags_notation_edit_draw(notation_edit,
+			 cr);
 }
 
 void
-ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
+ags_notation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotationEdit *notation_edit)
 {
   GtkWidget *editor;
   AgsScrolledPiano *scrolled_piano;
@@ -55,7 +56,7 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
   piano_adjustment = gtk_scrolled_window_get_vadjustment(scrolled_piano->scrolled_window);
   
   gtk_adjustment_set_value(piano_adjustment,
-			   gtk_range_get_value(range));
+			   gtk_adjustment_get_value(adjustment));
   
   gtk_widget_queue_draw((GtkWidget *) scrolled_piano);
 
@@ -64,7 +65,7 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 }
 
 void
-ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
+ags_notation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotationEdit *notation_edit)
 {
   GtkWidget *editor;
 
@@ -78,7 +79,7 @@ ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  value = gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) / (guint) (gui_scale_factor * 64.0);
+  value = gtk_adjustment_get_value(adjustment) / (guint) (gui_scale_factor * 64.0);
 
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,
 			   gui_scale_factor * value);

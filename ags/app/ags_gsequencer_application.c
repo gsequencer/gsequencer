@@ -152,7 +152,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   ags_ui_provider_set_app(AGS_UI_PROVIDER(application_context),
 			  gsequencer_app);
-      
+  
   /* open */
   open_action = g_simple_action_new("open",
 				    NULL);

@@ -601,6 +601,8 @@ main(int argc, char **argv)
     g_object_set(G_OBJECT(window),
 		 "application", gsequencer_app,
 		 NULL);
+
+    ags_connectable_connect(AGS_CONNECTABLE(application_context));
   }
   
   if(handles_command_line && filename != NULL){      

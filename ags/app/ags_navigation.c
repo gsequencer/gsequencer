@@ -422,7 +422,7 @@ ags_navigation_connect(AgsConnectable *connectable)
 
   navigation->flags |= AGS_NAVIGATION_CONNECTED;
   
-  g_signal_connect((GObject *) navigation->expander, "clicked",
+  g_signal_connect((GObject *) navigation->expander, "toggled",
 		   G_CALLBACK(ags_navigation_expander_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->bpm, "value-changed",
@@ -434,7 +434,7 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->previous, "clicked",
 		   G_CALLBACK(ags_navigation_prev_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->play, "clicked",
+  g_signal_connect((GObject *) navigation->play, "toggled",
 		   G_CALLBACK(ags_navigation_play_callback), (gpointer) navigation);
 
   g_signal_connect((GObject *) navigation->stop, "clicked",
@@ -446,7 +446,7 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->forward, "clicked",
 		   G_CALLBACK(ags_navigation_forward_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->loop, "clicked",
+  g_signal_connect((GObject *) navigation->loop, "toggled",
 		   G_CALLBACK(ags_navigation_loop_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->position_tact, "value-changed",
@@ -486,68 +486,68 @@ ags_navigation_disconnect(AgsConnectable *connectable)
   navigation->flags &= (~AGS_NAVIGATION_CONNECTED);
   
   g_object_disconnect((GObject *) navigation->expander,
-		      "clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_navigation_expander_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->bpm,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_bpm_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->rewind,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_rewind_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->previous,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_prev_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->play,
-		      "clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_navigation_play_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->stop,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_stop_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->next,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_next_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->forward,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_forward_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->loop,
-		      "clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_navigation_loop_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->position_tact,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_position_tact_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   if(navigation->soundcard != NULL){
     g_object_disconnect(navigation->soundcard,
-			"stop",
+			"any_signal::stop",
 			G_CALLBACK(ags_navigation_soundcard_stop_callback),
 			(gpointer) navigation,
 			NULL);
@@ -555,13 +555,13 @@ ags_navigation_disconnect(AgsConnectable *connectable)
   
   /* expansion */
   g_object_disconnect((GObject *) navigation->loop_left_tact,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_loop_left_tact_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->loop_right_tact,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_loop_right_tact_callback),
 		      (gpointer) navigation,
 		      NULL);

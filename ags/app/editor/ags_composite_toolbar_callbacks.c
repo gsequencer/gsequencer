@@ -535,8 +535,8 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
   
   if(composite_editor != NULL){
     if(composite_editor->notation_edit != NULL){
-      gtk_range_set_value(GTK_RANGE(composite_editor->notation_edit->hscrollbar),
-			  gtk_range_get_value(GTK_RANGE(composite_editor->notation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->notation_edit->hscrollbar),
+			       gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(composite_editor->notation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
   
       gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit);
       
@@ -549,8 +549,8 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
     }
 
     if(composite_editor->automation_edit != NULL){
-      gtk_range_set_value(GTK_RANGE(composite_editor->automation_edit->hscrollbar),
-			  gtk_range_get_value(GTK_RANGE(composite_editor->automation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar),
+			       gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
   
       gtk_widget_queue_draw((GtkWidget *) composite_editor->automation_edit);
       
@@ -563,8 +563,8 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
     }
     
     if(composite_editor->wave_edit != NULL){
-      gtk_range_set_value(GTK_RANGE(composite_editor->wave_edit->hscrollbar),
-			  gtk_range_get_value(GTK_RANGE(composite_editor->wave_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar),
+			       gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
   
       gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit);
       

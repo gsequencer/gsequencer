@@ -89,7 +89,7 @@ ags_composite_edit_hscrollbar_changed(GtkAdjustment *adjustment,
 }
 
 void
-ags_composite_edit_vscrollbar_callback(GtkRange *scrollbar,
+ags_composite_edit_vscrollbar_callback(GtkAdjustment *adjustment,
 				       AgsCompositeEdit *composite_edit)
 {
   if(composite_edit->block_vscrollbar){
@@ -99,8 +99,8 @@ ags_composite_edit_vscrollbar_callback(GtkRange *scrollbar,
   composite_edit->block_vscrollbar = TRUE;
 
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
-    gtk_range_set_value(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar,
-			gtk_range_get_value(scrollbar));
+    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar),
+			     gtk_adjustment_get_value(adjustment));
   }
   
   //TODO:JK: implement me
@@ -109,7 +109,7 @@ ags_composite_edit_vscrollbar_callback(GtkRange *scrollbar,
 }
 
 void
-ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
+ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
 				       AgsCompositeEdit *composite_edit)
 {
   if(composite_edit->block_hscrollbar){
@@ -119,8 +119,8 @@ ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
   composite_edit->block_hscrollbar = TRUE;
   
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
-    gtk_range_set_value(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar,
-			gtk_range_get_value(scrollbar));
+    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar),
+			     gtk_adjustment_get_value(adjustment));
   }
   
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
@@ -140,15 +140,15 @@ ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
       start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->automation_edit_box);
 
     while(list != NULL){
-      gtk_range_set_value(AGS_AUTOMATION_EDIT(list->data)->hscrollbar,
-			  gtk_range_get_value(scrollbar));
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_AUTOMATION_EDIT(list->data)->hscrollbar),
+			       gtk_adjustment_get_value(adjustment));
 
       list = list->next;
     }
 
     g_list_free(start_list);
 
-    value = gtk_range_get_value(scrollbar) / (gui_scale_factor * 64.0);
+    value = gtk_adjustment_get_value(adjustment) / (gui_scale_factor * 64.0);
     gtk_adjustment_set_value(composite_edit->ruler->adjustment,
 			     gui_scale_factor * value);
   }
@@ -170,13 +170,13 @@ ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
       start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->wave_edit_box);
 
     while(list != NULL){
-      gtk_range_set_value(AGS_WAVE_EDIT(list->data)->hscrollbar,
-			  gtk_range_get_value(scrollbar));
+      gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_WAVE_EDIT(list->data)->hscrollbar),
+			       gtk_adjustment_get_value(adjustment));
 
       list = list->next;
     }
 
-    value = gtk_range_get_value(scrollbar) / (gui_scale_factor * 64.0);
+    value = gtk_adjustment_get_value(adjustment) / (gui_scale_factor * 64.0);
     gtk_adjustment_set_value(composite_edit->ruler->adjustment,
 			     gui_scale_factor * value);
   }

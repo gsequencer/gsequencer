@@ -741,14 +741,16 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   automation_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* drawing area */
-  g_signal_connect(G_OBJECT(automation_edit->drawing_area), "draw",
-		   G_CALLBACK(ags_automation_edit_draw_callback), (gpointer) automation_edit);
+  gtk_drawing_area_set_draw_func(automation_edit->drawing_area,
+				 ags_automation_edit_draw_callback,
+				 automation_edit,
+				 NULL);
 
   /* scrollbars */
-  g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed",
+  g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(automation_edit->vscrollbar), "value-changed",
 			 G_CALLBACK(ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
 
-  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+  g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(automation_edit->hscrollbar), "value-changed",
 			 G_CALLBACK(ags_automation_edit_hscrollbar_value_changed), (gpointer) automation_edit);
 }
 
@@ -766,20 +768,19 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
   automation_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   /* drawing area */
-  g_object_disconnect((GObject *) automation_edit->drawing_area,
-		      "any_signal::draw",
-		      G_CALLBACK(ags_automation_edit_draw_callback),
-		      (gpointer) automation_edit,
-		      NULL);
+  gtk_drawing_area_set_draw_func(automation_edit->drawing_area,
+				 NULL,
+				 NULL,
+				 NULL);
 
   /* scrollbars */
-  g_object_disconnect((GObject *) automation_edit->vscrollbar,
+  g_object_disconnect((GObject *) gtk_scrollbar_get_adjustment(automation_edit->vscrollbar),
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_automation_edit_vscrollbar_value_changed),
 		      (gpointer) automation_edit,
 		      NULL);
 
-  g_object_disconnect((GObject *) automation_edit->hscrollbar,
+  g_object_disconnect((GObject *) gtk_scrollbar_get_adjustment(automation_edit->hscrollbar),
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_automation_edit_hscrollbar_value_changed),
 		      (gpointer) automation_edit,

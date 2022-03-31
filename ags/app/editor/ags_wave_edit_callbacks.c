@@ -36,14 +36,14 @@ ags_wave_edit_draw_callback(GtkWidget *drawing_area,
 }
 
 void
-ags_wave_edit_vscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
+ags_wave_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit)
 {
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 void
-ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
+ags_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit)
 {
   GtkWidget *editor;
   
@@ -57,7 +57,7 @@ ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  value = gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / (gui_scale_factor * 64.0);
+  value = gtk_adjustment_get_value(adjustment) / (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(wave_edit->ruler->adjustment,
 			   gui_scale_factor * value);
   gtk_widget_queue_draw((GtkWidget *) wave_edit->ruler);

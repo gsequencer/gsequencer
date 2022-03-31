@@ -38,8 +38,8 @@ void ags_notation_edit_draw_callback(GtkWidget *drawing_area,
 				     int width, int height,
 				     AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit);
-void ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit);
+void ags_notation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotationEdit *notation_edit);
+void ags_notation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotationEdit *notation_edit);
 
 G_END_DECLS
 

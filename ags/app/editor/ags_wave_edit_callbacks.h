@@ -38,8 +38,8 @@ void ags_wave_edit_draw_callback(GtkWidget *drawing_area,
 				 int width, int height,
 				 AgsWaveEdit *wave_edit);
 
-void ags_wave_edit_vscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit);
-void ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit);
+void ags_wave_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit);
+void ags_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit);
 
 G_END_DECLS
 

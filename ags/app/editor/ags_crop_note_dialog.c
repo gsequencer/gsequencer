@@ -236,7 +236,7 @@ ags_crop_note_dialog_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_crop_note_dialog_response_callback), crop_note_dialog);
 
   /* absolute */
-  g_signal_connect_after(crop_note_dialog->absolute, "clicked",
+  g_signal_connect_after(crop_note_dialog->absolute, "toggled",
 			 G_CALLBACK(ags_crop_note_dialog_absolute_callback), crop_note_dialog);
 }
 
@@ -261,7 +261,7 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
 
   /* absolute */
   g_object_disconnect(G_OBJECT(crop_note_dialog->absolute),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_crop_note_dialog_absolute_callback),
 		      crop_note_dialog,
 		      NULL);

@@ -308,6 +308,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 				 GTK_ORIENTATION_VERTICAL);
 
   composite_editor->flags = 0;
+  composite_editor->connectable_flags = 0;
   composite_editor->edit = 0;
 
   composite_editor->version = g_strdup(AGS_COMPOSITE_EDITOR_DEFAULT_VERSION);
@@ -600,7 +601,7 @@ ags_composite_editor_is_ready(AgsConnectable *connectable)
   composite_editor = AGS_COMPOSITE_EDITOR(connectable);
 
   /* check is added */
-  is_ready = ags_composite_editor_test_flags(composite_editor, AGS_COMPOSITE_EDITOR_ADDED_TO_REGISTRY);
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (composite_editor->connectable_flags)) != 0) ? TRUE: FALSE;
   
   return(is_ready);
 }
@@ -621,7 +622,7 @@ ags_composite_editor_add_to_registry(AgsConnectable *connectable)
   
   composite_editor = AGS_COMPOSITE_EDITOR(connectable);
 
-  ags_composite_editor_set_flags(composite_editor, AGS_COMPOSITE_EDITOR_ADDED_TO_REGISTRY);
+  composite_editor->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
 
   application_context = ags_application_context_get_instance();
 
@@ -690,7 +691,7 @@ ags_composite_editor_is_connected(AgsConnectable *connectable)
   composite_editor = AGS_COMPOSITE_EDITOR(connectable);
 
   /* check is connected */
-  is_connected = ags_composite_editor_test_flags(composite_editor, AGS_COMPOSITE_EDITOR_CONNECTED);
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (composite_editor->connectable_flags)) != 0) ? TRUE: FALSE;
   
   return(is_connected);
 }
@@ -702,11 +703,11 @@ ags_composite_editor_connect(AgsConnectable *connectable)
   
   composite_editor = AGS_COMPOSITE_EDITOR(connectable);
 
-  if((AGS_COMPOSITE_EDITOR_CONNECTED & (composite_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (composite_editor->connectable_flags)) != 0){
     return;
   }
 
-  composite_editor->flags |= AGS_COMPOSITE_EDITOR_CONNECTED;
+  composite_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   ags_connectable_connect(AGS_CONNECTABLE(composite_editor->toolbar));
   
@@ -728,11 +729,11 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
   
   composite_editor = AGS_COMPOSITE_EDITOR(connectable);
 
-  if((AGS_COMPOSITE_EDITOR_CONNECTED & (composite_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (composite_editor->connectable_flags)) == 0){
     return;
   }
 
-  composite_editor->flags &= (~AGS_COMPOSITE_EDITOR_CONNECTED);
+  composite_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->toolbar));
   

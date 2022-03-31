@@ -54,11 +54,6 @@ typedef struct _AgsCompositeEditor AgsCompositeEditor;
 typedef struct _AgsCompositeEditorClass AgsCompositeEditorClass;
 
 typedef enum{
-  AGS_COMPOSITE_EDITOR_ADDED_TO_REGISTRY     = 1,
-  AGS_COMPOSITE_EDITOR_CONNECTED             = 1 << 1,
-}AgsCompositeEditorFlags;
-
-typedef enum{
   AGS_COMPOSITE_EDITOR_EDIT_NOTATION    = 1,
   AGS_COMPOSITE_EDITOR_EDIT_SHEET       = 1 <<  1,
   AGS_COMPOSITE_EDITOR_EDIT_AUTOMATION  = 1 <<  2,
@@ -70,6 +65,7 @@ struct _AgsCompositeEditor
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   guint edit;
   
   gchar *version;

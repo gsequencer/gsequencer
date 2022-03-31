@@ -451,22 +451,22 @@ ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
   composite_toolbar = AGS_COMPOSITE_TOOLBAR(connectable);
 
   if(composite_toolbar->position == connection){
-    g_signal_connect_after(connection, "clicked",
+    g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_position_callback), composite_toolbar);
   }
 
   if(composite_toolbar->edit == connection){
-    g_signal_connect_after(connection, "clicked",
+    g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_edit_callback), composite_toolbar);
   }
 
   if(composite_toolbar->clear == connection){
-    g_signal_connect_after(connection, "clicked",
+    g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_position_callback), composite_toolbar);
   }
 
   if(composite_toolbar->select == connection){
-    g_signal_connect_after(connection, "clicked",
+    g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_select_callback), composite_toolbar);
   }
 
@@ -515,28 +515,28 @@ ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
 
   if(composite_toolbar->position == connection){
     g_object_disconnect(connection,
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_position_callback),
 			composite_toolbar,
 			NULL);
   }
 
   if(composite_toolbar->edit == connection){
-    g_object_disconnect(connection, "any_signal::clicked",
+    g_object_disconnect(connection, "any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_edit_callback),
 			composite_toolbar,
 			NULL);
   }
 
   if(composite_toolbar->clear == connection){
-    g_object_disconnect(connection, "any_signal::clicked",
+    g_object_disconnect(connection, "any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_position_callback),
 			composite_toolbar,
 			NULL);
   }
 
   if(composite_toolbar->select == connection){
-    g_object_disconnect(connection, "any_signal::clicked",
+    g_object_disconnect(connection, "any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_select_callback),
 			composite_toolbar,
 			NULL);
