@@ -26,6 +26,8 @@
 
 #include <ags/app/machine/ags_panel.h>
 
+#include <ags/i18n.h>
+
 void ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line);
 void ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
@@ -133,15 +135,21 @@ void
 ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
-
+  GtkCheckButton *check_button;
+  
   /* mute line member */
-  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type", GTK_TYPE_CHECK_BUTTON,
-					       "widget-label", "mute",
-					       "plugin-name", "ags-fx-volume",
-					       "specifier", "./muted[0]",
-					       "control-port", "1/2",
-					       NULL);
+  line_member =
+    panel_input_line->mute_check_button = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+									 "widget-type", GTK_TYPE_CHECK_BUTTON,
+									 "plugin-name", "ags-fx-volume",
+									 "specifier", "./muted[0]",
+									 "control-port", "1/2",
+									 NULL);
+
+  check_button = ags_line_member_get_widget(line_member);
+  gtk_check_button_set_label(check_button,
+			     i18n("mute"));
+  
   ags_line_add_line_member(AGS_LINE(panel_input_line),
 			   GTK_WIDGET(line_member),
 			   1, 0,
@@ -233,9 +241,19 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   if(AGS_IS_SOUNDCARD(output_soundcard)){
     device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
 
-    //TODO:JK: implement me
+    str = g_strdup_printf("%s:%s[%d]",
+			  G_OBJECT_TYPE_NAME(output_soundcard),
+			  device,
+			  output_soundcard_channel);
     
+    g_object_set(panel_input_line->mute_check_button,
+		 "widget-label", str,
+		 NULL);
+
     g_object_unref(output_soundcard);
+
+    g_free(device);
+    g_free(str);    
   }
   
 #ifdef AGS_DEBUG

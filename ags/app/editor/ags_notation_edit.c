@@ -327,6 +327,10 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 				       AGS_RULER_DEFAULT_FACTOR,
 				       AGS_RULER_DEFAULT_PRECISION,
 				       AGS_RULER_DEFAULT_SCALE_PRECISION);
+
+  gtk_widget_set_visible(notation_edit->ruler,
+			 FALSE);
+  
   gtk_grid_attach(GTK_GRID(notation_edit),
 		  (GtkWidget *) notation_edit->ruler,
 		  0, 0,
@@ -352,6 +356,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   gtk_widget_set_vexpand((GtkWidget *) notation_edit->vscrollbar,
 			 TRUE);
 
+  gtk_widget_set_visible(notation_edit->vscrollbar,
+			 FALSE);
+
   gtk_grid_attach(GTK_GRID(notation_edit),
 		  (GtkWidget *) notation_edit->vscrollbar,
 		  1, 1,
@@ -367,6 +374,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   gtk_widget_set_hexpand((GtkWidget *) notation_edit->hscrollbar,
 			 TRUE);
+
+  gtk_widget_set_visible(notation_edit->hscrollbar,
+			 FALSE);
 
   gtk_grid_attach(GTK_GRID(notation_edit),
 		  (GtkWidget *) notation_edit->hscrollbar,
@@ -1544,15 +1554,15 @@ ags_notation_edit_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show(widget);
 
   if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){    
-    gtk_widget_hide((GtkWidget *) notation_edit->ruler);
+    gtk_widget_show((GtkWidget *) notation_edit->ruler);
   }
 
   if((AGS_NOTATION_EDIT_SHOW_VSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_hide((GtkWidget *) notation_edit->vscrollbar);
+    gtk_widget_show((GtkWidget *) notation_edit->vscrollbar);
   }
 
   if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_hide((GtkWidget *) notation_edit->hscrollbar);
+    gtk_widget_show((GtkWidget *) notation_edit->hscrollbar);
   }
 
   ags_notation_edit_reset_vscrollbar(notation_edit);

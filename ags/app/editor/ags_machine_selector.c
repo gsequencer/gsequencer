@@ -309,6 +309,9 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 
   machine_selector->flags = 0;
   machine_selector->connectable_flags = 0;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_selector),
+				 GTK_ORIENTATION_VERTICAL);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
@@ -375,7 +378,7 @@ ags_machine_selector_connect(AgsConnectable *connectable)
   list = list->next;
   
   while(list != NULL){
-    g_signal_connect_after(G_OBJECT(list->data), "clicked",
+    g_signal_connect_after(G_OBJECT(list->data), "toggled",
 			   G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
 
     list = list->next;
@@ -407,7 +410,7 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK(ags_machine_selector_radio_changed),
 			machine_selector,
 			NULL);
@@ -654,13 +657,15 @@ ags_machine_selector_add_index(AgsMachineSelector *machine_selector)
 {
   AgsMachineRadioButton *machine_radio_button;
 
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+
   machine_radio_button = (AgsMachineRadioButton *) g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 								NULL);
   
   ags_machine_selector_add_machine_radio_button(machine_selector,
 						machine_radio_button);
   
-  g_signal_connect_after(G_OBJECT(machine_radio_button), "clicked",
+  g_signal_connect_after(G_OBJECT(machine_radio_button), "toggled",
 			 G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
 
   gtk_widget_show((GtkWidget *) machine_radio_button);
@@ -673,6 +678,8 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
   AgsMachineRadioButton *machine_radio_button;
   
   GList *start_list, *list;
+
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
 
   /* get machine radio button */
   machine_radio_button = NULL;
@@ -709,6 +716,8 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
 
   GList *start_list, *list;
 
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+
   /* retrieve selected */    
   machine_radio_button = NULL;
   existing_radio_button = NULL;
@@ -733,7 +742,7 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
   /* decide if link to editor or change index */
   if(existing_radio_button != NULL){
     g_signal_emit_by_name(existing_radio_button,
-			  "clicked");
+			  "toggled");
   }else{
     g_object_set(G_OBJECT(machine_radio_button),
 		 "machine", machine,

@@ -130,8 +130,8 @@ ags_panel_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_panel_init(AgsPanel *panel)
 {
-  g_signal_connect_after((GObject *) panel, "show",
-			 G_CALLBACK(ags_panel_show_callback), (gpointer) panel);
+  g_signal_connect_after((GObject *) panel, "notify::parent",
+			 G_CALLBACK(ags_panel_notify_parent_callback), (gpointer) NULL);
 
   AGS_MACHINE(panel)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION;
 
@@ -172,6 +172,15 @@ ags_panel_init(AgsPanel *panel)
 
   /* input */
   AGS_MACHINE(panel)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign(AGS_MACHINE(panel)->input_pad_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(AGS_MACHINE(panel)->input_pad_grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_hexpand(AGS_MACHINE(panel)->input_pad_grid,
+			 FALSE);  
+  
   gtk_box_append(panel->vbox,
 		 (GtkWidget *) AGS_MACHINE(panel)->input_pad_grid);
 }

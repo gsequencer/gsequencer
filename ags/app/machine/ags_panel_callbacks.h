@@ -33,7 +33,9 @@
 
 G_BEGIN_DECLS
 
-void ags_panel_show_callback(GtkWidget *widget, AgsPanel *panel);
+void ags_panel_notify_parent_callback(GObject *gobject,
+				      GParamSpec *pspec,
+				      gpointer user_data);
 
 G_END_DECLS
 

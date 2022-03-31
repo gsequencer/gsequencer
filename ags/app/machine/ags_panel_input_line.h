@@ -50,6 +50,8 @@ struct _AgsPanelInputLine
 
   gchar *name;
   gchar *xml_type;
+
+  AgsLineMember *mute_check_button;
 };
 
 struct _AgsPanelInputLineClass

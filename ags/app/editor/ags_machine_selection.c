@@ -226,15 +226,13 @@ ags_machine_selection_add_radio_button(AgsMachineSelection *machine_selection,
     machine_selection->radio_button = g_list_prepend(machine_selection->radio_button,
 						     radio_button);
   
-    if(list == NULL){
-      group = radio_button;
-    }else{
+    if(list != NULL){
       group = GTK_CHECK_BUTTON(list->data);
-    }
 
-    g_object_set(radio_button,
-		 "group", group,
-		 NULL);
+      g_object_set(radio_button,
+		   "group", group,
+		   NULL);
+    }
     
     gtk_box_append((GtkBox *) gtk_dialog_get_content_area(machine_selection),
 		   radio_button);

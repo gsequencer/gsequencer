@@ -330,6 +330,9 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   gtk_paned_set_end_child(composite_edit->composite_paned,
 			  (GtkWidget *) composite_edit->scrolled_edit_meta);
 
+  gtk_widget_set_visible(composite_edit->scrolled_edit_meta,
+			 FALSE);
+  
   composite_edit->edit_meta = NULL;
 }
 

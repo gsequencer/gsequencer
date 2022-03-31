@@ -158,9 +158,8 @@ ags_drum_init(AgsDrum *drum)
   
   int i, j;
 
-  g_signal_connect_after((GObject *) drum, "show",
-			 G_CALLBACK(ags_drum_show_callback), (gpointer) drum);
-
+  g_signal_connect_after((GObject *) drum, "notify::parent",
+			 G_CALLBACK(ags_drum_notify_parent_callback), (gpointer) drum);
 
   audio = AGS_MACHINE(drum)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |

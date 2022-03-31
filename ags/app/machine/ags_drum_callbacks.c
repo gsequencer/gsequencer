@@ -39,18 +39,21 @@
 void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
 void
-ags_drum_show_callback(GtkWidget *widget, AgsDrum *drum)
+ags_drum_notify_parent_callback(GObject *gobject,
+				GParamSpec *pspec,
+				gpointer user_data)
 {
   AgsWindow *window;
 
   gchar *str;
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) gobject,
+					      AGS_TYPE_WINDOW));
 
   str = g_strdup_printf("Default %d",
 			ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
 
-  g_object_set(AGS_MACHINE(drum),
+  g_object_set(gobject,
 	       "machine-name", str,
 	       NULL);
 

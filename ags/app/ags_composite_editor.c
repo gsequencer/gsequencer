@@ -335,6 +335,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   gtk_widget_set_halign((GtkWidget *) composite_editor->paned,
 			GTK_ALIGN_FILL);
 
+  gtk_paned_set_position(composite_editor->paned,
+			 AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION);
+  
   gtk_box_append((GtkBox *) composite_editor,
 		 (GtkWidget *) composite_editor->paned);
 
@@ -460,6 +463,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 
   /* edit - sheet edit */
   composite_editor->sheet_edit = ags_composite_edit_new();
+
+  gtk_widget_set_visible(composite_editor->sheet_edit,
+			 FALSE);
   
   /* edit - automation edit */
   composite_editor->automation_edit = ags_composite_edit_new();
@@ -468,6 +474,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 				   AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL);
   ags_composite_edit_set_scrollbar(composite_editor->automation_edit,
 				   AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL);
+
+  gtk_widget_set_visible(composite_editor->automation_edit,
+			 FALSE);
   
   gtk_box_append(vbox,
 		 composite_editor->automation_edit);
@@ -506,6 +515,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   
   ags_composite_edit_set_channel_selector_mode(composite_editor->wave_edit,
 					       AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_AUDIO_CHANNEL);
+
+  gtk_widget_set_visible(composite_editor->wave_edit,
+			 FALSE);
 
   gtk_box_append(vbox,
 		 composite_editor->wave_edit);
@@ -556,10 +568,6 @@ ags_composite_editor_show(GtkWidget *widget)
   
   /* call parent */ 
   GTK_WIDGET_CLASS(ags_composite_editor_parent_class)->show(widget);
-
-  gtk_widget_hide(composite_editor->sheet_edit);
-  gtk_widget_hide(composite_editor->automation_edit);
-  gtk_widget_hide(composite_editor->wave_edit);
 }
 
 AgsUUID*

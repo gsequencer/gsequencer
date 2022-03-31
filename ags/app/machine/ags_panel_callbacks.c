@@ -22,19 +22,21 @@
 #include <ags/app/ags_window.h>
 
 void
-ags_panel_show_callback(GtkWidget *widget, AgsPanel *panel)
+ags_panel_notify_parent_callback(GObject *gobject,
+				 GParamSpec *pspec,
+				 gpointer user_data)
 {
   AgsWindow *window;
 
   gchar *str;
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
+  window = AGS_WINDOW(gtk_widget_get_ancestor(gobject,
 					      AGS_TYPE_WINDOW));
 
   str = g_strdup_printf("Default %d",
 			ags_window_find_machine_counter(window, AGS_TYPE_PANEL)->counter);
 
-  g_object_set(AGS_MACHINE(panel),
+  g_object_set(AGS_MACHINE(gobject),
 	       "machine-name", str,
 	       NULL);
 
