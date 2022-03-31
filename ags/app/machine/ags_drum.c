@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -158,8 +158,8 @@ ags_drum_init(AgsDrum *drum)
   
   int i, j;
 
-  g_signal_connect_after((GObject *) drum, "parent_set",
-			 G_CALLBACK(ags_drum_parent_set_callback), (gpointer) drum);
+  g_signal_connect_after((GObject *) drum, "show",
+			 G_CALLBACK(ags_drum_show_callback), (gpointer) drum);
 
 
   audio = AGS_MACHINE(drum)->audio;
@@ -423,19 +423,19 @@ ags_drum_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) drum->open, "clicked",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->loop_button, "clicked",
+  g_signal_connect((GObject *) drum->loop_button, "toggled",
 		   G_CALLBACK(ags_drum_loop_button_callback), (gpointer) drum);
 
   g_signal_connect_after((GObject *) drum->length_spin, "value-changed",
 			 G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum);
 
   for(i = 0; i < 12; i++){
-    g_signal_connect(G_OBJECT(drum->index1[i]), "clicked",
+    g_signal_connect(G_OBJECT(drum->index1[i]), "toggled",
 		     G_CALLBACK(ags_drum_index1_callback), (gpointer) drum);
   }
 
   for(i = 0; i < 4; i++){
-    g_signal_connect(G_OBJECT(drum->index0[i]), "clicked",
+    g_signal_connect(G_OBJECT(drum->index0[i]), "toggled",
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
@@ -474,7 +474,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) drum->loop_button,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_drum_loop_button_callback),
 		      (gpointer) drum,
 		      NULL);
@@ -487,7 +487,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   for(i = 0; i < 12; i++){
     g_object_disconnect(G_OBJECT(drum->index1[i]),
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK(ags_drum_index1_callback),
 			(gpointer) drum,
 			NULL);
@@ -495,7 +495,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   for(i = 0; i < 4; i++){
     g_object_disconnect(G_OBJECT(drum->index0[i]),
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK(ags_drum_index0_callback),
 			(gpointer) drum,
 			NULL);

@@ -39,15 +39,11 @@
 void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
 void
-ags_drum_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDrum *drum)
+ags_drum_show_callback(GtkWidget *widget, AgsDrum *drum)
 {
   AgsWindow *window;
 
   gchar *str;
-  
-  if(old_parent != NULL){
-    return;
-  }
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 

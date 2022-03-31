@@ -35,7 +35,7 @@ G_BEGIN_DECLS
 
 void ags_line_check_message_callback(GObject *application_context, AgsLine *line);
 
-void ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
+void ags_line_group_toggled_callback(GtkWidget *widget, AgsLine *line);
 
 /* stop */
 void ags_line_stop_callback(AgsLine *line,

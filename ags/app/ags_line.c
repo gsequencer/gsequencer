@@ -824,8 +824,8 @@ ags_line_connect(AgsConnectable *connectable)
   }
 
   /* connect group button */
-  g_signal_connect_after((GObject *) line->group, "clicked",
-			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
+  g_signal_connect_after((GObject *) line->group, "toggled",
+			 G_CALLBACK(ags_line_group_toggled_callback), (gpointer) line);
 
   /* connect line members */
   list =
@@ -866,8 +866,8 @@ ags_line_disconnect(AgsConnectable *connectable)
   if(line->group != NULL &&
      GTK_IS_BUTTON(line->group)){
     g_object_disconnect(line->group,
-			"any_signal::clicked",
-			G_CALLBACK(ags_line_group_clicked_callback),
+			"any_signal::toggled",
+			G_CALLBACK(ags_line_group_toggled_callback),
 			(gpointer) line,
 			NULL);
   }
@@ -3873,6 +3873,10 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
     
     line = (AgsLine *) gtk_widget_get_ancestor(widget,
 					       AGS_TYPE_LINE);
+
+    if(line == NULL){
+      return(TRUE);
+    }
     
     list =
       start_list = ags_line_get_line_member(line);

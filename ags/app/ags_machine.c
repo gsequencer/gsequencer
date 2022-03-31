@@ -1955,18 +1955,18 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     output_pads = machine->output_pads;
     input_pads = machine->input_pads;
 
-    if(machine->input_pad != NULL){
+    if(machine->input_pad_grid != NULL){
       list_input_pad =
 	list_input_pad_start = ags_machine_get_input_pad(machine);
     }
 
-    if(machine->output_pad != NULL){
+    if(machine->output_pad_grid != NULL){
       list_output_pad =
 	list_output_pad_start = ags_machine_get_output_pad(machine);
     }
     
     /* AgsInput */
-    if(machine->input_pad != NULL){
+    if(machine->input_pad_grid != NULL){
       /* get input */
       start_channel = NULL;
 
@@ -1995,10 +1995,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  pad = g_object_new(machine->input_pad_type,
 			     "channel", channel,
 			     NULL);
-	  gtk_grid_attach((GtkBox *) machine->input_pad_grid,
-			  (GtkWidget *) pad,
-			  i, 0,
-			  1, 1);
+
+	  ags_machine_add_input_pad(machine,
+				    (GtkWidget *) pad,
+				    i, 0,
+				    1, 1);
 
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
 			       audio_channels, 0);
@@ -2025,7 +2026,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     }
 
     /* AgsOutput */
-    if(machine->output_pad != NULL){
+    if(machine->output_pad_grid != NULL){
       /* get output */
       start_channel = NULL;
 
@@ -2046,10 +2047,12 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  pad = g_object_new(machine->output_pad_type,
 			     "channel", channel,
 			     NULL);
-	  gtk_grid_attach((GtkBox *) machine->output_pad_grid,
-			  (GtkWidget *) pad,
-			  i, 0,
-			  1, 1);
+	  
+	  ags_machine_add_output_pad(machine,
+				     (GtkWidget *) pad,
+				     i, 0,
+				     1, 1);
+	  
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
 			       audio_channels, 0);
 	}else{
@@ -2076,12 +2079,12 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
     /* show all */
     if(audio_channels_old == 0){
-      if(machine->input_pad != NULL){
+      if(machine->input_pad_grid != NULL){
 	list_input_pad_start = 
 	  list_input_pad = ags_machine_get_input_pad(machine);
       }
 
-      if(machine->output_pad != NULL){
+      if(machine->output_pad_grid != NULL){
 	list_output_pad_start = 
 	  list_output_pad = ags_machine_get_output_pad(machine);
       }
@@ -2090,7 +2093,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(gtk_widget_get_visible((GtkWidget *) machine)){
       if(audio_channels_old == 0){
 	/* AgsInput */
-	if(machine->input_pad != NULL){
+	if(machine->input_pad_grid != NULL){
 	  list_input_pad = list_input_pad_start;
 
 	  while(list_input_pad != NULL){
@@ -2101,7 +2104,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
 	
 	/* AgsOutput */
-	if(machine->output_pad != NULL){
+	if(machine->output_pad_grid != NULL){
 	  list_output_pad = list_output_pad_start;
 	  
 	  while(list_input_pad != NULL){
@@ -2111,7 +2114,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  }
 	}
       }else{
-	if(machine->input_pad != NULL){
+	if(machine->input_pad_grid != NULL){
 	  GList *start_list_input_line, *list_input_line;
 
 	  list_input_pad = list_input_pad_start;
@@ -2135,7 +2138,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
 	
 	/* AgsOutput */
-	if(machine->output_pad != NULL){
+	if(machine->output_pad_grid != NULL){
 	  GList *start_list_output_line, *list_output_line;
 	  
 	  list_output_pad = list_output_pad_start;
@@ -2169,14 +2172,14 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	list_output_pad = ags_machine_get_output_pad(machine);
     }
 
-    if(machine->input_pad != NULL){
+    if(machine->input_pad_grid != NULL){
       list_input_pad_start = 
 	list_input_pad = ags_machine_get_input_pad(machine);
     }
 	
     if(audio_channels == 0){
       /* AgsInput */
-      if(machine->input_pad != NULL){
+      if(machine->input_pad_grid != NULL){
 	while(list_input_pad != NULL){
 	  ags_machine_remove_input_pad(machine,
 				       list_input_pad->data);
@@ -2189,7 +2192,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       }
       
       /* AgsOutput */
-      if(machine->output_pad != NULL){
+      if(machine->output_pad_grid != NULL){
 	while(list_output_pad != NULL){
 	  ags_machine_remove_output_pad(machine,
 					list_output_pad->data);
@@ -2202,7 +2205,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       }
     }else{
       /* AgsInput */
-      if(machine->input_pad != NULL){
+      if(machine->input_pad_grid != NULL){
 	for(i = 0; list_input_pad != NULL; i++){
 	  ags_pad_resize_lines(AGS_PAD(list_input_pad->data), machine->input_pad_type,
 			       audio_channels, audio_channels_old);
@@ -2212,7 +2215,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       }
       
       /* AgsOutput */
-      if(machine->output_pad != NULL){
+      if(machine->output_pad_grid != NULL){
 	for(i = 0; list_output_pad != NULL; i++){
 	  ags_pad_resize_lines(AGS_PAD(list_output_pad->data), machine->output_pad_type,
 			       audio_channels, audio_channels_old);
@@ -2335,13 +2338,14 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 		 NULL);
 
     /* grow input */
-    if(machine->input_pad != NULL){
+    if(machine->input_pad_grid != NULL){
       if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
 	for(i = pads_old; i < pads; i++){
 	  /* instantiate pad */
 	  if(audio_audio_channels > 0 &&
 	     i < audio_input_pads){
-	    input = ags_channel_nth(start_input, i * audio_audio_channels);
+	    input = ags_channel_nth(start_input,
+				    i * audio_audio_channels);
 	  }else{
 	    input = NULL;
 	  }
@@ -2354,7 +2358,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 				    pad,
 				    i, 0,
 				    1, 1);
-
+	  
 	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
 			       audio_channels, 0);	  
@@ -2385,13 +2389,14 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
     }
     
     /* grow output */
-    if(machine->output_pad != NULL){
+    if(machine->output_pad_grid != NULL){
       if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
 	for(i = pads_old; i < pads; i++){
 	  /* instantiate pad */
 	  if(audio_audio_channels > 0 &&
 	     i < audio_output_pads){
-	    output = ags_channel_nth(start_output, i * audio_audio_channels);
+	    output = ags_channel_nth(start_output,
+				     i * audio_audio_channels);
 	  }else{
 	    output = NULL;
 	  }
@@ -2417,6 +2422,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	/* show all */
 	list_pad_start = 
 	  list_pad = ags_machine_get_output_pad(machine);
+
 	list_pad = g_list_nth(list_pad,
 			      pads_old);
 
@@ -2438,7 +2444,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
     
     /* input - destroy AgsPad's */
     if(channel_type == AGS_TYPE_INPUT &&
-       machine->input_pad != NULL){
+       machine->input_pad_grid != NULL){
       for(i = 0; i < pads_old - pads; i++){
 	list_start = ags_machine_get_input_pad(machine);
 	list = g_list_nth(list_start, pads);
@@ -2457,7 +2463,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
     
     /* output - destroy AgsPad's */
     if(channel_type == AGS_TYPE_OUTPUT &&
-       machine->output_pad != NULL){
+       machine->output_pad_grid != NULL){
       for(i = 0; i < pads_old - pads; i++){
 	list_start = ags_machine_get_output_pad(machine);
 	list = g_list_nth(list_start, pads);
@@ -2551,7 +2557,7 @@ ags_machine_real_find_port(AgsMachine *machine)
   port = NULL;
 
   /* find output ports */
-  if(machine->output_pad != NULL){
+  if(machine->output_pad_grid != NULL){
     pad_start = 
       pad = ags_machine_get_output_pad(machine);
 
@@ -2572,7 +2578,7 @@ ags_machine_real_find_port(AgsMachine *machine)
   }
 
   /* find input ports */
-  if(machine->input_pad != NULL){
+  if(machine->input_pad_grid != NULL){
     pad_start = 
       pad = ags_machine_get_input_pad(machine);
 

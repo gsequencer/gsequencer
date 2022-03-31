@@ -510,9 +510,6 @@ ags_line_member_init(AgsLineMember *line_member)
 
   application_context = ags_application_context_get_instance();
 
-  g_signal_connect_after((GObject *) line_member, "parent_set",
-			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
-
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
 			AGS_LINE_MEMBER_APPLY_RECALL);
   line_member->port_flags = 0;
@@ -633,9 +630,6 @@ ags_line_member_set_property(GObject *gobject,
       if(child != NULL){
 	ags_line_member_set_widget(line_member,
 				   NULL);
-
-	g_object_run_dispose(child);
-	g_object_unref(child);
       }
 
       line_member->widget_type = widget_type;
@@ -736,6 +730,9 @@ ags_line_member_set_property(GObject *gobject,
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
+      }else if(GTK_IS_CHECK_BUTTON(new_child)){
+	gtk_check_button_set_active((GtkCheckButton *) new_child,
+				    active);
       }else{
 	if(!(GTK_IS_LABEL(new_child) ||
 	     AGS_IS_INDICATOR(new_child) ||
@@ -1291,11 +1288,11 @@ ags_line_member_connect(AgsConnectable *connectable)
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "clicked",
-			   G_CALLBACK(ags_line_member_check_button_clicked_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+			   G_CALLBACK(ags_line_member_check_button_toggled_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "clicked",
-			   G_CALLBACK(ags_line_member_toggle_button_clicked_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+			   G_CALLBACK(ags_line_member_toggle_button_toggled_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "clicked",
 			   G_CALLBACK(ags_line_member_button_clicked_callback), line_member);
@@ -1339,14 +1336,14 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::clicked",
-			G_CALLBACK(ags_line_member_check_button_clicked_callback),
+			"any_signal::toggled",
+			G_CALLBACK(ags_line_member_check_button_toggled_callback),
 			line_member,
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::clicked",
-			G_CALLBACK(ags_line_member_toggle_button_clicked_callback),
+			"any_signal::toggled",
+			G_CALLBACK(ags_line_member_toggle_button_toggled_callback),
 			line_member,
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){

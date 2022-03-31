@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,14 +18,6 @@
  */
 
 #include <ags/app/ags_line_member_callbacks.h>
-
-void
-ags_line_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLineMember *line_member)
-{
-  if(old_parent == NULL){
-    //TODO:JK: implement me
-  }
-}
 
 void
 ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member)
@@ -78,16 +70,16 @@ ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMemb
 }
 
 void
-ags_line_member_check_button_clicked_callback(GtkWidget *check_button, AgsLineMember *line_member)
+ags_line_member_check_button_toggled_callback(GtkWidget *check_button, AgsLineMember *line_member)
 {
-  line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
+  line_member->active = gtk_check_button_get_active((GtkCheckButton *) check_button);
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
   ags_line_member_chained_event(line_member);
 }
 
 void
-ags_line_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLineMember *line_member)
+ags_line_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsLineMember *line_member)
 {
   line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
   ags_line_member_change_port(line_member,

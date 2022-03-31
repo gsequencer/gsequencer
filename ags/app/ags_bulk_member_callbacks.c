@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,14 +18,6 @@
  */
 
 #include <ags/app/ags_bulk_member_callbacks.h>
-
-void
-ags_bulk_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsBulkMember *bulk_member)
-{
-  if(old_parent == NULL){
-    //TODO:JK: implement me
-  }
-}
 
 void
 ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_member)
@@ -106,7 +98,7 @@ ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMemb
 }
 
 void
-ags_bulk_member_check_button_clicked_callback(GtkWidget *check_button, AgsBulkMember *bulk_member)
+ags_bulk_member_check_button_toggled_callback(GtkWidget *check_button, AgsBulkMember *bulk_member)
 {
   gboolean active;
 
@@ -120,7 +112,7 @@ ags_bulk_member_check_button_clicked_callback(GtkWidget *check_button, AgsBulkMe
 }
 
 void
-ags_bulk_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsBulkMember *bulk_member)
+ags_bulk_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsBulkMember *bulk_member)
 {
   gboolean active;
 

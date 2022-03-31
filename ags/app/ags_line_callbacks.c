@@ -35,7 +35,7 @@ ags_line_check_message_callback(GObject *application_context, AgsLine *line)
 }
 
 void
-ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
+ags_line_group_toggled_callback(GtkWidget *widget, AgsLine *line)
 {
   AgsPad *pad;
   AgsLine *current;

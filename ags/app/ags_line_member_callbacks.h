@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,13 +33,11 @@
 
 G_BEGIN_DECLS
 
-void ags_line_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLineMember *line_member);
-
 void ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member);
 void ags_line_member_scale_changed_callback(GtkWidget *scale, AgsLineMember *line_member);
 void ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMember *line_member);
-void ags_line_member_check_button_clicked_callback(GtkWidget *check_button, AgsLineMember *line_member);
-void ags_line_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLineMember *line_member);
+void ags_line_member_check_button_toggled_callback(GtkWidget *check_button, AgsLineMember *line_member);
+void ags_line_member_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsLineMember *line_member);
 void ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_member);
 
 G_END_DECLS
