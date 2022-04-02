@@ -25,6 +25,7 @@
 
 void ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box);
 void ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box);
+void ags_automation_edit_box_dispose(GObject *gobject);
 void ags_automation_edit_box_finalize(GObject *gobject);
 
 void ags_automation_edit_box_notify_width_request_callback(GObject *gobject,
@@ -89,13 +90,12 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
   GObjectClass *gobject;
   GtkWidgetClass *widget;
 
-  GParamSpec *param_spec;
-
   ags_automation_edit_box_parent_class = g_type_class_peek_parent(automation_edit_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) automation_edit_box;
 
+  gobject->dispose = ags_automation_edit_box_dispose;
   gobject->finalize = ags_automation_edit_box_finalize;
 
   /* properties */
@@ -158,8 +158,29 @@ ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box)
 }
 
 void
+ags_automation_edit_box_dispose(GObject *gobject)
+{
+  AgsAutomationEditBox *automation_edit_box;
+
+  automation_edit_box = AGS_AUTOMATION_EDIT_BOX(gobject);
+  
+  g_list_free(automation_edit_box->automation_edit);
+
+  automation_edit_box->automation_edit = NULL;
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_edit_box_parent_class)->dispose(gobject);
+}
+
+void
 ags_automation_edit_box_finalize(GObject *gobject)
 {
+  AgsAutomationEditBox *automation_edit_box;
+
+  automation_edit_box = AGS_AUTOMATION_EDIT_BOX(gobject);
+  
+  g_list_free(automation_edit_box->automation_edit);
+
   /* call parent */
   G_OBJECT_CLASS(ags_automation_edit_box_parent_class)->finalize(gobject);
 }
@@ -215,11 +236,11 @@ ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edi
 {
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
 
-  return(g_list_copy(automation_edit_box->automation_edit));
+  return(g_list_reverse(g_list_copy(automation_edit_box->automation_edit)));
 }
 
 /**
- * ags_automation_edit_box_add:
+ * ags_automation_edit_box_add_automation_edit:
  * @automation_edit_box: the #AgsAutomationEditBox
  * @automation_edit: the #AgsAutomationEdit
  * 
@@ -228,8 +249,8 @@ ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edi
  * Since: 4.0.0
  */
 void
-ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
-			    AgsAutomationEdit *automation_edit)
+ags_automation_edit_box_add_automation_edit(AgsAutomationEditBox *automation_edit_box,
+					    AgsAutomationEdit *automation_edit)
 {
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT(automation_edit));
@@ -250,7 +271,7 @@ ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
 }
 
 /**
- * ags_automation_edit_box_remove:
+ * ags_automation_edit_box_remove_automation_edit:
  * @automation_edit_box: the #AgsAutomationEditBox
  * @automation_edit: the #AgsAutomationEdit
  * 
@@ -259,8 +280,8 @@ ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
  * Since: 4.0.0
  */
 void
-ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
-			       AgsAutomationEdit *automation_edit)
+ags_automation_edit_box_remove_automation_edit(AgsAutomationEditBox *automation_edit_box,
+					       AgsAutomationEdit *automation_edit)
 {
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
   g_return_if_fail(AGS_IS_AUTOMATION_EDIT(automation_edit));

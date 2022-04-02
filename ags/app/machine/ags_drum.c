@@ -276,6 +276,11 @@ ags_drum_init(AgsDrum *drum)
   gtk_widget_set_hexpand(AGS_MACHINE(drum)->input_pad_grid,
 			 FALSE);
 
+  gtk_grid_set_column_spacing(AGS_MACHINE(drum)->input_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(drum)->input_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) AGS_MACHINE(drum)->input_pad_grid);
 
@@ -287,6 +292,11 @@ ags_drum_init(AgsDrum *drum)
   
   gtk_widget_set_hexpand(AGS_MACHINE(drum)->output_pad_grid,
 			 FALSE);
+
+  gtk_grid_set_column_spacing(AGS_MACHINE(drum)->output_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(drum)->output_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   gtk_box_append(hbox,
 		 (GtkWidget *) AGS_MACHINE(drum)->output_pad_grid);

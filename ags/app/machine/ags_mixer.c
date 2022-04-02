@@ -171,6 +171,20 @@ ags_mixer_init(AgsMixer *mixer)
   
   /* input */
   AGS_MACHINE(mixer)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign(AGS_MACHINE(mixer)->input_pad_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(AGS_MACHINE(mixer)->input_pad_grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_hexpand(AGS_MACHINE(mixer)->input_pad_grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(AGS_MACHINE(mixer)->input_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(mixer)->input_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+
   gtk_frame_set_child(AGS_MACHINE(mixer)->frame,
 		      (GtkWidget *) AGS_MACHINE(mixer)->input_pad_grid);
 }

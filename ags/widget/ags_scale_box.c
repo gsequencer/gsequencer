@@ -25,10 +25,7 @@
 
 void ags_scale_box_class_init(AgsScaleBoxClass *scale_box);
 void ags_scale_box_init(AgsScaleBox *scale_box);
-void ags_scale_box_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
+void ags_scale_box_dispose(GObject *gobject);
 void ags_scale_box_finalize(GObject *gobject);
 
 void ags_scale_box_notify_width_request_callback(GObject *gobject,
@@ -52,11 +49,6 @@ enum{
   CHILD_WIDTH_REQUEST,
   CHILD_HEIGHT_REQUEST,
   LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_SCALE_COUNT,
 };
 
 static gpointer ags_scale_box_parent_class = NULL;
@@ -96,40 +88,14 @@ void
 ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
-  GParamSpec *param_spec;
 
   ags_scale_box_parent_class = g_type_class_peek_parent(scale_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) scale_box;
 
-  gobject->get_property = ags_scale_box_get_property;
-
+  gobject->dispose = ags_scale_box_dispose;
   gobject->finalize = ags_scale_box_finalize;
-
-  /* properties */
-  /**
-   * AgsScaleBox:scale-count:
-   *
-   * The scale-count.
-   * 
-   * Since: 4.0.0
-   */
-  param_spec = g_param_spec_uint("scale-count",
-				 i18n_pspec("scale count"),
-				 i18n_pspec("The scale count"),
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SCALE_COUNT,
-				  param_spec);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) scale_box;
 
   /* AgsScaleBox */
   scale_box->child_width_request = NULL;
@@ -179,37 +145,34 @@ ags_scale_box_init(AgsScaleBox *scale_box)
 	       "homogeneous", FALSE,
 	       "spacing", AGS_SCALE_BOX_DEFAULT_SPACING,
 	       NULL);
-
-  scale_box->scale_count = 0;
   
   scale_box->scale = NULL;
 }
 
 void
-ags_scale_box_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec)
+ags_scale_box_dispose(GObject *gobject)
 {
   AgsScaleBox *scale_box;
 
   scale_box = AGS_SCALE_BOX(gobject);
+  
+  g_list_free(scale_box->scale);
 
-  switch(prop_id){
-  case PROP_SCALE_COUNT:
-  {
-    g_value_set_uint(value,
-		     scale_box->scale_count);
-  }
-  break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-  }
+  scale_box->scale = NULL;
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_scale_box_parent_class)->dispose(gobject);
 }
 
 void
 ags_scale_box_finalize(GObject *gobject)
 {
+  AgsScaleBox *scale_box;
+
+  scale_box = AGS_SCALE_BOX(gobject);
+  
+  g_list_free(scale_box->scale);
+
   /* call parent */
   G_OBJECT_CLASS(ags_scale_box_parent_class)->finalize(gobject);
 }
@@ -251,33 +214,25 @@ ags_scale_box_notify_height_request_callback(GObject *gobject,
 }
 
 /**
- * ags_scale_box_add:
+ * ags_scale_box_get_scale:
  * @scale_box: the #AgsScaleBox
  * 
- * Get scale count of @scale_box.
+ * Get scale.
  * 
- * Returns: the count of scales added
+ * Returns: the #GList-struct containing #AgsScale
  * 
  * Since: 4.0.0
  */
-guint
-ags_scale_box_get_scale_count(AgsScaleBox *scale_box)
+GList*
+ags_scale_box_get_scale(AgsScaleBox *scale_box)
 {
-  guint scale_count;
-
   g_return_if_fail(AGS_IS_SCALE_BOX(scale_box));
 
-  scale_count = 0;
-
-  g_object_get(scale_box,
-	       "scale-count", &scale_count,
-	       NULL);
-  
-  return(scale_count);
+  return(g_list_reverse(g_list_copy(scale_box->scale)));
 }
 
 /**
- * ags_scale_box_add:
+ * ags_scale_box_add_scale:
  * @scale_box: the #AgsScaleBox
  * @scale: the #AgsScale
  * 
@@ -286,8 +241,8 @@ ags_scale_box_get_scale_count(AgsScaleBox *scale_box)
  * Since: 4.0.0
  */
 void
-ags_scale_box_add(AgsScaleBox *scale_box,
-		  GtkWidget *scale)
+ags_scale_box_add_scale(AgsScaleBox *scale_box,
+			AgsScale *scale)
 {
   g_return_if_fail(AGS_IS_SCALE_BOX(scale_box));
   g_return_if_fail(AGS_IS_SCALE(scale));
@@ -310,28 +265,22 @@ ags_scale_box_add(AgsScaleBox *scale_box,
 }
 
 /**
- * ags_scale_box_remove:
+ * ags_scale_box_remove_scale:
  * @scale_box: the #AgsScaleBox
- * @position: the scale at position to remove
+ * @scale: the #AgsScale
  * 
- * Remove scale at @position of @scale_box.
+ * Remove @scale from @scale_box.
  * 
  * Since: 4.0.0
  */
 void
-ags_scale_box_remove(AgsScaleBox *scale_box,
-		     guint position)
+ags_scale_box_remove_scale(AgsScaleBox *scale_box,
+			   AgsScale *scale)
 {
-  GList *start_scale, *scale;
-  
   g_return_if_fail(AGS_IS_SCALE_BOX(scale_box));
+  g_return_if_fail(AGS_IS_SCALE(scale));
 
-  start_scale = g_list_reverse(g_list_copy(scale_box));
-  
-  scale = g_list_nth(start_scale,
-		     position);
-
-  if(scale != NULL){
+  if(g_list_find(scale_box->scale, scale) != NULL){
     g_object_disconnect(scale,
 			"any_signal::notify::width-request",
 			G_CALLBACK(ags_scale_box_notify_width_request_callback),
@@ -342,15 +291,13 @@ ags_scale_box_remove(AgsScaleBox *scale_box,
 			NULL);
     
     scale_box->scale = g_list_remove(scale_box->scale,
-				     scale->data);
+				     scale);
 
     gtk_box_remove(scale_box,
-		   scale->data);
+		   scale);
   }else{
-    g_warning("no scale at position [%d] in scale box", position);
+    g_warning("scale not packed by scale box");
   }
-
-  g_list_free(start_scale);
 }
 
 /**
@@ -399,24 +346,6 @@ ags_scale_box_child_height_request(AgsScaleBox *scale_box,
 		scale_box_signals[CHILD_HEIGHT_REQUEST], 0,
 		scale, height_request);
   g_object_unref((GObject *) scale_box);
-}
-
-/**
- * ags_scale_box_get_scale:
- * @scale_box: the #AgsScaleBox
- * 
- * Get scale.
- * 
- * Returns: the #GList-struct containing #AgsScale
- * 
- * Since: 4.0.0
- */
-GList*
-ags_scale_box_get_scale(AgsScaleBox *scale_box)
-{
-  g_return_if_fail(AGS_IS_SCALE_BOX(scale_box));
-
-  return(g_list_copy(scale_box->scale));
 }
 
 /**

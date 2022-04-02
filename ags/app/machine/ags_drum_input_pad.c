@@ -138,7 +138,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
 
   /* toplevel functions */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_box_append(pad,
 		 (GtkWidget *) hbox);
   gtk_box_reorder_child_after((GtkBox *) pad,

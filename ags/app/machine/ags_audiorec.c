@@ -320,8 +320,6 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		 (GtkWidget *) radio_hbox);
 
   audiorec->keep_data = (GtkCheckButton *) gtk_check_button_new_with_label("keep");
-  gtk_check_button_set_group(audiorec->keep_data,
-			     audiorec->keep_data);
   gtk_box_append(radio_hbox,
 		 (GtkWidget *) audiorec->keep_data);
 
@@ -339,6 +337,13 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   
   /* frame - hindicator */
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
+
+  gtk_widget_set_halign(frame,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_hexpand(frame,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) frame);
 
@@ -408,13 +413,13 @@ ags_audiorec_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_audiorec_open_callback), audiorec);
 
   /* mode */
-  g_signal_connect_after(audiorec->keep_data, "clicked",
+  g_signal_connect_after(audiorec->keep_data, "toggled",
 			 G_CALLBACK(ags_audiorec_keep_data_callback), audiorec);
 
-  g_signal_connect_after(audiorec->mix_data, "clicked",
+  g_signal_connect_after(audiorec->mix_data, "toggled",
 			 G_CALLBACK(ags_audiorec_mix_data_callback), audiorec);
 
-  g_signal_connect_after(audiorec->replace_data, "clicked",
+  g_signal_connect_after(audiorec->replace_data, "toggled",
 			 G_CALLBACK(ags_audiorec_replace_data_callback), audiorec);
 }
 
@@ -440,19 +445,19 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
 
   /* mode */
   g_object_disconnect(audiorec->keep_data,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_audiorec_keep_data_callback),
 		      audiorec,
 		      NULL);
 
   g_object_disconnect(audiorec->replace_data,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_audiorec_replace_data_callback),
 		      audiorec,
 		      NULL);
 
   g_object_disconnect(audiorec->mix_data,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_audiorec_mix_data_callback),
 		      audiorec,
 		      NULL);

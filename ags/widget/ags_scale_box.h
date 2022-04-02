@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_scale.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SCALE_BOX                (ags_scale_box_get_type())
@@ -44,8 +46,6 @@ struct _AgsScaleBox
   GtkBox box;
 
   /* private */
-  guint scale_count;
-  
   GList *scale;
 };
 
@@ -63,12 +63,11 @@ struct _AgsScaleBoxClass
 
 GType ags_scale_box_get_type(void);
 
-guint ags_scale_box_get_scale_count(AgsScaleBox *scale_box);
-
-void ags_scale_box_add(AgsScaleBox *scale_box,
-		       GtkWidget *scale);
-void ags_scale_box_remove(AgsScaleBox *scale_box,
-			  guint position);
+GList* ags_scale_box_get_scale(AgsScaleBox *scale_box);
+void ags_scale_box_add_scale(AgsScaleBox *scale_box,
+			     AgsScale *scale);
+void ags_scale_box_remove_scale(AgsScaleBox *scale_box,
+				AgsScale *scale);
 
 void ags_scale_box_child_width_request(AgsScaleBox *scale_box,
 				       GtkWidget *scale,
@@ -76,8 +75,6 @@ void ags_scale_box_child_width_request(AgsScaleBox *scale_box,
 void ags_scale_box_child_height_request(AgsScaleBox *scale_box,
 					GtkWidget *scale,
 					gint height_request);
-
-GList* ags_scale_box_get_scale(AgsScaleBox *scale_box);
 
 AgsScaleBox* ags_scale_box_new(GtkOrientation orientation);
 

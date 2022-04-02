@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_level.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_LEVEL_BOX                (ags_level_box_get_type())
@@ -44,8 +46,6 @@ struct _AgsLevelBox
   GtkBox box;
 
   /* private */
-  guint level_count;
-  
   GList *level;
 };
 
@@ -63,12 +63,11 @@ struct _AgsLevelBoxClass
 
 GType ags_level_box_get_type(void);
 
-guint ags_level_box_get_level_count(AgsLevelBox *level_box);
-
-void ags_level_box_add(AgsLevelBox *level_box,
-		       GtkWidget *level);
-void ags_level_box_remove(AgsLevelBox *level_box,
-			  guint position);
+GList* ags_level_box_get_level(AgsLevelBox *level_box);
+void ags_level_box_add_level(AgsLevelBox *level_box,
+			     AgsLevel *level);
+void ags_level_box_remove_level(AgsLevelBox *level_box,
+				AgsLevel *level);
 
 void ags_level_box_child_width_request(AgsLevelBox *level_box,
 				       GtkWidget *level,
@@ -76,8 +75,6 @@ void ags_level_box_child_width_request(AgsLevelBox *level_box,
 void ags_level_box_child_height_request(AgsLevelBox *level_box,
 					GtkWidget *level,
 					gint height_request);
-
-GList* ags_level_box_get_level(AgsLevelBox *level_box);
 
 AgsLevelBox* ags_level_box_new(GtkOrientation orientation);
 

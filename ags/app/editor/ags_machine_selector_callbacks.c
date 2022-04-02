@@ -54,7 +54,7 @@ ags_machine_selector_remove_index_callback(GAction *action, GVariant *parameter,
   nth = 0;
   
   while(list != NULL){
-    if(gtk_check_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+    if(gtk_check_button_get_active(GTK_CHECK_BUTTON(list->data))){
       ags_machine_selector_changed(machine_selector,
 				   NULL);
 

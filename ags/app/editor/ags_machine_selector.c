@@ -535,15 +535,17 @@ ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
 {
   g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
 
-  if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (flags)) != 0){
+  if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (flags)) != 0 &&
+     (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     g_menu_remove(machine_selector->popup,
 		  3);
     
     machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING);
   }
 
-  if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (flags)) != 0){
-    if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
+  if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (flags)) != 0 &&
+     (AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
+    if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) == 0){
       g_menu_remove(machine_selector->popup,
 		    3);
     }else{

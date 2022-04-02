@@ -415,11 +415,6 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   application_context = ags_application_context_get_instance();
 
-  g_object_set(automation_edit,
-	       "can-focus", FALSE,
-	       "homogeneous", FALSE,
-	       NULL);
-
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) automation_edit,
 			    event_controller);
@@ -490,6 +485,10 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 					 AGS_RULER_DEFAULT_FACTOR,
 					 AGS_RULER_DEFAULT_PRECISION,
 					 AGS_RULER_DEFAULT_SCALE_PRECISION);
+
+  gtk_widget_set_visible(automation_edit->ruler,
+			 FALSE);
+  
   gtk_grid_attach(GTK_GRID(automation_edit),
 		   (GtkWidget *) automation_edit->ruler,
 		   0, 0,
@@ -512,6 +511,19 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   gtk_widget_set_can_focus((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
 
+  gtk_widget_set_halign(automation_edit->drawing_area,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(automation_edit->drawing_area,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand((GtkWidget *) automation_edit->drawing_area,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) automation_edit->drawing_area,
+			 FALSE);
+
+  gtk_widget_set_size_request(automation_edit->drawing_area,
+			      -1, AGS_SCALE_DEFAULT_HEIGHT_REQUEST);
+  
   gtk_grid_attach(GTK_GRID(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,
 		   0, 1,
@@ -521,9 +533,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, automation_edit->control_height, 1.0);
   automation_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 								   adjustment);
-  g_object_set(automation_edit->vscrollbar,
-	       "no-show-all", TRUE,
-	       NULL);
+  gtk_widget_set_visible(automation_edit->vscrollbar,
+			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) automation_edit->vscrollbar,
 			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_HEIGHT_REQUEST));
   gtk_grid_attach(GTK_GRID(automation_edit),
@@ -535,9 +546,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) automation_edit->control_width, 1.0);
   automation_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 								   adjustment);
-  g_object_set(automation_edit->hscrollbar,
-	       "no-show-all", TRUE,
-	       NULL);
+  gtk_widget_set_visible(automation_edit->hscrollbar,
+			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) automation_edit->hscrollbar,
 			      -1, -1);
   gtk_grid_attach(GTK_GRID(automation_edit),
@@ -999,8 +1009,8 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 
 	x0_offset = automation_edit->cursor_position_x / zoom_factor;
       
-	if(x0_offset / zoom_factor < gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))){
-	  gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
+	if(x0_offset / zoom_factor < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))){
+	  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar),
 			      x0_offset / zoom_factor);
 	}
       }
@@ -1017,8 +1027,8 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 
 	x0_offset = automation_edit->cursor_position_x / zoom_factor;
       
-	if((x0_offset + automation_edit->control_width) / zoom_factor > gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) + allocation.width){
-	  gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
+	if((x0_offset + automation_edit->control_width) / zoom_factor > gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) + allocation.width){
+	  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar),
 			      x0_offset / zoom_factor);
 	}
       }
@@ -1033,7 +1043,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	gdouble c_range;
 	guint g_range;
 
-	vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
+	vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
 
 	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
 	  c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
@@ -1062,7 +1072,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	}
 	
 	if(y0_offset < gtk_adjustment_get_value(vscrollbar_adjustment)){
-	  gtk_range_set_value(GTK_RANGE(automation_edit->vscrollbar),
+	  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar),
 			      y0_offset);
 	}
       }
@@ -1077,7 +1087,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	gdouble c_range;
 	guint g_range;
 
-	vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
+	vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
 
 	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
 	  c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
@@ -1106,7 +1116,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	}
 	
 	if(y0_offset < gtk_adjustment_get_value(vscrollbar_adjustment)){
-	  gtk_range_set_value(GTK_RANGE(automation_edit->vscrollbar),
+	  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar),
 			      y0_offset);
 	}
       }
@@ -1186,8 +1196,8 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
@@ -1265,8 +1275,8 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
@@ -1315,14 +1325,14 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
-  if(zoom_factor * x + gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) >= 0.0){
-    automation_edit->selection_x1 = (guint) zoom_factor * x + gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar));
+  if(zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) >= 0.0){
+    automation_edit->selection_x1 = (guint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
   }else{
     automation_edit->selection_x1 = 0.0;
   }
   
-  if(y + gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar)) >= 0.0){
-    automation_edit->selection_y1 = (guint) y + gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar));
+  if(y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar)) >= 0.0){
+    automation_edit->selection_y1 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
   }else{
     automation_edit->selection_y1 = 0.0;
   }
@@ -1417,10 +1427,10 @@ ags_automation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  g_range = gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar)) + allocation.height;
+  g_range = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar)) + allocation.height;
 
   /* cursor position */
-  automation_edit->cursor_position_x = (guint) (zoom_factor * (x + gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))));
+  automation_edit->cursor_position_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
@@ -1487,8 +1497,8 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(GtkWidget *editor
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
     
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
@@ -1544,10 +1554,10 @@ ags_automation_edit_drawing_area_button_press_select_acceleration(GtkWidget *edi
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
-  automation_edit->selection_x0 = (guint) zoom_factor * x + gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar));
+  automation_edit->selection_x0 = (guint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
   automation_edit->selection_x1 = automation_edit->selection_x0;
     
-  automation_edit->selection_y0 = (guint) y + gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar));
+  automation_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
   automation_edit->selection_y1 = automation_edit->selection_y0;
 
   gtk_widget_queue_draw((GtkWidget *) automation_edit);
@@ -1717,8 +1727,8 @@ ags_automation_edit_drawing_area_button_release_position_cursor(GtkWidget *edito
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
     
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
@@ -1794,8 +1804,8 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
@@ -1871,8 +1881,8 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
     
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
   
@@ -1942,8 +1952,8 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
@@ -2207,10 +2217,10 @@ ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
     automation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
     /* reset scrollbar */
-    hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+    hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
     x = ((automation_edit->note_offset * automation_edit->control_width) / (AGS_AUTOMATION_DEFAULT_LENGTH * automation_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
     
-    gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
+    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar),
 			x);
 
     g_object_unref(output_soundcard);
@@ -2242,7 +2252,7 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   application_context = ags_application_context_get_instance();
 
   /* adjustment and allocation */
-  adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->vscrollbar));
+  adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -2297,7 +2307,7 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
 			    &allocation);
   
   /* adjustment and allocation */
-  adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   /* zoom */
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
@@ -2410,7 +2420,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   width = (gdouble) allocation.width;
   height = (gdouble) allocation.height;
 
-  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  hscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
   
   x_offset = gtk_adjustment_get_value(hscrollbar_adjustment);
 
@@ -2655,7 +2665,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   position = ((double) automation_edit->note_offset) * ((double) control_width);
   
   y = 0.0;
-  x = (position) - (gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)));
+  x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)));
 
   width = (double) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH));
   height = automation_edit->step_count * automation_edit->control_height;
@@ -2758,7 +2768,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
   
   /* get offset */
-  x = ((double) automation_edit->cursor_position_x) - (gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) * zoom_factor);
+  x = ((double) automation_edit->cursor_position_x) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) * zoom_factor);
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     lower = automation_edit->lower;
@@ -2770,7 +2780,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
     
     y = (step_count - 1) * log(val / lower) / log(upper / lower);
   }else{
-    y = allocation.height - ((((double) automation_edit->cursor_position_y / c_range) * allocation.height) - gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar)));
+    y = allocation.height - ((((double) automation_edit->cursor_position_y / c_range) * allocation.height) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar)));
   }
   
   width = (double) AGS_AUTOMATION_EDIT_CURSOR_WIDTH;
@@ -2897,18 +2907,18 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   
   /* get offset and dimensions */
   if(automation_edit->selection_x0 < automation_edit->selection_x1){
-    x = (((double) automation_edit->selection_x0) - gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))) / zoom_factor;
+    x = (((double) automation_edit->selection_x0) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))) / zoom_factor;
     width = ((double) automation_edit->selection_x1 - (double) automation_edit->selection_x0) / zoom_factor;
   }else{
-    x = (((double) automation_edit->selection_x1) - gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))) / zoom_factor;
+    x = (((double) automation_edit->selection_x1) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))) / zoom_factor;
     width = ((double) automation_edit->selection_x0 - (double) automation_edit->selection_x1) / zoom_factor;
   }
 
   if(automation_edit->selection_y0 < automation_edit->selection_y1){
-    y = ((double) automation_edit->selection_y0) - gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar));
+    y = ((double) automation_edit->selection_y0) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
     height = ((double) automation_edit->selection_y1 - (double) automation_edit->selection_y0);
   }else{
-    y = ((double) automation_edit->selection_y1) - gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar));
+    y = ((double) automation_edit->selection_y1) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
     height = ((double) automation_edit->selection_y0 - (double) automation_edit->selection_y1);
   }
   
@@ -3060,12 +3070,12 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   
   /* get offset and dimensions */
   if(AGS_AUTOMATION_DEFAULT_LENGTH > allocation.width){
-    viewport_x = zoom_factor * gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar));
+    viewport_x = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
   }else{
     viewport_x = 0.0;
   }
   
-  viewport_y = gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar));
+  viewport_y = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
 
   g_object_get(acceleration_a,
 	       "x", &a_x,
@@ -3305,8 +3315,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   opacity = gtk_spin_button_get_value(composite_toolbar->opacity);  
 
   /* get visisble region */
-  x0 = gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar));
-  x1 = (gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) + allocation.width);
+  x0 = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
+  x1 = (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) + allocation.width);
 
   /* draw automation */
   timestamp = ags_timestamp_new();

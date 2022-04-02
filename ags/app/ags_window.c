@@ -249,7 +249,7 @@ ags_window_init(AgsWindow *window)
   window->edit_button = gtk_menu_button_new();
 
   gtk_menu_button_set_icon_name(window->edit_button,
-				"document-edit");
+				"text-editor");
 
   gtk_header_bar_pack_end(window->header_bar,
 			  window->edit_button);

@@ -2,7 +2,7 @@ ags (4.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* major API improvements
-	* TODO:JK: migrated libgsequencer.so to Gtk-4
+	* migrated libgsequencer.so to Gtk-4
 	* migrated libags_gui.so to Gtk-4
 	* implemented AgsCartesian properties
 	* TODO:JK: implemented AgsVector

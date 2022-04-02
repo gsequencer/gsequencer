@@ -402,11 +402,17 @@ ags_pad_init(AgsPad *pad)
   pad->line = NULL;
   
   pad->line_expander_set = ags_expander_set_new();
+
+  gtk_grid_set_column_spacing(pad->line_expander_set,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(pad->line_expander_set,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
   gtk_box_append((GtkBox *) pad,
 		 (GtkWidget *) pad->line_expander_set);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_box_append((GtkBox *) pad,
 		 (GtkWidget *) hbox);
 

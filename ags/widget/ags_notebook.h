@@ -65,7 +65,7 @@ struct _AgsNotebook
   GtkButton *scroll_prev;
   GtkButton *scroll_next;
   
-  GtkViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
 
   GtkBox *hbox;
 

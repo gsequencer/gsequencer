@@ -264,11 +264,6 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 
   application_context = ags_application_context_get_instance();
 
-  g_object_set(wave_edit,
-	       "can-focus", FALSE,
-	       "homogeneous", FALSE,
-	       NULL);
-
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) wave_edit,
 			    event_controller);
@@ -332,6 +327,10 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 				   AGS_RULER_DEFAULT_FACTOR,
 				   AGS_RULER_DEFAULT_PRECISION,
 				   AGS_RULER_DEFAULT_SCALE_PRECISION);
+
+  gtk_widget_set_visible(wave_edit->ruler,
+			 FALSE);
+  
   gtk_grid_attach(GTK_GRID(wave_edit),
 		  (GtkWidget *) wave_edit->ruler,
 		  0, 0,
@@ -345,7 +344,17 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_can_focus((GtkWidget *) wave_edit->drawing_area,
 			   TRUE);
-    
+
+  gtk_widget_set_halign(wave_edit->drawing_area,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(wave_edit->drawing_area,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand((GtkWidget *) wave_edit->drawing_area,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) wave_edit->drawing_area,
+			 FALSE);
+  
   gtk_widget_set_size_request((GtkWidget *) wave_edit->drawing_area,
 			      -1, (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_HEIGHT_REQUEST));
 
@@ -361,9 +370,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, wave_edit->control_height, 1.0);
   wave_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 							     adjustment);
-  g_object_set(wave_edit->vscrollbar,
-	       "no-show-all", TRUE,
-	       NULL);
+  gtk_widget_set_visible(wave_edit->vscrollbar,
+			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) wave_edit->vscrollbar,
 			      -1, (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_HEIGHT_REQUEST));
   gtk_grid_attach(GTK_GRID(wave_edit),
@@ -375,9 +383,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) wave_edit->control_width, 1.0);
   wave_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 							     adjustment);
-  g_object_set(wave_edit->hscrollbar,
-	       "no-show-all", TRUE,
-	       NULL);
+  gtk_widget_set_visible(wave_edit->hscrollbar,
+			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) wave_edit->hscrollbar,
 			      -1, -1);
   gtk_grid_attach(GTK_GRID(wave_edit),
@@ -721,8 +728,8 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
 	x0_offset = wave_edit->cursor_position_x / zoom_factor;
       
-	if(x0_offset / zoom_factor < gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar))){
-	  gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
+	if(x0_offset / zoom_factor < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar))){
+	  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar),
 			      x0_offset / zoom_factor);
 	}
       }
@@ -739,8 +746,8 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
 	x0_offset = wave_edit->cursor_position_x / zoom_factor;
       
-	if((x0_offset + wave_edit->control_width) / zoom_factor > gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) + allocation.width){
-	  gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
+	if((x0_offset + wave_edit->control_width) / zoom_factor > gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) + allocation.width){
+	  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar),
 			      x0_offset / zoom_factor);
 	}
       }
@@ -788,7 +795,7 @@ ags_wave_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->vscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->vscrollbar);
 
   c_range = wave_edit->upper - wave_edit->lower;
 
@@ -797,7 +804,7 @@ ags_wave_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
   /* cursor position */
   zoom_correction = 1.0 / 16;
 
-  wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)));
+  wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
 
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
 
@@ -829,10 +836,10 @@ ags_wave_edit_drawing_area_motion_notify_select_buffer(GtkWidget *editor,
 
   zoom_correction = 1.0 / 16;
   
-  wave_edit->selection_x1 = (guint) (zoom_factor * x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
+  wave_edit->selection_x1 = (guint) (zoom_factor * x) + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction);
   
-  if(y + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar)) >= 0.0){
-    wave_edit->selection_y1 = (guint) y + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar));
+  if(y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar)) >= 0.0){
+    wave_edit->selection_y1 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
   }else{
     wave_edit->selection_y1 = 0.0;
   }
@@ -919,7 +926,7 @@ ags_wave_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->vscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->vscrollbar);
 
   c_range = wave_edit->upper - wave_edit->lower;
 
@@ -928,7 +935,7 @@ ags_wave_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   /* cursor position */
   zoom_correction = 1.0 / 16;
 
-  wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)));
+  wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
     
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
 
@@ -957,10 +964,10 @@ ags_wave_edit_drawing_area_button_press_select_buffer(GtkWidget *editor,
   
   zoom_correction = 1.0 / 16;
 
-  wave_edit->selection_x0 = (guint) (zoom_factor * x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
+  wave_edit->selection_x0 = (guint) (zoom_factor * x) + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction);
   wave_edit->selection_x1 = wave_edit->selection_x0;
     
-  wave_edit->selection_y0 = (guint) y + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar));
+  wave_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
   wave_edit->selection_y1 = wave_edit->selection_y0;
 
   gtk_widget_queue_draw((GtkWidget *) wave_edit);
@@ -1058,7 +1065,7 @@ ags_wave_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->vscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->vscrollbar);
 
   c_range = wave_edit->upper - wave_edit->lower;
 
@@ -1067,7 +1074,7 @@ ags_wave_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
   /* cursor position */
   zoom_correction = 1.0 / 16;
 
-  wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)));
+  wave_edit->cursor_position_x = (guint) ((zoom_factor * x + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)));
     
   wave_edit->cursor_position_y = (((allocation.height - y) / g_range) * c_range);
     
@@ -1105,14 +1112,14 @@ ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
 
-  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->vscrollbar));
+  vscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->vscrollbar);
 
   c_range = wave_edit->upper - wave_edit->lower;
 
   g_range = gtk_adjustment_get_upper(vscrollbar_adjustment) + allocation.height;
 
   //FIXME:JK: this won't work
-//  wave_edit->selection_x1 = (guint) (zoom_factor * x) + (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction);
+//  wave_edit->selection_x1 = (guint) (zoom_factor * x) + (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction);
 
   /* region */
   x0 = (guint) wave_edit->selection_x0;
@@ -1121,7 +1128,7 @@ ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
   
   x1 = (guint) wave_edit->selection_x1;
     
-  y1 = (((allocation.height - y) + gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar))) / g_range) * c_range;
+  y1 = (((allocation.height - y) + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar))) / g_range) * c_range;
     
   /* select region */
   ags_composite_editor_select_region(editor,
@@ -1323,7 +1330,7 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
       return(TRUE);
     }
 
-    hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->hscrollbar));
+    hscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->hscrollbar);
     
     /* reset offset */
     g_object_get(composite_editor->selected_machine->audio,
@@ -1336,7 +1343,7 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
     /* reset scrollbar */
     x = ((wave_edit->note_offset * wave_edit->control_width) / (AGS_WAVE_DEFAULT_LENGTH * wave_edit->control_width)) * gtk_adjustment_get_upper(hscrollbar_adjustment);
     
-    gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
+    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar),
 			x);
 
     g_object_unref(output_soundcard);
@@ -1369,7 +1376,7 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->vscrollbar));
+  adjustment = gtk_scrollbar_get_adjustment(wave_edit->vscrollbar);
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
@@ -1424,7 +1431,7 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
 			    &allocation);
   
   /* adjustment */
-  adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->hscrollbar));
+  adjustment = gtk_scrollbar_get_adjustment(wave_edit->hscrollbar);
 
   /* zoom */
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
@@ -1532,8 +1539,8 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
   tact = exp2((double) gtk_combo_box_get_active(toolbar->zoom) - 2.0);
    
   /* dimension and offset */
-  x_offset = gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar));
-  y_offset = gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar));
+  x_offset = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar));
+  y_offset = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
 
   y = (gdouble) 0.0;
 
@@ -1768,7 +1775,7 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   position = ((double) wave_edit->note_offset) * ((double) control_width);
   
   y = 0.0;
-  x = (position) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)));
+  x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)));
 
   width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
   height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
@@ -1866,7 +1873,7 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
   zoom_correction = 1.0 / 16;
 
   y = 0.0;
-  x = (((double) wave_edit->cursor_position_x) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)) /  zoom_factor;
+  x = (((double) wave_edit->cursor_position_x) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)) /  zoom_factor;
 
   width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
   height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
@@ -1960,18 +1967,18 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
   zoom_correction = 1.0 / 16;
   
   if(wave_edit->selection_x0 < wave_edit->selection_x1){
-    x = (((double) wave_edit->selection_x0) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)) / zoom_factor;
+    x = (((double) wave_edit->selection_x0) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)) / zoom_factor;
     width = ((double) wave_edit->selection_x1 - (double) wave_edit->selection_x0) / zoom_factor;
   }else{
-    x = (((double) wave_edit->selection_x1) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) / zoom / zoom_correction)) / zoom_factor;
+    x = (((double) wave_edit->selection_x1) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) / zoom / zoom_correction)) / zoom_factor;
     width = ((double) wave_edit->selection_x0 - (double) wave_edit->selection_x1) / zoom_factor;
   }
 
   if(wave_edit->selection_y0 < wave_edit->selection_y1){
-    y = ((double) wave_edit->selection_y0) - gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar));
+    y = ((double) wave_edit->selection_y0) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
     height = ((double) wave_edit->selection_y1 - (double) wave_edit->selection_y0);
   }else{
-    y = ((double) wave_edit->selection_y1) - gtk_range_get_value(GTK_RANGE(wave_edit->vscrollbar));
+    y = ((double) wave_edit->selection_y1) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->vscrollbar));
     height = ((double) wave_edit->selection_y0 - (double) wave_edit->selection_y1);
   }
 
@@ -2130,8 +2137,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
 
   /* get visisble region */
-  x0 = gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar));
-  x1 = (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) + allocation.width * zoom_factor);
+  x0 = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar));
+  x1 = (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) + allocation.width * zoom_factor);
 
   /* width and height */
   width = (gdouble) allocation.width;
@@ -2387,8 +2394,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
   
   /* get visisble region */
-  x0 = (guint) gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar));
-  x1 = ((guint) gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)) + allocation.width * zoom_factor);
+  x0 = (guint) gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar));
+  x1 = ((guint) gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) + allocation.width * zoom_factor);
 
   x_cut = x0;
   

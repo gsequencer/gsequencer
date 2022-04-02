@@ -29,6 +29,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/app/editor/ags_wave_edit.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_WAVE_EDIT_BOX                (ags_wave_edit_box_get_type())
@@ -48,9 +50,7 @@ struct _AgsWaveEditBox
 {
   GtkBox box;
 
-  /* private */
-  guint wave_edit_count;
-  
+  /* private */  
   GList *wave_edit;
 };
 
@@ -68,12 +68,11 @@ struct _AgsWaveEditBoxClass
 
 GType ags_wave_edit_box_get_type(void);
 
-guint ags_wave_edit_box_get_wave_edit_count(AgsWaveEditBox *wave_edit_box);
-
-void ags_wave_edit_box_add(AgsWaveEditBox *wave_edit_box,
-			   GtkWidget *wave_edit);
-void ags_wave_edit_box_remove(AgsWaveEditBox *wave_edit_box,
-			      guint position);
+GList* ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box);
+void ags_wave_edit_box_add_wave_edit(AgsWaveEditBox *wave_edit_box,
+				     AgsWaveEdit *wave_edit);
+void ags_wave_edit_box_remove_wave_edit(AgsWaveEditBox *wave_edit_box,
+					AgsWaveEdit *wave_edit);
 
 void ags_wave_edit_box_child_width_request(AgsWaveEditBox *wave_edit_box,
 					   GtkWidget *wave_edit,
@@ -81,8 +80,6 @@ void ags_wave_edit_box_child_width_request(AgsWaveEditBox *wave_edit_box,
 void ags_wave_edit_box_child_height_request(AgsWaveEditBox *wave_edit_box,
 					    GtkWidget *wave_edit,
 					    gint height_request);
-
-GList* ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box);
 
 AgsWaveEditBox* ags_wave_edit_box_new(GtkOrientation orientation);
 

@@ -69,10 +69,10 @@ struct _AgsAutomationEditBoxClass
 GType ags_automation_edit_box_get_type(void);
 
 GList* ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box);
-void ags_automation_edit_box_add(AgsAutomationEditBox *automation_edit_box,
-				 AgsAutomationEdit *automation_edit);
-void ags_automation_edit_box_remove(AgsAutomationEditBox *automation_edit_box,
-				    AgsAutomationEdit *automation_edit);
+void ags_automation_edit_box_add_automation_edit(AgsAutomationEditBox *automation_edit_box,
+						 AgsAutomationEdit *automation_edit);
+void ags_automation_edit_box_remove_automation_edit(AgsAutomationEditBox *automation_edit_box,
+						    AgsAutomationEdit *automation_edit);
 
 void ags_automation_edit_box_child_width_request(AgsAutomationEditBox *automation_edit_box,
 						 GtkWidget *automation_edit,

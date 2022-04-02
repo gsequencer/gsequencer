@@ -25,10 +25,7 @@
 
 void ags_level_box_class_init(AgsLevelBoxClass *level_box);
 void ags_level_box_init(AgsLevelBox *level_box);
-void ags_level_box_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
+void ags_level_box_dispose(GObject *gobject);
 void ags_level_box_finalize(GObject *gobject);
 
 void ags_level_box_notify_width_request_callback(GObject *gobject,
@@ -52,11 +49,6 @@ enum{
   CHILD_WIDTH_REQUEST,
   CHILD_HEIGHT_REQUEST,
   LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_LEVEL_COUNT,
 };
 
 static gpointer ags_level_box_parent_class = NULL;
@@ -97,35 +89,13 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
 {
   GObjectClass *gobject;
 
-  GParamSpec *param_spec;
-
   ags_level_box_parent_class = g_type_class_peek_parent(level_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) level_box;
 
-  gobject->get_property = ags_level_box_get_property;
-
+  gobject->dispose = ags_level_box_dispose;
   gobject->finalize = ags_level_box_finalize;
-
-  /* properties */
-  /**
-   * AgsLevelBox:level-count:
-   *
-   * The level-count.
-   * 
-   * Since: 4.0.0
-   */
-  param_spec = g_param_spec_uint("level-count",
-				 i18n_pspec("level count"),
-				 i18n_pspec("The level count"),
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_LEVEL_COUNT,
-				  param_spec);
 
   /* AgsLevelBox */
   level_box->child_width_request = NULL;
@@ -175,37 +145,34 @@ ags_level_box_init(AgsLevelBox *level_box)
 	       "homogeneous", FALSE,
 	       "spacing", AGS_LEVEL_BOX_DEFAULT_SPACING,
 	       NULL);
-
-  level_box->level_count = 0;
   
   level_box->level = NULL;
 }
 
 void
-ags_level_box_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec)
+ags_level_box_dispose(GObject *gobject)
 {
   AgsLevelBox *level_box;
 
   level_box = AGS_LEVEL_BOX(gobject);
+  
+  g_list_free(level_box->level);
 
-  switch(prop_id){
-  case PROP_LEVEL_COUNT:
-  {
-    g_value_set_uint(value,
-		     level_box->level_count);
-  }
-  break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-  }
+  level_box->level = NULL;
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_level_box_parent_class)->dispose(gobject);
 }
 
 void
 ags_level_box_finalize(GObject *gobject)
 {
+  AgsLevelBox *level_box;
+
+  level_box = AGS_LEVEL_BOX(gobject);
+  
+  g_list_free(level_box->level);
+
   /* call parent */
   G_OBJECT_CLASS(ags_level_box_parent_class)->finalize(gobject);
 }
@@ -247,33 +214,25 @@ ags_level_box_notify_height_request_callback(GObject *gobject,
 }
 
 /**
- * ags_level_box_add:
+ * ags_level_box_get_level:
  * @level_box: the #AgsLevelBox
  * 
- * Get level count of @level_box.
+ * Get level.
  * 
- * Returns: the count of levels added
+ * Returns: the #GList-struct containing #AgsLevel
  * 
  * Since: 4.0.0
  */
-guint
-ags_level_box_get_level_count(AgsLevelBox *level_box)
+GList*
+ags_level_box_get_level(AgsLevelBox *level_box)
 {
-  guint level_count;
-
   g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
 
-  level_count = 0;
-
-  g_object_get(level_box,
-	       "level-count", &level_count,
-	       NULL);
-  
-  return(level_count);
+  return(g_list_reverse(g_list_copy(level_box->level)));
 }
 
 /**
- * ags_level_box_add:
+ * ags_level_box_add_level:
  * @level_box: the #AgsLevelBox
  * @level: the #AgsLevel
  * 
@@ -282,8 +241,8 @@ ags_level_box_get_level_count(AgsLevelBox *level_box)
  * Since: 4.0.0
  */
 void
-ags_level_box_add(AgsLevelBox *level_box,
-		  GtkWidget *level)
+ags_level_box_add_level(AgsLevelBox *level_box,
+			AgsLevel *level)
 {
   g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
   g_return_if_fail(AGS_IS_LEVEL(level));
@@ -306,28 +265,22 @@ ags_level_box_add(AgsLevelBox *level_box,
 }
 
 /**
- * ags_level_box_remove:
+ * ags_level_box_remove_level:
  * @level_box: the #AgsLevelBox
- * @position: the level at position to remove
+ * @level: the #AgsLevel
  * 
  * Remove level at @position of @level_box.
  * 
  * Since: 4.0.0
  */
 void
-ags_level_box_remove(AgsLevelBox *level_box,
-		     guint position)
-{
-  GList *start_level, *level;
-  
+ags_level_box_remove_level(AgsLevelBox *level_box,
+			   AgsLevel *level)
+{  
   g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+  g_return_if_fail(AGS_IS_LEVEL(level));
 
-  start_level = g_list_reverse(g_list_copy(level_box));
-  
-  level = g_list_nth(start_level,
-		     position);
-
-  if(level != NULL){
+  if(g_list_find(level_box->level, level) != NULL){
     g_object_disconnect(level,
 			"any_signal::notify::width-request",
 			G_CALLBACK(ags_level_box_notify_width_request_callback),
@@ -338,15 +291,13 @@ ags_level_box_remove(AgsLevelBox *level_box,
 			NULL);
     
     level_box->level = g_list_remove(level_box->level,
-				     level->data);
+				     level);
 
     gtk_box_remove(level_box,
-		   level->data);
+		   level);
   }else{
-    g_warning("no level at position [%d] in level box", position);
+    g_warning("level not packed by level box");
   }
-
-  g_list_free(start_level);
 }
 
 /**
@@ -395,24 +346,6 @@ ags_level_box_child_height_request(AgsLevelBox *level_box,
 		level_box_signals[CHILD_HEIGHT_REQUEST], 0,
 		level, height_request);
   g_object_unref((GObject *) level_box);
-}
-
-/**
- * ags_level_box_get_level:
- * @level_box: the #AgsLevelBox
- * 
- * Get level.
- * 
- * Returns: the #GList-struct containing #AgsLevel
- * 
- * Since: 4.0.0
- */
-GList*
-ags_level_box_get_level(AgsLevelBox *level_box)
-{
-  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
-
-  return(g_list_copy(level_box->level));
 }
 
 /**

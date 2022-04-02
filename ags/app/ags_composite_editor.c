@@ -369,8 +369,9 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   gtk_widget_set_halign((GtkWidget *) composite_editor->machine_selector,
 			GTK_ALIGN_START);
   
-  composite_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
-						AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+  ags_machine_selector_set_flags(composite_editor->machine_selector,
+				 (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
+				  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO));
   composite_editor->machine_selector->edit = (AGS_MACHINE_SELECTOR_EDIT_NOTATION |
 					      AGS_MACHINE_SELECTOR_EDIT_AUTOMATION |
 					      AGS_MACHINE_SELECTOR_EDIT_WAVE);
@@ -966,8 +967,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     start_list = ags_scale_box_get_scale(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box);
   
   while(list != NULL){
-    ags_scale_box_remove(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box,
-			 list->data);
+    ags_scale_box_remove_scale(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box,
+			       list->data);
 
     g_object_run_dispose(list->data);
     g_object_unref(list->data);
@@ -981,8 +982,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
   
   while(list != NULL){
-    ags_automation_edit_box_remove(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
-				   list->data);
+    ags_automation_edit_box_remove_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
+						   list->data);
 
     g_object_run_dispose(list->data);
     g_object_unref(list->data);
@@ -997,8 +998,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     start_list = ags_level_box_get_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box);
   
   while(list != NULL){
-    ags_level_box_remove(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
-			 list->data);
+    ags_level_box_remove_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
+			       list->data);
 
     g_object_run_dispose(list->data);
     g_object_unref(list->data);
@@ -1012,8 +1013,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
   
   while(list != NULL){
-    ags_wave_edit_box_remove(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
-			     list->data);
+    ags_wave_edit_box_remove_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
+				       list->data);
 
     g_object_run_dispose(list->data);
     g_object_unref(list->data);
@@ -1087,26 +1088,26 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
       level = ags_level_new(GTK_ORIENTATION_VERTICAL,
 			    (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_WIDTH_REQUEST),
 			    (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_HEIGHT_REQUEST));
-      ags_level_box_add(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
-			GTK_WIDGET(level));
+      ags_level_box_add_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
+			      level);
 	
       gtk_widget_show(GTK_WIDGET(level));
 
       /* wave edit */
       wave_edit = ags_wave_edit_new(i);
-      gtk_box_append(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
-		     GTK_WIDGET(wave_edit));
+      ags_wave_edit_box_add_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
+				      wave_edit);
 
       ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
       gtk_widget_show(GTK_WIDGET(wave_edit));
 
-      g_signal_connect(gtk_range_get_adjustment((GtkRange *) wave_edit->hscrollbar), "changed",
+      g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "changed",
 		       G_CALLBACK(ags_composite_editor_wave_edit_hadjustment_changed_callback), (gpointer) composite_editor);
       
-      g_signal_connect(gtk_range_get_adjustment(wave_edit->hscrollbar), "changed",
+      g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "changed",
 		       G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_editor->wave_edit);
       
-      g_signal_connect((GObject *) wave_edit->hscrollbar, "value-changed",
+      g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "value-changed",
 		       G_CALLBACK(ags_composite_editor_wave_edit_hscrollbar_value_changed), (gpointer) composite_editor);
     }
     
@@ -1506,8 +1507,8 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
 	       "default-value", default_value,
 	       NULL);
   
-  gtk_box_append((GtkBox *) AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box,
-		 (GtkWidget *) scale);
+  ags_scale_box_add_scale(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box,
+			  scale);
   
   gtk_widget_show((GtkWidget *) scale);
 
@@ -1538,21 +1539,20 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
     automation_edit->flags |= AGS_AUTOMATION_EDIT_TOGGLED;
   }
   
-  gtk_box_append((GtkBox *) AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
-		 (GtkWidget *) automation_edit);
+  ags_automation_edit_box_add_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
+					      automation_edit);
   
   ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
   gtk_widget_show((GtkWidget *) automation_edit);
 
-  g_signal_connect(gtk_range_get_adjustment((GtkRange *) automation_edit->hscrollbar), "changed",
+  g_signal_connect(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar), "changed",
 		   G_CALLBACK(ags_composite_editor_automation_edit_hadjustment_changed_callback), (gpointer) composite_editor);
   
-  g_signal_connect(gtk_range_get_adjustment(automation_edit->hscrollbar), "changed",
+  g_signal_connect(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar), "changed",
 		   G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_editor->automation_edit);
   
-  g_signal_connect((GObject *) automation_edit->hscrollbar, "value-changed",
-		   G_CALLBACK(ags_composite_editor_automation_edit_hscrollbar_value_changed), (gpointer) composite_editor);
-  
+  g_signal_connect(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar), "value-changed",
+		   G_CALLBACK(ags_composite_editor_automation_edit_hscrollbar_value_changed), (gpointer) composite_editor);  
   
   /* unset bypass */
   ags_audio_add_automation_port(machine->audio, control_name);
@@ -1628,8 +1628,8 @@ ags_composite_editor_remove_automation_port(AgsCompositeEditor *composite_editor
     if(AGS_AUTOMATION_EDIT(list->data)->channel_type == channel_type &&
        !g_strcmp0(AGS_AUTOMATION_EDIT(list->data)->control_name,
 		  control_name)){
-      ags_automation_edit_box_remove(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
-				     list->data);
+      ags_automation_edit_box_remove_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box,
+						     list->data);
       
       g_object_run_dispose(list->data);
       g_object_unref(list->data);
@@ -1650,8 +1650,8 @@ ags_composite_editor_remove_automation_port(AgsCompositeEditor *composite_editor
     list = g_list_nth(start_list,
 		      nth);
 
-    ags_scale_box_remove(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box,
-			 list->data);
+    ags_scale_box_remove_scale(AGS_SCROLLED_SCALE_BOX(composite_editor->automation_edit->edit_control)->scale_box,
+			       list->data);
     
     g_object_run_dispose(list->data);
     g_object_unref(list->data);

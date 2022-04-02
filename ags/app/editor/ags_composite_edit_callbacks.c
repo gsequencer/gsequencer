@@ -45,7 +45,7 @@ ags_composite_edit_vscrollbar_changed(GtkAdjustment *adjustment,
 	       "page-increment", &page_increment,
 	       NULL);
 
-  composite_adjustment = gtk_range_get_adjustment(composite_edit->vscrollbar);
+  composite_adjustment = gtk_scrollbar_get_adjustment(composite_edit->vscrollbar);
   
   g_object_set(composite_adjustment,
 	       "upper", upper,
@@ -74,7 +74,7 @@ ags_composite_edit_hscrollbar_changed(GtkAdjustment *adjustment,
 	       "page-increment", &page_increment,
 	       NULL);
 
-  composite_adjustment = gtk_range_get_adjustment(composite_edit->hscrollbar);
+  composite_adjustment = gtk_scrollbar_get_adjustment(composite_edit->hscrollbar);
   
   g_object_set(composite_adjustment,
 	       "upper", upper,

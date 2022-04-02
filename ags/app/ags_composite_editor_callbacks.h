@@ -63,10 +63,10 @@ void ags_composite_editor_resize_pads_callback(AgsMachine *machine, GType channe
 					       guint pads, guint pads_old,
 					       AgsCompositeEditor *composite_editor);
 
-void ags_composite_editor_automation_edit_hscrollbar_value_changed(GtkRange *range,
+void ags_composite_editor_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment,
 								   AgsCompositeEditor *composite_editor);
 
-void ags_composite_editor_wave_edit_hscrollbar_value_changed(GtkRange *range,
+void ags_composite_editor_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment,
 							     AgsCompositeEditor *composite_editor);
 
 

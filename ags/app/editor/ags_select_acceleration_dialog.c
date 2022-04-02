@@ -639,6 +639,13 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 		 "plugin-port", &plugin_port,
 		 NULL);
 
+    if(specifier == NULL){
+      /* iterate */
+      port = port->next;
+
+      continue;
+    }
+    
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(collected_audio_specifier,
 					    specifier);

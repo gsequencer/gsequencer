@@ -118,7 +118,7 @@ ags_composite_editor_automation_edit_hadjustment_changed_callback(GtkAdjustment 
 	       "value", &value,
 	       NULL);
 
-  g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->automation_edit->hscrollbar),
+  g_object_set(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar),
 	       "lower", lower,
 	       "upper", upper,
 	       "page-increment", page_increment,
@@ -146,7 +146,7 @@ ags_composite_editor_wave_edit_hadjustment_changed_callback(GtkAdjustment *adjus
 	       "value", &value,
 	       NULL);
 
-  g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->wave_edit->hscrollbar),
+  g_object_set(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar),
 	       "lower", lower,
 	       "upper", upper,
 	       "page-increment", page_increment,
@@ -292,8 +292,8 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 				(guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_WIDTH_REQUEST),
 				(guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_HEIGHT_REQUEST));
 
-	  ags_level_box_add(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
-			    GTK_WIDGET(level));
+	  ags_level_box_add_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
+				  level);
 
 	  //FIXME:JK: safe to remove?
 	  //	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
@@ -304,8 +304,8 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 
 	  /* wave edit */
 	  wave_edit = ags_wave_edit_new(i * audio_channels + j);
-	  ags_wave_edit_box_add(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
-				GTK_WIDGET(wave_edit));
+	  ags_wave_edit_box_add_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
+					  wave_edit);
 
 	  //FIXME:JK: safe to remove?
 	  //	  gtk_box_reorder_child(GTK_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box),
@@ -315,13 +315,13 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 	  ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
 	  gtk_widget_show(GTK_WIDGET(wave_edit));
 
-	  g_signal_connect(gtk_range_get_adjustment((GtkRange *) wave_edit->hscrollbar), "changed",
+	  g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "changed",
 			   G_CALLBACK(ags_composite_editor_wave_edit_hadjustment_changed_callback), (gpointer) composite_editor);
       
-	  g_signal_connect(gtk_range_get_adjustment(wave_edit->hscrollbar), "changed",
+	  g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "changed",
 			   G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_editor->wave_edit);
       
-	  g_signal_connect((GObject *) wave_edit->hscrollbar, "value-changed",
+	  g_signal_connect(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar), "value-changed",
 			   G_CALLBACK(ags_composite_editor_wave_edit_hscrollbar_value_changed), (gpointer) composite_editor);      
 	}
       }
@@ -366,8 +366,8 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 	}
 
 	for(; j < audio_channels_old && list != NULL; j++){
-	  ags_level_box_remove(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
-			       list->data);
+	  ags_level_box_remove_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box,
+				     list->data);
 
 	  g_object_run_dispose(list->data);
 	  g_object_unref(list->data);
@@ -387,8 +387,8 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
 	}
 
 	for(; j < audio_channels_old && list != NULL; j++){
-	  ags_wave_edit_box_remove(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
-				   list->data);
+	  ags_wave_edit_box_remove_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box,
+					     list->data);
 
 	  g_object_run_dispose(list->data);
 	  g_object_unref(list->data);
@@ -496,14 +496,14 @@ ags_composite_editor_resize_pads_callback(AgsMachine *machine, GType channel_typ
 }
 
 void
-ags_composite_editor_automation_edit_hscrollbar_value_changed(GtkRange *range,
+ags_composite_editor_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment,
 							      AgsCompositeEditor *composite_editor)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_composite_editor_wave_edit_hscrollbar_value_changed(GtkRange *range,
+ags_composite_editor_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment,
 							AgsCompositeEditor *composite_editor)
 {
   //TODO:JK: implement me

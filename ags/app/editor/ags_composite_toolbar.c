@@ -721,7 +721,7 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     composite_toolbar->edit = (GtkToggleButton *) gtk_toggle_button_new();
     g_object_set(composite_toolbar->edit,
 		 "label", i18n("Edit"),
-		 "icon-name", "document-edit",
+		 "icon-name", "text-editor",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
@@ -795,9 +795,6 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
      composite_toolbar->position != NULL){
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->position);
-
-    g_object_run_dispose(composite_toolbar->position);
-    g_object_unref(composite_toolbar->position);
     
     composite_toolbar->position = NULL;
   }
@@ -807,9 +804,6 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->edit);
 
-    g_object_run_dispose(composite_toolbar->edit);
-    g_object_unref(composite_toolbar->edit);
-
     composite_toolbar->edit = NULL;
   }
 
@@ -818,9 +812,6 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->clear);
 
-    g_object_run_dispose(composite_toolbar->clear);
-    g_object_unref(composite_toolbar->clear);
-
     composite_toolbar->clear = NULL;
   }
 
@@ -828,9 +819,6 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
      composite_toolbar->select != NULL){
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->select);
-
-    g_object_run_dispose(composite_toolbar->select);
-    g_object_unref(composite_toolbar->select);
 
     composite_toolbar->select = NULL;
   }
@@ -1006,9 +994,6 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
      composite_toolbar->invert != NULL){
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->invert);
-
-    g_object_run_dispose(composite_toolbar->invert);
-    g_object_unref(composite_toolbar->invert);
     
     composite_toolbar->invert = NULL;
   }
@@ -1018,9 +1003,6 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->copy);
 
-    g_object_run_dispose(composite_toolbar->copy);
-    g_object_unref(composite_toolbar->copy);
-
     composite_toolbar->copy = NULL;
   }
 
@@ -1029,9 +1011,6 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->cut);
 
-    g_object_run_dispose(composite_toolbar->cut);
-    g_object_unref(composite_toolbar->cut);
-
     composite_toolbar->cut = NULL;
   }
 
@@ -1039,9 +1018,6 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
      composite_toolbar->paste != NULL){
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->paste);
-
-    g_object_run_dispose(composite_toolbar->paste);
-    g_object_unref(composite_toolbar->paste);
 
     //TODO:JK: check if needed
     //    composite_toolbar->paste_mode = 0;
@@ -1371,9 +1347,6 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
     gtk_box_remove(composite_toolbar,
 		   (GtkWidget *) composite_toolbar->menu_tool);
 
-    g_object_run_dispose(composite_toolbar->menu_tool);
-    g_object_unref(composite_toolbar->menu_tool);
-
     composite_toolbar->menu_tool = NULL;
     composite_toolbar->menu_tool_popup = NULL;
   }
@@ -1382,9 +1355,6 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
      composite_toolbar->opacity != NULL){
     gtk_box_remove(composite_toolbar,
 		   gtk_widget_get_parent(composite_toolbar->opacity));
-
-    g_object_run_dispose(composite_toolbar->opacity);
-    g_object_unref(composite_toolbar->opacity);
     
     composite_toolbar->opacity = NULL;
   }
@@ -1394,9 +1364,6 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
     gtk_box_remove(composite_toolbar,
 		   gtk_widget_get_parent(composite_toolbar->port));
 
-    g_object_run_dispose(composite_toolbar->port);
-    g_object_unref(composite_toolbar->port);
-
     composite_toolbar->port = NULL;
   }
 
@@ -1405,9 +1372,6 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
     gtk_box_remove(composite_toolbar,
 		   gtk_widget_get_parent(composite_toolbar->beats));
 
-    g_object_run_dispose(composite_toolbar->beats);
-    g_object_unref(composite_toolbar->beats);
-
     composite_toolbar->beats = NULL;
   }
 
@@ -1415,9 +1379,6 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
      composite_toolbar->beats_type != NULL){
     gtk_box_remove(composite_toolbar,
 		   gtk_widget_get_parent(composite_toolbar->beats_type));
-
-    g_object_run_dispose(composite_toolbar->beats_type);
-    g_object_unref(composite_toolbar->beats_type);
 
     composite_toolbar->beats_type = NULL;
   }

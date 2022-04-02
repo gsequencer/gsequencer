@@ -25,10 +25,7 @@
 
 void ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box);
 void ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box);
-void ags_wave_edit_box_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
+void ags_wave_edit_box_dispose(GObject *gobject);
 void ags_wave_edit_box_finalize(GObject *gobject);
 
 void ags_wave_edit_box_notify_width_request_callback(GObject *gobject,
@@ -52,11 +49,6 @@ enum{
   CHILD_WIDTH_REQUEST,
   CHILD_HEIGHT_REQUEST,
   LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_WAVE_EDIT_COUNT,
 };
 
 static gpointer ags_wave_edit_box_parent_class = NULL;
@@ -97,35 +89,13 @@ ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box)
 {
   GObjectClass *gobject;
 
-  GParamSpec *param_spec;
-
   ags_wave_edit_box_parent_class = g_type_class_peek_parent(wave_edit_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) wave_edit_box;
 
-  gobject->get_property = ags_wave_edit_box_get_property;
-
+  gobject->dispose = ags_wave_edit_box_dispose;
   gobject->finalize = ags_wave_edit_box_finalize;
-
-  /* properties */
-  /**
-   * AgsWaveEditBox:wave_edit-count:
-   *
-   * The wave_edit-count.
-   * 
-   * Since: 4.0.0
-   */
-  param_spec = g_param_spec_uint("wave_edit-count",
-				 i18n_pspec("wave_edit count"),
-				 i18n_pspec("The wave_edit count"),
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_WAVE_EDIT_COUNT,
-				  param_spec);
 
   /* AgsWaveEditBox */
   wave_edit_box->child_width_request = NULL;
@@ -175,38 +145,34 @@ ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box)
 	       "homogeneous", FALSE,
 	       "spacing", AGS_WAVE_EDIT_BOX_DEFAULT_SPACING,
 	       NULL);
-
-  wave_edit_box->wave_edit_count = 0;
   
   wave_edit_box->wave_edit = NULL;
 }
 
 void
-ags_wave_edit_box_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
+ags_wave_edit_box_dispose(GObject *gobject)
 {
   AgsWaveEditBox *wave_edit_box;
 
   wave_edit_box = AGS_WAVE_EDIT_BOX(gobject);
+  
+  g_list_free(wave_edit_box->wave_edit);
 
-  switch(prop_id){
-  case PROP_WAVE_EDIT_COUNT:
-  {
-    g_value_set_uint(value,
-		     wave_edit_box->wave_edit_count);
-  }
-  break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  wave_edit_box->wave_edit = NULL;
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_wave_edit_box_parent_class)->dispose(gobject);
 }
 
 void
 ags_wave_edit_box_finalize(GObject *gobject)
 {
+  AgsWaveEditBox *wave_edit_box;
+
+  wave_edit_box = AGS_WAVE_EDIT_BOX(gobject);
+  
+  g_list_free(wave_edit_box->wave_edit);
+
   /* call parent */
   G_OBJECT_CLASS(ags_wave_edit_box_parent_class)->finalize(gobject);
 }
@@ -248,33 +214,25 @@ ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
 }
 
 /**
- * ags_wave_edit_box_add:
+ * ags_wave_edit_box_get_wave_edit:
  * @wave_edit_box: the #AgsWaveEditBox
  * 
- * Get wave_edit count of @wave_edit_box.
+ * Get wave_edit.
  * 
- * Returns: the count of wave_edits added
+ * Returns: the #GList-struct containing #AgsWaveEdit
  * 
  * Since: 4.0.0
  */
-guint
-ags_wave_edit_box_get_wave_edit_count(AgsWaveEditBox *wave_edit_box)
+GList*
+ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box)
 {
-  guint wave_edit_count;
-
   g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
 
-  wave_edit_count = 0;
-
-  g_object_get(wave_edit_box,
-	       "wave_edit-count", &wave_edit_count,
-	       NULL);
-  
-  return(wave_edit_count);
+  return(g_list_reverse(g_list_copy(wave_edit_box->wave_edit)));
 }
 
 /**
- * ags_wave_edit_box_add:
+ * ags_wave_edit_box_add_wave_edit:
  * @wave_edit_box: the #AgsWaveEditBox
  * @wave_edit: the #AgsWaveEdit
  * 
@@ -283,8 +241,8 @@ ags_wave_edit_box_get_wave_edit_count(AgsWaveEditBox *wave_edit_box)
  * Since: 4.0.0
  */
 void
-ags_wave_edit_box_add(AgsWaveEditBox *wave_edit_box,
-		      GtkWidget *wave_edit)
+ags_wave_edit_box_add_wave_edit(AgsWaveEditBox *wave_edit_box,
+				AgsWaveEdit *wave_edit)
 {
   g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
   g_return_if_fail(AGS_IS_WAVE_EDIT(wave_edit));
@@ -301,34 +259,26 @@ ags_wave_edit_box_add(AgsWaveEditBox *wave_edit_box,
     
     gtk_box_append(wave_edit_box,
 		   wave_edit);
-  }else{
-    g_warning("wave_edit already added to wave_edit box");
   }
 }
 
 /**
- * ags_wave_edit_box_remove:
+ * ags_wave_edit_box_remove_wave_edit:
  * @wave_edit_box: the #AgsWaveEditBox
- * @position: the wave_edit at position to remove
+ * @wave_edit: the #AgsWaveEdit
  * 
  * Remove wave_edit at @position of @wave_edit_box.
  * 
  * Since: 4.0.0
  */
 void
-ags_wave_edit_box_remove(AgsWaveEditBox *wave_edit_box,
-			 guint position)
+ags_wave_edit_box_remove_wave_edit(AgsWaveEditBox *wave_edit_box,
+				   AgsWaveEdit *wave_edit)
 {
-  GList *start_wave_edit, *wave_edit;
-  
   g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
+  g_return_if_fail(AGS_IS_WAVE_EDIT(wave_edit));
 
-  start_wave_edit = g_list_reverse(g_list_copy(wave_edit_box));
-  
-  wave_edit = g_list_nth(start_wave_edit,
-			 position);
-
-  if(wave_edit != NULL){
+  if(g_list_find(wave_edit_box->wave_edit, wave_edit) != NULL){
     g_object_disconnect(wave_edit,
 			"any_signal::notify::width-request",
 			G_CALLBACK(ags_wave_edit_box_notify_width_request_callback),
@@ -339,15 +289,11 @@ ags_wave_edit_box_remove(AgsWaveEditBox *wave_edit_box,
 			NULL);
     
     wave_edit_box->wave_edit = g_list_remove(wave_edit_box->wave_edit,
-					     wave_edit->data);
+					     wave_edit);
 
     gtk_box_remove(wave_edit_box,
-		   wave_edit->data);
-  }else{
-    g_warning("no wave_edit at position [%d] in wave_edit box", position);
+		   wave_edit);
   }
-
-  g_list_free(start_wave_edit);
 }
 
 /**
@@ -396,24 +342,6 @@ ags_wave_edit_box_child_height_request(AgsWaveEditBox *wave_edit_box,
 		wave_edit_box_signals[CHILD_HEIGHT_REQUEST], 0,
 		wave_edit, height_request);
   g_object_unref((GObject *) wave_edit_box);
-}
-
-/**
- * ags_wave_edit_box_get_wave_edit:
- * @wave_edit_box: the #AgsWaveEditBox
- * 
- * Get wave_edit.
- * 
- * Returns: the #GList-struct containing #AgsWaveEdit
- * 
- * Since: 4.0.0
- */
-GList*
-ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box)
-{
-  g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
-
-  return(g_list_copy(wave_edit_box->wave_edit));
 }
 
 /**
