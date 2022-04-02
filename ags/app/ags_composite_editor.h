@@ -48,7 +48,7 @@ G_BEGIN_DECLS
 #define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.8.0"
 #define AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
 
-#define AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION (400)
+#define AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION (300)
 
 typedef struct _AgsCompositeEditor AgsCompositeEditor;
 typedef struct _AgsCompositeEditorClass AgsCompositeEditorClass;

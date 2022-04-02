@@ -23,6 +23,14 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 
+#include <ags/app/editor/ags_notation_edit.h>
+#include <ags/app/editor/ags_scrolled_automation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit_box.h>
+#include <ags/app/editor/ags_automation_edit.h>
+#include <ags/app/editor/ags_scrolled_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit_box.h>
+#include <ags/app/editor/ags_wave_edit.h>
+
 void
 ags_composite_toolbar_position_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar)
 {
@@ -312,7 +320,7 @@ ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GAction
 {
   AgsCompositeEditor *composite_editor;
 
-  GList *list;
+  GList *start_list, *list;
   
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
 								    AGS_TYPE_COMPOSITE_EDITOR);
@@ -321,14 +329,17 @@ ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GAction
     return;
   }
 
-  list = composite_editor->selected_edit->channel_selector->tab;
+  list =
+    start_list = ags_notebook_get_tab(composite_editor->selected_edit->channel_selector);
 
   while(list != NULL){
-    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+    gtk_toggle_button_set_active(list->data,
 				 TRUE);
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
@@ -337,7 +348,7 @@ ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GActio
 {
   AgsCompositeEditor *composite_editor;
 
-  GList *list;
+  GList *start_list, *list;
   
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
 								    AGS_TYPE_COMPOSITE_EDITOR);
@@ -346,14 +357,17 @@ ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GActio
     return;
   }
 
-  list = composite_editor->selected_edit->channel_selector->tab;
+  list =
+    start_list = ags_notebook_get_tab(composite_editor->selected_edit->channel_selector);
 
   while(list != NULL){
-    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+    gtk_toggle_button_set_active(list->data,
 				 FALSE);
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
@@ -362,7 +376,7 @@ ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback(GAction *action,
 {
   AgsCompositeEditor *composite_editor;
 
-  GList *list;
+  GList *start_list, *list;
   
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
 								    AGS_TYPE_COMPOSITE_EDITOR);
@@ -371,14 +385,17 @@ ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback(GAction *action,
     return;
   }
 
-  list = composite_editor->selected_edit->channel_selector->tab;
+  list =
+    start_list = ags_notebook_get_tab(composite_editor->selected_edit->channel_selector);
 
   while(list != NULL){
-    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+    gtk_toggle_button_set_active(list->data,
 				 TRUE);
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
@@ -387,7 +404,7 @@ ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GAction *action
 {
   AgsCompositeEditor *composite_editor;
 
-  GList *list;
+  GList *start_list, *list;
   
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
 								    AGS_TYPE_COMPOSITE_EDITOR);
@@ -396,14 +413,17 @@ ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GAction *action
     return;
   }
 
-  list = composite_editor->selected_edit->channel_selector->tab;
+  list =
+    start_list = ags_notebook_get_tab(composite_editor->selected_edit->channel_selector);
 
   while(list != NULL){
-    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+    gtk_toggle_button_set_active(list->data,
 				 FALSE);
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
@@ -546,9 +566,12 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
       composite_editor->notation_edit->ruler->scale_precision = 1.0 / zoom;
   
       gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->ruler);
+      gtk_widget_queue_draw((GtkWidget *) AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area);
     }
 
     if(composite_editor->automation_edit != NULL){
+      GList *start_list, *list;
+      
       gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar),
 			       gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(composite_editor->automation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
   
@@ -560,9 +583,22 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
       composite_editor->automation_edit->ruler->scale_precision = 1.0 / zoom;
   
       gtk_widget_queue_draw((GtkWidget *) composite_editor->automation_edit->ruler);
+
+      list = 
+	start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+
+      while(list != NULL){
+	gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(list->data)->drawing_area);
+
+	list = list->next;
+      }
+
+      g_list_free(start_list);
     }
     
     if(composite_editor->wave_edit != NULL){
+      GList *start_list, *list;
+      
       gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar),
 			       gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
   
@@ -574,6 +610,17 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
       composite_editor->wave_edit->ruler->scale_precision = 1.0 / zoom;
   
       gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit->ruler);
+
+      list = 
+	start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+
+      while(list != NULL){
+	gtk_widget_queue_draw((GtkWidget *) AGS_WAVE_EDIT(list->data)->drawing_area);
+
+	list = list->next;
+      }
+
+      g_list_free(start_list);
     }
   }
 }

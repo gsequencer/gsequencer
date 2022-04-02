@@ -1577,6 +1577,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
 
   AgsApplicationContext *application_context;
 
+  GList *start_tab, *tab;
+  
   guint audio_channels;
   guint output_lines, input_lines;
   guint length;
@@ -1606,13 +1608,18 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   AGS_COMPOSITE_EDITOR(editor)->automation_edit->focused_edit = automation_edit;
   
   /* automation edit notebook - remove tabs */
-  length = g_list_length(AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector->tab);
+  tab =
+    start_tab = ags_notebook_get_tab(AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector);
   
-  for(i = 0; i < length; i++){
+  while(tab != NULL){
     ags_notebook_remove_tab(AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector,
-			    0);
+			    tab->data);
+
+    tab = tab->next;
   }
-    
+
+  g_list_free(start_tab);
+  
   audio_channels = 2;
     
   output_lines = 2;
@@ -1635,15 +1642,15 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   }
     
   for(i = 0; i < length; i++){
-    GList *tab;
-      
-    ags_notebook_insert_tab(AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector,
-			    i);
+    gchar *str;
 
-    tab = AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector->tab;
-    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				 TRUE);
-    gtk_widget_show(AGS_NOTEBOOK_TAB(tab->data)->toggle);
+    str = g_strdup_printf("line %d",
+			  i + 1);
+    
+    ags_notebook_add_tab(AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector,
+			 gtk_toggle_button_new_with_label(str));
+
+    g_free(str);
   }
   
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);

@@ -2021,9 +2021,7 @@ void
 ags_composite_toolbar_set_selected_tool(AgsCompositeToolbar *composite_toolbar,
 					GtkToggleButton *selected_tool)
 {
-  if(!AGS_IS_COMPOSITE_TOOLBAR(composite_toolbar)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_COMPOSITE_TOOLBAR(composite_toolbar));
   
   if(composite_toolbar->selected_tool != selected_tool){
     GtkToggleButton *old_selected_tool;

@@ -805,7 +805,7 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 {
   AgsCompositeEditor *composite_editor;
 
-  GList *tab;
+  GList *start_tab, *tab;
   
   guint length;
   guint i;
@@ -818,12 +818,17 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 					     AGS_TYPE_COMPOSITE_EDITOR);
   
   /* channel selector - remove tabs */
-  length = g_list_length(composite_edit->channel_selector->tab);
+  tab =
+    start_tab = ags_notebook_get_tab(composite_edit->channel_selector);
   
   for(i = 0; i < length; i++){
     ags_notebook_remove_tab(composite_edit->channel_selector,
-			    0);
+			    tab->data);
+
+    tab = tab->next;
   }
+
+  g_list_free(start_tab);
 
   if((AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_AUDIO_CHANNEL & (channel_selector_mode)) != 0){
     if(composite_editor != NULL &&
@@ -835,12 +840,15 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < audio_channels; i++){
-	ags_notebook_insert_tab(composite_edit->channel_selector,
-				i);
+	gchar *str;
 
-	tab = composite_edit->channel_selector->tab;
-	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				     TRUE);
+	str = g_strdup_printf("channel %d",
+			      i);
+
+	ags_notebook_add_tab(composite_edit->channel_selector,
+			     gtk_toggle_button_new_with_label(str));
+
+	g_free(str);
       }
     }
   }else if((AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_OUTPUT_LINE & (channel_selector_mode)) != 0){
@@ -853,12 +861,15 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < output_lines; i++){
-	ags_notebook_insert_tab(composite_edit->channel_selector,
-				i);
+	gchar *str;
 
-	tab = composite_edit->channel_selector->tab;
-	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				     TRUE);
+	str = g_strdup_printf("line %d",
+			      i);
+
+	ags_notebook_add_tab(composite_edit->channel_selector,
+			     gtk_toggle_button_new_with_label(str));
+
+	g_free(str);
       }
     }
   }else if((AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_INPUT_LINE & (channel_selector_mode)) != 0){
@@ -871,12 +882,15 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < input_lines; i++){
-	ags_notebook_insert_tab(composite_edit->channel_selector,
-				i);
+	gchar *str;
 
-	tab = composite_edit->channel_selector->tab;
-	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				     TRUE);
+	str = g_strdup_printf("line %d",
+			      i);
+
+	ags_notebook_add_tab(composite_edit->channel_selector,
+			     gtk_toggle_button_new_with_label(str));
+
+	g_free(str);
       }
     }
   }

@@ -253,40 +253,6 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   application_context = ags_application_context_get_instance();
 
-  event_controller = gtk_event_controller_key_new();
-  gtk_widget_add_controller((GtkWidget *) notation_edit,
-			    event_controller);
-
-  g_signal_connect(event_controller, "key-pressed",
-		   G_CALLBACK(ags_notation_edit_key_pressed_callback), notation_edit);
-  
-  g_signal_connect(event_controller, "key-released",
-		   G_CALLBACK(ags_notation_edit_key_released_callback), notation_edit);
-
-  g_signal_connect(event_controller, "modifiers",
-		   G_CALLBACK(ags_notation_edit_modifiers_callback), notation_edit);
-
-  event_controller = gtk_gesture_click_new();
-  gtk_widget_add_controller((GtkWidget *) notation_edit,
-			    event_controller);
-
-  g_signal_connect(event_controller, "pressed",
-		   G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback), notation_edit);
-
-  g_signal_connect(event_controller, "released",
-		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
-
-  event_controller = gtk_event_controller_motion_new();
-  gtk_widget_add_controller((GtkWidget *) notation_edit,
-			    event_controller);
-
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
-
-  g_object_set(notation_edit,
-	       "can-focus", FALSE,
-	       NULL);
-
   notation_edit->flags = (AGS_NOTATION_EDIT_SHOW_RULER |
 			  AGS_NOTATION_EDIT_SHOW_VSCROLLBAR |
 			  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR);
@@ -340,6 +306,36 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   gtk_widget_set_can_focus((GtkWidget *) notation_edit->drawing_area,
 			   TRUE);
 
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_notation_edit_key_pressed_callback), notation_edit);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_notation_edit_key_released_callback), notation_edit);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_notation_edit_modifiers_callback), notation_edit);
+
+  event_controller = gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "pressed",
+		   G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback), notation_edit);
+
+  g_signal_connect(event_controller, "released",
+		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
+
+  event_controller = gtk_event_controller_motion_new();
+  gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "motion",
+		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
+  
   gtk_widget_set_halign(notation_edit->drawing_area,
 			GTK_ALIGN_FILL);
   gtk_widget_set_valign(notation_edit->drawing_area,
@@ -605,6 +601,8 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     break;
     }
   }
+
+  gtk_widget_queue_draw(notation_edit->drawing_area);
 
   return(key_handled);
 }
@@ -909,6 +907,8 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
     }
   }
   
+  gtk_widget_queue_draw(notation_edit->drawing_area);
+  
   return(key_handled);
 }
 
@@ -1081,6 +1081,8 @@ ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 							       machine,
 							       x, y);
     }
+
+    gtk_widget_queue_draw(notation_edit->drawing_area);
   }
 
   return(FALSE);
@@ -1396,6 +1398,8 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
 							      n_press,
 							      x, y);
     }
+
+    gtk_widget_queue_draw(notation_edit->drawing_area);
   }
   
   return(FALSE);
@@ -1418,7 +1422,7 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
 
   application_context = ags_application_context_get_instance();
-
+  
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
@@ -1478,6 +1482,8 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
 
       notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }
+
+    gtk_widget_queue_draw(notation_edit->drawing_area);
   }
 
   return(FALSE);
