@@ -122,7 +122,7 @@ struct _AgsMachine
   guint export_flags;
   guint import_flags;
 
-  char *machine_name;
+  gchar *machine_name;
 
   gchar *version;
   gchar *build_id;
@@ -240,6 +240,10 @@ gint ags_machine_input_line_sort_func(gconstpointer a,
 				      gconstpointer b);
 
 AgsMachineInputLine* ags_machine_input_line_alloc();
+
+gchar* ags_machine_get_machine_name(AgsMachine *machine);
+void ags_machine_set_machine_name(AgsMachine *machine,
+				  gchar *machine_name);
 
 void ags_machine_reset_pattern_envelope(AgsMachine *machine);
 

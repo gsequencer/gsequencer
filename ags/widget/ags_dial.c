@@ -40,6 +40,7 @@ void ags_dial_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
+void ags_dial_dispose(GObject *gobject);
 
 void ags_dial_realize(GtkWidget *widget);
 
@@ -192,6 +193,8 @@ ags_dial_class_init(AgsDialClass *dial)
   gobject->set_property = ags_dial_set_property;
   gobject->get_property = ags_dial_get_property;
 
+  gobject->dispose = ags_dial_dispose;
+  
   /* properties */
   /**
    * AgsDial:radius:
@@ -609,6 +612,13 @@ ags_dial_get_property(GObject *gobject,
 }
 
 void
+ags_dial_dispose(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_dial_parent_class)->dispose(gobject);
+}
+
+void
 ags_dial_realize(GtkWidget *widget)
 {
   GdkFrameClock *frame_clock;
@@ -669,7 +679,7 @@ void
 ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
 				     AgsDial *dial)
 {
-  gtk_widget_queue_draw((GtkWidget *) dial);
+  gtk_widget_queue_draw(AGS_DIAL(dial));
 }
 
 void

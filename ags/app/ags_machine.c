@@ -1236,6 +1236,53 @@ ags_machine_input_line_sort_func(gconstpointer a,
 }
 
 /**
+ * ags_machine_get_machine_name:
+ * @machine: the #AgsMachine
+ * 
+ * Get machine name of @machine.
+ * 
+ * Returns: the machine name
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_machine_get_machine_name(AgsMachine *machine)
+{
+  gchar *machine_name;
+
+  g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
+
+  machine_name = NULL;
+
+  g_object_get(machine,
+	       "machine-name", &machine_name,
+	       NULL);
+
+  return(machine_name);
+}
+
+/**
+ * ags_machine_get_machine_name:
+ * @machine: the #AgsMachine
+ * @machine_name: the machine name
+ * 
+ * Get machine name of @machine.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_set_machine_name(AgsMachine *machine,
+			     gchar *machine_name)
+{
+
+  g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
+
+  g_object_set(machine,
+	       "machine-name", machine_name,
+	       NULL);
+}
+
+/**
  * ags_machine_input_line_alloc:
  * 
  * Allocate #AgsMachineInputLine-struct.

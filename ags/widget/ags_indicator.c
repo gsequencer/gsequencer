@@ -30,6 +30,7 @@ void ags_indicator_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
+void ags_indicator_dispose(GObject *gobject);
 
 void ags_indicator_realize(GtkWidget *widget);
 
@@ -138,6 +139,8 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
 
   gobject->set_property = ags_indicator_set_property;
   gobject->get_property = ags_indicator_get_property;
+
+  gobject->dispose = ags_indicator_dispose;
 
   g_object_class_override_property(gobject, PROP_ORIENTATION, "orientation");
   
@@ -384,6 +387,13 @@ ags_indicator_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_indicator_dispose(GObject *gobject)
+{  
+  /* call parent */
+  G_OBJECT_CLASS(ags_indicator_parent_class)->dispose(gobject);
 }
 
 void

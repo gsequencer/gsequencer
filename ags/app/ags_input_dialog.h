@@ -43,7 +43,8 @@ typedef struct _AgsInputDialog AgsInputDialog;
 typedef struct _AgsInputDialogClass AgsInputDialogClass;
 
 typedef enum{
-  AGS_INPUT_DIALOG_SHOW_STRING_INPUT  = 1,
+  AGS_INPUT_DIALOG_SHOW_STRING_INPUT        = 1,
+  AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT   = 1 <<  1,
 }AgsInputDialogFlags;
 
 struct _AgsInputDialog
@@ -51,8 +52,11 @@ struct _AgsInputDialog
   GtkDialog dialog;
 
   guint flags;
-  
+
   GtkEntry *string_input;
+
+  GtkLabel *spin_button_label;  
+  GtkSpinButton *spin_button_input;
 };
 
 struct _AgsInputDialogClass

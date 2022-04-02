@@ -25,6 +25,7 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_connection_editor.h>
 #include <ags/app/ags_midi_dialog.h>
+#include <ags/app/ags_input_dialog.h>
 
 #include <ags/app/export/ags_wave_export_dialog.h>
 
@@ -36,9 +37,9 @@
 void ags_machine_recall_set_loop(AgsMachine *machine,
 				 AgsRecall *recall);
 
-int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-int ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-int ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+void ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+void ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+void ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 //FIXME:JK: remove me
@@ -325,9 +326,6 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
       ags_machine_selector_remove_machine_radio_button(window->composite_editor->machine_selector,
 						       list->data);
       
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
-      
       break;
     }
     
@@ -344,9 +342,6 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
 
   ags_window_remove_machine(window,
 			    machine);
-  
-  g_object_run_dispose(machine);
-  g_object_unref(machine);
 
   /* get task thread */
   remove_audio = ags_remove_audio_new(audio);
@@ -356,24 +351,134 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    gchar *text;
+
+    /* get name */
+    text = gtk_editable_get_chars(GTK_EDITABLE(AGS_INPUT_DIALOG(widget)->string_input),
+				  0,
+				  -1);
+
+    ags_machine_set_machine_name(machine,
+				 text);
+  }
+  
+  gtk_window_destroy(widget);
+}
+
+void
 ags_machine_rename_callback(GAction *action, GVariant *parameter,
 			    AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  GtkDialog *dialog;
+
+  dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename machine"),
+					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
+										    AGS_TYPE_WINDOW));
+  ags_input_dialog_set_flags(dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+
+  gtk_widget_show((GtkWidget *) dialog);
+
+  g_signal_connect((GObject *) dialog, "response",
+		   G_CALLBACK(ags_machine_rename_response_callback), (gpointer) machine);
+}
+
+void
+ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    gchar *text;
+
+    /* get name */
+    text = gtk_editable_get_chars(GTK_EDITABLE(AGS_INPUT_DIALOG(widget)->string_input),
+				  0,
+				  -1);
+
+    g_object_set(machine->audio,
+		 "name", text,
+		 NULL);
+  }
+  
+  gtk_window_destroy(widget);
 }
 
 void
 ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
 				  AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  GtkDialog *dialog;
+
+  dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename audio"),
+					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
+										    AGS_TYPE_WINDOW));
+  ags_input_dialog_set_flags(dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+
+  gtk_widget_show((GtkWidget *) dialog);
+
+  g_signal_connect((GObject *) dialog, "response",
+		   G_CALLBACK(ags_machine_rename_audio_response_callback), (gpointer) machine);
+}
+
+void
+ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    AgsAudio *audio;
+
+    AgsApplicationContext *application_context;
+
+    GList *start_list;
+  
+    gint new_position;
+    
+    application_context = ags_application_context_get_instance();
+    
+    audio = machine->audio;
+    
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+    
+    new_position = gtk_spin_button_get_value_as_int(AGS_INPUT_DIALOG(widget)->spin_button_input);
+    
+    start_list = g_list_remove(start_list,
+			       audio);
+    start_list = g_list_insert(start_list,
+			       audio,
+			       new_position);
+
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				 start_list);
+
+    g_list_foreach(start_list,
+		   (GFunc) g_object_unref,
+		   NULL);
+  }
+  
+  gtk_window_destroy(widget);
 }
 
 void
 ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
 				      AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  GtkDialog *dialog;
+
+  dialog = (GtkDialog *) ags_input_dialog_new(i18n("reposition audio"),
+					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
+										    AGS_TYPE_WINDOW));
+  ags_input_dialog_set_flags(dialog,
+			     AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT);
+
+  gtk_label_set_text(AGS_INPUT_DIALOG(dialog)->spin_button_label,
+		     i18n("position"));
+  
+  gtk_widget_show((GtkWidget *) dialog);
+
+  g_signal_connect((GObject *) dialog, "response",
+		   G_CALLBACK(ags_machine_rename_audio_response_callback), (gpointer) machine);
 }
 
 void

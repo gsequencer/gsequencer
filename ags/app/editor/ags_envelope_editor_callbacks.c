@@ -49,7 +49,9 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
     dialog = (GtkDialog *) ags_input_dialog_new(i18n("preset name"),
 						(GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(envelope_editor),
 										      AGS_TYPE_ENVELOPE_DIALOG));
-
+  ags_input_dialog_set_flags(dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+  
   gtk_widget_show((GtkWidget *) dialog);
 
   g_signal_connect((GObject *) dialog, "response",
@@ -101,8 +103,6 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
   envelope_editor->rename = NULL;
 
   gtk_window_destroy(widget);
-
-  return;
 }
 
 void

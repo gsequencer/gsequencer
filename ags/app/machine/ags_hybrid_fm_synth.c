@@ -1761,7 +1761,7 @@ ags_hybrid_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_fm_synth->synth_2_lfo_tuning, "value-changed",
 			 G_CALLBACK(ags_hybrid_fm_synth_synth_2_lfo_tuning_callback), hybrid_fm_synth);
   
-  g_signal_connect_after(hybrid_fm_synth->sequencer_enabled, "clicked",
+  g_signal_connect_after(hybrid_fm_synth->sequencer_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_fm_synth_sequencer_enabled_callback), hybrid_fm_synth);
   
   g_signal_connect_after(hybrid_fm_synth->sequencer_sign, "changed",
@@ -1773,7 +1773,7 @@ ags_hybrid_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_fm_synth->noise_gain, "value-changed",
 			 G_CALLBACK(ags_hybrid_fm_synth_noise_gain_callback), hybrid_fm_synth);
     
-//  g_signal_connect_after(hybrid_fm_synth->chorus_enabled, "clicked",
+//  g_signal_connect_after(hybrid_fm_synth->chorus_enabled, "toggled",
 //			 G_CALLBACK(ags_hybrid_fm_synth_chorus_enabled_callback), hybrid_fm_synth);
   
   g_signal_connect_after(hybrid_fm_synth->chorus_input_volume, "value-changed",
@@ -1797,7 +1797,7 @@ ags_hybrid_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_fm_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_hybrid_fm_synth_chorus_delay_callback), hybrid_fm_synth);
   
-  g_signal_connect_after(hybrid_fm_synth->low_pass_enabled, "clicked",
+  g_signal_connect_after(hybrid_fm_synth->low_pass_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_fm_synth_low_pass_enabled_callback), hybrid_fm_synth);
   
   g_signal_connect_after(hybrid_fm_synth->low_pass_q_lin, "value-changed",
@@ -1806,7 +1806,7 @@ ags_hybrid_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_fm_synth->low_pass_filter_gain, "value-changed",
 			 G_CALLBACK(ags_hybrid_fm_synth_low_pass_filter_gain_callback), hybrid_fm_synth);
   
-  g_signal_connect_after(hybrid_fm_synth->high_pass_enabled, "clicked",
+  g_signal_connect_after(hybrid_fm_synth->high_pass_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_fm_synth_high_pass_enabled_callback), hybrid_fm_synth);
   
   g_signal_connect_after(hybrid_fm_synth->high_pass_q_lin, "value-changed",

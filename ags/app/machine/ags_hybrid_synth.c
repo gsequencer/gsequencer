@@ -1743,7 +1743,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->synth_0_volume, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_synth_0_volume_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->synth_0_sync_enabled, "clicked",
+  g_signal_connect_after(hybrid_synth->synth_0_sync_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_synth_synth_0_sync_enabled_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->synth_0_sync_relative_attack_factor, "value-changed",
@@ -1788,7 +1788,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->synth_1_volume, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_synth_1_volume_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->synth_1_sync_enabled, "clicked",
+  g_signal_connect_after(hybrid_synth->synth_1_sync_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_enabled_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->synth_1_sync_relative_attack_factor, "value-changed",
@@ -1818,7 +1818,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->synth_1_sync_lfo_frequency, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_synth_1_sync_lfo_frequency_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->sequencer_enabled, "clicked",
+  g_signal_connect_after(hybrid_synth->sequencer_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_synth_sequencer_enabled_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->sequencer_sign, "changed",
@@ -1830,7 +1830,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->noise_gain, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_noise_gain_callback), hybrid_synth);
     
-//  g_signal_connect_after(hybrid_synth->chorus_enabled, "clicked",
+//  g_signal_connect_after(hybrid_synth->chorus_enabled, "toggled",
 //			 G_CALLBACK(ags_hybrid_synth_chorus_enabled_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->chorus_input_volume, "value-changed",
@@ -1854,7 +1854,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_chorus_delay_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->low_pass_enabled, "clicked",
+  g_signal_connect_after(hybrid_synth->low_pass_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_synth_low_pass_enabled_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->low_pass_q_lin, "value-changed",
@@ -1863,7 +1863,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(hybrid_synth->low_pass_filter_gain, "value-changed",
 			 G_CALLBACK(ags_hybrid_synth_low_pass_filter_gain_callback), hybrid_synth);
   
-  g_signal_connect_after(hybrid_synth->high_pass_enabled, "clicked",
+  g_signal_connect_after(hybrid_synth->high_pass_enabled, "toggled",
 			 G_CALLBACK(ags_hybrid_synth_high_pass_enabled_callback), hybrid_synth);
   
   g_signal_connect_after(hybrid_synth->high_pass_q_lin, "value-changed",

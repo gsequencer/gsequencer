@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_input_dialog.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_input_dialog_class_init(AgsInputDialogClass *input_dialog);
@@ -78,6 +80,7 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
   input_dialog->flags = 0;
 
   input_dialog->string_input = NULL;
+  input_dialog->spin_button_input = NULL;
 
   gtk_dialog_add_buttons(input_dialog,
 			 i18n("_OK"),
@@ -134,6 +137,26 @@ ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
 		   input_dialog->string_input);
 
     gtk_widget_show(input_dialog->string_input);
+  }else if((AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT & (flags)) != 0 &&
+	   input_dialog->spin_button_input == NULL){
+    GtkBox *hbox;
+
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+		       AGS_UI_PROVIDER_DEFAULT_PADDING);
+    gtk_box_append(gtk_dialog_get_content_area(input_dialog),
+		   hbox);
+
+    input_dialog->spin_button_label = gtk_label_new(NULL);
+    gtk_box_append(hbox,
+		   input_dialog->spin_button_label);
+    
+    input_dialog->spin_button_input = gtk_spin_button_new(NULL,
+							  1.0,
+							  0);
+    gtk_box_append(hbox,
+		   input_dialog->spin_button_input);
+
+    gtk_widget_show(hbox);
   }
   
   input_dialog->flags |= flags;
