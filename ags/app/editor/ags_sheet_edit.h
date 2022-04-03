@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <cairo.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>

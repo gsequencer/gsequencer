@@ -36,6 +36,9 @@ extern "C" {
   typedef struct IProgramListData AgsVstIProgramListData;
   typedef struct IUnitData AgsVstIUnitData;
 
+  typedef void (*AgsVstIUnitHandlerNotifyUnitSelection)(AgsVstIUnitHandler *iunit_handler, AgsVstUnitID unit_id);
+  typedef void (*AgsVstIUnitHandlerNotifyProgramListChange)(AgsVstIUnitHandler *iunit_handler, AgsVstProgramListID program_list_id, gint32 program_index);
+
   static const AgsVstUnitID ags_vst_kroot_unit_id = 0;
   static const AgsVstUnitID ags_vst_kno_parent_unit_id = -1;
 

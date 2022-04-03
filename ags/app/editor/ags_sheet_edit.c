@@ -28,6 +28,8 @@
 
 #include <gdk/gdkkeysyms.h>
 
+#include <cairo-ps.h>
+
 #include <math.h>
 
 static GType ags_accessible_sheet_edit_get_type(void);

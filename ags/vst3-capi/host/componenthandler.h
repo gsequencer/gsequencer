@@ -22,6 +22,7 @@
 #include <pluginterfaces/base/conststringtable.h>
 #include <pluginterfaces/base/funknown.h>
 #include <pluginterfaces/vst/ivsteditcontroller.h>
+#include <pluginterfaces/vst/ivstunits.h>
 #include <public.sdk/source/vst/hosting/pluginterfacesupport.h>
 
 #include <ags/libags-vst.h>
@@ -36,6 +37,8 @@ namespace Ags
     typedef AgsVstTResult (*ComponentHandlerPerformEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, gpointer data);
     typedef AgsVstTResult (*ComponentHandlerEndEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, gpointer data);
     typedef AgsVstTResult (*ComponentHandlerRestartComponent)(AgsVstIComponentHandler *icomponent_handler, gint32 flags, gpointer data);
+    typedef AgsVstTResult (*ComponentHandlerNotifyUnitSelection)(AgsVstIUnitHandler *iunit_handler, AgsVstUnitID unit_id);
+    typedef AgsVstTResult (*ComponentHandlerNotifyProgramListChange)(AgsVstIUnitHandler *iunit_handler, AgsVstProgramListID list_id, gint32 program_index);
 
     struct EventHandler
     {
@@ -46,7 +49,8 @@ namespace Ags
       int handler_id;
     };
       
-    class ComponentHandler : public Steinberg::Vst::IComponentHandler
+    class ComponentHandler : public Steinberg::Vst::IComponentHandler,
+      public Steinberg::Vst::IUnitHandler
     {
     public:
       ComponentHandler();
@@ -61,6 +65,11 @@ namespace Ags
 
       Steinberg::tresult PLUGIN_API restartComponent(Steinberg::int32 flags) override;
 
+      Steinberg::tresult PLUGIN_API notifyUnitSelection(Steinberg::Vst::UnitID unitId) override;
+
+      Steinberg::tresult PLUGIN_API notifyProgramListChange(Steinberg::Vst::ProgramListID listId,
+							    Steinberg::int32 programIndex) override;
+      
       DECLARE_FUNKNOWN_METHODS
 
       Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport () const { return mPlugInterfaceSupport; }

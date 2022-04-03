@@ -28,7 +28,7 @@ using namespace Steinberg::Vst;
 namespace Ags {
 
   namespace VstCAPI {
-
+    
     ComponentHandler::ComponentHandler()
     {
       this->handler = nullptr;
@@ -137,6 +137,57 @@ namespace Ags {
       return(0);
     }
 
+    Steinberg::tresult PLUGIN_API ComponentHandler::notifyUnitSelection(Steinberg::Vst::UnitID unitId)
+    {
+      void *component_handler;
+
+      int i;
+      
+      component_handler = (void *) this;
+      
+      this->componentHandlerMutex.lock();
+
+      for(i = 0; i < this->handlerCount; i++){
+	if(!strncmp(this->handler[i].event_name, "notifyUnitSelection", 21)){
+	  void *data;
+
+	  data = (void *) this->handler[i].data;
+	  
+	  ((ComponentHandlerNotifyUnitSelection) (this->handler[i].callback))((AgsVstIUnitHandler *) component_handler, unitId);
+	}
+      }
+
+      this->componentHandlerMutex.unlock();
+      
+      return(0);
+    }
+    
+    Steinberg::tresult PLUGIN_API ComponentHandler::notifyProgramListChange(Steinberg::Vst::ProgramListID listId,
+									    Steinberg::int32 programIndex)
+    {
+      void *component_handler;
+
+      int i;
+      
+      component_handler = (void *) this;
+      
+      this->componentHandlerMutex.lock();
+
+      for(i = 0; i < this->handlerCount; i++){
+	if(!strncmp(this->handler[i].event_name, "NotifyProgramListChange", 25)){
+	  void *data;
+
+	  data = (void *) this->handler[i].data;
+	  
+	  ((ComponentHandlerNotifyProgramListChange) (this->handler[i].callback))((AgsVstIUnitHandler *) component_handler, listId, programIndex);
+	}
+      }
+
+      this->componentHandlerMutex.unlock();
+      
+      return(0);
+    }
+
     int ComponentHandler::connectHandler(char *event_name, void *callback, void *data)
     {
       EventHandler *handler;
@@ -152,6 +203,8 @@ namespace Ags {
       }else if(!strncmp(event_name, "performEdit", 12)){
       }else if(!strncmp(event_name, "endEdit", 8)){
       }else if(!strncmp(event_name, "restartComponent", 18)){
+      }else if(!strncmp(event_name, "notifyUnitSelection", 21)){
+      }else if(!strncmp(event_name, "notifyProgramListChange", 25)){
       }else{
 	this->componentHandlerMutex.unlock();
 	
@@ -222,11 +275,12 @@ namespace Ags {
     Steinberg::tresult PLUGIN_API ComponentHandler::queryInterface (const char* _iid, void** obj)
     {
       QUERY_INTERFACE (_iid, obj, FUnknown::iid, IComponentHandler)
-	QUERY_INTERFACE (_iid, obj, IComponentHandler::iid, IComponentHandler)
-
-	if(mPlugInterfaceSupport && mPlugInterfaceSupport->queryInterface (iid, obj) == Steinberg::kResultTrue){
-	  return Steinberg::kResultOk;
-	}
+      QUERY_INTERFACE (_iid, obj, IComponentHandler::iid, IComponentHandler)
+      QUERY_INTERFACE (_iid, obj, IUnitHandler::iid, IUnitHandler)
+	
+      if(mPlugInterfaceSupport && mPlugInterfaceSupport->queryInterface(_iid, obj) == Steinberg::kResultTrue){
+	return Steinberg::kResultOk;
+      }
 
       *obj = nullptr;
 
