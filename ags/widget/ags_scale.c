@@ -43,6 +43,7 @@ void ags_scale_get_property(GObject *gobject,
 void ags_scale_finalize(GObject *gobject);
 
 void ags_scale_realize(GtkWidget *widget);
+void ags_scale_unrealize(GtkWidget *widget);
 
 void ags_scale_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					   AgsScale *scale);
@@ -252,6 +253,7 @@ ags_scale_class_init(AgsScaleClass *scale)
   widget = (GtkWidgetClass *) scale;
 
   widget->realize = ags_scale_realize;
+  widget->unrealize = ags_scale_unrealize;
   
   widget->snapshot = ags_scale_snapshot;
 
@@ -474,7 +476,6 @@ ags_scale_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_scale_parent_class)->finalize(gobject);
 }
 
-
 void
 ags_scale_realize(GtkWidget *widget)
 {
@@ -489,6 +490,25 @@ ags_scale_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_scale_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_scale_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_scale_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_scale_parent_class)->unrealize(widget);
 }
 
 void

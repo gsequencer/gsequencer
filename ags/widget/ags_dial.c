@@ -43,6 +43,7 @@ void ags_dial_get_property(GObject *gobject,
 void ags_dial_dispose(GObject *gobject);
 
 void ags_dial_realize(GtkWidget *widget);
+void ags_dial_unrealize(GtkWidget *widget);
 
 void ags_dial_measure(GtkWidget *widget,
 		      GtkOrientation orientation,
@@ -361,6 +362,7 @@ ags_dial_class_init(AgsDialClass *dial)
   widget = (GtkWidgetClass *) dial;
 
   widget->realize = ags_dial_realize;
+  widget->unrealize = ags_dial_unrealize;
 
   widget->measure = ags_dial_measure;
   widget->size_allocate = ags_dial_size_allocate;
@@ -632,6 +634,25 @@ ags_dial_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_dial_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_dial_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_dial_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_dial_parent_class)->unrealize(widget);
 }
 
 void

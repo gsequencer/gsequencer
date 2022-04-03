@@ -41,6 +41,7 @@ void ags_ruler_get_property(GObject *gobject,
 void ags_ruler_show(GtkWidget *widget);
 
 void ags_ruler_realize(GtkWidget *widget);
+void ags_ruler_unrealize(GtkWidget *widget);
 
 void ags_ruler_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					   AgsRuler *ruler);
@@ -145,6 +146,7 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   widget = (GtkWidgetClass *) ruler;
 
   widget->realize = ags_ruler_realize;
+  widget->unrealize = ags_ruler_unrealize;
     
   widget->snapshot = ags_ruler_snapshot;
 
@@ -496,6 +498,25 @@ ags_ruler_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_ruler_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_ruler_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_ruler_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_ruler_parent_class)->unrealize(widget);
 }
 
 void

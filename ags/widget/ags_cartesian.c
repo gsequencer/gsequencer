@@ -36,6 +36,7 @@ void ags_cartesian_finalize(GObject *gobject);
 void ags_cartesian_show(GtkWidget *widget);
 
 void ags_cartesian_realize(GtkWidget *widget);
+void ags_cartesian_unrealize(GtkWidget *widget);
 
 void ags_cartesian_measure(GtkWidget *widget,
 			   GtkOrientation orientation,
@@ -1066,6 +1067,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   widget = (GtkWidgetClass *) cartesian;
 
   widget->realize = ags_cartesian_realize;
+  widget->unrealize = ags_cartesian_unrealize;
 
   widget->measure = ags_cartesian_measure;
   widget->size_allocate = ags_cartesian_size_allocate;
@@ -1813,6 +1815,25 @@ ags_cartesian_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_cartesian_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_cartesian_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+  
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_cartesian_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->unrealize(widget);
 }
 
 void

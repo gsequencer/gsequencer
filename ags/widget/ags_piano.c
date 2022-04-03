@@ -41,6 +41,7 @@ void ags_piano_get_property(GObject *gobject,
 void ags_piano_finalize(GObject *gobject);
 
 void ags_piano_realize(GtkWidget *widget);
+void ags_piano_unrealize(GtkWidget *widget);
 
 void ags_piano_measure(GtkWidget *widget,
 		       GtkOrientation orientation,
@@ -292,6 +293,7 @@ ags_piano_class_init(AgsPianoClass *piano)
   widget = (GtkWidgetClass *) piano;
 
   widget->realize = ags_piano_realize;
+  widget->unrealize = ags_piano_unrealize;
   
   widget->measure = ags_piano_measure;
   widget->size_allocate = ags_piano_size_allocate;
@@ -574,6 +576,24 @@ ags_piano_realize(GtkWidget *widget)
   gdk_frame_clock_begin_updating(frame_clock);
 }
 
+void
+ags_piano_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_piano_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_piano_parent_class)->unrealize(widget);
+}
 
 void
 ags_piano_measure(GtkWidget *widget,

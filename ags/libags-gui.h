@@ -24,7 +24,6 @@
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
-#include <ags/widget/ags_hscale_box.h>
 #include <ags/widget/ags_indicator.h>
 #include <ags/widget/ags_led.h>
 #include <ags/widget/ags_led_array.h>

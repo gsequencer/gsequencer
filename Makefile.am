@@ -2543,8 +2543,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_scrolled_piano.h \
 	ags/widget/ags_scale.h \
 	ags/widget/ags_scale_box.h \
-	ags/widget/ags_vscale_box.h \
-	ags/widget/ags_hscale_box.h \
 	ags/widget/ags_scrolled_level_box.h \
 	ags/widget/ags_scrolled_scale_box.h \
 	ags/widget/ags_ruler.h \
@@ -2568,8 +2566,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_scrolled_piano.c \
 	ags/widget/ags_scale.c \
 	ags/widget/ags_scale_box.c \
-	ags/widget/ags_vscale_box.c \
-	ags/widget/ags_hscale_box.c \
 	ags/widget/ags_scrolled_scale_box.c \
 	ags/widget/ags_scrolled_level_box.c \
 	ags/widget/ags_ruler.c \

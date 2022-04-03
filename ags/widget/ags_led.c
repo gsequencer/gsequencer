@@ -34,6 +34,7 @@ void ags_led_get_property(GObject *gobject,
 			  GParamSpec *param_spec);
 
 void ags_led_realize(GtkWidget *widget);
+void ags_led_unrealize(GtkWidget *widget);
 
 void ags_led_measure(GtkWidget *widget,
 		     GtkOrientation orientation,
@@ -162,6 +163,7 @@ ags_led_class_init(AgsLedClass *led)
   widget = (GtkWidgetClass *) led;
 
   widget->realize = ags_led_realize;
+  widget->unrealize = ags_led_unrealize;
 
   widget->measure = ags_led_measure;
   widget->size_allocate = ags_led_size_allocate;
@@ -255,6 +257,24 @@ ags_led_realize(GtkWidget *widget)
   gdk_frame_clock_begin_updating(frame_clock);
 }
 
+void
+ags_led_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_led_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_led_parent_class)->unrealize(widget);
+}
 
 void
 ags_led_measure(GtkWidget *widget,

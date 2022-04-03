@@ -33,6 +33,7 @@ void ags_indicator_get_property(GObject *gobject,
 void ags_indicator_dispose(GObject *gobject);
 
 void ags_indicator_realize(GtkWidget *widget);
+void ags_indicator_unrealize(GtkWidget *widget);
 
 void ags_indicator_measure(GtkWidget *widget,
 			   GtkOrientation orientation,
@@ -237,6 +238,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   widget = (GtkWidgetClass *) indicator;
 
   widget->realize = ags_indicator_realize;
+  widget->unrealize = ags_indicator_unrealize;
   
   widget->measure = ags_indicator_measure;
   widget->size_allocate = ags_indicator_size_allocate;
@@ -410,6 +412,25 @@ ags_indicator_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_indicator_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_indicator_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+  
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_indicator_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->unrealize(widget);
 }
 
 void
