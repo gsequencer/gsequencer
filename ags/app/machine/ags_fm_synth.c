@@ -166,6 +166,13 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_SYNTH));
+
+  AGS_MACHINE(fm_synth)->input_pad_orientation = GTK_ORIENTATION_VERTICAL;
+  AGS_MACHINE(fm_synth)->input_pad_type = AGS_TYPE_FM_SYNTH_INPUT_PAD;
+  AGS_MACHINE(fm_synth)->input_line_type = AGS_TYPE_FM_SYNTH_INPUT_LINE;
+  AGS_MACHINE(fm_synth)->output_pad_type = G_TYPE_NONE;
+  AGS_MACHINE(fm_synth)->output_line_type = G_TYPE_NONE;
+
   g_object_set(audio,
 	       "min-audio-channels", 1,
 	       "max-audio-channels", 1,
@@ -173,11 +180,6 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
 	       "max-output-pads", 128,
 	       "min-input-pads", 1,
 	       NULL);
-
-  AGS_MACHINE(fm_synth)->input_pad_type = AGS_TYPE_FM_SYNTH_INPUT_PAD;
-  AGS_MACHINE(fm_synth)->input_line_type = AGS_TYPE_FM_SYNTH_INPUT_LINE;
-  AGS_MACHINE(fm_synth)->output_pad_type = G_TYPE_NONE;
-  AGS_MACHINE(fm_synth)->output_line_type = G_TYPE_NONE;
 
   //  AGS_MACHINE(fm_synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(fm_synth)->mapping_flags |= AGS_MACHINE_MONO;
@@ -193,6 +195,17 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_widget_set_valign(hbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand(hbox,
+			 FALSE);
+  gtk_widget_set_hexpand(hbox,
+			 FALSE);
+  
   gtk_frame_set_child(AGS_MACHINE(fm_synth)->frame,
 		      (GtkWidget *) hbox);
 
@@ -276,7 +289,7 @@ ags_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) fm_synth->lower, "value-changed",
 		   G_CALLBACK(ags_fm_synth_lower_callback), fm_synth);
 
-  g_signal_connect((GObject *) fm_synth->auto_update, "clicked",
+  g_signal_connect((GObject *) fm_synth->auto_update, "toggled",
 		   G_CALLBACK(ags_fm_synth_auto_update_callback), fm_synth);
 
   g_signal_connect((GObject *) fm_synth->update, "clicked",
@@ -304,7 +317,7 @@ ags_fm_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) fm_synth->auto_update,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_fm_synth_auto_update_callback),
 		      fm_synth,
 		      NULL);

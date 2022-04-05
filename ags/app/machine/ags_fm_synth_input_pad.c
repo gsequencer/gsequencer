@@ -114,6 +114,9 @@ ags_fm_synth_input_pad_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_fm_synth_input_pad_init(AgsFMSynthInputPad *fm_synth_input_pad)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(fm_synth_input_pad),
+				 GTK_ORIENTATION_VERTICAL);
+
   fm_synth_input_pad->name = NULL;
   fm_synth_input_pad->xml_type = "ags-fm-synth-input-pad";
 }

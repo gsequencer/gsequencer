@@ -114,6 +114,9 @@ ags_synth_input_pad_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(synth_input_pad),
+				 GTK_ORIENTATION_VERTICAL);
+  
   synth_input_pad->name = NULL;
   synth_input_pad->xml_type = "ags-synth-input-pad";
 }

@@ -733,12 +733,6 @@ ags_line_member_set_property(GObject *gobject,
       }else if(GTK_IS_CHECK_BUTTON(new_child)){
 	gtk_check_button_set_active((GtkCheckButton *) new_child,
 				    active);
-      }else{
-	if(!(GTK_IS_LABEL(new_child) ||
-	     AGS_IS_INDICATOR(new_child) ||
-	     AGS_IS_LED(new_child))){
-	  g_warning("ags_line_member_set_property() - unknown child type %s", g_type_name(widget_type));
-	}
       }
 
       /* add */

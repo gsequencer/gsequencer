@@ -132,14 +132,15 @@ ags_fm_synth_input_line_init(AgsFMSynthInputLine *fm_synth_input_line)
 
   /* fm oscillator */
   line_member = ags_line_member_new();
+  g_object_set(line_member,
+	       "widget-type", AGS_TYPE_FM_OSCILLATOR,
+	       NULL);
   ags_line_add_line_member(AGS_LINE(fm_synth_input_line),
 			   line_member,
 			   0, 0,
 			   1, 1);
   
-  fm_synth_input_line->fm_oscillator = ags_fm_oscillator_new();
-  ags_line_member_set_widget(line_member,
-			     (GtkWidget *) fm_synth_input_line->fm_oscillator);
+  fm_synth_input_line->fm_oscillator = ags_line_member_get_widget(line_member);
 
   g_signal_connect((GObject *) fm_synth_input_line, "samplerate-changed",
 		   G_CALLBACK(ags_fm_synth_input_line_samplerate_changed_callback), NULL);

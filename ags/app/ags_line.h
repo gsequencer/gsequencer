@@ -66,7 +66,7 @@ struct _AgsLine
 
   guint flags;
   guint connectable_flags;
-
+  
   gchar *version;
   gchar *build_id;
 

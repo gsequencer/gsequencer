@@ -617,8 +617,13 @@ ags_machine_init(AgsMachine *machine)
   machine->mapping_flags = 0;
   machine->connection_flags = 0;
   
+  machine->output_pad_orientation = GTK_ORIENTATION_HORIZONTAL;
   machine->output_pad_type = G_TYPE_NONE;
+  machine->output_line_type = G_TYPE_NONE;
+
+  machine->input_pad_orientation = GTK_ORIENTATION_HORIZONTAL;
   machine->input_pad_type = G_TYPE_NONE;
+  machine->input_line_type = G_TYPE_NONE;
 
   machine->bank_0 = 0;
   machine->bank_1 = 0;
@@ -2043,10 +2048,17 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 			     "channel", channel,
 			     NULL);
 
-	  ags_machine_add_input_pad(machine,
-				    (GtkWidget *) pad,
-				    i, 0,
-				    1, 1);
+	  if(machine->input_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
+	    ags_machine_add_input_pad(machine,
+				      (GtkWidget *) pad,
+				      i, 0,
+				      1, 1);
+	  }else{
+	    ags_machine_add_input_pad(machine,
+				      (GtkWidget *) pad,
+				      0, i,
+				      1, 1);
+	  }
 
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
 			       audio_channels, 0);
@@ -2094,11 +2106,18 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  pad = g_object_new(machine->output_pad_type,
 			     "channel", channel,
 			     NULL);
-	  
-	  ags_machine_add_output_pad(machine,
-				     (GtkWidget *) pad,
-				     i, 0,
-				     1, 1);
+
+	  if(machine->output_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
+	    ags_machine_add_output_pad(machine,
+				       (GtkWidget *) pad,
+				       i, 0,
+				       1, 1);
+	  }else{
+	    ags_machine_add_output_pad(machine,
+				       (GtkWidget *) pad,
+				       0, i,
+				       1, 1);
+	  }
 	  
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
 			       audio_channels, 0);
@@ -2401,10 +2420,17 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			     "channel", input,
 			     NULL);
 
-	  ags_machine_add_input_pad(machine,
-				    pad,
-				    i, 0,
-				    1, 1);
+	  if(machine->input_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
+	    ags_machine_add_input_pad(machine,
+				      (GtkWidget *) pad,
+				      i, 0,
+				      1, 1);
+	  }else{
+	    ags_machine_add_input_pad(machine,
+				      (GtkWidget *) pad,
+				      0, i,
+				      1, 1);
+	  }
 	  
 	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
@@ -2452,10 +2478,17 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			     "channel", output,
 			     NULL);
 
-	  ags_machine_add_output_pad(machine,
-				     pad,
-				     i, 0,
-				     1, 1);
+	  if(machine->output_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
+	    ags_machine_add_output_pad(machine,
+				       (GtkWidget *) pad,
+				       i, 0,
+				       1, 1);
+	  }else{
+	    ags_machine_add_output_pad(machine,
+				       (GtkWidget *) pad,
+				       0, i,
+				       1, 1);
+	  }
 
 	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,

@@ -150,15 +150,17 @@ struct _AgsMachine
   
   GtkToggleButton *play;
 
+  GtkOrientation output_pad_orientation;
   GType output_pad_type;
   GType output_line_type;
 
   GList *output_pad;
-
+  
   GtkGrid *output_pad_grid;
 
   GtkWidget *selected_output_pad;
   
+  GtkOrientation input_pad_orientation;
   GType input_pad_type;
   GType input_line_type;
 
