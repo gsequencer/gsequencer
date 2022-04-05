@@ -208,6 +208,17 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_widget_set_vexpand(vbox,
+			 FALSE);
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);
+  
   gtk_frame_set_child(AGS_MACHINE(spectrometer)->frame,
 		      (GtkWidget *) vbox);
 

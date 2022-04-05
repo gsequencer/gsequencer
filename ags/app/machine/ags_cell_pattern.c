@@ -263,7 +263,7 @@ ags_cell_pattern_connect(AgsConnectable *connectable)
 
   cell_pattern->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  g_signal_connect(G_OBJECT(gtk_range_get_adjustment(GTK_RANGE(cell_pattern->vscrollbar))), "value_changed",
+  g_signal_connect(G_OBJECT(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)), "value_changed",
 		   G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback), (gpointer) cell_pattern);
 }
 
@@ -281,7 +281,7 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
 
   cell_pattern->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  g_object_disconnect(G_OBJECT(gtk_range_get_adjustment(GTK_RANGE(cell_pattern->vscrollbar))),
+  g_object_disconnect(G_OBJECT(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)),
 		      "any_signal::value_changed",
 		      G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback),
 		      (gpointer) cell_pattern,
@@ -389,7 +389,7 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
     gutter = input_pads;
   }
 
-  current_gutter = (guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar));
+  current_gutter = (guint) gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar));
   
   /* clear bg */  
   cairo_set_source_rgba(cr,
@@ -502,7 +502,7 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern, cairo_t *cr)
     gutter = input_pads;
   }
 
-  current_gutter = (guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar));
+  current_gutter = (guint) gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar));
 
   nth_channel = ags_channel_nth(start_channel,
 				input_pads - current_gutter - 1);
@@ -549,9 +549,9 @@ ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern, cairo_t *cr)
 {
   guint i, j;
 
-  if(cell_pattern->cursor_y >= gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) &&
-     cell_pattern->cursor_y < gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + cell_pattern->n_rows){
-    i = cell_pattern->cursor_y - gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar));
+  if(cell_pattern->cursor_y >= gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)) &&
+     cell_pattern->cursor_y < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)) + cell_pattern->n_rows){
+    i = cell_pattern->cursor_y - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar));
     j = cell_pattern->cursor_x;
     
     if((AGS_CELL_PATTERN_CURSOR_ON & (cell_pattern->flags)) != 0){

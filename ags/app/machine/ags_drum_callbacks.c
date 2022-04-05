@@ -97,7 +97,7 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 
   gboolean loop;
 
-  loop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+  loop = gtk_check_button_get_active(GTK_CHECK_BUTTON(button));
 
   /* play - ags-fx-pattern */
   g_object_get(AGS_MACHINE(drum)->audio,

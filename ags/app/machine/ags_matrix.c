@@ -253,6 +253,17 @@ ags_matrix_init(AgsMatrix *matrix)
   
   /* create widgets */
   matrix->grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_vexpand(matrix->grid,
+			 FALSE);
+  gtk_widget_set_hexpand(matrix->grid,
+			 FALSE);
+
+  gtk_widget_set_halign(matrix->grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(matrix->grid,
+			GTK_ALIGN_START);
+
   gtk_frame_set_child(AGS_MACHINE(matrix)->frame,
 		      (GtkWidget *) matrix->grid);
 
@@ -413,7 +424,7 @@ ags_matrix_connect(AgsConnectable *connectable)
   matrix = AGS_MATRIX(connectable);
 
   for(i  = 0; i < 9; i++){
-    g_signal_connect(G_OBJECT (matrix->index[i]), "clicked",
+    g_signal_connect(G_OBJECT (matrix->index[i]), "toggled",
 		     G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
 
@@ -422,7 +433,7 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
 
-  g_signal_connect((GObject *) matrix->loop_button, "clicked",
+  g_signal_connect((GObject *) matrix->loop_button, "toggled",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
   g_signal_connect_after(G_OBJECT(matrix), "stop",
@@ -448,7 +459,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 
   for(i  = 0; i < 9; i++){
     g_object_disconnect(G_OBJECT (matrix->index[i]),
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK (ags_matrix_index_callback),
 			(gpointer) matrix,
 			NULL);
@@ -463,7 +474,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) matrix->loop_button,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_matrix_loop_button_callback),
 		      (gpointer) matrix,
 		      NULL);
@@ -505,7 +516,7 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
-    gtk_adjustment_set_upper(gtk_range_get_adjustment(GTK_RANGE(matrix->cell_pattern->vscrollbar)),
+    gtk_adjustment_set_upper(gtk_scrollbar_get_adjustment(matrix->cell_pattern->vscrollbar),
 			     (double) pads);
 
     
