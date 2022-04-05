@@ -68,6 +68,8 @@ enum{
 static gpointer ags_navigation_parent_class = NULL;
 static guint navigation_signals[LAST_SIGNAL];
 
+GHashTable *ags_navigation_duration_queue_draw = NULL;
+
 GType
 ags_navigation_get_type(void)
 {
@@ -287,9 +289,18 @@ ags_navigation_init(AgsNavigation *navigation)
 	       NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->duration_time);
+
+  if(ags_navigation_duration_queue_draw == NULL){
+    ags_navigation_duration_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							       NULL,
+							       NULL);
+  }
+
+  g_hash_table_insert(ags_navigation_duration_queue_draw,
+		      navigation, ags_navigation_duration_time_queue_draw_timeout);
   
   g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0),
-		(GSourceFunc) ags_navigation_duration_time_queue_draw,
+		(GSourceFunc) ags_navigation_duration_time_queue_draw_timeout,
 		(gpointer) navigation);
 
   navigation->duration_tact = NULL;
@@ -405,6 +416,13 @@ ags_navigation_get_property(GObject *gobject,
 void
 ags_navigation_finalize(GObject *gobject)
 {
+  AgsNavigation *navigation;
+  
+  navigation = AGS_NAVIGATION(gobject);
+
+  g_hash_table_remove(ags_navigation_duration_queue_draw,
+		      navigation);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_navigation_parent_class)->finalize(gobject);
 }
@@ -854,34 +872,39 @@ ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 }
 
 gboolean
-ags_navigation_duration_time_queue_draw(GtkWidget *widget)
+ags_navigation_duration_time_queue_draw_timeout(GtkWidget *widget)
 {
-  AgsNavigation *navigation;
+  if(g_hash_table_lookup(ags_navigation_duration_queue_draw,
+			 widget) != NULL){      
+    AgsNavigation *navigation;
 
-  AgsApplicationContext *application_context;
+    AgsApplicationContext *application_context;
 
-  GObject *default_soundcard;
+    GObject *default_soundcard;
 
-  gchar *str;
+    gchar *str;
 
-  navigation = AGS_NAVIGATION(widget);
+    navigation = AGS_NAVIGATION(widget);
 
-  application_context = ags_application_context_get_instance();
+    application_context = ags_application_context_get_instance();
 
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+    default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  if(default_soundcard != NULL){
-    str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
+    if(default_soundcard != NULL){
+      str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
     
-    g_object_set(navigation->duration_time,
-		 "label", str,
-		 NULL);
-    g_free(str);
+      g_object_set(navigation->duration_time,
+		   "label", str,
+		   NULL);
+      g_free(str);
   
-    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+      gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+    }
+  
+    return(TRUE);
   }
   
-  return(TRUE);
+  return(FALSE);
 }
 
 /**

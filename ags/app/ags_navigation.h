@@ -130,7 +130,7 @@ void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 void ags_navigation_change_position(AgsNavigation *navigation,
 				    gdouble tact);
 
-gboolean ags_navigation_duration_time_queue_draw(GtkWidget *widget);
+gboolean ags_navigation_duration_time_queue_draw_timeout(GtkWidget *widget);
 
 AgsNavigation* ags_navigation_new();
 

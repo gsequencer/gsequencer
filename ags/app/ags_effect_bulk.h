@@ -75,6 +75,8 @@ struct _AgsEffectBulk
   GType channel_type;
   AgsAudio *audio;
 
+  GtkBox *control_box;
+  
   GtkButton *add;
   GtkButton *remove;
 
@@ -136,6 +138,13 @@ struct _AgsEffectBulkPlugin
 };
 
 GType ags_effect_bulk_get_type(void);
+
+gboolean ags_effect_bulk_test_flags(AgsEffectBulk *effect_bulk,
+				    guint flags);
+void ags_effect_bulk_set_flags(AgsEffectBulk *effect_bulk,
+			       guint flags);
+void ags_effect_bulk_unset_flags(AgsEffectBulk *effect_bulk,
+				 guint flags);
 
 AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 						  gchar *plugin_name,

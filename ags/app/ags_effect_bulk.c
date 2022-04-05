@@ -55,8 +55,6 @@ void ags_effect_bulk_finalize(GObject *gobject);
 void ags_effect_bulk_connect(AgsConnectable *connectable);
 void ags_effect_bulk_disconnect(AgsConnectable *connectable);
 
-void ags_effect_bulk_show(GtkWidget *widget);
-
 void ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 				       GList *control_type_name,
 				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -199,7 +197,7 @@ void
 ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_effect_bulk_parent_class = g_type_class_peek_parent(effect_bulk);
@@ -245,11 +243,6 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL_TYPE,
 				  param_spec);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) effect_bulk;
-
-  widget->show = ags_effect_bulk_show;
 
   /* AgsEffectBulkClass */
   effect_bulk->add_plugin = ags_effect_bulk_real_add_plugin;
@@ -426,8 +419,9 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 
   effect_bulk->plugin = NULL;
 
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+  hbox =
+    effect_bulk->control_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						      0);
   gtk_widget_set_halign(hbox,
 			GTK_ALIGN_END);
   gtk_box_append((GtkBox *) effect_bulk,
@@ -754,22 +748,59 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   g_list_free(start_list);
 }
 
-void
-ags_effect_bulk_show(GtkWidget *widget)
+gboolean
+ags_effect_bulk_test_flags(AgsEffectBulk *effect_bulk,
+			   guint flags)
 {
-  AgsEffectBulk *effect_bulk;
-    
-  effect_bulk = AGS_EFFECT_BULK(widget);
+  gboolean retval;
   
-  GTK_WIDGET_CLASS(ags_effect_bulk_parent_class)->show(widget);
+  g_return_val_if_fail(AGS_IS_EFFECT_BULK(effect_bulk), FALSE);
 
-  if((AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) == 0){
-    gtk_widget_show(gtk_widget_get_parent(GTK_WIDGET(effect_bulk->add)));
+  retval = ((flags & (effect_bulk->flags)) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+void
+ags_effect_bulk_set_flags(AgsEffectBulk *effect_bulk,
+			  guint flags)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  if((AGS_EFFECT_BULK_HIDE_BUTTONS & (flags)) != 0 &&
+     (AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) == 0){
+    gtk_widget_set_visible(GTK_WIDGET(effect_bulk->control_box),
+			   FALSE);
   }
 
-  if((AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) == 0){
-    gtk_widget_show((GtkWidget *) effect_bulk->bulk_member);
+  if((AGS_EFFECT_BULK_HIDE_ENTRIES & (flags)) != 0 &&
+     (AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) == 0){
+    gtk_widget_set_visible((GtkWidget *) effect_bulk->bulk_member_entry_box,
+			   FALSE);
   }
+
+  effect_bulk->flags |= flags;
+}
+
+void
+ags_effect_bulk_unset_flags(AgsEffectBulk *effect_bulk,
+			    guint flags)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+  
+  if((AGS_EFFECT_BULK_HIDE_BUTTONS & (flags)) != 0 &&
+     (AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) == 0){
+    gtk_widget_set_visible(gtk_widget_get_parent(GTK_WIDGET(effect_bulk->add)),
+			   TRUE);
+  }
+
+  if((AGS_EFFECT_BULK_HIDE_ENTRIES & (flags)) != 0 &&
+     (AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) == 0){
+    gtk_widget_set_visible((GtkWidget *) effect_bulk->bulk_member,
+			   TRUE);
+  }
+
+  effect_bulk->flags &= (~flags);
 }
 
 /**

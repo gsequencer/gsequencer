@@ -56,6 +56,27 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   gtk_menu_button_set_menu_model(window->add_button,
 				 menu);
 
+  ags_window_load_add_menu_ladspa(window,
+				  menu);
+
+  ags_window_load_add_menu_dssi(window,
+				menu);
+
+  ags_window_load_add_menu_lv2(window,
+			       menu);
+
+  ags_window_load_add_menu_vst3(window,
+				menu);
+
+  ags_window_load_add_menu_live_dssi(window,
+				     menu);
+
+  ags_window_load_add_menu_live_lv2(window,
+				    menu);
+
+  ags_window_load_add_menu_live_vst3(window,
+				     menu);
+  
   /* connect and show window */
   gtk_widget_show((GtkWidget *) window);
 }

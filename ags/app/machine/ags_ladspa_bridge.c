@@ -270,14 +270,20 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 													AGS_TYPE_INPUT);
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
-												AGS_EFFECT_BULK_HIDE_ENTRIES |
-												AGS_EFFECT_BULK_SHOW_LABELS);
+  ags_effect_bulk_set_flags(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input),
+			    (AGS_EFFECT_BULK_HIDE_BUTTONS |
+			     AGS_EFFECT_BULK_HIDE_ENTRIES |
+			     AGS_EFFECT_BULK_SHOW_LABELS));
 
   gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+			 FALSE);
   
   gtk_grid_attach((GtkGrid *) AGS_MACHINE(ladspa_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
@@ -401,15 +407,6 @@ ags_ladspa_bridge_finalize(GObject *gobject)
   AgsLadspaBridge *ladspa_bridge;
 
   ladspa_bridge = (AgsLadspaBridge *) gobject;
-  
-  g_object_disconnect(G_OBJECT(ladspa_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_ladspa_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_ladspa_bridge_resize_pads),
-		      NULL,
-		      NULL);
   
   g_free(ladspa_bridge->filename);
   g_free(ladspa_bridge->effect);
