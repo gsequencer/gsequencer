@@ -53,9 +53,6 @@ endif
 if get_option('poppler')
   poppler_dependency = dependency('poppler-glib')
 endif
-if get_option('webkit')
-  webkit_dependency = dependency('webkit2gtk-4.0')
-endif
 if get_option('gstreamer')
   gstreamer_dependency = dependency('gstreamer-1.0')
   gstreamer_audio_dependency = dependency('gstreamer-audio-1.0')
