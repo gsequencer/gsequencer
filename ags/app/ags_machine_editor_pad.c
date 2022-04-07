@@ -20,6 +20,10 @@
 #include <ags/app/ags_machine_editor_pad.h>
 #include <ags/app/ags_machine_editor_pad_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_machine.h>
+#include <ags/app/ags_machine_editor.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_editor_pad_class_init(AgsMachineEditorPadClass *machine_editor_pad);
@@ -159,7 +163,20 @@ ags_machine_editor_pad_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_machine_editor_pad_init(AgsMachineEditorPad *machine_editor_pad)
 {
-  //TODO:JK: implement me
+  machine_editor_pad->connectable_flags = 0;
+
+  machine_editor_pad->channel = NULL;
+
+  machine_editor_pad->expander = (GtkExpander *) gtk_expander_new(i18n("pad"));
+  gtk_box_append((GtkBox *) machine_editor_pad,
+		 (GtkWidget *) machine_editor_pad->expander);
+  
+  machine_editor_pad->line = NULL;
+
+  machine_editor_pad->line_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_expander_set_child(machine_editor_pad->expander,
+			 (GtkWidget *) machine_editor_pad->line_box);
 }
 
 void
@@ -223,6 +240,8 @@ ags_machine_editor_pad_connect(AgsConnectable *connectable)
 {
   AgsMachineEditorPad *machine_editor_pad;
 
+  GList *start_line, *line;
+
   machine_editor_pad = AGS_MACHINE_EDITOR_PAD(connectable);
 
   if((AGS_CONNECTABLE_CONNECTED & (machine_editor_pad->connectable_flags)) != 0){
@@ -231,13 +250,25 @@ ags_machine_editor_pad_connect(AgsConnectable *connectable)
 
   machine_editor_pad->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  //TODO:JK: implement me
+  line =
+    start_line = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  while(line != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line->data));
+
+    /* iterate */
+    line = line->next;
+  }
+
+  g_list_free(start_line);
 }
 
 void
 ags_machine_editor_pad_disconnect(AgsConnectable *connectable)
 {
   AgsMachineEditorPad *machine_editor_pad;
+
+  GList *start_line, *line;
 
   machine_editor_pad = AGS_MACHINE_EDITOR_PAD(connectable);
 
@@ -247,7 +278,17 @@ ags_machine_editor_pad_disconnect(AgsConnectable *connectable)
   
   machine_editor_pad->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  //TODO:JK: implement me
+  line =
+    start_line = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  while(line != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line->data));
+
+    /* iterate */
+    line = line->next;
+  }
+
+  g_list_free(start_line);
 }
 
 void
@@ -255,9 +296,22 @@ ags_machine_editor_pad_set_update(AgsApplicable *applicable, gboolean update)
 {
   AgsMachineEditorPad *machine_editor_pad;
 
+  GList *start_line, *line;
+
   machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
 
-  //TODO:JK: implement me
+  line =
+    start_line = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  while(line != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(line->data),
+			      update);
+
+    /* iterate */
+    line = line->next;
+  }
+
+  g_list_free(start_line);
 }
 
 void
@@ -265,19 +319,197 @@ ags_machine_editor_pad_apply(AgsApplicable *applicable)
 {
   AgsMachineEditorPad *machine_editor_pad;
 
+  GList *start_line, *line;
+
   machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
 
-  //TODO:JK: implement me
+  line =
+    start_line = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  while(line != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(line->data));
+
+    /* iterate */
+    line = line->next;
+  }
+
+  g_list_free(start_line);
 }
 
 void
 ags_machine_editor_pad_reset(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
   AgsMachineEditorPad *machine_editor_pad;
 
+  AgsChannel *start_output, *start_input;
+
+  GList *start_line, *line;
+
+  guint audio_channels;
+  guint pad;
+  guint i;
+  
   machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
 
-  //TODO:JK: implement me
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_pad,
+								AGS_TYPE_MACHINE_EDITOR);
+  
+  line =
+    start_line = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  while(line != NULL){
+    ags_machine_editor_pad_remove_line(machine_editor_pad,
+				       line->data);
+
+    /* iterate */
+    line = line->next;
+  }
+
+  g_list_free(start_line);
+
+  if(!AGS_IS_MACHINE_EDITOR(machine_editor) ||
+     machine_editor->machine == NULL){
+    return;
+  }
+  
+  if(machine_editor_pad->channel == NULL){
+    return;
+  }
+
+  audio_channels = ags_audio_get_audio_channels(machine->audio);
+
+  start_output = ags_audio_get_output(machine->audio);
+  
+  start_input = ags_audio_get_input(machine->audio);
+
+  pad = ags_channel_get_pad(machine_editor_pad->channel);
+  
+  if(g_type_is_a(G_OBJECT_TYPE(machine_editor_pad->channel), AGS_TYPE_OUTPUT)){
+    for(i = 0; i < audio_channels; i++){
+      AgsMachineEditorLine *line;
+
+      AgsChannel *current_channel;
+
+      current_channel = ags_channel_nth(start_output,
+					pad * audio_channels + i);
+
+      line = ags_machine_editor_line_new(current_channel);
+      ags_machine_editor_pad_add_line(machine_editor_pad,
+				      line);
+
+      if(current_channel != NULL){
+	g_object_unref(current_channel);
+      }      
+    }
+  }else{
+    for(i = 0; i < audio_channels; i++){
+      AgsMachineEditorLine *line;
+
+      AgsChannel *current_channel;
+
+      current_channel = ags_channel_nth(start_input,
+					pad * audio_channels + i);
+
+      line = ags_machine_editor_line_new(current_channel);
+      ags_machine_editor_pad_add_line(machine_editor_pad,
+				      line);
+
+      if(current_channel != NULL){
+	g_object_unref(current_channel);
+      }      
+    }
+  }
+  
+  /* reset */
+  line =
+    start_line = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  while(line != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(line->data));
+
+    /* iterate */
+    line = line->next;
+  }
+
+  g_list_free(start_line);
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+  
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+/**
+ * ags_machine_editor_pad_get_line:
+ * @machine_editor_pad: the #AgsMachineEditorPad
+ * 
+ * Get line.
+ * 
+ * Returns: the #GList-struct containig #AgsMachineEditorLine
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_editor_pad_get_line(AgsMachineEditorPad *machine_editor_pad)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad), NULL);
+
+  return(g_list_reverse(g_list_copy(machine_editor_pad->line)));
+}
+
+/**
+ * ags_machine_editor_pad_add_line:
+ * @machine_editor_pad: the #AgsMachineEditorPad
+ * @line: the #AgsMachineEditorLine
+ * 
+ * Add @line to @machine_editor_pad.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_editor_pad_add_line(AgsMachineEditorPad *machine_editor_pad,
+				AgsMachineEditorLine *line)
+{
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad));
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_LINE(line));
+
+  if(g_list_find(machine_editor_pad->line, line) == NULL){
+    machine_editor_pad->line = g_list_prepend(machine_editor_pad->line,
+					      line);
+    
+    gtk_box_append(machine_editor_pad->line_box,
+		   line);
+  }
+}
+
+/**
+ * ags_machine_editor_pad_remove_line:
+ * @machine_editor_pad: the #AgsMachineEditorPad
+ * @line: the #AgsMachineEditorLine
+ * 
+ * Remove @line from @machine_editor_pad.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_editor_pad_remove_line(AgsMachineEditorPad *machine_editor_pad,
+				   AgsMachineEditorLine *line)
+{
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad));
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_LINE(line));
+
+  if(g_list_find(machine_editor_pad->line, line) != NULL){
+    machine_editor_pad->line = g_list_remove(machine_editor_pad->line,
+					     line);
+    
+    gtk_box_remove(machine_editor_pad->line_box,
+		   line);
+  }
 }
 
 /**

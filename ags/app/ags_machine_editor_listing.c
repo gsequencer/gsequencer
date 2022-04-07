@@ -175,7 +175,7 @@ ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing)
   machine_editor_listing->pad = NULL;
 
   machine_editor_listing->pad_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							   AGS_UI_PROVIDER_DEFAULT_PADDING);
+							   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) machine_editor_listing,
 		 (GtkWidget *) machine_editor_listing->pad_box);
 }
@@ -339,8 +339,8 @@ ags_machine_editor_listing_reset(AgsApplicable *applicable)
   
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
 
-  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(machine_editor_listing,
-							      AGS_TYPE_MACHINE_EDITOR));
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_listing,
+								AGS_TYPE_MACHINE_EDITOR);
   
   pad =
     start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
@@ -354,6 +354,11 @@ ags_machine_editor_listing_reset(AgsApplicable *applicable)
   }
 
   g_list_free(start_pad);
+
+  if(!AGS_IS_MACHINE_EDITOR(machine_editor) ||
+     machine_editor->machine == NULL){
+    return;
+  }
 
   machine = machine_editor->machine;
 
@@ -403,6 +408,19 @@ ags_machine_editor_listing_reset(AgsApplicable *applicable)
     }
   }
 
+  /* reset */
+  pad =
+    start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  while(pad != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(pad->data));
+
+    /* iterate */
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
+  
   if(start_output != NULL){
     g_object_unref(start_output);
   }

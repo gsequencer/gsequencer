@@ -65,6 +65,12 @@ struct _AgsMachineEditorPadClass
 
 GType ags_machine_editor_pad_get_type(void);
 
+GList* ags_machine_editor_pad_get_line(AgsMachineEditorPad *machine_editor_pad);
+void ags_machine_editor_pad_add_line(AgsMachineEditorPad *machine_editor_pad,
+				     AgsMachineEditorLine *line);
+void ags_machine_editor_pad_remove_line(AgsMachineEditorPad *machine_editor_pad,
+					AgsMachineEditorLine *line);
+
 AgsMachineEditorPad* ags_machine_editor_pad_new(AgsChannel *channel);
 
 G_END_DECLS

@@ -132,12 +132,12 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
   line_member_editor->connectable_flags = 0;
   
   line_member_editor->entry_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							 0);
+							 AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) line_member_editor,
 		 (GtkWidget *) line_member_editor->entry_box);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) line_member_editor,
 		 (GtkWidget *) hbox);
 

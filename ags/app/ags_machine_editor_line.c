@@ -164,8 +164,12 @@ ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
   machine_editor_line->channel = NULL;
 
   machine_editor_line->link_editor = ags_link_editor_new();
+  gtk_box_append((GtkBox *) machine_editor_line,
+		 (GtkWidget *) machine_editor_line->link_editor);
 
   machine_editor_line->line_member_editor = ags_line_member_editor_new();
+  gtk_box_append((GtkBox *) machine_editor_line,
+		 (GtkWidget *) machine_editor_line->line_member_editor);
 }
 
 void
