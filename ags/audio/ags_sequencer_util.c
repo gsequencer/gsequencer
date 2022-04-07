@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/ags_sequencer_util.h>
-
-#include <ags/audio/ags_midiin.h>
 
 #include <ags/audio/alsa/ags_alsa_midiin.h>
 
@@ -94,9 +92,7 @@ ags_sequencer_util_get_obj_mutex(GObject *sequencer)
 
   obj_mutex = NULL;
   
-  if(AGS_IS_MIDIIN(sequencer)){
-    obj_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(sequencer);
-  }else if(AGS_IS_ALSA_MIDIIN(sequencer)){
+  if(AGS_IS_ALSA_MIDIIN(sequencer)){
     obj_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else if(AGS_IS_OSS_MIDIIN(sequencer)){
     obj_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(sequencer);

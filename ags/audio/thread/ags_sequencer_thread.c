@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/thread/ags_sequencer_thread.h>
-
-#include <ags/audio/ags_midiin.h>
 
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
@@ -240,9 +238,7 @@ ags_sequencer_thread_set_property(GObject *gobject,
       if(sequencer != NULL){
 	g_object_ref(G_OBJECT(sequencer));
 
-	if(AGS_IS_MIDIIN(sequencer)){
-	  ags_thread_set_flags(sequencer_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
-	}else if(AGS_IS_JACK_MIDIIN(sequencer)){
+	if(AGS_IS_JACK_MIDIIN(sequencer)){
 	  ags_thread_set_flags(sequencer_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 
 	  //	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),

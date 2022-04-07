@@ -49,8 +49,6 @@
 
 #include <ags/audio/midi/ags_midi_file.h>
 
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-
 #include <ags/audio/fx/ags_fx_playback_audio_processor.h>
 #include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
 #include <ags/audio/fx/ags_fx_notation_audio_processor.h>
@@ -13692,8 +13690,7 @@ ags_audio_recall_done_callback(AgsRecall *recall,
   gint sound_scope;
   
   if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
-     (AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
-      AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
+     (AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
       AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(recall) ||
       AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR(recall))){
     sound_scope = ags_recall_get_sound_scope(recall);

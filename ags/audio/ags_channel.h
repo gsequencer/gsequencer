@@ -171,12 +171,6 @@ struct _AgsChannelClass
 			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
-  GList* (*add_effect)(AgsChannel *channel,
-		       gchar *filename,
-		       gchar *effect);
-  void (*remove_effect)(AgsChannel *channel,
-			guint nth);
-
   void (*duplicate_recall)(AgsChannel *channel,
 			   AgsRecallID *recall_id);
   void (*resolve_recall)(AgsChannel *channel,
@@ -348,13 +342,6 @@ void ags_channel_insert_recall(AgsChannel *channel, GObject *recall,
 			       gint position);
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall,
 			       gboolean play_context);
-
-/* add/remove effect */
-GList* ags_channel_add_effect(AgsChannel *channel,
-			      char *filename,
-			      gchar *effect);
-void ags_channel_remove_effect(AgsChannel *channel,
-			       guint nth);
 
 /* stages */
 void ags_channel_duplicate_recall(AgsChannel *channel,

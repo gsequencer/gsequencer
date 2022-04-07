@@ -2419,7 +2419,7 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 {
   AgsAudioPreferences *audio_preferences;
   
-  AgsDevout *devout;
+  AgsWasapiDevout *wasapi_devout;
 
   GList *start_list;
   GList *card_id;
@@ -2435,11 +2435,11 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
 
   /*  */
-  devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
-			NULL);
+  wasapi_devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
+			       NULL);
 
   card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
+  ags_soundcard_list_cards(AGS_SOUNDCARD(wasapi_devout),
 			   &card_id, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
@@ -2466,7 +2466,7 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     (GObject *) devout);
+				     (GObject *) wasapi_devout);
 
   /*  */
   audio_preferences = gtk_widget_get_ancestor(soundcard_editor,

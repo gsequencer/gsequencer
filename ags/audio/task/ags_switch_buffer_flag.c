@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,10 +18,6 @@
  */
 
 #include <ags/audio/task/ags_switch_buffer_flag.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_devin.h>
-#include <ags/audio/ags_midiin.h>
 
 #include <ags/audio/alsa/ags_alsa_devout.h>
 #include <ags/audio/alsa/ags_alsa_devin.h>
@@ -258,11 +254,7 @@ ags_switch_buffer_flag_launch(AgsTask *task)
   switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(task);
 
   /* switch buffer flag */
-  if(AGS_IS_DEVOUT(switch_buffer_flag->device)){
-    ags_devout_switch_buffer_flag((AgsDevout *) switch_buffer_flag->device);
-  }else if(AGS_IS_DEVIN(switch_buffer_flag->device)){
-    ags_devin_switch_buffer_flag((AgsDevin *) switch_buffer_flag->device);
-  }else if(AGS_IS_ALSA_DEVOUT(switch_buffer_flag->device)){
+  if(AGS_IS_ALSA_DEVOUT(switch_buffer_flag->device)){
     ags_alsa_devout_switch_buffer((AgsAlsaDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_ALSA_DEVIN(switch_buffer_flag->device)){
     ags_alsa_devin_switch_buffer_flag((AgsAlsaDevin *) switch_buffer_flag->device);
@@ -286,8 +278,6 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_core_audio_devout_switch_buffer_flag((AgsCoreAudioDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVIN(switch_buffer_flag->device)){
     ags_core_audio_devin_switch_buffer_flag((AgsCoreAudioDevin *) switch_buffer_flag->device);
-  }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
-    ags_midiin_switch_buffer_flag((AgsMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_ALSA_MIDIIN(switch_buffer_flag->device)){
     ags_alsa_midiin_switch_buffer_flag((AgsAlsaMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_OSS_MIDIIN(switch_buffer_flag->device)){

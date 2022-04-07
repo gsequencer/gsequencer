@@ -150,7 +150,7 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   gtk_box_append((GtkBox *) pitch_sampler_file,
-		     (GtkWidget *) grid);
+		 (GtkWidget *) grid);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,

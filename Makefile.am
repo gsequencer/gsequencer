@@ -1196,8 +1196,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_chorus_util.h \
-	ags/audio/ags_devout.h \
-	ags/audio/ags_devin.h \
 	ags/audio/ags_diatonic_scale.h \
 	ags/audio/ags_envelope_util.h \
 	ags/audio/ags_fast_pitch_util.h \
@@ -1224,7 +1222,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_lfo_synth_util.h \
 	ags/audio/ags_linear_interpolate_util.h \
 	ags/audio/ags_midi.h \
-	ags/audio/ags_midiin.h \
 	ags/audio/ags_noise_util.h \
 	ags/audio/ags_notation.h \
 	ags/audio/ags_note.h \
@@ -1244,15 +1241,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_channel_run.h \
 	ags/audio/ags_recall_container.h \
 	ags/audio/ags_recall_dependency.h \
-	ags/audio/ags_recall_factory.h \
 	ags/audio/ags_recall.h \
-	ags/audio/ags_recall_dssi.h \
-	ags/audio/ags_recall_dssi_run.h \
 	ags/audio/ags_recall_id.h \
-	ags/audio/ags_recall_ladspa.h \
-	ags/audio/ags_recall_ladspa_run.h \
-	ags/audio/ags_recall_lv2.h \
-	ags/audio/ags_recall_lv2_run.h \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
@@ -1299,8 +1289,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_chorus_util.c \
-	ags/audio/ags_devout.c \
-	ags/audio/ags_devin.c \
 	ags/audio/ags_diatonic_scale.c \
 	ags/audio/ags_envelope_util.c \
 	ags/audio/ags_fast_pitch_util.c \
@@ -1327,7 +1315,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
 	ags/audio/ags_midi.c \
-	ags/audio/ags_midiin.c \
 	ags/audio/ags_noise_util.c \
 	ags/audio/ags_notation.c \
 	ags/audio/ags_note.c \
@@ -1348,14 +1335,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_channel_run.c \
 	ags/audio/ags_recall_container.c \
 	ags/audio/ags_recall_dependency.c \
-	ags/audio/ags_recall_factory.c \
-	ags/audio/ags_recall_dssi.c \
-	ags/audio/ags_recall_dssi_run.c \
 	ags/audio/ags_recall_id.c \
-	ags/audio/ags_recall_ladspa.c \
-	ags/audio/ags_recall_ladspa_run.c \
-	ags/audio/ags_recall_lv2.c \
-	ags/audio/ags_recall_lv2_run.c \
 	ags/audio/ags_recall_recycling.c \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
@@ -1867,197 +1847,6 @@ libags_audio_gstreamer_c_sources = \
 	ags/audio/gstreamer/ags_gstreamer_port.c \
 	ags/audio/gstreamer/ags_gstreamer_server.c
 
-# libags-audio - recall
-deprecated_libags_audio_recall_h_sources =
-
-libags_audio_recall_h_sources = \
-	$(deprecated_libags_audio_recall_h_sources) \
-	ags/audio/recall/ags_analyse_audio_signal.h \
-	ags/audio/recall/ags_analyse_channel.h \
-	ags/audio/recall/ags_analyse_channel_run.h \
-	ags/audio/recall/ags_analyse_recycling.h \
-	ags/audio/recall/ags_buffer_audio_signal.h \
-	ags/audio/recall/ags_buffer_channel.h \
-	ags/audio/recall/ags_buffer_channel_run.h \
-	ags/audio/recall/ags_buffer_recycling.h \
-	ags/audio/recall/ags_capture_wave_audio.h \
-	ags/audio/recall/ags_capture_wave_audio_run.h \
-	ags/audio/recall/ags_capture_wave_channel.h \
-	ags/audio/recall/ags_capture_wave_channel_run.h \
-	ags/audio/recall/ags_copy_audio_signal.h \
-	ags/audio/recall/ags_copy_channel.h \
-	ags/audio/recall/ags_copy_channel_run.h \
-	ags/audio/recall/ags_copy_pattern_audio.h \
-	ags/audio/recall/ags_copy_pattern_audio_run.h \
-	ags/audio/recall/ags_copy_pattern_channel.h \
-	ags/audio/recall/ags_copy_pattern_channel_run.h \
-	ags/audio/recall/ags_copy_recycling.h \
-	ags/audio/recall/ags_count_beats_audio.h \
-	ags/audio/recall/ags_count_beats_audio_run.h \
-	ags/audio/recall/ags_delay_audio.h \
-	ags/audio/recall/ags_delay_audio_run.h \
-	ags/audio/recall/ags_envelope_audio_signal.h \
-	ags/audio/recall/ags_envelope_channel.h \
-	ags/audio/recall/ags_envelope_channel_run.h \
-	ags/audio/recall/ags_envelope_recycling.h \
-	ags/audio/recall/ags_eq10_audio_signal.h \
-	ags/audio/recall/ags_eq10_channel.h \
-	ags/audio/recall/ags_eq10_channel_run.h \
-	ags/audio/recall/ags_eq10_recycling.h \
-	ags/audio/recall/ags_feed_audio_signal.h \
-	ags/audio/recall/ags_feed_channel.h \
-	ags/audio/recall/ags_feed_channel_run.h \
-	ags/audio/recall/ags_feed_recycling.h \
-	ags/audio/recall/ags_lfo_audio_signal.h \
-	ags/audio/recall/ags_lfo_channel.h \
-	ags/audio/recall/ags_lfo_channel_run.h \
-	ags/audio/recall/ags_lfo_recycling.h \
-	ags/audio/recall/ags_loop_channel.h \
-	ags/audio/recall/ags_loop_channel_run.h \
-	ags/audio/recall/ags_mute_audio.h \
-	ags/audio/recall/ags_mute_audio_run.h \
-	ags/audio/recall/ags_mute_audio_signal.h \
-	ags/audio/recall/ags_mute_channel.h \
-	ags/audio/recall/ags_mute_channel_run.h \
-	ags/audio/recall/ags_mute_recycling.h \
-	ags/audio/recall/ags_peak_audio_signal.h \
-	ags/audio/recall/ags_peak_channel.h \
-	ags/audio/recall/ags_peak_channel_run.h \
-	ags/audio/recall/ags_peak_recycling.h \
-	ags/audio/recall/ags_play_audio.h \
-	ags/audio/recall/ags_play_audio_signal.h \
-	ags/audio/recall/ags_play_channel.h \
-	ags/audio/recall/ags_play_channel_run.h \
-	ags/audio/recall/ags_play_channel_run_master.h \
-	ags/audio/recall/ags_play_dssi_audio.h \
-	ags/audio/recall/ags_play_dssi_audio_run.h \
-	ags/audio/recall/ags_play_lv2_audio.h \
-	ags/audio/recall/ags_play_lv2_audio_run.h \
-	ags/audio/recall/ags_play_notation_audio.h \
-	ags/audio/recall/ags_play_notation_audio_run.h \
-	ags/audio/recall/ags_play_recycling.h \
-	ags/audio/recall/ags_play_wave_audio.h \
-	ags/audio/recall/ags_play_wave_audio_run.h \
-	ags/audio/recall/ags_play_wave_channel.h \
-	ags/audio/recall/ags_play_wave_channel_run.h \
-	ags/audio/recall/ags_prepare_audio_signal.h \
-	ags/audio/recall/ags_prepare_channel.h \
-	ags/audio/recall/ags_prepare_channel_run.h \
-	ags/audio/recall/ags_prepare_recycling.h \
-	ags/audio/recall/ags_record_midi_audio.h \
-	ags/audio/recall/ags_record_midi_audio_run.h \
-	ags/audio/recall/ags_route_dssi_audio.h \
-	ags/audio/recall/ags_route_dssi_audio_run.h \
-	ags/audio/recall/ags_route_lv2_audio.h \
-	ags/audio/recall/ags_route_lv2_audio_run.h \
-	ags/audio/recall/ags_rt_stream_audio_signal.h \
-	ags/audio/recall/ags_rt_stream_channel.h \
-	ags/audio/recall/ags_rt_stream_channel_run.h \
-	ags/audio/recall/ags_rt_stream_recycling.h \
-	ags/audio/recall/ags_stream_audio_signal.h \
-	ags/audio/recall/ags_stream_channel.h \
-	ags/audio/recall/ags_stream_channel_run.h \
-	ags/audio/recall/ags_stream_recycling.h \
-	ags/audio/recall/ags_volume_audio_signal.h \
-	ags/audio/recall/ags_volume_channel.h \
-	ags/audio/recall/ags_volume_channel_run.h \
-	ags/audio/recall/ags_volume_recycling.h
-
-deprecated_libags_audio_recall_c_sources =
-
-libags_audio_recall_c_sources = \
-	$(deprecated_libags_audio_recall_c_sources) \
-	ags/audio/recall/ags_analyse_audio_signal.c \
-	ags/audio/recall/ags_analyse_channel.c \
-	ags/audio/recall/ags_analyse_channel_run.c \
-	ags/audio/recall/ags_analyse_recycling.c \
-	ags/audio/recall/ags_buffer_audio_signal.c \
-	ags/audio/recall/ags_buffer_channel.c \
-	ags/audio/recall/ags_buffer_channel_run.c \
-	ags/audio/recall/ags_buffer_recycling.c \
-	ags/audio/recall/ags_capture_wave_audio.c \
-	ags/audio/recall/ags_capture_wave_audio_run.c \
-	ags/audio/recall/ags_capture_wave_channel.c \
-	ags/audio/recall/ags_capture_wave_channel_run.c \
-	ags/audio/recall/ags_copy_audio_signal.c \
-	ags/audio/recall/ags_copy_channel.c \
-	ags/audio/recall/ags_copy_channel_run.c \
-	ags/audio/recall/ags_copy_pattern_audio.c \
-	ags/audio/recall/ags_copy_pattern_audio_run.c \
-	ags/audio/recall/ags_copy_pattern_channel.c \
-	ags/audio/recall/ags_copy_pattern_channel_run.c \
-	ags/audio/recall/ags_copy_recycling.c \
-	ags/audio/recall/ags_count_beats_audio.c \
-	ags/audio/recall/ags_count_beats_audio_run.c \
-	ags/audio/recall/ags_delay_audio.c \
-	ags/audio/recall/ags_delay_audio_run.c \
-	ags/audio/recall/ags_envelope_audio_signal.c \
-	ags/audio/recall/ags_envelope_channel.c \
-	ags/audio/recall/ags_envelope_channel_run.c \
-	ags/audio/recall/ags_envelope_recycling.c \
-	ags/audio/recall/ags_eq10_audio_signal.c \
-	ags/audio/recall/ags_eq10_channel.c \
-	ags/audio/recall/ags_eq10_channel_run.c \
-	ags/audio/recall/ags_eq10_recycling.c \
-	ags/audio/recall/ags_feed_audio_signal.c \
-	ags/audio/recall/ags_feed_channel.c \
-	ags/audio/recall/ags_feed_channel_run.c \
-	ags/audio/recall/ags_feed_recycling.c \
-	ags/audio/recall/ags_lfo_audio_signal.c \
-	ags/audio/recall/ags_lfo_channel.c \
-	ags/audio/recall/ags_lfo_channel_run.c \
-	ags/audio/recall/ags_lfo_recycling.c \
-	ags/audio/recall/ags_loop_channel.c \
-	ags/audio/recall/ags_loop_channel_run.c \
-	ags/audio/recall/ags_mute_audio.c \
-	ags/audio/recall/ags_mute_audio_run.c \
-	ags/audio/recall/ags_mute_audio_signal.c \
-	ags/audio/recall/ags_mute_channel.c \
-	ags/audio/recall/ags_mute_channel_run.c \
-	ags/audio/recall/ags_mute_recycling.c \
-	ags/audio/recall/ags_peak_audio_signal.c \
-	ags/audio/recall/ags_peak_channel.c \
-	ags/audio/recall/ags_peak_channel_run.c \
-	ags/audio/recall/ags_peak_recycling.c \
-	ags/audio/recall/ags_play_audio.c \
-	ags/audio/recall/ags_play_audio_signal.c \
-	ags/audio/recall/ags_play_channel.c \
-	ags/audio/recall/ags_play_channel_run.c \
-	ags/audio/recall/ags_play_channel_run_master.c \
-	ags/audio/recall/ags_play_dssi_audio.c \
-	ags/audio/recall/ags_play_dssi_audio_run.c \
-	ags/audio/recall/ags_play_lv2_audio.c \
-	ags/audio/recall/ags_play_lv2_audio_run.c \
-	ags/audio/recall/ags_play_notation_audio.c \
-	ags/audio/recall/ags_play_notation_audio_run.c \
-	ags/audio/recall/ags_play_recycling.c \
-	ags/audio/recall/ags_play_wave_audio.c \
-	ags/audio/recall/ags_play_wave_audio_run.c \
-	ags/audio/recall/ags_play_wave_channel.c \
-	ags/audio/recall/ags_play_wave_channel_run.c \
-	ags/audio/recall/ags_prepare_audio_signal.c \
-	ags/audio/recall/ags_prepare_channel.c \
-	ags/audio/recall/ags_prepare_channel_run.c \
-	ags/audio/recall/ags_prepare_recycling.c \
-	ags/audio/recall/ags_record_midi_audio.c \
-	ags/audio/recall/ags_record_midi_audio_run.c \
-	ags/audio/recall/ags_route_dssi_audio.c \
-	ags/audio/recall/ags_route_dssi_audio_run.c \
-	ags/audio/recall/ags_route_lv2_audio.c \
-	ags/audio/recall/ags_route_lv2_audio_run.c \
-	ags/audio/recall/ags_rt_stream_audio_signal.c \
-	ags/audio/recall/ags_rt_stream_channel.c \
-	ags/audio/recall/ags_rt_stream_channel_run.c \
-	ags/audio/recall/ags_rt_stream_recycling.c \
-	ags/audio/recall/ags_stream_audio_signal.c \
-	ags/audio/recall/ags_stream_channel.c \
-	ags/audio/recall/ags_stream_channel_run.c \
-	ags/audio/recall/ags_stream_recycling.c \
-	ags/audio/recall/ags_volume_audio_signal.c \
-	ags/audio/recall/ags_volume_channel.c \
-	ags/audio/recall/ags_volume_channel_run.c \
-	ags/audio/recall/ags_volume_recycling.c
-
 # libags-audio - fx
 deprecated_libags_audio_fx_h_sources =
 
@@ -2364,7 +2153,6 @@ libags_audio_task_h_sources = \
 	$(deprecated_libags_audio_task_h_sources) \
 	ags/audio/task/ags_add_audio.h \
 	ags/audio/task/ags_add_audio_signal.h \
-	ags/audio/task/ags_add_effect.h \
 	ags/audio/task/ags_add_note.h \
 	ags/audio/task/ags_add_soundcard.h \
 	ags/audio/task/ags_apply_presets.h \
@@ -2409,9 +2197,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_bpm.h \
 	ags/audio/task/ags_apply_sequencer_length.h \
 	ags/audio/task/ags_apply_tact.h \
-	ags/audio/task/ags_reset_amplitude.h \
 	ags/audio/task/ags_reset_note.h \
-	ags/audio/task/ags_reset_peak.h \
 	ags/audio/task/ags_reset_fx_analyse.h \
 	ags/audio/task/ags_reset_fx_peak.h \
 	ags/audio/task/ags_set_muted.h
@@ -2447,7 +2233,6 @@ libags_audio_task_c_sources = \
 	$(deprecated_libags_audio_task_c_sources) \
 	ags/audio/task/ags_add_audio.c \
 	ags/audio/task/ags_add_audio_signal.c \
-	ags/audio/task/ags_add_effect.c \
 	ags/audio/task/ags_add_note.c \
 	ags/audio/task/ags_add_soundcard.c \
 	ags/audio/task/ags_apply_presets.c \
@@ -2492,9 +2277,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_bpm.c \
 	ags/audio/task/ags_apply_sequencer_length.c \
 	ags/audio/task/ags_apply_tact.c \
-	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_note.c \
-	ags/audio/task/ags_reset_peak.c \
 	ags/audio/task/ags_reset_fx_analyse.c \
 	ags/audio/task/ags_reset_fx_peak.c \
 	ags/audio/task/ags_set_muted.c

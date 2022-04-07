@@ -5,6 +5,8 @@ ags (4.0.0)
 	* migrated libgsequencer.so to Gtk-4
 	* migrated libags_gui.so to Gtk-4
 	* implemented AgsCartesian properties
+	* removed ags/audio/recall
+	* removed ags_recall_factory.[ch], ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]
 	* TODO:JK: implemented AgsVector
 	* TODO:JK: implemented AgsSoundDirection
 	* TODO:JK: implemented AgsAudioManager with ui-scope
@@ -16,6 +18,7 @@ ags (4.0.0)
 	* TODO:JK: implemented pitch selection of ags-sf2-synth
 	* TODO:JK: implemented pitch selection of ags-sfz-synth
 	* TODO:JK: refactor use GFile instead of FILE
+	* TODO:JK: fixed AgsWave clipboard
 
 ags (3.18.2)
 

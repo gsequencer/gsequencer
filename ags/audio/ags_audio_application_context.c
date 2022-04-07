@@ -34,12 +34,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_generic_recall_channel_run.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_ladspa_run.h>
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_recall_lv2_run.h>
-#include <ags/audio/ags_recall_dssi.h>
-#include <ags/audio/ags_recall_dssi_run.h>
 
 #include <ags/audio/alsa/ags_alsa_devout.h>
 #include <ags/audio/alsa/ags_alsa_devin.h>
@@ -73,33 +67,6 @@
 #include <ags/audio/wasapi/ags_wasapi_devin.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
-
-#include <ags/audio/recall/ags_play_audio.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -2992,48 +2959,6 @@ ags_audio_application_context_register_types(AgsApplicationContext *application_
   ags_audio_loop_get_type();
   ags_soundcard_thread_get_type();
   ags_export_thread_get_type();
-
-  /* register recalls */
-  ags_play_audio_get_type();
-  ags_play_channel_get_type();
-  ags_play_channel_run_get_type();
-  ags_play_channel_run_master_get_type();
-
-  ags_stream_channel_get_type();
-  ags_stream_channel_run_get_type();
-
-  ags_loop_channel_get_type();
-  ags_loop_channel_run_get_type();
-
-  ags_copy_channel_get_type();
-  ags_copy_channel_run_get_type();
-
-  ags_volume_channel_get_type();
-  ags_volume_channel_run_get_type();
-
-  ags_peak_channel_get_type();
-  ags_peak_channel_run_get_type();
-
-  ags_recall_ladspa_get_type();
-  ags_generic_recall_channel_run_get_type();
-  ags_recall_ladspa_run_get_type();
-
-  ags_delay_audio_get_type();
-  ags_delay_audio_run_get_type();
-
-  ags_count_beats_audio_get_type();
-  ags_count_beats_audio_run_get_type();
-
-  ags_copy_pattern_audio_get_type();
-  ags_copy_pattern_audio_run_get_type();
-  ags_copy_pattern_channel_get_type();
-  ags_copy_pattern_channel_run_get_type();
-
-  ags_buffer_channel_get_type();
-  ags_buffer_channel_run_get_type();
-
-  ags_play_notation_audio_get_type();
-  ags_play_notation_audio_run_get_type();
 }
 
 void
