@@ -204,6 +204,9 @@ ags_synth_init(AgsSynth *synth)
 			 FALSE);
   gtk_widget_set_hexpand(hbox,
 			 FALSE);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_frame_set_child(AGS_MACHINE(synth)->frame,
 		      (GtkWidget *) hbox);
@@ -214,6 +217,10 @@ ags_synth_init(AgsSynth *synth)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) vbox);
 
@@ -227,6 +234,12 @@ ags_synth_init(AgsSynth *synth)
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) grid);
 

@@ -264,6 +264,11 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_widget_set_valign(matrix->grid,
 			GTK_ALIGN_START);
 
+  gtk_grid_set_column_spacing(matrix->grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(matrix->grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(matrix)->frame,
 		      (GtkWidget *) matrix->grid);
 
@@ -287,10 +292,15 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_widget_set_halign((GtkWidget *) grid,
 			GTK_ALIGN_FILL);
 
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_grid_attach(matrix->grid,
 		  (GtkWidget *) grid,
 		  1, 0,
-		  1, 2);
+		  1, 1);
   matrix->selected = NULL;
 
   for(i = 0; i < 3; i++){
@@ -337,6 +347,9 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_widget_set_halign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
 
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_grid_attach(matrix->grid,
 		  (GtkWidget *) vbox,
 		  3, 0,
@@ -344,6 +357,10 @@ ags_matrix_init(AgsMatrix *matrix)
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 

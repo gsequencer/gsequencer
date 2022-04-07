@@ -20,6 +20,8 @@
 #include <ags/app/machine/ags_oscillator.h>
 #include <ags/app/machine/ags_oscillator_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
@@ -133,7 +135,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   GtkGrid *grid;
   GtkBox *hbox;
   GtkBox *sync_box;
-
+  GtkLabel *label;
+  
   GtkCellRenderer *cell_renderer;
 
   GtkListStore *model;
@@ -150,6 +153,12 @@ ags_oscillator_init(AgsOscillator *oscillator)
   oscillator->connectable_flags = 0;
 
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child((GtkFrame *) oscillator,
 		      (GtkWidget *) grid);
 
@@ -214,8 +223,13 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_combo_box_set_active(oscillator->wave, 0);
 
   /* attack */
+  label = (GtkLabel *) gtk_label_new(i18n("attack"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("attack")),
+		  (GtkWidget *) label,
 		  2, 0,
 		  1, 1);
 
@@ -227,8 +241,13 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		  1, 1);
 
   /* length */
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("length")),
+		  (GtkWidget *) label,
 		  4, 0,
 		  1, 1);
   
@@ -240,8 +259,13 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		  1, 1);
 
   /* phase */
+  label = (GtkLabel *) gtk_label_new(i18n("phase"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("phase")),
+		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
   
@@ -253,8 +277,13 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		  1, 1);
 
   /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("frequency"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("frequency")),
+		  (GtkWidget *) label,
 		  2, 1,
 		  1, 1);
   
@@ -268,8 +297,13 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		  1, 1);
 
   /* volume */
+  label = (GtkLabel *) gtk_label_new(i18n("volume"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("volume")),
+		  (GtkWidget *) label,
 		  4, 1,
 		  1, 1);
   
@@ -291,6 +325,10 @@ ags_oscillator_init(AgsOscillator *oscillator)
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) hbox,
 		  6, 1,
@@ -302,6 +340,10 @@ ags_oscillator_init(AgsOscillator *oscillator)
   for(i = 0; i < oscillator->sync_point_count; i++){
     sync_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
+
+    gtk_box_set_spacing(sync_box,
+			AGS_UI_PROVIDER_DEFAULT_SPACING);
+
     gtk_box_append(hbox,
 		   (GtkWidget *) sync_box);
     

@@ -138,6 +138,11 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   g_object_set(pattern_box,
 	       "can-focus", TRUE,
 	       NULL);
+
+  gtk_grid_set_column_spacing((GtkGrid *) pattern_box,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing((GtkGrid *) pattern_box,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 			
   pattern_box->flags = 0;
   pattern_box->connectable_flags = 0;
@@ -183,6 +188,9 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   pattern_box->pad_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						0);
 
+  gtk_box_set_spacing(pattern_box->pad_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_widget_set_valign((GtkWidget *) pattern_box->pad_box,
 			GTK_ALIGN_CENTER);
   gtk_widget_set_vexpand((GtkWidget *) pattern_box->pad_box,
@@ -197,8 +205,10 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
     GtkToggleButton *toggle_button;
     
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
+
     gtk_widget_set_size_request((GtkWidget *) toggle_button,
 				gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
+
     ags_pattern_box_add_pad(pattern_box,
 			    toggle_button);
   }
@@ -206,6 +216,10 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   /* page / offset */
   offset = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				  0);
+
+  gtk_box_set_spacing(offset,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_grid_attach((GtkGrid *) pattern_box,
 		  (GtkWidget *) offset,
 		  1, 0,
@@ -214,24 +228,40 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   pattern_box->page_0_15 = gtk_check_button_new_with_label("0 - 15");
   gtk_check_button_set_active(pattern_box->page_0_15,
 			      TRUE);
+
+  gtk_widget_set_halign(pattern_box->page_0_15,
+			GTK_ALIGN_START);
+  
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_0_15);
 
   pattern_box->page_16_31 = gtk_check_button_new_with_label("16 - 31");
   gtk_check_button_set_group(pattern_box->page_16_31,
 			     pattern_box->page_0_15);
+
+  gtk_widget_set_halign(pattern_box->page_16_31,
+			GTK_ALIGN_START);
+
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_16_31);
 
   pattern_box->page_32_47 = gtk_check_button_new_with_label("32 - 47");
   gtk_check_button_set_group(pattern_box->page_32_47,
 			     pattern_box->page_0_15);
+
+  gtk_widget_set_halign(pattern_box->page_32_47,
+			GTK_ALIGN_START);
+
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_32_47);
 
   pattern_box->page_48_63 = gtk_check_button_new_with_label("48 - 63");
   gtk_check_button_set_group(pattern_box->page_48_63,
 			     pattern_box->page_0_15);
+
+  gtk_widget_set_halign(pattern_box->page_48_63,
+			GTK_ALIGN_START);
+
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_48_63);
 }

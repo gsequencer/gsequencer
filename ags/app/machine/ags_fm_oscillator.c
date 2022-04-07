@@ -20,10 +20,6 @@
 #include <ags/app/machine/ags_fm_oscillator.h>
 #include <ags/app/machine/ags_fm_oscillator_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/app/ags_ui_provider.h>
 
 #include <ags/i18n.h>

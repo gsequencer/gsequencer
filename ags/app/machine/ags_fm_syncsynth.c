@@ -261,6 +261,10 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   /* create widgets */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(fm_syncsynth)->frame,
 		      (GtkWidget *) hbox);
 
@@ -268,6 +272,10 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   
   fm_syncsynth->fm_oscillator_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 							   0);
+
+  gtk_box_set_spacing(fm_syncsynth->fm_oscillator_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) fm_syncsynth->fm_oscillator_box);
 
@@ -279,6 +287,10 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   /* add and remove buttons */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) vbox);
 
@@ -293,6 +305,10 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   /* update */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) vbox);
 
@@ -306,6 +322,12 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) grid);
   
@@ -406,15 +428,19 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
 
   gtk_widget_set_valign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
     
   gtk_box_append(hbox,
 		 (GtkWidget *) frame);
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
+
+  gtk_box_set_spacing(volume_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) volume_hbox);
   
@@ -424,7 +450,10 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 							       0.025);
 
   gtk_widget_set_size_request(fm_syncsynth->volume,
-			      gui_scale_factor * 16, gui_scale_factor * 100);
+			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
+
+  gtk_widget_set_valign((GtkWidget *) fm_syncsynth->volume,
+			GTK_ALIGN_START);
   
   gtk_box_append(volume_hbox,
 		 (GtkWidget *) fm_syncsynth->volume);

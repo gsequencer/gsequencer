@@ -153,7 +153,8 @@ ags_drum_init(AgsDrum *drum)
   GtkBox *hbox;
   GtkFrame *frame;
   GtkGrid *grid0, *grid1;
-
+  GtkLabel *label;
+  
   AgsAudio *audio;
   
   AgsMachineCounterManager *machine_counter_manager;
@@ -257,11 +258,19 @@ ags_drum_init(AgsDrum *drum)
   /* create widgets */
   drum->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				      0);
+
+  gtk_box_set_spacing(drum->vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(drum)->frame,
 		      (GtkWidget *) drum->vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(drum->vbox,
 		 (GtkWidget *) hbox);
 
@@ -308,6 +317,10 @@ ags_drum_init(AgsDrum *drum)
   /*  */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(drum->vbox,
 		 (GtkWidget *) hbox);
 
@@ -317,6 +330,10 @@ ags_drum_init(AgsDrum *drum)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) vbox);
 
@@ -325,6 +342,7 @@ ags_drum_init(AgsDrum *drum)
  
   gtk_box_append(vbox,
 		 (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"))));
+
   drum->open_dialog = NULL;
   
   /* sequencer */
@@ -340,6 +358,12 @@ ags_drum_init(AgsDrum *drum)
 		 (GtkWidget *) frame);
 
   grid0 = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid0,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid0,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) grid0);
 
@@ -358,6 +382,12 @@ ags_drum_init(AgsDrum *drum)
 
   /* bank 1 */
   grid1 = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid1,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid1,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_grid_attach(grid0,
 		  (GtkWidget *) grid1,
 		  2, 0,
@@ -408,14 +438,18 @@ ags_drum_init(AgsDrum *drum)
 			 FALSE);
   gtk_widget_set_hexpand((GtkWidget *) hbox,
 			 TRUE);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_grid_attach(grid0,
 		  (GtkWidget *) hbox,
 		  6, 0,
 		  1, 1);
-  
+
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
   gtk_box_append(hbox,
-		 gtk_label_new(i18n("length")));
+		 (GtkWidget *) label);
   
   drum->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 64.0, 1.0);
   gtk_spin_button_set_value(drum->length_spin, 16.0);
