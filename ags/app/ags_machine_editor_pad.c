@@ -62,6 +62,8 @@ enum{
   PROP_CHANNEL,
 };
 
+static gpointer ags_machine_editor_pad_parent_class = NULL;
+
 GType
 ags_machine_editor_pad_get_type(void)
 {
@@ -118,6 +120,8 @@ ags_machine_editor_pad_class_init(AgsMachineEditorPadClass *machine_editor_pad)
   GObjectClass *gobject;
 
   GParamSpec *param_spec;
+
+  ags_machine_editor_pad_parent_class = g_type_class_peek_parent(machine_editor_pad);
 
   /* GObjectClass */
   gobject = (GObjectClass *) machine_editor_pad;

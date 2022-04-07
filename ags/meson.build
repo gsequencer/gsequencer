@@ -1007,6 +1007,8 @@ libgsequencer_sources = files(
   'app/ags_machine_counter_manager.c',
   'app/ags_machine_editor.c',
   'app/ags_machine_editor_callbacks.c',
+  'app/ags_machine_editor_bulk.c',
+  'app/ags_machine_editor_bulk_callbacks.c',
   'app/ags_machine_editor_dialog.c',
   'app/ags_machine_editor_collection.c',
   'app/ags_machine_editor_collection_callbacks.c',

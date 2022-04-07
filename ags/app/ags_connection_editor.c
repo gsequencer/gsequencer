@@ -191,6 +191,8 @@ ags_connection_editor_applicable_interface_init(AgsApplicableInterface *applicab
 void
 ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 {
+  connection_editor->connectable_flags = 0;
+
   connection_editor->version = AGS_CONNECTION_EDITOR_DEFAULT_VERSION;
   connection_editor->build_id = AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID;
 

@@ -52,6 +52,8 @@ struct _AgsConnectionEditor
 {
   GtkGrid grid;
 
+  guint connectable_flags;
+  
   gchar *version;
   gchar *build_id;
 

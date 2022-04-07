@@ -60,6 +60,8 @@ enum{
   PROP_CHANNEL,
 };
 
+static gpointer ags_machine_editor_line_parent_class = NULL;
+
 GType
 ags_machine_editor_line_get_type(void)
 {
@@ -116,6 +118,8 @@ ags_machine_editor_line_class_init(AgsMachineEditorLineClass *machine_editor_lin
   GObjectClass *gobject;
 
   GParamSpec *param_spec;
+
+  ags_machine_editor_line_parent_class = g_type_class_peek_parent(machine_editor_line);
 
   /* GObjectClass */
   gobject = (GObjectClass *) machine_editor_line;

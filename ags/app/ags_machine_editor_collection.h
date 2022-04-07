@@ -67,6 +67,12 @@ struct _AgsMachineEditorCollectionClass
 
 GType ags_machine_editor_collection_get_type(void);
 
+GList* ags_machine_editor_collection_get_bulk(AgsMachineEditorCollection *machine_editor_collection);
+void ags_machine_editor_collection_add_bulk(AgsMachineEditorCollection *machine_editor_collection,
+					    AgsMachineEditorBulk *bulk);
+void ags_machine_editor_collection_remove_bulk(AgsMachineEditorCollection *machine_editor_collection,
+					       AgsMachineEditorBulk *bulk);
+
 AgsMachineEditorCollection* ags_machine_editor_collection_new(GType channel_type);
 
 G_END_DECLS

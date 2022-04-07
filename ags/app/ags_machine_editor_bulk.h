@@ -45,6 +45,8 @@ struct _AgsMachineEditorBulk
 {
   GtkBox box;
 
+  guint connectable_flags;
+
   GtkButton *remove_bulk;
 };
 

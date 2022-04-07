@@ -68,6 +68,8 @@ enum{
 
 static guint machine_editor_signals[LAST_SIGNAL];
 
+static gpointer ags_machine_editor_parent_class = NULL;
+
 GType
 ags_machine_editor_get_type(void)
 {
@@ -124,6 +126,8 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
   GObjectClass *gobject;
 
   GParamSpec *param_spec;
+
+  ags_machine_editor_parent_class = g_type_class_peek_parent(machine_editor);
 
   /* GObjectClass */
   gobject = (GObjectClass *) machine_editor;

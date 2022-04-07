@@ -20,6 +20,10 @@
 #include <ags/app/ags_machine_editor_collection.h>
 #include <ags/app/ags_machine_editor_collection_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_machine.h>
+#include <ags/app/ags_machine_editor.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_editor_collection_class_init(AgsMachineEditorCollectionClass *machine_editor_collection);
@@ -159,7 +163,41 @@ ags_machine_editor_collection_applicable_interface_init(AgsApplicableInterface *
 void
 ags_machine_editor_collection_init(AgsMachineEditorCollection *machine_editor_collection)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_collection),
+				 GTK_ORIENTATION_VERTICAL);
+  
   machine_editor_collection->connectable_flags = 0;
+
+  machine_editor_collection->channel_type = G_TYPE_NONE;
+
+  machine_editor_collection->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+
+  gtk_widget_set_halign(machine_editor_collection->enabled,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(machine_editor_collection->enabled,
+			GTK_ALIGN_START);
+  
+  gtk_box_append((GtkBox *) machine_editor_collection,
+		 (GtkWidget *) machine_editor_collection->enabled);
+
+  machine_editor_collection->bulk = NULL;
+
+  machine_editor_collection->bulk_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append((GtkBox *) machine_editor_collection,
+		 (GtkWidget *) machine_editor_collection->bulk_box);
+
+  machine_editor_collection->add_bulk = (GtkButton *) gtk_button_new();
+  gtk_button_set_icon_name(machine_editor_collection->add_bulk,
+			   "list-add");
+
+  gtk_widget_set_halign(machine_editor_collection->add_bulk,
+			GTK_ALIGN_END);
+  gtk_widget_set_valign(machine_editor_collection->add_bulk,
+			GTK_ALIGN_START);
+
+  gtk_box_append((GtkBox *) machine_editor_collection,
+		 (GtkWidget *) machine_editor_collection->add_bulk);
 }
 
 void
@@ -196,7 +234,9 @@ ags_machine_editor_collection_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL_TYPE:
-    g_value_set_gtype(value, machine_editor_collection->channel_type);
+    {
+      g_value_set_gtype(value, machine_editor_collection->channel_type);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -209,6 +249,8 @@ ags_machine_editor_collection_connect(AgsConnectable *connectable)
 {
   AgsMachineEditorCollection *machine_editor_collection;
 
+  GList *start_bulk, *bulk;
+
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(connectable);
 
   if((AGS_CONNECTABLE_CONNECTED & (machine_editor_collection->connectable_flags)) != 0){
@@ -217,13 +259,25 @@ ags_machine_editor_collection_connect(AgsConnectable *connectable)
 
   machine_editor_collection->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  //TODO:JK: implement me
+  bulk =
+    start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+
+  while(bulk != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(bulk->data));
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
 }
 
 void
 ags_machine_editor_collection_disconnect(AgsConnectable *connectable)
 {
   AgsMachineEditorCollection *machine_editor_collection;
+
+  GList *start_bulk, *bulk;
 
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(connectable);
 
@@ -233,7 +287,17 @@ ags_machine_editor_collection_disconnect(AgsConnectable *connectable)
   
   machine_editor_collection->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  //TODO:JK: implement me
+  bulk =
+    start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+
+  while(bulk != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(bulk->data));
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
 }
 
 void
@@ -241,9 +305,22 @@ ags_machine_editor_collection_set_update(AgsApplicable *applicable, gboolean upd
 {
   AgsMachineEditorCollection *machine_editor_collection;
 
+  GList *start_bulk, *bulk;
+
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(applicable);
 
-  //TODO:JK: implement me
+  bulk =
+    start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+
+  while(bulk != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(bulk->data),
+			      update);
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
 }
 
 void
@@ -251,9 +328,21 @@ ags_machine_editor_collection_apply(AgsApplicable *applicable)
 {
   AgsMachineEditorCollection *machine_editor_collection;
 
+  GList *start_bulk, *bulk;
+
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(applicable);
 
-  //TODO:JK: implement me
+  bulk =
+    start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+
+  while(bulk != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(bulk->data));
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
 }
 
 void
@@ -261,9 +350,90 @@ ags_machine_editor_collection_reset(AgsApplicable *applicable)
 {
   AgsMachineEditorCollection *machine_editor_collection;
 
+  GList *start_bulk, *bulk;
+
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(applicable);
 
-  //TODO:JK: implement me
+  /* reset */
+  bulk =
+    start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+
+  while(bulk != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(bulk->data));
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
+}
+
+/**
+ * ags_machine_editor_collection_get_bulk:
+ * @machine_editor_collection: the #AgsMachineEditorCollection
+ * 
+ * Get bulk.
+ * 
+ * Returns: the #GList-struct containig #AgsMachineEditorBulk
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_editor_collection_get_bulk(AgsMachineEditorCollection *machine_editor_collection)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE_EDITOR_COLLECTION(machine_editor_collection), NULL);
+
+  return(g_list_reverse(g_list_copy(machine_editor_collection->bulk)));
+}
+
+/**
+ * ags_machine_editor_collection_add_bulk:
+ * @machine_editor_collection: the #AgsMachineEditorCollection
+ * @bulk: the #AgsMachineEditorBulk
+ * 
+ * Add @bulk to @machine_editor_collection.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_editor_collection_add_bulk(AgsMachineEditorCollection *machine_editor_collection,
+				       AgsMachineEditorBulk *bulk)
+{
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_COLLECTION(machine_editor_collection));
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_BULK(bulk));
+
+  if(g_list_find(machine_editor_collection->bulk, bulk) == NULL){
+    machine_editor_collection->bulk = g_list_prepend(machine_editor_collection->bulk,
+						     bulk);
+    
+    gtk_box_append(machine_editor_collection->bulk_box,
+		   bulk);
+  }
+}
+
+/**
+ * ags_machine_editor_collection_remove_bulk:
+ * @machine_editor_collection: the #AgsMachineEditorCollection
+ * @bulk: the #AgsMachineEditorBulk
+ * 
+ * Remove @bulk from @machine_editor_collection.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_editor_collection_remove_bulk(AgsMachineEditorCollection *machine_editor_collection,
+					  AgsMachineEditorBulk *bulk)
+{
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_COLLECTION(machine_editor_collection));
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_BULK(bulk));
+
+  if(g_list_find(machine_editor_collection->bulk, bulk) != NULL){
+    machine_editor_collection->bulk = g_list_remove(machine_editor_collection->bulk,
+						    bulk);
+    
+    gtk_box_remove(machine_editor_collection->bulk_box,
+		   bulk);
+  }
 }
 
 /**

@@ -2757,6 +2757,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_callbacks.c \
 	ags/app/ags_machine_editor.c \
 	ags/app/ags_machine_editor_callbacks.c \
+	ags/app/ags_machine_editor_bulk.c \
+	ags/app/ags_machine_editor_bulk_callbacks.c \
 	ags/app/ags_machine_editor_dialog.c \
 	ags/app/ags_machine_editor_collection.c \
 	ags/app/ags_machine_editor_collection_callbacks.c \
