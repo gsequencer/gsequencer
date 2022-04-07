@@ -380,9 +380,9 @@ ags_matrix_init(AgsMatrix *matrix)
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
 
   gtk_widget_set_valign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(matrix->grid,
 		  (GtkWidget *) frame,
@@ -400,7 +400,7 @@ ags_matrix_init(AgsMatrix *matrix)
 							 0.025);
 
   gtk_widget_set_size_request(matrix->volume,
-			      gui_scale_factor * 16, gui_scale_factor * 100);
+			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
   gtk_box_append(volume_hbox,
 		 (GtkWidget *) matrix->volume);

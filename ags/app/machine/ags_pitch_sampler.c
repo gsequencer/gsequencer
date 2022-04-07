@@ -274,24 +274,42 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   /* create widgets */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(pitch_sampler)->frame,
 		      (GtkWidget *) vbox);
   
   /* hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   /* file */
   expander = gtk_expander_new(i18n("file"));
+
+  gtk_widget_set_hexpand(expander,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) expander);
+
+  pitch_sampler->pitch_sampler_file = NULL;
   
-  pitch_sampler->pitch_sampler_file = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							     0);
+  pitch_sampler->pitch_sampler_file_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+								 0);
+
+  gtk_box_set_spacing(pitch_sampler->pitch_sampler_file_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_expander_set_child(expander,
-			 (GtkWidget *) pitch_sampler->pitch_sampler_file);
+			 (GtkWidget *) pitch_sampler->pitch_sampler_file_box);
   
   /* add 1 sample */
   file = ags_pitch_sampler_file_new();
@@ -301,12 +319,23 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   /* control */
   control_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					0);
+
+  gtk_box_set_spacing(control_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_hexpand(control_vbox,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) control_vbox);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					 0);
+
+  gtk_box_set_spacing(filename_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(control_vbox,
 		 (GtkWidget *) filename_hbox);
 
@@ -329,11 +358,19 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 
   /* synth generator */
   frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
+
+  gtk_widget_set_hexpand(frame,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) frame);
 
   synth_generator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						0);
+
+  gtk_box_set_spacing(synth_generator_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) synth_generator_vbox);
   
@@ -344,6 +381,10 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   /* pitch function */
   pitch_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
+
+  gtk_box_set_spacing(pitch_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(synth_generator_vbox,
 		 (GtkWidget *) pitch_hbox);
 
@@ -380,6 +421,10 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   /* base note */
   base_note_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
+
+  gtk_box_set_spacing(base_note_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(synth_generator_vbox,
 		 (GtkWidget *) base_note_hbox);
 
@@ -394,12 +439,20 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 			     2);
   gtk_spin_button_set_value(pitch_sampler->lower,
 			    -48.0);
+
+  gtk_widget_set_halign((GtkWidget *) pitch_sampler->lower,
+			GTK_ALIGN_END);
+
   gtk_box_append(base_note_hbox,
 		 (GtkWidget *) pitch_sampler->lower);
   
   /* key count */
   key_count_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
+
+  gtk_box_set_spacing(key_count_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(synth_generator_vbox,
 		 (GtkWidget *) key_count_hbox);
 
@@ -412,12 +465,20 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									 1.0);
   gtk_spin_button_set_value(pitch_sampler->key_count,
 			    78.0);
+
+  gtk_widget_set_halign((GtkWidget *) pitch_sampler->key_count,
+			GTK_ALIGN_END);
+
   gtk_box_append((GtkBox *) key_count_hbox,
 		 (GtkWidget *) pitch_sampler->key_count);
 
   pitch_sampler->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
   gtk_widget_set_valign((GtkWidget *) pitch_sampler->update,
 			GTK_ALIGN_END);
+
+  gtk_widget_set_hexpand(pitch_sampler->update,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) pitch_sampler->update);
   
@@ -428,13 +489,23 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_widget_set_valign((GtkWidget *) frame,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
-  
+			GTK_ALIGN_FILL);  
+
+  gtk_widget_set_hexpand(frame,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) frame);
 
   aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
+
+  gtk_widget_set_hexpand(aliase_hbox,
+			 FALSE);
+
+  gtk_box_set_spacing(aliase_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) aliase_hbox);
   
@@ -519,15 +590,22 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
 
   gtk_widget_set_valign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
+  gtk_widget_set_hexpand(frame,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) frame);
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
+
+  gtk_box_set_spacing(volume_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   gtk_frame_set_child(frame,
 		      (GtkWidget *) volume_hbox);
   
@@ -537,7 +615,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 							   0.025);
   
   gtk_widget_set_size_request(pitch_sampler->volume,
-			      gui_scale_factor * 16, gui_scale_factor * 100);
+			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
   gtk_box_append(volume_hbox,
 		 (GtkWidget *) pitch_sampler->volume);
@@ -554,6 +632,15 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   
   /* LFO grid */
   lfo_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_hexpand(lfo_grid,
+			 FALSE);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) lfo_grid);
 
@@ -758,7 +845,7 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) pitch_sampler->lfo_tuning, "value-changed",
 			 G_CALLBACK(ags_pitch_sampler_lfo_tuning_callback), (gpointer) pitch_sampler);
 
-  g_signal_connect((GObject *) pitch_sampler->enable_aliase, "clicked",
+  g_signal_connect((GObject *) pitch_sampler->enable_aliase, "toggled",
 		   G_CALLBACK(ags_pitch_sampler_enable_aliase_callback), (gpointer) pitch_sampler);
 
   g_signal_connect((GObject *) pitch_sampler->aliase_a_amount, "value-changed",
@@ -850,7 +937,7 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
 
   /* aliase */
   g_object_disconnect((GObject *) pitch_sampler->enable_aliase,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_pitch_sampler_enable_aliase_callback),
 		      (gpointer) pitch_sampler,
 		      NULL);

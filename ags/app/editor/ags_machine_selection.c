@@ -19,6 +19,8 @@
 
 #include <ags/app/editor/ags_machine_selection.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/app/editor/ags_machine_selector.h>
 #include <ags/app/editor/ags_machine_radio_button.h>
 
@@ -144,6 +146,9 @@ ags_machine_selection_init(AgsMachineSelection *machine_selection)
 	       "modal", TRUE,
 	       "title", i18n("select machines"),
 	       NULL);
+
+  gtk_box_set_spacing(gtk_dialog_get_content_area((GtkDialog *) machine_selection),
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   machine_selection->radio_button = NULL;
 

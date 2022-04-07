@@ -20,6 +20,8 @@
 #include <ags/app/machine/ags_sfz_synth.h>
 #include <ags/app/machine/ags_sfz_synth_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_sfz_synth_class_init(AgsSFZSynthClass *sfz_synth);
@@ -245,12 +247,28 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   /* SFZ */
   sfz_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				    0);
+
+  gtk_widget_set_valign(sfz_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(sfz_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(sfz_hbox,
+			 FALSE);
+
+  gtk_box_set_spacing(sfz_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(sfz_synth)->frame,
 		      (GtkWidget *) sfz_hbox);
 
   /* file */
   sfz_file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					 0);  
+
+  gtk_box_set_spacing(sfz_file_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(sfz_hbox,
 		 (GtkWidget *) sfz_file_hbox);
 
@@ -282,6 +300,10 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   /* opcode */
   sfz_opcode_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					   0);
+
+  gtk_box_set_spacing(sfz_opcode_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(sfz_hbox,
 		 (GtkWidget *) sfz_opcode_hbox);
 
@@ -334,11 +356,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   /* effect control */
   effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				       0);
+
+  gtk_box_set_spacing(effect_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(sfz_hbox,
 		 (GtkWidget *) effect_vbox);
 
   /*  */
   synth_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(effect_vbox,
 		 (GtkWidget *) synth_grid);
 
@@ -449,6 +481,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(chorus_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(chorus_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(effect_vbox,
 		 (GtkWidget *) chorus_grid);
   

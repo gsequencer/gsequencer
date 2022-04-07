@@ -44,8 +44,10 @@ ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   }
 }
 
-gboolean
-ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
+void
+ags_ffplayer_draw_callback(GtkWidget *drawing_area,
+			   cairo_t *cr,
+			   int width, int height,
 			   AgsFFPlayer *ffplayer)
 {
   GtkStyleContext *style_context;
@@ -215,8 +217,6 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
   }
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
-
-  return(FALSE);
 }
 
 void

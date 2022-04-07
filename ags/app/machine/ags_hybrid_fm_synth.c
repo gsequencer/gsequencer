@@ -259,29 +259,55 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   /* widget */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(hybrid_fm_synth)->frame,
 		      (GtkWidget *) vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
   
   /* oscillator */
   osc_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				    0);
+
+  gtk_box_set_spacing(osc_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) osc_vbox);
 
     /* grid */
   synth_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(osc_vbox,
 		 (GtkWidget *) synth_0_grid);
 
   /* OSC 1 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -310,8 +336,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - octave */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - octave"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -346,8 +372,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - key */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - key"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -381,8 +407,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* OSC 1 - phase */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - phase"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  2, 1,
@@ -415,8 +441,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - volume */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  4, 1,
@@ -449,8 +475,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - LFO OSC */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - LFO OSC"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -479,8 +505,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - LFO frequency */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - LFO frequency"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  2, 2,
@@ -498,8 +524,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - LFO tuning */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - LFO tuning"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  2, 3,
@@ -532,8 +558,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 1 - LFO depth */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - LFO depth"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) label,
 		  4, 2,
@@ -566,13 +592,19 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* grid */
   synth_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(osc_vbox,
 		 (GtkWidget *) synth_1_grid);
 
   /* OSC 2 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -601,8 +633,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - octave */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - octave"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -637,8 +669,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - key */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - key"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -672,8 +704,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* OSC 2 - phase */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - phase"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  2, 1,
@@ -706,8 +738,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - volume */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  4, 1,
@@ -740,8 +772,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - LFO OSC */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - LFO OSC"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -770,8 +802,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - LFO frequency */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - LFO frequency"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  2, 2,
@@ -792,8 +824,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - LFO tuning */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - LFO tuning"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  2, 3,
@@ -826,8 +858,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 2 - LFO depth */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - LFO depth"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) label,
 		  4, 2,
@@ -860,13 +892,19 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* grid */
   synth_2_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_2_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_2_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(osc_vbox,
 		 (GtkWidget *) synth_2_grid);
 
   /* OSC 3 */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -895,8 +933,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - octave */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - octave"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -931,8 +969,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - key */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - key"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -966,8 +1004,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* OSC 3 - phase */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - phase"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  2, 1,
@@ -1000,8 +1038,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - volume */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  4, 1,
@@ -1034,8 +1072,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - LFO OSC */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - LFO OSC"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -1064,8 +1102,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - LFO frequency */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - LFO frequency"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  2, 2,
@@ -1083,8 +1121,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - LFO tuning */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - LFO tuning"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  2, 3,
@@ -1117,8 +1155,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* OSC 3 - LFO depth */
   label = (GtkLabel *) gtk_label_new(i18n("OSC 3 - LFO depth"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_2_grid,
 		  (GtkWidget *) label,
 		  4, 2,
@@ -1151,6 +1189,12 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* grid */
   misc_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(misc_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(misc_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) misc_grid);
 
@@ -1162,8 +1206,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("sequencer sign"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -1206,8 +1250,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* pitch */
   label = (GtkLabel *) gtk_label_new(i18n("pitch tuning"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -1240,8 +1284,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* noise */
   label = (GtkLabel *) gtk_label_new(i18n("noise gain"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(misc_grid,
 		  (GtkWidget *) label,
 		  6, 0,
@@ -1280,6 +1324,12 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* low pass grid */
   low_pass_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(low_pass_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(low_pass_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(band_hbox,
 		 (GtkWidget *) low_pass_grid);
 
@@ -1291,8 +1341,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* low pass q-lin */
   label = (GtkLabel *) gtk_label_new(i18n("low pass q-lin"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(low_pass_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -1325,8 +1375,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* low pass filter gain */
   label = (GtkLabel *) gtk_label_new(i18n("low pass filter gain"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(low_pass_grid,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -1359,6 +1409,12 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* high pass grid */
   high_pass_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(high_pass_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(high_pass_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(band_hbox,
 		 (GtkWidget *) high_pass_grid);
 
@@ -1370,8 +1426,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* high pass q-lin */
   label = (GtkLabel *) gtk_label_new(i18n("high pass q-lin"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(high_pass_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -1404,8 +1460,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* high pass filter gain */
   label = (GtkLabel *) gtk_label_new(i18n("high pass filter gain"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(high_pass_grid,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -1438,13 +1494,19 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(chorus_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(chorus_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) chorus_grid);
 
   /* chorus input volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus input volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -1477,8 +1539,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* chorus output volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus output volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -1511,8 +1573,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   
   /* chorus LFO */
   label = (GtkLabel *) gtk_label_new(i18n("chorus LFO"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -1541,8 +1603,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* chorus LFO frequency */
   label = (GtkLabel *) gtk_label_new(i18n("chorus LFO frequency"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  2, 1,
@@ -1556,8 +1618,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* chorus depth */
   label = (GtkLabel *) gtk_label_new(i18n("chorus depth"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -1590,8 +1652,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* chorus mix */
   label = (GtkLabel *) gtk_label_new(i18n("chorus mix"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 1,
@@ -1624,8 +1686,8 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 
   /* chorus delay */
   label = (GtkLabel *) gtk_label_new(i18n("chorus delay"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 2,

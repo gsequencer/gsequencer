@@ -295,16 +295,37 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* create widgets */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(ffplayer)->frame,
 		      (GtkWidget *) vbox);
   
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) grid);
   
   /* preset and instrument */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) hbox,
 			GTK_ALIGN_FILL);
@@ -341,6 +362,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					 0);
+
+  gtk_box_set_spacing(filename_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) filename_hbox);
 
@@ -371,6 +396,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* piano */
   piano_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				      2);
+
+  gtk_box_set_spacing(piano_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) piano_vbox,
 			GTK_ALIGN_FILL);
@@ -420,6 +448,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   synth_generator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						0);
+
+  gtk_box_set_spacing(synth_generator_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) synth_generator_vbox);
   
@@ -430,6 +462,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* pitch function */
   pitch_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
+
+  gtk_box_set_spacing(pitch_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(synth_generator_vbox,
 		 (GtkWidget *) pitch_hbox);
 
@@ -466,6 +502,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* base note */
   base_note_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
+
+  gtk_box_set_spacing(base_note_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(synth_generator_vbox,
 		 (GtkWidget *) base_note_hbox);
 
@@ -486,6 +526,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* key count */
   key_count_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
+
+  gtk_box_set_spacing(key_count_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(synth_generator_vbox,
 		 (GtkWidget *) key_count_hbox);
 
@@ -529,6 +573,13 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
+
+  gtk_widget_set_hexpand(aliase_hbox,
+			 FALSE);
+
+  gtk_box_set_spacing(aliase_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) aliase_hbox);
   
@@ -613,9 +664,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
 
   gtk_widget_set_valign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) frame,
@@ -624,6 +675,13 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
+
+  gtk_widget_set_hexpand(volume_hbox,
+			 FALSE);
+
+  gtk_box_set_spacing(volume_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(frame,
 		      (GtkWidget *) volume_hbox);
   
@@ -633,7 +691,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							   0.025);
   
   gtk_widget_set_size_request(ffplayer->volume,
-			      gui_scale_factor * 16, gui_scale_factor * 100);
+			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
   gtk_box_append(volume_hbox,
 		 (GtkWidget *) ffplayer->volume);
@@ -704,9 +762,10 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) ffplayer->instrument, "changed",
 			 G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
 
-
-  g_signal_connect((GObject *) ffplayer->drawing_area, "draw",
-                   G_CALLBACK(ags_ffplayer_draw_callback), (gpointer) ffplayer);
+  gtk_drawing_area_set_draw_func(ffplayer->drawing_area,
+				 ags_ffplayer_draw_callback,
+				 ffplayer,
+				 NULL);
 
   g_signal_connect((GObject *) ffplayer->drawing_area, "button_press_event",
                    G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback), (gpointer) ffplayer);
@@ -717,7 +776,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->update, "clicked",
 		   G_CALLBACK(ags_ffplayer_update_callback), (gpointer) ffplayer);
 
-  g_signal_connect((GObject *) ffplayer->enable_aliase, "clicked",
+  g_signal_connect((GObject *) ffplayer->enable_aliase, "toggled",
 		   G_CALLBACK(ags_ffplayer_enable_aliase_callback), (gpointer) ffplayer);
 
   g_signal_connect((GObject *) ffplayer->aliase_a_amount, "value-changed",
@@ -774,6 +833,11 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 		      (gpointer) ffplayer,
 		      NULL);
 
+  gtk_drawing_area_set_draw_func(ffplayer->drawing_area,
+				 NULL,
+				 NULL,
+				 NULL);
+
   g_object_disconnect((GObject *) ffplayer->drawing_area,
 		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback),
@@ -793,7 +857,7 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->enable_aliase,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_ffplayer_enable_aliase_callback),
 		      (gpointer) ffplayer,
 		      NULL);

@@ -20,6 +20,8 @@
 #include <ags/app/machine/ags_sf2_synth.h>
 #include <ags/app/machine/ags_sf2_synth_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_sf2_synth_class_init(AgsSF2SynthClass *sf2_synth);
@@ -253,12 +255,28 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   /* SF2 */
   sf2_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				    0);
+
+  gtk_widget_set_valign(sf2_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(sf2_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(sf2_hbox,
+			 FALSE);
+
+  gtk_box_set_spacing(sf2_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_frame_set_child(AGS_MACHINE(sf2_synth)->frame,
 		      (GtkWidget *) sf2_hbox);
 
   /* file */
   sf2_file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					 0);  
+
+  gtk_box_set_spacing(sf2_file_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(sf2_hbox,
 		 (GtkWidget *) sf2_file_hbox);
 
@@ -296,6 +314,10 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   
   sf2_preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					   0);
+
+  gtk_box_set_spacing(sf2_preset_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(sf2_hbox,
 		 (GtkWidget *) sf2_preset_hbox);
 
@@ -384,18 +406,28 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   /* effect control */
   effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				       0);
+
+  gtk_box_set_spacing(effect_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(sf2_hbox,
 		 (GtkWidget *) effect_vbox);
 
   /*  */
   synth_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(synth_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(effect_vbox,
 		 (GtkWidget *) synth_grid);
 
   /* WAV 1 - octave */
   label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - octave"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -430,8 +462,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* WAV 1 - key */
   label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - key"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -465,8 +497,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* WAV 1 - volume */
   label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -499,13 +531,19 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(chorus_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(chorus_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(effect_vbox,
 		 (GtkWidget *) chorus_grid);
   
   /* chorus input volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus input volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -538,8 +576,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus output volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus output volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -572,8 +610,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   
   /* chorus LFO */
   label = (GtkLabel *) gtk_label_new(i18n("chorus LFO"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -602,8 +640,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus LFO frequency */
   label = (GtkLabel *) gtk_label_new(i18n("chorus LFO frequency"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  2, 1,
@@ -617,8 +655,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus depth */
   label = (GtkLabel *) gtk_label_new(i18n("chorus depth"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -651,8 +689,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus mix */
   label = (GtkLabel *) gtk_label_new(i18n("chorus mix"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 1,
@@ -685,8 +723,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus delay */
   label = (GtkLabel *) gtk_label_new(i18n("chorus delay"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 2,

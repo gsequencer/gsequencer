@@ -312,9 +312,16 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_selector),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing((GtkBox *) machine_selector,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(GTK_BOX(machine_selector),
 		 GTK_WIDGET(hbox));
 

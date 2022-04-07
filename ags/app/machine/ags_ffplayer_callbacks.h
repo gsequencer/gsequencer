@@ -35,8 +35,10 @@ G_BEGIN_DECLS
 
 void ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
-gboolean ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
-				    AgsFFPlayer *ffplayer);
+void ags_ffplayer_draw_callback(GtkWidget *drawing_area,
+				cairo_t *cr,
+				int width, int height,
+				AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
