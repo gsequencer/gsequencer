@@ -153,6 +153,9 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   
   gdouble width, height;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(envelope_info),
+				 GTK_ORIENTATION_VERTICAL);
+
   envelope_info->flags = 0;
 
   envelope_info->version = AGS_ENVELOPE_INFO_DEFAULT_VERSION;
@@ -177,8 +180,14 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   height = cartesian->y_end - cartesian->y_start;
 
   /* cartesian - size, pack and redraw */
+  gtk_widget_set_valign(cartesian,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(cartesian,
+			GTK_ALIGN_START);
+
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
+
   gtk_box_append((GtkBox *) envelope_info,
 		 (GtkWidget *) cartesian);
 
@@ -236,11 +245,16 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 					      renderer,
 					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_Y,
 					      NULL);
+
+  gtk_widget_set_valign((GtkWidget *) envelope_info->tree_view,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) envelope_info->tree_view,
+			GTK_ALIGN_START);
   
   gtk_box_append((GtkBox *) envelope_info,
 		 (GtkWidget *) envelope_info->tree_view);
   
-  g_signal_connect(G_OBJECT(toggle_renderer), "toggled\0",
+  g_signal_connect(G_OBJECT(toggle_renderer), "toggled",
 		   G_CALLBACK(ags_envelope_info_plot_callback), envelope_info);
 }
 

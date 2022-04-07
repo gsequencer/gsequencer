@@ -276,17 +276,13 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->sync_thread = NULL;
 
   /* staging program */
-  audio_loop->do_fx_staging = FALSE;
+  audio_loop->do_fx_staging = TRUE;
 
-  audio_loop->staging_program = NULL;
+  audio_loop->staging_program = (guint *) g_malloc(sizeof(guint));
 
-  audio_loop->staging_program_count = 0;
-
-  ags_audio_loop_set_do_fx_staging((AgsAudioLoop *) audio_loop,
-				   TRUE);
-  ags_audio_loop_set_staging_program((AgsAudioLoop *) audio_loop,
-				     staging_program,
-				     1);
+  audio_loop->staging_program[0] = staging_program[0];
+  
+  audio_loop->staging_program_count = 1;
 }
 
 void

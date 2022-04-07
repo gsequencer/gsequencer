@@ -257,17 +257,13 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   channel_thread->sound_scope = -1;
 
   /* staging program */
-  channel_thread->do_fx_staging = FALSE;
+  channel_thread->do_fx_staging = TRUE;
 
-  channel_thread->staging_program = NULL;
+  channel_thread->staging_program = (guint *) g_malloc(sizeof(guint));
 
-  channel_thread->staging_program_count = 0;
-
-  ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
-				       TRUE);
-  ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
-					 staging_program,
-					 1);
+  channel_thread->staging_program[0] = staging_program[0];
+  
+  channel_thread->staging_program_count = 1;
 
   channel_thread->processing = FALSE;
 

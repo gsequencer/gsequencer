@@ -265,17 +265,13 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   audio_thread->sync_thread = NULL;
 
   /* staging program */
-  audio_thread->do_fx_staging = FALSE;
+  audio_thread->do_fx_staging = TRUE;
 
-  audio_thread->staging_program = NULL;
+  audio_thread->staging_program = (guint *) g_malloc(sizeof(guint));
 
-  audio_thread->staging_program_count = 0;
-
-  ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread,
-				     TRUE);
-  ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
-				       staging_program,
-				       1);
+  audio_thread->staging_program[0] = staging_program[0];
+  
+  audio_thread->staging_program_count = 1;
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     audio_thread->scope_data[i] = ags_audio_thread_scope_data_alloc();

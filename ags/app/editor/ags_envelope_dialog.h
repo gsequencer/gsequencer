@@ -44,8 +44,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ENVELOPE_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_DIALOG))
 #define AGS_ENVELOPE_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_DIALOG, AgsEnvelopeDialogClass))
 
-#define AGS_ENVELOPE_DIALOG_DEFAULT_VERSION "0.8.1"
-#define AGS_ENVELOPE_DIALOG_DEFAULT_BUILD_ID "CEST 29-04-2017 09:55"
+#define AGS_ENVELOPE_DIALOG_DEFAULT_VERSION "4.0.0"
+#define AGS_ENVELOPE_DIALOG_DEFAULT_BUILD_ID "Thu Apr  7 04:09:52 PM UTC 2022"
 
 typedef struct _AgsEnvelopeDialog AgsEnvelopeDialog;
 typedef struct _AgsEnvelopeDialogClass AgsEnvelopeDialogClass;
@@ -93,7 +93,9 @@ void ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog);
 
 void ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog);
 
-AgsEnvelopeDialog* ags_envelope_dialog_new(AgsMachine *machine);
+AgsEnvelopeDialog* ags_envelope_dialog_new(gchar *title,
+					   GtkWindow *transient_for,
+					   AgsMachine *machine);
 
 G_END_DECLS
 

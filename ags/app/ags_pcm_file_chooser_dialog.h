@@ -71,7 +71,7 @@ struct _AgsPCMFileChooserDialogClass
 GType ags_pcm_file_chooser_dialog_get_type(void);
 
 AgsPCMFileChooserDialog* ags_pcm_file_chooser_dialog_new(gchar *title,
-							 GtkWidget *parent);
+							 GtkWidget *transient_for);
 
 G_END_DECLS
 

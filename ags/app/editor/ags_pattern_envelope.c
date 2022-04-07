@@ -159,6 +159,9 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gdouble width, height;
   guint i;
   
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(pattern_envelope),
+				 GTK_ORIENTATION_VERTICAL);
+
   pattern_envelope->flags = 0;
 
   pattern_envelope->version = AGS_PATTERN_ENVELOPE_DEFAULT_VERSION;

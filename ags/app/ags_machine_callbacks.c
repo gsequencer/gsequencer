@@ -44,49 +44,6 @@ void ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint resp
 void ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
-//FIXME:JK: remove me
-#if 0
-void
-ags_machine_show_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  AgsAudio *audio;
-  AgsPlaybackDomain *playback_domain;
-  
-  guint i;
-
-  static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
-  };
-
-  audio = machine->audio;
-
-  g_object_get(audio,
-	       "playback-domain", &playback_domain,
-	       NULL);
-
-  if(playback_domain != NULL){
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsThread *audio_thread;
-	  
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  i);
-
-      if(audio_thread != NULL){
-	ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread,
-					   TRUE);
-	ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
-					     staging_program,
-					     1);
-	    
-	g_object_unref(audio_thread);
-      }
-    }
-    
-    g_object_unref(playback_domain);
-  }
-}
-#endif
-
 void
 ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)
 {
@@ -594,7 +551,26 @@ void
 ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 			      AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsEnvelopeDialog *envelope_dialog;
+
+  gchar *title;
+  
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  title = g_strdup_printf("%s:%s %s",
+			  G_OBJECT_TYPE_NAME(machine),
+			  machine->machine_name,
+			  i18n("envelope"));
+  
+  envelope_dialog = ags_envelope_dialog_new(title,
+					    window,
+					    machine);
+
+  gtk_widget_show((GtkWidget *) envelope_dialog);
+  
+  g_free(title);
 }
 
 void
@@ -732,162 +708,7 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
   
   guint i;
 
-  static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
-  };
-
   audio = machine->audio;
-
-  start_output = NULL;
-  start_input = NULL;
-
-  g_object_get(audio,
-	       "output", &start_output,
-	       "input", &start_input,
-	       NULL);
-
-  if(audio_channels > audio_channels_old){
-    /* AgsOutput */
-    channel = start_output;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-
-    next_pad = NULL;
-    
-    while(channel != NULL){      
-      /* get some fields */
-      next_pad = ags_channel_next_pad(channel);
-      
-      next_channel = ags_channel_nth(channel,
-				     audio_channels_old);
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-      
-      channel = next_channel;
-      
-      while(channel != next_pad && channel != NULL){
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
-						   TRUE);
-	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
-    }
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
-
-    /* AgsInput */
-    channel = start_input;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-
-    next_pad = NULL;
-    
-    while(channel != NULL){      
-      /* get some fields */
-      next_pad = ags_channel_next_pad(channel);
-
-      next_channel = ags_channel_nth(channel,
-				     audio_channels_old);
-      
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-      
-      channel = next_channel;
-      
-      while(channel != next_pad && channel != NULL){
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
-						   TRUE);
-	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
-    }
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
-  }
-   
-  /* unref */
-  if(start_output != NULL){
-    g_object_unref(start_output);
-  }
-
-  if(start_input != NULL){
-    g_object_unref(start_input);
-  }
   
   /* resize */
   if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
@@ -957,129 +778,6 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 
   guint audio_channels;
   guint i;
-
-  static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
-  };
-
-  audio = machine->audio;
-
-  start_output = NULL;
-  start_input = NULL;
-  
-  audio_channels = 0;
-
-  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-    if(pads > pads_old){
-      /* get some fields */
-      g_object_get(audio,
-		   "input", &start_input,
-		   "audio-channels", &audio_channels,
-		   NULL);
-
-      /* AgsOutput */
-      channel = ags_channel_pad_nth(start_input,
-				    pads_old);
-      
-      while(channel != NULL){
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
-						   TRUE);
-	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(start_input != NULL){
-	g_object_unref(start_input);
-      }
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-    }
-  }else{
-    if(pads > pads_old){
-      /* get some fields */
-      g_object_get(audio,
-		   "output", &start_output,
-		   "audio-channels", &audio_channels,
-		   NULL);
-
-      /* AgsOutput */
-      channel = ags_channel_pad_nth(start_output,
-				    pads_old);
-      
-      while(channel != NULL){
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
-						   TRUE);
-	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(start_output != NULL){
-	g_object_unref(start_output);
-      }
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-    }
-  }
   
   /* resize */
   if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){

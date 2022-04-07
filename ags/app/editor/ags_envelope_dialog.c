@@ -176,14 +176,6 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 {
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
-  
-  gtk_window_set_title((GtkWindow *) envelope_dialog,
-		       i18n("Envelope"));
-
-  g_object_set(envelope_dialog,
-	       "default-width", 400,
-	       "default-height", 450,
-	       NULL);
 
   envelope_dialog->flags = 0;
   envelope_dialog->connectable_flags = 0;
@@ -222,6 +214,9 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->pattern_envelope_scrolled_window = NULL;
   envelope_dialog->pattern_envelope = NULL;
+
+  gtk_window_set_default_size(envelope_dialog,
+			      800, 600);
   
   /* GtkButton's in GtkDialog->action_area  */
   envelope_dialog->apply = (GtkButton *) gtk_dialog_add_button(GTK_DIALOG(envelope_dialog),
@@ -486,6 +481,8 @@ ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
 
 /**
  * ags_envelope_dialog_new:
+ * @title: the title
+ * @transient_for: the #GtkWindow
  * @machine: the assigned machine.
  *
  * Creates an #AgsEnvelopeDialog
@@ -495,11 +492,15 @@ ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
  * Since: 3.0.0
  */
 AgsEnvelopeDialog*
-ags_envelope_dialog_new(AgsMachine *machine)
+ags_envelope_dialog_new(gchar *title,
+			GtkWindow *transient_for,
+			AgsMachine *machine)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
   envelope_dialog = (AgsEnvelopeDialog *) g_object_new(AGS_TYPE_ENVELOPE_DIALOG,
+						       "title", title,
+						       "transient-for", transient_for,
 						       "machine", machine,
 						       NULL);
 
