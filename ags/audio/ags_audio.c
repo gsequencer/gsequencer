@@ -15022,9 +15022,16 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       }
       
       if(audio_channels > audio_file->file_audio_channels){
-	channel = ags_channel_nth(channel,
-				  audio_channels - audio_file->file_audio_channels);
-	g_object_unref(channel);
+	AgsChannel *nth_channel;
+	
+	nth_channel = ags_channel_nth(channel,
+				      audio_channels - audio_file->file_audio_channels);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
+
+	channel = nth_channel;
       }
 
       g_object_run_dispose(audio_file);

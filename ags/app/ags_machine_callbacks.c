@@ -517,7 +517,7 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
   ags_applicable_reset(AGS_APPLICABLE(machine_editor_dialog->machine_editor));
 
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor_dialog->machine_editor));
-  
+    
   gtk_widget_show(machine_editor_dialog);
 
   g_signal_connect(machine_editor_dialog, "response",
@@ -637,12 +637,18 @@ ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine 
     
     for(i = 0; i < i_stop; i++){
       GFile *current_file;
+
+      gchar *path;
       
       current_file = g_list_model_get_item(file,
 					   i);
+
+      path = g_file_get_path(current_file);
+
+      g_message("%s", path);
       
       filename = g_slist_append(filename,
-				g_file_get_path(current_file));
+				path);
     }
     
     ags_machine_open_files(machine,

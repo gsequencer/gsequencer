@@ -527,7 +527,7 @@ ags_machine_editor_pad_remove_line(AgsMachineEditorPad *machine_editor_pad,
 
 /**
  * ags_machine_editor_pad_new:
- * @channel_type: the channel type
+ * @channel: the #AgsChannel
  *
  * Creates an #AgsMachineEditorPad
  *

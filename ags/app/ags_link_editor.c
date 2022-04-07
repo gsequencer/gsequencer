@@ -502,20 +502,33 @@ ags_link_editor_reset(AgsApplicable *applicable)
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
-
-    gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
-			     FALSE);
-
+    
     if(found){
+      guint audio_channels;
+      
       /* set channel link */
       gtk_combo_box_set_active(link_editor->combo, i);
 
+      audio_channels  = ags_audio_get_audio_channels(link_machine->audio);
+      
+      gtk_spin_button_set_range(link_editor->spin_button,
+				0.0, (gdouble) audio_channels);
+      
       if(link_channel == NULL){
+	gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+				 FALSE);
+
 	gtk_spin_button_set_value(link_editor->spin_button, 0);
       }else{
+	gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+				 TRUE);
+
 	gtk_spin_button_set_value(link_editor->spin_button, link_channel->line);
       }
     }else{
+      gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+			       FALSE);
+
       gtk_combo_box_set_active(link_editor->combo,
 			       0);
     }

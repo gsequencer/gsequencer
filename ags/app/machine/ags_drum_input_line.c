@@ -250,6 +250,10 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_PLAYBACK));
     
     /* get some fields */
+    output_soundcard = NULL;
+
+    first_recycling = NULL;
+    
     g_object_get(channel,
 		 "output-soundcard", &output_soundcard,
 		 "first-recycling", &first_recycling,
@@ -266,6 +270,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 #endif
 
     /* get some fields */
+    start_list = NULL;
+    
     g_object_get(first_recycling,
 		 "audio-signal", &start_list,
 		 NULL);

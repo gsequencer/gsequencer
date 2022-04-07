@@ -405,7 +405,7 @@ ags_machine_editor_listing_reset(AgsApplicable *applicable)
 
       AgsChannel *current_channel;
 
-      current_channel = ags_channel_pad_nth(start_output,
+      current_channel = ags_channel_pad_nth(start_input,
 					    i);
       
       pad = ags_machine_editor_pad_new(current_channel);

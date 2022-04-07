@@ -10344,7 +10344,7 @@ ags_channel_recall_done_callback(AgsRecall *recall,
   gint sound_scope;
 
   if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
-     (AGS_IS_FX_PLAYBACK_CHANNEL_PROCESSOR(recall))){
+     AGS_IS_FX_PLAYBACK_CHANNEL_PROCESSOR(recall)){
     sound_scope = ags_recall_get_sound_scope(recall);
 
     if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){

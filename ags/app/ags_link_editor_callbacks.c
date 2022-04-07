@@ -30,16 +30,6 @@ int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint resp
 
 #define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 
-//FIXME:JK: remove me
-#if 0
-void
-ags_link_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLinkEditor *link_editor)
-{
-  //TODO:JK: missing mutex
-
-}
-#endif
-
 void
 ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 {
