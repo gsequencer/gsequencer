@@ -20,6 +20,8 @@
 #include <ags/app/ags_machine_editor_line.h>
 #include <ags/app/ags_machine_editor_line_callbacks.h>
 
+#include <ags/app/ags_machine_editor.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_editor_line_class_init(AgsMachineEditorLineClass *machine_editor_line);
@@ -159,7 +161,12 @@ ags_machine_editor_line_applicable_interface_init(AgsApplicableInterface *applic
 void
 ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_line),
+				 GTK_ORIENTATION_VERTICAL);
+  
   machine_editor_line->connectable_flags = 0;
+
+  machine_editor_line->parent_pad = NULL;
 
   machine_editor_line->channel = NULL;
 
@@ -241,7 +248,8 @@ ags_machine_editor_line_connect(AgsConnectable *connectable)
 
   machine_editor_line->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  //TODO:JK: implement me
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->link_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor_line->line_member_editor));
 }
 
 void
@@ -257,7 +265,8 @@ ags_machine_editor_line_disconnect(AgsConnectable *connectable)
   
   machine_editor_line->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  //TODO:JK: implement me
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->link_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor_line->line_member_editor));
 }
 
 void
@@ -267,7 +276,10 @@ ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update)
 
   machine_editor_line = AGS_MACHINE_EDITOR_LINE(applicable);
 
-  //TODO:JK: implement me
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor_line->link_editor),
+			    update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor_line->line_member_editor),
+			    update);
 }
 
 void
@@ -277,7 +289,8 @@ ags_machine_editor_line_apply(AgsApplicable *applicable)
 
   machine_editor_line = AGS_MACHINE_EDITOR_LINE(applicable);
 
-  //TODO:JK: implement me
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->link_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor_line->line_member_editor));
 }
 
 void
@@ -286,8 +299,9 @@ ags_machine_editor_line_reset(AgsApplicable *applicable)
   AgsMachineEditorLine *machine_editor_line;
 
   machine_editor_line = AGS_MACHINE_EDITOR_LINE(applicable);
-
-  //TODO:JK: implement me
+  
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->link_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor_line->line_member_editor));
 }
 
 /**

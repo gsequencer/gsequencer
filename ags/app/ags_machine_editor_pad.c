@@ -163,6 +163,9 @@ ags_machine_editor_pad_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_machine_editor_pad_init(AgsMachineEditorPad *machine_editor_pad)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_pad),
+				 GTK_ORIENTATION_VERTICAL);
+
   machine_editor_pad->connectable_flags = 0;
 
   machine_editor_pad->channel = NULL;
@@ -374,6 +377,8 @@ ags_machine_editor_pad_reset(AgsApplicable *applicable)
     return;
   }
   
+  machine = machine_editor->machine;
+
   if(machine_editor_pad->channel == NULL){
     return;
   }
@@ -481,6 +486,8 @@ ags_machine_editor_pad_add_line(AgsMachineEditorPad *machine_editor_pad,
   if(g_list_find(machine_editor_pad->line, line) == NULL){
     machine_editor_pad->line = g_list_prepend(machine_editor_pad->line,
 					      line);
+
+    line->parent_pad = machine_editor_pad;
     
     gtk_box_append(machine_editor_pad->line_box,
 		   line);
@@ -506,6 +513,8 @@ ags_machine_editor_pad_remove_line(AgsMachineEditorPad *machine_editor_pad,
   if(g_list_find(machine_editor_pad->line, line) != NULL){
     machine_editor_pad->line = g_list_remove(machine_editor_pad->line,
 					     line);
+
+    line->parent_pad = NULL;
     
     gtk_box_remove(machine_editor_pad->line_box,
 		   line);

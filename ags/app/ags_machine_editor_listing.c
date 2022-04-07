@@ -163,12 +163,21 @@ ags_machine_editor_listing_applicable_interface_init(AgsApplicableInterface *app
 void
 ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_listing),
+				 GTK_ORIENTATION_VERTICAL);
+  
   machine_editor_listing->flags = 0;
   machine_editor_listing->connectable_flags = 0;
 
   machine_editor_listing->channel_type = G_TYPE_NONE;
 
   machine_editor_listing->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+
+  gtk_widget_set_halign(machine_editor_listing->enabled,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(machine_editor_listing->enabled,
+			GTK_ALIGN_START);
+  
   gtk_box_append((GtkBox *) machine_editor_listing,
 		 (GtkWidget *) machine_editor_listing->enabled);
 

@@ -41,6 +41,7 @@ void ags_machine_recall_set_loop(AgsMachine *machine,
 void ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+void ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 //FIXME:JK: remove me
@@ -240,6 +241,7 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
   AgsWindow *window;
 
   GList *start_list, *list;
+  GList *prev;
   
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
@@ -253,9 +255,34 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
     gtk_box_reorder_child_after(window->machine_box,
 				machine,
 				list->prev->prev->data);
-  }
 
-  g_list_free(start_list);
+    prev = list->prev;
+    
+    start_list = g_list_remove(start_list,
+			       machine);
+
+    start_list = g_list_insert_before(start_list,
+				      prev,
+				      machine);
+    
+    g_list_free(window->machine);
+
+    window->machine = g_list_reverse(start_list);
+  }else if(list->prev != NULL){    
+    gtk_box_reorder_child_after(window->machine_box,
+				machine,
+				NULL);
+
+    start_list = g_list_remove(start_list,
+			       machine);
+
+    start_list = g_list_prepend(start_list,
+				machine);
+    
+    g_list_free(window->machine);
+
+    window->machine = g_list_reverse(start_list);
+  }
 }
 
 void
@@ -265,6 +292,7 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
   AgsWindow *window;
 
   GList *start_list, *list;
+  GList *next_next;
   
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
@@ -278,9 +306,25 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
     gtk_box_reorder_child_after(window->machine_box,
 				machine,
 				list->next->data);
-  }
 
-  g_list_free(start_list);
+    next_next = list->next->next;
+    
+    start_list = g_list_remove(start_list,
+			       machine);
+
+    if(next_next != NULL){
+      start_list = g_list_insert_before(start_list,
+					next_next,
+					machine);
+    }else{
+      start_list = g_list_append(start_list,
+				 machine);
+    }
+    
+    g_list_free(window->machine);
+
+    window->machine = g_list_reverse(start_list);
+  }
 }
 
 void
@@ -483,6 +527,16 @@ ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    ags_applicable_apply(AGS_APPLICABLE(AGS_MACHINE_EDITOR_DIALOG(widget)->machine_editor));    
+  }
+
+  gtk_window_destroy(widget);
+}
+
+void
 ags_machine_properties_callback(GAction *action, GVariant *parameter,
 				AgsMachine *machine)
 {
@@ -502,13 +556,17 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
 
   ags_machine_editor_set_machine(machine_editor_dialog->machine_editor,
 				 machine);
+  
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor_dialog->machine_editor));
 
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor_dialog->machine_editor));
+  
   gtk_widget_show(machine_editor_dialog);
 
-
+  g_signal_connect(machine_editor_dialog, "response",
+		   G_CALLBACK(ags_machine_editor_dialog_response_callback), machine);
+  
   g_free(str);
-
-  //TODO:JK: implement me
 }
 
 void

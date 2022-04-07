@@ -132,8 +132,8 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(link_editor),
 				 GTK_ORIENTATION_HORIZONTAL);
 
-  g_signal_connect_after((GObject *) link_editor, "parent_set",
-			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
+  //  g_signal_connect_after((GObject *) link_editor, "notify::parent",
+  //			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
 
   link_editor->flags = 0;
   link_editor->connectable_flags = 0;
@@ -236,7 +236,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
     machine_editor_line = AGS_MACHINE_EDITOR_LINE(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 									  AGS_TYPE_MACHINE_EDITOR_LINE));
 
-    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(machine_editor_line),
+    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(machine_editor_line->parent_pad,
 								AGS_TYPE_MACHINE_EDITOR));
 
     machine = machine_editor->machine;
@@ -343,28 +343,104 @@ ags_link_editor_apply(AgsApplicable *applicable)
 void
 ags_link_editor_reset(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
   AgsLinkEditor *link_editor;
   AgsMachineEditor *machine_editor;
   AgsMachineEditorLine *machine_editor_line;
 
   GtkTreeModel *model;
 
+  AgsAudio *audio;
+  AgsChannel *channel;
+
   GtkTreeIter iter;
 
   link_editor = AGS_LINK_EDITOR(applicable);
 
-  machine_editor_line = AGS_MACHINE_EDITOR_LINE(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
-									AGS_TYPE_MACHINE_EDITOR_LINE));
+  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor(link_editor,
+									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(machine_editor_line),
-							      AGS_TYPE_MACHINE_EDITOR));
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_line->parent_pad,
+								AGS_TYPE_MACHINE_EDITOR);
 
-  if(machine_editor == NULL){
+  model = gtk_combo_box_get_model(link_editor->combo);
+
+  if(GTK_IS_LIST_STORE(model)){
+    gtk_list_store_clear(GTK_LIST_STORE(model));
+  }
+  
+  if(machine_editor == NULL ||
+     machine_editor->machine == NULL){
     return;
   }
   
-  model = gtk_combo_box_get_model(link_editor->combo);
+  machine = machine_editor->machine;
 
+  if(machine_editor_line == NULL){
+    return;
+  }
+  
+  channel = machine_editor_line->channel;
+  
+  if(channel != NULL){
+    GtkTreeIter iter;
+
+    g_object_get(channel,
+		 "audio", &audio,
+		 NULL);
+
+    if(audio != NULL){
+      //FIXME:JK: don't access AgsAudio to obtain widget	    
+      model = GTK_TREE_MODEL(ags_machine_get_possible_links(machine));
+  
+      if(AGS_IS_INPUT(machine_editor_line->channel) &&
+	 (AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
+	 ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
+	  ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
+	AgsFileLink *file_link;
+	  
+	gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+
+	g_object_get(channel,
+		     "file-link", &file_link,
+		     NULL);
+      
+	if(file_link != NULL){
+	  gchar *filename;
+
+	  /* get some fields */
+	  g_object_get(file_link,
+		       "filename", &filename,
+		       NULL);
+
+	  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			     0, g_strdup_printf("file://%s", filename),
+			     1, NULL,
+			     -1);
+	  //FIXME:JK: 
+	  //	    gtk_combo_box_set_active_iter(link_editor->combo,
+	  //				  &iter);
+
+	  g_free(filename);
+
+	  g_object_unref(file_link);
+	}else{
+	  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			     0, "file://",
+			     1, NULL,
+			     -1);
+	}
+
+      }
+
+      gtk_combo_box_set_model(link_editor->combo,
+			      model);
+
+      g_object_unref(audio);
+    }
+  }
+ 
+  /* reset */  
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
     AgsMachine *machine, *link_machine, *link;

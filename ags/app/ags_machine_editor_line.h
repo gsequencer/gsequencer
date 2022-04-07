@@ -49,6 +49,8 @@ struct _AgsMachineEditorLine
   GtkBox box;
 
   guint connectable_flags;
+
+  GtkWidget *parent_pad;
   
   AgsChannel *channel;
   

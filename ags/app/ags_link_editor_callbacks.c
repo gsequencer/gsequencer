@@ -30,89 +30,15 @@ int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint resp
 
 #define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 
+//FIXME:JK: remove me
+#if 0
 void
 ags_link_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLinkEditor *link_editor)
 {
-  AgsMachine *machine;
-  AgsMachineEditorLine *machine_editor_line;
-
-  AgsAudio *audio;
-  AgsChannel *channel;
-
-  GtkTreeModel *model;
-
-  if(old_parent != NULL){
-    return;
-  }
-
   //TODO:JK: missing mutex
-  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor(widget,
-									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  if(machine_editor_line != NULL){
-    channel = machine_editor_line->channel;
-  
-    if(channel != NULL){
-      GtkTreeIter iter;
-
-      g_object_get(channel,
-		   "audio", &audio,
-		   NULL);
-
-      if(audio != NULL){
-	//FIXME:JK: don't access AgsAudio to obtain widget	
-	machine = AGS_MACHINE(audio->machine_widget);
-    
-	model = GTK_TREE_MODEL(ags_machine_get_possible_links(machine));
-  
-	if(AGS_IS_INPUT(machine_editor_line->channel) &&
-	   (AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
-	   ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
-	    ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
-	  AgsFileLink *file_link;
-	  
-	  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-
-	  g_object_get(channel,
-		       "file-link", &file_link,
-		       NULL);
-      
-	  if(file_link != NULL){
-	    gchar *filename;
-
-	    /* get some fields */
-	    g_object_get(file_link,
-			 "filename", &filename,
-			 NULL);
-
-	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			       0, g_strdup_printf("file://%s", filename),
-			       1, NULL,
-			       -1);
-	    //FIXME:JK: 
-	    //	    gtk_combo_box_set_active_iter(link_editor->combo,
-	    //				  &iter);
-
-	    g_free(filename);
-
-	    g_object_unref(file_link);
-	  }else{
-	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			       0, "file://",
-			       1, NULL,
-			       -1);
-	  }
-
-	}
-
-	gtk_combo_box_set_model(link_editor->combo,
-				model);
-
-	g_object_unref(audio);
-      }
-    }
-  }  
 }
+#endif
 
 void
 ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
