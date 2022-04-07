@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -235,8 +235,12 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   gdouble frequency;
   guint samplerate;
   guint buffer_size;
-  guint i;
-  
+  guint i;  
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
   thread = (AgsThread *) audio_loop;
 
   ags_thread_set_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
@@ -274,15 +278,15 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* staging program */
   audio_loop->do_fx_staging = FALSE;
 
-  audio_loop->staging_program = g_malloc(3 * sizeof(guint));
+  audio_loop->staging_program = NULL;
 
-  audio_loop->staging_program[0] = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-				    AGS_SOUND_STAGING_AUTOMATE |
-				    AGS_SOUND_STAGING_RUN_PRE);
-  audio_loop->staging_program[1] = (AGS_SOUND_STAGING_RUN_INTER);
-  audio_loop->staging_program[2] = (AGS_SOUND_STAGING_RUN_POST);
+  audio_loop->staging_program_count = 0;
 
-  audio_loop->staging_program_count = 3;
+  ags_audio_loop_set_do_fx_staging((AgsAudioLoop *) audio_loop,
+				   TRUE);
+  ags_audio_loop_set_staging_program((AgsAudioLoop *) audio_loop,
+				     staging_program,
+				     1);
 }
 
 void

@@ -553,7 +553,7 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
     machine->machine_editor_dialog = ags_machine_editor_dialog_new(str,
 								   (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
 													 AGS_TYPE_WINDOW));
-
+  
   ags_machine_editor_set_machine(machine_editor_dialog->machine_editor,
 				 machine);
   
@@ -655,6 +655,8 @@ ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine 
     
     file = gtk_file_chooser_get_files(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
 
+    filename = NULL;
+    
     i_stop = g_list_model_get_n_items(file);
     
     for(i = 0; i < i_stop; i++){
@@ -664,7 +666,7 @@ ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine 
 					   i);
       
       filename = g_slist_append(filename,
-				g_file_get_path(file));
+				g_file_get_path(current_file));
     }
     
     ags_machine_open_files(machine,

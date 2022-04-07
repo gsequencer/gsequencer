@@ -91,6 +91,9 @@ ags_machine_editor_dialog_init(AgsMachineEditorDialog *machine_editor_dialog)
   
   gtk_box_append(gtk_dialog_get_content_area(machine_editor_dialog),
 		 machine_editor_dialog->machine_editor);
+
+  gtk_window_set_default_size(machine_editor_dialog,
+			      800, 600);
   
   gtk_dialog_add_buttons(machine_editor_dialog,
 			 i18n("_OK"),

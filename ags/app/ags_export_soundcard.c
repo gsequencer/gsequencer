@@ -160,6 +160,22 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+
   gtk_box_append((GtkBox *) export_soundcard,
 		 (GtkWidget *) grid);
 

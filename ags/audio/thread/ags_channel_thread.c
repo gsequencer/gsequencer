@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -217,6 +217,10 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   guint samplerate;
   guint buffer_size;
   
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
   thread = (AgsThread *) channel_thread;
 
   ags_thread_set_flags(thread, (AGS_THREAD_START_SYNCED_FREQ |
@@ -255,15 +259,15 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   /* staging program */
   channel_thread->do_fx_staging = FALSE;
 
-  channel_thread->staging_program = g_malloc(3 * sizeof(guint));
+  channel_thread->staging_program = NULL;
 
-  channel_thread->staging_program[0] = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-					AGS_SOUND_STAGING_AUTOMATE |
-					AGS_SOUND_STAGING_RUN_PRE);
-  channel_thread->staging_program[1] = (AGS_SOUND_STAGING_RUN_INTER);
-  channel_thread->staging_program[2] = (AGS_SOUND_STAGING_RUN_POST);
+  channel_thread->staging_program_count = 0;
 
-  channel_thread->staging_program_count = 3;
+  ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
+				       TRUE);
+  ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
+					 staging_program,
+					 1);
 
   channel_thread->processing = FALSE;
 

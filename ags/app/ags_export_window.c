@@ -144,6 +144,20 @@ ags_export_window_init(AgsExportWindow *export_window)
   /* pack */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_FILL);
+  
+  gtk_widget_set_vexpand(vbox,
+			 FALSE);
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_window_set_child((AgsWindow *) export_window,
 		       (GtkWidget *) vbox);
 
@@ -175,17 +189,30 @@ ags_export_window_init(AgsExportWindow *export_window)
 		 (GtkWidget *) export_window->exclude_sequencer);
   
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) grid);
 
   /* mode */
   label = (GtkLabel *) gtk_label_new(i18n("mode"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
 
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_hexpand((GtkWidget *) label,
@@ -219,12 +246,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* tact */
   label = (GtkLabel *) gtk_label_new(i18n("tact"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
 
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_hexpand((GtkWidget *) label,
@@ -253,12 +277,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* time */
   label = (GtkLabel *) gtk_label_new(i18n("time"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
 
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_hexpand((GtkWidget *) label,
@@ -274,6 +295,9 @@ ags_export_window_init(AgsExportWindow *export_window)
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_FILL);
@@ -300,11 +324,25 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   export_window->export_soundcard_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 							       0);
+
+  gtk_box_set_spacing(export_window->export_soundcard_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) export_window->export_soundcard_box);
 
   /* add */
   export_window->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+  
+  gtk_widget_set_halign((GtkWidget *) export_window->add,
+			GTK_ALIGN_END);
+  gtk_widget_set_valign((GtkWidget *) export_window->add,
+			GTK_ALIGN_START);
+  gtk_widget_set_hexpand((GtkWidget *) export_window->add,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) export_window->add,
+			 TRUE);
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) export_window->add);
 
@@ -314,12 +352,19 @@ ags_export_window_init(AgsExportWindow *export_window)
   /* export */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("export"));
   gtk_box_append(hbox,
 		 (GtkWidget *) export_window->export);
+
+  gtk_window_set_default_size(export_window,
+			      800, 600);
 }
 
 void

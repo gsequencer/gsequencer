@@ -160,6 +160,9 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 		  0, 2,
 		  1, 1);
 
+  gtk_window_set_default_size(pcm_file_chooser_dialog,
+			      800, 600);
+
   /* file chooser */  
   gtk_dialog_add_buttons((GtkDialog *) pcm_file_chooser_dialog,
 			 "_Cancel", GTK_RESPONSE_CANCEL,

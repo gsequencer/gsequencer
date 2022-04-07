@@ -228,6 +228,9 @@ ags_preferences_init(AgsPreferences *preferences)
 			     GTK_WIDGET(preferences->server_preferences),
 			     gtk_label_new(i18n("server")));
   }
+
+  gtk_window_set_default_size(preferences,
+			      800, 600);
   
   gtk_dialog_add_buttons((GtkDialog *) preferences,
 			 i18n("_Apply"), GTK_RESPONSE_APPLY,
@@ -247,7 +250,7 @@ ags_preferences_dispose(GObject *gobject)
 				  NULL);
 
   /* call parent */
-  G_OBJECT_CLASS(ags_preferences_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_preferences_parent_class)->dispose(gobject);
 }
 
 void
