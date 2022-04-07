@@ -24,6 +24,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator);
@@ -137,6 +139,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   GtkGrid *grid;
   GtkBox *hbox;
   GtkBox *sync_box;
+  GtkLabel *label;
 
   GtkCellRenderer *cell_renderer;
 
@@ -146,6 +149,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   AgsConfig *config;
 
   guint samplerate;
+  guint x, y;
   guint i;
 
   config = ags_config_get_instance();
@@ -154,6 +158,12 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->connectable_flags = 0;
   
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child((GtkFrame *) fm_oscillator,
 		      (GtkWidget *) grid);
 
@@ -162,8 +172,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->selector = gtk_check_button_new();
   
   /* wave */
+  label = gtk_label_new(i18n("wave"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+  
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("wave")),
+		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
 
@@ -218,8 +233,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   gtk_combo_box_set_active(fm_oscillator->wave, 0);
 
   /* other controls */
+  label = gtk_label_new(i18n("attack"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("attack")),
+		  (GtkWidget *) label,
 		  2, 0,
 		  1, 1);
   fm_oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
@@ -229,8 +249,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  3, 0,
 		  1, 1);
 
+  label = gtk_label_new(i18n("length"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("length")),
+		  (GtkWidget *) label,
 		  4, 0,
 		  1, 1);
   fm_oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
@@ -240,8 +265,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  5, 0,
 		  1, 1);
 
+  label = gtk_label_new(i18n("phase"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("phase")),
+		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
   fm_oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
@@ -251,8 +281,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  1, 1,
 		  1, 1);
 
+  label = gtk_label_new(i18n("frequency"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("frequency")),
+		  (GtkWidget *) label,
 		  2, 1,
 		  1, 1);
   fm_oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 100000.0, 1.0);
@@ -264,8 +299,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  3, 1,
 		  1, 1);
 
+  label = gtk_label_new(i18n("volume"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("volume")),
+		  (GtkWidget *) label,
 		  4, 1,
 		  1, 1);
   fm_oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
@@ -279,6 +319,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 
   /* do sync */
   fm_oscillator->do_sync = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("sync"));
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) fm_oscillator->do_sync,
 		  6, 0,
@@ -286,6 +327,10 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   gtk_grid_attach(grid,
 		  (GtkWidget *) hbox,
 		  6, 1,
@@ -297,6 +342,10 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   for(i = 0; i < fm_oscillator->sync_point_count; i++){
     sync_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
+
+    gtk_box_set_spacing(sync_box,
+			AGS_UI_PROVIDER_DEFAULT_SPACING);
+
     gtk_box_append(hbox,
 		   (GtkWidget *) sync_box);
     
@@ -310,8 +359,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   }
 
   /* LFO wave */
+  label = gtk_label_new(i18n("LFO wave"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("LFO wave")),
+		  (GtkWidget *) label,
 		  0, 2,
 		  1, 1);
 
@@ -366,8 +420,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   gtk_combo_box_set_active(fm_oscillator->fm_lfo_wave, 0);
 
   /* LFO controls */
+  label = gtk_label_new(i18n("LFO frequency"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("LFO frequency")),
+		  (GtkWidget *) label,
 		  2, 2,
 		  1, 1);
   fm_oscillator->fm_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 24.0, 1.0);
@@ -379,8 +438,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  3, 2,
 		  1, 1);
 
+  label = gtk_label_new(i18n("LFO depth"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("LFO depth")),
+		  (GtkWidget *) label,
 		  4, 2,
 		  1, 1);
   fm_oscillator->fm_lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.01);
@@ -392,8 +456,13 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  5, 2,
 		  1, 1);
 
+  label = gtk_label_new(i18n("LFO tuning"));
+
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("LFO tuning")),
+		  (GtkWidget *) label,
 		  2, 3,
 		  1, 1);
   fm_oscillator->fm_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-96.0, 96.0, 0.01);

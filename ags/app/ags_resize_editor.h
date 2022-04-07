@@ -45,6 +45,8 @@ struct _AgsResizeEditor
 {
   GtkGrid grid;
 
+  guint connectable_flags;
+  
   GtkCheckButton *enabled;
   
   GtkSpinButton *audio_channels;

@@ -233,13 +233,29 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 void
 ags_resize_editor_connect(AgsConnectable *connectable)
 {
-  ags_resize_editor_parent_connectable_interface->connect(connectable);
+  AgsResizeEditor *resize_editor;
+
+  resize_editor = AGS_RESIZE_EDITOR(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (resize_editor->connectable_flags)) != 0){
+    return;
+  }
+
+  resize_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 }
 
 void
 ags_resize_editor_disconnect(AgsConnectable *connectable)
 {
-  ags_resize_editor_parent_connectable_interface->disconnect(connectable);
+  AgsResizeEditor *resize_editor;
+
+  resize_editor = AGS_RESIZE_EDITOR(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (resize_editor->connectable_flags)) == 0){
+    return;
+  }
+  
+  resize_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 }
 
 void

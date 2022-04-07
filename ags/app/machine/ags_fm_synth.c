@@ -196,6 +196,9 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
 
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_widget_set_valign(hbox,
 			GTK_ALIGN_START);
   gtk_widget_set_halign(hbox,
@@ -210,11 +213,21 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
 		      (GtkWidget *) hbox);
 
   AGS_MACHINE(fm_synth)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(AGS_MACHINE(fm_synth)->input_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(fm_synth)->input_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) AGS_MACHINE(fm_synth)->input_pad_grid);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) vbox);
 
@@ -228,19 +241,22 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) grid);
 
   /* frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("lower"),
-				    "xalign", 0.0,
 				    NULL);
 
-  gtk_widget_set_valign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
