@@ -401,18 +401,18 @@ ags_osc_server_preferences_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_osc_server_preferences_stop_callback), osc_server_preferences);
 
   /* listen any address */
-  g_signal_connect_after(G_OBJECT(osc_server_preferences->any_address), "clicked",
+  g_signal_connect_after(G_OBJECT(osc_server_preferences->any_address), "toggled",
 			 G_CALLBACK(ags_osc_server_preferences_any_address_callback), osc_server_preferences);
 
   /* IPv4 */
-  g_signal_connect_after(G_OBJECT(osc_server_preferences->enable_ip4), "clicked",
+  g_signal_connect_after(G_OBJECT(osc_server_preferences->enable_ip4), "toggled",
 			 G_CALLBACK(ags_osc_server_preferences_enable_ip4_callback), osc_server_preferences);
 
   g_signal_connect_after(G_OBJECT(osc_server_preferences->ip4_address), "changed",
 			 G_CALLBACK(ags_osc_server_preferences_ip4_address_callback), osc_server_preferences);
 
   /* IPv6 */
-  g_signal_connect_after(G_OBJECT(osc_server_preferences->enable_ip6), "clicked",
+  g_signal_connect_after(G_OBJECT(osc_server_preferences->enable_ip6), "toggled",
 			 G_CALLBACK(ags_osc_server_preferences_enable_ip6_callback), osc_server_preferences);
 
   g_signal_connect_after(G_OBJECT(osc_server_preferences->ip6_address), "changed",
@@ -451,14 +451,14 @@ ags_osc_server_preferences_disconnect(AgsConnectable *connectable)
 
   /* listen any address */
   g_object_disconnect(G_OBJECT(osc_server_preferences->any_address),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_osc_server_preferences_any_address_callback),
 		      osc_server_preferences,
 		      NULL);
 
   /* IPv4 */
   g_object_disconnect(G_OBJECT(osc_server_preferences->enable_ip4),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_osc_server_preferences_enable_ip6_callback),
 		      osc_server_preferences,
 		      NULL);
@@ -471,7 +471,7 @@ ags_osc_server_preferences_disconnect(AgsConnectable *connectable)
 
   /* IPv6 */
   g_object_disconnect(G_OBJECT(osc_server_preferences->enable_ip6),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_osc_server_preferences_enable_ip6_callback),
 		      osc_server_preferences,
 		      NULL);
@@ -510,7 +510,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
   config = ags_config_get_instance();
 
   /* auto-start */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->auto_start)){
+  if(gtk_check_button_get_active(osc_server_preferences->auto_start)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "auto-start",
@@ -523,7 +523,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
   }
 
   /* any address */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->any_address)){
+  if(gtk_check_button_get_active(osc_server_preferences->any_address)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "any-address",
@@ -536,7 +536,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
   }
 
   /* IPv4 */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->enable_ip4)){
+  if(gtk_check_button_get_active(osc_server_preferences->enable_ip4)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "enable-ip4",
@@ -560,7 +560,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
 		       str);
   
   /* IPv6 */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->enable_ip6)){
+  if(gtk_check_button_get_active(osc_server_preferences->enable_ip6)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "enable-ip6",
@@ -631,11 +631,11 @@ ags_osc_server_preferences_reset(AgsApplicable *applicable)
      !g_ascii_strncasecmp(str,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->auto_start,
-				 TRUE);
+    gtk_check_button_set_active(osc_server_preferences->auto_start,
+				TRUE);
   }else{
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->auto_start,
-				 FALSE);
+    gtk_check_button_set_active(osc_server_preferences->auto_start,
+				FALSE);
   }
 
   /* any address */
@@ -647,11 +647,11 @@ ags_osc_server_preferences_reset(AgsApplicable *applicable)
      !g_ascii_strncasecmp(str,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->any_address,
-				 TRUE);
+    gtk_check_button_set_active(osc_server_preferences->any_address,
+				TRUE);
   }else{
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->any_address,
-				 FALSE);
+    gtk_check_button_set_active(osc_server_preferences->any_address,
+				FALSE);
   }
 
   /* IPv4 */
@@ -663,11 +663,11 @@ ags_osc_server_preferences_reset(AgsApplicable *applicable)
      !g_ascii_strncasecmp(str,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->enable_ip4,
+    gtk_check_button_set_active(osc_server_preferences->enable_ip4,
 				 TRUE);
   }else{
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->enable_ip4,
-				 FALSE);
+    gtk_check_button_set_active(osc_server_preferences->enable_ip4,
+				FALSE);
   }
 
   str = ags_config_get_value(config,
@@ -688,11 +688,11 @@ ags_osc_server_preferences_reset(AgsApplicable *applicable)
      !g_ascii_strncasecmp(str,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->enable_ip6,
-				 TRUE);
+    gtk_check_button_set_active(osc_server_preferences->enable_ip6,
+				TRUE);
   }else{
-    gtk_toggle_button_set_active((GtkToggleButton *) osc_server_preferences->enable_ip6,
-				 FALSE);
+    gtk_check_button_set_active(osc_server_preferences->enable_ip6,
+				FALSE);
   }
 
   str = ags_config_get_value(config,

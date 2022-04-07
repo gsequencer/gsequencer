@@ -20,6 +20,7 @@
 #include <ags/app/ags_midi_preferences.h>
 #include <ags/app/ags_midi_preferences_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_preferences.h>
 #include <ags/app/ags_sequencer_editor.h>
@@ -148,17 +149,25 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
-			 TRUE);
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
   
   gtk_box_append((GtkBox *) midi_preferences,
 		 (GtkWidget *) scrolled_window);
   
   midi_preferences->sequencer_editor_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 								  0);
+
+  gtk_box_set_spacing(midi_preferences->sequencer_editor_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) midi_preferences->sequencer_editor_box);
 

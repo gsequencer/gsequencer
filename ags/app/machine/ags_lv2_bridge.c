@@ -411,6 +411,17 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   /**/
   lv2_bridge->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					    0);
+
+  gtk_widget_set_valign((GtkWidget *) lv2_bridge->vbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) lv2_bridge->vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand((GtkWidget *) lv2_bridge->vbox,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) lv2_bridge->vbox,
+			 FALSE);
+
   gtk_frame_set_child(AGS_MACHINE(lv2_bridge)->frame,
 		      (GtkWidget *) lv2_bridge->vbox);
   
@@ -1023,7 +1034,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   G_TYPE_BOOLEAN);
 
       g_value_set_boolean(&value,
-			  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			  gtk_check_button_get_active(navigation->loop));
 
       ags_port_safe_write(port,
 			  &value);

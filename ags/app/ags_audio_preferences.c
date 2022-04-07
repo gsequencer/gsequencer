@@ -153,6 +153,17 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_box_append((GtkBox *) audio_preferences,
 		 (GtkWidget *) scrolled_window);
 
@@ -160,6 +171,10 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   
   audio_preferences->soundcard_editor_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 								   0);
+
+  gtk_box_set_spacing(audio_preferences->soundcard_editor_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) audio_preferences->soundcard_editor_box);
 
@@ -168,6 +183,17 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   
   /*  */
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign((GtkWidget *) grid,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) grid,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append((GtkWidget *) audio_preferences,
 		 (GtkWidget *) grid);
   
@@ -226,6 +252,12 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
     hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				  0);
+
+    gtk_box_set_spacing(hbox,
+			AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+    gtk_box_set_spacing(hbox,
+			AGS_UI_PROVIDER_DEFAULT_SPACING);
     
     gtk_widget_set_halign((GtkWidget *) hbox,
 			  GTK_ALIGN_FILL);

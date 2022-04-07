@@ -234,7 +234,7 @@ ags_generic_preferences_connect(AgsConnectable *connectable)
 
   generic_preferences->flags |= AGS_GENERIC_PREFERENCES_CONNECTED;
   
-  g_signal_connect_after(G_OBJECT(generic_preferences->rt_safe), "clicked",
+  g_signal_connect_after(G_OBJECT(generic_preferences->rt_safe), "toggled",
 			 G_CALLBACK(ags_generic_preferences_rt_safe_callback), generic_preferences);
 }
 
@@ -252,7 +252,7 @@ ags_generic_preferences_disconnect(AgsConnectable *connectable)
   generic_preferences->flags &= (~AGS_GENERIC_PREFERENCES_CONNECTED);
   
   g_object_disconnect(G_OBJECT(generic_preferences->rt_safe),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_generic_preferences_rt_safe_callback),
 		      generic_preferences,
 		      NULL);
@@ -280,7 +280,7 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 		       "disable-feature",
 		       "experimental");
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
+  if(gtk_check_button_get_active(generic_preferences->autosave_thread)){
     ags_config_set_value(config,
 			 AGS_CONFIG_GENERIC,
 			 "autosave-thread",
@@ -305,7 +305,7 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
 		       "rt-safe",
-		       (gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->rt_safe) ? "true": "false"));
+		       (gtk_check_button_get_active(generic_preferences->rt_safe) ? "true": "false"));
 
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
@@ -332,13 +332,13 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 			     "autosave-thread");
 
   if(str != NULL){
-    gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
-				 ((!g_ascii_strncasecmp(str,
-							"true",
-							5)) ? TRUE: FALSE));
+    gtk_check_button_set_active(generic_preferences->autosave_thread,
+				((!g_ascii_strncasecmp(str,
+						       "true",
+						       5)) ? TRUE: FALSE));
   }else{
-    gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
-				 FALSE);
+    gtk_check_button_set_active(generic_preferences->autosave_thread,
+				FALSE);
   }
   
   g_free(str);
@@ -371,8 +371,8 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
      !g_ascii_strncasecmp(str,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->rt_safe,
-				 TRUE);
+    gtk_check_button_set_active(generic_preferences->rt_safe,
+				TRUE);
   }
 
   g_free(str);

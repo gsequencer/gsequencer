@@ -225,7 +225,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   /* attack */
   label = (GtkLabel *) gtk_label_new(i18n("attack"));
   
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,

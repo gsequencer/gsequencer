@@ -140,19 +140,34 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   sequencer_editor->sequencer_thread = NULL;
   
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(GTK_BOX(sequencer_editor),
 		 GTK_WIDGET(grid));
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("backend"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
@@ -193,13 +208,12 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   /* MIDI card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("MIDI card"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);

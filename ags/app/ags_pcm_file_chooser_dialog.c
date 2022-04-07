@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_pcm_file_chooser_dialog.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_pcm_file_chooser_dialog_class_init(AgsPCMFileChooserDialogClass *pcm_file_chooser_dialog);
@@ -88,10 +90,27 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
   content_area = gtk_dialog_get_content_area((GtkDialog *) pcm_file_chooser_dialog);
 
   pcm_file_chooser_dialog->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+
+  gtk_widget_set_vexpand(pcm_file_chooser_dialog->file_chooser,
+			 TRUE);
+  gtk_widget_set_hexpand(pcm_file_chooser_dialog->file_chooser,
+			 TRUE);
+  
   gtk_box_append(content_area,
 		 (GtkWidget *) pcm_file_chooser_dialog->file_chooser);
 
   grid = gtk_grid_new();
+
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(content_area,
 		 (GtkWidget *) grid);
 
@@ -100,6 +119,10 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 			i18n("audio channel"));
   
   pcm_file_chooser_dialog->audio_channel_label = gtk_label_new(str);
+
+  gtk_widget_set_halign((GtkWidget *) pcm_file_chooser_dialog->audio_channel_label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) pcm_file_chooser_dialog->audio_channel_label,
 		  0, 0,
@@ -139,7 +162,6 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 
   /* file chooser */  
   gtk_dialog_add_buttons((GtkDialog *) pcm_file_chooser_dialog,
-			 GTK_FILE_CHOOSER_ACTION_OPEN,
 			 "_Cancel", GTK_RESPONSE_CANCEL,
 			 "_Open", GTK_RESPONSE_ACCEPT,
 			 NULL);  
@@ -173,7 +195,7 @@ ags_pcm_file_chooser_dialog_show(GtkWidget *widget)
 /**
  * ags_pcm_file_chooser_dialog_new:
  * @title: the title
- * @parent: the parent widget
+ * @transient_for: the transient for widget
  * 
  * Create a new instance of #AgsPCMFileChooserDialog
  * 
@@ -183,13 +205,13 @@ ags_pcm_file_chooser_dialog_show(GtkWidget *widget)
  */
 AgsPCMFileChooserDialog*
 ags_pcm_file_chooser_dialog_new(gchar *title,
-				GtkWidget *parent)
+				GtkWidget *transient_for)
 {
   AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
   pcm_file_chooser_dialog = (AgsPCMFileChooserDialog *) g_object_new(AGS_TYPE_PCM_FILE_CHOOSER_DIALOG,
 								     "title", title,
-								     "parent", parent,
+								     "transient-for", transient_for,
 								     NULL);
 
   return(pcm_file_chooser_dialog);

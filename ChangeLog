@@ -1,12 +1,15 @@
-ags (4.0.0)
+ags (4.0.0-alpha)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* major API improvements
 	* migrated libgsequencer.so to Gtk-4
 	* migrated libags_gui.so to Gtk-4
 	* implemented AgsCartesian properties
+	* removed AgsDevout, AgsDevin and AgsMidiin
 	* removed ags/audio/recall
 	* removed ags_recall_factory.[ch], ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]
+	* TODO:JK: removed deprecated ags_audio_buffer_util.[ch] functions
+	* TODO:JK: refactored LV2 parser
 	* TODO:JK: implemented AgsVector
 	* TODO:JK: implemented AgsSoundDirection
 	* TODO:JK: implemented AgsAudioManager with ui-scope

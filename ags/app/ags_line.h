@@ -92,7 +92,7 @@ struct _AgsLine
 
   GList *plugin;
 
-  GList *queued_drawing;
+  GList *queued_refresh;
 };
 
 struct _AgsLineClass
@@ -205,7 +205,7 @@ GList* ags_line_find_next_grouped(GList *line);
 
 void ags_line_check_message(AgsLine *line);
 
-gboolean ags_line_indicator_queue_draw_timeout(GtkWidget *widget);
+gboolean ags_line_indicator_refresh_timeout(GtkWidget *widget);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 

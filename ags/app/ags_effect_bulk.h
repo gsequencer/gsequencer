@@ -91,7 +91,7 @@ struct _AgsEffectBulk
   GList *plugin;
   GtkDialog *plugin_browser;
 
-  GList *queued_drawing;
+  GList *queued_refresh;
 };
 
 struct _AgsEffectBulkClass
@@ -189,7 +189,7 @@ void ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_map_recall(AgsEffectBulk *effect_bulk);
 GList* ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk);
 
-gboolean ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget);
+gboolean ags_effect_bulk_indicator_refresh_timeout(GtkWidget *widget);
 
 AgsEffectBulk* ags_effect_bulk_new(AgsAudio *audio,
 				   GType channel_type);

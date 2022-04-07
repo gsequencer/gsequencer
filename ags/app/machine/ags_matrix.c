@@ -142,7 +142,8 @@ ags_matrix_init(AgsMatrix *matrix)
   GtkBox *vbox;
   GtkBox *hbox;
   GtkBox *volume_hbox;
-
+  GtkLabel *label;
+  
   AgsAudio *audio;
 
   AgsApplicationContext *application_context;   
@@ -364,8 +365,13 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
   gtk_box_append(hbox,
-		 gtk_label_new("length"));
+		 (GtkWidget *) label);
 
   matrix->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 32.0, 1.0);
   gtk_spin_button_set_value(matrix->length_spin, 16.0);

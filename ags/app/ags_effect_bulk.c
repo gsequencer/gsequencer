@@ -151,7 +151,7 @@ enum{
 static gpointer ags_effect_bulk_parent_class = NULL;
 static guint effect_bulk_signals[LAST_SIGNAL];
 
-GHashTable *ags_effect_bulk_indicator_queue_draw = NULL;
+GHashTable *ags_effect_bulk_indicator_refresh = NULL;
 
 GType
 ags_effect_bulk_get_type(void)
@@ -401,8 +401,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_bulk),
 				 GTK_ORIENTATION_VERTICAL);
 
-  if(ags_effect_bulk_indicator_queue_draw == NULL){
-    ags_effect_bulk_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+  if(ags_effect_bulk_indicator_refresh == NULL){
+    ags_effect_bulk_indicator_refresh = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 								 NULL,
 								 NULL);
   }
@@ -457,7 +457,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 
   effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) effect_bulk);
 
-  effect_bulk->queued_drawing = NULL;
+  effect_bulk->queued_refresh = NULL;
 }
 
 void
@@ -622,10 +622,10 @@ ags_effect_bulk_finalize(GObject *gobject)
   gtk_window_destroy(GTK_WINDOW(effect_bulk->plugin_browser));
 
   /* remove of the queued drawing hash */
-  list = effect_bulk->queued_drawing;
+  list = effect_bulk->queued_refresh;
 
   while(list != NULL){
-    g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+    g_hash_table_remove(ags_effect_bulk_indicator_refresh,
 			(GDestroyNotify) list->data);
 
     list = list->next;
@@ -1287,14 +1287,14 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
-			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
+			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
 
-	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
 
 	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
+		      (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }
 
@@ -1729,11 +1729,11 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 #endif
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
-			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
-	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
+			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
+	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
-	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout, (gpointer) child_widget);
       }
 
       gtk_widget_set_halign(bulk_member,
@@ -2223,14 +2223,14 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
-			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
+			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
 
-	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
 
 	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
+		      (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }
 
@@ -2654,14 +2654,14 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
-			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	g_hash_table_insert(ags_effect_bulk_indicator_refresh,
+			    child_widget, ags_effect_bulk_indicator_refresh_timeout);
 
-	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
 						     child_widget);
 
 	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
+		      (GSourceFunc) ags_effect_bulk_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }
 
@@ -3142,7 +3142,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
       
       if(AGS_IS_INDICATOR(child_widget) ||
 	 AGS_IS_LED(child_widget)){
-	g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+	g_hash_table_remove(ags_effect_bulk_indicator_refresh,
 			    child_widget);
       }
 
@@ -3467,7 +3467,7 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
 }
 
 /**
- * ags_effect_bulk_indicator_queue_draw_timeout:
+ * ags_effect_bulk_indicator_refresh_timeout:
  * @widget: the indicator widgt
  *
  * Queue draw widget
@@ -3477,9 +3477,9 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
  * Since: 3.0.0
  */
 gboolean
-ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
+ags_effect_bulk_indicator_refresh_timeout(GtkWidget *widget)
 {
-  if(g_hash_table_lookup(ags_effect_bulk_indicator_queue_draw,
+  if(g_hash_table_lookup(ags_effect_bulk_indicator_refresh,
 			 widget) != NULL){
     AgsBulkMember *bulk_member;
 
@@ -3541,13 +3541,11 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
       gtk_adjustment_set_value(AGS_INDICATOR(widget)->adjustment,
 			       val);
     }
-    
-    gtk_widget_queue_draw(widget);
-    
+        
     return(TRUE);
-  }else{
-    return(FALSE);
   }
+  
+  return(FALSE);
 }
 
 /**

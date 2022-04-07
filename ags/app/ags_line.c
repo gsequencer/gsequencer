@@ -139,7 +139,7 @@ enum{
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
 
-GHashTable *ags_line_indicator_queue_draw = NULL;
+GHashTable *ags_line_indicator_refresh = NULL;
 
 GType
 ags_line_get_type(void)
@@ -535,8 +535,8 @@ ags_line_init(AgsLine *line)
   g_signal_connect(application_context, "check-message",
 		   G_CALLBACK(ags_line_check_message_callback), line);
 
-  if(ags_line_indicator_queue_draw == NULL){
-    ags_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+  if(ags_line_indicator_refresh == NULL){
+    ags_line_indicator_refresh = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 							  NULL,
 							  NULL);
   }
@@ -580,7 +580,7 @@ ags_line_init(AgsLine *line)
 
   line->plugin = NULL;
 
-  line->queued_drawing = NULL;
+  line->queued_refresh = NULL;
   
   /* forwarded callbacks */
   g_signal_connect_after(line, "stop",
@@ -771,15 +771,15 @@ ags_line_finalize(GObject *gobject)
   
   /* remove indicator widget */
   if(line->indicator != NULL){
-    g_hash_table_remove(ags_line_indicator_queue_draw,
+    g_hash_table_remove(ags_line_indicator_refresh,
 			line->indicator);
   }
 
   /* remove of the queued drawing hash */
-  list = line->queued_drawing;
+  list = line->queued_refresh;
 
   while(list != NULL){
-    g_hash_table_remove(ags_line_indicator_queue_draw,
+    g_hash_table_remove(ags_line_indicator_refresh,
 			list->data);
 
     list = list->next;
@@ -1858,12 +1858,12 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_line_indicator_queue_draw,
-			    child_widget, ags_line_indicator_queue_draw_timeout);
-	line->queued_drawing = g_list_prepend(line->queued_drawing,
+	g_hash_table_insert(ags_line_indicator_refresh,
+			    child_widget, ags_line_indicator_refresh_timeout);
+	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
 	g_timeout_add(1000 / 30,
-		      (GSourceFunc) ags_line_indicator_queue_draw_timeout,
+		      (GSourceFunc) ags_line_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }
       
@@ -2533,14 +2533,14 @@ ags_line_add_lv2_plugin(AgsLine *line,
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget)){
-	g_hash_table_insert(ags_line_indicator_queue_draw,
+	g_hash_table_insert(ags_line_indicator_refresh,
 			    child_widget,
-			    ags_line_indicator_queue_draw_timeout);
+			    ags_line_indicator_refresh_timeout);
 
-	line->queued_drawing = g_list_prepend(line->queued_drawing,
+	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
 	g_timeout_add(1000 / 30,
-		      (GSourceFunc) ags_line_indicator_queue_draw_timeout,
+		      (GSourceFunc) ags_line_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }
 
@@ -3136,14 +3136,14 @@ ags_line_add_vst3_plugin(AgsLine *line,
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget)){
-	g_hash_table_insert(ags_line_indicator_queue_draw,
+	g_hash_table_insert(ags_line_indicator_refresh,
 			    child_widget,
-			    ags_line_indicator_queue_draw_timeout);
+			    ags_line_indicator_refresh_timeout);
 
-	line->queued_drawing = g_list_prepend(line->queued_drawing,
+	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
 	g_timeout_add(1000 / 30,
-		      (GSourceFunc) ags_line_indicator_queue_draw_timeout,
+		      (GSourceFunc) ags_line_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }
 
@@ -3529,7 +3529,7 @@ ags_line_real_remove_plugin(AgsLine *line,
       
       if(AGS_IS_INDICATOR(child_widget) ||
 	 AGS_IS_LED(child_widget)){
-	g_hash_table_remove(ags_line_indicator_queue_draw,
+	g_hash_table_remove(ags_line_indicator_refresh,
 			    child_widget);
       }
 
@@ -3853,7 +3853,7 @@ ags_line_check_message(AgsLine *line)
 }
 
 /**
- * ags_line_indicator_queue_draw_timeout:
+ * ags_line_indicator_refresh_timeout:
  * @widget: the widget
  *
  * Queue draw widget
@@ -3863,11 +3863,11 @@ ags_line_check_message(AgsLine *line)
  * Since: 3.0.0
  */
 gboolean
-ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
+ags_line_indicator_refresh_timeout(GtkWidget *widget)
 {
   AgsLine *line;
 
-  if(g_hash_table_lookup(ags_line_indicator_queue_draw,
+  if(g_hash_table_lookup(ags_line_indicator_refresh,
 			 widget) != NULL){      
     GList *start_list, *list;
     
@@ -4058,14 +4058,11 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
     }
 
     g_list_free(start_list);
-
-    /* queue draw */
-    gtk_widget_queue_draw(widget);
     
     return(TRUE);
-  }else{
-    return(FALSE);
   }
+  
+  return(FALSE);
 }
 
 /**
