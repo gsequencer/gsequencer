@@ -43,10 +43,16 @@ G_BEGIN_DECLS
 typedef struct _AgsMachineEditorListing AgsMachineEditorListing;
 typedef struct _AgsMachineEditorListingClass AgsMachineEditorListingClass;
 
+typedef enum{
+  AGS_MACHINE_EDITOR_LISTING_LINK_EDITOR          = 1,
+  AGS_MACHINE_EDITOR_LISTING_LINE_MEMBER_EDITOR   = 1 <<  1,
+}AgsMachineEditorListingFlags;
+
 struct _AgsMachineEditorListing
 {
   GtkBox box;
 
+  guint flags;
   guint connectable_flags;
   
   GType channel_type;
@@ -64,6 +70,12 @@ struct _AgsMachineEditorListingClass
 };
 
 GType ags_machine_editor_listing_get_type(void);
+
+GList* ags_machine_editor_listing_get_pad(AgsMachineEditorListing *machine_editor_listing);
+void ags_machine_editor_listing_add_pad(AgsMachineEditorListing *machine_editor_listing,
+					AgsMachineEditorPad *pad);
+void ags_machine_editor_listing_remove_pad(AgsMachineEditorListing *machine_editor_listing,
+					   AgsMachineEditorPad *pad);
 
 AgsMachineEditorListing* ags_machine_editor_listing_new(GType channel_type);
 

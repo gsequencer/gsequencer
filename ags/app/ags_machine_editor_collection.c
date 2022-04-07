@@ -90,7 +90,7 @@ ags_machine_editor_collection_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_editor_collection = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_machine_editor_collection = g_type_register_static(GTK_TYPE_BOX,
 								"AgsMachineEditorCollection", &ags_machine_editor_collection_info,
 								0);
 

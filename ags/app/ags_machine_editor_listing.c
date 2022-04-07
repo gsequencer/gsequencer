@@ -20,6 +20,10 @@
 #include <ags/app/ags_machine_editor_listing.h>
 #include <ags/app/ags_machine_editor_listing_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_machine.h>
+#include <ags/app/ags_machine_editor.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_editor_listing_class_init(AgsMachineEditorListingClass *machine_editor_listing);
@@ -90,7 +94,7 @@ ags_machine_editor_listing_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_editor_listing = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_machine_editor_listing = g_type_register_static(GTK_TYPE_BOX,
 							     "AgsMachineEditorListing", &ags_machine_editor_listing_info,
 							     0);
 
@@ -159,7 +163,21 @@ ags_machine_editor_listing_applicable_interface_init(AgsApplicableInterface *app
 void
 ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing)
 {
+  machine_editor_listing->flags = 0;
   machine_editor_listing->connectable_flags = 0;
+
+  machine_editor_listing->channel_type = G_TYPE_NONE;
+
+  machine_editor_listing->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_append((GtkBox *) machine_editor_listing,
+		 (GtkWidget *) machine_editor_listing->enabled);
+
+  machine_editor_listing->pad = NULL;
+
+  machine_editor_listing->pad_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							   AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) machine_editor_listing,
+		 (GtkWidget *) machine_editor_listing->pad_box);
 }
 
 void
@@ -209,6 +227,8 @@ ags_machine_editor_listing_connect(AgsConnectable *connectable)
 {
   AgsMachineEditorListing *machine_editor_listing;
 
+  GList *start_pad, *pad;
+
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(connectable);
 
   if((AGS_CONNECTABLE_CONNECTED & (machine_editor_listing->connectable_flags)) != 0){
@@ -217,13 +237,25 @@ ags_machine_editor_listing_connect(AgsConnectable *connectable)
 
   machine_editor_listing->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  //TODO:JK: implement me
+  pad =
+    start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  while(pad != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(pad->data));
+
+    /* iterate */
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
 }
 
 void
 ags_machine_editor_listing_disconnect(AgsConnectable *connectable)
 {
   AgsMachineEditorListing *machine_editor_listing;
+
+  GList *start_pad, *pad;
 
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(connectable);
 
@@ -233,7 +265,17 @@ ags_machine_editor_listing_disconnect(AgsConnectable *connectable)
   
   machine_editor_listing->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  //TODO:JK: implement me
+  pad =
+    start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  while(pad != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(pad->data));
+
+    /* iterate */
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
 }
 
 void
@@ -241,9 +283,22 @@ ags_machine_editor_listing_set_update(AgsApplicable *applicable, gboolean update
 {
   AgsMachineEditorListing *machine_editor_listing;
 
+  GList *start_pad, *pad;
+
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
 
-  //TODO:JK: implement me
+  pad =
+    start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  while(pad != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(pad->data),
+			      update);
+
+    /* iterate */
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
 }
 
 void
@@ -251,19 +306,178 @@ ags_machine_editor_listing_apply(AgsApplicable *applicable)
 {
   AgsMachineEditorListing *machine_editor_listing;
 
+  GList *start_pad, *pad;
+
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
 
-  //TODO:JK: implement me
+  pad =
+    start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  while(pad != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(pad->data));
+
+    /* iterate */
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
 }
 
 void
 ags_machine_editor_listing_reset(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
   AgsMachineEditorListing *machine_editor_listing;
 
+  AgsChannel *start_output, *start_input;
+
+  GList *start_pad, *pad;
+
+  guint output_pads, input_pads;
+  guint i;
+  
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
 
-  //TODO:JK: implement me
+  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(machine_editor_listing,
+							      AGS_TYPE_MACHINE_EDITOR));
+  
+  pad =
+    start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  while(pad != NULL){
+    ags_machine_editor_listing_remove_pad(machine_editor_listing,
+					  pad->data);
+
+    /* iterate */
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
+
+  machine = machine_editor->machine;
+
+  if(machine == NULL){
+    return;
+  }
+
+  start_output = ags_audio_get_output(machine->audio);
+  output_pads = ags_audio_get_output_pads(machine->audio);
+  
+  input_pads = ags_audio_get_input_pads(machine->audio);
+  start_input = ags_audio_get_input(machine->audio);
+
+  if(g_type_is_a(machine_editor_listing->channel_type, AGS_TYPE_OUTPUT)){
+    for(i = 0; i < output_pads; i++){
+      AgsMachineEditorPad *pad;
+
+      AgsChannel *current_channel;
+
+      current_channel = ags_channel_pad_nth(start_output,
+					    i);
+      
+      pad = ags_machine_editor_pad_new(current_channel);
+      ags_machine_editor_listing_add_pad(machine_editor_listing,
+					 pad);
+
+      if(current_channel != NULL){
+	g_object_unref(current_channel);
+      }
+    }
+  }else{
+    for(i = 0; i < input_pads; i++){
+      AgsMachineEditorPad *pad;
+
+      AgsChannel *current_channel;
+
+      current_channel = ags_channel_pad_nth(start_output,
+					    i);
+      
+      pad = ags_machine_editor_pad_new(current_channel);
+      ags_machine_editor_listing_add_pad(machine_editor_listing,
+					 pad);
+
+      if(current_channel != NULL){
+	g_object_unref(current_channel);
+      }
+    }
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+  
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+/**
+ * ags_machine_editor_listing_get_pad:
+ * @machine_editor_listing: the #AgsMachineEditorListing
+ * 
+ * Get pad.
+ * 
+ * Returns: the #GList-struct containig #AgsMachineEditorPad
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_editor_listing_get_pad(AgsMachineEditorListing *machine_editor_listing)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE_EDITOR_LISTING(machine_editor_listing), NULL);
+
+  return(g_list_reverse(g_list_copy(machine_editor_listing->pad)));
+}
+
+/**
+ * ags_machine_editor_listing_add_pad:
+ * @machine_editor_listing: the #AgsMachineEditorListing
+ * @pad: the #AgsMachineEditorPad
+ * 
+ * Add @pad to @machine_editor_listing.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_editor_listing_add_pad(AgsMachineEditorListing *machine_editor_listing,
+				   AgsMachineEditorPad *pad)
+{
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_LISTING(machine_editor_listing));
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_PAD(pad));
+
+  if(g_list_find(machine_editor_listing->pad, pad) == NULL){
+    machine_editor_listing->pad = g_list_prepend(machine_editor_listing->pad,
+						 pad);
+    
+    gtk_box_append(machine_editor_listing->pad_box,
+		   pad);
+  }
+}
+
+/**
+ * ags_machine_editor_listing_remove_pad:
+ * @machine_editor_listing: the #AgsMachineEditorListing
+ * @pad: the #AgsMachineEditorPad
+ * 
+ * Remove @pad from @machine_editor_listing.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_editor_listing_remove_pad(AgsMachineEditorListing *machine_editor_listing,
+				      AgsMachineEditorPad *pad)
+{
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_LISTING(machine_editor_listing));
+  g_return_if_fail(AGS_IS_MACHINE_EDITOR_PAD(pad));
+
+  if(g_list_find(machine_editor_listing->pad, pad) != NULL){
+    machine_editor_listing->pad = g_list_remove(machine_editor_listing->pad,
+						pad);
+    
+    gtk_box_remove(machine_editor_listing->pad_box,
+		   pad);
+  }
 }
 
 /**

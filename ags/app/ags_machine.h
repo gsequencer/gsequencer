@@ -182,7 +182,7 @@ struct _AgsMachine
   GtkMenuButton *context_menu_button;
   GMenu *context_menu;
   
-  GtkDialog *properties;
+  GtkDialog *machine_editor_dialog;
   GtkDialog *rename;
   GtkDialog *rename_audio;
   GtkDialog *reposition_audio;

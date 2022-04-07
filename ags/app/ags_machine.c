@@ -721,7 +721,7 @@ ags_machine_init(AgsMachine *machine)
   gtk_menu_button_set_menu_model(machine->context_menu_button,
 				 machine->context_menu);
   
-  machine->properties = NULL;
+  machine->machine_editor_dialog = NULL;
   machine->rename = NULL;
   machine->rename_audio = NULL;
   machine->reposition_audio = NULL;
@@ -1047,8 +1047,8 @@ ags_machine_finalize(GObject *gobject)
 
   g_free(machine->base_note);
   
-  if(machine->properties != NULL){
-    gtk_window_destroy((GtkWindow *) machine->properties);
+  if(machine->machine_editor_dialog != NULL){
+    gtk_window_destroy((GtkWindow *) machine->machine_editor_dialog);
   }
 
   if(machine->rename != NULL){

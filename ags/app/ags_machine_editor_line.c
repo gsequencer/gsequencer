@@ -90,7 +90,7 @@ ags_machine_editor_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_editor_line = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_machine_editor_line = g_type_register_static(GTK_TYPE_BOX,
 							  "AgsMachineEditorLine", &ags_machine_editor_line_info,
 							  0);
 
@@ -159,7 +159,13 @@ ags_machine_editor_line_applicable_interface_init(AgsApplicableInterface *applic
 void
 ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
 {
-  //TODO:JK: implement me
+  machine_editor_line->connectable_flags = 0;
+
+  machine_editor_line->channel = NULL;
+
+  machine_editor_line->link_editor = ags_link_editor_new();
+
+  machine_editor_line->line_member_editor = ags_line_member_editor_new();
 }
 
 void

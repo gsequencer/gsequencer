@@ -26,6 +26,7 @@
 #include <ags/app/ags_connection_editor.h>
 #include <ags/app/ags_midi_dialog.h>
 #include <ags/app/ags_input_dialog.h>
+#include <ags/app/ags_machine_editor_dialog.h>
 
 #include <ags/app/export/ags_wave_export_dialog.h>
 
@@ -485,6 +486,28 @@ void
 ags_machine_properties_callback(GAction *action, GVariant *parameter,
 				AgsMachine *machine)
 {
+  AgsMachineEditorDialog *machine_editor_dialog;
+
+  gchar *str;
+
+  str = g_strdup_printf("%s:%s %s",
+			G_OBJECT_TYPE_NAME(machine),
+			machine->machine_name,
+			i18n("properties"));
+  
+  machine_editor_dialog =
+    machine->machine_editor_dialog = ags_machine_editor_dialog_new(str,
+								   (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
+													 AGS_TYPE_WINDOW));
+
+  ags_machine_editor_set_machine(machine_editor_dialog->machine_editor,
+				 machine);
+
+  gtk_widget_show(machine_editor_dialog);
+
+
+  g_free(str);
+
   //TODO:JK: implement me
 }
 

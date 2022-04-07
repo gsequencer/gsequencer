@@ -44,15 +44,11 @@ G_BEGIN_DECLS
 typedef struct _AgsLineMemberEditor AgsLineMemberEditor;
 typedef struct _AgsLineMemberEditorClass AgsLineMemberEditorClass;
 
-typedef enum{
-  AGS_LINE_MEMBER_EDITOR_CONNECTED    = 1,
-}AgsLineMemberEditorFlags;
-
 struct _AgsLineMemberEditor
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
 
   GList *entry;
   

@@ -90,7 +90,7 @@ ags_machine_editor_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_editor_pad = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_machine_editor_pad = g_type_register_static(GTK_TYPE_BOX,
 							 "AgsMachineEditorPad", &ags_machine_editor_pad_info,
 							 0);
 

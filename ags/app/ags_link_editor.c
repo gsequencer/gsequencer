@@ -136,6 +136,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
 
   link_editor->flags = 0;
+  link_editor->connectable_flags = 0;
 
   /* linking machine */
   link_editor->combo = (GtkComboBox *) gtk_combo_box_new();
@@ -168,11 +169,11 @@ ags_link_editor_connect(AgsConnectable *connectable)
 
   link_editor = AGS_LINK_EDITOR(connectable);
 
-  if((AGS_LINK_EDITOR_CONNECTED & (link_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (link_editor->connectable_flags)) != 0){
     return;
   }
 
-  link_editor->flags |= AGS_LINK_EDITOR_CONNECTED;
+  link_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   /* GtkComboBox */
   g_signal_connect(G_OBJECT(link_editor->combo), "changed",
@@ -186,11 +187,11 @@ ags_link_editor_disconnect(AgsConnectable *connectable)
 
   link_editor = AGS_LINK_EDITOR(connectable);
 
-  if((AGS_LINK_EDITOR_CONNECTED & (link_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (link_editor->connectable_flags)) == 0){
     return;
   }
 
-  link_editor->flags &= (~AGS_LINK_EDITOR_CONNECTED);
+  link_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* GtkComboBox */
   g_object_disconnect(G_OBJECT(link_editor->combo),

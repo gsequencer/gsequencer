@@ -129,7 +129,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(line_member_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
-  line_member_editor->flags = 0;
+  line_member_editor->connectable_flags = 0;
   
   line_member_editor->entry_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 							 0);
@@ -159,11 +159,11 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
 
-  if((AGS_LINE_MEMBER_EDITOR_CONNECTED & (line_member_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (line_member_editor->connectable_flags)) != 0){
     return;
   }
 
-  line_member_editor->flags |= AGS_LINE_MEMBER_EDITOR_CONNECTED;
+  line_member_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect(G_OBJECT(line_member_editor->add), "clicked",
 		   G_CALLBACK(ags_line_member_editor_add_callback), line_member_editor);
@@ -179,11 +179,11 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
 
-  if((AGS_LINE_MEMBER_EDITOR_CONNECTED & (line_member_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (line_member_editor->connectable_flags)) == 0){
     return;
   }
 
-  line_member_editor->flags &= (~AGS_LINE_MEMBER_EDITOR_CONNECTED);
+  line_member_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(line_member_editor->add),
 		      "any_signal::clicked",

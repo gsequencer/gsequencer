@@ -41,6 +41,11 @@ AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debug],
               [],
               [enable_debug=no])
 
+AC_ARG_ENABLE(devel, [AS_HELP_STRING([--enable-devel],
+                                     [enable devel mode (default is no)])],
+              [],
+              [enable_devel=no])
+
 AC_ARG_ENABLE(introspection, [AS_HELP_STRING([--enable-introspection],
                                              [enable introspection symbols (default is no)])],
               [],
@@ -444,6 +449,13 @@ AS_IF([test "x$enable_debug" != xno],
       AC_MSG_NOTICE([debug enabled])],
       [AC_MSG_NOTICE([debug disabled])])
 AM_CONDITIONAL([AGS_WITH_DEBUG], [test "x$enable_debug" == xyes])
+
+AS_IF([test "x$enable_devel" != xno],
+      [AC_DEFINE([AGS_WITH_DEVEL], [1], [devel mode enabled])
+      
+      AC_MSG_NOTICE([devel enabled])],
+      [AC_MSG_NOTICE([devel disabled])])
+AM_CONDITIONAL([AGS_WITH_DEVEL], [test "x$enable_devel" == xyes])
 
 AS_IF([test "x$enable_public_libgsequencer" != xno],
       [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])

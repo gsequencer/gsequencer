@@ -28,12 +28,12 @@ void ags_input_dialog_init(AgsInputDialog *input_dialog);
 
 /**
  * SECTION:ags_input_dialog
- * @short_description: Edit INPUT settings
+ * @short_description: edit input settings
  * @title: AgsInputDialog
  * @section_id:
  * @include: ags/app/ags_input_dialog.h
  *
- * #AgsInputDialog is a composite widget to edit INPUT settings.
+ * #AgsInputDialog is a dialog widget to edit input settings.
  */
 
 static gpointer ags_input_dialog_parent_class = NULL;

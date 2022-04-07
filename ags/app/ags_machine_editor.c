@@ -100,7 +100,7 @@ ags_machine_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_editor = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_machine_editor = g_type_register_static(GTK_TYPE_GRID,
 						     "AgsMachineEditor", &ags_machine_editor_info,
 						     0);
 
@@ -195,9 +195,6 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
-  gtk_window_set_title((GtkWindow *) machine_editor,
-		       i18n("properties"));
-
   machine_editor->connectable_flags = 0;
 
   machine_editor->version = AGS_MACHINE_EDITOR_DEFAULT_VERSION;
@@ -207,6 +204,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   notebook = 
     machine_editor->notebook = (GtkNotebook *) gtk_notebook_new();
+
+  gtk_widget_set_hexpand(machine_editor->notebook,
+			 TRUE);
+  gtk_widget_set_vexpand(machine_editor->notebook,
+			 TRUE);
+
+  gtk_widget_set_halign(machine_editor->notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(machine_editor->notebook,
+			GTK_ALIGN_FILL);
+
   gtk_grid_attach((GtkGrid *) machine_editor,
 		  (GtkWidget *) notebook,
 		  0, 0,
@@ -214,6 +222,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   /* AgsOutput */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("output")));
@@ -224,6 +243,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   
   /* AgsInput */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("input")));
@@ -234,6 +264,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   /* AgsOutput link editor */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("link output")));
@@ -244,6 +285,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   /* AgsInput link editor */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("link input")));
@@ -254,6 +306,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   /* resize editor */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook, (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 

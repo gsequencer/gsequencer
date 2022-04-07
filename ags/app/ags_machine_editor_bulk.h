@@ -44,6 +44,8 @@ typedef struct _AgsMachineEditorBulkClass AgsMachineEditorBulkClass;
 struct _AgsMachineEditorBulk
 {
   GtkBox box;
+
+  GtkButton *remove_bulk;
 };
 
 struct _AgsMachineEditorBulkClass
