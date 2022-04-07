@@ -375,14 +375,7 @@ libags_audio_sources = files(
   'audio/ags_recall_channel_run.c',
   'audio/ags_recall_container.c',
   'audio/ags_recall_dependency.c',
-  'audio/ags_recall_dssi.c',
-  'audio/ags_recall_dssi_run.c',
-  'audio/ags_recall_factory.c',
   'audio/ags_recall_id.c',
-  'audio/ags_recall_ladspa.c',
-  'audio/ags_recall_ladspa_run.c',
-  'audio/ags_recall_lv2.c',
-  'audio/ags_recall_lv2_run.c',
   'audio/ags_recall_recycling.c',
   'audio/ags_recycling.c',
   'audio/ags_recycling_context.c',
@@ -920,6 +913,8 @@ libgsequencer_sources = files(
   'app/ags_machine_editor_listing_callbacks.c',
   'app/ags_machine_editor_line.c',
   'app/ags_machine_editor_line_callbacks.c',
+  'app/ags_machine_editor_pad.c',
+  'app/ags_machine_editor_pad_callbacks.c',
   'app/ags_machine_util.c',
   'app/ags_menu_action_callbacks.c',
   'app/ags_meta_data_window.c',
@@ -1479,14 +1474,7 @@ libags_audio_audio_headers = [
   'audio/ags_recall_channel_run.h',
   'audio/ags_recall_container.h',
   'audio/ags_recall_dependency.h',
-  'audio/ags_recall_dssi.h',
-  'audio/ags_recall_dssi_run.h',
-  'audio/ags_recall_factory.h',
   'audio/ags_recall_id.h',
-  'audio/ags_recall_ladspa.h',
-  'audio/ags_recall_ladspa_run.h',
-  'audio/ags_recall_lv2.h',
-  'audio/ags_recall_lv2_run.h',
   'audio/ags_recall_recycling.h',
   'audio/ags_recycling.h',
   'audio/ags_recycling_context.h',
@@ -2029,7 +2017,6 @@ install_headers(libags_audio_audio_osc_headers, install_dir: gsequencer_included
 install_headers(libags_audio_audio_osc_controller_headers, install_dir: gsequencer_includedir / 'ags/audio/osc/controller')
 install_headers(libags_audio_audio_osc_xmlrpc_headers, install_dir: gsequencer_includedir / 'ags/audio/osc/xmlrpc')
 install_headers(libags_audio_audio_pulse_headers, install_dir: gsequencer_includedir / 'ags/audio/pulse')
-install_headers(libags_audio_audio_recall_headers, install_dir: gsequencer_includedir / 'ags/audio/recall')
 install_headers(libags_audio_audio_task_headers, install_dir: gsequencer_includedir / 'ags/audio/task')
 install_headers(libags_audio_audio_thread_headers, install_dir: gsequencer_includedir / 'ags/audio/thread')
 install_headers(libags_audio_audio_wasapi_headers, install_dir: gsequencer_includedir / 'ags/audio/wasapi')
