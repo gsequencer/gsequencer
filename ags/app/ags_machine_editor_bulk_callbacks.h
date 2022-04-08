@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_MACHINE_EDITOR_BULK_H__
-#define __AGS_MACHINE_EDITOR_BULK_H__
+#ifndef __AGS_MACHINE_EDITOR_BULK_CALLBACKS_H__
+#define __AGS_MACHINE_EDITOR_BULK_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -33,7 +33,11 @@
 
 G_BEGIN_DECLS
 
+void ags_machine_editor_bulk_remove_bulk_callback(GtkButton *button,
+						  AgsMachineEditorBulk *machine_editor_bulk);
+void ags_machine_editor_bulk_link_callback(GtkComboBox *combo_box,
+					   AgsMachineEditorBulk *machine_editor_bulk);
 
 G_END_DECLS
 
-#endif /*__AGS_MACHINE_EDITOR_BULK_H__*/
+#endif /*__AGS_MACHINE_EDITOR_BULK_CALLBACKS_H__*/

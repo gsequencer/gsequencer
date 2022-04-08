@@ -504,15 +504,24 @@ ags_link_editor_reset(AgsApplicable *applicable)
     }
     
     if(found){
-      guint audio_channels;
-      
       /* set channel link */
       gtk_combo_box_set_active(link_editor->combo, i);
 
-      audio_channels  = ags_audio_get_audio_channels(link_machine->audio);
+      if(AGS_IS_OUTPUT(machine_editor_line->channel)){
+	guint input_lines;
       
-      gtk_spin_button_set_range(link_editor->spin_button,
-				0.0, (gdouble) audio_channels);
+	input_lines  = ags_audio_get_input_lines(link_machine->audio);
+	
+	gtk_spin_button_set_range(link_editor->spin_button,
+				  0.0, (gdouble) input_lines - 1.0);
+      }else{
+	guint output_lines;
+      
+	output_lines  = ags_audio_get_output_lines(link_machine->audio);
+
+	gtk_spin_button_set_range(link_editor->spin_button,
+				  0.0, (gdouble) output_lines - 1.0);
+      }
       
       if(link_channel == NULL){
 	gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,

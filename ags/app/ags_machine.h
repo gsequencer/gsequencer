@@ -181,6 +181,8 @@ struct _AgsMachine
   
   GtkMenuButton *context_menu_button;
   GMenu *context_menu;
+
+  GList *dialog_model;
   
   GtkDialog *machine_editor_dialog;
   GtkDialog *rename;
@@ -304,11 +306,21 @@ void ags_machine_set_run_extended(AgsMachine *machine,
 				  gboolean run,
 				  gboolean sequencer, gboolean notation, gboolean wave, gboolean midi);
 
+GList* ags_machine_get_dialog_model(AgsMachine *machine);
+void ags_machine_add_dialog_model(AgsMachine *machine,
+				  xmlNode *node);
+void ags_machine_remove_dialog_model(AgsMachine *machine,
+				     xmlNode *node);
+
+GList* ags_machine_find_dialog_model(AgsMachine *machine,
+				     GList *dialog_model,
+				     gchar *node_name,
+				     gchar *attribute,
+				     gchar *value);
+
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_output_connections(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_input_connections(AgsMachine *machine);
-
-GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 
 void ags_machine_open_files(AgsMachine *machine,
 			    GSList *filenames,

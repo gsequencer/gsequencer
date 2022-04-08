@@ -189,7 +189,7 @@ ags_machine_editor_collection_init(AgsMachineEditorCollection *machine_editor_co
 
   machine_editor_collection->add_bulk = (GtkButton *) gtk_button_new();
   gtk_button_set_icon_name(machine_editor_collection->add_bulk,
-			   "list-add");
+			   "list-add-symbolic");
 
   gtk_widget_set_halign(machine_editor_collection->add_bulk,
 			GTK_ALIGN_END);
@@ -259,6 +259,9 @@ ags_machine_editor_collection_connect(AgsConnectable *connectable)
 
   machine_editor_collection->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
+  g_signal_connect(machine_editor_collection->add_bulk, "clicked",
+		   G_CALLBACK(ags_machine_editor_collection_add_bulk_callback), machine_editor_collection);
+  
   bulk =
     start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
@@ -286,6 +289,12 @@ ags_machine_editor_collection_disconnect(AgsConnectable *connectable)
   }
   
   machine_editor_collection->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_object_disconnect(machine_editor_collection->add_bulk,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_machine_editor_collection_add_bulk_callback),
+		      machine_editor_collection,
+		      NULL);
 
   bulk =
     start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
@@ -348,12 +357,71 @@ ags_machine_editor_collection_apply(AgsApplicable *applicable)
 void
 ags_machine_editor_collection_reset(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
   AgsMachineEditorCollection *machine_editor_collection;
 
+  GList *start_dialog_model, *dialog_model;
   GList *start_bulk, *bulk;
 
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(applicable);
 
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_collection,
+								AGS_TYPE_MACHINE_EDITOR);
+
+  machine = machine_editor->machine;
+
+  bulk =
+    start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+
+  while(bulk != NULL){
+    ags_machine_editor_collection_remove_bulk(machine_editor_collection,
+					      bulk->data);
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
+
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+
+  while(dialog_model != NULL){
+    AgsMachineEditorBulk *bulk;
+
+    xmlNode *node;
+
+    node = dialog_model->data;
+    
+    if(!g_strcmp0(node->name,
+		  "ags-machine-editor-bulk")){
+      xmlChar *direction;
+
+      direction = xmlGetProp(node,
+			     BAD_CAST "direction");
+
+      if(g_type_is_a(machine_editor_collection->channel_type, AGS_TYPE_OUTPUT) &&
+	 !g_strcmp0(direction, "output")){
+	bulk = ags_machine_editor_bulk_new();
+	ags_machine_editor_collection_add_bulk(machine_editor_collection,
+					       bulk);
+
+	ags_connectable_connect(AGS_CONNECTABLE(bulk));
+      }else if(g_type_is_a(machine_editor_collection->channel_type, AGS_TYPE_INPUT) &&
+	       !g_strcmp0(direction, "input")){
+	bulk = ags_machine_editor_bulk_new();
+	ags_machine_editor_collection_add_bulk(machine_editor_collection,
+					       bulk);
+
+	ags_connectable_connect(AGS_CONNECTABLE(bulk));
+      }
+    }
+    
+    /* iterate */
+    dialog_model = dialog_model->next;
+  }
+  
   /* reset */
   bulk =
     start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);

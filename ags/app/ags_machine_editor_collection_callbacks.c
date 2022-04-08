@@ -18,3 +18,16 @@
  */
 
 #include <ags/app/ags_machine_editor_collection_callbacks.h>
+
+void
+ags_machine_editor_collection_add_bulk_callback(GtkButton *button, AgsMachineEditorCollection *machine_editor_collection)
+{
+  AgsMachineEditorBulk *bulk;
+
+  bulk = ags_machine_editor_bulk_new();  
+  ags_machine_editor_collection_add_bulk(machine_editor_collection,
+					 bulk);
+
+  ags_applicable_reset(AGS_APPLICABLE(bulk));
+  ags_connectable_connect(AGS_APPLICABLE(bulk));
+}

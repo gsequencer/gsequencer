@@ -47,6 +47,13 @@ struct _AgsMachineEditorBulk
 
   guint connectable_flags;
 
+  GtkComboBox *link;
+  
+  GtkSpinButton *first_line;
+  GtkSpinButton *first_link_line;
+
+  GtkSpinButton *count;
+  
   GtkButton *remove_bulk;
 };
 
@@ -56,6 +63,10 @@ struct _AgsMachineEditorBulkClass
 };
 
 GType ags_machine_editor_bulk_get_type(void);
+
+xmlNode* ags_machine_editor_bulk_to_xml_node(AgsMachineEditorBulk *machine_editor_bulk);
+void ags_machine_editor_bulk_from_xml_node(AgsMachineEditorBulk *machine_editor_bulk,
+					   xmlNode *node);
 
 AgsMachineEditorBulk* ags_machine_editor_bulk_new();
 

@@ -140,6 +140,16 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   
   grid = (GtkGrid *) gtk_grid_new();
 
+  gtk_widget_set_valign((GtkWidget *) grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_grid_attach((GtkGrid *) resize_editor,
 		  (GtkWidget *) grid,
 		  0, 1,

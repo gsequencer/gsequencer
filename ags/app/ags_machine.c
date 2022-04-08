@@ -721,6 +721,8 @@ ags_machine_init(AgsMachine *machine)
   gtk_menu_button_set_menu_model(machine->context_menu_button,
 				 machine->context_menu);
   
+  machine->dialog_model = NULL;
+
   machine->machine_editor_dialog = NULL;
   machine->rename = NULL;
   machine->rename_audio = NULL;
@@ -3057,6 +3059,113 @@ ags_machine_set_run_extended(AgsMachine *machine,
 				    (AgsTask *) cancel_audio);
     }
   }
+}
+
+/**
+ * ags_machine_get_dialog_model:
+ * @machine: the #AgsMachine
+ * 
+ * Get dialog model.
+ * 
+ * Returns: the #GList-struct containing #xmlNode-struct
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_get_dialog_model(AgsMachine *machine)
+{  
+  g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
+
+  return(g_list_reverse(g_list_copy(machine->dialog_model)));
+}
+
+/**
+ * ags_machine_add_dialog_model:
+ * @machine: the #AgsMachine
+ * @node: the #xmlNode-struct
+ * 
+ * Add @node to @machine.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_add_dialog_model(AgsMachine *machine,
+			     xmlNode *node)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+  g_return_if_fail(node != NULL);
+
+  if(g_list_find(machine->dialog_model, node) == NULL){
+    machine->dialog_model = g_list_prepend(machine->dialog_model,
+					   node);
+  }
+}
+
+/**
+ * ags_machine_remove_dialog_model:
+ * @machine: the #AgsMachine
+ * @node: the #xmlNode-struct
+ * 
+ * Get @node from @machine.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_machine_remove_dialog_model(AgsMachine *machine,
+				xmlNode *node)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+  g_return_if_fail(node != NULL);
+
+  if(g_list_find(machine->dialog_model, node) != NULL){
+    machine->dialog_model = g_list_remove(machine->dialog_model,
+					  node);
+  }
+}
+
+/**
+ * ags_machine_find_dialog_model:
+ * @machine: the #AgsMachine
+ * @dialog_model: the #GList-struct
+ * @node_name: the node name
+ * @attribute: the attribute
+ * @value: the attribute value
+ * 
+ * Find dialog model.
+ * 
+ * Returns: the matching #GList-struct with data #xmlNode-struct, or %NULL
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_machine_find_dialog_model(AgsMachine *machine,
+			      GList *dialog_model,
+			      gchar *node_name,
+			      gchar *attribute,
+			      gchar *value)
+{
+  g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
+
+  while(dialog_model != NULL){
+    xmlNode *current_node;
+
+    current_node = dialog_model->data;
+
+    if(!g_strcmp0(current_node->name, node_name)){
+      if(attribute != NULL){
+	if(!g_strcmp0(xmlGetProp(current_node, attribute),
+		      value)){	
+	  return(dialog_model);
+	}
+      }else{
+	return(dialog_model);
+      }
+    }
+    
+    dialog_model = dialog_model->next;
+  }
+
+  return(NULL);
 }
 
 /**

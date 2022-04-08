@@ -33,6 +33,7 @@
 
 G_BEGIN_DECLS
 
+void ags_machine_editor_collection_add_bulk_callback(GtkButton *button, AgsMachineEditorCollection *machine_editor_collection);
 
 G_END_DECLS
 
