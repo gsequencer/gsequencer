@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_sf2_util.h>
+#include <ags/audio/ags_sf2_synth_util.h>
 
 G_BEGIN_DECLS
 
@@ -92,7 +92,7 @@ struct _AgsSF2SynthGenerator
   gdouble base_key;
   gdouble tuning;
 
-  AgsSF2 *sf2;
+  AgsSF2SynthUtil *sf2_synth_util;
   
   GObject *timestamp;
 };

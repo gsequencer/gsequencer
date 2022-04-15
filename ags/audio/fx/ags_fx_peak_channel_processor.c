@@ -20,6 +20,7 @@
 #include <ags/audio/fx/ags_fx_peak_channel_processor.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_peak_util.h>
 
 #include <ags/audio/fx/ags_fx_peak_channel.h>
 #include <ags/audio/fx/ags_fx_peak_recycling.h>
@@ -138,6 +139,7 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
   
   gdouble peak;
   guint buffer_size;
+  guint samplerate;
   gint sound_scope;
 
   GRecMutex *fx_peak_channel_mutex;
@@ -151,15 +153,19 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
   peak = 0.0;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
   g_object_get(recall,
 	       "recall-channel", &fx_peak_channel,
 	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
 	       NULL);
     
   if(fx_peak_channel != NULL){
     AgsPort *port;
 
+    AgsPeakUtil peak_util;
+    
     gboolean peak_reseted;
     
     GValue value = {0,};
@@ -188,13 +194,22 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
 
       g_value_unset(&value);
     }
-  
-    peak = ags_audio_buffer_util_peak(fx_peak_channel->input_data[sound_scope]->buffer, 1,
-				      AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-				      buffer_size,
-				      440.0,
-				      22000.0,
-				      1.0);
+
+    peak_util.source = fx_peak_channel->input_data[sound_scope]->buffer;
+    peak_util.source_stride = 1;
+
+    peak_util.buffer_length = buffer_size;
+    peak_util.format = AGS_SOUNDCARD_DOUBLE;
+    peak_util.samplerate = samplerate;
+
+    peak_util.harmonic_rate = 440.0;
+    peak_util.pressure_factor = 1.0;
+
+    peak_util.peak = 0.0;
+
+    ags_peak_util_compute_double(&peak_util);
+
+    peak = peak_util.peak;
 
     if(!peak_reseted){
       ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,

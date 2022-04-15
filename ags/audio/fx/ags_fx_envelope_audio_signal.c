@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_envelope_channel.h>
 #include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
@@ -450,6 +451,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  
 	  /* special case release - #0 key offset bigger than note offset */
 	  if(x1 < note_offset){
+	    AgsVolumeUtil volume_util;
+	    
 	    envelope_current_x = cattack.real + cdecay.real;
 	
 	    envelope_x0 = csustain.real;
@@ -466,14 +469,24 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	    current_volume = ags_fx_envelope_audio_signal_get_volume(envelope_y0, current_ratio,
 								     0, envelope_end_frame - envelope_start_frame,
 								     envelope_end_frame - envelope_start_frame);
-
-	    g_rec_mutex_lock(stream_mutex);
 	    
-	    ags_audio_buffer_util_volume(source->stream_current->data, 1,
-					 ags_audio_buffer_util_format_from_soundcard(format),
-					 buffer_size,
-					 current_volume);
-		
+	    g_rec_mutex_lock(stream_mutex);
+
+	    volume_util.destination = source->stream_current->data;
+	    volume_util.destination_stride = 1;
+    
+	    volume_util.source = source->stream_current->data;
+	    volume_util.source_stride = 1;
+
+	    volume_util.buffer_length = buffer_size;
+	    volume_util.format = format;
+
+	    volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+    
+	    volume_util.volume = current_volume;
+
+	    ags_volume_util_compute(&volume_util);
+
 	    g_rec_mutex_unlock(stream_mutex);
 	    
 	    /* iterate */
@@ -716,16 +729,28 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	    offset += current_frame_count;
 
 	    if(trailing_frame_count != 0){
+	      AgsVolumeUtil volume_util;
+	      
 	      current_volume = ags_fx_envelope_audio_signal_get_volume(envelope_y0, current_ratio,
 								       0, envelope_end_frame - envelope_start_frame,
 								       envelope_end_frame);
 
 	      g_rec_mutex_lock(stream_mutex);
 	      
-	      ags_audio_buffer_util_volume(source->stream_current->data + offset, 1,
-					   ags_audio_buffer_util_format_from_soundcard(format),
-					   trailing_frame_count,
-					   current_volume);
+	      volume_util.destination = source->stream_current->data;
+	      volume_util.destination_stride = 1;
+    
+	      volume_util.source = source->stream_current->data;
+	      volume_util.source_stride = 1;
+
+	      volume_util.buffer_length = buffer_size;
+	      volume_util.format = format;
+
+	      volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+    
+	      volume_util.volume = current_volume;
+
+	      ags_volume_util_compute(&volume_util);
 
 	      g_rec_mutex_unlock(stream_mutex);
 	    }

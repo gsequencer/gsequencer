@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_resample_util.h>
 
 #include <ags/i18n.h>
 
@@ -1143,6 +1144,8 @@ void
 ags_wave_set_samplerate(AgsWave *wave,
 			guint samplerate)
 {
+  AgsResampleUtil resample_util;
+
   GList *start_list, *list;
 
   void *data, *resampled_data;
@@ -1151,6 +1154,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   guint end_offset;
   guint buffer_length;
   guint new_buffer_length;
+  guint allocated_buffer_length;
   guint buffer_size;
   guint old_samplerate;
   guint format;
@@ -1196,63 +1200,69 @@ ags_wave_set_samplerate(AgsWave *wave,
 
   buffer_length = g_list_length(start_list);
 
-  new_buffer_length = (guint) ceil((samplerate * (buffer_length * buffer_size / old_samplerate)) / buffer_size);
+  new_buffer_length = (guint) ceil(((double) samplerate * ((double) buffer_length * (double) buffer_size / (double) old_samplerate)) / (double) buffer_size);
 
+  allocated_buffer_length = new_buffer_length * buffer_size;
+
+  if(allocated_buffer_length < buffer_length * buffer_size){
+    allocated_buffer_length = buffer_length * buffer_size;
+  }
+  
   copy_mode = G_MAXUINT;
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      data = (gint8 *) malloc(buffer_length * buffer_size * sizeof(gint8));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gint8));
+      data = (gint8 *) malloc(allocated_buffer_length * sizeof(gint8));
+      memset(data, 0, allocated_buffer_length * sizeof(gint8));
       
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      data = (gint16 *) malloc(buffer_length * buffer_size * sizeof(gint16));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gint16));
+      data = (gint16 *) malloc(allocated_buffer_length * sizeof(gint16));
+      memset(data, 0, allocated_buffer_length * sizeof(gint16));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      data = (gint32 *) malloc(buffer_length * buffer_size * sizeof(gint32));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gint32));
+      data = (gint32 *) malloc(allocated_buffer_length * sizeof(gint32));
+      memset(data, 0, allocated_buffer_length * sizeof(gint32));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      data = (gint32 *) malloc(buffer_length * buffer_size * sizeof(gint32));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gint32));
+      data = (gint32 *) malloc(allocated_buffer_length * sizeof(gint32));
+      memset(data, 0, allocated_buffer_length * sizeof(gint32));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      data = (gint64 *) malloc(buffer_length * buffer_size * sizeof(gint64));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gint64));
+      data = (gint64 *) malloc(allocated_buffer_length * sizeof(gint64));
+      memset(data, 0, allocated_buffer_length * sizeof(gint64));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
     }
     break;
   case AGS_SOUNDCARD_FLOAT:
     {
-      data = (gfloat *) malloc(buffer_length * buffer_size * sizeof(gfloat));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gfloat));
+      data = (gfloat *) malloc(allocated_buffer_length * sizeof(gfloat));
+      memset(data, 0, allocated_buffer_length * sizeof(gfloat));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
     }
     break;
   case AGS_SOUNDCARD_DOUBLE:
     {
-      data = (gdouble *) malloc(buffer_length * buffer_size * sizeof(gdouble));
-      memset(data, 0, buffer_length * buffer_size * sizeof(gdouble));
+      data = (gdouble *) malloc(allocated_buffer_length * sizeof(gdouble));
+      memset(data, 0, allocated_buffer_length * sizeof(gdouble));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
     }
@@ -1285,15 +1295,35 @@ ags_wave_set_samplerate(AgsWave *wave,
     offset += buffer_size;
   }
 
-  resampled_data = ags_stream_alloc(new_buffer_length * buffer_size,
+  resampled_data = ags_stream_alloc(allocated_buffer_length,
 				    format);
+
+  resample_util.secret_rabbit.src_ratio = samplerate / old_samplerate;
+
+  resample_util.secret_rabbit.input_frames = buffer_length * buffer_size;
+  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+  resample_util.secret_rabbit.output_frames = new_buffer_length * buffer_size;
+  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
   
-  ags_audio_buffer_util_resample_with_buffer(data, 1,
-					     ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
-					     buffer_length * buffer_size,
-					     samplerate,
-					     new_buffer_length * buffer_size,
-					     resampled_data);
+  resample_util.destination = resampled_data;
+  resample_util.destination_stride = 1;
+
+  resample_util.source = data;
+  resample_util.source_stride = 1;
+
+  resample_util.buffer_length = allocated_buffer_length;
+  resample_util.format = format;
+  resample_util.samplerate = old_samplerate;
+
+  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+  
+  resample_util.target_samplerate = samplerate;
+
+  ags_resample_util_compute(&resample_util);  
+
+  g_free(resample_util.secret_rabbit.data_in);
+  g_free(resample_util.secret_rabbit.data_out);
 
   if(data != NULL){
     free(data);
@@ -3346,16 +3376,45 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	data = NULL;
 	
 	if(samplerate_val != wave_samplerate){
-	  data = ags_stream_alloc(wave_buffer_size,
+	  AgsResampleUtil resample_util;
+
+	  guint allocated_buffer_length;
+
+	  allocated_buffer_length = wave_buffer_size;
+
+	  if(allocated_buffer_length < buffer_size_val){
+	    allocated_buffer_length = buffer_size_val;
+	  }
+
+	  data = ags_stream_alloc(allocated_buffer_length,
 				  format_val);
-	  
-	  ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
-						     ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-						     buffer_size_val,
-						     wave_samplerate,
-						     wave_buffer_size,
-						     data);
-	  
+
+	  resample_util.secret_rabbit.src_ratio = wave_samplerate / samplerate_val;
+
+	  resample_util.secret_rabbit.input_frames = buffer_size_val;
+	  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+	  resample_util.secret_rabbit.output_frames = wave_buffer_size;
+	  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+	  resample_util.destination = data;
+	  resample_util.destination_stride = 1;
+
+	  resample_util.source = clipboard_data;
+	  resample_util.source_stride = 1;
+
+	  resample_util.buffer_length = allocated_buffer_length;
+	  resample_util.format = format_val;
+	  resample_util.samplerate = samplerate_val;
+
+	  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format_val);
+  
+	  resample_util.target_samplerate = wave_samplerate;
+
+	  ags_resample_util_compute(&resample_util);  
+
+	  g_free(resample_util.secret_rabbit.data_out);
+	  g_free(resample_util.secret_rabbit.data_in);
 	}else{
 	  data = buffer->data;		
 	}
@@ -3831,17 +3890,48 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  ags_audio_buffer_util_format_from_soundcard(format_val));
 
 	  if(samplerate_val != wave_samplerate){
+	    AgsResampleUtil resample_util;
+
+	    guint allocated_buffer_length;
+
+	    allocated_buffer_length = wave_buffer_size;
+
+	    if(allocated_buffer_length < buffer_size_val){
+	      allocated_buffer_length = buffer_size_val;
+	    }
+	    
 	    target_frame_count = ceil((double) frame_count / (double) samplerate_val * (double) wave_samplerate);
 
 	    target_data = ags_stream_alloc(target_frame_count,
 					   format_val);
 
-	    ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
-						       ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-						       buffer_size_val,
-						       wave_samplerate,
-						       target_frame_count,
-						       target_data);
+
+	    resample_util.secret_rabbit.src_ratio = wave_samplerate / samplerate_val;
+
+	    resample_util.secret_rabbit.input_frames = buffer_size_val;
+	    resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+	    resample_util.secret_rabbit.output_frames = wave_buffer_size;
+	    resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+	    resample_util.destination = target_data;
+	    resample_util.destination_stride = 1;
+
+	    resample_util.source = clipboard_data;
+	    resample_util.source_stride = 1;
+
+	    resample_util.buffer_length = allocated_buffer_length;
+	    resample_util.format = format_val;
+	    resample_util.samplerate = samplerate_val;
+
+	    resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format_val);
+  
+	    resample_util.target_samplerate = wave_samplerate;
+
+	    ags_resample_util_compute(&resample_util);  
+
+	    g_free(resample_util.secret_rabbit.data_out);
+	    g_free(resample_util.secret_rabbit.data_in);
 	    
 	    if(attack + target_frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -3910,15 +4000,45 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							    ags_audio_buffer_util_format_from_soundcard(format_val));
 	      
 	    if(samplerate_val != wave_samplerate){
+	      AgsResampleUtil resample_util;
+
+	      guint allocated_buffer_length;
+
+	      allocated_buffer_length = wave_buffer_size;
+
+	      if(allocated_buffer_length < buffer_size_val){
+		allocated_buffer_length = buffer_size_val;
+	      }
+
 	      target_data = ags_stream_alloc(wave_buffer_size,
 					     format_val);
-	      
-	      ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
-							 ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-							 buffer_size_val,
-							 wave_samplerate,
-							 wave_buffer_size,
-							 target_data);
+
+	      resample_util.secret_rabbit.src_ratio = wave_samplerate / samplerate_val;
+
+	      resample_util.secret_rabbit.input_frames = buffer_size_val;
+	      resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+	      resample_util.secret_rabbit.output_frames = wave_buffer_size;
+	      resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+	      resample_util.destination = target_data;
+	      resample_util.destination_stride = 1;
+
+	      resample_util.source = clipboard_data;
+	      resample_util.source_stride = 1;
+
+	      resample_util.buffer_length = allocated_buffer_length;
+	      resample_util.format = format_val;
+	      resample_util.samplerate = samplerate_val;
+
+	      resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format_val);
+  
+	      resample_util.target_samplerate = wave_samplerate;
+
+	      ags_resample_util_compute(&resample_util);  
+
+	      g_free(resample_util.secret_rabbit.data_out);
+	      g_free(resample_util.secret_rabbit.data_in);
 	      
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  target_data, 1, wave_buffer_size - attack,

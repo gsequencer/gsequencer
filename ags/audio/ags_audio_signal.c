@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_note.h>
 
 #include <libxml/tree.h>
@@ -2533,10 +2534,13 @@ ags_audio_signal_get_samplerate(AgsAudioSignal *audio_signal)
 void
 ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 {
+  AgsResampleUtil resample_util;
+
   GList *stream;
 
   void *data, *resampled_data;
 
+  guint allocated_buffer_length;
   guint stream_length;
   guint end_offset;
   guint buffer_size;
@@ -2654,14 +2658,41 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   
   g_rec_mutex_unlock(stream_mutex);
 
+  allocated_buffer_length = stream_length * buffer_size;
+
+  if(allocated_buffer_length < samplerate * (stream_length * buffer_size / old_samplerate)){
+    allocated_buffer_length = samplerate * (stream_length * buffer_size / old_samplerate);
+  }
+
   resampled_data = ags_stream_alloc((guint) (samplerate * (stream_length * buffer_size / old_samplerate)),
 				    format);
-  ags_audio_buffer_util_resample_with_buffer(data, 1,
-					     ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
-					     stream_length * buffer_size,
-					     samplerate,
-					     (guint) (samplerate * (stream_length * buffer_size / old_samplerate)),
-					     resampled_data);
+
+  resample_util.secret_rabbit.src_ratio = old_samplerate / samplerate;
+
+  resample_util.secret_rabbit.input_frames = stream_length * buffer_size;
+  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+  resample_util.secret_rabbit.output_frames = samplerate * (stream_length * buffer_size / old_samplerate);
+  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+  resample_util.destination = resampled_data;
+  resample_util.destination_stride = 1;
+
+  resample_util.source = data;
+  resample_util.source_stride = 1;
+
+  resample_util.buffer_length = allocated_buffer_length;
+  resample_util.format = format;
+  resample_util.samplerate = old_samplerate;
+
+  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+  
+  resample_util.target_samplerate = samplerate;
+
+  ags_resample_util_compute(&resample_util);  
+
+  g_free(resample_util.secret_rabbit.data_out);
+  g_free(resample_util.secret_rabbit.data_in);
 
   g_free(data);
 

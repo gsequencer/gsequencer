@@ -122,6 +122,14 @@ AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
 gpointer ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr);
 void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
 
+AgsAudioContainer* ags_sfz_synth_util_get_sfz_file(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_sfz_file(AgsSFZSynthUtil *sfz_synth_util,
+				     AgsAudioContainer *sfz_file);
+
+AgsSFZSample* ags_sfz_synth_util_get_sfz_sample(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_sfz_sample(AgsSFZSynthUtil *sfz_synth_util,
+				       AgsSFZSample *sfz_sample);
+
 gpointer ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_source(AgsSFZSynthUtil *sfz_synth_util,
 				   gpointer source);
@@ -189,98 +197,6 @@ void ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute(AgsSFZSynthUtil *sfz_synth_util);
-
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s8)
-void ags_sfz_synth_util_copy_s8(gint8 *buffer,
-				guint buffer_size,
-				AgsSFZSample *sfz_sample,
-				gdouble note,
-				gdouble volume,
-				guint samplerate,
-				guint offset, guint n_frames,
-				guint loop_mode,
-				gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s16)
-void ags_sfz_synth_util_copy_s16(gint16 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s24)
-void ags_sfz_synth_util_copy_s24(gint32 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s32)
-void ags_sfz_synth_util_copy_s32(gint32 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s64)
-void ags_sfz_synth_util_copy_s64(gint64 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_float)
-void ags_sfz_synth_util_copy_float(gfloat *buffer,
-				   guint buffer_size,
-				   AgsSFZSample *sfz_sample,
-				   gdouble note,
-				   gdouble volume,
-				   guint samplerate,
-				   guint offset, guint n_frames,
-				   guint loop_mode,
-				   gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_double)
-void ags_sfz_synth_util_copy_double(gdouble *buffer,
-				    guint buffer_size,
-				    AgsSFZSample *sfz_sample,
-				    gdouble note,
-				    gdouble volume,
-				    guint samplerate,
-				    guint offset, guint n_frames,
-				    guint loop_mode,
-				    gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_complex)
-void ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
-				     guint buffer_size,
-				     AgsSFZSample *sfz_sample,
-				     gdouble note,
-				     gdouble volume,
-				     guint samplerate,
-				     guint offset, guint n_frames,
-				     guint loop_mode,
-				     gint loop_start, gint loop_end);
-
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute)
-void ags_sfz_synth_util_copy(void *buffer,
-			     guint buffer_size,
-			     AgsSFZSample *sfz_sample,
-			     gdouble note,
-			     gdouble volume,
-			     guint samplerate, guint audio_buffer_util_format,
-			     guint offset, guint n_frames,
-			     guint loop_mode,
-			     gint loop_start, gint loop_end);
 
 G_END_DECLS
 

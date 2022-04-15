@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/audio/fx/ags_fx_buffer_audio_signal.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_resample_util.h>
 
 #include <ags/audio/fx/ags_fx_buffer_audio.h>
 #include <ags/audio/fx/ags_fx_buffer_audio_processor.h>
@@ -342,11 +343,23 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 			    destination);
 
 	if(destination_samplerate != source_samplerate){
-	  g_object_ref(recycling);
+	  void *data;
+
+	  guint allocated_buffer_length;
+
+	  allocated_buffer_length = source_buffer_size;
+
+	  if(allocated_buffer_length < destination_buffer_size){
+	    allocated_buffer_length = destination_buffer_size;
+	  }	  
+	  
+	  data = ags_stream_alloc(allocated_buffer_length,
+				  source_format);
+	  
+	  g_object_ref(recycling);	  
 	  g_hash_table_insert(input_data->resample_cache,
 			      recycling,
-			      ags_stream_alloc(destination_buffer_size,
-					       source_format));	  
+			      data);
 	}
 	
 	g_rec_mutex_unlock(input_data_mutex);
@@ -422,21 +435,52 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	g_rec_mutex_lock(input_data_mutex);
 	  
 	if(source_samplerate != destination_samplerate){
+	  AgsResampleUtil resample_util;
+
 	  void *tmp_buffer_source;
+
+	  guint allocated_buffer_length;
+
+	  allocated_buffer_length = source_buffer_size;
+
+	  if(allocated_buffer_length < destination_buffer_size){
+	    allocated_buffer_length = destination_buffer_size;
+	  }
 	  
 	  tmp_buffer_source = g_hash_table_lookup(input_data->resample_cache,
 						  recycling);
+
 	  ags_audio_buffer_util_clear_buffer(tmp_buffer_source, 1,
-					     destination_buffer_size, source_format);
+					     allocated_buffer_length, source_format);
 
 	  g_rec_mutex_lock(source_stream_mutex);
-      
-	  ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
-						     ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-						     source_buffer_size,
-						     destination_samplerate,
-						     destination_buffer_size,
-						     tmp_buffer_source);
+
+	  resample_util.secret_rabbit.src_ratio = source_samplerate / destination_samplerate;
+
+	  resample_util.secret_rabbit.input_frames = source_buffer_size;
+	  resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+	  resample_util.secret_rabbit.output_frames = destination_buffer_size;
+	  resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+	  resample_util.destination = tmp_buffer_source;
+	  resample_util.destination_stride = 1;
+
+	  resample_util.source = buffer_source;
+	  resample_util.source_stride = 1;
+
+	  resample_util.buffer_length = allocated_buffer_length;
+	  resample_util.format = source_format;
+	  resample_util.samplerate = source_samplerate;
+
+	  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(source_format);
+  
+	  resample_util.target_samplerate = destination_samplerate;
+
+	  ags_resample_util_compute(&resample_util);  
+
+	  g_free(resample_util.secret_rabbit.data_out);
+	  g_free(resample_util.secret_rabbit.data_in);
 
 	  g_rec_mutex_unlock(source_stream_mutex);
       
@@ -463,20 +507,50 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	    buffer_source_prev = stream_source->prev->data;
 
 	    if(resample){
+	      AgsResampleUtil resample_util;
+
 	      void *tmp_buffer_source_prev;
+
+	      guint allocated_buffer_length;
+
+	      allocated_buffer_length = source_buffer_size;
+
+	      if(allocated_buffer_length < destination_buffer_size){
+		allocated_buffer_length = destination_buffer_size;
+	      }
 
 	      tmp_buffer_source_prev = g_hash_table_lookup(input_data->resample_cache,
 							   recycling);
 
 	      ags_audio_buffer_util_clear_buffer(tmp_buffer_source_prev, 1,
-						 destination_buffer_size, source_format);
+						 allocated_buffer_length, source_format);
 	  
-	      ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
-							 ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-							 source_buffer_size,
-							 destination_samplerate,
-							 destination_buffer_size,
-							 tmp_buffer_source_prev);
+	      resample_util.secret_rabbit.src_ratio = source_samplerate / destination_samplerate;
+
+	      resample_util.secret_rabbit.input_frames = source_buffer_size;
+	      resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+	      resample_util.secret_rabbit.output_frames = destination_buffer_size;
+	      resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+	      resample_util.destination = tmp_buffer_source_prev;
+	      resample_util.destination_stride = 1;
+
+	      resample_util.source = buffer_source_prev;
+	      resample_util.source_stride = 1;
+
+	      resample_util.buffer_length = allocated_buffer_length;
+	      resample_util.format = source_format;
+	      resample_util.samplerate = source_samplerate;
+
+	      resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(source_format);
+  
+	      resample_util.target_samplerate = destination_samplerate;
+
+	      ags_resample_util_compute(&resample_util);  
+
+	      g_free(resample_util.secret_rabbit.data_out);
+	      g_free(resample_util.secret_rabbit.data_in);
 
 	      buffer_source_prev = tmp_buffer_source_prev;
 	    }
@@ -554,19 +628,50 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	  g_rec_mutex_lock(source_stream_mutex);
 	  
 	  if(source_samplerate != destination_samplerate){
+	    AgsResampleUtil resample_util;
+
 	    void *tmp_buffer_source;
+
+	    guint allocated_buffer_length;
+
+	    allocated_buffer_length = source_buffer_size;
+
+	    if(allocated_buffer_length < destination_buffer_size){
+	      allocated_buffer_length = destination_buffer_size;
+	    }
 	    
 	    tmp_buffer_source = g_hash_table_lookup(input_data->resample_cache,
 						    recycling);
+
 	    ags_audio_buffer_util_clear_buffer(tmp_buffer_source, 1,
-					       destination_buffer_size, source_format);
-	    
-	    ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
-						       ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-						       source_buffer_size,
-						       destination_samplerate,
-						       destination_buffer_size,
-						       tmp_buffer_source);
+					       allocated_buffer_length, source_format);
+
+	    resample_util.secret_rabbit.src_ratio = source_samplerate / destination_samplerate;
+
+	    resample_util.secret_rabbit.input_frames = source_buffer_size;
+	    resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+	    resample_util.secret_rabbit.output_frames = destination_buffer_size;
+	    resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+	    resample_util.destination = tmp_buffer_source;
+	    resample_util.destination_stride = 1;
+
+	    resample_util.source = buffer_source;
+	    resample_util.source_stride = 1;
+
+	    resample_util.buffer_length = allocated_buffer_length;
+	    resample_util.format = source_format;
+	    resample_util.samplerate = source_samplerate;
+
+	    resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(source_format);
+  
+	    resample_util.target_samplerate = destination_samplerate;
+
+	    ags_resample_util_compute(&resample_util);  
+
+	    g_free(resample_util.secret_rabbit.data_out);
+	    g_free(resample_util.secret_rabbit.data_in);
 	    
 	    buffer_source = tmp_buffer_source;
 	  }

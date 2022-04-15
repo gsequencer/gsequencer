@@ -155,7 +155,7 @@ ags_function_get_type(void)
       (GInstanceInitFunc) ags_function_init,
     };
 
-    ags_type_function = g_type_register_static(AGS_TYPE_CONVERSION,
+    ags_type_function = g_type_register_static(G_TYPE_OBJECT,
 					       "AgsFunction",
 					       &ags_function_info,
 					       0);
