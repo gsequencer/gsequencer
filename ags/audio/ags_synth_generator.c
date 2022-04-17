@@ -2040,6 +2040,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 			    gdouble note)
 {
   AgsSynthUtil synth_util;
+  AgsFMSynthUtil fm_synth_util;
   
   GList *stream_start, *stream;
 
@@ -2275,7 +2276,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       }
 
     }else if(do_lfo){
-
       switch(oscillator){
       case AGS_SYNTH_OSCILLATOR_SIN:
       {
@@ -2332,61 +2332,55 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       }
 
     }else if(do_fm_synth){
+      fm_synth_util.source = stream->data;
+
+      fm_synth_util.source_stride = 1;
+
+      fm_synth_util.buffer_length = buffer_size;
+      fm_synth_util.format = format;
+      fm_synth_util.samplerate = samplerate;
+    
+      fm_synth_util.audio_buffer_util_format = audio_buffer_util_format;
+
+      fm_synth_util.synth_oscillator_mode = oscillator;
+    
+      fm_synth_util.frequency = current_frequency;
+      fm_synth_util.phase = current_phase;
+      fm_synth_util.volume = volume;
+
+      fm_synth_util.lfo_oscillator_mode = fm_lfo_osc_mode;
+
+      fm_synth_util.lfo_frequency = fm_lfo_freq;
+      fm_synth_util.lfo_depth = fm_lfo_depth;
+      fm_synth_util.tuning = fm_tuning;
+      
+      fm_synth_util.frame_count = current_count;
+      fm_synth_util.offset = current_attack;
 
       switch(synth_generator->oscillator){
       case AGS_SYNTH_OSCILLATOR_SIN:
       {
-	ags_fm_synth_util_sin(stream->data,
-			      current_frequency, current_phase, volume,
-			      samplerate, audio_buffer_util_format,
-			      current_attack, current_count,
-			      fm_lfo_osc_mode,
-			      fm_lfo_freq, fm_lfo_depth,
-			      fm_tuning);
+	ags_fm_synth_util_compute_sin(&fm_synth_util);
       }
       break;
       case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
       {
-	ags_fm_synth_util_sawtooth(stream->data,
-				   current_frequency, current_phase, volume,
-				   samplerate, audio_buffer_util_format,
-				   current_attack, current_count,
-				   fm_lfo_osc_mode,
-				   fm_lfo_freq, fm_lfo_depth,
-				   fm_tuning);
+	ags_fm_synth_util_compute_sawtooth(&fm_synth_util);
       }
       break;
       case AGS_SYNTH_OSCILLATOR_TRIANGLE:
       {
-	ags_fm_synth_util_triangle(stream->data,
-				   current_frequency, current_phase, volume,
-				   samplerate, audio_buffer_util_format,
-				   current_attack, current_count,
-				   fm_lfo_osc_mode,
-				   fm_lfo_freq, fm_lfo_depth,
-				   fm_tuning);
+	ags_fm_synth_util_compute_triangle(&fm_synth_util);
       }
       break;
       case AGS_SYNTH_OSCILLATOR_SQUARE:
       {
-	ags_fm_synth_util_square(stream->data,
-				 current_frequency, current_phase, volume,
-				 samplerate, audio_buffer_util_format,
-				 current_attack, current_count,
-				 fm_lfo_osc_mode,
-				 fm_lfo_freq, fm_lfo_depth,
-				 fm_tuning);
+	ags_fm_synth_util_compute_square(&fm_synth_util);
       }
       break;
       case AGS_SYNTH_OSCILLATOR_IMPULSE:
       {
-	ags_fm_synth_util_impulse(stream->data,
-				  current_frequency, current_phase, volume,
-				  samplerate, audio_buffer_util_format,
-				  current_attack, current_count,
-				  fm_lfo_osc_mode,
-				  fm_lfo_freq, fm_lfo_depth,
-				  fm_tuning);
+	ags_fm_synth_util_compute_impulse(&fm_synth_util);
       }
       break;
       default:

@@ -11,7 +11,7 @@ ags (4.0.0)
 	* removed ags_recall_factory.[ch]
 	* removed deprecated ags_audio_buffer_util.[ch] functions
 	* removed deprecated ags_synth_util.[ch] functions
-	* TODO:JK: removed deprecated ags_fm_synth_util.[ch] functions
+	* removed deprecated ags_fm_synth_util.[ch] functions
 	* TODO:JK: refactored LV2 parser
 	* TODO:JK: implemented AgsVector
 	* TODO:JK: implemented AgsSoundDirection
