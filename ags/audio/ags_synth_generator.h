@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_synth_enums.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SYNTH_GENERATOR                (ags_synth_generator_get_type())
@@ -40,7 +42,7 @@ G_BEGIN_DECLS
 #define AGS_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE (AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
 #define AGS_SYNTH_GENERATOR_DEFAULT_FORMAT (AGS_SOUNDCARD_DEFAULT_FORMAT)
 
-#define AGS_SYNTH_GENERATOR_DEFAULT_OSCILLATOR (AGS_SYNTH_GENERATOR_OSCILLATOR_SIN)
+#define AGS_SYNTH_GENERATOR_DEFAULT_OSCILLATOR (AGS_SYNTH_OSCILLATOR_SIN)
 
 #define AGS_SYNTH_GENERATOR_DEFAULT_FREQUENCY (440.0)
 #define AGS_SYNTH_GENERATOR_DEFAULT_PHASE (0.0)
@@ -55,24 +57,6 @@ G_BEGIN_DECLS
 
 typedef struct _AgsSynthGenerator AgsSynthGenerator;
 typedef struct _AgsSynthGeneratorClass AgsSynthGeneratorClass;
-
-/**
- * AgsSynthGeneratorOscillator:
- * @AGS_SYNTH_GENERATOR_OSCILLATOR_SIN: sinus
- * @AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH: sawtooth
- * @AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE: triangle
- * @AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE: square
- * @AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE: impulse
- * 
- * Enum values to specify oscillator.
- */
-typedef enum{
-  AGS_SYNTH_GENERATOR_OSCILLATOR_SIN,
-  AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH,
-  AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE,
-  AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE,
-  AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE,
-}AgsSynthGeneratorOscillator;
 
 struct _AgsSynthGenerator
 {

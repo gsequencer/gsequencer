@@ -1,3 +1,31 @@
+ags (4.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* major API improvements
+	* migrated libgsequencer.so to Gtk-4
+	* migrated libags_gui.so to Gtk-4
+	* implemented AgsCartesian properties
+	* removed AgsDevout, AgsDevin and AgsMidiin
+	* removed ags/audio/recall
+	* removed ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]
+	* removed ags_recall_factory.[ch]
+	* removed deprecated ags_audio_buffer_util.[ch] functions
+	* removed deprecated ags_synth_util.[ch] functions
+	* TODO:JK: removed deprecated ags_fm_synth_util.[ch] functions
+	* TODO:JK: refactored LV2 parser
+	* TODO:JK: implemented AgsVector
+	* TODO:JK: implemented AgsSoundDirection
+	* TODO:JK: implemented AgsAudioManager with ui-scope
+	* TODO:JK: improved AgsMessageEnvelope with ui-scope
+	* TODO:JK: refactored AgsConnectableFlags
+	* fixed typo in ags_function.h
+	* TODO:JK: implemented pitch selection of ags-synth
+	* TODO:JK: implemented pitch selection of ags-fm-synth
+	* TODO:JK: implemented pitch selection of ags-sf2-synth
+	* TODO:JK: implemented pitch selection of ags-sfz-synth
+	* TODO:JK: refactor use GFile instead of FILE
+	* TODO:JK: fixed AgsWave clipboard
+
 ags (4.0.0-alpha)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

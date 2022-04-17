@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -788,45 +788,51 @@ ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags)
 void
 ags_frequency_map_real_process(AgsFrequencyMap *frequency_map)
 {
+  AgsSynthUtil synth_util;
+
+  synth_util.source = frequency_map->buffer;
+
+  synth_util.source_stride = 1;
+
+  synth_util.buffer_length = frequency_map->buffer_size;
+  synth_util.format = AGS_SOUNDCARD_COMPLEX;
+  synth_util.samplerate = frequency_map->samplerate;
+    
+  synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+
+  synth_util.synth_oscillator_mode = frequency_map->oscillator_mode;
+    
+  synth_util.frequency = frequency_map->freq;
+  synth_util.phase = 0.0;
+  synth_util.volume = 1.0;
+
+  synth_util.frame_count = frequency_map->frame_count;
+  synth_util.offset = frequency_map->attack;
+
   switch(frequency_map->oscillator_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
-    ags_synth_util_sin_complex(frequency_map->buffer + frequency_map->attack,
-			       frequency_map->freq, 0.0, 1.0,
-			       frequency_map->samplerate,
-			       0, frequency_map->frame_count);
+    ags_synth_util_compute_sin_complex(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
   {
-    ags_synth_util_sawtooth_complex(frequency_map->buffer + frequency_map->attack,
-				    frequency_map->freq, 0.0, 1.0,
-				    frequency_map->samplerate,
-				    0, frequency_map->frame_count);
+    ags_synth_util_compute_sawtooth_complex(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_TRIANGLE:
   {
-    ags_synth_util_triangle_complex(frequency_map->buffer + frequency_map->attack,
-				    frequency_map->freq, 0.0, 1.0,
-				    frequency_map->samplerate,
-				    0, frequency_map->frame_count);
+    ags_synth_util_compute_triangle_complex(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SQUARE:
   {
-    ags_synth_util_square_complex(frequency_map->buffer + frequency_map->attack,
-				  frequency_map->freq, 0.0, 1.0,
-				  frequency_map->samplerate,
-				  0, frequency_map->frame_count);
+    ags_synth_util_compute_square_complex(&synth_util);
   }
   break;
   case AGS_SYNTH_OSCILLATOR_IMPULSE:
   {
-    ags_synth_util_impulse_complex(frequency_map->buffer + frequency_map->attack,
-				   frequency_map->freq, 0.0, 1.0,
-				   frequency_map->samplerate,
-				   0, frequency_map->frame_count);
+    ags_synth_util_compute_impulse_complex(&synth_util);
   }
   break;
   }
