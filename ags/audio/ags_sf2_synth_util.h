@@ -26,8 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_resample_util.h>
-#include <ags/audio/ags_generic_pitch_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
@@ -40,7 +39,8 @@ G_BEGIN_DECLS
 #define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
 
 typedef enum{
-  AGS_SF2_SYNTH_UTIL_FX_ENGINE   = 1,
+  AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT    = 1,
+  AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE   = 1 <<  1,
 }AgsSF2SynthUtilFlags;
 
 /**
@@ -115,8 +115,10 @@ struct _AgsSF2SynthUtil
   gint loop_end;
 
   AgsResampleUtil *resample_util;
-  AgsGenericPitchUtil *generic_pitch_util;
-  AgsHQPitchUtil *hq_pitch_util;
+
+  GType pitch_type;  
+  gpointer pitch_util;
+
   AgsVolumeUtil *volume_util;
 };
 
@@ -213,9 +215,13 @@ AgsResampleUtil* ags_sf2_synth_util_get_resample_util(AgsSF2SynthUtil *sf2_synth
 void ags_sf2_synth_util_set_resample_util(AgsSF2SynthUtil *sf2_synth_util,
 					  AgsResampleUtil *resample_util);
 
-AgsGenericPitchUtil* ags_sf2_synth_util_get_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
-void ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
-					       AgsGenericPitchUtil *generic_pitch_util);
+GType ags_sf2_synth_util_get_pitch_type(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
+				       GType pitch_type);
+
+gpointer ags_sf2_synth_util_get_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
+				       gpointer pitch_util);
 
 void ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
 

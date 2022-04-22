@@ -1449,16 +1449,6 @@ ags_fx_sfz_synth_audio_notify_format_callback(GObject *gobject,
 
 	channel_data->chorus_hq_pitch_util.format = format;
 
-	ags_stream_free(channel_data->chorus_hq_pitch_util.low_mix_buffer);
-	ags_stream_free(channel_data->chorus_hq_pitch_util.new_mix_buffer);
-
-	channel_data->chorus_hq_pitch_util.low_mix_buffer = ags_stream_alloc(AGS_FX_SFZ_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-									     format);
-	channel_data->chorus_hq_pitch_util.new_mix_buffer = ags_stream_alloc(AGS_FX_SFZ_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-									     format);
-	
-	channel_data->chorus_linear_interpolate_util.format = format;
-
 	ags_stream_free(channel_data->chorus_util.destination);
 	ags_stream_free(channel_data->chorus_hq_pitch_util.destination);
 	ags_stream_free(channel_data->chorus_util.pitch_mix_buffer_history);

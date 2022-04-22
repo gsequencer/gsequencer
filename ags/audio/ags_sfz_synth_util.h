@@ -26,8 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_resample_util.h>
-#include <ags/audio/ags_generic_pitch_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
@@ -38,10 +37,6 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
 #define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
-
-typedef enum{
-  AGS_SFZ_SYNTH_UTIL_FX_ENGINE   = 1,
-}AgsSFZSynthUtilFlags;
 
 /**
  * AgsSFZSynthUtilLoopMode:
@@ -108,8 +103,10 @@ struct _AgsSFZSynthUtil
   guint loop_end;
   
   AgsResampleUtil *resample_util;
-  AgsGenericPitchUtil *generic_pitch_util;
-  AgsHQPitchUtil *hq_pitch_util;
+
+  GType pitch_type;  
+  gpointer pitch_util;
+
   AgsVolumeUtil *volume_util;
 };
 
@@ -182,9 +179,13 @@ guint ags_sfz_synth_util_get_loop_end(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
 				     guint loop_end);
 
-AgsGenericPitchUtil* ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
-void ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
-					       AgsGenericPitchUtil *generic_pitch_util);
+GType ags_sfz_synth_util_get_pitch_type(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_pitch_type(AgsSFZSynthUtil *sfz_synth_util,
+				       GType pitch_type);
+
+gpointer ags_sfz_synth_util_get_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
+				       gpointer generic_pitch_util);
 
 void ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util);
 

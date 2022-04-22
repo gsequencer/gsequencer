@@ -5,6 +5,10 @@ ags (4.0.0)
 	* migrated libgsequencer.so to Gtk-4
 	* migrated libags_gui.so to Gtk-4
 	* implemented AgsCartesian properties
+	* implemented ags_common_pitch_util.[ch]
+	* TODO:JK: improved ags_fast_pitch_util.[ch]
+	* TODO:JK: improved ags_hq_pitch_util.[ch]
+	* TODO:JK: improved ags_chorus_util.[ch]
 	* removed AgsDevout, AgsDevin and AgsMidiin
 	* removed ags/audio/recall
 	* removed ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]
@@ -12,6 +16,11 @@ ags (4.0.0)
 	* removed deprecated ags_audio_buffer_util.[ch] functions
 	* removed deprecated ags_synth_util.[ch] functions
 	* removed deprecated ags_fm_synth_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_none_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_linear_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_4th_order_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_7th_order_util.[ch] functions
+	* removed ags_generic_pitch_util.[ch]
 	* TODO:JK: refactored LV2 parser
 	* TODO:JK: implemented AgsVector
 	* TODO:JK: implemented AgsSoundDirection

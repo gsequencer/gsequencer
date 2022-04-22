@@ -78,7 +78,6 @@
 #include <ags/audio/ags_fluid_interpolate_none_util.h>
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 #include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
-#include <ags/audio/ags_fluid_pitch_util.h>
 #include <ags/audio/ags_time_stretch_util.h>
 #include <ags/audio/ags_fm_synth_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
@@ -113,7 +112,6 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_generic_recall_recycling.h>
-#include <ags/audio/ags_generic_pitch_util.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recycling.h>

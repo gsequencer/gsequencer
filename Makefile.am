@@ -1196,6 +1196,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_chorus_util.h \
+	ags/audio/ags_common_pitch_util.h \
 	ags/audio/ags_diatonic_scale.h \
 	ags/audio/ags_envelope_util.h \
 	ags/audio/ags_fast_pitch_util.h \
@@ -1206,7 +1207,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_iir_filter_util.h \
 	ags/audio/ags_fluid_interpolate_linear_util.h \
 	ags/audio/ags_fluid_interpolate_none_util.h \
-	ags/audio/ags_fluid_pitch_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
@@ -1214,7 +1214,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_fx_factory.h \
-	ags/audio/ags_generic_pitch_util.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_hq_pitch_util.h \
@@ -1286,6 +1285,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_chorus_util.c \
+	ags/audio/ags_common_pitch_util.c \
 	ags/audio/ags_diatonic_scale.c \
 	ags/audio/ags_envelope_util.c \
 	ags/audio/ags_fast_pitch_util.c \
@@ -1296,7 +1296,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_iir_filter_util.c \
 	ags/audio/ags_fluid_interpolate_linear_util.c \
 	ags/audio/ags_fluid_interpolate_none_util.c \
-	ags/audio/ags_fluid_pitch_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
@@ -1304,7 +1303,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_fx_factory.c \
-	ags/audio/ags_generic_pitch_util.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_hq_pitch_util.c \

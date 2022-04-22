@@ -726,7 +726,7 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     template =
       sf2_midi_locale_loader->template = ags_sf2_synth_util_alloc();
 
-    template->flags |= AGS_SF2_SYNTH_UTIL_FX_ENGINE;
+    template->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
     
     template->sf2_file = sf2_midi_locale_loader->audio_container;
 
@@ -743,35 +743,24 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     template->im_buffer = ags_stream_alloc(buffer_length,
 					   AGS_SOUNDCARD_DOUBLE);
 
-    template->hq_pitch_util->low_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-							       AGS_SOUNDCARD_DOUBLE);
-    
-    template->hq_pitch_util->new_mix_buffer = ags_stream_alloc(AGS_FX_SF2_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE,
-							       AGS_SOUNDCARD_DOUBLE);
-
     /*  */
-    template->hq_pitch_util->source = template->sample_buffer;
-    
-    template->hq_pitch_util->destination = template->im_buffer;
-    
-    template->hq_pitch_util->samplerate = samplerate;
-    template->hq_pitch_util->buffer_length = buffer_length;
-    template->hq_pitch_util->format = AGS_SOUNDCARD_DOUBLE;
+    ags_common_pitch_util_set_source(template->pitch_util,
+				     template->pitch_type,
+				     template->sample_buffer);
 
-    template->hq_pitch_util->base_key = 0.0;
-    template->hq_pitch_util->tuning = 0.0;
-
-    template->hq_pitch_util->linear_interpolate_util->source = template->sample_buffer;
+    ags_common_pitch_util_set_destination(template->pitch_util,
+					  template->pitch_type,
+					  template->im_buffer);
     
-    template->hq_pitch_util->linear_interpolate_util->destination = template->hq_pitch_util->low_mix_buffer;
-    
-    template->hq_pitch_util->linear_interpolate_util->buffer_length = buffer_length;
-    template->hq_pitch_util->linear_interpolate_util->format = AGS_SOUNDCARD_DOUBLE;
-    template->hq_pitch_util->linear_interpolate_util->samplerate = samplerate;
-
-    template->hq_pitch_util->linear_interpolate_util->audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
-
-    template->hq_pitch_util->linear_interpolate_util->factor = 1.0;
+    ags_common_pitch_util_set_buffer_length(template->pitch_util,
+					    template->pitch_type,
+					    buffer_length);
+    ags_common_pitch_util_set_format(template->pitch_util,
+				     template->pitch_type,
+				     AGS_SOUNDCARD_DOUBLE);
+    ags_common_pitch_util_set_samplerate(template->pitch_util,
+					 template->pitch_type,
+					 samplerate);
 
     template->volume_util->source = template->im_buffer;
     

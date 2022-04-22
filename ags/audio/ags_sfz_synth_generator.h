@@ -44,6 +44,8 @@ G_BEGIN_DECLS
 
 #define AGS_SFZ_SYNTH_GENERATOR_DEFAULT_VOLUME (1.0)
 
+#define AGS_SFZ_SYNTH_GENERATOR_DEFAULT_PITCH_TYPE "ags-fluid-4th-order"
+
 #define AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BASE_KEY (-48.0)
 #define AGS_SFZ_SYNTH_GENERATOR_DEFAULT_TUNING (0.0)
 
@@ -64,7 +66,7 @@ struct _AgsSFZSynthGenerator
   guint buffer_size;
   guint format;
 
-  guint pitch_type;
+  gchar *pitch_type;
   
   guint frame_count;
   guint loop_start;
@@ -104,8 +106,8 @@ void ags_sfz_synth_generator_set_buffer_size(AgsSFZSynthGenerator *sfz_synth_gen
 guint ags_sfz_synth_generator_get_format(AgsSFZSynthGenerator *sfz_synth_generator);
 void ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, guint format);
 
-guint ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator);
-void ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, guint pitch_type);
+gchar* ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator);
+void ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, gchar *pitch_type);
 
 gdouble ags_sfz_synth_generator_get_delay(AgsSFZSynthGenerator *sfz_synth_generator);
 void ags_sfz_synth_generator_set_delay(AgsSFZSynthGenerator *sfz_synth_generator, gdouble delay);

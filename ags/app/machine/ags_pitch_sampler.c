@@ -1480,7 +1480,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   gdouble key_count;
   guint audio_channels;
   guint output_pads;
-  guint pitch_type;
+  gchar *pitch_type;
 
   if(!AGS_IS_PITCH_SAMPLER(pitch_sampler)){
     return;
@@ -1511,34 +1511,34 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   output_pads = AGS_MACHINE(pitch_sampler)->output_pads;
 
   /* pitch type */
-  pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+  pitch_type = "ags-fluid-4th-order";
 
   str = gtk_combo_box_text_get_active_text(pitch_sampler->pitch_function);
 
   if(!g_ascii_strncasecmp(str,
 			  "ags-fast-pitch",
 			  16)){
-    pitch_type = AGS_FAST_PITCH;
+    pitch_type = "ags-fast-pitch";
   }else if(!g_ascii_strncasecmp(str,
 				"ags-hq-pitch",
 				14)){
-    pitch_type = AGS_HQ_PITCH;
+    pitch_type = "ags-hq-pitch";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-no-interpolate",
 				21)){
-    pitch_type = AGS_FLUID_NO_INTERPOLATE;
+    pitch_type = "ags-fluid-none";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-linear-interpolate",
 				26)){
-    pitch_type = AGS_FLUID_LINEAR_INTERPOLATE;
+    pitch_type = "ags-fluid-linear";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-4th-order-interpolate",
 				29)){
-    pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+    pitch_type = "ags-fluid-4th-order";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-7th-order-interpolate",
 				29)){
-    pitch_type = AGS_FLUID_7TH_ORDER_INTERPOLATE;
+    pitch_type = "ags-fluid-7th-order";
   }
   
   /* open sfz file */
