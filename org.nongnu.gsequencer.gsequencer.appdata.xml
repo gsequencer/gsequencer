@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.19.0" date="2022-04-22">
+      <description>
+	<p>
+	  Fixed SIGSEGV while adjusting tact of AgsExportWindow.
+	</p>
+      </description>
+    </release>
+
     <release version="3.18.2" date="2022-02-22">
       <description>
 	<p>

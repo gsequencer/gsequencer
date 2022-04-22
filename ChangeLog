@@ -1,3 +1,10 @@
+ags (3.19.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV while adjusting tact of AgsExportWindow
+	* disabled webkit2gtk-4.0 per default in configure.ac
+	* enabled poppler per default in configure.ac
+
 ags (3.18.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

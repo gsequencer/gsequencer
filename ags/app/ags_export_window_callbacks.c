@@ -76,9 +76,9 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   gdouble delay;
 
   /* retrieve window */
-  window = AGS_WINDOW(export_window->main_window);
-
   application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
