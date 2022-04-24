@@ -391,8 +391,9 @@ ags_chorus_util_set_buffer_length(AgsChorusUtil *chorus_util,
 
   chorus_util->buffer_length = buffer_length;
 
-  ags_hq_pitch_util_set_buffer_length(chorus_util->hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(chorus_util->pitch_util,
+					  chorus_util->pitch_type,
+					  buffer_length);
 }
 
 /**
@@ -434,8 +435,9 @@ ags_chorus_util_set_format(AgsChorusUtil *chorus_util,
 
   chorus_util->format = format;
 
-  ags_hq_pitch_util_set_format(chorus_util->hq_pitch_util,
-			       format);
+  ags_common_pitch_util_set_format(chorus_util->pitch_util,
+				   chorus_util->pitch_type,
+				   format);
 }
 
 /**
@@ -477,8 +479,49 @@ ags_chorus_util_set_samplerate(AgsChorusUtil *chorus_util,
 
   chorus_util->samplerate = samplerate;
 
-  ags_hq_pitch_util_set_samplerate(chorus_util->hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(chorus_util->pitch_util,
+				       chorus_util->pitch_type,
+				       samplerate);
+}
+
+/**
+ * ags_chorus_util_get_offset:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Get offset of @chorus_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 4.0.0
+ */
+guint64
+ags_chorus_util_get_offset(AgsChorusUtil *chorus_util)
+{
+  if(chorus_util == NULL){
+    return(0);
+  }
+
+  return(chorus_util->offset);
+}
+
+/**
+ * ags_chorus_util_set_offset:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @chorus_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_chorus_util_set_offset(AgsChorusUtil *chorus_util,
+			   guint64 offset)
+{
+  if(chorus_util == NULL){
+    return;
+  }
+
+  chorus_util->offset = offset;
 }
 
 /**
@@ -519,6 +562,10 @@ ags_chorus_util_set_base_key(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->base_key = base_key;
+
+  ags_common_pitch_util_set_base_key(chorus_util->pitch_util,
+				     chorus_util->pitch_type,
+				     base_key);
 }
 
 /**

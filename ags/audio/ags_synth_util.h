@@ -26,14 +26,12 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_synth_enums.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SYNTH_UTIL         (ags_synth_util_get_type())
 
 #define AGS_SYNTH_UTIL_DEFAULT_FREQUENCY (440.0)
-#define AGS_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 
 typedef struct _AgsSynthUtil AgsSynthUtil;
 
@@ -45,8 +43,6 @@ struct _AgsSynthUtil
   guint buffer_length;
   guint format;
   guint samplerate;
-
-  guint audio_buffer_util_format;
 
   guint synth_oscillator_mode;
   
@@ -84,10 +80,6 @@ void ags_synth_util_set_format(AgsSynthUtil *synth_util,
 guint ags_synth_util_get_samplerate(AgsSynthUtil *synth_util);
 void ags_synth_util_set_samplerate(AgsSynthUtil *synth_util,
 				   guint samplerate);
-
-guint ags_synth_util_get_audio_buffer_util_format(AgsSynthUtil *synth_util);
-void ags_synth_util_set_audio_buffer_util_format(AgsSynthUtil *synth_util,
-						 guint audio_buffer_util_format);
 
 guint ags_synth_util_get_synth_oscillator_mode(AgsSynthUtil *synth_util);
 void ags_synth_util_set_synth_oscillator_mode(AgsSynthUtil *synth_util,
@@ -132,7 +124,7 @@ guint ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
 					      guint buffer_size);
 
 guint ags_synth_util_get_xcross_count(void *buffer,
-				      guint audio_buffer_util_format,
+				      guint format,
 				      guint buffer_size);
 
 /* sin oscillator */

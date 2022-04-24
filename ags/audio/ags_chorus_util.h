@@ -120,6 +120,10 @@ guint ags_chorus_util_get_samplerate(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_samplerate(AgsChorusUtil *chorus_util,
 				    guint samplerate);
 
+guint64 ags_chorus_util_get_offset(AgsChorusUtil *chorus_util);
+void ags_chorus_util_set_offset(AgsChorusUtil *chorus_util,
+				guint64 offset);
+
 gdouble ags_chorus_util_get_base_key(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_base_key(AgsChorusUtil *chorus_util,
 				  gdouble base_key);

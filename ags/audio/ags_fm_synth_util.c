@@ -19,7 +19,6 @@
 
 #include <ags/audio/ags_fm_synth_util.h>
 
-#include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -79,7 +78,7 @@ ags_fm_synth_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
-  ptr->audio_buffer_util_format = AGS_FM_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = 0;
   
   ptr->synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -122,7 +121,7 @@ ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->synth_oscillator_mode = ptr->synth_oscillator_mode;
@@ -357,46 +356,6 @@ ags_fm_synth_util_set_samplerate(AgsFMSynthUtil *fm_synth_util,
   }
 
   fm_synth_util->samplerate = samplerate;
-}
-
-/**
- * ags_fm_synth_util_get_audio_buffer_util_format:
- * @fm_synth_util: the #AgsFMSynthUtil-struct
- * 
- * Get audio buffer util format of @fm_synth_util.
- * 
- * Returns: the audio buffer util format
- * 
- * Since: 3.9.3
- */
-guint
-ags_fm_synth_util_get_audio_buffer_util_format(AgsFMSynthUtil *fm_synth_util)
-{
-  if(fm_synth_util == NULL){
-    return(0);
-  }
-
-  return(fm_synth_util->audio_buffer_util_format);
-}
-
-/**
- * ags_fm_synth_util_set_audio_buffer_util_format:
- * @fm_synth_util: the #AgsFMSynthUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
- *
- * Set @audio_buffer_util_format of @fm_synth_util.
- *
- * Since: 3.9.3
- */
-void
-ags_fm_synth_util_set_audio_buffer_util_format(AgsFMSynthUtil *fm_synth_util,
-					       guint audio_buffer_util_format)
-{
-  if(fm_synth_util == NULL){
-    return;
-  }
-
-  fm_synth_util->audio_buffer_util_format = audio_buffer_util_format;
 }
 
 /**

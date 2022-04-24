@@ -798,7 +798,7 @@ ags_frequency_map_real_process(AgsFrequencyMap *frequency_map)
   synth_util.format = AGS_SOUNDCARD_COMPLEX;
   synth_util.samplerate = frequency_map->samplerate;
     
-  synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+  synth_util.format = AGS_SOUNDCARD_COMPLEX;
 
   synth_util.synth_oscillator_mode = frequency_map->oscillator_mode;
     

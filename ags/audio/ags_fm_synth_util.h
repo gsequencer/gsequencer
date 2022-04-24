@@ -25,12 +25,13 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_synth_enums.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FM_SYNTH_UTIL         (ags_fm_synth_util_get_type())
 
 #define AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY (440.0)
-#define AGS_FM_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 #define AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY (12.0)
 #define AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH (0.0)
 #define AGS_FM_SYNTH_UTIL_DEFAULT_TUNING (0.0)
@@ -45,8 +46,6 @@ struct _AgsFMSynthUtil
   guint buffer_length;
   guint format;
   guint samplerate;
-
-  guint audio_buffer_util_format;
 
   guint synth_oscillator_mode;
   
@@ -90,10 +89,6 @@ void ags_fm_synth_util_set_format(AgsFMSynthUtil *fm_synth_util,
 guint ags_fm_synth_util_get_samplerate(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_samplerate(AgsFMSynthUtil *fm_synth_util,
 				      guint samplerate);
-
-guint ags_fm_synth_util_get_audio_buffer_util_format(AgsFMSynthUtil *fm_synth_util);
-void ags_fm_synth_util_set_audio_buffer_util_format(AgsFMSynthUtil *fm_synth_util,
-						    guint audio_buffer_util_format);
 
 guint ags_fm_synth_util_get_synth_oscillator_mode(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_synth_oscillator_mode(AgsFMSynthUtil *fm_synth_util,

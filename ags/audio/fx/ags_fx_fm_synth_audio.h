@@ -102,12 +102,15 @@ struct _AgsFxFMSynthAudio
   AgsPort *sequencer_enabled;
   AgsPort *sequencer_sign;
   
+  AgsPort *pitch_type;
   AgsPort *pitch_tuning;
   
   AgsPort *noise_gain;
 
   AgsPort *chorus_enabled;
   
+  AgsPort *chorus_pitch_type;
+
   AgsPort *chorus_input_volume;
   AgsPort *chorus_output_volume;
   
@@ -153,21 +156,19 @@ struct _AgsFxFMSynthAudioChannelData
   
   gpointer parent;
 
-  AgsFMSynthUtil synth_0;
-  AgsFMSynthUtil synth_1;
-  AgsFMSynthUtil synth_2;
+  AgsFMSynthUtil *synth_0;
+  AgsFMSynthUtil *synth_1;
+  AgsFMSynthUtil *synth_2;
 
-  AgsNoiseUtil noise_util;
+  AgsNoiseUtil *noise_util;
 
-  AgsHQPitchUtil hq_pitch_util;
-  AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
+  GType pitch_type;
+  gpointer pitch_util;
   
-  AgsChorusUtil chorus_util;
-  AgsHQPitchUtil chorus_hq_pitch_util;
-  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
+  AgsChorusUtil *chorus_util;
   
-  AgsFluidIIRFilterUtil low_pass_filter;
-  AgsFluidIIRFilterUtil high_pass_filter;
+  AgsFluidIIRFilterUtil *low_pass_filter;
+  AgsFluidIIRFilterUtil *high_pass_filter;
 
   AgsFxFMSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };

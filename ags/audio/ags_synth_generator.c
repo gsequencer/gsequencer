@@ -2062,7 +2062,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   gdouble tuning;
   gdouble current_phase;
   guint format;
-  guint audio_buffer_util_format;
   guint current_attack, current_count;
   guint offset;
   guint last_sync;
@@ -2186,8 +2185,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
   current_phase = phase;
 
-  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-
   current_attack = attack;
   current_count = buffer_size;
   
@@ -2230,8 +2227,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     synth_util.format = format;
     synth_util.samplerate = samplerate;
     
-    synth_util.audio_buffer_util_format = audio_buffer_util_format;
-
     synth_util.synth_oscillator_mode = oscillator;
     
     synth_util.frequency = current_frequency;
@@ -2276,61 +2271,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       }
 
     }else if(do_lfo){
-      switch(oscillator){
-      case AGS_SYNTH_OSCILLATOR_SIN:
-      {
-	ags_lfo_synth_util_sin(stream->data,
-			       current_frequency, current_phase,
-			       lfo_depth,
-			       tuning,
-			       samplerate, audio_buffer_util_format,
-			       current_attack, current_count);
-      }
-      break;
-      case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-      {
-	ags_lfo_synth_util_sawtooth(stream->data,
-				    current_frequency, current_phase,
-				    lfo_depth,
-				    tuning,
-				    samplerate, audio_buffer_util_format,
-				    current_attack, current_count);
-      }
-      break;
-      case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-      {
-	ags_lfo_synth_util_triangle(stream->data,
-				    current_frequency, current_phase,
-				    lfo_depth,
-				    tuning,
-				    samplerate, audio_buffer_util_format,
-				    current_attack, current_count);
-      }
-      break;
-      case AGS_SYNTH_OSCILLATOR_SQUARE:
-      {
-	ags_lfo_synth_util_square(stream->data,
-				  current_frequency, current_phase,
-				  lfo_depth,
-				  tuning,
-				  samplerate, audio_buffer_util_format,
-				  current_attack, current_count);
-      }
-      break;
-      case AGS_SYNTH_OSCILLATOR_IMPULSE:
-      {
-	ags_lfo_synth_util_impulse(stream->data,
-				   current_frequency, current_phase,
-				   lfo_depth,
-				   tuning,
-				   samplerate, audio_buffer_util_format,
-				   current_attack, current_count);
-      }
-      break;
-      default:
-	g_message("unknown oscillator");
-      }
-
+      //TODO:JK: implement me
     }else if(do_fm_synth){
       fm_synth_util.source = stream->data;
 
@@ -2340,8 +2281,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       fm_synth_util.format = format;
       fm_synth_util.samplerate = samplerate;
     
-      fm_synth_util.audio_buffer_util_format = audio_buffer_util_format;
-
       fm_synth_util.synth_oscillator_mode = oscillator;
     
       fm_synth_util.frequency = current_frequency;

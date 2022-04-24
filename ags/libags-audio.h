@@ -68,6 +68,7 @@
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_chorus_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_envelope_util.h>
 #include <ags/audio/ags_fast_pitch_util.h>
@@ -265,12 +266,6 @@
 #include <ags/audio/fx/ags_fx_buffer_channel.h>
 #include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
-#include <ags/audio/fx/ags_fx_chorus_audio.h>
-#include <ags/audio/fx/ags_fx_chorus_audio_processor.h>
-#include <ags/audio/fx/ags_fx_chorus_audio_signal.h>
-#include <ags/audio/fx/ags_fx_chorus_channel.h>
-#include <ags/audio/fx/ags_fx_chorus_channel_processor.h>
-#include <ags/audio/fx/ags_fx_chorus_recycling.h>
 #include <ags/audio/fx/ags_fx_dssi_audio.h>
 #include <ags/audio/fx/ags_fx_dssi_audio_processor.h>
 #include <ags/audio/fx/ags_fx_dssi_audio_signal.h>

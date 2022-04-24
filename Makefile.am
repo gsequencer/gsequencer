@@ -1880,12 +1880,6 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_high_pass_channel_processor.h \
 	ags/audio/fx/ags_fx_high_pass_recycling.h \
 	ags/audio/fx/ags_fx_high_pass_audio_signal.h \
-	ags/audio/fx/ags_fx_chorus_audio.h \
-	ags/audio/fx/ags_fx_chorus_audio_processor.h \
-	ags/audio/fx/ags_fx_chorus_channel.h \
-	ags/audio/fx/ags_fx_chorus_channel_processor.h \
-	ags/audio/fx/ags_fx_chorus_recycling.h \
-	ags/audio/fx/ags_fx_chorus_audio_signal.h \
 	ags/audio/fx/ags_fx_eq10_audio.h \
 	ags/audio/fx/ags_fx_eq10_audio_processor.h \
 	ags/audio/fx/ags_fx_eq10_channel.h \
@@ -2029,12 +2023,6 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_lfo_channel_processor.c \
 	ags/audio/fx/ags_fx_lfo_recycling.c \
 	ags/audio/fx/ags_fx_lfo_audio_signal.c \
-	ags/audio/fx/ags_fx_chorus_audio.c \
-	ags/audio/fx/ags_fx_chorus_audio_processor.c \
-	ags/audio/fx/ags_fx_chorus_channel.c \
-	ags/audio/fx/ags_fx_chorus_channel_processor.c \
-	ags/audio/fx/ags_fx_chorus_recycling.c \
-	ags/audio/fx/ags_fx_chorus_audio_signal.c \
 	ags/audio/fx/ags_fx_eq10_audio.c \
 	ags/audio/fx/ags_fx_eq10_audio_processor.c \
 	ags/audio/fx/ags_fx_eq10_channel.c \

@@ -19,6 +19,7 @@
 
 #include <ags/audio/ags_synth_util.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -78,7 +79,7 @@ ags_synth_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
-  ptr->audio_buffer_util_format = AGS_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = 0;
   
   ptr->synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -115,7 +116,7 @@ ags_synth_util_copy(AgsSynthUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->synth_oscillator_mode = ptr->synth_oscillator_mode;
@@ -344,46 +345,6 @@ ags_synth_util_set_samplerate(AgsSynthUtil *synth_util,
   }
 
   synth_util->samplerate = samplerate;
-}
-
-/**
- * ags_synth_util_get_audio_buffer_util_format:
- * @synth_util: the #AgsSynthUtil-struct
- * 
- * Get audio buffer util format of @synth_util.
- * 
- * Returns: the audio buffer util format
- * 
- * Since: 3.9.3
- */
-guint
-ags_synth_util_get_audio_buffer_util_format(AgsSynthUtil *synth_util)
-{
-  if(synth_util == NULL){
-    return(0);
-  }
-
-  return(synth_util->audio_buffer_util_format);
-}
-
-/**
- * ags_synth_util_set_audio_buffer_util_format:
- * @synth_util: the #AgsSynthUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
- *
- * Set @audio_buffer_util_format of @synth_util.
- *
- * Since: 3.9.3
- */
-void
-ags_synth_util_set_audio_buffer_util_format(AgsSynthUtil *synth_util,
-					    guint audio_buffer_util_format)
-{
-  if(synth_util == NULL){
-    return;
-  }
-
-  synth_util->audio_buffer_util_format = audio_buffer_util_format;
 }
 
 /**
@@ -1031,7 +992,7 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
 /**
  * ags_synth_util_get_xcross_count:
  * @buffer: the buffer containing audio data
- * @audio_buffer_util_format: the audio buffer util format
+ * @format: the format
  * @buffer_size: the buffer size
  * 
  * Get zero-cross count. 
@@ -1042,7 +1003,7 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
  */
 guint
 ags_synth_util_get_xcross_count(void *buffer,
-				guint audio_buffer_util_format,
+				guint format,
 				guint buffer_size)
 {
   guint count;
@@ -1053,50 +1014,50 @@ ags_synth_util_get_xcross_count(void *buffer,
 
   count = 0;
 
-  switch(audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     count = ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
 					       buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     count = ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
 						buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     count = ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
 						buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     count = ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
 						buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     count = ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
 						buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     count = ags_synth_util_get_xcross_count_float((gfloat *) buffer,
 						  buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     count = ags_synth_util_get_xcross_count_double((gdouble *) buffer,
 						   buffer_size);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     count = ags_synth_util_get_xcross_count_complex((AgsComplex *) buffer,
 						    buffer_size);

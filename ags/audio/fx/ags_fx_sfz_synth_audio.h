@@ -63,6 +63,8 @@ struct _AgsFxSFZSynthAudio
   
   AgsPort *chorus_enabled;
   
+  AgsPort *chorus_pitch_type;
+
   AgsPort *chorus_input_volume;
   AgsPort *chorus_output_volume;
   
