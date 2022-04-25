@@ -938,6 +938,9 @@ ags_sf2_synth_util_set_volume(AgsSF2SynthUtil *sf2_synth_util,
   }
 
   sf2_synth_util->volume = volume;
+
+  ags_volume_util_set_volume(sf2_synth_util->volume_util,
+			     volume);
 }
 
 /**

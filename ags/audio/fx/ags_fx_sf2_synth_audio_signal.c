@@ -299,7 +299,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     g_value_unset(&value);
 
-    channel_data->synth.note = (octave * 12.0) + key;
+    ags_sf2_synth_util_set_note(channel_data->synth,
+				(octave * 12.0) + key);
 
     /* synth volume */    
     g_object_get(fx_sf2_synth_audio,
@@ -312,8 +313,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_port_safe_read(port,
 			 &value);
 
-      channel_data->synth.volume =
-	channel_data->synth_volume_util.volume = (gdouble) g_value_get_float(&value);
+      ags_sf2_synth_util_set_volume(channel_data->synth,
+				    (gdouble) g_value_get_float(&value));
       
       g_object_unref(port);
     }
@@ -350,7 +351,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.input_volume = (gdouble) g_value_get_float(&value);
+	ags_chorus_util_set_input_volume(channel_data->chorus_util,
+					 (gdouble) g_value_get_float(&value));
       
 	g_object_unref(port);
       }
@@ -368,8 +370,9 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.output_volume = (gdouble) g_value_get_float(&value);
-      
+	ags_chorus_util_set_output_volume(channel_data->chorus_util,
+					  (gdouble) g_value_get_float(&value));
+            
 	g_object_unref(port);
       }
 
@@ -386,7 +389,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.lfo_oscillator = (guint) g_value_get_float(&value);
+	ags_chorus_util_set_lfo_oscillator(channel_data->chorus_util,
+					   (guint) g_value_get_float(&value));
       
 	g_object_unref(port);
       }
@@ -404,7 +408,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.lfo_frequency = (gdouble) g_value_get_float(&value);
+	ags_chorus_util_set_lfo_frequency(channel_data->chorus_util,
+					  (gdouble) g_value_get_float(&value));
       
 	g_object_unref(port);
       }
@@ -422,7 +427,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.depth = (gdouble) g_value_get_float(&value);
+	ags_chorus_util_set_depth(channel_data->chorus_util,
+				  (gdouble) g_value_get_float(&value));
       
 	g_object_unref(port);
       }
@@ -440,7 +446,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.mix = (gdouble) g_value_get_float(&value);
+	ags_chorus_util_set_mix(channel_data->chorus_util,
+				(gdouble) g_value_get_float(&value));
       
 	g_object_unref(port);
       }
@@ -458,7 +465,8 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	channel_data->chorus_util.delay = (gdouble) g_value_get_float(&value);
+	ags_chorus_util_set_delay(channel_data->chorus_util,
+				  (gdouble) g_value_get_float(&value));
       
 	g_object_unref(port);
       }
@@ -492,50 +500,70 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       g_rec_mutex_unlock(fx_sf2_synth_audio_mutex);
     }
 
-    channel_data->synth.flags |= AGS_SF2_SYNTH_UTIL_FX_ENGINE;
-    
-    channel_data->synth.source = source->stream_current->data;
-    channel_data->synth.source_stride = 1;
+    channel_data->synth->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
 
-    channel_data->synth.buffer_length = buffer_size;
-    channel_data->synth.format = format;
-    channel_data->synth.samplerate = samplerate;
+    ags_sf2_synth_util_set_source(channel_data->synth,
+				  source->stream_current->data);
+    ags_sf2_synth_util_set_source_stride(channel_data->synth,
+					 1);
 
-    channel_data->synth.midi_key = midi_note;
-    channel_data->synth.note = (octave * 12.0) + key;
-    
-    channel_data->synth.frame_count = floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size);
-    channel_data->synth.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
+    ags_sf2_synth_util_set_buffer_length(channel_data->synth,
+					 buffer_size);
+    ags_sf2_synth_util_set_format(channel_data->synth,
+				  format);
+    ags_sf2_synth_util_set_samplerate(channel_data->synth,
+				      samplerate);
+
+    ags_sf2_synth_util_set_midi_key(channel_data->synth,
+				    midi_note);
+    ags_sf2_synth_util_set_note(channel_data->synth,
+				(octave * 12.0) + key);
+
+    ags_sf2_synth_util_set_frame_count(channel_data->synth,
+				       floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
+    ags_sf2_synth_util_set_offset(channel_data->synth,
+				  floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
 
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 				       buffer_size, audio_buffer_util_format);
 
-    ags_sf2_synth_util_compute(&(channel_data->synth));
+    ags_sf2_synth_util_compute(channel_data->synth);
 
-    if(channel_data->chorus_util.depth != 0.0 && chorus_enabled){
-      channel_data->chorus_util.source = source->stream_current->data;
+    ags_sf2_synth_util_set_source(channel_data->synth,
+				  NULL);
 
-      channel_data->chorus_util.samplerate = samplerate;
-      channel_data->chorus_util.buffer_length = buffer_size;
-      channel_data->chorus_util.format = format;
+    /* chorus */
+    if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
+       chorus_enabled){
+      ags_chorus_util_set_source(channel_data->chorus_util,
+				 source->stream_current->data);
+
+      ags_chorus_util_set_samplerate(channel_data->chorus_util,
+				     samplerate);
+      ags_chorus_util_set_buffer_length(channel_data->chorus_util,
+					buffer_size);
+      ags_chorus_util_set_format(channel_data->chorus_util,
+				 format);
+
+      ags_chorus_util_set_offset(channel_data->chorus_util,
+				 floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
+      ags_chorus_util_set_base_key(channel_data->chorus_util,
+				   (gdouble) midi_note - 48.0);
       
-      channel_data->chorus_util.offset = floor(((offset_counter - x0) * delay + delay_counter) * buffer_size);
-
-      channel_data->chorus_util.base_key = (gdouble) midi_note - 48.0;
-
-      ags_chorus_util_compute(&(channel_data->chorus_util));
+      ags_chorus_util_compute(channel_data->chorus_util);
 
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);
 
       ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
-						  channel_data->chorus_util.destination, 1, 0,
+						  ags_chorus_util_get_destination(channel_data->chorus_util), 1, 0,
 						  buffer_size, copy_mode);
 
-      channel_data->chorus_util.source = NULL;
+      /* reset */      
+      ags_chorus_util_set_source(channel_data->chorus_util,
+				 NULL);
     }
-
-    channel_data->synth.source = NULL;
   }
   
   /* unref */
