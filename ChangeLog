@@ -8,7 +8,7 @@ ags (4.0.0)
 	* implemented ags_common_pitch_util.[ch]
 	* TODO:JK: improved ags_fast_pitch_util.[ch]
 	* TODO:JK: improved ags_hq_pitch_util.[ch]
-	* TODO:JK: improved ags_chorus_util.[ch]
+	* improved ags_chorus_util.[ch]
 	* removed AgsDevout, AgsDevin and AgsMidiin
 	* removed ags/audio/recall
 	* removed ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]

@@ -525,7 +525,7 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 				       buffer_size, audio_buffer_util_format);
 
-    ags_sfz_synth_util_compute(&(channel_data->synth));
+    ags_sfz_synth_util_compute(channel_data->synth);
 
     /* chorus */
     if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
