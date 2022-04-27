@@ -161,6 +161,9 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_window_set_deletable(GTK_WINDOW(preferences),
 			   TRUE);
 
+  g_signal_connect(preferences, "close-request",
+		   G_CALLBACK(ags_preferences_close_request_callback), NULL);
+  
   preferences->notebook = (GtkNotebook *) gtk_notebook_new();
   g_object_set(G_OBJECT(preferences->notebook),
 	       "tab-pos", GTK_POS_LEFT,

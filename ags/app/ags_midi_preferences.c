@@ -141,8 +141,8 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(midi_preferences),
 				 GTK_ORIENTATION_VERTICAL);
   
-  g_signal_connect_after((GObject *) midi_preferences, "parent-set",
-			 G_CALLBACK(ags_midi_preferences_parent_set_callback), (gpointer) midi_preferences);
+  g_signal_connect((GObject *) midi_preferences, "notify::parent",
+		   G_CALLBACK(ags_midi_preferences_notify_parent_callback), NULL);
 
   midi_preferences->connectable_flags = 0;
 

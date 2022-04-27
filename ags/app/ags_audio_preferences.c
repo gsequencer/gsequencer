@@ -146,8 +146,8 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(audio_preferences),
 				 GTK_ORIENTATION_VERTICAL);
   
-  g_signal_connect_after((GObject *) audio_preferences, "parent-set",
-			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
+  g_signal_connect((GObject *) audio_preferences, "notify::parent",
+		   G_CALLBACK(ags_audio_preferences_notify_parent_callback), NULL);
 
   audio_preferences->flags = 0;
 

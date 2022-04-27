@@ -27,12 +27,14 @@
 #include <ags/i18n.h>
 
 void
-ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsAudioPreferences *audio_preferences)
-{  
-  if(old_parent != NULL){
-    return;
-  }
+ags_audio_preferences_notify_parent_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     gpointer user_data)
+{
+  AgsAudioPreferences *audio_preferences;
 
+  audio_preferences = (AgsAudioPreferences *) gobject;
+  
   if(audio_preferences->add == NULL) {
     AgsPreferences *preferences;
 

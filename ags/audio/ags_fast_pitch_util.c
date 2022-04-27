@@ -76,20 +76,20 @@ ags_fast_pitch_util_alloc()
   ptr->destination = NULL;
   ptr->destination_stride = 1;
 
-  ptr->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  ptr->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 				     AGS_SOUNDCARD_DEFAULT_FORMAT);
 
-  ptr->mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
+  ptr->mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
   
-  ptr->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  ptr->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 					AGS_SOUNDCARD_DEFAULT_FORMAT);  
 
-  ptr->im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
+  ptr->im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
 
-  ptr->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  ptr->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 					 AGS_SOUNDCARD_DEFAULT_FORMAT);
 
-  ptr->low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
+  ptr->low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
 
   ptr->buffer_length = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -130,20 +130,20 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
   new_ptr->low_mix_buffer = NULL;
   new_ptr->new_mix_buffer = NULL;
 
-  new_ptr->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  new_ptr->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 					 ptr->format);
 
-  new_ptr->mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
+  new_ptr->mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
   
-  new_ptr->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  new_ptr->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 					    ptr->format);  
 
-  new_ptr->im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
+  new_ptr->im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
 
-  new_ptr->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  new_ptr->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 					     ptr->format);
 
-  new_ptr->low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
+  new_ptr->low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE;
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
@@ -430,16 +430,16 @@ ags_fast_pitch_util_set_format(AgsFastPitchUtil *fast_pitch_util,
   ags_stream_free(fast_pitch_util->low_mix_buffer);
   ags_stream_free(fast_pitch_util->new_mix_buffer);
 
-  fast_pitch_util->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  fast_pitch_util->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 						 format);
     
-  fast_pitch_util->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  fast_pitch_util->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 						    format);
     
-  fast_pitch_util->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  fast_pitch_util->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 						     format);
     
-  fast_pitch_util->new_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+  fast_pitch_util->new_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE,
 						     format);
 }
 

@@ -28,12 +28,14 @@
 #include <ags/config.h>
 
 void
-ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMidiPreferences *midi_preferences)
+ags_midi_preferences_notify_parent_callback(GObject *gobject,
+					    GParamSpec *pspec,
+					    gpointer user_data)
 {  
-  if(old_parent != NULL){
-    return;
-  }
+  AgsMidiPreferences *midi_preferences;
 
+  midi_preferences = (AgsMidiPreferences *) gobject;
+  
   if(midi_preferences->add == NULL) {
     AgsPreferences *preferences;
     

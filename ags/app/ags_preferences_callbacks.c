@@ -21,6 +21,14 @@
 
 #include <ags/app/ags_ui_provider.h>
 
+gboolean
+ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  ags_connectable_disconnect(AGS_CONNECTABLE(window));
+  
+  return(FALSE);
+}
+
 void
 ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data)
 {

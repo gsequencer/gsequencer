@@ -35,7 +35,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_HQ_PITCH_UTIL         (ags_hq_pitch_util_get_type())
 #define AGS_HQ_PITCH_UTIL(ptr) ((AgsHQPitchUtil *)(ptr))
 
-#define AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE (65536)
+#define AGS_HQ_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE (65536)
 
 typedef struct _AgsHQPitchUtil AgsHQPitchUtil;
 

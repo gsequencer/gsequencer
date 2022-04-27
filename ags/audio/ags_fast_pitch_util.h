@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_FAST_PITCH_UTIL         (ags_fast_pitch_util_get_type())
 #define AGS_FAST_PITCH_UTIL(ptr) ((AgsFastPitchUtil *)(ptr))
 
-#define AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE (65536)
+#define AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE (65536)
 
 typedef struct _AgsFastPitchUtil AgsFastPitchUtil;
 
