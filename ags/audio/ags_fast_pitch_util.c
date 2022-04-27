@@ -77,17 +77,17 @@ ags_fast_pitch_util_alloc()
   ptr->destination_stride = 1;
 
   ptr->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-				     AGS_SOUNDCARD_DOUBLE);
+				     AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   ptr->mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
   
   ptr->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					AGS_SOUNDCARD_DOUBLE);  
+					AGS_SOUNDCARD_DEFAULT_FORMAT);  
 
   ptr->im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
 
   ptr->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					 AGS_SOUNDCARD_DOUBLE);
+					 AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   ptr->low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
 
@@ -131,17 +131,17 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
   new_ptr->new_mix_buffer = NULL;
 
   new_ptr->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					 AGS_SOUNDCARD_DOUBLE);
+					 ptr->format);
 
   new_ptr->mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
   
   new_ptr->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					    AGS_SOUNDCARD_DOUBLE);  
+					    ptr->format);  
 
   new_ptr->im_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
 
   new_ptr->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					     AGS_SOUNDCARD_DOUBLE);
+					     ptr->format);
 
   new_ptr->low_mix_buffer_max_buffer_length = AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
 
@@ -166,16 +166,20 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 void
 ags_fast_pitch_util_free(AgsFastPitchUtil *ptr)
 {
+  if(ptr == NULL){
+    return;
+  }
+  
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
     g_free(ptr->source);
   }
 
-  g_free(ptr->mix_buffer);
-  g_free(ptr->im_mix_buffer);
-  g_free(ptr->low_mix_buffer);
-  g_free(ptr->new_mix_buffer);
+  ags_stream_free(ptr->mix_buffer);
+  ags_stream_free(ptr->im_mix_buffer);
+  ags_stream_free(ptr->low_mix_buffer);
+  ags_stream_free(ptr->new_mix_buffer);
   
   g_free(ptr);
 }
@@ -373,35 +377,12 @@ void
 ags_fast_pitch_util_set_buffer_length(AgsFastPitchUtil *fast_pitch_util,
 				      guint buffer_length)
 {
-  if(fast_pitch_util == NULL){
+  if(fast_pitch_util == NULL ||
+     fast_pitch_util->buffer_length == buffer_length){
     return;
   }
 
   fast_pitch_util->buffer_length = buffer_length;
-
-  ags_stream_free(fast_pitch_util->mix_buffer);
-  ags_stream_free(fast_pitch_util->im_mix_buffer);
-  ags_stream_free(fast_pitch_util->low_mix_buffer);
-  ags_stream_free(fast_pitch_util->new_mix_buffer);
-
-  fast_pitch_util->mix_buffer = NULL;
-  fast_pitch_util->im_mix_buffer = NULL;
-  fast_pitch_util->low_mix_buffer = NULL;
-  fast_pitch_util->new_mix_buffer = NULL;
-
-  if(buffer_length > 0){
-    fast_pitch_util->mix_buffer = ags_stream_alloc(buffer_length,
-						   fast_pitch_util->format);
-    
-    fast_pitch_util->im_mix_buffer = ags_stream_alloc(buffer_length,
-						      fast_pitch_util->format);
-    
-    fast_pitch_util->low_mix_buffer = ags_stream_alloc(buffer_length,
-						       fast_pitch_util->format);
-    
-    fast_pitch_util->new_mix_buffer = ags_stream_alloc(buffer_length,
-						       fast_pitch_util->format);
-  }
 }
 
 /**
@@ -437,7 +418,8 @@ void
 ags_fast_pitch_util_set_format(AgsFastPitchUtil *fast_pitch_util,
 			       guint format)
 {
-  if(fast_pitch_util == NULL){
+  if(fast_pitch_util == NULL ||
+     fast_pitch_util->format == format){
     return;
   }
 
@@ -448,24 +430,17 @@ ags_fast_pitch_util_set_format(AgsFastPitchUtil *fast_pitch_util,
   ags_stream_free(fast_pitch_util->low_mix_buffer);
   ags_stream_free(fast_pitch_util->new_mix_buffer);
 
-  fast_pitch_util->mix_buffer = NULL;
-  fast_pitch_util->im_mix_buffer = NULL;
-  fast_pitch_util->low_mix_buffer = NULL;
-  fast_pitch_util->new_mix_buffer = NULL;
-
-  if(fast_pitch_util->buffer_length > 0){
-    fast_pitch_util->mix_buffer = ags_stream_alloc(fast_pitch_util->buffer_length,
-						   format);
+  fast_pitch_util->mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+						 format);
     
-    fast_pitch_util->im_mix_buffer = ags_stream_alloc(fast_pitch_util->buffer_length,
-						      format);
+  fast_pitch_util->im_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+						    format);
     
-    fast_pitch_util->low_mix_buffer = ags_stream_alloc(fast_pitch_util->buffer_length,
-						       format);
+  fast_pitch_util->low_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+						     format);
     
-    fast_pitch_util->new_mix_buffer = ags_stream_alloc(fast_pitch_util->buffer_length,
-						       format);
-  }
+  fast_pitch_util->new_mix_buffer = ags_stream_alloc(AGS_FAST_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+						     format);
 }
 
 /**
@@ -501,7 +476,8 @@ void
 ags_fast_pitch_util_set_samplerate(AgsFastPitchUtil *fast_pitch_util,
 				   guint samplerate)
 {
-  if(fast_pitch_util == NULL){
+  if(fast_pitch_util == NULL ||
+     fast_pitch_util->samplerate == samplerate){
     return;
   }
 

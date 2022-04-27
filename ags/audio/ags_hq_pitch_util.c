@@ -75,12 +75,12 @@ ags_hq_pitch_util_alloc()
   ptr->destination_stride = 1;
 
   ptr->low_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					 AGS_SOUNDCARD_DOUBLE);
+					 AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   ptr->low_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
   
   ptr->new_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					 AGS_SOUNDCARD_DOUBLE);
+					 AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   ptr->new_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
   
@@ -121,12 +121,12 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->low_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					     AGS_SOUNDCARD_DOUBLE);
+					     ptr->format);
 
   new_ptr->low_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
   
   new_ptr->new_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
-					     AGS_SOUNDCARD_DOUBLE);
+					     ptr->format);
   
   new_ptr->new_mix_buffer_max_buffer_length = AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE;
   
@@ -151,14 +151,18 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 void
 ags_hq_pitch_util_free(AgsHQPitchUtil *ptr)
 {
+  if(ptr == NULL){
+    return;
+  }
+  
   g_free(ptr->destination);
 
   if(ptr->destination != ptr->source){
     g_free(ptr->source);
   }
 
-  g_free(ptr->low_mix_buffer);
-  g_free(ptr->new_mix_buffer);
+  ags_stream_free(ptr->low_mix_buffer);
+  ags_stream_free(ptr->new_mix_buffer);
   
   g_free(ptr);
 }
@@ -359,7 +363,8 @@ void
 ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
 				    guint buffer_length)
 {
-  if(hq_pitch_util == NULL){
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->buffer_length == buffer_length){
     return;
   }
 
@@ -402,12 +407,22 @@ void
 ags_hq_pitch_util_set_format(AgsHQPitchUtil *hq_pitch_util,
 			     guint format)
 {
-  if(hq_pitch_util == NULL){
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->format == format){
     return;
   }
 
   hq_pitch_util->format = format;
 
+  ags_stream_free(hq_pitch_util->low_mix_buffer);
+  ags_stream_free(hq_pitch_util->new_mix_buffer);
+
+  hq_pitch_util->low_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+						   hq_pitch_util->format);
+  
+  hq_pitch_util->new_mix_buffer = ags_stream_alloc(AGS_HQ_PITCH_UTIL_DEFAULT_BUFFER_SIZE,
+						   hq_pitch_util->format);
+  
   ags_linear_interpolate_util_set_format(hq_pitch_util->linear_interpolate_util,
 					 format);
 }
@@ -445,7 +460,8 @@ void
 ags_hq_pitch_util_set_samplerate(AgsHQPitchUtil *hq_pitch_util,
 				 guint samplerate)
 {
-  if(hq_pitch_util == NULL){
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->samplerate == samplerate){
     return;
   }
 
