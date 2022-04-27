@@ -304,12 +304,6 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
     synth->sf2_loop_start[i] = template->sf2_loop_start[i];
     synth->sf2_loop_end[i] = template->sf2_loop_end[i];
   }
-  
-  synth->ipatch_sample = template->ipatch_sample;
-  
-  if(synth->ipatch_sample != NULL){
-    g_object_ref(synth->ipatch_sample);
-  }
 
   ags_stream_free(synth->source);
   

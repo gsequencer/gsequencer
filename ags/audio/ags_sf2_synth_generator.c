@@ -2137,11 +2137,10 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   g_rec_mutex_lock(sf2_synth_generator_mutex);
 
+  sf2_synth_generator->sf2_synth_util->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT;
+  
   ags_sf2_synth_util_set_sf2_file(sf2_synth_generator->sf2_synth_util,
 				  audio_container);
-
-  ags_sf2_synth_util_set_ipatch_sample(sf2_synth_generator->sf2_synth_util,
-				       ipatch_sample);
 
   ags_sf2_synth_util_set_source(sf2_synth_generator->sf2_synth_util,
 				buffer);
@@ -2408,11 +2407,10 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   g_rec_mutex_lock(sf2_synth_generator_mutex);
   
+  sf2_synth_generator->sf2_synth_util->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
+
   ags_sf2_synth_util_set_sf2_file(sf2_synth_generator->sf2_synth_util,
 				  audio_container);
-
-  ags_sf2_synth_util_set_ipatch_sample(sf2_synth_generator->sf2_synth_util,
-				       ipatch_sample);
 
   ags_sf2_synth_util_set_source(sf2_synth_generator->sf2_synth_util,
 				buffer);

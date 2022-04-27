@@ -80,8 +80,6 @@ struct _AgsSF2SynthUtil
   
   guint sf2_resampled_buffer_length[128];
   gpointer *sf2_resampled_buffer;  
-
-  AgsIpatchSample *ipatch_sample;
   
   gpointer source;
   guint source_stride;
@@ -134,10 +132,6 @@ void ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr);
 AgsAudioContainer* ags_sf2_synth_util_get_sf2_file(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_sf2_file(AgsSF2SynthUtil *sf2_synth_util,
 				     AgsAudioContainer *sf2_file);
-
-AgsIpatchSample* ags_sf2_synth_util_get_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
-void ags_sf2_synth_util_set_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util,
-					  AgsIpatchSample *ipatch_sample);
 
 gpointer ags_sf2_synth_util_get_source(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_source(AgsSF2SynthUtil *sf2_synth_util,
@@ -223,8 +217,9 @@ gpointer ags_sf2_synth_util_get_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
 				       gpointer pitch_util);
 
-void ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
-
+void ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
+					gchar *preset,
+					gchar *instrument);
 void ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 					 gint bank,
 					 gint program);
