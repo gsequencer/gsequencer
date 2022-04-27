@@ -305,12 +305,6 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
     synth->sfz_loop_end[i] = template->sfz_loop_end[i];
   }
   
-  synth->sfz_sample = template->sfz_sample;
-  
-  if(synth->sfz_sample != NULL){
-    g_object_ref(synth->sfz_sample);
-  }
-
   ags_stream_free(synth->source);
   
   synth->source_stride = template->source_stride;

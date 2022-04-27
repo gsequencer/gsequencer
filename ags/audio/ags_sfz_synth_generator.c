@@ -1644,9 +1644,6 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   ags_sfz_synth_util_set_sfz_file(sfz_synth_generator->sfz_synth_util,
 				  audio_container);
 
-  ags_sfz_synth_util_set_sfz_sample(sfz_synth_generator->sfz_synth_util,
-				    sfz_sample);
-
   ags_sfz_synth_util_set_source(sfz_synth_generator->sfz_synth_util,
 				buffer);
   ags_sfz_synth_util_set_source_stride(sfz_synth_generator->sfz_synth_util,

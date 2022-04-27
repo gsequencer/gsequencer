@@ -9,7 +9,7 @@ ags (4.0.0)
 	* TODO:JK: improved ags_fast_pitch_util.[ch]
 	* TODO:JK: improved ags_hq_pitch_util.[ch]
 	* improved ags_sf2_synth_util.[ch]
-	* TODO:JK: improved ags_sfz_synth_util.[ch]
+	* improved ags_sfz_synth_util.[ch]
 	* improved ags_chorus_util.[ch]
 	* removed AgsDevout, AgsDevin and AgsMidiin
 	* removed ags/audio/recall

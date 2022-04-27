@@ -75,8 +75,6 @@ struct _AgsSFZSynthUtil
   
   guint sfz_resampled_buffer_length[128];
   gpointer *sfz_resampled_buffer;  
-  
-  AgsSFZSample *sfz_sample;
 
   gpointer source;
   guint source_stride;
@@ -122,10 +120,6 @@ void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
 AgsAudioContainer* ags_sfz_synth_util_get_sfz_file(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_sfz_file(AgsSFZSynthUtil *sfz_synth_util,
 				     AgsAudioContainer *sfz_file);
-
-AgsSFZSample* ags_sfz_synth_util_get_sfz_sample(AgsSFZSynthUtil *sfz_synth_util);
-void ags_sfz_synth_util_set_sfz_sample(AgsSFZSynthUtil *sfz_synth_util,
-				       AgsSFZSample *sfz_sample);
 
 gpointer ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_source(AgsSFZSynthUtil *sfz_synth_util,

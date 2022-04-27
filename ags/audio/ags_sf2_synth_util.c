@@ -2327,6 +2327,15 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
       
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
+
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
     
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
@@ -2626,6 +2635,15 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
     
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
+    
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
 					       AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -2923,6 +2941,15 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
       
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
+    
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
     
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
@@ -3222,6 +3249,15 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
     
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
+    
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
 					       AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -3519,6 +3555,15 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
       
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
+    
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
     
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
@@ -3818,6 +3863,15 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
     
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
+    
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
 					       AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -4116,6 +4170,15 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
     
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
+    
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
 					       AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -4413,6 +4476,15 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
       
     ags_fluid_iir_filter_util_process(&custom_resonant_iir_filter_util);
   }
+    
+  /* reset */
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					NULL);
     
   /* volume */
   ags_volume_util_set_audio_buffer_util_format(volume_util,
