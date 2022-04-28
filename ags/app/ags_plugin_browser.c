@@ -369,7 +369,7 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 
 /**
  * ags_plugin_browser_new:
- * @parent_window: the #AgsWindow
+ * @transient_for: the #AgsWindow
  *
  * Create a new instance of #AgsPluginBrowser
  *
@@ -378,14 +378,13 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
  * Since: 3.0.0
  */
 AgsPluginBrowser*
-ags_plugin_browser_new(GtkWidget *parent_window)
+ags_plugin_browser_new(GtkWidget *transient_for)
 {
   AgsPluginBrowser *plugin_browser;
 
   plugin_browser = (AgsPluginBrowser *) g_object_new(AGS_TYPE_PLUGIN_BROWSER,
+						     "transient-for", transient_for,
 						     NULL);
-
-  plugin_browser->parent_window = parent_window;
 
   return(plugin_browser);
 }

@@ -132,6 +132,9 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(link_editor),
 				 GTK_ORIENTATION_HORIZONTAL);
 
+  gtk_box_set_spacing(GTK_BOX(link_editor),
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   //  g_signal_connect_after((GObject *) link_editor, "notify::parent",
   //			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
 

@@ -589,8 +589,9 @@ ags_app_action_util_preferences()
 void
 ags_app_action_util_about()
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
+
+  AgsApplicationContext *application_context;
 
   static FILE *file = NULL;
   struct stat sb;
@@ -744,16 +745,20 @@ ags_app_action_util_about()
 void
 ags_app_action_util_help()
 {
+  AgsWindow *window;
+
   AgsOnlineHelpWindow *online_help_window;
   
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
 
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
   online_help_window = ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context));
 
   if(online_help_window == NULL){
-    online_help_window = ags_online_help_window_new();
+    online_help_window = ags_online_help_window_new(window);
     
     ags_connectable_connect(AGS_CONNECTABLE(online_help_window));
     
@@ -767,9 +772,16 @@ ags_app_action_util_help()
 void
 ags_app_action_util_quit()
 {  
+  AgsWindow *window;
   AgsQuitDialog *quit_dialog;
 
-  quit_dialog = ags_quit_dialog_new();
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  quit_dialog = ags_quit_dialog_new(window);
 
   gtk_widget_show((GtkWidget *) quit_dialog);
   

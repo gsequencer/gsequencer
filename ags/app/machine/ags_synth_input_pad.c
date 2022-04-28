@@ -119,6 +119,15 @@ ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad)
   
   synth_input_pad->name = NULL;
   synth_input_pad->xml_type = "ags-synth-input-pad";
+
+  gtk_widget_set_visible(AGS_PAD(synth_input_pad)->group,
+			 FALSE);
+
+  gtk_widget_set_visible(AGS_PAD(synth_input_pad)->mute,
+			 FALSE);
+
+  gtk_widget_set_visible(AGS_PAD(synth_input_pad)->solo,
+			 FALSE);
 }
 
 void

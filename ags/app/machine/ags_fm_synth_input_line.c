@@ -140,10 +140,16 @@ ags_fm_synth_input_line_init(AgsFMSynthInputLine *fm_synth_input_line)
 			   0, 0,
 			   1, 1);
   
-  fm_synth_input_line->fm_oscillator = ags_line_member_get_widget(line_member);
+  fm_synth_input_line->fm_oscillator = (AgsFMOscillator *) ags_line_member_get_widget(line_member);
 
   g_signal_connect((GObject *) fm_synth_input_line, "samplerate-changed",
 		   G_CALLBACK(ags_fm_synth_input_line_samplerate_changed_callback), NULL);
+
+  gtk_widget_set_visible(AGS_LINE(fm_synth_input_line)->group,
+			 FALSE);
+
+  gtk_widget_set_visible(fm_synth_input_line->fm_oscillator->selector,
+			 FALSE);
 }
 
 void

@@ -271,10 +271,7 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   fm_syncsynth->fm_oscillator = NULL;
   
   fm_syncsynth->fm_oscillator_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							   0);
-
-  gtk_box_set_spacing(fm_syncsynth->fm_oscillator_box,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+							   AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(hbox,
 		 (GtkWidget *) fm_syncsynth->fm_oscillator_box);
@@ -1017,7 +1014,7 @@ ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
     fm_syncsynth->fm_oscillator = g_list_remove(fm_syncsynth->fm_oscillator,
 						fm_oscillator);
     
-    gtk_box_remove(fm_syncsynth->fm_oscillator,
+    gtk_box_remove(fm_syncsynth->fm_oscillator_box,
 		   fm_oscillator);
   }
 }
@@ -1235,7 +1232,7 @@ ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
 		 "fm-tuning", fm_tuning,
 		 NULL);
 
-    do_sync = gtk_toggle_button_get_active((GtkToggleButton *) fm_oscillator->do_sync);
+    do_sync = gtk_check_button_get_active(fm_oscillator->do_sync);
 
     if(do_sync){
       sync_point_count = fm_oscillator->sync_point_count;

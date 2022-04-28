@@ -170,6 +170,9 @@ ags_machine_editor_pad_init(AgsMachineEditorPad *machine_editor_pad)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_pad),
 				 GTK_ORIENTATION_VERTICAL);
 
+  gtk_box_set_spacing(GTK_BOX(machine_editor_pad),
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   machine_editor_pad->connectable_flags = 0;
 
   machine_editor_pad->channel = NULL;

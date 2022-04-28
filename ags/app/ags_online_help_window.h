@@ -85,7 +85,7 @@ struct _AgsOnlineHelpWindowClass
 
 GType ags_online_help_window_get_type(void);
 
-AgsOnlineHelpWindow* ags_online_help_window_new();
+AgsOnlineHelpWindow* ags_online_help_window_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

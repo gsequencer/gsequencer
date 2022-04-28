@@ -47,8 +47,6 @@ struct _AgsPluginBrowser
   GtkDialog dialog;
 
   guint connectable_flags;
-  
-  GtkWidget *parent_window;
 
   GtkComboBoxText *plugin_type;
 
@@ -70,7 +68,7 @@ GType ags_plugin_browser_get_type(void);
 gchar* ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser);
 gchar* ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser);
 
-AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *parent_window);
+AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *transient_for);
 
 G_END_DECLS
 

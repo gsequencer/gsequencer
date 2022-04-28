@@ -81,7 +81,7 @@ GType ags_quit_dialog_get_type(void);
 void ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 				 AgsMachine *machine);
 
-AgsQuitDialog* ags_quit_dialog_new();
+AgsQuitDialog* ags_quit_dialog_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

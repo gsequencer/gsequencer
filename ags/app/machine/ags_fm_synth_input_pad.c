@@ -119,6 +119,15 @@ ags_fm_synth_input_pad_init(AgsFMSynthInputPad *fm_synth_input_pad)
 
   fm_synth_input_pad->name = NULL;
   fm_synth_input_pad->xml_type = "ags-fm-synth-input-pad";
+
+  gtk_widget_set_visible(AGS_PAD(fm_synth_input_pad)->group,
+			 FALSE);
+
+  gtk_widget_set_visible(AGS_PAD(fm_synth_input_pad)->mute,
+			 FALSE);
+
+  gtk_widget_set_visible(AGS_PAD(fm_synth_input_pad)->solo,
+			 FALSE);
 }
 
 void

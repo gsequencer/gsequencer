@@ -292,6 +292,7 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 
 /**
  * ags_quit_dialog_new:
+ * @transient_for: the #GtkWindow
  * 
  * Create a new instance of #AgsQuitDialog
  * 
@@ -300,11 +301,12 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
  * Since: 3.5.0
  */
 AgsQuitDialog*
-ags_quit_dialog_new()
+ags_quit_dialog_new(GtkWindow *transient_for)
 {
   AgsQuitDialog *quit_dialog;
 
   quit_dialog = (AgsQuitDialog *) g_object_new(AGS_TYPE_QUIT_DIALOG,
+					       "transient-for", transient_for,
 					       NULL);
 
   return(quit_dialog);

@@ -357,6 +357,7 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_online_help_window_new:
+ * @transient_for: the #GtkWindow
  *
  * Creates an #AgsOnlineHelpWindow
  *
@@ -365,11 +366,12 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
  * Since: 3.5.0
  */
 AgsOnlineHelpWindow*
-ags_online_help_window_new()
+ags_online_help_window_new(GtkWindow *transient_for)
 {
   AgsOnlineHelpWindow *online_help_window;
 
   online_help_window = (AgsOnlineHelpWindow *) g_object_new(AGS_TYPE_ONLINE_HELP_WINDOW,
+							    "transient-for", transient_for,
 							    NULL);
 
   return(online_help_window);

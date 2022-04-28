@@ -193,7 +193,7 @@ ags_synth_init(AgsSynth *synth)
   synth->mapped_output_pad = 0;
  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign(hbox,
 			GTK_ALIGN_START);
@@ -204,22 +204,22 @@ ags_synth_init(AgsSynth *synth)
 			 FALSE);
   gtk_widget_set_hexpand(hbox,
 			 FALSE);
-
-  gtk_box_set_spacing(hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_frame_set_child(AGS_MACHINE(synth)->frame,
 		      (GtkWidget *) hbox);
 
   AGS_MACHINE(synth)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(AGS_MACHINE(synth)->input_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(synth)->input_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(hbox,
 		 (GtkWidget *) AGS_MACHINE(synth)->input_pad_grid);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-
-  gtk_box_set_spacing(vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(hbox,
 		 (GtkWidget *) vbox);
@@ -587,7 +587,7 @@ ags_synth_update(AgsSynth *synth)
 		 "volume", volume,
 		 NULL);
 
-    do_sync = gtk_toggle_button_get_active((GtkToggleButton *) oscillator->do_sync);
+    do_sync = gtk_check_button_get_active(oscillator->do_sync);
     
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;

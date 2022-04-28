@@ -260,10 +260,7 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
  
   /* create widgets */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-
-  gtk_box_set_spacing(hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_frame_set_child(AGS_MACHINE(syncsynth)->frame,
 		      (GtkWidget *) hbox);
@@ -271,10 +268,7 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   syncsynth->oscillator = NULL;  
 
   syncsynth->oscillator_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						     0);
-
-  gtk_box_set_spacing(hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+						     AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(hbox,
 		 (GtkWidget *) syncsynth->oscillator_box);
@@ -1023,7 +1017,7 @@ ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
     syncsynth->oscillator = g_list_remove(syncsynth->oscillator,
 					  oscillator);
     
-    gtk_box_remove(syncsynth->oscillator,
+    gtk_box_remove(syncsynth->oscillator_box,
 		   oscillator);
   }
 }
@@ -1229,7 +1223,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 		 "volume", volume,
 		 NULL);
 
-    do_sync = gtk_toggle_button_get_active((GtkToggleButton *) oscillator->do_sync);
+    do_sync = gtk_check_button_get_active(oscillator->do_sync);
 
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;

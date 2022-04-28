@@ -20,6 +20,7 @@
 #include <ags/app/ags_machine_editor_line.h>
 #include <ags/app/ags_machine_editor_line_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine_editor.h>
 
 #include <ags/i18n.h>
@@ -167,6 +168,9 @@ ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
 {
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_line),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(GTK_BOX(machine_editor_line),
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   machine_editor_line->connectable_flags = 0;
 
