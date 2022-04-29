@@ -305,6 +305,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_can_focus((GtkWidget *) notation_edit->drawing_area,
 			   TRUE);
+  gtk_widget_set_focusable((GtkWidget *) notation_edit->drawing_area,
+			   TRUE);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
@@ -428,8 +430,6 @@ ags_notation_edit_connect(AgsConnectable *connectable)
   }
 
   notation_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-  
-  g_message("notation edit connect");
 
   /* drawing area */
   gtk_drawing_area_set_draw_func(notation_edit->drawing_area,
@@ -1362,7 +1362,7 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
   selected_select = (composite_toolbar->selected_tool == composite_toolbar->select) ? TRUE: FALSE;
   
   gtk_widget_grab_focus((GtkWidget *) notation_edit->drawing_area);
-
+  
   if(machine != NULL){
     notation_edit->button_mask |= AGS_NOTATION_EDIT_BUTTON_1;
     

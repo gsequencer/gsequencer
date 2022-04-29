@@ -36,8 +36,6 @@ void ags_composite_edit_class_init(AgsCompositeEditClass *composite_edit);
 void ags_composite_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_composite_edit_init(AgsCompositeEdit *composite_edit);
 
-void ags_composite_edit_show(GtkWidget *widget);
-
 AgsUUID* ags_composite_edit_get_uuid(AgsConnectable *connectable);
 gboolean ags_composite_edit_has_resource(AgsConnectable *connectable);
 gboolean ags_composite_edit_is_ready(AgsConnectable *connectable);
@@ -106,14 +104,7 @@ ags_composite_edit_get_type(void)
 void
 ags_composite_edit_class_init(AgsCompositeEditClass *composite_edit)
 {
-  GtkWidgetClass *widget;
-  
   ags_composite_edit_parent_class = g_type_class_peek_parent(composite_edit);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) composite_edit;
-
-  widget->show = ags_composite_edit_show;
 }
 
 void
@@ -335,29 +326,6 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 			 FALSE);
   
   composite_edit->edit_meta = NULL;
-}
-
-void
-ags_composite_edit_show(GtkWidget *widget)
-{
-  AgsCompositeEdit *composite_edit;
-
-  composite_edit = (AgsCompositeEdit *) widget;
-
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_composite_edit_parent_class)->show(widget);
-  
-  gtk_widget_show((GtkWidget *) composite_edit->channel_selector);
-  
-  if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL)){
-    gtk_widget_hide(composite_edit->hscrollbar);
-  }
-  
-  if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL)){
-    gtk_widget_hide(composite_edit->vscrollbar);
-  }
-
-  gtk_widget_hide(composite_edit->scrolled_edit_meta);
 }
 
 AgsUUID*
@@ -746,13 +714,17 @@ ags_composite_edit_set_scrollbar(AgsCompositeEdit *composite_edit, guint scrollb
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
     gtk_widget_show(composite_edit->hscrollbar);
   }else{
-    gtk_widget_hide(composite_edit->hscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) == 0){
+      gtk_widget_hide(composite_edit->hscrollbar);
+    }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
     gtk_widget_show(composite_edit->vscrollbar);
   }else{
-    gtk_widget_hide(composite_edit->vscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) == 0){
+      gtk_widget_hide(composite_edit->vscrollbar);
+    }
   }
   
   /* set scrollbar */
@@ -778,13 +750,17 @@ ags_composite_edit_unset_scrollbar(AgsCompositeEdit *composite_edit, guint scrol
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
     gtk_widget_hide(composite_edit->hscrollbar);
   }else{
-    gtk_widget_show(composite_edit->hscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) != 0){
+      gtk_widget_show(composite_edit->hscrollbar);
+    }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
     gtk_widget_hide(composite_edit->vscrollbar);
   }else{
-    gtk_widget_show(composite_edit->vscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) != 0){
+      gtk_widget_show(composite_edit->vscrollbar);
+    }
   }
 
   /* unset scrollbar */

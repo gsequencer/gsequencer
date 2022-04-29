@@ -344,6 +344,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_can_focus((GtkWidget *) wave_edit->drawing_area,
 			   TRUE);
+  gtk_widget_set_focusable((GtkWidget *) wave_edit->drawing_area,
+			   TRUE);
 
   gtk_widget_set_halign(wave_edit->drawing_area,
 			GTK_ALIGN_FILL);

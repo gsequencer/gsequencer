@@ -510,6 +510,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_can_focus((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
+  gtk_widget_set_focusable((GtkWidget *) automation_edit->drawing_area,
+			   TRUE);
 
   gtk_widget_set_halign(automation_edit->drawing_area,
 			GTK_ALIGN_FILL);
