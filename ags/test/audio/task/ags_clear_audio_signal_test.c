@@ -59,7 +59,7 @@ ags_clear_audio_signal_test_clean_suite()
 void
 ags_clear_audio_signal_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudioSignal *audio_signal;
 
   AgsClearAudioSignal *clear_audio_signal;
@@ -70,7 +70,7 @@ ags_clear_audio_signal_test_launch()
   gboolean success;
   
   /* create soundcard */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
 			NULL);
   g_object_ref(devout);
 

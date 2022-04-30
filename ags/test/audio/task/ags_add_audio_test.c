@@ -57,7 +57,7 @@ ags_add_audio_test_clean_suite()
 void
 ags_add_audio_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
 
   AgsAddAudio *add_audio;
@@ -75,7 +75,7 @@ ags_add_audio_test_launch()
   ags_application_context_setup(application_context);
 
   /* create soundcard */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
 			NULL);
   g_object_ref(devout);
 

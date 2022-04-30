@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,16 +134,19 @@ ags_osc_meter_controller_test_init_suite()
 					      drum));
 
   /* ags-peak */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-peak",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(drum,
+			NULL, NULL,
+			"ags-fx-peak",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   return(0);
 }

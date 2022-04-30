@@ -39,8 +39,6 @@ void ags_fm_synth_util_test_get_source_stride();
 void ags_fm_synth_util_test_set_source_stride();
 void ags_fm_synth_util_test_get_buffer_length();
 void ags_fm_synth_util_test_set_buffer_length();
-void ags_fm_synth_util_test_get_audio_buffer_util_format();
-void ags_fm_synth_util_test_set_audio_buffer_util_format();
 void ags_fm_synth_util_test_get_samplerate();
 void ags_fm_synth_util_test_set_samplerate();
 void ags_fm_synth_util_test_get_synth_oscillator_mode();
@@ -73,15 +71,6 @@ void ags_fm_synth_util_test_compute_sin_float();
 void ags_fm_synth_util_test_compute_sin_double();
 void ags_fm_synth_util_test_compute_sin_complex();
 
-void ags_fm_synth_util_test_sin_s8();
-void ags_fm_synth_util_test_sin_s16();
-void ags_fm_synth_util_test_sin_s24();
-void ags_fm_synth_util_test_sin_s32();
-void ags_fm_synth_util_test_sin_s64();
-void ags_fm_synth_util_test_sin_float();
-void ags_fm_synth_util_test_sin_double();
-void ags_fm_synth_util_test_sin_complex();
-
 void ags_fm_synth_util_test_compute_sawtooth_s8();
 void ags_fm_synth_util_test_compute_sawtooth_s16();
 void ags_fm_synth_util_test_compute_sawtooth_s24();
@@ -90,15 +79,6 @@ void ags_fm_synth_util_test_compute_sawtooth_s64();
 void ags_fm_synth_util_test_compute_sawtooth_float();
 void ags_fm_synth_util_test_compute_sawtooth_double();
 void ags_fm_synth_util_test_compute_sawtooth_complex();
-
-void ags_fm_synth_util_test_sawtooth_s8();
-void ags_fm_synth_util_test_sawtooth_s16();
-void ags_fm_synth_util_test_sawtooth_s24();
-void ags_fm_synth_util_test_sawtooth_s32();
-void ags_fm_synth_util_test_sawtooth_s64();
-void ags_fm_synth_util_test_sawtooth_float();
-void ags_fm_synth_util_test_sawtooth_double();
-void ags_fm_synth_util_test_sawtooth_complex();
 
 void ags_fm_synth_util_test_compute_triangle_s8();
 void ags_fm_synth_util_test_compute_triangle_s16();
@@ -109,15 +89,6 @@ void ags_fm_synth_util_test_compute_triangle_float();
 void ags_fm_synth_util_test_compute_triangle_double();
 void ags_fm_synth_util_test_compute_triangle_complex();
 
-void ags_fm_synth_util_test_triangle_s8();
-void ags_fm_synth_util_test_triangle_s16();
-void ags_fm_synth_util_test_triangle_s24();
-void ags_fm_synth_util_test_triangle_s32();
-void ags_fm_synth_util_test_triangle_s64();
-void ags_fm_synth_util_test_triangle_float();
-void ags_fm_synth_util_test_triangle_double();
-void ags_fm_synth_util_test_triangle_complex();
-
 void ags_fm_synth_util_test_compute_square_s8();
 void ags_fm_synth_util_test_compute_square_s16();
 void ags_fm_synth_util_test_compute_square_s24();
@@ -127,15 +98,6 @@ void ags_fm_synth_util_test_compute_square_float();
 void ags_fm_synth_util_test_compute_square_double();
 void ags_fm_synth_util_test_compute_square_complex();
 
-void ags_fm_synth_util_test_square_s8();
-void ags_fm_synth_util_test_square_s16();
-void ags_fm_synth_util_test_square_s24();
-void ags_fm_synth_util_test_square_s32();
-void ags_fm_synth_util_test_square_s64();
-void ags_fm_synth_util_test_square_float();
-void ags_fm_synth_util_test_square_double();
-void ags_fm_synth_util_test_square_complex();
-
 void ags_fm_synth_util_test_compute_impulse_s8();
 void ags_fm_synth_util_test_compute_impulse_s16();
 void ags_fm_synth_util_test_compute_impulse_s24();
@@ -144,15 +106,6 @@ void ags_fm_synth_util_test_compute_impulse_s64();
 void ags_fm_synth_util_test_compute_impulse_float();
 void ags_fm_synth_util_test_compute_impulse_double();
 void ags_fm_synth_util_test_compute_impulse_complex();
-
-void ags_fm_synth_util_test_impulse_s8();
-void ags_fm_synth_util_test_impulse_s16();
-void ags_fm_synth_util_test_impulse_s24();
-void ags_fm_synth_util_test_impulse_s32();
-void ags_fm_synth_util_test_impulse_s64();
-void ags_fm_synth_util_test_impulse_float();
-void ags_fm_synth_util_test_impulse_double();
-void ags_fm_synth_util_test_impulse_complex();
 
 #define AGS_FM_SYNTH_UTIL_TEST_FREQ (440.0)
 #define AGS_FM_SYNTH_UTIL_TEST_PHASE (0.0)
@@ -235,18 +188,6 @@ ags_fm_synth_util_test_get_buffer_length()
 
 void
 ags_fm_synth_util_test_set_buffer_length()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_fm_synth_util_test_get_audio_buffer_util_format()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_fm_synth_util_test_set_audio_buffer_util_format()
 {
   //TODO:JK: implement me
 }
@@ -399,7 +340,7 @@ ags_fm_synth_util_test_compute_sin_s8()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -442,7 +383,7 @@ ags_fm_synth_util_test_compute_sin_s16()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -485,7 +426,7 @@ ags_fm_synth_util_test_compute_sin_s24()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -528,7 +469,7 @@ ags_fm_synth_util_test_compute_sin_s32()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -571,7 +512,7 @@ ags_fm_synth_util_test_compute_sin_s64()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -614,7 +555,7 @@ ags_fm_synth_util_test_compute_sin_float()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  fm_synth_util.format = AGS_SOUNDCARD_FLOAT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -657,7 +598,7 @@ ags_fm_synth_util_test_compute_sin_double()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
+  fm_synth_util.format = AGS_SOUNDCARD_DOUBLE;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -700,7 +641,7 @@ ags_fm_synth_util_test_compute_sin_complex()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+  fm_synth_util.format = AGS_SOUNDCARD_COMPLEX;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
@@ -727,205 +668,6 @@ ags_fm_synth_util_test_compute_sin_complex()
   CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
 }
 
-void
-ags_fm_synth_util_test_sin_s8()
-{
-  gint8 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_8_BIT);
-
-  ags_fm_synth_util_sin_s8(buffer,
-			   AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			   AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			   AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			   AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			   AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			   AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S8,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_s16()
-{
-  gint16 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_16_BIT);
-
-  ags_fm_synth_util_sin_s16(buffer,
-			    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S16,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_s24()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_24_BIT);
-
-  ags_fm_synth_util_sin_s24(buffer,
-			    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S24,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-  
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_s32()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_32_BIT);
-
-  ags_fm_synth_util_sin_s32(buffer,
-			    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S32,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_s64()
-{
-  gint64 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_64_BIT);
-
-  ags_fm_synth_util_sin_s64(buffer,
-			    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S64,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_float()
-{
-  gfloat *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_FLOAT);
-
-  ags_fm_synth_util_sin_float(buffer,
-			      AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			      AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			      AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			      AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			      AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			      AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_double()
-{
-  gdouble *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_DOUBLE);
-
-  ags_fm_synth_util_sin_double(buffer,
-			       AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			       AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			       AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			       AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sin_complex()
-{
-  AgsComplex *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_COMPLEX);
-
-  ags_fm_synth_util_sin_complex(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
 
 void
 ags_fm_synth_util_test_compute_sawtooth_s8()
@@ -943,7 +685,7 @@ ags_fm_synth_util_test_compute_sawtooth_s8()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -986,7 +728,7 @@ ags_fm_synth_util_test_compute_sawtooth_s16()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1029,7 +771,7 @@ ags_fm_synth_util_test_compute_sawtooth_s24()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1072,7 +814,7 @@ ags_fm_synth_util_test_compute_sawtooth_s32()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1115,7 +857,7 @@ ags_fm_synth_util_test_compute_sawtooth_s64()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1158,7 +900,7 @@ ags_fm_synth_util_test_compute_sawtooth_float()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  fm_synth_util.format = AGS_SOUNDCARD_FLOAT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1201,7 +943,7 @@ ags_fm_synth_util_test_compute_sawtooth_double()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
+  fm_synth_util.format = AGS_SOUNDCARD_DOUBLE;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1244,7 +986,7 @@ ags_fm_synth_util_test_compute_sawtooth_complex()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+  fm_synth_util.format = AGS_SOUNDCARD_COMPLEX;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
@@ -1272,206 +1014,6 @@ ags_fm_synth_util_test_compute_sawtooth_complex()
 }
 
 void
-ags_fm_synth_util_test_sawtooth_s8()
-{
-  gint8 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_8_BIT);
-
-  ags_fm_synth_util_sawtooth_s8(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S8,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_s16()
-{
-  gint16 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_16_BIT);
-
-  ags_fm_synth_util_sawtooth_s16(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S16,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_s24()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_24_BIT);
-
-  ags_fm_synth_util_sawtooth_s24(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S24,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_s32()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_32_BIT);
-
-  ags_fm_synth_util_sawtooth_s32(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S32,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_s64()
-{
-  gint64 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_64_BIT);
-
-  ags_fm_synth_util_sawtooth_s64(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S64,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_float()
-{
-  gfloat *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_FLOAT);
-
-  ags_fm_synth_util_sawtooth_float(buffer,
-				   AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				   AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				   AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				   AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_double()
-{
-  gdouble *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_DOUBLE);
-
-  ags_fm_synth_util_sawtooth_double(buffer,
-				    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_sawtooth_complex()
-{
-  AgsComplex *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_COMPLEX);
-
-  ags_fm_synth_util_sawtooth_complex(buffer,
-				     AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				     AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				     AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				     AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				     AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				     AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
 ags_fm_synth_util_test_compute_triangle_s8()
 {
   AgsFMSynthUtil fm_synth_util;
@@ -1487,7 +1029,7 @@ ags_fm_synth_util_test_compute_triangle_s8()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1530,7 +1072,7 @@ ags_fm_synth_util_test_compute_triangle_s16()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1573,7 +1115,7 @@ ags_fm_synth_util_test_compute_triangle_s24()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1616,7 +1158,7 @@ ags_fm_synth_util_test_compute_triangle_s32()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1659,7 +1201,7 @@ ags_fm_synth_util_test_compute_triangle_s64()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1702,7 +1244,7 @@ ags_fm_synth_util_test_compute_triangle_float()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  fm_synth_util.format = AGS_SOUNDCARD_FLOAT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1745,7 +1287,7 @@ ags_fm_synth_util_test_compute_triangle_double()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
+  fm_synth_util.format = AGS_SOUNDCARD_DOUBLE;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1788,7 +1330,7 @@ ags_fm_synth_util_test_compute_triangle_complex()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+  fm_synth_util.format = AGS_SOUNDCARD_COMPLEX;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
@@ -1816,206 +1358,6 @@ ags_fm_synth_util_test_compute_triangle_complex()
 }
 
 void
-ags_fm_synth_util_test_triangle_s8()
-{
-  gint8 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_8_BIT);
-
-  ags_fm_synth_util_triangle_s8(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S8,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_s16()
-{
-  gint16 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_16_BIT);
-
-  ags_fm_synth_util_triangle_s16(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S16,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_s24()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_24_BIT);
-
-  ags_fm_synth_util_triangle_s24(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S24,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-  
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_s32()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_32_BIT);
-
-  ags_fm_synth_util_triangle_s32(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S32,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_s64()
-{
-  gint64 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_64_BIT);
-
-  ags_fm_synth_util_triangle_s64(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S64,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_float()
-{
-  gfloat *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_FLOAT);
-
-  ags_fm_synth_util_triangle_float(buffer,
-				   AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				   AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				   AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				   AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_double()
-{
-  gdouble *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_DOUBLE);
-
-  ags_fm_synth_util_triangle_double(buffer,
-				    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_triangle_complex()
-{
-  AgsComplex *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_COMPLEX);
-
-  ags_fm_synth_util_triangle_complex(buffer,
-				     AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				     AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				     AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				     AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				     AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				     AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
 ags_fm_synth_util_test_compute_square_s8()
 {
   AgsFMSynthUtil fm_synth_util;
@@ -2031,7 +1373,7 @@ ags_fm_synth_util_test_compute_square_s8()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2074,7 +1416,7 @@ ags_fm_synth_util_test_compute_square_s16()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2117,7 +1459,7 @@ ags_fm_synth_util_test_compute_square_s24()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2160,7 +1502,7 @@ ags_fm_synth_util_test_compute_square_s32()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2203,7 +1545,7 @@ ags_fm_synth_util_test_compute_square_s64()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2246,7 +1588,7 @@ ags_fm_synth_util_test_compute_square_float()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  fm_synth_util.format = AGS_SOUNDCARD_FLOAT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2289,7 +1631,7 @@ ags_fm_synth_util_test_compute_square_double()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
+  fm_synth_util.format = AGS_SOUNDCARD_DOUBLE;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2332,7 +1674,7 @@ ags_fm_synth_util_test_compute_square_complex()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+  fm_synth_util.format = AGS_SOUNDCARD_COMPLEX;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
@@ -2360,206 +1702,6 @@ ags_fm_synth_util_test_compute_square_complex()
 }
 
 void
-ags_fm_synth_util_test_square_s8()
-{
-  gint8 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_8_BIT);
-
-  ags_fm_synth_util_square_s8(buffer,
-			      AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			      AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			      AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			      AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			      AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			      AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S8,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_s16()
-{
-  gint16 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_16_BIT);
-
-  ags_fm_synth_util_square_s16(buffer,
-			       AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			       AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			       AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			       AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S16,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_s24()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_24_BIT);
-
-  ags_fm_synth_util_square_s24(buffer,
-			       AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			       AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			       AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			       AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S24,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_s32()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_32_BIT);
-
-  ags_fm_synth_util_square_s32(buffer,
-			       AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			       AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			       AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			       AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S32,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_s64()
-{
-  gint64 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_64_BIT);
-
-  ags_fm_synth_util_square_s64(buffer,
-			       AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			       AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			       AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			       AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S64,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_float()
-{
-  gfloat *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_FLOAT);
-
-  ags_fm_synth_util_square_float(buffer,
-				 AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				 AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				 AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				 AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				 AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_double()
-{
-  gdouble *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_DOUBLE);
-
-  ags_fm_synth_util_square_double(buffer,
-				  AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				  AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				  AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				  AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				  AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				  AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_square_complex()
-{
-  AgsComplex *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_COMPLEX);
-
-  ags_fm_synth_util_square_complex(buffer,
-				   AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				   AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				   AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				   AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
 ags_fm_synth_util_test_compute_impulse_s8()
 {
   AgsFMSynthUtil fm_synth_util;
@@ -2575,7 +1717,7 @@ ags_fm_synth_util_test_compute_impulse_s8()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_8_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2618,7 +1760,7 @@ ags_fm_synth_util_test_compute_impulse_s16()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2661,7 +1803,7 @@ ags_fm_synth_util_test_compute_impulse_s24()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_24_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2704,7 +1846,7 @@ ags_fm_synth_util_test_compute_impulse_s32()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_32_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2747,7 +1889,7 @@ ags_fm_synth_util_test_compute_impulse_s64()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64;
+  fm_synth_util.format = AGS_SOUNDCARD_SIGNED_64_BIT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2790,7 +1932,7 @@ ags_fm_synth_util_test_compute_impulse_float()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  fm_synth_util.format = AGS_SOUNDCARD_FLOAT;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2833,7 +1975,7 @@ ags_fm_synth_util_test_compute_impulse_double()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
+  fm_synth_util.format = AGS_SOUNDCARD_DOUBLE;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2876,7 +2018,7 @@ ags_fm_synth_util_test_compute_impulse_complex()
   fm_synth_util.source_stride = 1;
   
   fm_synth_util.buffer_length = AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT;
-  fm_synth_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX;
+  fm_synth_util.format = AGS_SOUNDCARD_COMPLEX;
   fm_synth_util.samplerate = AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE;
 
   fm_synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
@@ -2896,206 +2038,6 @@ ags_fm_synth_util_test_compute_impulse_complex()
   
   ags_fm_synth_util_compute_impulse_complex(&fm_synth_util);
   
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_s8()
-{
-  gint8 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_8_BIT);
-
-  ags_fm_synth_util_impulse_s8(buffer,
-			       AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-			       AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-			       AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-			       AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-			       AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S8,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_s16()
-{
-  gint16 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_16_BIT);
-
-  ags_fm_synth_util_impulse_s16(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S16,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_s24()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_24_BIT);
-
-  ags_fm_synth_util_impulse_s24(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S24,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_s32()
-{
-  gint32 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_32_BIT);
-
-  ags_fm_synth_util_impulse_s32(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S32,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_s64()
-{
-  gint64 *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_SIGNED_64_BIT);
-
-  ags_fm_synth_util_impulse_s64(buffer,
-				AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_S64,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_float()
-{
-  gfloat *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_FLOAT);
-
-  ags_fm_synth_util_impulse_float(buffer,
-				  AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				  AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				  AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				  AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				  AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				  AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_double()
-{
-  gdouble *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_DOUBLE);
-
-  ags_fm_synth_util_impulse_double(buffer,
-				   AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				   AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				   AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				   AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				   AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
-  xcross_count = ags_synth_util_get_xcross_count(buffer,
-						 AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
-  CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
-}
-
-void
-ags_fm_synth_util_test_impulse_complex()
-{
-  AgsComplex *buffer;
-
-  guint xcross_count;
-
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-			    AGS_SOUNDCARD_COMPLEX);
-
-  ags_fm_synth_util_impulse_complex(buffer,
-				    AGS_FM_SYNTH_UTIL_TEST_FREQ, AGS_FM_SYNTH_UTIL_TEST_PHASE, AGS_FM_SYNTH_UTIL_TEST_VOLUME,
-				    AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE,
-				    AGS_FM_SYNTH_UTIL_TEST_OFFSET, AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
-				    AGS_FM_SYNTH_UTIL_TEST_LFO_OSC_MODE,
-				    AGS_FM_SYNTH_UTIL_TEST_LFO_FREQ, AGS_FM_SYNTH_UTIL_TEST_LFO_DEPTH,
-				    AGS_FM_SYNTH_UTIL_TEST_TUNING);
-
   xcross_count = ags_synth_util_get_xcross_count(buffer,
 						 AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
@@ -3132,8 +2074,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c set source stride", ags_fm_synth_util_test_set_source_stride) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c get buffer length", ags_fm_synth_util_test_get_buffer_length) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c set buffer length", ags_fm_synth_util_test_set_buffer_length) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c get audio buffer util format", ags_fm_synth_util_test_get_audio_buffer_util_format) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c set audio buffer util format", ags_fm_synth_util_test_set_audio_buffer_util_format) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c get samplerate", ags_fm_synth_util_test_get_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c set samplerate", ags_fm_synth_util_test_set_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c get synth oscillator mode", ags_fm_synth_util_test_get_synth_oscillator_mode) == NULL) ||
@@ -3164,14 +2104,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sin float", ags_fm_synth_util_test_compute_sin_float) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sin double", ags_fm_synth_util_test_compute_sin_double) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sin complex", ags_fm_synth_util_test_compute_sin_complex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin s8", ags_fm_synth_util_test_sin_s8) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin s16", ags_fm_synth_util_test_sin_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin s24", ags_fm_synth_util_test_sin_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin s32", ags_fm_synth_util_test_sin_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin s64", ags_fm_synth_util_test_sin_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin float", ags_fm_synth_util_test_sin_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin double", ags_fm_synth_util_test_sin_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sin complex", ags_fm_synth_util_test_sin_complex) == NULL) ||     
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sawtooth s8", ags_fm_synth_util_test_compute_sawtooth_s8) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sawtooth s16", ags_fm_synth_util_test_compute_sawtooth_s16) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sawtooth s24", ags_fm_synth_util_test_compute_sawtooth_s24) == NULL) ||
@@ -3180,14 +2112,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sawtooth float", ags_fm_synth_util_test_compute_sawtooth_float) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sawtooth double", ags_fm_synth_util_test_compute_sawtooth_double) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute sawtooth complex", ags_fm_synth_util_test_compute_sawtooth_complex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth s8", ags_fm_synth_util_test_sawtooth_s8) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth s16", ags_fm_synth_util_test_sawtooth_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth s24", ags_fm_synth_util_test_sawtooth_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth s32", ags_fm_synth_util_test_sawtooth_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth s64", ags_fm_synth_util_test_sawtooth_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth float", ags_fm_synth_util_test_sawtooth_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth double", ags_fm_synth_util_test_sawtooth_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c sawtooth complex", ags_fm_synth_util_test_sawtooth_complex) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute triangle s8", ags_fm_synth_util_test_compute_triangle_s8) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute triangle s16", ags_fm_synth_util_test_compute_triangle_s16) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute triangle s24", ags_fm_synth_util_test_compute_triangle_s24) == NULL) ||
@@ -3196,14 +2120,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute triangle float", ags_fm_synth_util_test_compute_triangle_float) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute triangle double", ags_fm_synth_util_test_compute_triangle_double) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute triangle complex", ags_fm_synth_util_test_compute_triangle_complex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle s8", ags_fm_synth_util_test_triangle_s8) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle s16", ags_fm_synth_util_test_triangle_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle s24", ags_fm_synth_util_test_triangle_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle s32", ags_fm_synth_util_test_triangle_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle s64", ags_fm_synth_util_test_triangle_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle float", ags_fm_synth_util_test_triangle_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle double", ags_fm_synth_util_test_triangle_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c triangle complex", ags_fm_synth_util_test_triangle_complex) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute square s8", ags_fm_synth_util_test_compute_square_s8) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute square s16", ags_fm_synth_util_test_compute_square_s16) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute square s24", ags_fm_synth_util_test_compute_square_s24) == NULL) ||
@@ -3212,28 +2128,13 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute square float", ags_fm_synth_util_test_compute_square_float) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute square double", ags_fm_synth_util_test_compute_square_double) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute square complex", ags_fm_synth_util_test_compute_square_complex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square s8", ags_fm_synth_util_test_square_s8) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square s16", ags_fm_synth_util_test_square_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square s24", ags_fm_synth_util_test_square_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square s32", ags_fm_synth_util_test_square_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square s64", ags_fm_synth_util_test_square_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square float", ags_fm_synth_util_test_square_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square double", ags_fm_synth_util_test_square_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c square complex", ags_fm_synth_util_test_square_complex) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse s16", ags_fm_synth_util_test_compute_impulse_s16) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse s24", ags_fm_synth_util_test_compute_impulse_s24) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse s32", ags_fm_synth_util_test_compute_impulse_s32) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse s64", ags_fm_synth_util_test_compute_impulse_s64) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse float", ags_fm_synth_util_test_compute_impulse_float) == NULL) ||
      (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse double", ags_fm_synth_util_test_compute_impulse_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse complex", ags_fm_synth_util_test_compute_impulse_complex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse s16", ags_fm_synth_util_test_impulse_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse s24", ags_fm_synth_util_test_impulse_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse s32", ags_fm_synth_util_test_impulse_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse s64", ags_fm_synth_util_test_impulse_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse float", ags_fm_synth_util_test_impulse_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse double", ags_fm_synth_util_test_impulse_double) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_fm_synth_util.c impulse complex", ags_fm_synth_util_test_impulse_complex) == NULL)){
+     (CU_add_test(pSuite, "test of ags_fm_synth_util.c compute impulse complex", ags_fm_synth_util_test_compute_impulse_complex) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

@@ -108,8 +108,8 @@ ags_soundcard_test_init_suite()
   
   i = 0;
   
-  soundcard_test_types[(i++)] = AGS_TYPE_DEVOUT;
-  soundcard_test_types[(i++)] = AGS_TYPE_DEVIN;
+  soundcard_test_types[(i++)] = AGS_TYPE_ALSA_DEVOUT;
+  soundcard_test_types[(i++)] = AGS_TYPE_ALSA_DEVIN;
   soundcard_test_types[(i++)] = AGS_TYPE_CORE_AUDIO_DEVOUT;
   soundcard_test_types[(i++)] = AGS_TYPE_CORE_AUDIO_DEVIN;
   soundcard_test_types[(i++)] = AGS_TYPE_JACK_DEVOUT;

@@ -91,16 +91,19 @@ ags_set_muted_test_launch()
 		     8, 0);
 
   /* ags-mute */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-mute",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(audio,
+			NULL, NULL,
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
   
   set_muted = ags_set_muted_new(audio,
 				TRUE);
@@ -127,13 +130,13 @@ ags_set_muted_test_launch()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_MUTE_CHANNEL);
+					 AGS_TYPE_FX_VOLUME_CHANNEL);
     recall = ags_recall_template_find_type(start_recall,
-					   AGS_TYPE_MUTE_CHANNEL);
+					   AGS_TYPE_FX_VOLUME_CHANNEL);
 
 
-    if(!AGS_MUTE_CHANNEL(play->data)->muted->port_value.ags_port_boolean ||
-       !AGS_MUTE_CHANNEL(recall->data)->muted->port_value.ags_port_boolean){
+    if(!AGS_FX_VOLUME_CHANNEL(play->data)->muted->port_value.ags_port_boolean ||
+       !AGS_FX_VOLUME_CHANNEL(recall->data)->muted->port_value.ags_port_boolean){
       success = FALSE;
 
       break;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,29 +36,29 @@ int ags_osc_renew_controller_test_clean_suite();
 
 void ags_osc_renew_controller_test_set_data();
 
-#define AGS_OSC_RENEW_CONTROLLER_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=false\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#define AGS_OSC_RENEW_CONTROLLER_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"					\
+  "simple-file=false\n"						\
+  "disable-feature=experimental\n"				\
+  "segmentation=4/4\n"						\
+  "\n"								\
+  "[thread]\n"							\
+  "model=super-threaded\n"					\
+  "super-threaded-scope=channel\n"				\
+  "lock-global=ags-thread\n"					\
+  "lock-parent=ags-recycling-thread\n"				\
+  "\n"								\
+  "[soundcard-0]\n"						\
+  "backend=alsa\n"						\
+  "device=default\n"						\
+  "samplerate=44100\n"						\
+  "buffer-size=1024\n"						\
+  "pcm-channels=2\n"						\
+  "dsp-channels=2\n"						\
+  "format=16\n"							\
+  "\n"								\
+  "[recall]\n"							\
+  "auto-sense=true\n"						\
   "\n"
 
 AgsApplicationContext *application_context;
@@ -122,26 +122,32 @@ ags_osc_renew_controller_test_init_suite()
 					      panel));
 
   /* ags-play */
-  ags_recall_factory_create(panel,
-			    NULL, NULL,
-			    "ags-play-master",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(panel,
+			NULL, NULL,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* ags-mute */
-  ags_recall_factory_create(panel,
-			    NULL, NULL,
-			    "ags-mute",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(panel,
+			NULL, NULL,
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* spectrometer */
   spectrometer = ags_audio_new(default_soundcard);
@@ -169,16 +175,19 @@ ags_osc_renew_controller_test_init_suite()
 			       g_list_prepend(start_audio,
 					      spectrometer));
   
-  ags_recall_factory_create(spectrometer,
-			    NULL, NULL,
-			    "ags-analyse",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(spectrometer,
+			NULL, NULL,
+			"ags-fx-analyse",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* drum */
   drum = ags_audio_new(default_soundcard);
@@ -210,39 +219,48 @@ ags_osc_renew_controller_test_init_suite()
 					      drum));
 
   /* ags-copy-pattern */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-copy-pattern",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
+  ags_fx_factory_create(drum,
+			NULL, NULL,
+			"ags-fx-pattern",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_REMAP |
+			 AGS_FX_FACTORY_RECALL),
+			0);
 
   /* ags-volume */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-volume",
-			    0, 2, 
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(drum,
+			NULL, NULL,
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2, 
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* ags-envelope */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-envelope",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(drum,
+			NULL, NULL,
+			"ags-fx-envelope",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   return(0);
 }
@@ -315,7 +333,7 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_MUTE_CHANNEL);
+					 AGS_TYPE_FX_VOLUME_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
@@ -360,7 +378,7 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_MUTE_CHANNEL);
+					 AGS_TYPE_FX_VOLUME_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
@@ -450,7 +468,7 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_ANALYSE_CHANNEL);
+					 AGS_TYPE_FX_ANALYSE_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
@@ -495,7 +513,7 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_ANALYSE_CHANNEL);
+					 AGS_TYPE_FX_ANALYSE_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,

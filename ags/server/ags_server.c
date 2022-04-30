@@ -71,10 +71,9 @@ char* ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
 					     const char *username,
 					     AgsServer *server);
 void ags_server_xmlrpc_callback(SoupServer *soup_server,
-				SoupMessage *msg,
+				SoupServerMessage *msg,
 				const char *path,
 				GHashTable *query,
-				SoupClientContext *client,
 				AgsServer *server);
 
 /**
@@ -1077,11 +1076,12 @@ ags_server_real_start(AgsServer *server)
   /* create listen thread */
   server->soup_server = soup_server_new(NULL);
 
-  server->auth_domain = soup_auth_domain_basic_new(SOUP_AUTH_DOMAIN_REALM, server->realm,
-						   SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK, ags_server_xmlrpc_auth_callback,
-						   SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA, server,
-						   SOUP_AUTH_DOMAIN_ADD_PATH, AGS_CONTROLLER_BASE_PATH,
+  server->auth_domain = soup_auth_domain_basic_new("realm", server->realm,
+						   "auth-callback", ags_server_xmlrpc_auth_callback,
+						   "auth-data", server,
 						   NULL);
+  soup_auth_domain_add_path(server->auth_domain,
+			    AGS_CONTROLLER_BASE_PATH);
   soup_server_add_auth_domain(server->soup_server, server->auth_domain);
   
   soup_server_add_handler(server->soup_server,
@@ -1439,10 +1439,9 @@ ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
 
 void
 ags_server_xmlrpc_callback(SoupServer *soup_server,
-			   SoupMessage *msg,
+			   SoupServerMessage *msg,
 			   const char *path,
 			   GHashTable *query,
-			   SoupClientContext *client,
 			   AgsServer *server)
 {
   AgsAuthenticationManager *authentication_manager;
@@ -1515,20 +1514,20 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
       ags_front_controller_do_request(front_controller,
 				      msg,
 				      query,
-				      client,
 				      security_context,
 				      path,
 				      login,
 				      security_token);
     }else{
-      soup_message_set_status(msg,
-			      403);
+      soup_server_message_set_status(msg,
+				     403,
+				     NULL);
 
-      soup_message_set_response(msg,
-				"text/plain",
-				SOUP_MEMORY_STATIC,
-				"Forbidden",
-				9);
+      soup_server_message_set_response(msg,
+				       "text/plain",
+				       SOUP_MEMORY_STATIC,
+				       "Forbidden",
+				       9);
 
       g_message("AgsServer - session not active");
     }
@@ -1541,14 +1540,15 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 
     g_free(user_uuid);
   }else{
-    soup_message_set_status(msg,
-			    403);
+    soup_server_message_set_status(msg,
+				   403,
+				   NULL);
 
-    soup_message_set_response(msg,
-			      "text/plain",
-			      SOUP_MEMORY_STATIC,
-			      "Forbidden",
-			      9);
+    soup_server_message_set_response(msg,
+				     "text/plain",
+				     SOUP_MEMORY_STATIC,
+				     "Forbidden",
+				     9);
   }
 }
 

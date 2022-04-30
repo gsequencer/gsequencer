@@ -60,9 +60,8 @@ ags_plugin_controller_class_init(AgsPluginControllerInterface *ginterface)
 /**
  * ags_plugin_controller_do_request:
  * @plugin_controller: the #AgsPluginController
- * @msg: the #SoupMessage
+ * @msg: the #SoupServerMessage
  * @query: the #GHashTable
- * @client: the #SoupClientContext
  * @security_context: the #AgsSecurityContext
  * @path: the context path to access
  * @login: the login
@@ -76,9 +75,8 @@ ags_plugin_controller_class_init(AgsPluginControllerInterface *ginterface)
  */
 gpointer
 ags_plugin_controller_do_request(AgsPluginController *plugin_controller,
-				 SoupMessage *msg,
+				 SoupServerMessage *msg,
 				 GHashTable *query,
-				 SoupClientContext *client,
 				 GObject *security_context,
 				 gchar *path,
 				 gchar *login,
@@ -95,7 +93,6 @@ ags_plugin_controller_do_request(AgsPluginController *plugin_controller,
   response = plugin_controller_interface->do_request(plugin_controller,
 						     msg,
 						     query,
-						     client,
 						     security_context,
 						     path,
 						     login,

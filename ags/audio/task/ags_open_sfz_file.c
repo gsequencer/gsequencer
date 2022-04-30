@@ -23,7 +23,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
-#include <ags/audio/ags_filter_util.h>
+#include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_sound_container.h>
@@ -802,6 +802,8 @@ ags_open_sfz_file_launch(AgsTask *task)
     if(audio_signal != NULL){
       AgsAudioSignal *current_audio_signal;
 
+      AgsFluidInterpolate4thOrderUtil fluid_interpolate_4th_order_util;
+      
       GList *start_stream, *stream;
       
       gchar *str_key, *str_pitch_keycenter;
@@ -931,80 +933,33 @@ ags_open_sfz_file_launch(AgsTask *task)
       key -= lokey;
 
       while(stream != NULL){
-	switch(format){
-	case AGS_SOUNDCARD_SIGNED_8_BIT:
-	{
-	  ags_filter_util_pitch_s8((gint8 *) stream->data,
-				   buffer_size,
-				   samplerate,
-				   pitch_keycenter - 48.0,
-				   ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	gdouble root_pitch_hz;
+	gdouble phase_incr;
+
+	fluid_interpolate_4th_order_util.source = stream->data;
+	fluid_interpolate_4th_order_util.source_stride = 1;
+	
+	fluid_interpolate_4th_order_util.destination = stream->data;
+	fluid_interpolate_4th_order_util.destination_stride = 1;
+
+	fluid_interpolate_4th_order_util.buffer_length = buffer_size;
+	fluid_interpolate_4th_order_util.format = format;
+	fluid_interpolate_4th_order_util.samplerate = samplerate;
+
+	fluid_interpolate_4th_order_util.base_key = (gdouble) key - 48.0;
+	fluid_interpolate_4th_order_util.tuning = ((gdouble) key - (gdouble) pitch_keycenter) * 100.0;
+
+	root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util.base_key - 48.0) / 12.0) * 440.0;
+  
+	phase_incr = (exp2(((double) fluid_interpolate_4th_order_util.base_key + (fluid_interpolate_4th_order_util.tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+  
+	if(phase_incr == 0.0){
+	  phase_incr = 1.0;
 	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ags_filter_util_pitch_s16((gint16 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  ags_filter_util_pitch_s24((gint32 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  ags_filter_util_pitch_s32((gint32 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_64_BIT:
-	{
-	  ags_filter_util_pitch_s64((gint64 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_FLOAT:
-	{
-	  ags_filter_util_pitch_float((gfloat *) stream->data,
-				      buffer_size,
-				      samplerate,
-				      pitch_keycenter - 48.0,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_DOUBLE:
-	{
-	  ags_filter_util_pitch_double((gdouble *) stream->data,
-				       buffer_size,
-				       samplerate,
-				       pitch_keycenter - 48.0,
-				       ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_COMPLEX:
-	{
-	  ags_filter_util_pitch_complex((AgsComplex *) stream->data,
-					buffer_size,
-					samplerate,
-					pitch_keycenter - 48.0,
-					((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	}	  
+
+	fluid_interpolate_4th_order_util.phase_increment = phase_incr;
+
+	ags_fluid_interpolate_4th_order_util_pitch(&fluid_interpolate_4th_order_util);
 
 	/* iterate */
 	x_offset += buffer_size;

@@ -57,11 +57,11 @@ ags_set_device_test_clean_suite()
 void
 ags_set_device_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsSetDevice *set_device;
 
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
 
   set_device = ags_set_device_new(devout,
 				  "default");

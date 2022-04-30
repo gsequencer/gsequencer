@@ -62,11 +62,11 @@ ags_seek_soundcard_test_clean_suite()
 void
 ags_seek_soundcard_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsSeekSoundcard *seek_soundcard;
 
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
 
   seek_soundcard = ags_seek_soundcard_new(devout,
 					  64 * 16,

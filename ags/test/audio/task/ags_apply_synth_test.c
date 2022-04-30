@@ -60,7 +60,7 @@ ags_apply_synth_test_clean_suite()
 void
 ags_apply_synth_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsSynthGenerator *synth_generator;
   
@@ -71,7 +71,7 @@ ags_apply_synth_test_launch()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);

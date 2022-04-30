@@ -63,7 +63,6 @@ void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
 void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 					      SoupWebsocketConnection *connection,
 					      const char *path,
-					      SoupClientContext *client,
 					      AgsOscXmlrpcServer *osc_xmlrpc_server);
 
 /**
@@ -819,7 +818,6 @@ void
 ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 					 SoupWebsocketConnection *websocket_connection,
 					 const char *path,
-					 SoupClientContext *client,
 					 AgsOscXmlrpcServer *osc_xmlrpc_server)
 {
   g_signal_connect(websocket_connection, "message",

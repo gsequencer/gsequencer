@@ -39,7 +39,7 @@ void ags_recall_recycling_test_source_remove_audio_signal_done_callback();
 
 #define AGS_RECALL_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH (24)
 
-AgsDevout *devout;
+AgsAlsaDevout *devout;
 AgsAudio *audio;
 
 AgsApplicationContext *audio_application_context;
@@ -62,8 +62,7 @@ ags_recall_recycling_test_init_suite()
   ags_application_context_setup(audio_application_context);
   
   /* create soundcard */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
-			NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
 
   /* create audio */

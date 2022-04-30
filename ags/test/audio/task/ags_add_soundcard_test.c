@@ -57,7 +57,7 @@ ags_add_soundcard_test_clean_suite()
 void
 ags_add_soundcard_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   
   AgsAddSoundcard *add_soundcard;
 
@@ -68,7 +68,7 @@ ags_add_soundcard_test_launch()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   g_object_ref(devout);
   
   add_soundcard = ags_add_soundcard_new(devout);

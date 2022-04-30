@@ -199,8 +199,8 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  gtk_init(NULL,
-	   NULL);
+  gtk_init();
+  
   //  g_log_set_fatal_mask(G_LOG_DOMAIN, // "GLib-GObject", // "Gtk" G_LOG_DOMAIN,
   //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 

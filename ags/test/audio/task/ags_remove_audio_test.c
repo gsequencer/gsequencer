@@ -57,7 +57,7 @@ ags_remove_audio_test_clean_suite()
 void
 ags_remove_audio_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
 
   AgsRemoveAudio *remove_audio;
@@ -70,7 +70,7 @@ ags_remove_audio_test_launch()
   g_object_ref(application_context);
 
   /* create soundcard */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
 			NULL);
   g_object_ref(devout);
 

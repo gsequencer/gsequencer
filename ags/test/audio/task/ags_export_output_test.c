@@ -60,13 +60,13 @@ ags_export_output_test_clean_suite()
 void
 ags_export_output_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsExportThread *export_thread;
   
   AgsExportOutput *export_output;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
 
   export_thread = ags_export_thread_new(devout,
 					NULL);

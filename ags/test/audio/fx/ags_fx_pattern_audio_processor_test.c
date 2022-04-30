@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,7 +120,7 @@ ags_fx_pattern_audio_processor_test_new()
 void
 ags_fx_pattern_audio_processor_test_run_inter()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -254,7 +254,7 @@ ags_fx_pattern_audio_processor_test_run_inter()
 void
 ags_fx_pattern_audio_processor_test_key_on()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -396,7 +396,7 @@ ags_fx_pattern_audio_processor_test_key_on()
 void
 ags_fx_pattern_audio_processor_test_counter_change()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -511,7 +511,7 @@ ags_fx_pattern_audio_processor_test_counter_change()
 void
 ags_fx_pattern_audio_processor_test_play()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;

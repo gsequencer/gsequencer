@@ -24,15 +24,8 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_timestamp.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_pattern.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 int ags_pattern_test_init_suite();
 int ags_pattern_test_clean_suite();

@@ -42,7 +42,6 @@ void ags_front_controller_finalize(GObject *gobject);
 gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
 					      SoupMessage *msg,
 					      GHashTable *query,
-					      SoupClientContext *client,
 					      GObject *security_context,
 					      gchar *context_path,
 					      gchar *login,
@@ -119,7 +118,6 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * @front_controller: the #AgsFrontController
    * @msg: the #SoupMessage
    * @query: the #GHashTable
-   * @client: the #SoupClient
    * @security_context: the #AgsSecurityContext
    * @context_path: the context path to access
    * @user: the user's UUID
@@ -137,10 +135,9 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, do_request),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING,
-		 G_TYPE_POINTER, 7,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_STRING_STRING_STRING,
+		 G_TYPE_POINTER, 6,
 		 G_TYPE_OBJECT,
-		 G_TYPE_POINTER,
 		 G_TYPE_POINTER,
 		 G_TYPE_OBJECT,
 		 G_TYPE_STRING,
@@ -169,7 +166,6 @@ gpointer
 ags_front_controller_real_do_request(AgsFrontController *front_controller,
 				     SoupMessage *msg,
 				     GHashTable *query,
-				     SoupClientContext *client,
 				     GObject *security_context,
 				     gchar *path,
 				     gchar *login,
@@ -241,7 +237,6 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 	  start_response = ags_plugin_controller_do_request(AGS_PLUGIN_CONTROLLER(controller->data),
 							    msg,
 							    query,
-							    client,
 							    security_context,
 							    path,
 							    login,
@@ -254,13 +249,14 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   }
 
   if(!found_controller){
-    soup_message_set_status(msg,
-			    200);
-    soup_message_set_response(msg,
-			      "text/plain",
-			      SOUP_MEMORY_STATIC,
-			      "OK",
-			      2);
+    soup_server_message_set_status(msg,
+				   200,
+				   NULL);
+    soup_server_message_set_response(msg,
+				     "text/plain",
+				     SOUP_MEMORY_STATIC,
+				     "OK",
+				     2);
   }
   
   return(start_response);
@@ -269,9 +265,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 /**
  * ags_front_controller_do_request:
  * @front_controller: the #AgsFrontController
- * @msg: the #SoupMessage
+ * @msg: the #SoupServerMessage
  * @query: the #GHashTable
- * @client: the #SoupClientContext
  * @security_context: the #AgsSecurityContext
  * @path: the context path to access
  * @login: the login
@@ -285,9 +280,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  */
 gpointer
 ags_front_controller_do_request(AgsFrontController *front_controller,
-				SoupMessage *msg,
+				SoupServerMessage *msg,
 				GHashTable *query,
-				SoupClientContext *client,
 				GObject *security_context,
 				gchar *path,
 				gchar *login,
@@ -303,7 +297,6 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 		front_controller_signals[DO_REQUEST], 0,
 		msg,
 		query,
-		client,
 		security_context,
 		path,
 		login,

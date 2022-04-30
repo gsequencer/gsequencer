@@ -79,9 +79,8 @@ gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_
 					     gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
 
 gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
-					      SoupMessage *msg,
+					      SoupServerMessage *msg,
 					      GHashTable *query,
-					      SoupClientContext *client,
 					      GObject *security_context,
 					      gchar *context_path,
 					      gchar *login,
@@ -1167,9 +1166,8 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 
 gpointer
 ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
-				     SoupMessage *msg,
+				     SoupServerMessage *msg,
 				     GHashTable *query,
-				     SoupClientContext *client,
 				     GObject *security_context,
 				     gchar *path,
 				     gchar *login,
@@ -1366,14 +1364,15 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   /* set body */
   xmlDocDumpFormatMemoryEnc(response_doc, &response_buffer, &response_buffer_length, "UTF-8", TRUE);
 
-  soup_message_set_response(msg,
-			    "text/xml; charset=UTF-8",
-			    SOUP_MEMORY_COPY,
-			    response_buffer,
-			    response_buffer_length);
+  soup_server_message_set_response(msg,
+				   "text/xml; charset=UTF-8",
+				   SOUP_MEMORY_COPY,
+				   response_buffer,
+				   response_buffer_length);
 
-  soup_message_set_status(msg,
-			  200);
+  soup_server_message_set_status(msg,
+				 200,
+				 NULL);
 
   xmlFree(response_buffer);
   xmlFreeDoc(response_doc);

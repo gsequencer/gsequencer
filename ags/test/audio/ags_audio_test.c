@@ -133,7 +133,7 @@ void ags_audio_test_resolve_recall_callback(AgsRecall *recall,
 #define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_INPUT_PADS (1)
 #define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_OUTPUT_PADS (1)
 
-AgsDevout *devout;
+AgsAlsaDevout *devout;
 gboolean audio_test_finalized;
 
 struct{
@@ -174,7 +174,7 @@ guint test_resolve_recall_callback_hits_count = 0;
 int
 ags_audio_test_init_suite()
 {
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
   
   return(0);

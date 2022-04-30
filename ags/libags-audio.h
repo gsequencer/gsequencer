@@ -73,7 +73,6 @@
 #include <ags/audio/ags_envelope_util.h>
 #include <ags/audio/ags_fast_pitch_util.h>
 #include <ags/audio/ags_fifoout.h>
-#include <ags/audio/ags_filter_util.h>
 #include <ags/audio/ags_fluid_iir_filter_util.h>
 #include <ags/audio/ags_fluid_interpolate_linear_util.h>
 #include <ags/audio/ags_fluid_interpolate_none_util.h>

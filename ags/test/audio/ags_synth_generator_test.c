@@ -75,7 +75,7 @@ ags_synth_generator_test_compute()
   synth_generator = ags_synth_generator_new();
   
   /* test - note 0.0 */
-  synth_generator->oscillator = AGS_SYNTH_GENERATOR_OSCILLATOR_SIN;
+  synth_generator->oscillator = AGS_SYNTH_OSCILLATOR_SIN;
 
   synth_generator->frequency = 440.0;
   synth_generator->volume = 0.5;
@@ -100,7 +100,7 @@ ags_synth_generator_test_compute()
   CU_ASSERT(xcross_count > 0);
 
   /* test - note 48.0 */
-  synth_generator->oscillator = AGS_SYNTH_GENERATOR_OSCILLATOR_SIN;
+  synth_generator->oscillator = AGS_SYNTH_OSCILLATOR_SIN;
 
   synth_generator->frequency = 440.0;
   synth_generator->volume = 0.5;

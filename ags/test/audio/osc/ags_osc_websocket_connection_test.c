@@ -77,8 +77,11 @@ ags_osc_websocket_connection_test_set_property()
 
   websocket_connection = soup_websocket_connection_new(g_simple_io_stream_new(g_memory_input_stream_new(),
 									      g_memory_output_stream_new(NULL, 0, g_realloc, g_free)),
-						       soup_uri_new("http://localhost/ags-test-osc-xmlrpc"),
+						       g_uri_parse("http://localhost/ags-test-osc-xmlrpc",
+								   G_URI_FLAGS_NONE,
+								   NULL),
 						       SOUP_WEBSOCKET_CONNECTION_SERVER,
+						       NULL,
 						       NULL,
 						       NULL);
   
@@ -115,8 +118,11 @@ ags_osc_websocket_connection_test_get_property()
 
   osc_websocket_connection->websocket_connection = soup_websocket_connection_new(g_simple_io_stream_new(g_memory_input_stream_new(),
 													g_memory_output_stream_new(NULL, 0, g_realloc, g_free)),
-										 soup_uri_new("http://localhost/ags-test-osc-xmlrpc"),
+										 g_uri_parse("http://localhost/ags-test-osc-xmlrpc",
+											     G_URI_FLAGS_NONE,
+											     NULL),
 										 SOUP_WEBSOCKET_CONNECTION_SERVER,
+										 NULL,
 										 NULL,
 										 NULL);
 
