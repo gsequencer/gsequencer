@@ -77,6 +77,9 @@ ags_expander_test_add(AgsExpanderFixture *fixture,
 
   gtk_widget_show(label);
 
+  g_main_context_iteration(NULL,
+			   FALSE);
+
   g_usleep(3 * G_USEC_PER_SEC);
 }
 
@@ -94,8 +97,14 @@ ags_expander_test_add_and_collapse(AgsExpanderFixture *fixture,
 
   gtk_widget_show(label);
 
+  g_main_context_iteration(NULL,
+			   FALSE);
+
   g_signal_emit_by_name(fixture->expander->expander, "activate",
 			NULL);
+
+  g_main_context_iteration(NULL,
+			   FALSE);
 
   g_usleep(3 * G_USEC_PER_SEC);
 }
@@ -122,6 +131,9 @@ main(int argc, char **argv)
 		 label);
   
   gtk_widget_show(window);
+
+  g_main_context_iteration(NULL,
+			   FALSE);
   
   g_test_add("/ags-expander/add", AgsExpanderFixture, "ags-expander-add-test",
 	     ags_expander_fixture_set_up,
