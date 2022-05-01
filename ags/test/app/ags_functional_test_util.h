@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,11 +96,8 @@ void ags_functional_test_util_fake_mouse_button_release(gpointer display, guint 
 void ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button);
 
 /* common */
-GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
-					       gchar *item_label);
-gboolean ags_functional_test_util_menu_bar_click(gchar *item_label);
-gboolean ags_functional_test_util_menu_click(GtkMenu *menu,
-					     gchar *item_label);
+void ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button,
+							   gchar **item_path);
 
 gboolean ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 						  guint nth);
@@ -158,9 +155,6 @@ gboolean ags_functional_test_util_export_do_export();
 gboolean ags_functional_test_util_quit();
 
 /* edit */
-gboolean ags_functional_test_util_add_machine(gchar *submenu,
-					      gchar *machine_name);
-
 gboolean ags_functional_test_util_automation_open();
 gboolean ags_functional_test_util_automation_close();
 

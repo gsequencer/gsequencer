@@ -285,7 +285,7 @@ ags_test_init(int *argc, char ***argv,
   gst_init(&gst_argc, &gst_argv);
 #endif
 
-  gtk_init(argc, argv);
+  gtk_init();
   
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
@@ -365,6 +365,16 @@ ags_test_quit()
 }
 
 void
+ags_test_main_quit()
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  ags_application_context_quit(application_context);
+}
+
+void
 ags_test_show_file_error(gchar *filename,
 			 GError *error)
 {
@@ -380,7 +390,7 @@ ags_test_show_file_error(gchar *filename,
 				  filename);
   gtk_widget_show_all((GtkWidget *) dialog);
   g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_main_quit), NULL);
+		   G_CALLBACK(ags_test_main_quit), NULL);
   gtk_main();
 }
 
