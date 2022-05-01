@@ -277,7 +277,7 @@ libags_server_sources = files(
 
 libags_server_dependencies = [
   common_dependencies,
-  dependency('libsoup-2.4'),
+  dependency('libsoup-3.0'),
   crypt_dependency,
 ]
 
@@ -1177,14 +1177,14 @@ libgsequencer = library('gsequencer',
 gsequencer_dependencies = [
   common_dependencies,
   dependency('gtk4'),
-  dependency('libsoup-2.4'),
+  dependency('libsoup-3.0'),
   dependency('libinstpatch-1.0'),
 #  compiler.find_library('crypt', required: true),
   ]
 
 midi2xml_dependencies = [
   common_dependencies,
-  dependency('libsoup-2.4'),
+  dependency('libsoup-3.0'),
   dependency('libinstpatch-1.0'),
 #  compiler.find_library('crypt', required: true),
   ]
@@ -2028,7 +2028,7 @@ if build_gir
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'Ags',
-    includes: [ 'Soup-2.4', 'GObject-2.0', 'libxml2-2.0', ],
+    includes: [ 'Soup-3.0', 'GObject-2.0', 'libxml2-2.0', ],
     header: 'libags.h',
     install: true,
     extra_args: gir_args,
@@ -2044,7 +2044,7 @@ if build_gir
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsAudio',
-    includes: [ 'Gst-1.0', 'GstBase-1.0', 'GstAudio-1.0', 'Soup-2.4', 'GObject-2.0', 'libxml2-2.0', ],
+    includes: [ 'Gst-1.0', 'GstBase-1.0', 'GstAudio-1.0', 'Soup-3.0', 'GObject-2.0', 'libxml2-2.0', ],
     header: 'libags-audio.h',
     install: true,
     dependencies: libags_gir_dep,
