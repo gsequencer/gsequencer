@@ -2405,7 +2405,6 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine_editor_collection_callbacks.h \
 	ags/app/ags_machine_editor_bulk.h \
 	ags/app/ags_machine_editor_bulk_callbacks.h \
-	ags/app/ags_menu_action_callbacks.h \
 	ags/app/ags_meta_data_window.h \
 	ags/app/ags_midi_dialog_callbacks.h \
 	ags/app/ags_midi_dialog.h \
@@ -2529,7 +2528,6 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor_pad_callbacks.c \
 	ags/app/ags_machine_editor_line.c \
 	ags/app/ags_machine_editor_line_callbacks.c \
-	ags/app/ags_menu_action_callbacks.c \
 	ags/app/ags_meta_data_window.c \
 	ags/app/ags_midi_dialog.c \
 	ags/app/ags_midi_dialog_callbacks.c \
