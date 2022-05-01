@@ -123,7 +123,7 @@ ags_osc_node_controller_test_init_suite()
 
   /* ags-play */
   ags_fx_factory_create(panel,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-playback",
 			NULL,
 			NULL,
@@ -137,7 +137,7 @@ ags_osc_node_controller_test_init_suite()
 
   /* ags-mute */
   ags_fx_factory_create(panel,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-volume",
 			NULL,
 			NULL,
@@ -176,7 +176,7 @@ ags_osc_node_controller_test_init_suite()
 					      spectrometer));
   
   ags_fx_factory_create(spectrometer,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-analyse",
 			NULL,
 			NULL,
@@ -220,7 +220,7 @@ ags_osc_node_controller_test_init_suite()
 
   /* ags-copy-pattern */
   ags_fx_factory_create(drum,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-pattern",
 			NULL,
 			NULL,
@@ -234,7 +234,7 @@ ags_osc_node_controller_test_init_suite()
 
   /* ags-volume */
   ags_fx_factory_create(drum,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-volume",
 			NULL,
 			NULL,
@@ -249,7 +249,7 @@ ags_osc_node_controller_test_init_suite()
 
   /* ags-envelope */
   ags_fx_factory_create(drum,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-envelope",
 			NULL,
 			NULL,
@@ -290,9 +290,9 @@ ags_osc_node_controller_test_get_data()
   guint padding;
   gboolean success;
 
-  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
+  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
 
-  static const guint volume_message_size = 116;
+  static const guint volume_message_size = 120;
 
   osc_connection = ags_osc_connection_new(NULL);
   

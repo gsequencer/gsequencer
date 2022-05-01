@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,7 +92,7 @@ ags_set_muted_test_launch()
 
   /* ags-mute */
   ags_fx_factory_create(audio,
-			NULL, NULL,
+			ags_recall_container_new(), ags_recall_container_new(),
 			"ags-fx-volume",
 			NULL,
 			NULL,
