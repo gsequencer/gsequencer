@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,7 @@ void ags_osc_config_controller_finalize(GObject *gobject);
 
 gpointer ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_controller,
 						     AgsOscConnection *osc_connection,
-						     unsigned char *message, guint message_size);
+						     guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_config_controller
@@ -224,7 +224,7 @@ ags_osc_config_controller_finalize(GObject *gobject)
 gpointer
 ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_controller,
 					    AgsOscConnection *osc_connection,
-					    unsigned char *message, guint message_size)
+					    guchar *message, guint message_size)
 {
   AgsOscResponse *osc_response;
 
@@ -332,7 +332,7 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 gpointer
 ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_controller,
 				       AgsOscConnection *osc_connection,
-				       unsigned char *message, guint message_size)
+				       guchar *message, guint message_size)
 {
   gpointer osc_response;
   

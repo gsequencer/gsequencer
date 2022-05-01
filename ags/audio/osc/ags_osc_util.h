@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,17 +70,17 @@ GType ags_osc_util_get_type(void);
 
 guint ags_osc_util_type_tag_string_count_type(gchar *type_tag);
 
-unsigned char* ags_osc_util_meta_data(gchar *uri,
-				      guint *meta_data_length);
-unsigned char* ags_osc_util_mime_header(gchar *uri,
-					guint *mime_header_length);
+guchar* ags_osc_util_meta_data(gchar *uri,
+			       guint *meta_data_length);
+guchar* ags_osc_util_mime_header(gchar *uri,
+				 guint *mime_header_length);
 
-unsigned char* ags_osc_util_slip_encode(unsigned char *osc_buffer,
-					guint buffer_length,
-					guint *returned_buffer_length);
-unsigned char* ags_osc_util_slip_decode(unsigned char *slip_buffer,
-					guint slip_buffer_length,
-					guint *returned_buffer_length);
+guchar* ags_osc_util_slip_encode(guchar *osc_buffer,
+				 guint buffer_length,
+				 guint *returned_buffer_length);
+guchar* ags_osc_util_slip_decode(guchar *slip_buffer,
+				 guint slip_buffer_length,
+				 guint *returned_buffer_length);
 
 void ags_osc_util_timetag_now(gint32 *tv_sec, gint32 *tv_fraction);
 

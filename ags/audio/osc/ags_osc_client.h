@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,10 +97,10 @@ struct _AgsOscClient
 
   struct timespec *start_time;
 
-  unsigned char *cache_data;
+  guchar *cache_data;
   guint cache_data_length;
 
-  unsigned char *buffer;
+  guchar *buffer;
   guint allocated_buffer_size;
   
   guint read_count;
@@ -116,8 +116,8 @@ struct _AgsOscClientClass
   void (*resolve)(AgsOscClient *osc_client);
   void (*connect)(AgsOscClient *osc_client);
 
-  unsigned char* (*read_bytes)(AgsOscClient *osc_client,
-			       guint *data_length);
+  guchar* (*read_bytes)(AgsOscClient *osc_client,
+			guint *data_length);
   gboolean (*write_bytes)(AgsOscClient *osc_client,
 			  guchar *data, guint data_length);
 };
@@ -131,8 +131,8 @@ void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_resolve(AgsOscClient *osc_client);
 void ags_osc_client_connect(AgsOscClient *osc_client);
 
-unsigned char* ags_osc_client_read_bytes(AgsOscClient *osc_client,
-					 guint *data_length);
+guchar* ags_osc_client_read_bytes(AgsOscClient *osc_client,
+				  guint *data_length);
 
 gboolean ags_osc_client_write_bytes(AgsOscClient *osc_client,
 				    guchar *data, guint data_length);

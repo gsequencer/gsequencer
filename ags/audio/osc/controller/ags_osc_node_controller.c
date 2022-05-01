@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,33 +57,33 @@ void ags_osc_node_controller_finalize(GObject *gobject);
 gpointer ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_controller,
 						    AgsOscConnection *osc_connection,
 						    GObject *soundcard,
-						    unsigned char *message, guint message_size,
+						    guchar *message, guint message_size,
 						    gchar *type_tag,
 						    gchar *path, guint path_offset);
 gpointer ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_controller,
 						    AgsOscConnection *osc_connection,
 						    GObject *sequencer,
-						    unsigned char *message, guint message_size,
+						    guchar *message, guint message_size,
 						    gchar *type_tag,
 						    gchar *path, guint path_offset);
 
 gpointer ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller,
 						AgsOscConnection *osc_connection,
 						AgsAudio *audio,
-						unsigned char *message, guint message_size,
+						guchar *message, guint message_size,
 						gchar *type_tag,
 						gchar *path, guint path_offset);
 gpointer ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controller,
 						  AgsOscConnection *osc_connection,
 						  AgsChannel *channel,
-						  unsigned char *message, guint message_size,
+						  guchar *message, guint message_size,
 						  gchar *type_tag,
 						  gchar *path, guint path_offset);
 
 gpointer ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controller,
 						 AgsOscConnection *osc_connection,
 						 AgsRecall *recall,
-						 unsigned char *message, guint message_size,
+						 guchar *message, guint message_size,
 						 gchar *type_tag,
 						 gchar *path, guint path_offset);
 
@@ -91,13 +91,13 @@ gpointer ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_co
 					       AgsOscConnection *osc_connection,
 					       AgsRecall *parent,
 					       AgsPort *port,
-					       unsigned char *message, guint message_size,
+					       guchar *message, guint message_size,
 					       gchar *type_tag,
 					       gchar *path, guint path_offset);
 
 gpointer ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 					       AgsOscConnection *osc_connection,
-					       unsigned char *message, guint message_size);
+					       guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_node_controller
@@ -281,7 +281,7 @@ gpointer
 ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_controller,
 					   AgsOscConnection *osc_connection,
 					   GObject *soundcard,
-					   unsigned char *message, guint message_size,
+					   guchar *message, guint message_size,
 					   gchar *type_tag,
 					   gchar *path, guint path_offset)
 {
@@ -292,7 +292,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
   GList *start_response;
   GList *start_list;
   
-  unsigned char *packet;
+  guchar *packet;
   gchar *current_path;
   
   guint real_packet_size;
@@ -326,8 +326,8 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
         
     g_object_set(osc_response,
 		 "packet", packet,
@@ -667,7 +667,7 @@ gpointer
 ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_controller,
 					   AgsOscConnection *osc_connection,
 					   GObject *sequencer,
-					   unsigned char *message, guint message_size,
+					   guchar *message, guint message_size,
 					   gchar *type_tag,
 					   gchar *path, guint path_offset)
 {
@@ -678,7 +678,7 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
   GList *start_response;
   GList *start_list;
 
-  unsigned char *packet;
+  guchar *packet;
   gchar *current_path;
 
   guint real_packet_size;
@@ -712,8 +712,8 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
         
     g_object_set(osc_response,
 		 "packet", packet,
@@ -826,7 +826,7 @@ gpointer
 ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller,
 				       AgsOscConnection *osc_connection,
 				       AgsAudio *audio,
-				       unsigned char *message, guint message_size,
+				       guchar *message, guint message_size,
 				       gchar *type_tag,
 				       gchar *path, guint path_offset)
 {
@@ -837,7 +837,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
   GList *start_response;
   GList *start_list;
 
-  unsigned char *packet;
+  guchar *packet;
   gchar *current_path;
 
   guint real_packet_size;
@@ -873,8 +873,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -1989,7 +1989,7 @@ gpointer
 ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controller,
 					 AgsOscConnection *osc_connection,
 					 AgsChannel *channel,
-					 unsigned char *message, guint message_size,
+					 guchar *message, guint message_size,
 					 gchar *type_tag,
 					 gchar *path, guint path_offset)
 {
@@ -2002,7 +2002,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
   GList *start_response;
   GList *start_list;
 
-  unsigned char *packet;
+  guchar *packet;
   gchar *current_path;
 
   guint real_packet_size;
@@ -2046,8 +2046,8 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -2716,7 +2716,7 @@ gpointer
 ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controller,
 					AgsOscConnection *osc_connection,
 					AgsRecall *recall,
-					unsigned char *message, guint message_size,
+					guchar *message, guint message_size,
 					gchar *type_tag,
 					gchar *path, guint path_offset)
 {
@@ -2728,7 +2728,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 
   GList *start_response;
   
-  unsigned char *packet;
+  guchar *packet;
 
   guint path_length;
   guint real_packet_size;
@@ -2756,8 +2756,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -3093,7 +3093,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 				      AgsOscConnection *osc_connection,
 				      AgsRecall *parent,
 				      AgsPort *port,
-				      unsigned char *message, guint message_size,
+				      guchar *message, guint message_size,
 				      gchar *type_tag,
 				      gchar *path, guint path_offset)
 {
@@ -3107,7 +3107,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
   GList *start_response;
   GList *start_list;
 
-  unsigned char *packet;
+  guchar *packet;
   gchar *current_path;
   gchar *specifier;
   
@@ -3169,8 +3169,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -3748,7 +3748,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 gpointer
 ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 				      AgsOscConnection *osc_connection,
-				      unsigned char *message, guint message_size)
+				      guchar *message, guint message_size)
 {
   AgsOscResponse *osc_response;
 
@@ -4630,7 +4630,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 gpointer
 ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
 				 AgsOscConnection *osc_connection,
-				 unsigned char *message, guint message_size)
+				 guchar *message, guint message_size)
 {
   gpointer osc_response;
   

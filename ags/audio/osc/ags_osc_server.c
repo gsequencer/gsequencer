@@ -1676,7 +1676,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
     if(slip_buffer != NULL){
       GList *start_osc_response, *osc_response;
 
-      unsigned char *packet;
+      guchar *packet;
 
       guint packet_size;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ void ags_osc_parser_real_on_error(AgsOscParser *osc_parser,
 
 xmlDoc* ags_osc_parser_real_parse_full(AgsOscParser *osc_parser);
 xmlNode* ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
-					 unsigned char *osc_buffer,
+					 guchar *osc_buffer,
 					 guint buffer_length);
 
 xmlNode* ags_osc_parser_real_packet(AgsOscParser *osc_parser);
@@ -700,7 +700,7 @@ ags_osc_parser_parse_full(AgsOscParser *osc_parser)
 
 xmlNode*
 ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
-				unsigned char *osc_buffer,
+				guchar *osc_buffer,
 				guint buffer_length)
 {
   xmlNode *node;
@@ -726,7 +726,7 @@ ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
  */
 xmlNode*
 ags_osc_parser_parse_bytes(AgsOscParser *osc_parser,
-			   unsigned char *osc_buffer,
+			   guchar *osc_buffer,
 			   guint buffer_length)
 {
   xmlNode *node;
@@ -935,7 +935,7 @@ ags_osc_parser_real_message(AgsOscParser *osc_parser)
   current_byte = ags_osc_parser_osc_getc(osc_parser);
 
   if(current_byte != ','){
-    unsigned char *blob;
+    guchar *blob;
     
     char str[4];
     gint32 value;
@@ -955,7 +955,7 @@ ags_osc_parser_real_message(AgsOscParser *osc_parser)
     current = xmlNewNode(NULL,
 		      "osc-value");
 
-    blob = (unsigned char *) malloc(value * sizeof(unsigned char));
+    blob = (guchar *) malloc(value * sizeof(guchar));
     
     for(i = 0; i < value; i++){
       blob[i] = ags_osc_parser_osc_getc(osc_parser);
@@ -1084,14 +1084,14 @@ ags_osc_parser_real_value(AgsOscParser *osc_parser,
     break;
   case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
     {
-      unsigned char *blob;
+      guchar *blob;
       
       gint32 data_size;
       guint i;
       
       data_size = ags_osc_parser_read_gint32(osc_parser);
 
-      blob = (unsigned char *) malloc(data_size * sizeof(unsigned char));
+      blob = (guchar *) malloc(data_size * sizeof(guchar));
       
       for(i = 0; i < data_size; i++){
 	blob[i] = ags_osc_parser_osc_getc(osc_parser);

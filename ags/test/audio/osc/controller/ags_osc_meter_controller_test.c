@@ -465,8 +465,8 @@ ags_osc_meter_controller_test_monitor_meter()
 
   GList *osc_response;
 
-  static const unsigned char *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
-  static const unsigned char *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const unsigned char *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsFxPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const unsigned char *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsFxPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
 
   static const guint enable_peak_message_size = 112;
   static const guint disable_peak_message_size = 112;

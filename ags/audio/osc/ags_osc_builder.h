@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,7 +60,7 @@ struct _AgsOscBuilder
 
   GRecMutex obj_mutex;
 
-  unsigned char *data;
+  guchar *data;
   guint length;
 
   guint64 offset;
@@ -136,7 +136,7 @@ struct _AgsOscBuilderMessage
 
   gsize data_allocated_length;
   gsize data_length;
-  unsigned char *data;
+  guchar *data;
 
   AgsOscBuilderPacket *packet;
   AgsOscBuilderBundle *parent_bundle;

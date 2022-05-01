@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,11 +119,11 @@ ags_osc_util_type_tag_string_count_type(gchar *type_tag)
  * 
  * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_osc_util_meta_data(gchar *uri,
 		       guint *meta_data_length)
 {
-  unsigned char *meta_data;
+  guchar *meta_data;
   
   meta_data = g_strdup_printf("framing=slip\nversion=1.0 | 1.1\nuri=%s\ntypes=%s\n",
 			      uri,
@@ -147,11 +147,11 @@ ags_osc_util_meta_data(gchar *uri,
  * 
  * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_osc_util_mime_header(gchar *uri,
 			 guint *mime_header_length)
 {
-  unsigned char *mime_header;
+  guchar *mime_header;
   
   mime_header = g_strdup_printf("MIME-Version: 1.0\nContent-type: application/osc;\nframing=slip\nversion=1.0 | 1.1\nuri=%s\ntypes=%s\n",
 				uri,
@@ -177,27 +177,27 @@ ags_osc_util_mime_header(gchar *uri,
  * 
  * Since: 3.0.0
  */
-unsigned char*
-ags_osc_util_slip_encode(unsigned char *osc_buffer,
+guchar*
+ags_osc_util_slip_encode(guchar *osc_buffer,
 			 guint buffer_length,
 			 guint *returned_buffer_length)
 {
-  unsigned char *slip_buffer;
+  guchar *slip_buffer;
 
   guint slip_buffer_length;
   guint i, j;
   
   slip_buffer_length = (guint) AGS_OSC_UTIL_SLIP_CHUNK_LENGTH + 2;
   
-  slip_buffer = (unsigned char *) malloc((slip_buffer_length + 2) * sizeof(unsigned char));
+  slip_buffer = (guchar *) malloc((slip_buffer_length + 2) * sizeof(guchar));
 
   slip_buffer[0] = AGS_OSC_UTIL_SLIP_END;
   
   for(i = 0, j = 1; i < buffer_length; i++, j++){
     if(j + 2 >= slip_buffer_length){
       slip_buffer_length = slip_buffer_length + AGS_OSC_UTIL_SLIP_CHUNK_LENGTH;
-      slip_buffer = (unsigned char *) realloc(slip_buffer,
-					      (slip_buffer_length + AGS_OSC_UTIL_SLIP_CHUNK_LENGTH) * sizeof(unsigned char));
+      slip_buffer = (guchar *) realloc(slip_buffer,
+					      (slip_buffer_length + AGS_OSC_UTIL_SLIP_CHUNK_LENGTH) * sizeof(guchar));
     }
     
     switch(osc_buffer[i]){
@@ -246,19 +246,19 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
  * 
  * Since: 3.0.0
  */
-unsigned char*
-ags_osc_util_slip_decode(unsigned char *slip_buffer,
+guchar*
+ags_osc_util_slip_decode(guchar *slip_buffer,
 			 guint slip_buffer_length,
 			 guint *returned_buffer_length)
 {
-  unsigned char *osc_buffer;
+  guchar *osc_buffer;
 
   guint buffer_length;
   guint i, j;
 
   buffer_length = slip_buffer_length;
 
-  osc_buffer = (unsigned char *) malloc(buffer_length * sizeof(unsigned char));
+  osc_buffer = (guchar *) malloc(buffer_length * sizeof(guchar));
 
   for(i = 0, j = 1; j < slip_buffer_length; i++, j++){
     switch(slip_buffer[j]){
