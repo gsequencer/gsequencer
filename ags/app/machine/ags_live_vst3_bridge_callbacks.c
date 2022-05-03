@@ -32,7 +32,8 @@
 #endif
 
 void
-ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *live_vst3_bridge)
+ags_live_vst3_bridge_show_vst3_ui_callback(GAction *action, GVariant *parameter,
+					   AgsLiveVst3Bridge *live_vst3_bridge)
 {
   AgsVst3Plugin *vst3_plugin;
 
@@ -163,6 +164,8 @@ ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst
 AgsVstTResult
 ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsLiveVst3Bridge *live_vst3_bridge)
 {
+  AgsEffectBridge *effect_bridge;
+
   AgsVst3Plugin *vst3_plugin;
   AgsPluginPort *plugin_port;
 
@@ -184,6 +187,8 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   vst3_plugin = live_vst3_bridge->vst3_plugin;
 
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
+
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge);
 
   g_rec_mutex_lock(base_plugin_mutex);
   
@@ -215,7 +220,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 							     id,
 							     value_normalized);
 
-  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->grid);
+  start_bulk_member = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   bulk_member = start_bulk_member;
   

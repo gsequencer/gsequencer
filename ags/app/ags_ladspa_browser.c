@@ -132,6 +132,15 @@ void
 ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 {
   GtkLabel *label;
+  GtkTreeViewColumn *filename_column;
+  GtkTreeViewColumn *effect_column;
+  GtkScrolledWindow *scrolled_window;
+
+  GtkCellRenderer *filename_renderer;
+  GtkCellRenderer *effect_renderer;
+
+  GtkListStore *filename_list_store;
+  GtkListStore *effect_list_store;
 
   GList *start_list, *list;
 
@@ -140,27 +149,53 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(ladspa_browser),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(ladspa_browser,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  ladspa_browser->connectable_flags = 0;
   
   /* plugin */
   ladspa_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						  0);
+						  AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) ladspa_browser,
 		 (GtkWidget *) ladspa_browser->plugin);
 
   /* filename */
-  str = g_strconcat(i18n("Filename"),
-		    ": ",
-		    NULL);  
-
-  label = (GtkLabel *) gtk_label_new(str);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_LADSPA_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_LADSPA_BROWSER_FILENAME_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
   gtk_box_append(ladspa_browser->plugin,
-		 (GtkWidget *) label);
+		 (GtkWidget *) scrolled_window);
+
+  ladspa_browser->filename_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(ladspa_browser->filename_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) ladspa_browser->filename_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) ladspa_browser->filename_tree_view,
+			      AGS_LADSPA_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_LADSPA_BROWSER_FILENAME_HEIGHT_REQUEST);
+
+  filename_renderer = gtk_cell_renderer_text_new();
+
+  filename_column = gtk_tree_view_column_new_with_attributes(i18n("filename"),
+							     filename_renderer,
+							     "text", 0,
+							     NULL);
+  gtk_tree_view_append_column(ladspa_browser->filename_tree_view,
+			      filename_column);
   
-  ladspa_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_append(ladspa_browser->plugin,
-		 (GtkWidget *) ladspa_browser->filename);
+  filename_list_store = gtk_list_store_new(1,
+					   G_TYPE_STRING);
 
-  g_free(str);
+  gtk_tree_view_set_model(ladspa_browser->filename_tree_view,
+			  GTK_TREE_MODEL(filename_list_store));  
 
   ladspa_browser->path = NULL;
 
@@ -182,8 +217,14 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 			       g_strcmp0);
 
     while(list != NULL){
-      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(ladspa_browser->filename),
-				     list->data);
+      GtkTreeIter tree_iter;
+
+      gtk_list_store_append(filename_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(filename_list_store, &tree_iter,
+			 0, list->data,
+			 -1);
  
       list = list->next;
     }
@@ -194,23 +235,44 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   }
 
   /* effect */
-  str = g_strconcat(i18n("Effect"),
-		    ": ",
-		    NULL);  
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_LADSPA_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_LADSPA_BROWSER_EFFECT_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_append(ladspa_browser->plugin,
+		 (GtkWidget *) scrolled_window);
+
+  ladspa_browser->effect_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(ladspa_browser->effect_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) ladspa_browser->effect_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) ladspa_browser->effect_tree_view,
+			      AGS_LADSPA_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_LADSPA_BROWSER_EFFECT_HEIGHT_REQUEST);
+
+  effect_renderer = gtk_cell_renderer_text_new();
+
+  effect_column = gtk_tree_view_column_new_with_attributes(i18n("effect"),
+							   effect_renderer,
+							   "text", 0,
+							   NULL);
+  gtk_tree_view_append_column(ladspa_browser->effect_tree_view,
+			      effect_column);
   
-  label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_append(ladspa_browser->plugin,
-		 (GtkWidget *) label);
+  effect_list_store = gtk_list_store_new(1,
+					 G_TYPE_STRING);
 
-  g_free(str);
-
-  ladspa_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_append(ladspa_browser->plugin,
-		 (GtkWidget *) ladspa_browser->effect);
+  gtk_tree_view_set_model(ladspa_browser->effect_tree_view,
+			  GTK_TREE_MODEL(effect_list_store));  
 
   /* description */
   ladspa_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						       0);
+						       AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) ladspa_browser,
 		 (GtkWidget *) ladspa_browser->description);
 
@@ -268,10 +330,18 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   gtk_box_append((GtkBox *) ladspa_browser->description,
 		 (GtkWidget *) label);
 
+  g_free(str);
+
   /* port editor */
   ladspa_browser->port_editor = NULL;
   
   ladspa_browser->port_editor_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(ladspa_browser->port_editor_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(ladspa_browser->port_editor_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_box_append((GtkBox *) ladspa_browser->description,
 		 (GtkWidget *) ladspa_browser->port_editor_grid);
 
@@ -286,16 +356,16 @@ ags_ladspa_browser_connect(AgsConnectable *connectable)
 
   ladspa_browser = AGS_LADSPA_BROWSER(connectable);
 
-  if((AGS_LADSPA_BROWSER_CONNECTED & (ladspa_browser->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (ladspa_browser->connectable_flags)) != 0){
     return;
   }
 
-  ladspa_browser->flags |= AGS_LADSPA_BROWSER_CONNECTED;
+  ladspa_browser->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  g_signal_connect_after(G_OBJECT(ladspa_browser->filename), "changed",
+  g_signal_connect_after(G_OBJECT(ladspa_browser->filename_tree_view), "row-activated",
 			 G_CALLBACK(ags_ladspa_browser_plugin_filename_callback), ladspa_browser);
 
-  g_signal_connect_after(G_OBJECT(ladspa_browser->effect), "changed",
+  g_signal_connect_after(G_OBJECT(ladspa_browser->effect_tree_view), "row-activated",
 			 G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
 }
 
@@ -306,20 +376,20 @@ ags_ladspa_browser_disconnect(AgsConnectable *connectable)
 
   ladspa_browser = AGS_LADSPA_BROWSER(connectable);
 
-  if((AGS_LADSPA_BROWSER_CONNECTED & (ladspa_browser->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (ladspa_browser->connectable_flags)) == 0){
     return;
   }
 
-  ladspa_browser->flags &= (~AGS_LADSPA_BROWSER_CONNECTED);
+  ladspa_browser->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  g_object_disconnect(G_OBJECT(ladspa_browser->filename),
-		      "any_signal::changed",
+  g_object_disconnect(G_OBJECT(ladspa_browser->filename_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_ladspa_browser_plugin_filename_callback),
 		      ladspa_browser,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(ladspa_browser->effect),
-		      "any_signal::changed",
+  g_object_disconnect(G_OBJECT(ladspa_browser->effect_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_ladspa_browser_plugin_effect_callback),
 		      ladspa_browser,
 		      NULL);
@@ -341,14 +411,22 @@ void
 ags_ladspa_browser_reset(AgsApplicable *applicable)
 {
   AgsLadspaBrowser *ladspa_browser;
-  GtkComboBoxText *filename;
+
+  GtkTreeModel *model;
+
+  GtkTreeIter tree_iter;
 
   ladspa_browser = AGS_LADSPA_BROWSER(applicable);
+	  
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(ladspa_browser->filename_tree_view)));
 
-  filename = GTK_COMBO_BOX_TEXT(ladspa_browser->filename);
-
-  gtk_combo_box_set_active((GtkComboBox *) filename,
-			   0);
+  if(gtk_tree_model_get_iter_first(model, &tree_iter)){
+    gtk_tree_view_set_cursor(GTK_TREE_VIEW(ladspa_browser->filename_tree_view),
+			     gtk_tree_model_get_path(model,
+						     &tree_iter),
+			     NULL,
+			     FALSE);
+  }
 }
 
 /**
@@ -364,11 +442,36 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 gchar*
 ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 {
+  GtkListStore *filename_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
+  
+  GtkTreeIter iter;
+
+  gchar *filename;
+  
   if(!AGS_IS_LADSPA_BROWSER(ladspa_browser)){
     return(NULL);
   }
+
+  filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(ladspa_browser->filename_tree_view));
+
+  gtk_tree_view_get_cursor(ladspa_browser->filename_tree_view,
+			   &path,
+			   NULL);
   
-  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ladspa_browser->filename)));
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path);
+
+  gtk_tree_path_free(path);
+
+  filename = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		     &iter,
+		     0, &filename,
+		     -1);
+  
+  return(filename);
 }
 
 /**
@@ -384,11 +487,36 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 {
+  GtkListStore *effect_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
+  
+  GtkTreeIter iter;
+
+  gchar *effect;
+  
   if(!AGS_IS_LADSPA_BROWSER(ladspa_browser)){
     return(NULL);
   }
 
-  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ladspa_browser->effect)));
+  effect_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(ladspa_browser->effect_tree_view));
+
+  gtk_tree_view_get_cursor(ladspa_browser->effect_tree_view,
+			   &path,
+			   NULL);
+  
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path);
+
+  gtk_tree_path_free(path);
+
+  effect = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
+		     &iter,
+		     0, &effect,
+		     -1);
+  
+  return(effect);
 }
 
 /**

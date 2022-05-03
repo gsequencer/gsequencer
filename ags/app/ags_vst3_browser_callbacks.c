@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,37 +30,42 @@
 #include <ags/i18n.h>
 
 void
-ags_vst3_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+ags_vst3_browser_plugin_filename_callback(GtkTreeView *tree_view,
+					  GtkTreePath *path,
+					  GtkTreeViewColumn *column,
 					  AgsVst3Browser *vst3_browser)
 {
-  GtkComboBoxText *filename_combo, *effect_combo;
+  GtkListStore *filename_list_store;
+  GtkListStore *effect_list_store;
 
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
 
   GList *start_list, *list;
 
+  GtkTreeIter tree_iter;
+
   gchar *filename;
   
   GRecMutex *vst3_manager_mutex;
 
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->plugin));
+  filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(vst3_browser->filename_tree_view));
+  effect_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(vst3_browser->effect_tree_view));
 
-  filename_combo = GTK_COMBO_BOX_TEXT(list->next->data);
-  effect_combo = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model((GtkComboBox *) effect_combo)));
-
-  g_list_free(start_list);
-
-  if(gtk_combo_box_get_active(filename_combo) == -1){
+  gtk_list_store_clear(effect_list_store);
+  
+  if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &tree_iter, path)){
     return;
   }
 
-  vst3_manager = ags_vst3_manager_get_instance();
+  filename = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		     &tree_iter,
+		     0, &filename,
+		     -1);
 
-  filename = gtk_combo_box_text_get_active_text(filename_combo);
+  vst3_manager = ags_vst3_manager_get_instance();
 
   /* get vst3 manager mutex */
   vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
@@ -75,7 +80,7 @@ ags_vst3_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   g_rec_mutex_unlock(vst3_manager_mutex);
 
-  while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename_combo))) != NULL){
+  while((list = ags_base_plugin_find_filename(list, filename)) != NULL){
     gchar *effect;
 
     vst3_plugin = list->data;
@@ -86,8 +91,12 @@ ags_vst3_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 		 NULL);
     
     if(effect != NULL){
-      gtk_combo_box_text_append_text(effect_combo,
-				     effect);
+      gtk_list_store_append(effect_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(effect_list_store, &tree_iter,
+			 0, effect,
+			 -1);
     }
 
     g_free(effect);
@@ -95,26 +104,23 @@ ags_vst3_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
     /* iterate */
     list = list->next;
   }
-  
-  gtk_combo_box_set_active((GtkComboBox *) effect_combo,
-  			   -1);
 
   g_list_free_full(start_list,
 		   g_object_unref);
 }
 
 void
-ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
-				     AgsVst3Browser *vst3_browser)
+ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
+					GtkTreePath *path,
+					GtkTreeViewColumn *column,
+					AgsVst3Browser *vst3_browser)
 {
-  GtkGrid *grid;
   GtkComboBoxText *filename_combo, *effect_combo;
   GtkLabel *label;
 
   AgsVst3Plugin *vst3_plugin;
 
-  GList *start_list, *list;
-  GList *start_child, *child;
+  GList *start_port_editor, *port_editor;
 
   gchar *filename, *effect;
   gchar *str;
@@ -123,48 +129,18 @@ ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   GRecMutex *base_plugin_mutex;
   GRecMutex *plugin_port_mutex;
 
-  /* retrieve filename and uri */
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->plugin));
+  /* retrieve filename and effect */
+  filename = ags_vst3_browser_get_plugin_filename(vst3_browser);
+  effect = ags_vst3_browser_get_plugin_effect(vst3_browser);
 
-  filename_combo = GTK_COMBO_BOX_TEXT(list->next->data);
-  effect_combo = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-
-  g_list_free(start_list);
-
-  if(gtk_combo_box_get_active(effect_combo) == -1){
-    list =
-      start_list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->description));
-    
-    /* update ui - empty */
-    //TODO:JK: implement me
-    
-    grid = vst3_browser->port_grid;
-
-    /* update ui - port information */
-    child =
-      start_child = gtk_container_get_children(GTK_CONTAINER(grid));
-    
-    while(child != NULL){
-      gtk_widget_destroy(GTK_WIDGET(child->data));
-      
-      child = child->next;
-    }
-    
-    g_list_free(start_child);
-
-    g_list_free(start_list);
+  if(filename == NULL ||
+     effect == NULL){
+    ags_vst3_browser_clear(vst3_browser);
     
     return;
   }
 
   /* update description */
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->description));
-
-  filename = gtk_combo_box_text_get_active_text(filename_combo);
-  effect = gtk_combo_box_text_get_active_text(effect_combo);
-
   vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
 						  filename,
 						  effect);
@@ -178,19 +154,21 @@ ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     /* update ui - empty */
     //TODO:JK: implement me
     
-    grid = vst3_browser->port_grid;
-
     /* update ui - port information */
-    child =
-      start_child = gtk_container_get_children(GTK_CONTAINER(grid));
+    port_editor =
+      start_port_editor = ags_vst3_browser_get_port_editor(vst3_browser);
     
-    while(child != NULL){
-      gtk_widget_destroy(GTK_WIDGET(child->data));
+    while(port_editor != NULL){
+      ags_vst3_browser_remove_port_editor(vst3_browser,
+					    port_editor->data);
       
-      child = child->next;
+      g_object_run_dispose(port_editor->data);
+      g_object_unref(port_editor->data);
+
+      port_editor = port_editor->next;
     }
-    
-    g_list_free(start_child);
+
+    g_list_free(start_port_editor);
 
     start_plugin_port = g_list_copy(AGS_BASE_PLUGIN(vst3_plugin)->plugin_port);
 
@@ -200,6 +178,10 @@ ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     y = 0;
     
     while(plugin_port != NULL){
+      AgsPortEditor *port_editor;
+
+      guint flags;
+
       if(!ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	plugin_port = plugin_port->next;
 	
@@ -216,67 +198,41 @@ ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
       g_rec_mutex_unlock(plugin_port_mutex);
 
-      label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-					"xalign", 0.0,
-					"label", str,
-					NULL);
-      gtk_grid_attach(grid,
-		      (GtkWidget *) label,
-		      0, y,
-		      1, 1);
-      
-      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  gtk_grid_attach(grid,
-			  GTK_WIDGET(ags_vst3_browser_combo_box_output_boolean_controls_new()),
-			  1, y,
-			  1, 1);
-	}else{
-	  gtk_grid_attach(grid,
-			  GTK_WIDGET(ags_vst3_browser_combo_box_boolean_controls_new()),
-			  1, y,
-			  1, 1);
-	}
+      port_editor = ags_port_editor_new();
+
+      gtk_label_set_text(port_editor->port_name,
+			 str);
+
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	flags |= AGS_PORT_EDITOR_IS_OUTPUT;
       }else{
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  gtk_grid_attach(grid,
-			  GTK_WIDGET(ags_vst3_browser_combo_box_output_controls_new()),
-			  1, y,
-			  1, 1);
-	}else{
-	  gtk_grid_attach(grid,
-			  GTK_WIDGET(ags_vst3_browser_combo_box_controls_new()),
-			  1, y,
-			  1, 1);
-	}
+	flags |= AGS_PORT_EDITOR_IS_INPUT;
       }
       
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	flags |= AGS_PORT_EDITOR_IS_BOOLEAN;
+      }else{
+	flags |= AGS_PORT_EDITOR_IS_ADJUSTMENT;
+      }
+      
+      ags_port_editor_set_flags(port_editor,
+				flags);
+      
+      ags_vst3_browser_add_port_editor(vst3_browser,
+					 port_editor,
+					 0, y,
+					 1, 1);
+      
+      gtk_widget_show((GtkWidget *) port_editor);
+            
       y++;
       
       plugin_port = plugin_port->next;
     }
 
     g_list_free(start_plugin_port);
-    
-    gtk_widget_show((GtkWidget *) grid);
   }else{
-    /* update ui - empty */
-    //TODO:JK: implement me
-
-    grid = vst3_browser->port_grid;
-    
-    /* update ui - no ports */
-    child =
-      start_child = gtk_container_get_children(GTK_CONTAINER(grid));
-    
-    while(child != NULL){
-      gtk_widget_destroy(GTK_WIDGET(child->data));
-
-      child = child->next;
-    }
-
-    g_list_free(start_child);
+    ags_vst3_browser_clear(vst3_browser);
   }
-
-  g_list_free(start_list);
 }

@@ -132,6 +132,15 @@ void
 ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 {
   GtkLabel *label;
+  GtkTreeViewColumn *filename_column;
+  GtkTreeViewColumn *effect_column;
+  GtkScrolledWindow *scrolled_window;
+
+  GtkCellRenderer *filename_renderer;
+  GtkCellRenderer *effect_renderer;
+
+  GtkListStore *filename_list_store;
+  GtkListStore *effect_list_store;
 
   AgsLv2Manager *lv2_manager;
 
@@ -146,6 +155,9 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(lv2_browser),
 				 GTK_ORIENTATION_VERTICAL);
 
+  gtk_box_set_spacing(lv2_browser,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   lv2_browser->connectable_flags = 0;
   
   /* plugin */
@@ -155,19 +167,40 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		 (GtkWidget *) lv2_browser->plugin);
 
   /* filename */
-  str = g_strconcat(i18n("Filename"),
-		    ": ",
-		    NULL);  
-
-  label = (GtkLabel *) gtk_label_new(str);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
   gtk_box_append(lv2_browser->plugin,
-		 (GtkWidget *) label);
+		 (GtkWidget *) scrolled_window);
 
-  lv2_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_append(lv2_browser->plugin,
-		 (GtkWidget *) lv2_browser->filename);
+  lv2_browser->filename_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(lv2_browser->filename_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) lv2_browser->filename_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) lv2_browser->filename_tree_view,
+			      AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST);
 
-  g_free(str);
+  filename_renderer = gtk_cell_renderer_text_new();
+
+  filename_column = gtk_tree_view_column_new_with_attributes(i18n("filename"),
+							     filename_renderer,
+							     "text", 0,
+							     NULL);
+  gtk_tree_view_append_column(lv2_browser->filename_tree_view,
+			      filename_column);
+  
+  filename_list_store = gtk_list_store_new(1,
+					   G_TYPE_STRING);
+
+  gtk_tree_view_set_model(lv2_browser->filename_tree_view,
+			  GTK_TREE_MODEL(filename_list_store));  
 
   lv2_browser->path = NULL;
 
@@ -200,10 +233,16 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
        (filename_strv == NULL ||
 	!g_strv_contains(filename_strv,
 			 filename))){
+      GtkTreeIter tree_iter;
+
       guint length;
       
-      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename),
-				     filename);
+      gtk_list_store_append(filename_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(filename_list_store, &tree_iter,
+			 0, filename,
+			 -1);
 
       if(filename_strv == NULL){
 	length = 0;
@@ -226,19 +265,40 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   g_free(filename_strv);
 
   /* effect */
-  str = g_strconcat(i18n("Effect"),
-		    ": ",
-		    NULL);  
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_append(lv2_browser->plugin,
+		 (GtkWidget *) scrolled_window);
+
+  lv2_browser->effect_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(lv2_browser->effect_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) lv2_browser->effect_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) lv2_browser->effect_tree_view,
+			      AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST);
+
+  effect_renderer = gtk_cell_renderer_text_new();
+
+  effect_column = gtk_tree_view_column_new_with_attributes(i18n("effect"),
+							   effect_renderer,
+							   "text", 0,
+							   NULL);
+  gtk_tree_view_append_column(lv2_browser->effect_tree_view,
+			      effect_column);
   
-  label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_append(lv2_browser->plugin,
-		 (GtkWidget *) label);
+  effect_list_store = gtk_list_store_new(1,
+					 G_TYPE_STRING);
 
-  g_free(str);
-
-  lv2_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_append(lv2_browser->plugin,
-		 (GtkWidget *) lv2_browser->effect);
+  gtk_tree_view_set_model(lv2_browser->effect_tree_view,
+			  GTK_TREE_MODEL(effect_list_store));  
 
   /* description */
   lv2_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -315,11 +375,11 @@ ags_lv2_browser_connect(AgsConnectable *connectable)
   }
 
   lv2_browser->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-  
-  g_signal_connect_after(G_OBJECT(lv2_browser->filename), "changed",
+
+  g_signal_connect_after(G_OBJECT(lv2_browser->filename_tree_view), "row-activated",
 			 G_CALLBACK(ags_lv2_browser_plugin_filename_callback), lv2_browser);
 
-  g_signal_connect_after(G_OBJECT(lv2_browser->effect), "changed",
+  g_signal_connect_after(G_OBJECT(lv2_browser->effect_tree_view), "row-activated",
 			 G_CALLBACK(ags_lv2_browser_plugin_uri_callback), lv2_browser);
 }
 
@@ -335,15 +395,15 @@ ags_lv2_browser_disconnect(AgsConnectable *connectable)
   }
 
   lv2_browser->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-  
-  g_object_disconnect(G_OBJECT(lv2_browser->filename),
-		      "any_signal::changed",
+
+  g_object_disconnect(G_OBJECT(lv2_browser->filename_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_lv2_browser_plugin_filename_callback),
 		      lv2_browser,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(lv2_browser->effect),
-		      "any_signal::changed",
+  g_object_disconnect(G_OBJECT(lv2_browser->effect_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_lv2_browser_plugin_uri_callback),
 		      lv2_browser,
 		      NULL);
@@ -366,10 +426,21 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 {
   AgsLv2Browser *lv2_browser;
 
+  GtkTreeModel *model;
+
+  GtkTreeIter tree_iter;
+
   lv2_browser = AGS_LV2_BROWSER(applicable);
 
-  gtk_combo_box_set_active((GtkComboBox *) lv2_browser->filename,
-			   0);
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(lv2_browser->filename_tree_view)));
+
+  if(gtk_tree_model_get_iter_first(model, &tree_iter)){
+    gtk_tree_view_set_cursor(GTK_TREE_VIEW(lv2_browser->filename_tree_view),
+			     gtk_tree_model_get_path(model,
+						     &tree_iter),
+			     NULL,
+			     FALSE);
+  }
 }
 
 /**
@@ -385,11 +456,36 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 {
+  GtkListStore *filename_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
+  
+  GtkTreeIter iter;
+
+  gchar *filename;
+  
   if(!AGS_IS_LV2_BROWSER(lv2_browser)){
     return(NULL);
   }
+
+  filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(lv2_browser->filename_tree_view));
+
+  gtk_tree_view_get_cursor(lv2_browser->filename_tree_view,
+			   &path,
+			   NULL);
   
-  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename)));
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path);
+
+  gtk_tree_path_free(path);
+
+  filename = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		     &iter,
+		     0, &filename,
+		     -1);
+  
+  return(filename);
 }
 
 /**
@@ -405,11 +501,36 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 gchar*
 ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 {
+  GtkListStore *effect_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
+  
+  GtkTreeIter iter;
+
+  gchar *effect;
+  
   if(!AGS_IS_LV2_BROWSER(lv2_browser)){
     return(NULL);
   }
 
-  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lv2_browser->effect)));
+  effect_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(lv2_browser->effect_tree_view));
+
+  gtk_tree_view_get_cursor(lv2_browser->effect_tree_view,
+			   &path,
+			   NULL);
+  
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path);
+
+  gtk_tree_path_free(path);
+
+  effect = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
+		     &iter,
+		     0, &effect,
+		     -1);
+  
+  return(effect);
 }
 
 /**

@@ -33,9 +33,13 @@
 
 G_BEGIN_DECLS
 
-void ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+void ags_lv2_browser_plugin_filename_callback(GtkTreeView *tree_view,
+					      GtkTreePath *path,
+					      GtkTreeViewColumn *column,
 					      AgsLv2Browser *lv2_browser);
-void ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
+void ags_lv2_browser_plugin_uri_callback(GtkTreeView *tree_view,
+					 GtkTreePath *path,
+					 GtkTreeViewColumn *column,
 					 AgsLv2Browser *lv2_browser);
 
 G_END_DECLS

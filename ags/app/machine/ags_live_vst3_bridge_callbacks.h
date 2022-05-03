@@ -33,7 +33,8 @@
 
 G_BEGIN_DECLS
 
-void ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *live_vst3_bridge);
+void ags_live_vst3_bridge_show_vst3_ui_callback(GAction *action, GVariant *parameter,
+						AgsLiveVst3Bridge *live_vst3_bridge);
 
 void ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst3Bridge *live_vst3_bridge);
 

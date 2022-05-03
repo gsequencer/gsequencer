@@ -214,8 +214,26 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 
   AgsMachineCounterManager *machine_counter_manager;
   AgsMachineCounter *machine_counter;
+
+  GMenuItem *item;
+
+  GSimpleActionGroup *action_group;
+  GSimpleAction *action;
   
   gchar *machine_name;
+
+  action_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) vst3_bridge,
+				 "vst3_bridge",
+				 action_group);
+
+  /* show VST3 UI */
+  action = g_simple_action_new("show_vst3_ui",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_vst3_bridge_show_vst3_ui_callback), vst3_bridge);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
 
   machine_counter_manager = ags_machine_counter_manager_get_instance();
 
@@ -277,13 +295,24 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   vst3_bridge->effect_index = 0;
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) vst3_bridge),
-		    (GtkWidget *) vbox);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+  gtk_widget_set_valign((GtkWidget *) vbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) vbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
+			 FALSE);
+
+  gtk_frame_set_child(AGS_MACHINE(vst3_bridge)->frame,
+		      (GtkWidget *) vbox);  
 
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -321,13 +350,9 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 		 (GtkWidget *) vst3_bridge->program);
 
   /* effect bridge */
-  AGS_MACHINE(vst3_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  AGS_MACHINE(vst3_bridge)->bridge = ags_effect_bridge_new(audio);
   gtk_box_append(vbox,
-		 (GtkWidget *) AGS_MACHINE(vst3_bridge)->bridge);
-  
-  grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_append((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge),
-		 (GtkWidget *) grid);
+		 (GtkWidget *) AGS_MACHINE(vst3_bridge)->bridge);  
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 												      AGS_TYPE_INPUT);
@@ -341,7 +366,7 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   gtk_widget_set_halign(AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach(AGS_MACHINE(vst3_bridge)->bridge,
 		  AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input,
 		  0, 0,
 		  1, 1);
@@ -354,7 +379,15 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   vst3_bridge->iplug_view = NULL;
 
   /* vst3 menu */
-  //TODO:JK: implement me
+  vst3_bridge->vst3_menu = (GMenu *) g_menu_new();
+  g_menu_append_submenu(AGS_MACHINE(vst3_bridge)->context_menu,
+			"VST3",
+			vst3_bridge->vst3_menu);
+
+  item = g_menu_item_new(i18n("show VST3 UI"),
+			 "vst3_bridge.show_vst3_ui");
+  g_menu_append_item(vst3_bridge->vst3_menu,
+		     item);
   
   vst3_bridge->block_control = g_hash_table_new_full(g_direct_hash,
 						     g_direct_equal,
@@ -508,10 +541,9 @@ ags_vst3_bridge_connect(AgsConnectable *connectable)
   AgsBulkMember *bulk_member;
   GtkWidget *control;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
-
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -522,25 +554,16 @@ ags_vst3_bridge_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(vst3_bridge->program), "changed",
 			 G_CALLBACK(ags_vst3_bridge_program_changed_callback), vst3_bridge);
 
-  /* menu */
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) vst3_bridge->vst3_menu);
-
-  g_signal_connect(G_OBJECT(list->data), "activate",
-		   G_CALLBACK(ags_vst3_bridge_show_gui_callback), vst3_bridge);
-
-  g_list_free(list_start);
-
   /* bulk member */
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge);
-  
+
   list =
-    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->grid);
+    start_list = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   while(list != NULL){
     bulk_member = list->data;
 
-    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+    control = ags_bulk_member_get_widget(bulk_member);
 
     if(bulk_member->widget_type == AGS_TYPE_DIAL){
       g_signal_connect_after(GTK_WIDGET(control), "value-changed",
@@ -565,7 +588,7 @@ ags_vst3_bridge_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -573,7 +596,7 @@ ags_vst3_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsVst3Bridge *vst3_bridge;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -1166,6 +1189,8 @@ ags_vst3_bridge_load(AgsVst3Bridge *vst3_bridge)
 void
 ags_vst3_bridge_reload_port(AgsVst3Bridge *vst3_bridge)
 {
+  AgsEffectBridge *effect_bridge;
+
   AgsVst3Plugin *vst3_plugin;
   AgsPluginPort *plugin_port;
 
@@ -1184,7 +1209,9 @@ ags_vst3_bridge_reload_port(AgsVst3Bridge *vst3_bridge)
 
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
 
-  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input)->grid);
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge);
+
+  start_bulk_member = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   parameter_count = ags_vst_iedit_controller_get_parameter_count(vst3_bridge->iedit_controller);
 

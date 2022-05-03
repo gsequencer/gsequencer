@@ -428,7 +428,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   /**/
   live_lv2_bridge->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						 0);
+						 AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_frame_set_child(AGS_MACHINE(live_lv2_bridge)->frame,
 		      (GtkWidget *) live_lv2_bridge->vbox);
 
@@ -437,7 +437,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
 		  (GtkWidget *) hbox,
 		  0, 0,
@@ -461,7 +461,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   
   /* preset */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
 		  (GtkWidget *) hbox,
 		  0, 1,

@@ -32,13 +32,18 @@
 #include <ags/i18n.h>
 
 void
-ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+ags_lv2_browser_plugin_filename_callback(GtkTreeView *tree_view,
+					 GtkTreePath *path,
+					 GtkTreeViewColumn *column,
 					 AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *filename_combo, *effect_combo;
+  GtkListStore *filename_list_store;
+  GtkListStore *effect_list_store;
 
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
+
+  GtkTreeIter iter;
 
   GList *start_list, *list;
   
@@ -46,18 +51,23 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   
   GRecMutex *lv2_manager_mutex;
 
-  filename_combo = GTK_COMBO_BOX_TEXT(lv2_browser->filename);
-  effect_combo = GTK_COMBO_BOX_TEXT(lv2_browser->effect);
+  filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(lv2_browser->filename_tree_view));
+  effect_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(lv2_browser->effect_tree_view));
 
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model((GtkComboBox *) effect_combo)));
-
-  if(gtk_combo_box_get_active(filename_combo) == -1){
+  gtk_list_store_clear(effect_list_store);
+  
+  if(!gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path)){
     return;
   }
 
-  lv2_manager = ags_lv2_manager_get_instance();
+  filename = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		     &iter,
+		     0, &filename,
+		     -1);
 
-  filename = gtk_combo_box_text_get_active_text(filename_combo);
+  lv2_manager = ags_lv2_manager_get_instance();
 
   if(filename != NULL){
     AgsTurtle *manifest;
@@ -133,7 +143,7 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   g_rec_mutex_unlock(lv2_manager_mutex);
 
-  while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename_combo))) != NULL){
+  while((list = ags_base_plugin_find_filename(list, filename)) != NULL){
     gchar *effect;
 
     lv2_plugin = list->data;
@@ -144,8 +154,14 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 		 NULL);
     
     if(effect != NULL){
-      gtk_combo_box_text_append_text(effect_combo,
-				     effect);
+      GtkTreeIter tree_iter;
+
+      gtk_list_store_append(effect_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(effect_list_store, &tree_iter,
+			 0, effect,
+			 -1);
     }
 
     g_free(effect);
@@ -154,24 +170,26 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
     list = list->next;
   }
   
-  gtk_combo_box_set_active((GtkComboBox *) effect_combo,
-  			   -1);
-
   g_list_free_full(start_list,
 		   g_object_unref);
 }
 
 void
-ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
+ags_lv2_browser_plugin_uri_callback(GtkTreeView *tree_view,
+				    GtkTreePath *path,
+				    GtkTreeViewColumn *column,
 				    AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *filename, *effect;
-
   AgsLv2Plugin *lv2_plugin;
 
+  AgsTurtle *manifest;
+  AgsTurtleManager *turtle_manager;
+    
   GList *start_port_editor, *port_editor;
 
-  gchar *lv2_filename, *lv2_effect;
+  gchar *filename, *effect;
+  gchar *lv2_path;
+  gchar *manifest_filename;
   gchar *str;
 
   guint y;
@@ -180,84 +198,73 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   GRecMutex *plugin_port_mutex;
 
   /* retrieve filename and effect */
-  filename = (GtkComboBoxText *) lv2_browser->filename;
-  effect = (GtkComboBoxText *) lv2_browser->effect;
+  filename = ags_lv2_browser_get_plugin_filename(lv2_browser);
+  effect = ags_lv2_browser_get_plugin_effect(lv2_browser);
 
-  if(gtk_combo_box_get_active(effect) == -1){
+  if(filename == NULL ||
+     effect == NULL){
     ags_lv2_browser_clear(lv2_browser);
     
     return;
   }
 
   /* update description */
-  lv2_filename = gtk_combo_box_text_get_active_text(filename);
-  lv2_effect = gtk_combo_box_text_get_active_text(effect);
-  
-  if(lv2_filename != NULL &&
-     lv2_effect != NULL){
-    AgsTurtle *manifest;
-    AgsTurtleManager *turtle_manager;
+  turtle_manager = ags_turtle_manager_get_instance();
     
-    gchar *path;
-    gchar *manifest_filename;
+  lv2_path = g_path_get_dirname(filename);
 
-    turtle_manager = ags_turtle_manager_get_instance();
-    
-    path = g_path_get_dirname(lv2_filename);
+  manifest_filename = g_strdup_printf("%s%c%s",
+				      lv2_path,
+				      G_DIR_SEPARATOR,
+				      "manifest.ttl");
 
-    manifest_filename = g_strdup_printf("%s%c%s",
-					path,
-					G_DIR_SEPARATOR,
-					"manifest.ttl");
+  manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						   manifest_filename);
 
-    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
-						     manifest_filename);
-
-    if(manifest == NULL){
-      AgsLv2TurtleParser *lv2_turtle_parser;
+  if(manifest == NULL){
+    AgsLv2TurtleParser *lv2_turtle_parser;
 	
-      AgsTurtle **turtle;
+    AgsTurtle **turtle;
 
-      guint n_turtle;
+    guint n_turtle;
 
-      if(!g_file_test(manifest_filename,
-		      G_FILE_TEST_EXISTS)){
-	return;
-      }
-
-      g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-      manifest = ags_turtle_new(manifest_filename);
-      ags_turtle_load(manifest,
-		      NULL);
-      ags_turtle_manager_add(turtle_manager,
-			     (GObject *) manifest);
-
-      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-      n_turtle = 1;
-      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-      turtle[0] = manifest;
-      turtle[1] = NULL;
-	
-      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				  turtle, n_turtle);
-    
-      g_object_run_dispose((GObject *) lv2_turtle_parser);
-      g_object_unref(lv2_turtle_parser);
-	
-      g_object_unref(manifest);
-	
-      free(turtle);
+    if(!g_file_test(manifest_filename,
+		    G_FILE_TEST_EXISTS)){
+      return;
     }
+
+    g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+    manifest = ags_turtle_new(manifest_filename);
+    ags_turtle_load(manifest,
+		    NULL);
+    ags_turtle_manager_add(turtle_manager,
+			   (GObject *) manifest);
+
+    lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+    n_turtle = 1;
+    turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+    turtle[0] = manifest;
+    turtle[1] = NULL;
+	
+    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				turtle, n_turtle);
     
-    g_free(manifest_filename);
+    g_object_run_dispose((GObject *) lv2_turtle_parser);
+    g_object_unref(lv2_turtle_parser);
+	
+    g_object_unref(manifest);
+	
+    free(turtle);
   }
+    
+  g_free(manifest_filename);
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       lv2_filename,
-					       lv2_effect);
+					       filename,
+					       effect);
 
   if(lv2_plugin != NULL){
     GList *start_plugin_port, *plugin_port;

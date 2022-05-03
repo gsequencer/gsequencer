@@ -44,7 +44,7 @@ void ags_port_editor_reset(AgsApplicable *applicable);
  * @include: ags/app/ags_port_editor.h
  *
  * #AgsPortEditor is a composite widget to modify ports. A port editor 
- * should be packed by a #AgsLineEditor.
+ * should be packed by plugin browser implementation.
  */
 
 static gpointer ags_port_editor_parent_class = NULL;
@@ -135,6 +135,11 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   GtkTreeIter iter;
 
   gchar *str;
+
+  gtk_grid_set_column_spacing(port_editor,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(port_editor,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
   port_editor->flags = 0;
   port_editor->connectable_flags = 0;
@@ -144,6 +149,10 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 			i18n("Port name"));
   
   label = gtk_label_new(str);
+  
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  
   gtk_grid_attach(port_editor,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -152,6 +161,8 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   g_free(str);
   
   port_editor->port_name = gtk_label_new(NULL);  
+  gtk_widget_set_halign((GtkWidget *) port_editor->port_name,
+			GTK_ALIGN_START);
   gtk_grid_attach(port_editor,
 		  (GtkWidget *) port_editor->port_name,
 		  1, 0,
@@ -162,6 +173,8 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 			i18n("Port control"));
   
   label = gtk_label_new(str);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(port_editor,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -187,6 +200,9 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   gtk_combo_box_set_model(port_editor->port_control,
 			  GTK_TREE_MODEL(list_store));
   
+  gtk_widget_set_halign((GtkWidget *) port_editor->port_control,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(port_editor,
 		  (GtkWidget *) port_editor->port_control,
 		  1, 1,
@@ -197,6 +213,8 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 			i18n("Port control orientation"));
 
   label = gtk_label_new(str);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(port_editor,
 		  (GtkWidget *) label,
 		  0, 2,
@@ -217,7 +235,7 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 
   list_store = gtk_list_store_new(2,
 				  G_TYPE_STRING,
-				  G_TYPE_ENUM);
+				  G_TYPE_UINT);
 
   /* vertical */
   gtk_list_store_append(list_store,
@@ -242,6 +260,9 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 			  GTK_TREE_MODEL(list_store));
 
   /* attach */
+  gtk_widget_set_halign((GtkWidget *) port_editor->port_control_orientation,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(port_editor,
 		  (GtkWidget *) port_editor->port_control_orientation,
 		  1, 2,
@@ -348,6 +369,9 @@ ags_port_editor_fill_controls(AgsPortEditor *port_editor)
 			 0, AGS_PORT_EDITOR_CONTROL_LED,
 			 1, AGS_TYPE_LED,
 			 -1);
+
+      gtk_combo_box_set_active(port_editor->port_control,
+			       0);
     }else{
       /* indicator */
       gtk_list_store_append(list_store,
@@ -358,6 +382,9 @@ ags_port_editor_fill_controls(AgsPortEditor *port_editor)
 			 0, AGS_PORT_EDITOR_CONTROL_INDICATOR,
 			 1, AGS_TYPE_INDICATOR,
 			 -1);
+
+      gtk_combo_box_set_active(port_editor->port_control,
+			       0);
     }
   }else{
     if((AGS_PORT_EDITOR_IS_BOOLEAN & (port_editor->flags)) != 0){
@@ -380,6 +407,9 @@ ags_port_editor_fill_controls(AgsPortEditor *port_editor)
 			 0, AGS_PORT_EDITOR_CONTROL_CHECK_BUTTON,
 			 1, GTK_TYPE_CHECK_BUTTON,
 			 -1);
+
+      gtk_combo_box_set_active(port_editor->port_control,
+			       1);
     }else{
       /* spin button */
       gtk_list_store_append(list_store,
@@ -410,6 +440,9 @@ ags_port_editor_fill_controls(AgsPortEditor *port_editor)
 			 0, AGS_PORT_EDITOR_CONTROL_DIAL,
 			 1, AGS_TYPE_DIAL,
 			 -1);
+
+      gtk_combo_box_set_active(port_editor->port_control,
+			       2);
     }
   }
 }

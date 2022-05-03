@@ -41,6 +41,12 @@ G_BEGIN_DECLS
 #define AGS_IS_LV2_BROWSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_BROWSER))
 #define AGS_LV2_BROWSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_BROWSER, AgsLv2BrowserClass))
 
+#define AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST (256)
+#define AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST (512)
+
+#define AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST (256)
+#define AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST (512)
+
 typedef struct _AgsLv2Browser AgsLv2Browser;
 typedef struct _AgsLv2BrowserClass AgsLv2BrowserClass;
 
@@ -54,8 +60,8 @@ struct _AgsLv2Browser
 
   GtkBox *plugin;
 
-  GtkComboBox *filename;
-  GtkComboBox *effect;
+  GtkTreeView *filename_tree_view;
+  GtkTreeView *effect_tree_view;
 
   GtkBox *description;
 

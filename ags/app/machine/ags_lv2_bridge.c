@@ -410,7 +410,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   /**/
   lv2_bridge->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					    0);
+					    AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) lv2_bridge->vbox,
 			GTK_ALIGN_START);
@@ -430,7 +430,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(lv2_bridge->vbox,
 		 (GtkWidget *) hbox);
   
@@ -452,7 +452,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   /* preset */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(lv2_bridge->vbox,
 		 (GtkWidget *) hbox);
   

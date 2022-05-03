@@ -349,18 +349,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
     break;      
   }
 		
-  if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-    gtk_combo_box_set_active(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->filename,
-			     -1);
-  }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-    gtk_combo_box_set_active(AGS_LV2_BROWSER(plugin_browser->active_browser)->filename,
-			     -1);
-#if defined(AGS_WITH_VST3)
-  }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
-    gtk_combo_box_set_active(AGS_VST3_BROWSER(plugin_browser->active_browser)->filename,
-			     -1);
-#endif
-  }
+  ags_applicable_reset(AGS_APPLICABLE(plugin_browser->active_browser));
 
   gtk_combo_box_set_active(plugin_browser->plugin_type,
 			   -1);

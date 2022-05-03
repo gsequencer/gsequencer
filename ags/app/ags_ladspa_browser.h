@@ -40,26 +40,28 @@ G_BEGIN_DECLS
 #define AGS_IS_LADSPA_BROWSER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LADSPA_BROWSER))
 #define AGS_IS_LADSPA_BROWSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LADSPA_BROWSER))
 #define AGS_LADSPA_BROWSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LADSPA_BROWSER, AgsLadspaBrowserClass))
+  
+#define AGS_LADSPA_BROWSER_FILENAME_HEIGHT_REQUEST (256)
+#define AGS_LADSPA_BROWSER_FILENAME_WIDTH_REQUEST (512)
+
+#define AGS_LADSPA_BROWSER_EFFECT_HEIGHT_REQUEST (256)
+#define AGS_LADSPA_BROWSER_EFFECT_WIDTH_REQUEST (512)
 
 typedef struct _AgsLadspaBrowser AgsLadspaBrowser;
 typedef struct _AgsLadspaBrowserClass AgsLadspaBrowserClass;
-
-typedef enum{
-  AGS_LADSPA_BROWSER_CONNECTED   = 1,
-}AgsLadspaBrowserFlags;
 
 struct _AgsLadspaBrowser
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
   
   gchar *path;
 
   GtkBox *plugin;
   
-  GtkComboBox *filename;
-  GtkComboBox *effect;
+  GtkTreeView *filename_tree_view;
+  GtkTreeView *effect_tree_view;
   
   GtkBox *description;
 

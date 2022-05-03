@@ -33,9 +33,13 @@
 
 G_BEGIN_DECLS
 
-void ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+void ags_ladspa_browser_plugin_filename_callback(GtkTreeView *tree_view,
+						 GtkTreePath *path,
+						 GtkTreeViewColumn *column,
 						 AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
+void ags_ladspa_browser_plugin_effect_callback(GtkTreeView *tree_view,
+					       GtkTreePath *path,
+					       GtkTreeViewColumn *column,
 					       AgsLadspaBrowser *ladspa_browser);
 
 G_END_DECLS
