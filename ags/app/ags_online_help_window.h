@@ -27,6 +27,10 @@
 
 #include <ags/ags_api_config.h>
 
+#if defined(AGS_WITH_WEBKIT)
+#include <webkit2/webkit2.h>
+#endif
+
 #if defined(AGS_WITH_POPPLER)
 #include <poppler.h>
 #endif
@@ -61,8 +65,14 @@ struct _AgsOnlineHelpWindow
 
   GtkEntry *location;
 
-  gchar *start_filename;
+  gchar *start_filename;  
   
+#if defined(AGS_WITH_WEBKIT)
+  WebKitWebView *web_view;
+#else
+  gpointer web_view;
+#endif
+
   gint max_width;
   gint max_height;
 

@@ -616,9 +616,6 @@ ags_bulk_member_set_property(GObject *gobject,
       if(widget_type != G_TYPE_NONE){
 	new_child = (GtkWidget *) g_object_new(widget_type,
 					       NULL);
-
-	ags_bulk_member_set_widget(bulk_member,
-				   new_child);
       }
       
       /* scale factor */
@@ -725,6 +722,9 @@ ags_bulk_member_set_property(GObject *gobject,
 	gtk_check_button_set_active((GtkToggleButton *) new_child,
 				    active);
       }			
+
+      ags_bulk_member_set_widget(bulk_member,
+				 new_child);
     }
     break;
   case PROP_WIDGET_ORIENTATION:
@@ -783,8 +783,8 @@ ags_bulk_member_set_property(GObject *gobject,
       }
       
       bulk_member->widget_label = g_strdup(label);
-      ags_bulk_member_set_widget(bulk_member,
-				 label);
+      gtk_frame_set_label(bulk_member,
+			  label);
     }
     break;
   case PROP_PLAY_CONTAINER:

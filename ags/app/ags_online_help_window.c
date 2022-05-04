@@ -109,6 +109,7 @@ ags_online_help_window_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 {
+
 #if defined(AGS_WITH_POPPLER)
   GtkBox *vbox;
   GtkGrid *grid;
