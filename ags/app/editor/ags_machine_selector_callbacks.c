@@ -26,15 +26,115 @@
 #include <ags/app/editor/ags_machine_radio_button.h>
 #include <ags/app/editor/ags_notation_edit.h>
 
-void ags_machine_selector_selection_response(GtkWidget *machine_selection,
-					     gint response,
-					     AgsMachineSelector *machine_selector);
-
 void
-ags_machine_selector_add_index_callback(GAction *action, GVariant *parameter,
-					AgsMachineSelector *machine_selector)
+ags_machine_selector_add_by_uuid_callback(GAction *action, GVariant *parameter,
+					  AgsMachineSelector *machine_selector)
 {
-  ags_machine_selector_add_index(machine_selector);
+  AgsWindow *window;
+  AgsMachine *selected_machine;
+  
+  GVariant *variant;
+
+  GList *start_machine, *machine;
+  GList *start_list, *list;
+
+  gchar *action_name;
+  gchar *uid;
+    
+  gint position;
+  gboolean success;  
+
+  window = gtk_widget_get_ancestor(machine_selector,
+				   AGS_TYPE_WINDOW);
+
+  machine = 
+    start_machine = ags_window_get_machine(window);
+
+  action_name = NULL;
+  uid = NULL;
+  
+  g_object_get(G_SIMPLE_ACTION(action),
+	       "name", &action_name,
+	       NULL);
+
+  if(action_name != NULL &&
+     strlen(action_name) > 4){
+    uid = action_name + 4;
+  }
+  
+  selected_machine = NULL;
+
+  while(machine != NULL){
+    if(!g_strcmp0(AGS_MACHINE(machine->data)->uid,
+		  uid)){
+      selected_machine = machine->data;
+      
+      break;
+    }
+    
+    machine = machine->next;
+  }
+
+  if(selected_machine == NULL){
+    g_list_free(start_machine);
+    
+    return;
+  }
+
+  position = 0;
+
+  machine = start_machine;
+  start_list = ags_machine_selector_get_machine_radio_button(machine_selector);
+
+  while(machine != NULL){
+    if(machine->data == selected_machine){
+      break;
+    }
+    
+    list = start_list;
+
+    success = FALSE;
+
+    while(!success && list != NULL){
+      if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == selected_machine){
+	break;
+      }
+      
+      if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine->data){
+	success = TRUE;
+      } 
+      
+      list = list->next;
+    }
+    
+    if(success){
+      position++;
+    }
+    
+    machine = machine->next;
+  }
+
+  variant = g_action_get_state(action);
+
+  if(g_variant_get_boolean(variant)){
+    g_object_set(action,
+		 "state", g_variant_new_boolean(FALSE),
+		 NULL);
+
+    ags_machine_selector_remove_index(machine_selector,
+				      position);
+  }else{
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
+    ags_machine_selector_insert_index(machine_selector,
+				      position,
+				      selected_machine);
+  }
+  
+  g_list_free(start_machine);    
+  g_list_free(start_list);    
 }
 
 void
@@ -70,84 +170,6 @@ ags_machine_selector_remove_index_callback(GAction *action, GVariant *parameter,
 				    nth);
 
   g_list_free(start_list);
-}
-
-void
-ags_machine_selector_link_index_callback(GAction *action, GVariant *parameter,
-					 AgsMachineSelector *machine_selector)
-{
-  AgsWindow *window;
-  AgsMachine *machine;
-  AgsMachineSelection *machine_selection;
-  AgsMachineRadioButton *machine_radio_button;
-
-  window = gtk_widget_get_ancestor(machine_selector,
-				   AGS_TYPE_WINDOW);
-
-  machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
-  machine_selector->machine_selection = (GtkDialog *) machine_selection;
-
-  if((AGS_MACHINE_SELECTOR_EDIT_NOTATION & (machine_selector->edit)) != 0){
-    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_NOTATION);
-  }
-
-  if((AGS_MACHINE_SELECTOR_EDIT_AUTOMATION & (machine_selector->edit)) != 0){
-    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_AUTOMATION);
-  }
-
-  if((AGS_MACHINE_SELECTOR_EDIT_WAVE & (machine_selector->edit)) != 0){
-    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_WAVE);
-  }
-  
-  ags_machine_selection_load_defaults(machine_selection);
-
-  g_signal_connect(G_OBJECT(machine_selection), "response",
-		   G_CALLBACK(ags_machine_selector_selection_response), machine_selector);
-
-  gtk_widget_show((GtkWidget *) machine_selection);
-}
-
-void
-ags_machine_selector_selection_response(GtkWidget *machine_selection,
-					gint response,
-					AgsMachineSelector *machine_selector)
-{
-  AgsMachine *machine;
-
-  GList *start_list, *list;
-
-  if(response == GTK_RESPONSE_ACCEPT){
-    /* retrieve machine */
-    machine = NULL;
-
-    if(response == GTK_RESPONSE_ACCEPT){
-      list =
-	start_list = ags_machine_selection_get_radio_button(machine_selection);
-
-      while(list != NULL){
-	if(GTK_IS_CHECK_BUTTON(list->data) &&
-	   gtk_check_button_get_active(GTK_CHECK_BUTTON(list->data))){
-	  machine = g_object_get_data(list->data,
-				      AGS_MACHINE_SELECTION_INDEX);
-	  
-	  break;
-	}
-	
-	list = list->next;
-      }
-
-      g_list_free(start_list);
-    }
-
-    /* link index  */
-    ags_machine_selector_link_index(machine_selector,
-				    machine);
-  }
-
-  /* unset machine selection and destroy */
-  machine_selector->machine_selection = NULL;
-
-  gtk_window_destroy(machine_selection);
 }
 
 void

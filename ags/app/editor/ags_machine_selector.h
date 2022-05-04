@@ -68,9 +68,12 @@ struct _AgsMachineSelector
   
   GtkLabel *label;
 
+  GSimpleActionGroup *action_group;
+
   GtkMenuButton *menu_button;
 
   GMenu *popup;
+  GMenu *add_index_menu;
   GMenu *shift_piano;
 
   GSimpleAction *reverse_mapping_action;
@@ -98,20 +101,26 @@ void ags_machine_selector_set_flags(AgsMachineSelector *machine_selector,
 void ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
 				    guint flags);
 
+void ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selector,
+					       gint position,
+					       AgsMachine *machine);
+void ags_machine_selector_popup_remove_machine(AgsMachineSelector *machine_selector,
+					       gint position);
+
 GList* ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_selector);
-void ags_machine_selector_add_machine_radio_button(AgsMachineSelector *machine_selector,
-						   AgsMachineRadioButton *machine_radio_button);
+void ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_selector,
+						      gint position,
+						      AgsMachineRadioButton *machine_radio_button);
 void ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_selector,
 						      AgsMachineRadioButton *machine_radio_button);
 
 void ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit);
 
-void ags_machine_selector_add_index(AgsMachineSelector *machine_selector);
+void ags_machine_selector_insert_index(AgsMachineSelector *machine_selector,
+				       gint position,
+				       AgsMachine *machine);
 void ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 				       guint nth);
-
-void ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
-				     AgsMachine *machine);
 
 void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
 

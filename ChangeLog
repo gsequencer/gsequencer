@@ -6,6 +6,7 @@ ags (4.0.0)
 	* migrated libags_gui.so to Gtk-4
 	* implemented AgsCartesian properties
 	* implemented ags_common_pitch_util.[ch]
+	* refactored AgsMachineSelector
 	* improved ags_fast_pitch_util.[ch]
 	* improved ags_hq_pitch_util.[ch]
 	* improved ags_sf2_synth_util.[ch]

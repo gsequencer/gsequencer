@@ -25,6 +25,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_composite_editor.h>
+#include <ags/app/ags_window.h>
 
 #include <ags/app/editor/ags_machine_radio_button.h>
 
@@ -167,39 +168,14 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 {
   GtkBox *hbox;
 
-  GMenuItem *item;
-
   GSimpleActionGroup *action_group;
   GSimpleAction *action;
 
-  action_group = g_simple_action_group_new();
+  action_group =
+    machine_selector->action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) machine_selector,
 				 "machine_selector",
 				 action_group);
-
-  /* add index */
-  action = g_simple_action_new("add_index",
-			       NULL);
-  g_signal_connect(action, "activate",
-		   G_CALLBACK(ags_machine_selector_add_index_callback), machine_selector);
-  g_action_map_add_action(G_ACTION_MAP(action_group),
-			  G_ACTION(action));
-
-  /* remove index */
-  action = g_simple_action_new("remove_index",
-			       NULL);
-  g_signal_connect(action, "activate",
-		   G_CALLBACK(ags_machine_selector_remove_index_callback), machine_selector);
-  g_action_map_add_action(G_ACTION_MAP(action_group),
-			  G_ACTION(action));
-
-  /* link index */
-  action = g_simple_action_new("link_index",
-			       NULL);
-  g_signal_connect(action, "activate",
-		   G_CALLBACK(ags_machine_selector_link_index_callback), machine_selector);
-  g_action_map_add_action(G_ACTION_MAP(action_group),
-			  G_ACTION(action));
 
   /* reverse mapping */
   action =
@@ -341,21 +317,11 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   gtk_menu_button_set_menu_model(machine_selector->menu_button,
 				 machine_selector->popup);
   
-  item = g_menu_item_new(i18n("add index"),
-			 "machine_selector.add_index");
-  g_menu_append_item(machine_selector->popup,
-		     item);
+  machine_selector->add_index_menu = (GMenu *) g_menu_new();
+  g_menu_append_submenu(machine_selector->popup,
+			i18n("add machine"),
+			machine_selector->add_index_menu);
   
-  item = g_menu_item_new(i18n("remove index"),
-			 "machine_selector.remove_index");
-  g_menu_append_item(machine_selector->popup,
-		     item);
-  
-  item = g_menu_item_new(i18n("link index"),
-			 "machine_selector.link_index");
-  g_menu_append_item(machine_selector->popup,
-		     item);
-
   machine_selector->shift_piano = NULL;
 
   machine_selector->machine_radio_button = NULL;
@@ -545,7 +511,7 @@ ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
   if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (flags)) != 0 &&
      (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     g_menu_remove(machine_selector->popup,
-		  3);
+		  1);
     
     machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING);
   }
@@ -554,16 +520,69 @@ ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
      (AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
     if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) == 0){
       g_menu_remove(machine_selector->popup,
-		    3);
+		    1);
     }else{
       g_menu_remove(machine_selector->popup,
-		    4);
+		    2);
     }
     
     machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
   }
   
   machine_selector->flags &= (~flags);
+}
+
+void
+ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selector,
+					  gint position,
+					  AgsMachine *machine)
+{
+  GSimpleAction *action;
+  GMenuItem *item;
+
+  gchar *action_name;
+  gchar *detailed_action;
+  gchar *label;
+  
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  action_name = g_strdup_printf("add-%s",
+				machine->uid);
+  
+  action = g_simple_action_new_stateful(action_name,
+					NULL,
+					g_variant_new_boolean(FALSE));
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_machine_selector_add_by_uuid_callback), machine_selector);
+  g_action_map_add_action(G_ACTION_MAP(machine_selector->action_group),
+			  G_ACTION(action));
+  
+  label = g_strdup_printf("%s - %s",
+			  G_OBJECT_TYPE_NAME(machine),
+			  machine->machine_name);
+
+  detailed_action = g_strdup_printf("machine_selector.%s",
+				    action_name);
+  
+  item = g_menu_item_new(label,
+			 detailed_action);
+  g_menu_insert_item(machine_selector->add_index_menu,
+		     position,
+		     item);
+
+  g_free(action_name);
+  g_free(detailed_action);
+}
+
+void
+ags_machine_selector_popup_remove_machine(AgsMachineSelector *machine_selector,
+					  gint position)
+{
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+
+  g_menu_remove(machine_selector->add_index_menu,
+		position);
 }
 
 /**
@@ -594,35 +613,54 @@ ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_select
  * Since: 4.0.0
  */
 void
-ags_machine_selector_add_machine_radio_button(AgsMachineSelector *machine_selector,
-					      AgsMachineRadioButton *machine_radio_button)
+ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_selector,
+						 gint position,
+						 AgsMachineRadioButton *machine_radio_button)
 {
   g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
   g_return_if_fail(AGS_IS_MACHINE_RADIO_BUTTON(machine_radio_button));
 
   if(g_list_find(machine_selector->machine_radio_button, machine_radio_button) == NULL){
+    AgsMachineRadioButton *sibling;
     AgsMachineRadioButton *group;
     
     GList *start_list, *list;
 
     list =
       start_list = ags_machine_selector_get_machine_radio_button(machine_selector);
-    
-    machine_selector->machine_radio_button = g_list_prepend(machine_selector->machine_radio_button,
-							    machine_radio_button);
-  
-    if(list != NULL){
-      group = AGS_MACHINE_RADIO_BUTTON(list->data);
 
-      g_object_set(machine_radio_button,
-		   "group", group,
-		   NULL);
+    sibling = NULL;
+
+    if(position > 0){
+      sibling = g_list_nth_data(start_list,
+				position - 1);
+    }else{
+      sibling = gtk_widget_get_parent(machine_selector->menu_button);
     }
     
-    gtk_box_append((GtkBox *) machine_selector,
-		   machine_radio_button);
+    start_list = g_list_insert(start_list,
+			       machine_radio_button,
+			       position);
 
-    g_list_free(start_list);
+    list = start_list;
+    
+    while(list != NULL){
+      group = AGS_MACHINE_RADIO_BUTTON(start_list->data);
+
+      g_object_set(list->data,
+		   "group", group,
+		   NULL);
+      
+      list = list->next;
+    }
+
+    g_list_free(machine_selector->machine_radio_button);
+
+    machine_selector->machine_radio_button = g_list_reverse(start_list);
+
+    gtk_box_insert_child_after((GtkBox *) machine_selector,
+			       machine_radio_button,
+			       sibling);
   }
 }
 
@@ -662,22 +700,30 @@ ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit)
 }
 
 void
-ags_machine_selector_add_index(AgsMachineSelector *machine_selector)
+ags_machine_selector_insert_index(AgsMachineSelector *machine_selector,
+				  gint position,
+				  AgsMachine *machine)
 {
   AgsMachineRadioButton *machine_radio_button;
 
+  GList *start_list, *list;
+
   g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
 
-  machine_radio_button = (AgsMachineRadioButton *) g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
-								NULL);
+  machine_radio_button = ags_machine_radio_button_new();
   
-  ags_machine_selector_add_machine_radio_button(machine_selector,
-						machine_radio_button);
+  ags_machine_selector_insert_machine_radio_button(machine_selector,
+						   position,
+						   machine_radio_button);
   
   g_signal_connect_after(G_OBJECT(machine_radio_button), "toggled",
 			 G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
 
   gtk_widget_show((GtkWidget *) machine_radio_button);
+
+  g_object_set(machine_radio_button,
+	       "machine", machine,
+	       NULL);
 }
 
 void
@@ -712,53 +758,6 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
   /*  */
   ags_machine_selector_remove_machine_radio_button(machine_selector,
 						   machine_radio_button);
-
-  g_object_run_dispose(machine_radio_button);
-  g_object_unref(machine_radio_button);
-}
-
-void
-ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
-				AgsMachine *machine)
-{
-  AgsMachineRadioButton *machine_radio_button, *existing_radio_button;
-
-  GList *start_list, *list;
-
-  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
-
-  /* retrieve selected */    
-  machine_radio_button = NULL;
-  existing_radio_button = NULL;
-
-  list =
-    start_list = ags_machine_selector_get_machine_radio_button(machine_selector);
-
-  while(list != NULL){
-    if(GTK_IS_CHECK_BUTTON(list->data)){
-      if(gtk_check_button_get_active(GTK_CHECK_BUTTON(list->data))){
-	machine_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
-      }
-
-      if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-	existing_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
-      }
-    }
-      
-    list = list->next;
-  }
-
-  /* decide if link to editor or change index */
-  if(existing_radio_button != NULL){
-    g_signal_emit_by_name(existing_radio_button,
-			  "toggled");
-  }else{
-    g_object_set(G_OBJECT(machine_radio_button),
-		 "machine", machine,
-		 NULL);
-  }
-
-  g_list_free(start_list);
 }
 
 void

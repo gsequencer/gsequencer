@@ -122,6 +122,7 @@ struct _AgsMachine
   guint export_flags;
   guint import_flags;
 
+  gchar *uid;
   gchar *machine_name;
 
   gchar *version;

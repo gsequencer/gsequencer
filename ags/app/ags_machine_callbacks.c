@@ -196,13 +196,105 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
 			     AgsMachine *machine)
 {
   AgsWindow *window;
+  AgsMachineSelector *machine_selector;
 
   GList *start_list, *list;
+  GList *start_machine_radio_button, *machine_radio_button;    
   GList *prev;
   
+  gint position;
+  gint popup_position;    
+  gboolean has_machine_radio_button;
+
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
 
+  machine_selector = window->composite_editor->machine_selector;
+
+  /* position in composite editor */
+  has_machine_radio_button = FALSE;
+  
+  list = 
+    start_list = ags_window_get_machine(window);
+
+  popup_position = g_list_index(start_list,
+				machine);
+
+  start_machine_radio_button = ags_machine_selector_get_machine_radio_button(machine_selector);
+
+  position = 0;
+  
+  while(list != NULL){
+    gboolean success;
+
+    if(list->data == machine){
+      has_machine_radio_button = TRUE;
+
+      break;
+    }
+
+    success = FALSE;
+
+    machine_radio_button = start_machine_radio_button;
+
+    while(!success && machine_radio_button != NULL){
+      if(AGS_MACHINE_RADIO_BUTTON(machine_radio_button->data)->machine == list->data){
+	success = TRUE;
+      }
+      
+      machine_radio_button = machine_radio_button->next;
+    }
+    
+    if(success){
+      position++;
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+  g_list_free(start_machine_radio_button);    
+
+  /* composite editor */
+  start_list = ags_window_get_machine(window);
+  
+  if(start_list != NULL &&
+     start_list->data != machine){
+    GAction *action;
+    
+    gchar *action_name;
+    
+    ags_machine_selector_popup_remove_machine(machine_selector,
+					      popup_position);
+    
+    ags_machine_selector_popup_insert_machine(machine_selector,
+					      popup_position - 1,
+					      machine);    
+
+    action_name = g_strdup_printf("add-%s",
+				  machine->uid);
+    
+    action = g_action_map_lookup_action(machine_selector->action_group,
+					action_name);
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
+    g_free(action_name);
+  }
+
+  g_list_free(start_list);
+  
+  if(has_machine_radio_button && position > 0){
+    ags_machine_selector_remove_index(machine_selector,
+				      position);    
+
+    ags_machine_selector_insert_index(machine_selector,
+				      position - 1,
+				      machine);
+  }
+
+  /* window */
   start_list = ags_window_get_machine(window);
 
   list = g_list_find(start_list,
@@ -247,13 +339,105 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
 			       AgsMachine *machine)
 {
   AgsWindow *window;
-
+  AgsMachineSelector *machine_selector;
+  
   GList *start_list, *list;
+  GList *start_machine_radio_button, *machine_radio_button;
   GList *next_next;
+
+  gint position;
+  gint popup_position;
+  gboolean has_machine_radio_button;
   
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
 
+  machine_selector = window->composite_editor->machine_selector;
+
+  /* position composite editor */
+  has_machine_radio_button = FALSE;
+  
+  list = 
+    start_list = ags_window_get_machine(window);
+
+  popup_position = g_list_index(start_list,
+				machine);
+
+  start_machine_radio_button = ags_machine_selector_get_machine_radio_button(machine_selector);
+
+  position = 0;
+  
+  while(list != NULL){
+    gboolean success;
+
+    if(list->data == machine){
+      has_machine_radio_button = TRUE;
+      
+      break;
+    }
+
+    success = FALSE;
+
+    machine_radio_button = start_machine_radio_button;
+
+    while(!success && machine_radio_button != NULL){
+      if(AGS_MACHINE_RADIO_BUTTON(machine_radio_button->data)->machine == list->data){
+	success = TRUE;
+      }
+      
+      machine_radio_button = machine_radio_button->next;
+    }
+    
+    if(success){
+      position++;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+  g_list_free(start_machine_radio_button);    
+  
+  /* composite editor */
+  start_list = ags_window_get_machine(window);
+  
+  if(start_list != NULL &&
+     g_list_last(start_list)->data != machine){
+    GAction *action;
+    
+    gchar *action_name;
+    
+    ags_machine_selector_popup_remove_machine(machine_selector,
+					      popup_position);
+    
+    ags_machine_selector_popup_insert_machine(machine_selector,
+					      popup_position + 1,
+					      machine);
+
+    action_name = g_strdup_printf("add-%s",
+				  machine->uid);
+    
+    action = g_action_map_lookup_action(machine_selector->action_group,
+					action_name);
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
+    g_free(action_name);
+  }
+
+  g_list_free(start_list);
+  
+  if(has_machine_radio_button && position + 1 < g_list_length(machine_selector->machine_radio_button)){
+    ags_machine_selector_remove_index(machine_selector,
+				      position);    
+
+    ags_machine_selector_insert_index(machine_selector,
+				      position + 1,
+				      machine);
+  }
+
+  /* window */
   start_list = ags_window_get_machine(window);
 
   list = g_list_find(start_list,
@@ -311,6 +495,8 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
   AgsRemoveAudio *remove_audio;
 
   GList *start_list, *list;
+
+  gint popup_position;
   
   application_context = ags_application_context_get_instance();
 
@@ -320,9 +506,19 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
   ags_machine_set_run(machine,
 		      FALSE);
 
+  start_list = ags_window_get_machine(window);
+
+  popup_position = g_list_index(start_list,
+				machine);
+  
+  ags_machine_selector_popup_remove_machine(window->composite_editor->machine_selector,
+					    popup_position);
+
+  g_list_free(start_list);
+
   list = 
     start_list = ags_machine_selector_get_machine_radio_button(window->composite_editor->machine_selector);
-
+    
   while(list != NULL){
     if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
       ags_machine_selector_remove_machine_radio_button(window->composite_editor->machine_selector,

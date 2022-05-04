@@ -606,6 +606,7 @@ ags_machine_init(AgsMachine *machine)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
   
+  machine->uid = g_uuid_string_random();
   machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;

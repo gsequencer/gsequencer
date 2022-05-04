@@ -33,12 +33,8 @@
 
 G_BEGIN_DECLS
 
-void ags_machine_selector_add_index_callback(GAction *action, GVariant *parameter,
-					     AgsMachineSelector *machine_selector);
-void ags_machine_selector_remove_index_callback(GAction *action, GVariant *parameter,
-						AgsMachineSelector *machine_selector);
-void ags_machine_selector_link_index_callback(GAction *action, GVariant *parameter,
-					      AgsMachineSelector *machine_selector);
+void ags_machine_selector_add_by_uuid_callback(GAction *action, GVariant *parameter,
+					       AgsMachineSelector *machine_selector);
 
 void ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *machine_selector);
 

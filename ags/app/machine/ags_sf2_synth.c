@@ -21,6 +21,8 @@
 #include <ags/app/machine/ags_sf2_synth_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/i18n.h>
 
@@ -139,6 +141,8 @@ ags_sf2_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkBox *sf2_hbox;
   GtkBox *sf2_file_hbox;
   GtkBox *sf2_preset_hbox;
@@ -168,8 +172,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   AgsMachineCounterManager *machine_counter_manager;
   AgsMachineCounter *machine_counter;
   
+  AgsApplicationContext *application_context;
+  
   gchar *machine_name;
 
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
   machine_counter_manager = ags_machine_counter_manager_get_instance();
 
   machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
@@ -189,6 +200,17 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 	       NULL);
 
   g_free(machine_name);
+  
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    sf2_synth);
     
   audio = AGS_MACHINE(sf2_synth)->audio;
 

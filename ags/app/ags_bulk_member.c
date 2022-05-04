@@ -661,14 +661,14 @@ ags_bulk_member_set_property(GObject *gobject,
 
 	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
 	  g_object_set(new_child,
-		       "segment-width", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH),
-		       "segment-height", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		       NULL);
 	}else{
 	  g_object_set(new_child,
-		       "segment-width", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
-		       "segment-height", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
 		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		       NULL);
 	}
@@ -765,6 +765,18 @@ ags_bulk_member_set_property(GObject *gobject,
       }else if(AGS_IS_INDICATOR(child)){
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
 				       widget_orientation);
+
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  g_object_set(child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       NULL);
+	}else{
+	  g_object_set(child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       NULL);
+	}
       }
     }
     break;

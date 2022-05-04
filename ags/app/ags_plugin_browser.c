@@ -147,7 +147,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		       i18n("Plugin browser"));
 
   gtk_window_set_default_size((GtkWindow *) plugin_browser,
-			      1030, 800);
+			      1024, 800);
 
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();

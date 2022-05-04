@@ -156,6 +156,18 @@ ags_ladspa_browser_plugin_effect_callback(GtkTreeView *tree_view,
   g_object_get(ladspa_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
+
+  port_editor =
+    start_port_editor = ags_ladspa_browser_get_port_editor(ladspa_browser);
+    
+  while(port_editor != NULL){
+    ags_ladspa_browser_remove_port_editor(ladspa_browser,
+					  port_editor->data);
+      
+    port_editor = port_editor->next;
+  }
+
+  g_list_free(start_port_editor);
   
   /* update description */
   if(plugin_so){
@@ -199,21 +211,6 @@ ags_ladspa_browser_plugin_effect_callback(GtkTreeView *tree_view,
 
     /* update ui - port information */
     port_count = plugin_descriptor->PortCount;
-
-    port_editor =
-      start_port_editor = ags_ladspa_browser_get_port_editor(ladspa_browser);
-    
-    while(port_editor != NULL){
-      ags_ladspa_browser_remove_port_editor(ladspa_browser,
-					    port_editor->data);
-      
-      g_object_run_dispose(port_editor->data);
-      g_object_unref(port_editor->data);
-
-      port_editor = port_editor->next;
-    }
-
-    g_list_free(start_port_editor);
 
     for(i = 0, y = 0; i < port_count; i++){
       AgsPortEditor *port_editor;

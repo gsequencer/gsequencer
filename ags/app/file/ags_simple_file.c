@@ -9383,6 +9383,7 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 	while(property != NULL){
   	  if(!g_strcmp0(((GParameter *) property->data)->name,
 			"machine")){
+	    AgsWindow *window;
 	    AgsMachine *machine;
 
 	    GList *file_id_ref;
@@ -9391,24 +9392,24 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 
 	    if(str != NULL){
-	      ags_machine_selector_add_index(composite_editor->machine_selector);
-
 	      file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
 								 str);
 
 	      if(file_id_ref != NULL &&
 		 file_id_ref->data != NULL &&
 		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
-		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
-	    
-		start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
-		list = g_list_last(start_list);
+		window = gtk_widget_get_ancestor(composite_editor,
+						 AGS_TYPE_WINDOW);
 
-		g_signal_emit_by_name(list->data,
-				      "clicked");
-		ags_machine_selector_link_index(composite_editor->machine_selector,
-						machine);
-	      
+		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
+		
+		start_list = ags_window_get_machine(window);		
+	    
+		ags_machine_selector_insert_index(composite_editor->machine_selector,
+						  g_list_index(start_list,
+							       machine),
+						  machine);
+
 		g_list_free(start_list);
 	      }
 	    }
@@ -9421,14 +9422,6 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 	  property = property->next;
 	}
 
-	start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
-
-	if(list != NULL){
-	  g_signal_emit_by_name(list->data,
-				"clicked");
-	}
-	
-	g_list_free(start_list);
 	g_list_free_full(start_property,
 			 g_free);
       }

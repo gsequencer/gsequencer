@@ -22,6 +22,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_bulk_member.h>
@@ -204,13 +205,23 @@ ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+
   AgsAudio *audio;
 
   AgsMachineCounterManager *machine_counter_manager;
   AgsMachineCounter *machine_counter;
+
+  AgsApplicationContext *application_context;
   
   gchar *machine_name;
 
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
   machine_counter_manager = ags_machine_counter_manager_get_instance();
 
   machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
@@ -230,6 +241,17 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 	       NULL);
 
   g_free(machine_name);
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    ladspa_bridge);
 
   audio = AGS_MACHINE(ladspa_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));

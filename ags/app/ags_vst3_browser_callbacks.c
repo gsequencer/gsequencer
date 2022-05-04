@@ -145,6 +145,18 @@ ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
 						  filename,
 						  effect);
 
+  port_editor =
+    start_port_editor = ags_vst3_browser_get_port_editor(vst3_browser);
+    
+  while(port_editor != NULL){
+    ags_vst3_browser_remove_port_editor(vst3_browser,
+					port_editor->data);
+
+    port_editor = port_editor->next;
+  }
+
+  g_list_free(start_port_editor);
+
   if(vst3_plugin != NULL){
     GList *start_plugin_port, *plugin_port;
     
@@ -155,21 +167,6 @@ ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
     //TODO:JK: implement me
     
     /* update ui - port information */
-    port_editor =
-      start_port_editor = ags_vst3_browser_get_port_editor(vst3_browser);
-    
-    while(port_editor != NULL){
-      ags_vst3_browser_remove_port_editor(vst3_browser,
-					    port_editor->data);
-      
-      g_object_run_dispose(port_editor->data);
-      g_object_unref(port_editor->data);
-
-      port_editor = port_editor->next;
-    }
-
-    g_list_free(start_port_editor);
-
     start_plugin_port = g_list_copy(AGS_BASE_PLUGIN(vst3_plugin)->plugin_port);
 
     g_rec_mutex_unlock(base_plugin_mutex);
