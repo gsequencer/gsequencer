@@ -31,6 +31,16 @@ void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
 {
+  if(effect_bulk->plugin_browser == NULL){
+    effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new(gtk_widget_get_ancestor(effect_bulk,
+											       AGS_TYPE_WINDOW));
+
+    ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+
+    g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response",
+		     G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
+  }
+  
   gtk_widget_show((GtkWidget *) effect_bulk->plugin_browser);
 }
 

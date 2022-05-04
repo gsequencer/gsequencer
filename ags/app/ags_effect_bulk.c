@@ -455,7 +455,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   gtk_box_append((GtkBox *) hbox,
 		 (GtkWidget *) effect_bulk->bulk_member_grid);
 
-  effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) effect_bulk);
+  effect_bulk->plugin_browser = NULL;
 
   effect_bulk->queued_refresh = NULL;
 }
@@ -619,6 +619,14 @@ ags_effect_bulk_finalize(GObject *gobject)
 		   (GDestroyNotify) ags_effect_bulk_plugin_free);
 
   /* destroy plugin browser */
+  ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+
+  g_object_disconnect(G_OBJECT(effect_bulk->plugin_browser),
+		      "any_signal::response",
+		      G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback),
+		      effect_bulk,
+		      NULL);
+
   gtk_window_destroy(GTK_WINDOW(effect_bulk->plugin_browser));
 
   /* remove of the queued drawing hash */
@@ -666,11 +674,6 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(effect_bulk->remove), "clicked",
 		   G_CALLBACK(ags_effect_bulk_remove_callback), effect_bulk);
-
-  ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
-
-  g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response",
-		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
 
   list =
     start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
@@ -723,14 +726,6 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(effect_bulk->remove),
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_effect_bulk_remove_callback),
-		      effect_bulk,
-		      NULL);
-
-  ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
-
-  g_object_disconnect(G_OBJECT(effect_bulk->plugin_browser),
-		      "any_signal::response",
-		      G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback),
 		      effect_bulk,
 		      NULL);
 
@@ -1116,6 +1111,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 				     k + 1,
 				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
@@ -1556,6 +1552,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 				     k + 1,
 				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
@@ -2079,6 +2076,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 				     port_count);
       
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,

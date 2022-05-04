@@ -160,10 +160,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_ulong("widget-type",
+  param_spec = g_param_spec_gtype("widget-type",
 				  i18n_pspec("widget type of bulk member"),
 				  i18n_pspec("The widget type this bulk member packs"),
-				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -503,9 +502,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   
   bulk_member->widget_type = AGS_TYPE_DIAL;
   bulk_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
-  dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
-				  NULL);
+  dial = (AgsDial *) ags_dial_new();
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -517,8 +514,8 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 	       "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 	       NULL);
 
-  gtk_frame_set_child((GtkFrame *) bulk_member,
-		      (GtkWidget *) dial);
+  ags_bulk_member_set_widget(bulk_member,
+			     (GtkWidget *) dial);
 
   bulk_member->widget_label = NULL;
 
@@ -572,7 +569,7 @@ ags_bulk_member_set_property(GObject *gobject,
       gdouble current_value;
       gboolean active;
 
-      widget_type = g_value_get_ulong(value);
+      widget_type = g_value_get_gtype(value);
 
       if(widget_type == bulk_member->widget_type){
 	return;
@@ -609,10 +606,8 @@ ags_bulk_member_set_property(GObject *gobject,
       }
 
       /* destroy old */
-      if(child != NULL){
-	g_object_run_dispose(child);
-	g_object_unref(child); 
-      }
+      ags_bulk_member_set_widget(bulk_member,
+				 NULL);
 
       bulk_member->widget_type = widget_type;
 
@@ -621,6 +616,9 @@ ags_bulk_member_set_property(GObject *gobject,
       if(widget_type != G_TYPE_NONE){
 	new_child = (GtkWidget *) g_object_new(widget_type,
 					       NULL);
+
+	ags_bulk_member_set_widget(bulk_member,
+				   new_child);
       }
       
       /* scale factor */
@@ -723,18 +721,10 @@ ags_bulk_member_set_property(GObject *gobject,
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
-      }else{
-	if(!(GTK_IS_LABEL(new_child) ||
-	     AGS_IS_INDICATOR(new_child) ||
-	     AGS_IS_LED(new_child))){
-	  g_warning("ags_bulk_member_set_property() - unknown child type %s", g_type_name(widget_type));
-	}
-      }
-
-      /* add */
-      gtk_frame_set_child((GtkFrame *) bulk_member,
-			  new_child);
-			
+      }else if(GTK_IS_CHECK_BUTTON(new_child)){
+	gtk_check_button_set_active((GtkToggleButton *) new_child,
+				    active);
+      }			
     }
     break;
   case PROP_WIDGET_ORIENTATION:
@@ -747,6 +737,10 @@ ags_bulk_member_set_property(GObject *gobject,
       gdouble gui_scale_factor;
 
       widget_orientation = g_value_get_uint(value);
+
+      if(widget_orientation == bulk_member->widget_orientation){
+	return;
+      }
       
       bulk_member->widget_orientation = widget_orientation;
 
@@ -771,8 +765,6 @@ ags_bulk_member_set_property(GObject *gobject,
       }else if(AGS_IS_INDICATOR(child)){
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
 				       widget_orientation);
-
-	//FIXME:JK: make indicator orientable
       }
     }
     break;
@@ -791,7 +783,8 @@ ags_bulk_member_set_property(GObject *gobject,
       }
       
       bulk_member->widget_label = g_strdup(label);
-      ags_bulk_member_set_label(bulk_member, label);
+      ags_bulk_member_set_widget(bulk_member,
+				 label);
     }
     break;
   case PROP_PLAY_CONTAINER:
@@ -1086,7 +1079,7 @@ ags_bulk_member_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_WIDGET_TYPE:
     {
-      g_value_set_ulong(value, bulk_member->widget_type);
+      g_value_set_gtype(value, bulk_member->widget_type);
     }
     break;
   case PROP_WIDGET_ORIENTATION:
@@ -1337,6 +1330,33 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
   }
 }
 
+/**
+ * ags_bulk_member_set_widget:
+ * @bulk_member: the #AgsBulkMember
+ * @widget: the #GtkWidget
+ *
+ * Set @widget of @bulk_member.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_bulk_member_set_widget(AgsBulkMember *bulk_member,
+			   GtkWidget *widget)
+{
+  gtk_frame_set_child((GtkFrame *) bulk_member,
+		      widget);
+}
+
+/**
+ * ags_bulk_member_get_widget:
+ * @bulk_member: the #AgsBulkMember
+ *
+ * Get widget of @bulk_member.
+ *
+ * Returns: the #GtkWidget
+ * 
+ * Since: 4.0.0
+ */
 GtkWidget*
 ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
 {

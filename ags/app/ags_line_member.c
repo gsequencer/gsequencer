@@ -162,10 +162,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_ulong("widget-type",
+  param_spec = g_param_spec_gtype("widget-type",
 				  i18n_pspec("widget type of line member"),
 				  i18n_pspec("The widget type this line member packs"),
-				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -516,9 +515,7 @@ ags_line_member_init(AgsLineMember *line_member)
   
   line_member->widget_type = AGS_TYPE_DIAL;
   line_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
-  dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
-				  NULL);
+  dial = (AgsDial *) ags_dial_new();
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -590,7 +587,7 @@ ags_line_member_set_property(GObject *gobject,
       gboolean active;
       
       //TODO:JK: verify me
-      widget_type = g_value_get_ulong(value);
+      widget_type = g_value_get_gtype(value);
 
       if(widget_type == line_member->widget_type){
 	return;
@@ -627,10 +624,8 @@ ags_line_member_set_property(GObject *gobject,
       }
       
       /* destroy old */
-      if(child != NULL){
-	ags_line_member_set_widget(line_member,
-				   NULL);
-      }
+      ags_line_member_set_widget(line_member,
+				 NULL);
 
       line_member->widget_type = widget_type;
 
@@ -751,6 +746,10 @@ ags_line_member_set_property(GObject *gobject,
 
       widget_orientation = g_value_get_uint(value);
       
+      if(widget_orientation == line_member->widget_orientation){
+	return;
+      }
+
       line_member->widget_orientation = widget_orientation;
 
       application_context = ags_application_context_get_instance();
@@ -774,8 +773,6 @@ ags_line_member_set_property(GObject *gobject,
       }else if(AGS_IS_INDICATOR(child)){
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
 				       widget_orientation);
-
-	//FIXME:JK: make indicator orientable
       }
     }
     break;
@@ -1082,7 +1079,7 @@ ags_line_member_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_WIDGET_TYPE:
     {
-      g_value_set_ulong(value, line_member->widget_type);
+      g_value_set_gtype(value, line_member->widget_type);
     }
     break;
   case PROP_WIDGET_ORIENTATION:
@@ -1349,6 +1346,15 @@ ags_line_member_disconnect(AgsConnectable *connectable)
   }
 }
 
+/**
+ * ags_line_member_set_widget:
+ * @line_member: the #AgsLineMember
+ * @widget: the #GtkWidget
+ *
+ * Set @widget of @line_member.
+ * 
+ * Since: 4.0.0
+ */
 void
 ags_line_member_set_widget(AgsLineMember *line_member,
 			   GtkWidget *widget)
@@ -1357,6 +1363,16 @@ ags_line_member_set_widget(AgsLineMember *line_member,
 		      widget);
 }
 
+/**
+ * ags_line_member_get_widget:
+ * @line_member: the #AgsLineMember
+ *
+ * Get widget of @line_member.
+ *
+ * Returns: the #GtkWidget
+ * 
+ * Since: 4.0.0
+ */
 GtkWidget*
 ags_line_member_get_widget(AgsLineMember *line_member)
 {

@@ -4130,6 +4130,11 @@ ags_gsequencer_application_context_register_types(AgsApplicationContext *applica
     
   /* gui */
   //TODO:JK: move me
+  gtk_scale_get_type();
+  gtk_toggle_button_get_type();
+  gtk_check_button_get_type();
+  gtk_spin_button_get_type();
+  
   ags_led_get_type();
   ags_indicator_get_type();
   ags_dial_get_type();
