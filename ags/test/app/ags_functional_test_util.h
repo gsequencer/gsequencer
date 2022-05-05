@@ -105,7 +105,7 @@ gboolean ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 gboolean ags_functional_test_util_button_click(GtkButton *button);
 gboolean ags_functional_test_util_toggle_button_click(GtkToggleButton *toggle_button);
 gboolean ags_functional_test_util_check_button_click(GtkCheckButton *check_button);
-gboolean ags_functional_test_util_menu_button_click(GtkButton *button);
+gboolean ags_functional_test_util_menu_button_click(GtkMenuButton *button);
 
 /* generic dialog */
 gboolean ags_functional_test_util_dialog_apply(GtkDialog *dialog);
@@ -209,11 +209,6 @@ gboolean ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
 							  guint y);
 gboolean ags_functional_test_util_notation_edit_select_region(guint x0, guint x1,
 							      guint y0, guint y1);
-
-/* automation edit */
-gboolean ags_functional_test_util_automation_edit_audio_click();
-gboolean ags_functional_test_util_automation_edit_output_click();
-gboolean ags_functional_test_util_automation_edit_input_click();
 
 /* automation area */
 gboolean ags_functional_test_util_automation_edit_delete_point(guint nth_index,

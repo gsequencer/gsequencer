@@ -660,7 +660,7 @@ ags_functional_test_util_button_click(GtkButton *button)
 }
 
 gboolean
-ags_functional_test_util_button_click(GtkToggleButton *button)
+ags_functional_test_util_toggle_button_click(GtkToggleButton *button)
 {
   GtkWidget *widget;
 
@@ -714,7 +714,61 @@ ags_functional_test_util_button_click(GtkToggleButton *button)
 }
 
 gboolean
-ags_functional_test_util_menu_button_click(GtkCheckButton *button)
+ags_functional_test_util_check_button_click(GtkCheckButton *button)
+{
+  GtkWidget *widget;
+
+  GtkAllocation allocation;
+  
+  gint x, y;
+  gint origin_x, origin_y;
+  gint position_x, position_y;
+  gboolean is_realized;
+  
+  if(button == NULL ||
+     !GTK_IS_BUTTON(button)){
+    return(FALSE);
+  }
+  
+  widget = button;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &widget);
+  
+  /*  */
+  ags_test_enter();
+
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
+
+  ags_test_leave();
+
+#if 0
+  //TODO:JK: implement me
+#else
+  /* emit signal */
+  ags_test_enter();
+
+  g_signal_emit_by_name(widget,
+			"toggled");
+  
+  ags_test_leave();
+#endif
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_menu_button_click(GtkMenuButton *button)
 {
   GtkWidget *widget;
 
@@ -763,7 +817,7 @@ ags_functional_test_util_menu_button_click(GtkCheckButton *button)
   ags_test_enter();
 
   g_signal_emit_by_name(widget,
-			"toggled");
+			"activate");
   
   ags_test_leave();
 #endif
@@ -956,9 +1010,9 @@ ags_functional_test_util_open()
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  succcess = ags_functional_test_util_header_bar_menu_button_click(window->app_button,
-								   path_strv,
-								   "app.open");
+  success = ags_functional_test_util_header_bar_menu_button_click(window->app_button,
+								  path_strv,
+								  "app.open");
 
   ags_test_leave();
 
@@ -1119,6 +1173,7 @@ ags_functional_test_util_export_add()
   ags_test_leave();
   
   success = ags_functional_test_util_button_click(add_button);
+
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_test_util_default_timeout,
 						      &condition);
@@ -2059,6 +2114,8 @@ ags_functional_test_util_machine_menu_button_click(GtkMenuButton *menu_button,
 						   gchar **item_path,
 						   gchar *action)
 {
+  gboolean success;
+  
   success = TRUE;
 
   if(!g_strcmp0(action, "machine.move_up")){
@@ -2458,6 +2515,8 @@ ags_functional_test_util_get_machine_editor_dialog_line(GtkWidget *machine_edito
 				       nth_pad);
 
   if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
+    ags_test_leave();
+    
     return(NULL);
   }
   
@@ -2466,6 +2525,8 @@ ags_functional_test_util_get_machine_editor_dialog_line(GtkWidget *machine_edito
 					nth_audio_channel);
 
   if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
+    ags_test_leave();
+    
     return(NULL);
   }
   
@@ -2540,7 +2601,7 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -2558,7 +2619,7 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
   /* click tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   gtk_notebook_set_current_page(machine_editor->notebook,
 				nth_tab);
@@ -2590,7 +2651,7 @@ ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
   /* retrieve machine */
   enable_button = NULL;
   
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -2608,41 +2669,41 @@ ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
   /* click tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      enable_button = AGS_PROPERTY_EDITOR(machine_editor->output_editor)->enabled;
+      enable_button = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing)->enabled;
     }
     break;
   case 1:
     {
-      enable_button = AGS_PROPERTY_EDITOR(machine_editor->input_editor)->enabled;
+      enable_button = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing)->enabled;
     }
     break;
   case 2:
     {
-      enable_button = AGS_PROPERTY_EDITOR(machine_editor->output_link_editor)->enabled;
+      enable_button = AGS_MACHINE_EDITOR_COLLECTION(machine_editor->output_editor_collection)->enabled;
     }
     break;
   case 3:
     {
-      enable_button = AGS_PROPERTY_EDITOR(machine_editor->input_link_editor)->enabled;
+      enable_button = AGS_MACHINE_EDITOR_COLLECTION(machine_editor->input_editor_collection)->enabled;
     }
     break;
   case 4:
     {
-      enable_button = AGS_PROPERTY_EDITOR(machine_editor->resize_editor)->enabled;
+      enable_button = AGS_RESIZE_EDITOR(machine_editor->resize_editor)->enabled;
     }
     break;
   }
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(enable_button);
+  success = ags_functional_test_util_check_button_click(enable_button);
 
   ags_functional_test_util_reaction_time_long();
 
@@ -2657,9 +2718,9 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLinkEditor *link_editor;
   
   GtkTreeModel *model;
@@ -2676,8 +2737,10 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   
   gsequencer_application_context = ags_application_context_get_instance();
 
-  /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  /* retrieve machine */
+  machine = NULL;
+  
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -2695,19 +2758,19 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   /* set link */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -2716,13 +2779,15 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
+  machine_editor_pad = NULL;
+  
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
   list = g_list_nth(list_start,
 		    pad);
 
   if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
+     AGS_IS_MACHINE_EDITOR_PAD(list->data)){
+    machine_editor_pad = list->data;
 
     g_list_free(list_start);
   }else{
@@ -2734,7 +2799,7 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   }
 
   /* expander */
-  gtk_expander_set_expanded(pad_editor->line_editor_expander,
+  gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
   
   ags_test_leave();
@@ -2744,13 +2809,15 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   /* line editor */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(pad_editor->line_editor);
+  machine_editor_line = NULL;
+  
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
   list = g_list_nth(list_start,
 		    audio_channel);
 
   if(list != NULL &&
      AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
+    machine_editor_line = list->data;
 
     g_list_free(list_start);
   }else{
@@ -2762,7 +2829,7 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   }
 
   /* link editor */
-  link_editor = line_editor->link_editor;
+  link_editor = machine_editor_line->link_editor;
 
   /* set link */
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(link_editor->combo));
@@ -2817,14 +2884,14 @@ ags_functional_test_util_machine_editor_dialog_link_open(guint nth_machine,
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_effect_add(guint nth_machine,
-							  guint pad, guint audio_channel)
+							  guint nth_pad, guint nth_audio_channel)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
   GtkDialog **effect_dialog;
   GtkButton *add_button;
@@ -2843,8 +2910,10 @@ ags_functional_test_util_machine_editor_dialog_effect_add(guint nth_machine,
   
   gsequencer_application_context = ags_application_context_get_instance();
 
-  /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  /* retrieve machine */
+  machine = NULL;
+  
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -2862,19 +2931,19 @@ ags_functional_test_util_machine_editor_dialog_effect_add(guint nth_machine,
   /* get tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = machine_editor->output_editor_listing;
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = machine_editor->output_editor_listing;
     }
     break;
   default:
@@ -2883,53 +2952,40 @@ ags_functional_test_util_machine_editor_dialog_effect_add(guint nth_machine,
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
-
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
-
+  
   /* expander */
-  gtk_expander_set_expanded(pad_editor->line_editor_expander,
+  gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
+
+  /* line editor */
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
+
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
+    ags_test_leave();
+    
+    return(FALSE);
+  }
   
   ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
-  /* line editor */
+  /* line member editor */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
-
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
-
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
-    ags_test_leave();
-
-    return(FALSE);
-  }
-
-  /* line member editor */
-  member_editor = line_editor->member_editor;
+  member_editor = machine_editor_line->line_member_editor;
   
   /* effect dialog and add button */
   effect_dialog = &(member_editor->plugin_browser);
@@ -2950,23 +3006,24 @@ ags_functional_test_util_machine_editor_dialog_effect_add(guint nth_machine,
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
-							     guint pad, guint audio_channel,
+							     guint nth_pad, guint nth_audio_channel,
 							     guint nth_effect)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
+  AgsLineMemberEditorEntry *member_editor_entry;
   GtkDialog **effect_dialog;
   GtkButton *check_button;
   GtkButton *remove_button;
   
   GtkTreeModel *model;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GtkTreeIter iter;
   GList *list_start, *list;
@@ -2981,16 +3038,13 @@ ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
 
@@ -2999,19 +3053,19 @@ ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
   /* get tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -3020,85 +3074,68 @@ ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
-
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
 
   /* expander */
-  gtk_expander_set_expanded(pad_editor->line_editor_expander,
+  gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
-  
-  ags_test_leave();
 
-  ags_functional_test_util_reaction_time_long();
-  
   /* line editor */
-  ags_test_enter();
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
 
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
-
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
 
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
   /* line member editor */
-  member_editor = line_editor->member_editor;
+  ags_test_enter();
+
+  member_editor = machine_editor_line->line_member_editor;
   
   /* effect dialog and remove button */
   effect_dialog = &(member_editor->plugin_browser);
   remove_button = member_editor->remove;
 
   /* check button */
-  container_test.container = &(member_editor->line_member);
-  
   check_button = NULL;
 
-  list_start = gtk_container_get_children(member_editor->line_member);
+  condition.start_list = &(member_editor->entry);
 
-  container_test.count = g_list_length(list_start) - 1;
+  list_start = ags_line_member_editor_get_entry(member_editor);
 
-  list = g_list_nth(list_start,
-		    nth_effect);
+  condition.length = g_list_length(list_start) - 1;
 
-  if(list != NULL){
-    GtkHBox *hbox;
+  member_editor_entry = g_list_nth_data(list_start,
+					nth_effect);
 
-    hbox = list->data;
-    list_start = gtk_container_get_children(hbox);
+  if(member_editor_entry == NULL){
+    ags_test_leave();
     
-    check_button = list_start->data;
-
-    g_list_free(list_start);
+    return(FALSE);
   }
   
   ags_test_leave();
 
   /* click check button */
-  success = ags_functional_test_util_button_click(check_button);
+  success = ags_functional_test_util_check_button_click(member_editor_entry->check_button);
 
   /* click remove */
   if(success){
@@ -3106,9 +3143,9 @@ ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
   
     success = ags_functional_test_util_button_click(remove_button);
   
-    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 							&ags_functional_test_util_default_timeout,
-							&container_test);
+							&condition);
   
     ags_functional_test_util_reaction_time_long();
   }
@@ -3118,16 +3155,17 @@ ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_effect_plugin_type(guint nth_machine,
-								  guint pad, guint audio_channel,
+								  guint nth_pad, guint nth_audio_channel,
 								  gchar *plugin_type)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
+  AgsLineMemberEditorEntry *member_editor_entry;
   AgsPluginBrowser *plugin_browser;
   
   GtkTreeModel *model;
@@ -3145,37 +3183,35 @@ ags_functional_test_util_machine_editor_dialog_effect_plugin_type(guint nth_mach
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
+  
   g_list_free(list_start);
 
   /* get tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -3185,43 +3221,36 @@ ags_functional_test_util_machine_editor_dialog_effect_plugin_type(guint nth_mach
   }
 
   /* pad editor */
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
     
   /* line editor */
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
 
+  ags_test_leave();
+
   /* line member editor */
-  member_editor = line_editor->member_editor;
+  ags_test_enter();
+
+  member_editor = machine_editor_line->line_member_editor;
+
   plugin_browser = member_editor->plugin_browser;
   
   /* set plugin type */
@@ -3239,6 +3268,13 @@ ags_functional_test_util_machine_editor_dialog_effect_plugin_type(guint nth_mach
 			     0);
 
     success = TRUE;
+  }else if(!g_ascii_strncasecmp(plugin_type,
+				"vst3",
+				5)){
+    gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
+			     2);
+
+    success = TRUE;
   }
   
   ags_test_leave();
@@ -3250,15 +3286,15 @@ ags_functional_test_util_machine_editor_dialog_effect_plugin_type(guint nth_mach
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_ladspa_filename(guint nth_machine,
-							       guint pad, guint audio_channel,
+							       guint nth_pad, guint nth_audio_channel,
 							       gchar *filename)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
   AgsPluginBrowser *plugin_browser;
   AgsLadspaBrowser *ladspa_browser;
@@ -3278,37 +3314,32 @@ ags_functional_test_util_machine_editor_dialog_ladspa_filename(guint nth_machine
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
 
   g_list_free(list_start);
 
-  /* get tab */
-  ags_test_enter();
-
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -3317,66 +3348,61 @@ ags_functional_test_util_machine_editor_dialog_ladspa_filename(guint nth_machine
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  /* pad editor */
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
-  
+    
   /* line editor */
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
+
+  ags_test_leave();
 
   /* line member editor */
-  member_editor = line_editor->member_editor;
+  ags_test_enter();
+
+  member_editor = machine_editor_line->line_member_editor;
+
   plugin_browser = member_editor->plugin_browser;
+
   ladspa_browser = plugin_browser->ladspa_browser;
   
   /* set plugin filename */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ladspa_browser->filename));
+  model = gtk_tree_view_get_model(ladspa_browser->filename_tree_view);
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
-    gint entry_text_column;
-    
-    entry_text_column = gtk_combo_box_get_entry_text_column(ladspa_browser->filename);
-    
     do{
       value = NULL;
       
       gtk_tree_model_get(model, &iter,
-			 entry_text_column, &value,
+			 0, &value,
 			 -1);
       
       if(!g_strcmp0(filename,
 		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) ladspa_browser->filename,
-				      &iter);
+	gtk_tree_view_set_cursor(ladspa_browser->filename_tree_view,
+				 gtk_tree_model_get_path(model,
+							 &iter),
+				 NULL,
+				 FALSE);
+	
 	success = TRUE;
 	
 	break;
@@ -3394,15 +3420,15 @@ ags_functional_test_util_machine_editor_dialog_ladspa_filename(guint nth_machine
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_ladspa_effect(guint nth_machine,
-							     guint pad, guint audio_channel,
+							     guint nth_pad, guint nth_audio_channel,
 							     gchar *effect)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
   AgsPluginBrowser *plugin_browser;
   AgsLadspaBrowser *ladspa_browser;
@@ -3422,37 +3448,32 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
 
   g_list_free(list_start);
 
-  /* get tab */
-  ags_test_enter();
-
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -3461,71 +3482,68 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect(guint nth_machine,
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  /* pad editor */
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
-  
+    
   /* line editor */
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
+
+  ags_test_leave();
 
   /* line member editor */
-  member_editor = line_editor->member_editor;
+  ags_test_enter();
+
+  member_editor = machine_editor_line->line_member_editor;
+
   plugin_browser = member_editor->plugin_browser;
+
   ladspa_browser = plugin_browser->ladspa_browser;
   
   /* set plugin effect */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ladspa_browser->effect));
+  model = gtk_tree_view_get_model(ladspa_browser->effect_tree_view);
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
-    gint entry_text_column;
-
-    entry_text_column = gtk_combo_box_get_entry_text_column(ladspa_browser->effect);
-    
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
-			 entry_text_column, &value,
+			 0, &value,
 			 -1);
       
       if(!g_strcmp0(effect,
 		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) ladspa_browser->effect,
-				      &iter);
+	gtk_tree_view_set_cursor(ladspa_browser->effect_tree_view,
+				 gtk_tree_model_get_path(model,
+							 &iter),
+				 NULL,
+				 FALSE);
+	
 	success = TRUE;
 	
 	break;
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
-  }      
+  }        
   
   ags_test_leave();
 
@@ -3536,15 +3554,15 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect(guint nth_machine,
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_lv2_filename(guint nth_machine,
-							    guint pad, guint audio_channel,
+							    guint nth_pad, guint nth_audio_channel,
 							    gchar *filename)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
   AgsPluginBrowser *plugin_browser;
   AgsLv2Browser *lv2_browser;
@@ -3564,37 +3582,32 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
 
   g_list_free(list_start);
 
-  /* get tab */
-  ags_test_enter();
-
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -3603,64 +3616,61 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename(guint nth_machine,
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  /* pad editor */
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
-  
+    
   /* line editor */
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
+
+  ags_test_leave();
 
   /* line member editor */
-  member_editor = line_editor->member_editor;
+  ags_test_enter();
+
+  member_editor = machine_editor_line->line_member_editor;
+
   plugin_browser = member_editor->plugin_browser;
+
   lv2_browser = plugin_browser->lv2_browser;
   
   /* set plugin filename */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_browser->filename));
+  model = gtk_tree_view_get_model(lv2_browser->filename_tree_view);
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
-    gint entry_text_column;
-
-    entry_text_column = gtk_combo_box_get_entry_text_column(lv2_browser->filename);
-
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
-			 entry_text_column, &value,
+			 0, &value,
 			 -1);
       
       if(!g_strcmp0(filename,
 		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) lv2_browser->filename,
-				      &iter);
+	gtk_tree_view_set_cursor(lv2_browser->filename_tree_view,
+				 gtk_tree_model_get_path(model,
+							 &iter),
+				 NULL,
+				 FALSE);
+	
 	success = TRUE;
 	
 	break;
@@ -3678,15 +3688,15 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename(guint nth_machine,
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_lv2_effect(guint nth_machine,
-							  guint pad, guint audio_channel,
+							  guint nth_pad, guint nth_audio_channel,
 							  gchar *effect)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsListingEditor *listing_editor;
-  AgsPadEditor *pad_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorListing *machine_editor_listing;
+  AgsMachineEditorPad *machine_editor_pad;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *member_editor;
   AgsPluginBrowser *plugin_browser;
   AgsLv2Browser *lv2_browser;
@@ -3706,37 +3716,32 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  ags_test_leave();
-  
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
-    return(FALSE);
-  }
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   g_list_free(list_start);
 
-  /* get tab */
-  ags_test_enter();
+  ags_test_leave();
+  
+  if(machine == NULL){
+    return(FALSE);
+  }
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case 0:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
     }
     break;
   case 1:
     {
-      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
     }
     break;
   default:
@@ -3745,71 +3750,72 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect(guint nth_machine,
     return(FALSE);
   }
 
-  list_start = gtk_container_get_children(listing_editor->child);
-  list = g_list_nth(list_start,
-		    pad);
+  /* pad editor */
+  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  if(list != NULL &&
-     AGS_IS_PAD_EDITOR(list->data)){
-    pad_editor = list->data;
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
+  g_list_free(list_start);
 
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
-  
+    
   /* line editor */
-  list_start = gtk_container_get_children(pad_editor->line_editor);
-  list = g_list_nth(list_start,
-		    audio_channel);
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    line_editor = list->data;
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
 
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
+  g_list_free(list_start);
 
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
+
+  ags_test_leave();
 
   /* line member editor */
-  member_editor = line_editor->member_editor;
+  ags_test_enter();
+
+  member_editor = machine_editor_line->line_member_editor;
+
   plugin_browser = member_editor->plugin_browser;
+
   lv2_browser = plugin_browser->lv2_browser;
   
   /* set plugin effect */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_browser->effect));
+  model = gtk_tree_view_get_model(lv2_browser->effect_tree_view);
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
-    gint entry_text_column;
-
-    entry_text_column = gtk_combo_box_get_entry_text_column(lv2_browser->effect);
-
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
-			 entry_text_column, &value,
+			 0, &value,
 			 -1);
       
       if(!g_strcmp0(effect,
 		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) lv2_browser->effect,
-				      &iter);
+	gtk_tree_view_set_cursor(lv2_browser->effect_tree_view,
+				 gtk_tree_model_get_path(model,
+							 &iter),
+				 NULL,
+				 FALSE);
+	
 	success = TRUE;
 	
 	break;
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
-  }      
+  }        
   
   ags_test_leave();
 
@@ -3824,7 +3830,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsPropertyCollectionEditor *property_collection_editor;
+  AgsMachineEditorCollection *machine_editor_collection;
   GtkButton *add_collection;
 
   GList *list_start, *list;
@@ -3837,37 +3843,35 @@ ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* get tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_OUTPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+      machine_editor_collection = machine_editor->output_editor_collection;
     }
     break;
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_INPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+      machine_editor_collection = machine_editor->input_editor_collection;
     }
     break;
   default:
@@ -3876,7 +3880,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
     return(FALSE);
   }
 
-  add_collection = property_collection_editor->add_collection;
+  add_collection = machine_editor_collection->add_bulk;
   
   ags_test_leave();
 
@@ -3903,8 +3907,8 @@ ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsPropertyCollectionEditor *property_collection_editor;
-  AgsLinkCollectionEditor *link_collection_editor;
+  AgsMachineEditorCollection *machine_editor_collection;
+  AgsMachineEditorBulk *machine_editor_bulk;
 
   GList *list_start, *list;
 
@@ -3922,37 +3926,35 @@ ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* get notebook tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_OUTPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+      machine_editor_collection = machine_editor->output_editor_collection;
     }
     break;
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_INPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+      machine_editor_collection = machine_editor->input_editor_collection;
     }
     break;
   default:
@@ -3962,28 +3964,24 @@ ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
   }
 
   /* get bulk editor */
-  list_start = gtk_container_get_children(property_collection_editor->child);
-  list = g_list_nth(list_start,
-		    nth_bulk);
+  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  if(list != NULL){
-    GtkTable *table;
-    
-    table = list->data;
-    g_list_free(list_start);
+  machine_editor_bulk = g_list_nth_data(list_start,
+					nth_bulk);
 
-    link_collection_editor = g_object_get_data(table,
-					       "AgsChild");
-  }else{
-    g_list_free(list_start);
+  g_list_free(list_start);
 
-    ags_test_leave();
+  ags_test_leave();
 
+  if(machine_editor_bulk == NULL){
     return(FALSE);
   }
   
   /* set link */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(link_collection_editor->link));
+  ags_test_enter();
+
+  model = gtk_combo_box_get_model(machine_editor_bulk->link);
+
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
@@ -3994,8 +3992,9 @@ ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
       
       if(!g_strcmp0(link,
 		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) link_collection_editor->link,
+	gtk_combo_box_set_active_iter(machine_editor_bulk->link,
 				      &iter);
+	
 	success = TRUE;
 	
 	break;
@@ -4019,8 +4018,8 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsPropertyCollectionEditor *property_collection_editor;
-  AgsLinkCollectionEditor *link_collection_editor;
+  AgsMachineEditorCollection *machine_editor_collection;
+  AgsMachineEditorBulk *machine_editor_bulk;
 
   GList *list_start, *list;
 
@@ -4037,37 +4036,35 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* get notebook tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_OUTPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+      machine_editor_collection = machine_editor->output_editor_collection;
     }
     break;
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_INPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+      machine_editor_collection = machine_editor->input_editor_collection;
     }
     break;
   default:
@@ -4077,27 +4074,22 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine
   }
 
   /* get bulk editor */
-  list_start = gtk_container_get_children(property_collection_editor->child);
-  list = g_list_nth(list_start,
-		    nth_bulk);
+  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  if(list != NULL){
-    GtkTable *table;
-    
-    table = list->data;
-    g_list_free(list_start);
+  machine_editor_bulk = g_list_nth_data(list_start,
+					nth_bulk);
 
-    link_collection_editor = g_object_get_data(table,
-					       "AgsChild");
-  }else{
-    g_list_free(list_start);
+  g_list_free(list_start);
 
-    ags_test_leave();
+  ags_test_leave();
 
+  if(machine_editor_bulk == NULL){
     return(FALSE);
   }
 
-  gtk_spin_button_set_value(link_collection_editor->first_line,
+  ags_test_enter();
+
+  gtk_spin_button_set_value(machine_editor_bulk->first_line,
 			    first_line);
 
   ags_test_leave();
@@ -4115,8 +4107,8 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsPropertyCollectionEditor *property_collection_editor;
-  AgsLinkCollectionEditor *link_collection_editor;
+  AgsMachineEditorCollection *machine_editor_collection;
+  AgsMachineEditorBulk *machine_editor_bulk;
 
   GList *list_start, *list;
 
@@ -4133,37 +4125,35 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* get notebook tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_OUTPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+      machine_editor_collection = machine_editor->output_editor_collection;
     }
     break;
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_INPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+      machine_editor_collection = machine_editor->input_editor_collection;
     }
     break;
   default:
@@ -4173,28 +4163,22 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
   }
 
   /* get bulk editor */
-  list_start = gtk_container_get_children(property_collection_editor->child);
-  list = g_list_nth(list_start,
-		    nth_bulk);
+  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  if(list != NULL &&
-     AGS_IS_LINK_COLLECTION_EDITOR(list->data)){
-    GtkTable *table;
-    
-    table = list->data;
-    g_list_free(list_start);
+  machine_editor_bulk = g_list_nth_data(list_start,
+					nth_bulk);
 
-    link_collection_editor = g_object_get_data(table,
-					       "AgsChild");
-  }else{
-    g_list_free(list_start);
+  g_list_free(list_start);
 
-    ags_test_leave();
+  ags_test_leave();
 
+  if(machine_editor_bulk == NULL){
     return(FALSE);
   }
 
-  gtk_spin_button_set_value(link_collection_editor->first_link,
+  ags_test_enter();
+
+  gtk_spin_button_set_value(machine_editor_bulk->first_link_line,
 			    first_link_line);
 
   ags_test_leave();
@@ -4212,8 +4196,8 @@ ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsPropertyCollectionEditor *property_collection_editor;
-  AgsLinkCollectionEditor *link_collection_editor;
+  AgsMachineEditorCollection *machine_editor_collection;
+  AgsMachineEditorBulk *machine_editor_bulk;
 
   GList *list_start, *list;
 
@@ -4230,37 +4214,35 @@ ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* get notebook tab */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
 
   switch(nth_tab){
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_OUTPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+      machine_editor_collection = machine_editor->output_editor_collection;
     }
     break;
   case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_INPUT_TAB:
     {
-      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+      machine_editor_collection = machine_editor->input_editor_collection;
     }
     break;
   default:
@@ -4270,27 +4252,22 @@ ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
   }
 
   /* get bulk editor */
-  list_start = gtk_container_get_children(property_collection_editor->child);
-  list = g_list_nth(list_start,
-		    nth_bulk);
+  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  if(list != NULL){
-    GtkTable *table;
-    
-    table = list->data;
-    g_list_free(list_start);
+  machine_editor_bulk = g_list_nth_data(list_start,
+					nth_bulk);
 
-    link_collection_editor = g_object_get_data(table,
-					       "AgsChild");
-  }else{
-    g_list_free(list_start);
+  g_list_free(list_start);
 
-    ags_test_leave();
+  ags_test_leave();
 
+  if(machine_editor_bulk == NULL){
     return(FALSE);
   }
 
-  gtk_spin_button_set_value(link_collection_editor->count,
+  ags_test_enter();
+
+  gtk_spin_button_set_value(machine_editor_bulk->count,
 			    count);
 
   ags_test_leave();
@@ -4315,25 +4292,24 @@ ags_functional_test_util_machine_editor_dialog_resize_audio_channels(guint nth_m
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* resize audio channels */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
+
   gtk_spin_button_set_value(machine_editor->resize_editor->audio_channels,
 			    audio_channels);
 
@@ -4358,26 +4334,25 @@ ags_functional_test_util_machine_editor_dialog_resize_inputs(guint nth_machine,
   
   gsequencer_application_context = ags_application_context_get_instance();
 
-  /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  /* retrieve machine */  
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* resize input pads */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
+
   gtk_spin_button_set_value(machine_editor->resize_editor->input_pads,
 			    inputs);
 
@@ -4403,25 +4378,24 @@ ags_functional_test_util_machine_editor_dialog_resize_outputs(guint nth_machine,
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
-
-  g_list_free(list_start);
 
   /* resize output pads */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
+
   gtk_spin_button_set_value(machine_editor->resize_editor->output_pads,
 			    outputs);
 
@@ -4668,21 +4642,20 @@ ags_functional_test_util_drum_open(guint nth_machine)
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve drum */
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  drum = g_list_nth_data(list_start,
+			 nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_DRUM(list->data)){
-    drum = list->data;
-  }else{
+  if(drum == NULL ||
+     !AGS_IS_DRUM(drum)){
     return(FALSE);
   }
   
-  g_list_free(list_start);
-
   /* open dialog */
   ags_test_enter();
   
@@ -4886,20 +4859,19 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve ffplayer */
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+
+  ffplayer = g_list_nth_data(list_start,
+			     nth_machine);
+
+  g_list_free(list_start);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_FFPLAYER(list->data)){
-    ffplayer = list->data;
-  }else{
+  if(ffplayer == NULL ||
+     !AGS_IS_FFPLAYER(ffplayer)){
     return(FALSE);
   }
-  
-  g_list_free(list_start);
 
   /* open dialog */
   ags_test_enter();
@@ -4919,8 +4891,9 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   return(success);
 }
 
-gboolean ags_functional_test_util_ffplayer_preset(guint nth_machine,
-						  gchar *preset)
+gboolean
+ags_functional_test_util_ffplayer_preset(guint nth_machine,
+					 gchar *preset)
 {
   //TODO:JK: 
 }

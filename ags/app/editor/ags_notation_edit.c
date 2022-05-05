@@ -1938,7 +1938,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
 			bg_color.alpha);
   cairo_rectangle(cr,
 		  0.0, 0.0,
-		  (double) allocation.width, (double) allocation.height);
+		  (double) width, (double) height);
   cairo_fill(cr);
   
   /* horizontal lines */

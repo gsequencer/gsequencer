@@ -85,7 +85,8 @@ struct _AgsFFPlayer
 
   GtkEntry *filename;
   GtkButton *open;
-  
+  GtkWidget *open_dialog;
+
   AgsSF2Loader *sf2_loader;
 
   gchar *load_preset;
@@ -121,9 +122,7 @@ struct _AgsFFPlayer
   AgsDial *aliase_b_amount;
   AgsDial *aliase_b_phase;
 
-  GtkScale *volume;
-  
-  GtkWidget *open_dialog;
+  GtkScale *volume;  
 };
 
 struct _AgsFFPlayerClass
