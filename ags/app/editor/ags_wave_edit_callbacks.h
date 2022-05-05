@@ -38,6 +38,10 @@ void ags_wave_edit_draw_callback(GtkWidget *drawing_area,
 				 int width, int height,
 				 AgsWaveEdit *wave_edit);
 
+void ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+						gint width, gint height,
+						AgsWaveEdit *wave_edit);
+
 void ags_wave_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit);
 void ags_wave_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsWaveEdit *wave_edit);
 

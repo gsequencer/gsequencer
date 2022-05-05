@@ -487,6 +487,9 @@ ags_wave_edit_connect(AgsConnectable *connectable)
 				 wave_edit,
 				 NULL);
 
+  g_signal_connect_after((GObject *) wave_edit->drawing_area, "resize",
+			 G_CALLBACK(ags_wave_edit_drawing_area_resize_callback), (gpointer) wave_edit);
+
   /* scrollbars */
   g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(wave_edit->vscrollbar), "value-changed",
 			 G_CALLBACK(ags_wave_edit_vscrollbar_value_changed), (gpointer) wave_edit);
@@ -513,6 +516,12 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
 				 NULL,
 				 NULL,
 				 NULL);
+
+  g_object_disconnect((GObject *) wave_edit->drawing_area,
+		      "any_signal::resize",
+		      G_CALLBACK(ags_wave_edit_drawing_area_resize_callback),
+		      (gpointer) wave_edit,
+		      NULL);
 
   /* scrollbars */
   g_object_disconnect((GObject *) gtk_scrollbar_get_adjustment(wave_edit->vscrollbar),

@@ -37,6 +37,17 @@ ags_notation_edit_draw_callback(GtkWidget *drawing_area,
 }
 
 void
+ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+					       gint width, gint height,
+					       AgsNotationEdit *notation_edit)
+{
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_edit);
+  
+  gtk_widget_queue_draw(notation_edit->drawing_area);
+}
+
+void
 ags_notation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotationEdit *notation_edit)
 {
   GtkWidget *editor;

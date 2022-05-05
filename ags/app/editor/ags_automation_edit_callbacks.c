@@ -36,6 +36,17 @@ ags_automation_edit_draw_callback(GtkWidget *drawing_area,
 }
 
 void
+ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+						 gint width, gint height,
+						 AgsAutomationEdit *automation_edit)
+{
+  ags_automation_edit_reset_vscrollbar(automation_edit);
+  ags_automation_edit_reset_hscrollbar(automation_edit);
+
+  gtk_widget_queue_draw(automation_edit);
+}
+
+void
 ags_automation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutomationEdit *automation_edit)
 {  
   /* queue draw */

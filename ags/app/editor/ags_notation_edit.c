@@ -437,6 +437,9 @@ ags_notation_edit_connect(AgsConnectable *connectable)
 				 notation_edit,
 				 NULL);
 
+  g_signal_connect_after((GObject *) notation_edit->drawing_area, "resize",
+			 G_CALLBACK(ags_notation_edit_drawing_area_resize_callback), (gpointer) notation_edit);
+
   /* scrollbars */
   g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(notation_edit->vscrollbar), "value-changed",
 			 G_CALLBACK(ags_notation_edit_vscrollbar_value_changed), (gpointer) notation_edit);
@@ -463,6 +466,12 @@ ags_notation_edit_disconnect(AgsConnectable *connectable)
 				 NULL,
 				 NULL,
 				 NULL);
+  
+  g_object_disconnect((GObject *) notation_edit->drawing_area,
+		      "any_signal::resize",
+		      G_CALLBACK(ags_notation_edit_drawing_area_resize_callback),
+		      (gpointer) notation_edit,
+		      NULL);
 
   /* scrollbars */
   g_object_disconnect(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar),
@@ -1572,18 +1581,6 @@ ags_notation_edit_show(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show(widget);
 
-  if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){    
-    gtk_widget_show((GtkWidget *) notation_edit->ruler);
-  }
-
-  if((AGS_NOTATION_EDIT_SHOW_VSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_show((GtkWidget *) notation_edit->vscrollbar);
-  }
-
-  if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_show((GtkWidget *) notation_edit->hscrollbar);
-  }
-
   ags_notation_edit_reset_vscrollbar(notation_edit);
   ags_notation_edit_reset_hscrollbar(notation_edit);
 }
@@ -1721,7 +1718,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 
     gtk_adjustment_set_value(piano_adjustment,
 			     gtk_adjustment_get_value(adjustment));
-  }  
+  }
 }
 
 void
@@ -1791,10 +1788,8 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
 
   /* reset value */
   if(old_upper != 0.0){
-#if 0
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
-#endif
   }
 }
 

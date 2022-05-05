@@ -758,6 +758,9 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 				 automation_edit,
 				 NULL);
 
+  g_signal_connect_after((GObject *) automation_edit->drawing_area, "resize",
+			 G_CALLBACK(ags_automation_edit_drawing_area_resize_callback), (gpointer) automation_edit);
+
   /* scrollbars */
   g_signal_connect_after((GObject *) gtk_scrollbar_get_adjustment(automation_edit->vscrollbar), "value-changed",
 			 G_CALLBACK(ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
@@ -784,6 +787,12 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
 				 NULL,
 				 NULL,
 				 NULL);
+  
+  g_object_disconnect((GObject *) automation_edit->drawing_area,
+		      "any_signal::resize",
+		      G_CALLBACK(ags_automation_edit_drawing_area_resize_callback),
+		      (gpointer) automation_edit,
+		      NULL);
 
   /* scrollbars */
   g_object_disconnect((GObject *) gtk_scrollbar_get_adjustment(automation_edit->vscrollbar),

@@ -38,6 +38,10 @@ void ags_automation_edit_draw_callback(GtkWidget *drawing_area,
 				       int width, int height,
 				       AgsAutomationEdit *automation_edit);
 
+void ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+						      gint width, gint height,
+						      AgsAutomationEdit *automation_edit);
+
 void ags_automation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutomationEdit *automation_edit);
 void ags_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutomationEdit *automation_edit);
 
