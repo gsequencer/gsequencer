@@ -1558,7 +1558,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   }
   
   /* open sfz file */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) pitch_sampler->enable_synth_generator)){
+  if(gtk_check_button_get_active(pitch_sampler->enable_synth_generator)){
     GList *start_sfz_synth_generator;
     GList *start_sound_resource;
 
@@ -1657,9 +1657,6 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	while(list != NULL){
 	  ags_pitch_sampler_remove_file(pitch_sampler,
 					list->data);
-
-	  g_object_run_dispose(list->data);
-	  g_object_unref(list->data);
 
 	  list = list->next;
 	}

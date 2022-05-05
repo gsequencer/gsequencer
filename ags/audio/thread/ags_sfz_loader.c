@@ -553,6 +553,10 @@ ags_sfz_loader_run(void *ptr)
 		 "input", &start_channel,
 		 NULL);
 
+    g_object_set(start_sfz_synth_generator->data,
+		 "filename", sfz_loader->filename,
+		 NULL);
+    
     apply_sfz_synth = ags_apply_sfz_synth_new(start_sfz_synth_generator->data,
 					      start_channel,
 					      sfz_loader->base_note,

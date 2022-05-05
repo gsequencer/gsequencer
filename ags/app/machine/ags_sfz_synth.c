@@ -1446,7 +1446,7 @@ ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth)
 		ags_sfz_instrument_loader_set_flags(sfz_instrument_loader,
 						    AGS_SFZ_INSTRUMENT_LOADER_RUN_APPLY_INSTRUMENT);
 		
-		sfz_instrument_loader->synth = &(channel_data->synth);
+		sfz_instrument_loader->synth = channel_data->synth;
       
 		ags_sfz_instrument_loader_start(sfz_instrument_loader);
 	      }

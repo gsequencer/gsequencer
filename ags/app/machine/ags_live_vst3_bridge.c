@@ -791,7 +791,7 @@ ags_live_vst3_bridge_map_recall(AgsMachine *machine)
 		 G_TYPE_BOOLEAN);
 
     g_value_set_boolean(&value,
-			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			gtk_check_button_get_active(navigation->loop));
 
     ags_port_safe_write(port,
 			&value);

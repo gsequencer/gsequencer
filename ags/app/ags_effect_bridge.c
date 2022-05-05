@@ -612,9 +612,6 @@ ags_effect_bridge_set_property(GObject *gobject,
 	  while(effect_pad != NULL){
 	    ags_effect_bridge_remove_output_effect_pad(effect_bridge,
 						       effect_pad->data);
-	    
-	    g_object_run_dispose(effect_pad->data);
-	    g_object_unref(effect_pad->data);
 
 	    effect_pad = effect_pad->next;
 	  }
@@ -628,9 +625,6 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    ags_effect_bridge_remove_input_effect_pad(effect_bridge,
 						      effect_pad->data);
 	    
-	    g_object_run_dispose(effect_pad->data);
-	    g_object_unref(effect_pad->data);
-
 	    effect_pad = effect_pad->next;
 	  }
 
@@ -740,9 +734,6 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    while(effect_pad != NULL){
 	      ags_effect_bridge_remove_output_effect_pad(effect_bridge,
 							 effect_pad->data);
-	    
-	      g_object_run_dispose(effect_pad->data);
-	      g_object_unref(effect_pad->data);
 
 	      effect_pad = effect_pad->next;
 	    }	      
@@ -821,9 +812,6 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    while(effect_pad != NULL){
 	      ags_effect_bridge_remove_input_effect_pad(effect_bridge,
 							effect_pad->data);
-	    
-	      g_object_run_dispose(effect_pad->data);
-	      g_object_unref(effect_pad->data);
 
 	      effect_pad = effect_pad->next;
 	    }	      
@@ -1436,10 +1424,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 	for(i = 0; list != NULL && i < new_size - old_size; i++){
 	  ags_effect_bridge_remove_output_effect_pad(effect_bridge,
 						     list->data);
-	  
-	  g_object_run_dispose(list->data);
-	  g_object_unref(list->data);
-	  
+	  	  
 	  list = list->next;
 	}
       }
@@ -1452,9 +1437,6 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 	for(i = 0; list != NULL && i < new_size - old_size; i++){
 	  ags_effect_bridge_remove_input_effect_pad(effect_bridge,
 						    list->data);
-
-	  g_object_run_dispose(list->data);
-	  g_object_unref(list->data);
 
 	  list = list->next;
 	}

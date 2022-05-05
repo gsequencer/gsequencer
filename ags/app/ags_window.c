@@ -915,21 +915,238 @@ void
 ags_window_load_add_menu_live_dssi(AgsWindow *window,
 				   GMenu *menu)
 {
-  //TODO:JK: implement me
+  GMenu *dssi_menu;
+  GMenuItem *dssi_item;
+  GMenuItem *item;
+
+  AgsDssiManager *dssi_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *dssi_manager_mutex;
+
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  /* get dssi manager mutex */
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
+
+  /* dssi sub-menu */
+  dssi_menu = g_menu_new();
+  dssi_item = g_menu_item_new("live DSSI",
+			      NULL);
+
+  /* get plugin */
+  g_rec_mutex_lock(dssi_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(dssi_manager->dssi_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(dssi_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    GVariantBuilder *builder;
+
+    gchar *filename, *effect;
+    
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+    
+    item = g_menu_item_new(effect,
+			   "app.add_live_dssi_bridge");
+
+    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+    g_variant_builder_add(builder, "s", filename);
+    g_variant_builder_add(builder, "s", effect);
+
+    g_menu_item_set_attribute_value(item,
+				    "target",
+				    g_variant_new("as", builder));
+    
+    g_menu_append_item(dssi_menu,
+		       item);
+
+    g_variant_builder_unref(builder);
+    
+    /* iterate */
+    list = list->next;
+  }
+
+  g_menu_item_set_submenu(dssi_item,
+			  G_MENU_MODEL(dssi_menu));  
+
+  g_menu_append_item(menu,
+		     dssi_item);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_window_load_add_menu_live_lv2(AgsWindow *window,
 				  GMenu *menu)
 {
-  //TODO:JK: implement me
+  GMenu *lv2_menu;
+  GMenuItem *lv2_item;
+  GMenuItem *item;
+
+  AgsLv2Manager *lv2_manager;
+
+  guint length;
+  guint i;
+
+  GRecMutex *lv2_manager_mutex;
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  /* get lv2 manager mutex */
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+
+  /* lv2 sub-menu */
+  lv2_menu = g_menu_new();
+  lv2_item = g_menu_item_new("live LV2",
+			      NULL);
+
+  /* get plugin */
+  g_rec_mutex_lock(lv2_manager_mutex);
+    
+  if(lv2_manager->quick_scan_instrument_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
+  
+    for(i = 0; i < length; i++){
+      gchar *filename, *effect;
+    
+      /* get filename and effect */
+      filename = lv2_manager->quick_scan_instrument_filename[i];
+      effect = lv2_manager->quick_scan_instrument_effect[i];
+    
+      /* create item */
+      if(filename != NULL &&
+	 effect != NULL){
+	GVariantBuilder *builder;
+    
+	item = g_menu_item_new(effect,
+			       "app.add_live_lv2_bridge");
+
+	builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+	g_variant_builder_add(builder, "s", filename);
+	g_variant_builder_add(builder, "s", effect);
+
+	g_menu_item_set_attribute_value(item,
+					"target",
+					g_variant_new("as", builder));
+    
+	g_menu_append_item(lv2_menu,
+			   item);
+
+	g_variant_builder_unref(builder);
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(lv2_manager_mutex);
+  
+  g_menu_item_set_submenu(lv2_item,
+			  G_MENU_MODEL(lv2_menu));  
+
+  g_menu_append_item(menu,
+		     lv2_item);
 }
 
 void
 ags_window_load_add_menu_live_vst3(AgsWindow *window,
 				   GMenu *menu)
 {
-  //TODO:JK: implement me
+#if defined(AGS_WITH_VST3)
+  GMenu *vst3_menu;
+  GMenuItem *vst3_item;
+  GMenuItem *item;
+
+  AgsVst3Manager *vst3_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *vst3_manager_mutex;
+
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  /* get vst3 manager mutex */
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+
+  /* vst3 sub-menu */
+  vst3_menu = g_menu_new();
+  vst3_item = g_menu_item_new("live VST3",
+			      NULL);
+  
+  /* get plugin */
+  g_rec_mutex_lock(vst3_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(vst3_manager->vst3_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(vst3_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    GVariantBuilder *builder;
+
+    gchar *filename, *effect;
+    
+    if(ags_base_plugin_test_flags(list->data, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      /* get filename and effect */
+      g_object_get(list->data,
+		   "filename", &filename,
+		   "effect", &effect,
+		   NULL);
+
+      item = g_menu_item_new(effect,
+			     "app.add_live_vst3_bridge");
+
+      builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    
+      g_variant_builder_add(builder, "s", filename);
+      g_variant_builder_add(builder, "s", effect);
+
+      g_menu_item_set_attribute_value(item,
+				      "target",
+				      g_variant_new("as", builder));
+    
+      g_menu_append_item(vst3_menu,
+			 item);
+
+      g_variant_builder_unref(builder);
+    }
+    
+    /* iterate */
+    list = list->next;
+  }
+  
+  g_menu_item_set_submenu(vst3_item,
+			  G_MENU_MODEL(vst3_menu));  
+
+  g_menu_append_item(menu,
+		     vst3_item);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+#endif
 }
 
 void

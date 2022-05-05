@@ -1530,7 +1530,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 	    ags_sf2_midi_locale_loader_set_flags(sf2_midi_locale_loader,
 						 AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE);
       
-	    sf2_midi_locale_loader->synth = &(channel_data->synth);
+	    sf2_midi_locale_loader->synth = channel_data->synth;
       
 	    ags_sf2_midi_locale_loader_start(sf2_midi_locale_loader);
 	  }

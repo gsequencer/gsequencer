@@ -389,7 +389,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   composite_editor->selected_edit = NULL;
 
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
-		     0);
+		     AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);

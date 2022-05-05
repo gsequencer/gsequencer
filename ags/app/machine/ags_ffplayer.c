@@ -1463,7 +1463,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   }
   
   /* open sf2 instrument */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) ffplayer->enable_synth_generator)){
+  if(gtk_check_button_get_active(ffplayer->enable_synth_generator)){
     GList *start_sf2_synth_generator;
     GList *start_sound_resource;
 

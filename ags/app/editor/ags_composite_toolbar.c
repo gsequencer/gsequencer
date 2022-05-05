@@ -153,6 +153,10 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   GSimpleActionGroup *action_group;
   GSimpleAction *action;
 
+  gtk_box_set_spacing(composite_toolbar,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+  /* action group */
   action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) composite_toolbar,
 				 "composite_toolbar",
@@ -712,7 +716,6 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->position,
 		 "label", i18n("Position"),
 		 "icon-name", "go-jump",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("position tool"),
 		 NULL);
@@ -732,7 +735,6 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->edit,
 		 "label", i18n("Edit"),
 		 "icon-name", "text-editor",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("edit tool"),
 		 NULL);
@@ -752,7 +754,6 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->clear,
 		 "label", i18n("Clear"),
 		 "icon-name", "edit-clear",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("clear tool"),
 		 NULL);
@@ -772,7 +773,6 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
     g_object_set(composite_toolbar->select,
 		 "label", i18n("Select"),
 		 "icon-name", "edit-select",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("selection tool"),
 		 NULL);
@@ -913,7 +913,6 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->invert,
 		 "label", i18n("Invert"),
 		 "icon-name", "object-flip-vertical",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("invert action"),
 		 NULL);
@@ -934,7 +933,6 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->copy,
 		 "label", i18n("Copy"),
 		 "icon-name", "edit-copy",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("copy action"),
 		 NULL);
@@ -955,7 +953,6 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->cut,
 		 "label", i18n("Cut"),
 		 "icon-name", "edit-cut",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("cut action"),
 		 NULL);
@@ -976,7 +973,6 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     g_object_set(composite_toolbar->paste,
 		 "label", i18n("Paste"),
 		 "icon-name", "edit-paste",
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("paste menu action"),
 		 NULL);
@@ -1139,7 +1135,6 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 								  NULL);
     g_object_set(composite_toolbar->menu_tool,
 		 "label", i18n("tool"),
-		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("tool dialog option"),
 		 NULL);
