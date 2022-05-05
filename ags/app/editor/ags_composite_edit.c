@@ -247,7 +247,9 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 
   /* edit vertical box */
   composite_edit->edit_mode = 0;
-  composite_edit->paste_flags = 0;
+  composite_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL |
+				 AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
+				 AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
   
   composite_edit->edit_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						    0);

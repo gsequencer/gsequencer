@@ -157,10 +157,10 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   gtk_widget_insert_action_group((GtkWidget *) composite_toolbar,
 				 "composite_toolbar",
 				 action_group);
-  
+
   /* match audio channel */
   action = g_simple_action_new_stateful("paste_match_audio_channel",
-					g_variant_type_new("b"),
+					NULL,
 					g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_composite_toolbar_paste_match_audio_channel_callback), composite_toolbar);
@@ -169,7 +169,7 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   
   /* match line */
   action = g_simple_action_new_stateful("paste_match_line",
-					g_variant_type_new("b"),
+					NULL,
 					g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_composite_toolbar_paste_match_line_callback), composite_toolbar);
@@ -178,10 +178,18 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   
   /* no duplicates */
   action = g_simple_action_new_stateful("paste_no_duplicates",
-					g_variant_type_new("b"),
+					NULL,
 					g_variant_new_boolean(TRUE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_composite_toolbar_paste_no_duplicates_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
+  /* paste */
+  action = g_simple_action_new("paste",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_paste_callback), composite_toolbar);
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
 
@@ -705,6 +713,8 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "label", i18n("Position"),
 		 "icon-name", "go-jump",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("position tool"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->position,
@@ -723,6 +733,8 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "label", i18n("Edit"),
 		 "icon-name", "text-editor",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("edit tool"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->edit,
@@ -741,6 +753,8 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "label", i18n("Clear"),
 		 "icon-name", "edit-clear",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("clear tool"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->clear,
@@ -759,6 +773,8 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "label", i18n("Select"),
 		 "icon-name", "edit-select",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("selection tool"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->select,
@@ -898,6 +914,8 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "label", i18n("Invert"),
 		 "icon-name", "object-flip-vertical",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("invert action"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->invert,
@@ -917,6 +935,8 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "label", i18n("Copy"),
 		 "icon-name", "edit-copy",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("copy action"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->copy,
@@ -936,6 +956,8 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "label", i18n("Cut"),
 		 "icon-name", "edit-cut",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("cut action"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->cut,
@@ -955,6 +977,8 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "label", i18n("Paste"),
 		 "icon-name", "edit-paste",
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("paste menu action"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->paste,
@@ -1116,6 +1140,8 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     g_object_set(composite_toolbar->menu_tool,
 		 "label", i18n("tool"),
 		 "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+		 "has-tooltip", TRUE,
+		 "tooltip-text", i18n("tool dialog option"),
 		 NULL);
     gtk_box_insert_child_after(composite_toolbar,
 			       (GtkWidget *) composite_toolbar->menu_tool,
@@ -1425,8 +1451,13 @@ ags_composite_toolbar_paste_popup_new(AgsCompositeToolbar *composite_toolbar,
 			   "composite_toolbar.paste_no_duplicates");
     g_menu_append_item(menu,
 		       item);
-  }
-  
+  }  
+
+  item = g_menu_item_new(i18n("paste"),
+			 "composite_toolbar.paste");
+  g_menu_append_item(menu,
+		     item);
+
   return(menu);
 }
 

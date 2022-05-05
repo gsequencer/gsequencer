@@ -164,9 +164,17 @@ ags_composite_toolbar_paste_match_audio_channel_callback(GAction *action,
 
   variant = g_action_get_state(action);
   
-  if(!g_variant_get_boolean(variant)){
+  if(g_variant_get_boolean(variant)){
+    g_object_set(action,
+		 "state", g_variant_new_boolean(FALSE),
+		 NULL);
+
     composite_editor->selected_edit->paste_flags &= (~AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL);
   }else{
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
     composite_editor->selected_edit->paste_flags |= AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL;
   }
 
@@ -190,9 +198,17 @@ ags_composite_toolbar_paste_match_line_callback(GAction *action, GVariant *param
 
   variant = g_action_get_state(action);
 
-  if(!g_variant_get_boolean(variant)){
+  if(g_variant_get_boolean(variant)){
+    g_object_set(action,
+		 "state", g_variant_new_boolean(FALSE),
+		 NULL);
+
     composite_editor->selected_edit->paste_flags &= (~AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE);
   }else{
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
     composite_editor->selected_edit->paste_flags |= AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE;
   }
 }
@@ -214,9 +230,17 @@ ags_composite_toolbar_paste_no_duplicates_callback(GAction *action, GVariant *pa
 
   variant = g_action_get_state(action);
 
-  if(!g_variant_get_boolean(variant)){
+  if(g_variant_get_boolean(variant)){
+    g_object_set(action,
+		 "state", g_variant_new_boolean(FALSE),
+		 NULL);
+
     composite_editor->selected_edit->paste_flags &= (~AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
   }else{
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
     composite_editor->selected_edit->paste_flags |= AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES;
   }
 }

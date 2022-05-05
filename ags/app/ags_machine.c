@@ -1030,6 +1030,8 @@ ags_machine_finalize(GObject *gobject)
 		      machine,
 		      NULL);
 
+  g_free(machine->uid);
+
   /* remove from sound provider */
   start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
