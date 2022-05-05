@@ -45,6 +45,17 @@ typedef struct _AgsGSequencerApplicationClass AgsGSequencerApplicationClass;
 struct _AgsGSequencerApplication
 {
   GtkApplication application;
+
+  GMenu *menubar;
+
+  GMenu *file_menu;
+
+  GMenu *edit_menu;
+  GMenu *add_menu;
+
+  GMenu *midi_menu;
+
+  GMenu *help_menu;
 };
 
 struct _AgsGSequencerApplicationClass

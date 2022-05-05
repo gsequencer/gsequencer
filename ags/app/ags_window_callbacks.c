@@ -21,6 +21,9 @@
 
 #include "config.h"
 
+#include <ags/app/ags_gsequencer_application.h>
+#include <ags/app/ags_gsequencer_application_context.h>
+
 #if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
 #endif
@@ -32,11 +35,15 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 {
   GtkBuilder *builder;
 
+  AgsGSequencerApplication *gsequencer_app;
+
 #if defined(AGS_WITH_MAC_INTEGRATION)
   GtkosxApplication *app;
 #endif
 
   GMenu *menu;
+
+  gsequencer_app = AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
 
   /* menu */
   builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
@@ -58,24 +65,38 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 
   ags_window_load_add_menu_ladspa(window,
 				  menu);
+  ags_window_load_add_menu_ladspa(window,
+				  gsequencer_app->add_menu);
 
   ags_window_load_add_menu_dssi(window,
 				menu);
+  ags_window_load_add_menu_dssi(window,
+				gsequencer_app->add_menu);
 
   ags_window_load_add_menu_lv2(window,
 			       menu);
+  ags_window_load_add_menu_lv2(window,
+			       gsequencer_app->add_menu);
 
   ags_window_load_add_menu_vst3(window,
 				menu);
+  ags_window_load_add_menu_vst3(window,
+				gsequencer_app->add_menu);
 
   ags_window_load_add_menu_live_dssi(window,
 				     menu);
+  ags_window_load_add_menu_live_dssi(window,
+				     gsequencer_app->add_menu);
 
   ags_window_load_add_menu_live_lv2(window,
 				    menu);
+  ags_window_load_add_menu_live_lv2(window,
+				    gsequencer_app->add_menu);
 
   ags_window_load_add_menu_live_vst3(window,
 				     menu);
+  ags_window_load_add_menu_live_vst3(window,
+				     gsequencer_app->add_menu);
   
   /* connect and show window */
   gtk_widget_show((GtkWidget *) window);

@@ -23,6 +23,8 @@
 #include "config.h"
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_gsequencer_application.h>
 
 #include <ags/app/file/ags_simple_file.h>
 
@@ -204,62 +206,70 @@ ags_window_init(AgsWindow *window)
 		       window_title);
 
   g_free(window_title);
+
+  window->header_bar = NULL;
+
+  window->app_button = NULL;
+  window->add_button = NULL;
+  window->edit_button = NULL;
   
-  window->header_bar = gtk_header_bar_new();
+  if(!window->shows_menu_bar){
+    window->header_bar = gtk_header_bar_new();
 
-  gtk_header_bar_set_decoration_layout(window->header_bar,
-				       "menu:minimize,maximize,close");
+    gtk_header_bar_set_decoration_layout(window->header_bar,
+					 "menu:minimize,maximize,close");
 
-  window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
-				 window->name);
+    window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
+				   window->name);
 
-  label = gtk_label_new(window_title);
-  gtk_label_set_use_markup(label,
-			   TRUE);
-  gtk_header_bar_set_title_widget(window->header_bar,
-				  label);
+    label = gtk_label_new(window_title);
+    gtk_label_set_use_markup(label,
+			     TRUE);
+    gtk_header_bar_set_title_widget(window->header_bar,
+				    label);
 
-  g_free(window_title);
+    g_free(window_title);
   
-  /* app menu buttton */
-  window->app_button = gtk_menu_button_new();
-  g_object_set(window->app_button,
-	       "direction", GTK_ARROW_NONE,
-	       NULL);
-  gtk_header_bar_pack_end(window->header_bar,
-			  window->app_button);
+    /* app menu buttton */
+    window->app_button = gtk_menu_button_new();
+    g_object_set(window->app_button,
+		 "direction", GTK_ARROW_NONE,
+		 NULL);
+    gtk_header_bar_pack_end(window->header_bar,
+			    window->app_button);
   
-  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_primary_menu.ui");
+    builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_primary_menu.ui");
 
-  menu = gtk_builder_get_object(builder,
-				"ags-primary-menu");
-  gtk_menu_button_set_menu_model(window->app_button,
-				 menu);
+    menu = gtk_builder_get_object(builder,
+				  "ags-primary-menu");
+    gtk_menu_button_set_menu_model(window->app_button,
+				   menu);
 
-  /* add menu button */
-  window->add_button = gtk_menu_button_new();
+    /* add menu button */
+    window->add_button = gtk_menu_button_new();
 
-  gtk_menu_button_set_icon_name(window->add_button,
-				"list-add-symbolic");
+    gtk_menu_button_set_icon_name(window->add_button,
+				  "list-add-symbolic");
 
-  gtk_header_bar_pack_end(window->header_bar,
-			  window->add_button);  
+    gtk_header_bar_pack_end(window->header_bar,
+			    window->add_button);  
 
-  /* app edit buttton */
-  window->edit_button = gtk_menu_button_new();
+    /* app edit buttton */
+    window->edit_button = gtk_menu_button_new();
 
-  gtk_menu_button_set_icon_name(window->edit_button,
-				"text-editor");
+    gtk_menu_button_set_icon_name(window->edit_button,
+				  "text-editor");
 
-  gtk_header_bar_pack_end(window->header_bar,
-			  window->edit_button);
+    gtk_header_bar_pack_end(window->header_bar,
+			    window->edit_button);
   
-  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_edit_menu.ui");
+    builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_edit_menu.ui");
 
-  menu = gtk_builder_get_object(builder,
-				"ags-edit-menu");
-  gtk_menu_button_set_menu_model(window->edit_button,
-				 menu);
+    menu = gtk_builder_get_object(builder,
+				  "ags-edit-menu");
+    gtk_menu_button_set_menu_model(window->edit_button,
+				   menu);
+  }
 
   /* vbox */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -268,13 +278,18 @@ ags_window_init(AgsWindow *window)
 		       (GtkWidget *) vbox);
   
   /* menubar */
-  //TODO:JK: implement me
-  //FIXME:JK: the header bar is actually not working properly on Xorg
-#if 0
-  if(window->shows_menu_bar){
-    gtk_widget_show((GtkWidget *) window->menu_bar);
+  //  if(window->shows_menu_bar)
+  {
+    AgsGSequencerApplication *gsequencer_app;
+
+    gsequencer_app = AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
+    
+    gtk_application_set_menubar(gsequencer_app,
+				gsequencer_app->menubar);
+
+    gtk_application_window_set_show_menubar(window,
+					    TRUE);
   }
-#endif
   
   /* vpaned and scrolled window */
   window->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_VERTICAL);

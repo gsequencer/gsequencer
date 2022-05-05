@@ -21,8 +21,11 @@
 #include <ags/app/ags_gsequencer_application_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_window.h>
+
+#include <ags/i18n.h>
 
 void ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_app);
 void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
@@ -509,12 +512,20 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 }
 
 void
-ags_gsequencer_application_startup(GApplication *gsequencer_app)
+ags_gsequencer_application_startup(GApplication *app)
 {
+  GtkBuilder *builder;
+
+  AgsGSequencerApplication *gsequencer_app;
+  GMenu *menu;
+  GMenuItem *item;
+  
   AgsApplicationContext *application_context;
   AgsLog *log;
 
-  G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->startup(gsequencer_app);
+  gsequencer_app = app;
+
+  G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->startup(app);
 
   /* application context */
   application_context = ags_application_context_get_instance();
@@ -523,6 +534,105 @@ ags_gsequencer_application_startup(GApplication *gsequencer_app)
   
   ags_log_add_message(log,
 		      "Welcome to Advanced Gtk+ Sequencer");
+
+  gsequencer_app->menubar = (GMenu *) g_menu_new();
+  
+  /* file menu */
+  gsequencer_app->file_menu = (GMenu *) g_menu_new();
+
+  item = g_menu_item_new(i18n("Open"),
+			 "app.open");
+  g_menu_append_item(gsequencer_app->file_menu,
+		     item);
+
+  item = g_menu_item_new(i18n("Save"),
+			 "app.save");
+  g_menu_append_item(gsequencer_app->file_menu,
+		     item);
+
+  item = g_menu_item_new(i18n("Save as"),
+			 "app.save_as");
+  g_menu_append_item(gsequencer_app->file_menu,
+		     item);
+  
+  item = g_menu_item_new(i18n("Export"),
+			 "app.export");
+  g_menu_append_item(gsequencer_app->file_menu,
+		     item);
+  
+  item = g_menu_item_new(i18n("Quit"),
+			 "app.quit");
+  g_menu_append_item(gsequencer_app->file_menu,
+		     item);
+
+  g_menu_insert_submenu(gsequencer_app->menubar,
+			0,
+			i18n("File"),
+			gsequencer_app->file_menu);
+  
+  /* edit menu */
+  gsequencer_app->edit_menu = (GMenu *) g_menu_new();
+
+  builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
+
+  gsequencer_app->add_menu = gtk_builder_get_object(builder,
+						    "ags-add-menu");
+
+  g_menu_insert_submenu(gsequencer_app->menubar,
+			0,
+			i18n("Add"),
+			gsequencer_app->add_menu);
+  
+  item = g_menu_item_new(i18n("Meta-data"),
+			 "app.meta_data");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);
+
+  item = g_menu_item_new(i18n("Preferences"),
+			 "app.preferences");
+  g_menu_append_item(gsequencer_app->edit_menu,
+		     item);  
+
+  g_menu_insert_submenu(gsequencer_app->menubar,
+			0,
+			i18n("Edit"),
+			gsequencer_app->edit_menu);
+
+  /* MIDI menu */
+  gsequencer_app->midi_menu = (GMenu *) g_menu_new();
+
+  item = g_menu_item_new(i18n("SMF import"),
+			 "app.smf_import");
+  g_menu_append_item(gsequencer_app->midi_menu,
+		     item);
+
+  item = g_menu_item_new(i18n("SMF export"),
+			 "app.smf_export");
+  g_menu_append_item(gsequencer_app->midi_menu,
+		     item);
+
+  g_menu_insert_submenu(gsequencer_app->menubar,
+			0,
+			i18n("MIDI"),
+			gsequencer_app->midi_menu);
+
+  /* Help menu */
+  gsequencer_app->help_menu = (GMenu *) g_menu_new();
+
+  item = g_menu_item_new(i18n("Help"),
+			 "app.help");
+  g_menu_append_item(gsequencer_app->help_menu,
+		     item);
+
+  item = g_menu_item_new(i18n("About"),
+			 "app.about");
+  g_menu_append_item(gsequencer_app->help_menu,
+		     item);
+
+  g_menu_insert_submenu(gsequencer_app->menubar,
+			0,
+			i18n("Help"),
+			gsequencer_app->help_menu);
 }
 
 void

@@ -259,6 +259,9 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   gtk_combo_box_set_model(port_editor->port_control_orientation,
 			  GTK_TREE_MODEL(list_store));
 
+  gtk_combo_box_set_active(port_editor->port_control_orientation,
+			   0);
+
   /* attach */
   gtk_widget_set_halign((GtkWidget *) port_editor->port_control_orientation,
 			GTK_ALIGN_START);
