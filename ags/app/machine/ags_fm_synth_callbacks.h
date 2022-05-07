@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_fm_synth_auto_update_callback(GtkToggleButton *toggle, AgsFMSynth *fm_synth);
+void ags_fm_synth_auto_update_callback(GtkCheckButton *check_button, AgsFMSynth *fm_synth);
 void ags_fm_synth_update_callback(GtkButton *button, AgsFMSynth *fm_synth);
 
 void ags_fm_synth_lower_callback(GtkSpinButton *spin_button, AgsFMSynth *fm_synth);

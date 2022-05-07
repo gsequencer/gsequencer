@@ -86,13 +86,11 @@ void
 ags_test_enter()
 {
   g_rec_mutex_lock(ags_test_get_driver_mutex());
-  gdk_threads_enter();
 }
 
 void
 ags_test_leave()
 {
-  gdk_threads_leave();
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
 }
 
@@ -388,7 +386,7 @@ ags_test_show_file_error(gchar *filename,
 				  GTK_BUTTONS_OK,
 				  "Failed to open '%s'",
 				  filename);
-  gtk_widget_show_all((GtkWidget *) dialog);
+  gtk_widget_show((GtkWidget *) dialog);
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(ags_test_main_quit), NULL);
   gtk_main();

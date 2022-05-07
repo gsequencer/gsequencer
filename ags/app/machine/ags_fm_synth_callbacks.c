@@ -29,9 +29,9 @@
 #include <math.h>
 
 void
-ags_fm_synth_auto_update_callback(GtkToggleButton *toggle, AgsFMSynth *fm_synth)
+ags_fm_synth_auto_update_callback(GtkCheckButton *check_button, AgsFMSynth *fm_synth)
 {
-  if(gtk_toggle_button_get_active(toggle)){
+  if(gtk_check_button_get_active(check_button)){
     ags_fm_synth_set_flags(fm_synth, AGS_FM_SYNTH_AUTO_UPDATE);
   }else{
     ags_fm_synth_unset_flags(fm_synth, AGS_FM_SYNTH_AUTO_UPDATE);

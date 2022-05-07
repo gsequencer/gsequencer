@@ -315,7 +315,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   gtk_spin_button_set_value(fm_oscillator->volume, 0.2);
   gtk_grid_attach(grid,
 		  (GtkWidget *) fm_oscillator->volume,
-		  5, 1,
+		  6, 1,
 		  1, 1);
 
   /* do sync */

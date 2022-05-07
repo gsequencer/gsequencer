@@ -25,9 +25,9 @@
 #include <math.h>
 
 void
-ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
+ags_synth_auto_update_callback(GtkCheckButton *check_button, AgsSynth *synth)
 {
-  if(gtk_toggle_button_get_active(toggle)){
+  if(gtk_check_button_get_active(check_button)){
     ags_synth_set_flags(synth, AGS_SYNTH_AUTO_UPDATE);
   }else{
     ags_synth_unset_flags(synth, AGS_SYNTH_AUTO_UPDATE);

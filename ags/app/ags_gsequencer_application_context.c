@@ -3094,13 +3094,11 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   uid = getuid();
   pw = getpwuid(uid);
 
-#if 0
+#if 1
   blacklist_path = g_strdup_printf("%s%c%s",
 				   pw->pw_dir,
 				   G_DIR_SEPARATOR,
 				   AGS_DEFAULT_DIRECTORY);
-#else
-  blacklist_path = g_strdup_printf("/Users/joelkrahemann/.gsequencer");  
 #endif
 #endif
   

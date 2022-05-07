@@ -265,7 +265,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_spin_button_set_value(oscillator->frame_count,
 			    AGS_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_OSCILLATOR_DEFAULT_SAMPLERATE));
   gtk_grid_attach(grid,
-		  (GtkWidget *) oscillator->frame_count, 5, 0,
+		  (GtkWidget *) oscillator->frame_count,
+		  6, 0,
 		  1, 1);
 
   /* phase */

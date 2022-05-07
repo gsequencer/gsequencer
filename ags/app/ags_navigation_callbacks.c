@@ -155,7 +155,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(current_machine,
 				   TRUE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+				   !gtk_check_button_get_active(navigation->exclude_sequencer), TRUE, FALSE, FALSE);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to play!\n");
@@ -213,7 +213,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(current_machine,
 				   FALSE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+				   !gtk_check_button_get_active(navigation->exclude_sequencer), TRUE, FALSE, FALSE);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to stop!");
@@ -325,11 +325,11 @@ ags_navigation_loop_callback(GtkWidget *widget,
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(widget)));
 			 
   g_value_init(&do_loop_value, G_TYPE_BOOLEAN);
   g_value_set_boolean(&do_loop_value,
-		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+		      gtk_check_button_get_active(GTK_CHECK_BUTTON(widget)));
 
   while(machines != NULL){
     AgsMachine *current_machine;
@@ -513,7 +513,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
 
   g_value_init(&value, G_TYPE_UINT64);
   g_value_set_uint64(&value,
@@ -691,7 +691,7 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
 
   g_value_init(&value, G_TYPE_UINT64);
   g_value_set_uint64(&value,

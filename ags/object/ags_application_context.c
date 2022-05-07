@@ -393,6 +393,9 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->version = g_strdup(AGS_VERSION);
   application_context->build_id = g_strdup(AGS_BUILD_ID);
 
+  g_atomic_int_set(&(application_context->is_ready),
+		   FALSE);
+  
   application_context->log = NULL;
   
   application_context->domain = NULL;

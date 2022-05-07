@@ -98,6 +98,8 @@ AgsAudioApplicationContext *audio_application_context;
 
 AgsAudio *output_panel;
 AgsAudio *wave_player;
+AgsSynthUtil *synth_util;
+AgsFastPitchUtil *fast_pitch_util;
 
 GObject *output_soundcard;
 
@@ -153,7 +155,8 @@ int
 ags_functional_fast_pitch_test_init_suite()
 {
   AgsChannel *channel, *link;
-  
+  AgsRecallContainer *play_container, *recall_container;
+    
   AgsConfig *config;
 
   GList *start_list;
@@ -215,16 +218,20 @@ ags_functional_fast_pitch_test_init_suite()
 		     AGS_TYPE_INPUT,
 		     1, 0);
 
-  /* ags-play */
-  ags_recall_factory_create(output_panel,
-			    NULL, NULL,
-			    "ags-play-master",
-			    0, AGS_FUNCTIONAL_FAST_PITCH_TEST_AUDIO_CHANNELS,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-playback */
+  play_container = ags_recall_container_new();
+  recall_container = ags_recall_container_new();
+  
+  ags_fx_factory_create(output_panel,
+			play_container, recall_container,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, AGS_FUNCTIONAL_FAST_PITCH_TEST_AUDIO_CHANNELS,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
 
   ags_connectable_connect(AGS_CONNECTABLE(output_panel));
 
@@ -258,16 +265,34 @@ ags_functional_fast_pitch_test_init_suite()
     channel = channel->next;
   }
   
-  /* ags-play-wave */
-  ags_recall_factory_create(wave_player,
-			    NULL, NULL,
-			    "ags-play-wave",
-			    0, AGS_FUNCTIONAL_FAST_PITCH_TEST_AUDIO_CHANNELS,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  /* ags-fx-playback */
+  play_container = ags_recall_container_new();
+  recall_container = ags_recall_container_new();
+
+  ags_fx_factory_create(wave_player,
+			play_container, recall_container,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, AGS_FUNCTIONAL_FAST_PITCH_TEST_AUDIO_CHANNELS,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
+  play_container = ags_recall_container_new();
+  recall_container = ags_recall_container_new();
+
+  ags_fx_factory_create(wave_player,
+			play_container, recall_container,
+			"ags-fx-buffer",
+			NULL,
+			NULL,
+			0, AGS_FUNCTIONAL_FAST_PITCH_TEST_AUDIO_CHANNELS,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
 
   ags_connectable_connect(AGS_CONNECTABLE(wave_player));
 
@@ -275,6 +300,11 @@ ags_functional_fast_pitch_test_init_suite()
   start_list = g_list_reverse(start_list);
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(audio_application_context),
 			       start_list);
+
+  /* fast pitch util */
+  synth_util = ags_synth_util_alloc();
+
+  fast_pitch_util = ags_fast_pitch_util_alloc();
 
   /* link */
   channel = output_panel->input;
@@ -383,6 +413,22 @@ ags_functional_fast_pitch_test_pitch_up()
 
   gint i, j, k;
   gboolean success;
+
+  ags_synth_util_set_buffer_length(synth_util,
+				   AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE);
+  ags_synth_util_set_format(synth_util,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_synth_util_set_samplerate(synth_util,
+				AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE);
+
+  ags_synth_util_set_synth_oscillator_mode(synth_util,
+					   AGS_SYNTH_OSCILLATOR_SIN);
+
+  ags_synth_util_set_frequency(synth_util,
+			       AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_FREQ);
+
+  ags_synth_util_set_volume(synth_util,
+			    AGS_FUNCTIONAL_FAST_PITCH_TEST_VOLUME);
   
   start_wave = NULL;
   
@@ -418,13 +464,25 @@ ags_functional_fast_pitch_test_pitch_up()
 			  FALSE);
 
       phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE / AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_FREQ);
-      ags_synth_util_sin(buffer->data,
-			 AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_FREQ, phase, AGS_FUNCTIONAL_FAST_PITCH_TEST_VOLUME,
-			 AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_FAST_PITCH_TEST_FORMAT),
-			 0, AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE);
+
+      ags_synth_util_set_source(synth_util,
+				buffer->data);
+
+      ags_synth_util_set_phase(synth_util,
+			       phase);
     }
   }
   
+  ags_fast_pitch_util_set_buffer_length(fast_pitch_util,
+					AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE);
+  ags_fast_pitch_util_set_format(fast_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_fast_pitch_util_set_samplerate(fast_pitch_util,
+				     AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE);
+
+  ags_fast_pitch_util_set_base_key(fast_pitch_util,
+				   AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_KEY);
+
   start_list = NULL;
   
   for(i = (gint) AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_KEY; i <= (gint) AGS_FUNCTIONAL_FAST_PITCH_TEST_PITCH_UP_END_KEY; i++){
@@ -444,17 +502,13 @@ ags_functional_fast_pitch_test_pitch_up()
       pitch_buffer = AGS_WAVE(pitch_wave->data)->buffer;
       
       for(k = 0; pitch_buffer != NULL; k++){	
-	switch(AGS_FUNCTIONAL_FAST_PITCH_TEST_FORMAT){
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ags_fast_pitch_util_compute_s16(AGS_BUFFER(pitch_buffer->data)->data,
-					  AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE,
-					  AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE,
-					  AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_KEY,
-					  (gdouble) i * AGS_FUNCTIONAL_FAST_PITCH_TEST_TUNE);
-	}
-	break;
-	}
+	ags_fast_pitch_util_set_source(fast_pitch_util,
+				       AGS_BUFFER(g_list_nth_data(AGS_WAVE(start_wave->data)->buffer, k))->data);
+
+	ags_fast_pitch_util_set_destination(fast_pitch_util,
+					    AGS_BUFFER(pitch_buffer->data)->data);
+	  
+	ags_fast_pitch_util_pitch(fast_pitch_util);
 	
 	pitch_buffer = pitch_buffer->next;
       }
@@ -530,6 +584,22 @@ ags_functional_fast_pitch_test_pitch_down()
   gint i, j, k;
   gboolean success;
 
+  ags_synth_util_set_buffer_length(synth_util,
+				   AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE);
+  ags_synth_util_set_format(synth_util,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_synth_util_set_samplerate(synth_util,
+				AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE);
+
+  ags_synth_util_set_synth_oscillator_mode(synth_util,
+					   AGS_SYNTH_OSCILLATOR_SIN);
+
+  ags_synth_util_set_frequency(synth_util,
+			       AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_FREQ);
+
+  ags_synth_util_set_volume(synth_util,
+			    AGS_FUNCTIONAL_FAST_PITCH_TEST_VOLUME);
+
   start_wave = NULL;
   
   for(i = 0; i < AGS_FUNCTIONAL_FAST_PITCH_TEST_AUDIO_CHANNELS; i++){
@@ -564,12 +634,26 @@ ags_functional_fast_pitch_test_pitch_down()
 			  FALSE);
 
       phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE / AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_FREQ);
-      ags_synth_util_sin(buffer->data,
-			 AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_FREQ, phase, AGS_FUNCTIONAL_FAST_PITCH_TEST_VOLUME,
-			 AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_FAST_PITCH_TEST_FORMAT),
-			 0, AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE);
+
+      ags_synth_util_set_source(synth_util,
+				buffer->data);
+
+      ags_synth_util_set_phase(synth_util,
+			       phase);
+      
+      ags_synth_util_compute_sin(synth_util);
     }
   }
+
+  ags_fast_pitch_util_set_buffer_length(fast_pitch_util,
+					AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE);
+  ags_fast_pitch_util_set_format(fast_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_fast_pitch_util_set_samplerate(fast_pitch_util,
+				     AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE);
+
+  ags_fast_pitch_util_set_base_key(fast_pitch_util,
+				   AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_KEY);
   
   start_list = NULL;
   
@@ -590,17 +674,13 @@ ags_functional_fast_pitch_test_pitch_down()
       pitch_buffer = AGS_WAVE(pitch_wave->data)->buffer;
       
       for(k = 0; k < floor(AGS_FUNCTIONAL_FAST_PITCH_TEST_PITCH_UP_FRAME_COUNT / AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE); k++){
-	switch(AGS_FUNCTIONAL_FAST_PITCH_TEST_FORMAT){
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ags_fast_pitch_util_compute_s16(AGS_BUFFER(pitch_buffer->data)->data,
-					  AGS_FUNCTIONAL_FAST_PITCH_TEST_BUFFER_SIZE,
-					  AGS_FUNCTIONAL_FAST_PITCH_TEST_SAMPLERATE,
-					  AGS_FUNCTIONAL_FAST_PITCH_TEST_BASE_KEY,
-					  (gdouble) i * AGS_FUNCTIONAL_FAST_PITCH_TEST_TUNE);
-	}
-	break;
-	}
+	ags_fast_pitch_util_set_source(fast_pitch_util,
+				       AGS_BUFFER(g_list_nth_data(AGS_WAVE(start_wave->data)->buffer, k))->data);
+
+	ags_fast_pitch_util_set_destination(fast_pitch_util,
+					    AGS_BUFFER(pitch_buffer->data)->data);
+	  
+	ags_fast_pitch_util_pitch(fast_pitch_util);
 	
 	pitch_buffer = pitch_buffer->next;
       }

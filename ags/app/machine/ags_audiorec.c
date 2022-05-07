@@ -235,30 +235,6 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 			      AGS_AUDIO_INPUT_HAS_RECYCLING));
   ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
 
-  g_object_get(audio,
-	       "playback-domain", &playback_domain,
-	       NULL);
-
-  if(playback_domain != NULL){
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsThread *audio_thread;
-      
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  i);
-      
-      if(audio_thread != NULL){
-	ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread, TRUE);
-	ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
-					     staging_program,
-					     1);
-
-	g_object_unref(audio_thread);
-      }
-    }
-    
-    g_object_unref(playback_domain);
-  }
-  
   AGS_MACHINE(audiorec)->flags |= (AGS_MACHINE_IS_WAVE_PLAYER);
 
   /* audio resize */
