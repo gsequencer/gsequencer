@@ -80,14 +80,14 @@ struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *templa
   "max-precision=250\n"					\
   "\n"							\
   "[soundcard-0]\n"					\
-  "backend=alsa\n"					\
-  "device=hw:CARD=PCH,DEV=0\n"				\
+  "backend=pulse\n"					\
+  "device=ags-pulse-devout-0\n"				\
   "samplerate=44100\n"					\
   "buffer-size=1024\n"					\
   "pcm-channels=2\n"					\
   "dsp-channels=2\n"					\
   "format=16\n"						\
-  "use-cache=false\n"					\
+  "use-cache=true\n"					\
   "cache-buffer-size=4096\n"				\
   "\n"							\
   "[recall]\n"						\
@@ -159,8 +159,7 @@ ags_functional_pitch_test_init_suite()
   AgsPlaybackDomain *playback_domain;
   AgsChannel *channel, *link;
   AgsRecallContainer *playback_play_container, *playback_recall_container;
-  AgsRecallContainer *buffer_play_container, *buffer_recall_container;
-  
+  AgsRecallContainer *buffer_play_container, *buffer_recall_container;  
   AgsAudioLoop *audio_loop;
   AgsAudioThread *audio_thread;
 
@@ -200,8 +199,6 @@ ags_functional_pitch_test_init_suite()
 
   ags_application_context_prepare(audio_application_context);
   ags_application_context_setup(audio_application_context);
-
-  ags_connectable_connect(AGS_CONNECTABLE(audio_application_context));
 
   /* audio loop */
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(audio_application_context));
@@ -854,4 +851,3 @@ main(int argc, char **argv)
   
   return(-1);
 }
-

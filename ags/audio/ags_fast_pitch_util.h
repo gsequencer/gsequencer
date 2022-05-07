@@ -55,7 +55,7 @@ struct _AgsFastPitchUtil
   guint low_mix_buffer_max_buffer_length;
 
   gpointer new_mix_buffer;
-  guint new_mix_max_buffer_length;
+  guint new_mix_buffer_max_buffer_length;
 
   guint buffer_length;
   guint format;
