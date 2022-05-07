@@ -3004,12 +3004,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       /* start soundcard */
-      start_soundcard = ags_start_soundcard_new(application_context);
+      start_soundcard = ags_start_soundcard_new();
       list = g_list_prepend(list,
 			    start_soundcard);
 
       /* start sequencer */
-      start_sequencer = ags_start_sequencer_new(application_context);
+      start_sequencer = ags_start_sequencer_new();
       list = g_list_prepend(list,
 			    start_sequencer);
       
