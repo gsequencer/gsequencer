@@ -75,6 +75,8 @@ struct _AgsEffectBulk
   GType channel_type;
   AgsAudio *audio;
 
+  GtkWidget *parent_bridge;
+  
   GtkBox *control_box;
   
   GtkButton *add;

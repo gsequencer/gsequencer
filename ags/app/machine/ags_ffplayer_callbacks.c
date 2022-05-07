@@ -354,13 +354,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   ags_ffplayer_update(ffplayer);
 }
 
-gboolean
-ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
-{
-
-  return(FALSE);
-}
-
 void
 ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer)
 {

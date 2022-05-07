@@ -130,7 +130,9 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
 									      NULL);
-
+  
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input)->parent_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
+  
   gtk_widget_set_valign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,

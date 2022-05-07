@@ -804,7 +804,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	  }else{
 	    /* destroy effect pad */
 	    effect_pad =
-	      start_effect_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge->input);
+	      start_effect_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 	    
 	    effect_pad = g_list_nth(effect_pad,
 				    input_pads);

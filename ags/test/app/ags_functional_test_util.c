@@ -843,10 +843,6 @@ ags_functional_test_util_menu_button_click(GtkMenuButton *button)
     return(FALSE);
   }
   
-  ags_test_enter();
-  
-  ags_test_leave();
-
   widget = button;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
@@ -1308,19 +1304,23 @@ ags_functional_test_util_export_remove(guint nth)
       list = list->next;
     }
   
-    ags_test_leave();
-
     g_list_free(list);
   
     if(!success){
+      ags_test_leave();
+
       return(FALSE);
     }
     
+    ags_test_leave();
+
     success = ags_functional_test_util_button_click(remove_button);
     ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 							&ags_functional_test_util_default_timeout,
 							&condition);
-  }  
+  }else{
+    ags_test_leave();
+  }
   
   return(success);
 }
@@ -3616,6 +3616,8 @@ ags_functional_test_util_machine_editor_dialog_ladspa_filename(guint nth_machine
 
   g_list_free(list_start);
 
+  ags_test_enter();
+
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
@@ -3749,6 +3751,8 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect(guint nth_machine,
   }
 
   g_list_free(list_start);
+
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
@@ -3884,6 +3888,8 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename(guint nth_machine,
 
   g_list_free(list_start);
 
+  ags_test_enter();
+
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
   nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
@@ -4017,6 +4023,8 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect(guint nth_machine,
   if(machine == NULL){
     return(FALSE);
   }
+
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 

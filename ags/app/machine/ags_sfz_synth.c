@@ -745,6 +745,13 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 void
 ags_sfz_synth_finalize(GObject *gobject)
 {
+  AgsSFZSynth *sfz_synth;
+
+  sfz_synth = AGS_SFZ_SYNTH(gobject);
+
+  g_hash_table_remove(ags_sfz_synth_sfz_loader_completed,
+		      sfz_synth);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_sfz_synth_parent_class)->finalize(gobject);
 }

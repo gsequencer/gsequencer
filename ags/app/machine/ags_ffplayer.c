@@ -787,9 +787,6 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 				 ffplayer,
 				 NULL);
 
-  g_signal_connect((GObject *) ffplayer->drawing_area, "button_press_event",
-                   G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback), (gpointer) ffplayer);
-
   g_signal_connect((GObject *) ffplayer->hadjustment, "value_changed",
 		   G_CALLBACK(ags_ffplayer_hscrollbar_value_changed), (gpointer) ffplayer);
 
@@ -857,12 +854,6 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 				 NULL,
 				 NULL,
 				 NULL);
-
-  g_object_disconnect((GObject *) ffplayer->drawing_area,
-		      "any_signal::button_press_event",
-		      G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback),
-		      (gpointer) ffplayer,
-		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->hadjustment,
 		      "any_signal::value_changed",

@@ -417,7 +417,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->channel_type = G_TYPE_NONE;
   effect_bulk->audio = NULL;
 
-  effect_bulk->plugin = NULL;
+  effect_bulk->parent_bridge = NULL;
 
   hbox =
     effect_bulk->control_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -454,6 +454,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->bulk_member_grid = (GtkGrid *) gtk_grid_new();
   gtk_box_append((GtkBox *) hbox,
 		 (GtkWidget *) effect_bulk->bulk_member_grid);
+
+  effect_bulk->plugin = NULL;
 
   effect_bulk->plugin_browser = NULL;
 
@@ -619,16 +621,18 @@ ags_effect_bulk_finalize(GObject *gobject)
 		   (GDestroyNotify) ags_effect_bulk_plugin_free);
 
   /* destroy plugin browser */
-  ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+  if(effect_bulk->plugin_browser != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
 
-  g_object_disconnect(G_OBJECT(effect_bulk->plugin_browser),
-		      "any_signal::response",
-		      G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback),
-		      effect_bulk,
-		      NULL);
+    g_object_disconnect(G_OBJECT(effect_bulk->plugin_browser),
+			"any_signal::response",
+			G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback),
+			effect_bulk,
+			NULL);
 
-  gtk_window_destroy(GTK_WINDOW(effect_bulk->plugin_browser));
-
+    gtk_window_destroy(GTK_WINDOW(effect_bulk->plugin_browser));
+  }
+  
   /* remove of the queued drawing hash */
   list = effect_bulk->queued_refresh;
 
@@ -659,7 +663,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 
   effect_bulk->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk->parent_bridge,
 						   AGS_TYPE_MACHINE);
   
   g_signal_connect_after(machine, "resize-audio-channels",
@@ -705,7 +709,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 
   effect_bulk->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk->parent_bridge,
 						   AGS_TYPE_MACHINE);
 
   g_object_disconnect(G_OBJECT(machine),
