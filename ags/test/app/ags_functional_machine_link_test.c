@@ -168,8 +168,9 @@ void
 ags_functional_machine_link_test_master_mixer()
 {
   GtkDialog *properties;
-
-  AgsFunctionalTestUtilContainerTest container_test;
+  GtkWidget **widget;
+  
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -180,42 +181,44 @@ ags_functional_machine_link_test_master_mixer()
   guint nth_machine;
   gboolean success;
 
-  gsequencer_application_context = ags_application_context;
+  ags_test_enter();
 
+  gsequencer_application_context = ags_application_context_get_instance();
+
+  widget = &(gsequencer_application_context->window);
+  
+  ags_test_leave();
+  
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &(gsequencer_application_context->window));
+						      widget);
 
   /* add panel */
   ags_functional_test_util_add_machine(NULL,
 				       "Panel");
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 1;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
   /* retrieve panel */
   nth_machine = 0;
   
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  panel = g_list_nth_data(list_start,
+			  nth_machine);
 
   ags_test_leave();
 
-  if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
-    panel = list->data;
-  }else{
-    panel = NULL;
-  }
-  
+  CU_ASSERT(panel != NULL);
+
   ags_functional_test_util_machine_hide(nth_machine);
   
   /* add mixer */
@@ -227,30 +230,28 @@ ags_functional_machine_link_test_master_mixer()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 2;
+  ags_test_enter();
+
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 2;
+
+  ags_test_leave();
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
   /* retrieve master mixer */
   nth_machine = 1;
   
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  master_mixer = g_list_nth_data(list_start,
+				 nth_machine);
 
   ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_MIXER(list->data)){
-    master_mixer = list->data;
-  }else{
-    master_mixer = NULL;
-  }
   
   CU_ASSERT(master_mixer != NULL);
 
@@ -259,30 +260,30 @@ ags_functional_machine_link_test_master_mixer()
    */
   
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_RESIZE_TAB;
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_RESIZE_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  resize_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+								     resize_tab);
 
   CU_ASSERT(success == TRUE);
   
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
   /* resize input */
-  success = ags_functional_test_util_machine_properties_resize_inputs(nth_machine,
-								      AGS_FUNCTIONAL_MACHINE_LINK_TEST_MASTER_MIXER_INPUT_PADS);
+  success = ags_functional_test_util_machine_editor_dialog_resize_inputs(nth_machine,
+									 AGS_FUNCTIONAL_MACHINE_LINK_TEST_MASTER_MIXER_INPUT_PADS);
 
   CU_ASSERT(success == TRUE);
 
@@ -291,7 +292,7 @@ ags_functional_machine_link_test_master_mixer()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(master_mixer)->properties;
+  properties = AGS_MACHINE(master_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -308,24 +309,24 @@ ags_functional_machine_link_test_master_mixer()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  output_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_OUTPUT_TAB;
+  output_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_OUTPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  output_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+								     output_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -340,17 +341,17 @@ ags_functional_machine_link_test_master_mixer()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_machine,
-								 0, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_machine,
+								    0, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_machine,
-								 0, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_machine,
+								    0, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -359,7 +360,7 @@ ags_functional_machine_link_test_master_mixer()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(master_mixer)->properties;
+  properties = AGS_MACHINE(master_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -382,7 +383,7 @@ ags_functional_machine_link_test_slave_mixer()
 {
   GtkDialog *properties;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -402,19 +403,20 @@ ags_functional_machine_link_test_slave_mixer()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 3;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 3;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
   /* retrieve master mixer */
   nth_machine = 2;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -436,24 +438,24 @@ ags_functional_machine_link_test_slave_mixer()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  output_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_OUTPUT_TAB;
+  output_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_OUTPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  output_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+								     output_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -468,17 +470,17 @@ ags_functional_machine_link_test_slave_mixer()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_machine,
-								 0, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_machine,
+								    0, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_machine,
-								 0, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_machine,
+								    0, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -487,7 +489,7 @@ ags_functional_machine_link_test_slave_mixer()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -510,7 +512,7 @@ ags_functional_machine_link_test_drum()
 {
   GtkDialog *properties;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -531,12 +533,13 @@ ags_functional_machine_link_test_drum()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 4;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 4;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
@@ -544,7 +547,7 @@ ags_functional_machine_link_test_drum()
   nth_parent_machine = 2;
   nth_machine = 3;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -564,24 +567,24 @@ ags_functional_machine_link_test_drum()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -596,17 +599,17 @@ ags_functional_machine_link_test_drum()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 0, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    0, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 0, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    0, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -615,7 +618,7 @@ ags_functional_machine_link_test_drum()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -638,7 +641,7 @@ ags_functional_machine_link_test_matrix()
 {
   GtkDialog *properties;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -659,12 +662,13 @@ ags_functional_machine_link_test_matrix()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 5;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 5;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
@@ -672,7 +676,7 @@ ags_functional_machine_link_test_matrix()
   nth_parent_machine = 2;
   nth_machine = 4;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -694,32 +698,32 @@ ags_functional_machine_link_test_matrix()
    */
   
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_RESIZE_TAB;
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_RESIZE_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  resize_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+								     resize_tab);
 
   CU_ASSERT(success == TRUE);
   
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* resize output */
-  success = ags_functional_test_util_machine_properties_resize_outputs(nth_machine,
-								       AGS_FUNCTIONAL_MACHINE_LINK_TEST_MATRIX_OUTPUT_PADS);
+  success = ags_functional_test_util_machine_editor_dialog_resize_outputs(nth_machine,
+									  AGS_FUNCTIONAL_MACHINE_LINK_TEST_MATRIX_OUTPUT_PADS);
 
   CU_ASSERT(success == TRUE);
 
@@ -728,7 +732,7 @@ ags_functional_machine_link_test_matrix()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(matrix)->properties;
+  properties = AGS_MACHINE(matrix)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -743,24 +747,24 @@ ags_functional_machine_link_test_matrix()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -775,15 +779,15 @@ ags_functional_machine_link_test_matrix()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 1, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    1, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 1, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    1, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -792,7 +796,7 @@ ags_functional_machine_link_test_matrix()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -815,7 +819,7 @@ ags_functional_machine_link_test_synth()
 {
   GtkDialog *properties;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -836,12 +840,13 @@ ags_functional_machine_link_test_synth()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 6;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 6;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
@@ -849,7 +854,7 @@ ags_functional_machine_link_test_synth()
   nth_parent_machine = 4;
   nth_machine = 5;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -869,24 +874,24 @@ ags_functional_machine_link_test_synth()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_link_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB;
+  input_link_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_link_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_link_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -903,23 +908,23 @@ ags_functional_machine_link_test_synth()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_bulk_add(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_bulk_add(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_bulk_link(nth_parent_machine,
-								  0,
-								  link_name);
+  success = ags_functional_test_util_machine_editor_dialog_bulk_link(nth_parent_machine,
+								     0,
+								     link_name);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_bulk_count(nth_parent_machine,
-								   0,
-								   input_line_count);
+  success = ags_functional_test_util_machine_editor_dialog_bulk_count(nth_parent_machine,
+								      0,
+								      input_line_count);
 
   CU_ASSERT(success == TRUE);
 
@@ -928,7 +933,7 @@ ags_functional_machine_link_test_synth()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(matrix)->properties;
+  properties = AGS_MACHINE(matrix)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -952,7 +957,7 @@ ags_functional_machine_link_test_ffplayer_0()
 {
   GtkDialog *properties;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -971,12 +976,13 @@ ags_functional_machine_link_test_ffplayer_0()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 7;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 7;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
@@ -984,7 +990,7 @@ ags_functional_machine_link_test_ffplayer_0()
   nth_parent_machine = 2;
   nth_machine = 6;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1006,22 +1012,22 @@ ags_functional_machine_link_test_ffplayer_0()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1036,17 +1042,17 @@ ags_functional_machine_link_test_ffplayer_0()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 2, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    2, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 2, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    2, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1055,7 +1061,7 @@ ags_functional_machine_link_test_ffplayer_0()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1078,7 +1084,7 @@ ags_functional_machine_link_test_ffplayer_1()
 {
   GtkDialog *properties;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
   GList *list_start, *list;
   
@@ -1099,12 +1105,13 @@ ags_functional_machine_link_test_ffplayer_1()
   ags_functional_test_util_reaction_time_long();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 8;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 8;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_machine_link_test_default_timeout,
-						      &container_test);
+						      &condition);
 
   ags_test_enter();
   
@@ -1112,7 +1119,7 @@ ags_functional_machine_link_test_ffplayer_1()
   nth_parent_machine = 2;
   nth_machine = 7;
 
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
+  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1134,24 +1141,24 @@ ags_functional_machine_link_test_ffplayer_1()
    */
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1166,17 +1173,17 @@ ags_functional_machine_link_test_ffplayer_1()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 3, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    3, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 3, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    3, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1185,7 +1192,7 @@ ags_functional_machine_link_test_ffplayer_1()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1229,24 +1236,24 @@ ags_functional_machine_link_test_relink_all()
   nth_machine = 6;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1261,17 +1268,17 @@ ags_functional_machine_link_test_relink_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 7, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    7, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 7, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    7, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1280,7 +1287,7 @@ ags_functional_machine_link_test_relink_all()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1300,24 +1307,24 @@ ags_functional_machine_link_test_relink_all()
   nth_machine = 3;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1332,24 +1339,24 @@ ags_functional_machine_link_test_relink_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 6, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    6, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 6, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    6, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1368,24 +1375,24 @@ ags_functional_machine_link_test_relink_all()
   nth_machine = 4;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1400,17 +1407,17 @@ ags_functional_machine_link_test_relink_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 0, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    0, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 0, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    0, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1419,7 +1426,7 @@ ags_functional_machine_link_test_relink_all()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1455,24 +1462,24 @@ ags_functional_machine_link_test_reset_link_all()
   nth_machine = 6;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1487,17 +1494,17 @@ ags_functional_machine_link_test_reset_link_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 0, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    0, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 0, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    0, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1506,7 +1513,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1526,24 +1533,24 @@ ags_functional_machine_link_test_reset_link_all()
   nth_machine = 3;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1558,17 +1565,17 @@ ags_functional_machine_link_test_reset_link_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 1, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    1, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 1, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    1, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1577,7 +1584,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1596,24 +1603,24 @@ ags_functional_machine_link_test_reset_link_all()
   nth_machine = 4;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1626,17 +1633,17 @@ ags_functional_machine_link_test_reset_link_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 1, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    1, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 1, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    1, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1645,7 +1652,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 
@@ -1664,24 +1671,24 @@ ags_functional_machine_link_test_reset_link_all()
   nth_machine = 3;
 
   /* open properties */
-  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click tab */
-  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
-  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
-								  input_tab);
+  success = ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
+								     input_tab);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
   /* click enable */
-  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+  success = ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1696,17 +1703,17 @@ ags_functional_machine_link_test_reset_link_all()
 
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 2, 0,
-								 link_name, 0);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    2, 0,
+								    link_name, 0);
 
   CU_ASSERT(success == TRUE);
 
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
-								 2, 1,
-								 link_name, 1);
+  success = ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+								    2, 1,
+								    link_name, 1);
 
   CU_ASSERT(success == TRUE);
 
@@ -1715,7 +1722,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* response ok */
   ags_test_enter();
 
-  properties = AGS_MACHINE(slave_mixer)->properties;
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
   ags_test_leave();
 

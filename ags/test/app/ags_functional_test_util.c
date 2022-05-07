@@ -113,6 +113,24 @@ ags_functional_test_util_driver_dispatch(GSource *source,
   return(G_SOURCE_CONTINUE);
 }
 
+gboolean
+ags_functional_test_timeout(gpointer data)
+{
+  g_main_context_iteration(g_main_context_default(),
+			   FALSE);
+
+  g_rec_mutex_unlock(ags_test_get_driver_mutex());
+  
+  usleep(4000);
+  
+  g_rec_mutex_lock(ags_test_get_driver_mutex());
+
+  g_main_context_iteration(g_main_context_default(),
+			   FALSE);
+
+  return(G_SOURCE_CONTINUE);
+}
+
 GThread*
 ags_functional_test_util_test_runner_thread()
 {
@@ -212,7 +230,6 @@ ags_functional_test_util_do_run(int argc, char **argv,
   AgsLog *log;
 
   GThread *thread;
-  GRecMutex *mutex;
   
   GSource *driver_source;
   GSourceFuncs driver_funcs;
@@ -235,13 +252,13 @@ ags_functional_test_util_do_run(int argc, char **argv,
 		      "Welcome to Advanced Gtk+ Sequencer - Test");
 
   /* application context */
-  mutex = ags_test_get_driver_mutex();
-  g_rec_mutex_lock(mutex);
-
+  g_rec_mutex_lock(ags_test_get_driver_mutex());
+ 
   thread = g_thread_new("libgsequencer.so - functional test",
 			ags_functional_test_util_do_run_thread,
 			is_available);
 
+#if 0
   driver_funcs.prepare = ags_functional_test_util_driver_prepare;
   driver_funcs.check = ags_functional_test_util_driver_check;
   driver_funcs.dispatch = ags_functional_test_util_driver_dispatch;
@@ -251,6 +268,11 @@ ags_functional_test_util_do_run(int argc, char **argv,
 			       sizeof(GSource));
   g_source_attach(driver_source,
   		  g_main_context_default());
+#else
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT,
+		ags_functional_test_timeout,
+		NULL);
+#endif
   
   application_context = ags_application_context_get_instance();
   
@@ -479,7 +501,7 @@ ags_functional_test_util_idle_test_list_length(AgsFunctionalTestUtilListLengthCo
   
   ags_test_enter();
   
-  if(g_list_length(condition->start_list) == condition->length){
+  if(g_list_length(condition->start_list[0]) == condition->length){
     do_idle = FALSE;
   }
 
@@ -2427,8 +2449,6 @@ ags_functional_test_util_machine_menu_button_click(guint nth_machine,
     return(FALSE);
   }
   
-  ags_test_enter();
-
   if(!g_strcmp0(action, "machine.move_up")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.move_down")){
@@ -2438,8 +2458,12 @@ ags_functional_test_util_machine_menu_button_click(guint nth_machine,
   }else if(!g_strcmp0(action, "machine.show")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.destroy")){
+    ags_test_enter();
+
     ags_machine_destroy_callback(NULL, NULL,
 				 machine);
+
+    ags_test_leave();
   }else if(!g_strcmp0(action, "machine.rename")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.rename_audio")){
@@ -2447,7 +2471,22 @@ ags_functional_test_util_machine_menu_button_click(guint nth_machine,
   }else if(!g_strcmp0(action, "machine.reposition_audio")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.properties")){
-    //TODO:JK: implement me
+    GtkWidget **widget;
+    
+    ags_test_enter();
+
+    ags_machine_properties_callback(NULL, NULL,
+				    machine);
+
+    widget = &(machine->machine_editor_dialog);
+
+    ags_test_leave();
+
+    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+							&ags_functional_test_util_default_timeout,
+							widget);
+
+    ags_functional_test_util_reaction_time_long();
   }else if(!g_strcmp0(action, "machine.sticky_controls")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.copy_pattern")){
@@ -2471,9 +2510,7 @@ ags_functional_test_util_machine_menu_button_click(guint nth_machine,
   }else{
     success = FALSE;
   }
-  
-  ags_test_leave();
-  
+    
   return(success);
 }
 
@@ -2897,6 +2934,7 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
+  GtkWidget **widget;
   
   GList *list_start, *list;
   
@@ -2908,15 +2946,12 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
 
   /* retrieve machine */
   list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  list = g_list_nth(list_start,
-		    nth_machine);
+  machine = g_list_nth_data(list_start,
+			 nth_machine);
 
   ags_test_leave();
   
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }else{
+  if(machine == NULL){
     return(FALSE);
   }
 
@@ -2927,6 +2962,18 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
 
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
+  widget = &(machine_editor->notebook);
+  
+  ags_test_leave();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_test_util_default_timeout,
+						      widget);
+
+  ags_functional_test_util_reaction_time_long();
+
+  ags_test_enter();
+  
   gtk_notebook_set_current_page(machine_editor->notebook,
 				nth_tab);
 
