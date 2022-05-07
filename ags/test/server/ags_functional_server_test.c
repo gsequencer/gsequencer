@@ -99,6 +99,8 @@ ags_functional_server_test_init_suite()
 
   ags_application_context_prepare(server_application_context);
   ags_application_context_setup(server_application_context);
+
+  AGS_SERVER(server_application_context->server->data)->path = "/ags-xmlrpc";
   
   /* server */
   sleep(5);
@@ -137,16 +139,17 @@ ags_functional_server_test_authenticate()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
 
-  GInputStream *response;
+  GBytes *response_body;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
 
-  gchar buffer[8192];
+  gchar *buffer;
   gchar *login;
   gchar *security_token;
   char *name, *value;
-  
+
+  gsize buffer_size;
   guint status;
   gsize read_count;
 
@@ -158,10 +161,10 @@ ags_functional_server_test_authenticate()
   g_signal_connect(msg, "authenticate",
 		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
 
-  response = soup_session_send_and_read(soup_session,
-					msg,
-					NULL,
-					NULL);
+  response_body = soup_session_send_and_read(soup_session,
+					     msg,
+					     NULL,
+					     NULL);
 
   status = soup_message_get_status(msg);
 
@@ -177,17 +180,12 @@ ags_functional_server_test_authenticate()
     g_message("%s: %s", name, value);
   }
 
-  g_input_stream_read(response,
-		      buffer,
-		      8191,
-		      NULL,
-		      NULL);
-
-  buffer[8191] = '\0';
+  //  buffer = g_bytes_get_data(response_body,
+  //			    &buffer_size);
   
   g_message("%s", buffer);
 
-  CU_ASSERT(status == 200);
+  CU_ASSERT(status == 302);
 
   cookie = soup_cookies_from_response(msg);
   

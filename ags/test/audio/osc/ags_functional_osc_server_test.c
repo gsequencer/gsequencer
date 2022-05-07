@@ -214,41 +214,31 @@ ags_functional_osc_server_test_init_suite()
 			       g_list_prepend(start_audio,
 					      drum));
 
-  /* ags-volume */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-volume",
-			    0, 2, 
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-volume */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2, 
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
-  /* ags-mute */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-mute",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  /* ags-peak */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-peak",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-peak */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-peak",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   ags_connectable_connect(AGS_CONNECTABLE(drum));
   
@@ -558,11 +548,11 @@ ags_functional_osc_server_test_meter_controller()
   guint i;
   gboolean retval;
 
-  static const guchar *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
-  static const guchar *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const guchar *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsFxPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00\x00\x00";
+  static const guchar *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsFxPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00\x00\x00";
 
-  static const guint enable_peak_message_size = 112;
-  static const guint disable_peak_message_size = 112;
+  static const guint enable_peak_message_size = 116;
+  static const guint disable_peak_message_size = 116;
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);
@@ -680,9 +670,9 @@ ags_functional_osc_server_test_node_controller()
   gboolean retval;
   gboolean success;
   
-  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
+  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
 
-  static const guint volume_message_size = 116;
+  static const guint volume_message_size = 120;
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);
@@ -765,9 +755,9 @@ ags_functional_osc_server_test_renew_controller()
   guint buffer_length;
   gboolean retval;
 
-  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
+  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
 
-  static const guint mute_message_size = 120;
+  static const guint mute_message_size = 124;
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);

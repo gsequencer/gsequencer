@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,8 +50,7 @@ void ags_functional_osc_xmlrpc_server_test_node_controller();
 void ags_functional_osc_xmlrpc_server_test_renew_controller();
 void ags_functional_osc_xmlrpc_server_test_status_controller();
 
-void ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback(SoupSession *session,
-									      SoupMessage *msg,
+void ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback(SoupMessage *msg,
 									      SoupAuth *auth,
 									      gboolean retrying,
 									      gpointer user_data);
@@ -266,6 +265,8 @@ ags_functional_osc_xmlrpc_server_test_init_suite()
   ags_application_context_prepare(application_context);
   ags_application_context_setup(application_context);
 
+  AGS_SERVER(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->server->data)->path = "/ags-xmlrpc/ags-osc-over-xmlrpc";
+
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* drum */
@@ -301,41 +302,31 @@ ags_functional_osc_xmlrpc_server_test_init_suite()
 			       g_list_prepend(start_audio,
 					      drum));
 
-  /* ags-volume */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-volume",
-			    0, 2, 
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-volume */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2, 
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
-  /* ags-mute */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-mute",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  /* ags-peak */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-peak",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-peak */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-peak",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   ags_connectable_connect(AGS_CONNECTABLE(drum));
   
@@ -349,6 +340,8 @@ ags_functional_osc_xmlrpc_server_test_init_suite()
 	       "xmlrpc-server", server->data,
 	       NULL);
 
+  ags_server_start(AGS_SERVER(server->data));
+  
   while(!ags_server_test_flags(server->data, AGS_SERVER_RUNNING)){
     sleep(1);
   }
@@ -360,21 +353,17 @@ ags_functional_osc_xmlrpc_server_test_init_suite()
   sleep(5);
   
   /* soup session */
-  soup_session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_BASIC,
-					       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_DIGEST,
-					       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_LOGGER,
-					       NULL);
+  soup_session = soup_session_new();
 
+  soup_session_add_feature_by_type(soup_session,
+				   SOUP_TYPE_AUTH_BASIC);
+
+  soup_session_add_feature_by_type(soup_session,
+				   SOUP_TYPE_AUTH_DIGEST);
+  
   jar = soup_cookie_jar_text_new(AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_XML_COOKIE_FILENAME,
 				 FALSE);     
-  soup_session_add_feature(soup_session, jar);  
-
-  g_object_set(G_OBJECT(soup_session),
-	       SOUP_SESSION_SSL_STRICT, FALSE,
-	       NULL);
-  
-  g_signal_connect(soup_session, "authenticate",
-		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
+  soup_session_add_feature(soup_session, jar);
 
   sleep(5);
   
@@ -394,8 +383,7 @@ ags_functional_osc_xmlrpc_server_test_clean_suite()
 }
 
 void
-ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback(SoupSession *session,
-									 SoupMessage *msg,
+ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback(SoupMessage *msg,
 									 SoupAuth *auth,
 									 gboolean retrying,
 									 gpointer user_data)
@@ -541,10 +529,13 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
 
+  GInputStream *response;
+  
   xmlDoc *doc;
   xmlNode *root_node;
   xmlNode *osc_packet_node_list;
@@ -607,22 +598,27 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
+  
+  request_header = soup_message_get_request_headers(msg);
+  
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -667,22 +663,25 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  status = soup_session_send_message(soup_session,
-				     msg);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
+
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -726,24 +725,25 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -785,24 +785,25 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -844,24 +845,25 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -903,24 +905,25 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -935,9 +938,12 @@ ags_functional_osc_xmlrpc_server_test_config_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
+
+  GInputStream *response;
 
   xmlDoc *doc;
   xmlNode *root_node;
@@ -1002,24 +1008,25 @@ ags_functional_osc_xmlrpc_server_test_config_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -1034,9 +1041,12 @@ ags_functional_osc_xmlrpc_server_test_info_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
+
+  GInputStream *response;
 
   xmlDoc *doc;
   xmlNode *root_node;
@@ -1088,24 +1098,25 @@ ags_functional_osc_xmlrpc_server_test_info_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
+
+  response = soup_session_send_and_read(soup_session,
+					msg,
+					NULL,
+					NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -1120,9 +1131,12 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
+
+  GBytes *response_data;
 
   xmlDoc *doc;
   xmlNode *root_node;
@@ -1143,18 +1157,19 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   gchar *data;
   guchar *packet;
   xmlChar *buffer;
-  
+
+  gsize response_size;
   int buffer_length;
   volatile gint meter_packet_count;
   guint i;
   gboolean retval;
   guint status;
 
-  static const guchar *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
-  static const guchar *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const guchar *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsFxPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00\x00\x00";
+  static const guchar *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsFxPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00\x00\x00";
 
-  static const guint enable_peak_message_size = 112;
-  static const guint disable_peak_message_size = 112;
+  static const guint enable_peak_message_size = 116;
+  static const guint disable_peak_message_size = 116;
 
   /* meter */
   doc = xmlNewDoc("1.0");
@@ -1190,29 +1205,25 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  sleep(5);
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
 
-  response_headers = NULL;
-  response_body = NULL;
-  
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  response_data = soup_session_send_and_read(soup_session,
+					     msg,
+					     NULL,
+					     NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -1250,9 +1261,11 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   }
 
   /* parse response */
-  g_message("%s", response_body->data);
+  g_message("%s", (gchar*) g_bytes_get_data(response_data,
+					    NULL));
 
-  doc = xmlParseDoc(response_body->data);
+  doc = xmlParseDoc(g_bytes_get_data(response_data,
+				     NULL));
 
   CU_ASSERT(doc != NULL);
 
@@ -1324,6 +1337,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 				       msg,
 				       NULL,
 				       NULL,
+				       SOUP_MESSAGE_PRIORITY_NORMAL,
 				       NULL,
 				       ags_functional_osc_xmlrpc_server_test_websocket_callback,
 				       NULL);
@@ -1360,27 +1374,25 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
   /* send message */
-  msg = soup_form_request_new("POST",
-			      "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc",
-			      NULL);
-  soup_message_set_request(msg,
-			   "text/xml; charset=UTF-8",
-			   SOUP_MEMORY_COPY,
-			   buffer,
-			   buffer_length);
-  
-  xmlFree(buffer);
+  msg = soup_message_new("POST",
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 
-  response_headers = NULL;
-  response_body = NULL;
+  soup_message_set_request_body_from_bytes(msg,
+					   "text/xml; charset=UTF-8",
+					   g_bytes_new(buffer,
+						       buffer_length));
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  response_data = soup_session_send_and_read(soup_session,
+					     msg,
+					     NULL,
+					     NULL);
+
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
 
@@ -1395,6 +1407,7 @@ ags_functional_osc_xmlrpc_server_test_node_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
@@ -1424,6 +1437,7 @@ ags_functional_osc_xmlrpc_server_test_renew_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
@@ -1453,6 +1467,7 @@ ags_functional_osc_xmlrpc_server_test_status_controller()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
+  SoupMessageHeaders *request_header;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;

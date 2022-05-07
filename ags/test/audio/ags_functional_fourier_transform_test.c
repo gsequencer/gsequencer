@@ -66,14 +66,16 @@ void ags_functional_fourier_transform_test_s16();
   "thread-pool-max-unused-threads=8\n"					\
   "max-precision=125\n"							\
   "\n"									\
-  "[soundcard]\n"							\
-  "backend=alsa\n"							\
-  "device=default\n"							\
+  "[soundcard-0]\n"							\
+  "backend=pulse\n"							\
+  "device=ags-pulse-devout-0\n"						\
   "samplerate=44100\n"							\
   "buffer-size=1024\n"							\
   "pcm-channels=2\n"							\
   "dsp-channels=2\n"							\
   "format=16\n"								\
+  "use-cache=true\n"							\
+  "cache-buffer-size=4096\n"						\
   "\n"									\
   "[recall]\n"								\
   "auto-sense=true\n"							\
@@ -87,6 +89,8 @@ AgsAudio *output_panel;
 AgsAudio *wave_player;
 
 GObject *output_soundcard;
+
+AgsSynthUtil *synth_util;
 
 gpointer
 ags_functional_fourier_transform_test_add_thread(gpointer data)
@@ -138,7 +142,12 @@ ags_functional_fourier_transform_test_add_thread(gpointer data)
 int
 ags_functional_fourier_transform_test_init_suite()
 {
+  AgsPlaybackDomain *playback_domain;
   AgsChannel *channel, *link;
+  AgsRecallContainer *playback_play_container, *playback_recall_container;
+  AgsRecallContainer *buffer_play_container, *buffer_recall_container;  
+  AgsAudioLoop *audio_loop;
+  AgsAudioThread *audio_thread;
   
   AgsConfig *config;
 
@@ -184,13 +193,34 @@ ags_functional_fourier_transform_test_init_suite()
   
   /* output panel */
   output_panel = ags_audio_new(output_soundcard);
-
   g_object_ref(output_panel);
+
+  output_panel->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
+  
   start_list = g_list_prepend(start_list,
 			      output_panel);
+  g_object_ref(output_panel);
   
   ags_audio_set_flags(output_panel, (AGS_AUDIO_SYNC));
 
+  ags_audio_set_flags(output_panel, (AGS_AUDIO_SYNC));
+
+  /* ags-fx-playback */
+  playback_play_container = ags_recall_container_new();
+  playback_recall_container = ags_recall_container_new();
+  
+  ags_fx_factory_create(output_panel,
+			playback_play_container, playback_recall_container,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
+  /* set channels */
   ags_audio_set_audio_channels(output_panel,
 			       AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS, 0);
   
@@ -201,31 +231,66 @@ ags_functional_fourier_transform_test_init_suite()
 		     AGS_TYPE_INPUT,
 		     1, 0);
 
-  /* ags-play */
-  ags_recall_factory_create(output_panel,
-			    NULL, NULL,
-			    "ags-play-master",
-			    0, AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-playback */
+  for(i = 0; i < AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS; i++){
+    ags_fx_factory_create(output_panel,
+			  playback_play_container, playback_recall_container,
+			  "ags-fx-playback",
+			  NULL,
+			  NULL,
+			  i, i + 1,
+			  0, 1,
+			  0,
+			  (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+			  0);
+  }
 
   ags_connectable_connect(AGS_CONNECTABLE(output_panel));
 
   /* wave player */
   wave_player = ags_audio_new(output_soundcard);
-
   g_object_ref(wave_player);
+  
+  wave_player->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
+
   start_list = g_list_prepend(start_list,
 			      wave_player);
+  g_object_ref(wave_player);
     
   ags_audio_set_flags(wave_player, (AGS_AUDIO_SYNC |
 				    AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				    AGS_AUDIO_INPUT_HAS_RECYCLING));
-  ags_audio_set_ability_flags(wave_player, (AGS_SOUND_ABILITY_WAVE));
+  ags_audio_set_ability_flags(wave_player, (AGS_SOUND_ABILITY_NOTATION));
   
+  /* ags-fx */
+  playback_play_container = ags_recall_container_new();
+  playback_recall_container = ags_recall_container_new();
+
+  ags_fx_factory_create(wave_player,
+			playback_play_container, playback_recall_container,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
+  buffer_play_container = ags_recall_container_new();
+  buffer_recall_container = ags_recall_container_new();
+
+  ags_fx_factory_create(wave_player,
+			buffer_play_container, buffer_recall_container,
+			"ags-fx-buffer",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
   ags_audio_set_audio_channels(wave_player,
 			       AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS, 0);
   
@@ -236,31 +301,74 @@ ags_functional_fourier_transform_test_init_suite()
 		     AGS_TYPE_INPUT,
 		     1, 0);
 
-  channel = wave_player->output;
+  playback_domain = NULL;
+  
+  g_object_get(wave_player,
+	       "playback-domain", &playback_domain,
+	       NULL);
+  
+  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+						      AGS_SOUND_SCOPE_NOTATION);
+	
+  ags_thread_add_start_queue(audio_loop,
+			     audio_thread);
 
+  channel = wave_player->output;
+  
   for(i = 0; i < AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS; i++){
-    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
+    AgsPlayback *playback;
+	
+    AgsChannelThread *channel_thread;
+
+    playback = NULL;
+
+    g_object_get(channel,
+		 "playback", &playback,
+		 NULL);
+
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_NOTATION);
+	
+    ags_thread_add_start_queue(audio_loop,
+			       channel_thread);
 
     channel = channel->next;
   }
   
-  /* ags-play-wave */
-  ags_recall_factory_create(wave_player,
-			    NULL, NULL,
-			    "ags-play-wave",
-			    0, AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  /* ags-fx */
+  for(i = 0; i < AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_AUDIO_CHANNELS; i++){
+    ags_fx_factory_create(wave_player,
+			  playback_play_container, playback_recall_container,
+			  "ags-fx-playback",
+			  NULL,
+			  NULL,
+			  i, i + 1,
+			  0, 1,
+			  0,
+			  (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+			  0);
 
+    ags_fx_factory_create(wave_player,
+			  buffer_play_container, buffer_recall_container,
+			  "ags-fx-buffer",
+			  NULL,
+			  NULL,
+			  i, i + 1,
+			  0, 1,
+			  0,
+			  (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+			  0);
+  }
+  
   ags_connectable_connect(AGS_CONNECTABLE(wave_player));
 
   /*  */
   start_list = g_list_reverse(start_list);
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(audio_application_context),
 			       start_list);
+
+  /* synth util */
+  synth_util = ags_synth_util_alloc();
 
   /* link */
   channel = output_panel->input;
@@ -313,6 +421,22 @@ ags_functional_fourier_transform_test_s16()
   gint i, j, k;
   gboolean success;
     
+  ags_synth_util_set_buffer_length(synth_util,
+				   AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_BUFFER_SIZE);
+  ags_synth_util_set_format(synth_util,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_synth_util_set_samplerate(synth_util,
+				AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_SAMPLERATE);
+
+  ags_synth_util_set_synth_oscillator_mode(synth_util,
+					   AGS_SYNTH_OSCILLATOR_SIN);
+
+  ags_synth_util_set_frequency(synth_util,
+			       AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BASE_FREQ);
+
+  ags_synth_util_set_volume(synth_util,
+			    AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_VOLUME);
+
   start_wave = NULL;
   
   for(i = 0; i < AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_AUDIO_CHANNELS; i++){
@@ -337,20 +461,24 @@ ags_functional_fourier_transform_test_s16()
       
       buffer = ags_buffer_new();
       g_object_set(buffer,
-		   "samplerate", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_SAMPLERATE,
-		   "buffer-size", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BUFFER_SIZE,
-		   "format", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_FORMAT,
-		   "x", (guint64) j * AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BUFFER_SIZE,
+		   "samplerate", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_SAMPLERATE,
+		   "buffer-size", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_BUFFER_SIZE,
+		   "format", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_FORMAT,
+		   "x", (guint64) (j * AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_BUFFER_SIZE),
 		   NULL);
       ags_wave_add_buffer(current_wave,
 			  buffer,
 			  FALSE);
-
+      
       phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_SAMPLERATE / AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BASE_FREQ);
-      ags_synth_util_sin(buffer->data,
-			 AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BASE_FREQ, phase, AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_VOLUME,
-			 AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_FORMAT),
-			 0, AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BUFFER_SIZE);
+
+      ags_synth_util_set_source(synth_util,
+				buffer->data);
+
+      ags_synth_util_set_phase(synth_util,
+			       phase);
+      
+      ags_synth_util_compute_sin(synth_util);
     }
   }
   
@@ -363,11 +491,11 @@ ags_functional_fourier_transform_test_s16()
   /* start audio and soundcard task */
   task = NULL;    
   start_audio = ags_start_audio_new(wave_player,
-				    AGS_SOUND_SCOPE_WAVE);
+				    AGS_SOUND_SCOPE_NOTATION);
   task = g_list_prepend(task,
 			start_audio);
     
-  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  start_soundcard = ags_start_soundcard_new();
   task = g_list_prepend(task,
 			start_soundcard);
     
@@ -379,7 +507,7 @@ ags_functional_fourier_transform_test_s16()
     
   /* create cancel task */
   cancel_audio = ags_cancel_audio_new(wave_player,
-				      AGS_SOUND_SCOPE_WAVE);
+				      AGS_SOUND_SCOPE_NOTATION);
     
   /* append AgsCancelAudio */
   ags_task_launcher_add_task(task_launcher,
@@ -432,7 +560,7 @@ ags_functional_fourier_transform_test_s16()
   /* start audio and soundcard task */
   task = NULL;    
   start_audio = ags_start_audio_new(wave_player,
-				    AGS_SOUND_SCOPE_WAVE);
+				    AGS_SOUND_SCOPE_NOTATION);
   task = g_list_prepend(task,
 			start_audio);
     
@@ -448,7 +576,7 @@ ags_functional_fourier_transform_test_s16()
     
   /* create cancel task */
   cancel_audio = ags_cancel_audio_new(wave_player,
-				      AGS_SOUND_SCOPE_WAVE);
+				      AGS_SOUND_SCOPE_NOTATION);
     
   /* append AgsCancelAudio */
   ags_task_launcher_add_task(task_launcher,

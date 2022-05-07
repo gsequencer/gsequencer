@@ -87,6 +87,8 @@ struct _AgsServer
 
   AgsUUID *uuid;
 
+  gchar *path;
+  
   AgsServerInfo *server_info;
 
   gchar *ip4;

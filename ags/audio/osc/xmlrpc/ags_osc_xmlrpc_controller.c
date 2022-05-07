@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,7 +72,7 @@ gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_c
 					    gsize offset);
 gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 					     AgsOscWebsocketConnection *osc_websocket_connection,
-					     SoupMessage *msg,
+					     SoupServerMessage *msg,
 					     GHashTable *query,
 					     guchar *packet, gsize packet_size,
 					     gsize offset,
@@ -1040,7 +1040,7 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
 gsize
 ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 				       AgsOscWebsocketConnection *osc_websocket_connection,
-				       SoupMessage *msg,
+				       SoupServerMessage *server_msg,
 				       GHashTable *query,
 				       guchar *packet, gsize packet_size,
 				       gsize offset,
@@ -1154,7 +1154,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 	       "immediately", immediately,
 	       "message-size", read_count,
 	       "message", message,
-	       "msg", msg,
+	       "server-msg", server_msg,
 	       "query", query,
 	       NULL);    
 
@@ -1166,7 +1166,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 
 gpointer
 ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
-				     SoupServerMessage *msg,
+				     SoupServerMessage *server_msg,
 				     GHashTable *query,
 				     GObject *security_context,
 				     gchar *path,
@@ -1176,6 +1176,8 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   AgsOscXmlrpcServer *osc_xmlrpc_server;
   AgsOscXmlrpcController *osc_xmlrpc_controller;
   AgsOscWebsocketConnection *osc_websocket_connection;
+
+  SoupMessageBody *msg_body;
   
   xmlDoc *doc;
   xmlDoc *response_doc;
@@ -1213,9 +1215,9 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     return(NULL);
   }
 
-  g_object_get(msg,
-	       "request-body-data", &request_body_data,
-	       NULL);
+  msg_body = soup_server_message_get_request_body(server_msg);
+  
+  request_body_data = soup_message_body_flatten(msg_body);
 
   data = g_bytes_get_data(request_body_data,
 			  &data_size);
@@ -1303,14 +1305,14 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 		if(!g_strcmp0(packet + offset, "#bundle")){      
 		  read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
 								     osc_websocket_connection,
-								     msg,
+								     server_msg,
 								     query,
 								     packet, packet_size,
 								     offset);
 		}else if(packet[offset] == '/'){
 		  read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
 								      osc_websocket_connection,
-								      msg,
+								      server_msg,
 								      query,
 								      packet, packet_size,
 								      offset,
@@ -1364,13 +1366,13 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   /* set body */
   xmlDocDumpFormatMemoryEnc(response_doc, &response_buffer, &response_buffer_length, "UTF-8", TRUE);
 
-  soup_server_message_set_response(msg,
+  soup_server_message_set_response(server_msg,
 				   "text/xml; charset=UTF-8",
 				   SOUP_MEMORY_COPY,
 				   response_buffer,
 				   response_buffer_length);
 
-  soup_server_message_set_status(msg,
+  soup_server_message_set_status(server_msg,
 				 200,
 				 NULL);
 

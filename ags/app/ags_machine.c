@@ -2829,7 +2829,7 @@ ags_machine_playback_set_active(AgsMachine *machine,
 				start_channel);
 
     /* start soundcard */
-    start_soundcard = ags_start_soundcard_new(application_context);
+    start_soundcard = ags_start_soundcard_new();
     start_task = g_list_prepend(start_task,
 				start_soundcard);
 
