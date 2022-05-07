@@ -152,6 +152,9 @@ gboolean ags_functional_test_util_export_do_export();
 gboolean ags_functional_test_util_quit();
 
 /* edit */
+gboolean ags_functional_test_util_add_machine(gchar *submenu,
+					      gchar *machine_name);
+
 gboolean ags_functional_test_util_automation_open();
 gboolean ags_functional_test_util_automation_close();
 
@@ -229,7 +232,8 @@ gboolean ags_functional_test_util_audio_preferences_samplerate(guint nth_backend
 							       guint samplerate);
 
 /* generic machine */
-gboolean ags_functional_test_util_machine_menu_button_click(GtkMenuButton *menu_button,
+gboolean ags_functional_test_util_machine_menu_button_click(guint nth_machine,
+							    GtkMenuButton *menu_button,
 							    gchar **item_path,
 							    gchar *action);
 

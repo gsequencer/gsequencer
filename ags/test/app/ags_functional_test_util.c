@@ -205,6 +205,9 @@ void
 ags_functional_test_util_do_run(int argc, char **argv,
 				AgsFunctionalTestUtilAddTest add_test, volatile gboolean *is_available)
 {
+  AgsWindow *window;
+  AgsGSequencerApplication *gsequencer_app;
+
   AgsApplicationContext *application_context;
   AgsLog *log;
 
@@ -214,14 +217,18 @@ ags_functional_test_util_do_run(int argc, char **argv,
   GSource *driver_source;
   GSourceFuncs driver_funcs;
 
-  /* application context */
-  application_context = 
-    ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
-  g_object_ref(application_context);
-  
-  application_context->argc = argc;
-  application_context->argv = argv;
+  GError *error;
+    
+  /* app */
+  gsequencer_app = ags_gsequencer_application_new("org.nongnu.gsequencer.gsequencer",
+						  G_APPLICATION_IS_LAUNCHER);
 
+  error = NULL;
+  g_application_register(G_APPLICATION(gsequencer_app),
+			 NULL,
+			 &error);    
+
+  /* application context */
   log = ags_log_get_instance();
 
   ags_log_add_message(log,
@@ -245,14 +252,33 @@ ags_functional_test_util_do_run(int argc, char **argv,
   g_source_attach(driver_source,
   		  g_main_context_default());
   
+  application_context = ags_application_context_get_instance();
+  
+  application_context->argc = argc;
+  application_context->argv = argv;
+
   ags_application_context_prepare(application_context);
 
-  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+  ags_application_context_setup(application_context);
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  gtk_window_set_titlebar((GtkWindow *) window,
+			  (GtkWidget *) AGS_WINDOW(window)->header_bar);
+
+  gtk_application_add_window(gsequencer_app,
+			     GTK_WINDOW(window));
+
+  g_object_set(G_OBJECT(window),
+	       "application", gsequencer_app,
+	       NULL);
+
+  ags_connectable_connect(AGS_CONNECTABLE(application_context));
 
   ags_functional_test_util_add_test(add_test, is_available);  
   
-  /* gtk main */
-  gtk_main();
+  g_application_run(G_APPLICATION(gsequencer_app),
+		    0, NULL);
 }
 
 void
@@ -546,6 +572,40 @@ ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button
     ags_app_action_util_help();
   }else if(!g_ascii_strncasecmp(action, "app.quit", 9)){
     ags_app_action_util_quit();
+  }else if(!g_ascii_strncasecmp(action, "app.add_panel", 14)){
+    ags_app_action_util_add_panel();
+  }else if(!g_ascii_strncasecmp(action, "app.add_spectrometer", 20)){
+    ags_app_action_util_add_spectrometer();
+  }else if(!g_ascii_strncasecmp(action, "app.add_equalizer", 18)){
+    ags_app_action_util_add_equalizer();
+  }else if(!g_ascii_strncasecmp(action, "app.add_mixer", 13)){
+    ags_app_action_util_add_mixer();
+  }else if(!g_ascii_strncasecmp(action, "app.add_drum", 12)){
+    ags_app_action_util_add_drum();
+  }else if(!g_ascii_strncasecmp(action, "app.add_matrix", 14)){
+    ags_app_action_util_add_matrix();
+  }else if(!g_ascii_strncasecmp(action, "app.add_synth", 13)){
+    ags_app_action_util_add_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_fm_synth", 16)){
+    ags_app_action_util_add_fm_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_syncsynth", 17)){
+    ags_app_action_util_add_syncsynth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_fm_syncsynth", 20)){
+    ags_app_action_util_add_fm_syncsynth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_hybrid_synth", 20)){
+    ags_app_action_util_add_hybrid_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_hybrid_fm_synth", 23)){
+    ags_app_action_util_add_hybrid_fm_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_ffplayer", 16)){
+    ags_app_action_util_add_ffplayer();
+  }else if(!g_ascii_strncasecmp(action, "app.add_sf2_synth", 17)){
+    ags_app_action_util_add_sf2_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_pitch_sampler", 21)){
+    ags_app_action_util_add_pitch_sampler();
+  }else if(!g_ascii_strncasecmp(action, "app.add_sfz_synth", 17)){
+    ags_app_action_util_add_sfz_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_audiorec", 16)){
+    ags_app_action_util_add_audiorec();
   }else{
     success = FALSE;
   }
@@ -1478,6 +1538,230 @@ ags_functional_test_util_quit()
 }
 
 gboolean
+ags_functional_test_util_add_machine(gchar *submenu,
+				     gchar *machine_name)
+{
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+
+  gboolean success;
+
+  gchar **path_strv;
+  gchar *action;
+
+  path_strv = NULL;
+  action = NULL;
+  
+  if(submenu == NULL){
+    if(!g_ascii_strncasecmp(machine_name,
+			    "Panel",
+			    6)){
+      static gchar* panel_path[] = {
+	"Panel",
+	NULL
+      };
+      
+      path_strv = panel_path;
+      
+      action = "app.add_panel";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Spectrometer",
+				  13)){
+      static gchar* spectrometer_path[] = {
+	"Spectrometer",
+	NULL
+      };
+      
+      path_strv = spectrometer_path;
+      
+      action = "app.add_spectrometer";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Equalizer",
+				  10)){
+      static gchar* equalizer_path[] = {
+	"Equalizer",
+	NULL
+      };
+      
+      path_strv = equalizer_path;
+      
+      action = "app.add_equalizer";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Mixer",
+				  6)){
+      static gchar* mixer_path[] = {
+	"Mixer",
+	NULL
+      };
+      
+      path_strv = mixer_path;
+      
+      action = "app.add_mixer";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Drum",
+				  5)){
+      static gchar* drum_path[] = {
+	"Drum",
+	NULL
+      };
+      
+      path_strv = drum_path;
+      
+      action = "app.add_drum";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Matrix",
+				  13)){
+      static gchar* matrix_path[] = {
+	"Matrix",
+	NULL
+      };
+      
+      path_strv = matrix_path;
+      
+      action = "app.add_matrix";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Synth",
+				  6)){
+      static gchar* synth_path[] = {
+	"Synth",
+	NULL
+      };
+      
+      path_strv = synth_path;
+      
+      action = "app.add_synth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "FM Synth",
+				  9)){
+      static gchar* fm_synth_path[] = {
+	"FM Synth",
+	NULL
+      };
+      
+      path_strv = fm_synth_path;
+      
+      action = "app.add_fm_synth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Syncsynth",
+				  10)){
+      static gchar* syncsynth_path[] = {
+	"Syncsynth",
+	NULL
+      };
+      
+      path_strv = syncsynth_path;
+      
+      action = "app.add_syncsynth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "FM Syncsynth",
+				  13)){
+      static gchar* fm_syncsynth_path[] = {
+	"FM Syncsynth",
+	NULL
+      };
+      
+      path_strv = fm_syncsynth_path;
+      
+      action = "app.add_fm_syncsynth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Hybrid Synth",
+				  13)){
+      static gchar* hybrid_synth_path[] = {
+	"Hybrid Synth",
+	NULL
+      };
+      
+      path_strv = hybrid_synth_path;
+      
+      action = "app.add_hybrid_synth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Hybrid FM Synth",
+				  16)){
+      static gchar* hybrid_fm_synth_path[] = {
+	"Hybrid FM Synth",
+	NULL
+      };
+      
+      path_strv = hybrid_fm_synth_path;
+      
+      action = "app.add_hybrid_fm_synth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "FPlayer",
+				  8)){
+      static gchar* ffplayer_path[] = {
+	"FPlayer",
+	NULL
+      };
+      
+      path_strv = ffplayer_path;
+      
+      action = "app.add_ffplayer";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "SF2 Synth",
+				  10)){
+      static gchar* sf2_synth_path[] = {
+	"SF2 Synth",
+	NULL
+      };
+      
+      path_strv = sf2_synth_path;
+      
+      action = "app.add_sf2_synth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Pitch Sampler",
+				  8)){
+      static gchar* pitch_sampler_path[] = {
+	"FPlayer",
+	NULL
+      };
+      
+      path_strv = pitch_sampler_path;
+      
+      action = "app.add_pitch_sampler";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "SFZ Synth",
+				  10)){
+      static gchar* sfz_synth_path[] = {
+	"SFZ Synth",
+	NULL
+      };
+      
+      path_strv = sfz_synth_path;
+      
+      action = "app.add_sfz_synth";
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Audiorec",
+				  9)){
+      static gchar* audiorec_path[] = {
+	"SF2 Synth",
+	NULL
+      };
+      
+      path_strv = audiorec_path;
+      
+      action = "app.add_audiorec";
+    }
+  }
+  
+  ags_test_enter();
+    
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  success = ags_functional_test_util_header_bar_menu_button_click(window->add_button,
+								  path_strv,
+								  action);
+  
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+  
+  return(success);
+}
+
+gboolean
 ags_functional_test_util_automation_open()
 {
   //TODO:JK: 
@@ -2110,13 +2394,40 @@ ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,
 }
 
 gboolean
-ags_functional_test_util_machine_menu_button_click(GtkMenuButton *menu_button,
+ags_functional_test_util_machine_menu_button_click(guint nth_machine,
+						   GtkMenuButton *menu_button,
 						   gchar **item_path,
 						   gchar *action)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+  
+  AgsApplicationContext *application_context;
+
+  GList *start_list;
+    
   gboolean success;
   
   success = TRUE;
+
+  ags_test_enter();
+    
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  /* retrieve machine */
+  start_list = window->machine;
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
+
+  ags_test_leave();
+  
+  if(!AGS_IS_MACHINE(machine)){
+    return(FALSE);
+  }
+  
+  ags_test_enter();
 
   if(!g_strcmp0(action, "machine.move_up")){
     //TODO:JK: implement me
@@ -2127,7 +2438,8 @@ ags_functional_test_util_machine_menu_button_click(GtkMenuButton *menu_button,
   }else if(!g_strcmp0(action, "machine.show")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.destroy")){
-    //TODO:JK: implement me
+    ags_machine_destroy_callback(NULL, NULL,
+				 machine);
   }else if(!g_strcmp0(action, "machine.rename")){
     //TODO:JK: implement me
   }else if(!g_strcmp0(action, "machine.rename_audio")){
@@ -2160,6 +2472,8 @@ ags_functional_test_util_machine_menu_button_click(GtkMenuButton *menu_button,
     success = FALSE;
   }
   
+  ags_test_leave();
+  
   return(success);
 }
 
@@ -2187,8 +2501,6 @@ ags_functional_test_util_machine_move_up(guint nth_machine)
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  ags_test_enter();
   
   /* retrieve machine */
   start_list = window->machine;
@@ -2206,7 +2518,7 @@ ags_functional_test_util_machine_move_up(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,machine->context_menu_button,
 						     path_strv,
 						     "machine.move_up");
 
@@ -2240,8 +2552,6 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  ags_test_enter();
-  
   /* retrieve machine */
   start_list = window->machine;
   machine = g_list_nth_data(start_list,
@@ -2258,7 +2568,8 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,
+						     machine->context_menu_button,
 						     path_strv,
 						     "machine.move_down");
 
@@ -2292,8 +2603,6 @@ ags_functional_test_util_machine_hide(guint nth_machine)
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  ags_test_enter();
-
   /* retrieve machine */
   start_list = window->machine;
   machine = g_list_nth_data(start_list,
@@ -2310,7 +2619,8 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,
+						     machine->context_menu_button,
 						     path_strv,
 						     "machine.hide");
 
@@ -2343,8 +2653,6 @@ ags_functional_test_util_machine_show(guint nth_machine)
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  ags_test_enter();
   
   /* retrieve machine */
   start_list = window->machine;
@@ -2362,7 +2670,8 @@ ags_functional_test_util_machine_show(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,
+						     machine->context_menu_button,
 						     path_strv,
 						     "machine.show");
 
@@ -2395,8 +2704,6 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  ags_test_enter();
   
   /* retrieve machine */
   start_list = window->machine;
@@ -2414,7 +2721,8 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,
+						     machine->context_menu_button,
 						     path_strv,
 						     "machine.destroy");
 
@@ -2447,8 +2755,6 @@ ags_functional_test_util_machine_rename_open(guint nth_machine)
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  ags_test_enter();
   
   /* retrieve machine */
   start_list = window->machine;
@@ -2466,7 +2772,8 @@ ags_functional_test_util_machine_rename_open(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,
+						     machine->context_menu_button,
 						     path_strv,
 						     "machine.rename");
 
@@ -2557,8 +2864,6 @@ ags_functional_test_util_machine_editor_dialog_open(guint nth_machine)
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  ags_test_enter();
   
   /* retrieve machine */
   machine = g_list_nth_data(window->machine,
@@ -2575,7 +2880,8 @@ ags_functional_test_util_machine_editor_dialog_open(guint nth_machine)
   /* activate hide */
   success = TRUE;
   
-  ags_functional_test_util_machine_menu_button_click(machine->context_menu_button,
+  ags_functional_test_util_machine_menu_button_click(nth_machine,
+						     machine->context_menu_button,
 						     path_strv,
 						     "machine.properties");
 
@@ -2712,7 +3018,7 @@ ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
 
 gboolean
 ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
-							guint pad, guint audio_channel,
+							guint nth_pad, guint nth_audio_channel,
 							gchar *link_name, guint link_nth_line)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
@@ -2779,56 +3085,39 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
     return(FALSE);
   }
 
-  machine_editor_pad = NULL;
-  
   list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
-  list = g_list_nth(list_start,
-		    pad);
+  
+  machine_editor_pad = g_list_nth_data(list_start,
+				       nth_pad);
 
-  if(list != NULL &&
-     AGS_IS_MACHINE_EDITOR_PAD(list->data)){
-    machine_editor_pad = list->data;
-
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
+  if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
     ags_test_leave();
-
+    
     return(FALSE);
   }
-
+  
   /* expander */
   gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
+
+  /* line editor */
+  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
+  machine_editor_line = g_list_nth_data(list_start,
+					nth_audio_channel);
+
+  if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
+    ags_test_leave();
+    
+    return(FALSE);
+  }
   
   ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
-  /* line editor */
+  /* link editor */
   ags_test_enter();
 
-  machine_editor_line = NULL;
-  
-  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
-  list = g_list_nth(list_start,
-		    audio_channel);
-
-  if(list != NULL &&
-     AGS_IS_LINE_EDITOR(list->data)){
-    machine_editor_line = list->data;
-
-    g_list_free(list_start);
-  }else{
-    g_list_free(list_start);
-
-    ags_test_leave();
-
-    return(FALSE);
-  }
-
-  /* link editor */
   link_editor = machine_editor_line->link_editor;
 
   /* set link */

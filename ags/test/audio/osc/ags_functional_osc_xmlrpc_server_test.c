@@ -600,9 +600,7 @@ ags_functional_osc_xmlrpc_server_test_action_controller()
   /* send message */
   msg = soup_message_new("POST",
 			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc");
-  
-  request_header = soup_message_get_request_headers(msg);
-  
+    
   g_signal_connect(msg, "authenticate",
 		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback), NULL);
 

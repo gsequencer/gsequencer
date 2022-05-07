@@ -389,7 +389,9 @@ ags_test_show_file_error(gchar *filename,
   gtk_widget_show((GtkWidget *) dialog);
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(ags_test_main_quit), NULL);
-  gtk_main();
+
+  g_main_loop_run(g_main_loop_new(NULL,
+				  FALSE));
 }
 
 void
