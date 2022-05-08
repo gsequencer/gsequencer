@@ -12,6 +12,7 @@ ags (4.0.0)
 	* improved ags_sf2_synth_util.[ch]
 	* improved ags_sfz_synth_util.[ch]
 	* improved ags_chorus_util.[ch]
+	* improved ags_lfo_synth_util.[ch]
 	* removed AgsDevout, AgsDevin and AgsMidiin
 	* removed ags/audio/recall
 	* removed ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]

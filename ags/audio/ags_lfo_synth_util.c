@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,6 +71,487 @@ void
 ags_lfo_synth_util_strct_free(gpointer ptr)
 {
   g_free(ptr);
+}
+
+/**
+ * ags_lfo_synth_util_get_source:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get source buffer of @lfo_synth_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 4.0.0
+ */
+gpointer
+ags_lfo_synth_util_get_source(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(lfo_synth_util->source);
+}
+
+/**
+ * ags_lfo_synth_util_set_source:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_source(AgsLFOSynthUtil *lfo_synth_util,
+			      gpointer source)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->source = source;
+}
+
+/**
+ * ags_lfo_synth_util_get_source_stride:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get source stride of @lfo_synth_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_lfo_synth_util_get_source_stride(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->source_stride);
+}
+
+/**
+ * ags_lfo_synth_util_set_source_stride:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_source_stride(AgsLFOSynthUtil *lfo_synth_util,
+				     guint source_stride)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->source_stride = source_stride;
+}
+
+/**
+ * ags_lfo_synth_util_get_buffer_length:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get buffer length of @lfo_synth_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_lfo_synth_util_get_buffer_length(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->buffer_length);
+}
+
+/**
+ * ags_lfo_synth_util_set_buffer_length:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_buffer_length(AgsLFOSynthUtil *lfo_synth_util,
+				     guint buffer_length)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_lfo_synth_util_get_format:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get audio buffer util format of @lfo_synth_util.
+ * 
+ * Returns: the audio buffer util format
+ * 
+ * Since: 3.14.0
+ */
+guint
+ags_lfo_synth_util_get_format(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->format);
+}
+
+/**
+ * ags_lfo_synth_util_set_format:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @format: the audio buffer util format
+ *
+ * Set @format of @lfo_synth_util.
+ *
+ * Since: 3.14.0
+ */
+void
+ags_lfo_synth_util_set_format(AgsLFOSynthUtil *lfo_synth_util,
+			      guint format)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->format = format;
+}
+
+/**
+ * ags_lfo_synth_util_get_samplerate:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get samplerate of @lfo_synth_util.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_lfo_synth_util_get_samplerate(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->samplerate);
+}
+
+/**
+ * ags_lfo_synth_util_set_samplerate:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @samplerate: the samplerate
+ *
+ * Set @samplerate of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_samplerate(AgsLFOSynthUtil *lfo_synth_util,
+				  guint samplerate)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->samplerate = samplerate;
+}
+
+/**
+ * ags_lfo_synth_util_get_lfo_synth_oscillator_mode:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get LFO synth oscillator mode of @lfo_synth_util.
+ * 
+ * Returns: the LFO synth oscillator mode
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_lfo_synth_util_get_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->lfo_synth_oscillator_mode);
+}
+
+/**
+ * ags_lfo_synth_util_set_lfo_synth_oscillator_mode:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @lfo_synth_oscillator_mode: the LFO synth oscillator mode
+ *
+ * Set @lfo_synth_oscillator_mode of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util,
+						 guint lfo_synth_oscillator_mode)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->lfo_synth_oscillator_mode = lfo_synth_oscillator_mode;
+}
+
+
+/**
+ * ags_lfo_synth_util_get_frequency:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get frequency of @lfo_synth_util.
+ * 
+ * Returns: the frequency
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_lfo_synth_util_get_frequency(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(lfo_synth_util->frequency);
+}
+
+/**
+ * ags_lfo_synth_util_set_frequency:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @frequency: the frequency
+ *
+ * Set @frequency of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_frequency(AgsLFOSynthUtil *lfo_synth_util,
+				 gdouble frequency)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->frequency = frequency;
+}
+
+/**
+ * ags_lfo_synth_util_get_phase:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get phase of @lfo_synth_util.
+ * 
+ * Returns: the phase
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_lfo_synth_util_get_phase(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(lfo_synth_util->phase);
+}
+
+/**
+ * ags_lfo_synth_util_set_phase:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @phase: the phase
+ *
+ * Set @phase of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_phase(AgsLFOSynthUtil *lfo_synth_util,
+			     gdouble phase)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->phase = phase;
+}
+
+/**
+ * ags_lfo_synth_util_get_lfo_depth:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get LFO depth of @lfo_synth_util.
+ * 
+ * Returns: the LFO depth
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_lfo_synth_util_get_lfo_depth(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(lfo_synth_util->lfo_depth);
+}
+
+/**
+ * ags_lfo_synth_util_set_lfo_depth:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @lfo_depth: the LFO depth
+ *
+ * Set @lfo_depth of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_lfo_depth(AgsLFOSynthUtil *lfo_synth_util,
+				 gdouble lfo_depth)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->lfo_depth = lfo_depth;
+}
+
+/**
+ * ags_lfo_synth_util_get_tuning:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get tuning of @lfo_synth_util.
+ * 
+ * Returns: the tuning
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_lfo_synth_util_get_tuning(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(lfo_synth_util->tuning);
+}
+
+/**
+ * ags_lfo_synth_util_set_tuning:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @tuning: the tuning
+ *
+ * Set @tuning of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_tuning(AgsLFOSynthUtil *lfo_synth_util,
+			      gdouble tuning)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->tuning = tuning;
+}
+
+/**
+ * ags_lfo_synth_util_get_offset:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get offset of @lfo_synth_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_lfo_synth_util_get_offset(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->offset);
+}
+
+/**
+ * ags_lfo_synth_util_set_offset:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_offset(AgsLFOSynthUtil *lfo_synth_util,
+			      guint offset)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->offset = offset;
+}
+
+/**
+ * ags_lfo_synth_util_get_frame_count:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * 
+ * Get frame count of @lfo_synth_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_lfo_synth_util_get_frame_count(AgsLFOSynthUtil *lfo_synth_util)
+{
+  if(lfo_synth_util == NULL){
+    return(0);
+  }
+
+  return(lfo_synth_util->frame_count);
+}
+
+/**
+ * ags_lfo_synth_util_set_frame_count:
+ * @lfo_synth_util: the #AgsLFOSynthUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @lfo_synth_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_set_frame_count(AgsLFOSynthUtil *lfo_synth_util,
+				   guint frame_count)
+{
+  if(lfo_synth_util == NULL){
+    return;
+  }
+
+  lfo_synth_util->frame_count = frame_count;
 }
 
 /**

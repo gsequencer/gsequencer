@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,10 +33,74 @@ typedef struct _AgsLFOSynthUtil AgsLFOSynthUtil;
 
 struct _AgsLFOSynthUtil
 {
-  //empty
+  gpointer source;
+  guint source_stride;
+  
+  guint buffer_length;
+  guint format;
+  guint samplerate;
+
+  guint lfo_synth_oscillator_mode;
+
+  gdouble frequency;
+  gdouble phase;
+
+  gdouble lfo_depth;
+  gdouble tuning;
+
+  guint offset;
+  guint frame_count;
 };
 
 GType ags_lfo_synth_util_get_type(void);
+
+gpointer ags_lfo_synth_util_get_source(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_source(AgsLFOSynthUtil *lfo_synth_util,
+				   gpointer source);
+
+guint ags_lfo_synth_util_get_source_stride(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_source_stride(AgsLFOSynthUtil *lfo_synth_util,
+					  guint source_stride);
+
+guint ags_lfo_synth_util_get_buffer_length(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_buffer_length(AgsLFOSynthUtil *lfo_synth_util,
+					  guint buffer_length);
+
+guint ags_lfo_synth_util_get_format(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_format(AgsLFOSynthUtil *lfo_synth_util,
+				   guint format);
+
+guint ags_lfo_synth_util_get_samplerate(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_samplerate(AgsLFOSynthUtil *lfo_synth_util,
+				       guint samplerate);
+
+guint ags_lfo_synth_util_get_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util,
+						      guint lfo_synth_oscillator_mode);
+
+gdouble ags_lfo_synth_util_get_frequency(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_frequency(AgsLFOSynthUtil *lfo_synth_util,
+				      gdouble frequency);
+
+gdouble ags_lfo_synth_util_get_phase(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_phase(AgsLFOSynthUtil *lfo_synth_util,
+				  gdouble phase);
+
+gdouble ags_lfo_synth_util_get_lfo_depth(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_lfo_depth(AgsLFOSynthUtil *lfo_synth_util,
+				      gdouble lfo_depth);
+
+gdouble ags_lfo_synth_util_get_tuning(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_tuning(AgsLFOSynthUtil *lfo_synth_util,
+				   gdouble tuning);
+
+guint ags_lfo_synth_util_get_offset(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_offset(AgsLFOSynthUtil *lfo_synth_util,
+				   guint offset);
+
+guint ags_lfo_synth_util_get_frame_count(AgsLFOSynthUtil *lfo_synth_util);
+void ags_lfo_synth_util_set_frame_count(AgsLFOSynthUtil *lfo_synth_util,
+					guint frame_count);
 
 /* sin LFO */
 void ags_lfo_synth_util_sin_s8(gint8 *buffer,
