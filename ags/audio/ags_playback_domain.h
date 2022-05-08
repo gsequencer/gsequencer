@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,6 @@ typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
 
 /**
  * AgsPlaybackDomainFlags:
- * @AGS_PLAYBACK_DOMAIN_CONNECTED: indicates the playback domain was connected by calling #AgsConnectable::connect()
  * @AGS_PLAYBACK_DOMAIN_SINGLE_THREADED: single threaded
  * @AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO: super threaded audio
  * 
@@ -51,9 +50,8 @@ typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PLAYBACK_DOMAIN_CONNECTED                  = 1,
-  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1 <<  1,
-  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  2,
+  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1,
+  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  1,
 }AgsPlaybackDomainFlags;
 
 struct _AgsPlaybackDomain
@@ -61,6 +59,7 @@ struct _AgsPlaybackDomain
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   
   GRecMutex obj_mutex;
 

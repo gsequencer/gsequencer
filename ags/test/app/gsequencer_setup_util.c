@@ -82,15 +82,37 @@ struct sigaction ags_test_sigact;
 
 extern AgsApplicationContext *ags_application_context;
 
+gpointer
+ags_test_get_display()
+{
+  static Display *display = NULL;
+
+  if(display == NULL){
+    display = XOpenDisplay(NULL);
+  }
+
+  return(display);
+}
+
 void
 ags_test_enter()
 {
+  Display *display;
+
+  display = ags_test_get_display();
+
+  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
 }
 
 void
 ags_test_leave()
 {
+  Display *display;
+
+  display = ags_test_get_display();
+
+  XUnlockDisplay(display);
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
 }
 

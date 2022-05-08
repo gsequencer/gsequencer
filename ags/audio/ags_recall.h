@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,8 +54,6 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
 
 /**
  * AgsRecallFlags:
- * @AGS_RECALL_ADDED_TO_REGISTRY: the recall was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_RECALL_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_RECALL_TEMPLATE: is template
  * @AGS_RECALL_DEFAULT_TEMPLATE: is default template
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
@@ -66,13 +64,11 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECALL_ADDED_TO_REGISTRY     = 1,
-  AGS_RECALL_CONNECTED             = 1 <<  1,
-  AGS_RECALL_TEMPLATE              = 1 <<  2,
-  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  3,
-  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  4,
-  AGS_RECALL_BYPASS                = 1 <<  5,
-  AGS_RECALL_INITIAL_RUN           = 1 <<  6,
+  AGS_RECALL_TEMPLATE              = 1,
+  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  1,
+  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  2,
+  AGS_RECALL_BYPASS                = 1 <<  3,
+  AGS_RECALL_INITIAL_RUN           = 1 <<  4,
 }AgsRecallFlags;
 
 /**
@@ -100,6 +96,7 @@ struct _AgsRecall
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   guint ability_flags;
   guint behaviour_flags;
   gint sound_scope;

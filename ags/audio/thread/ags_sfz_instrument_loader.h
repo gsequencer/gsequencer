@@ -61,7 +61,8 @@ struct _AgsSFZInstrumentLoader
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GThread *thread;

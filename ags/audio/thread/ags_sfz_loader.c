@@ -165,6 +165,7 @@ void
 ags_sfz_loader_init(AgsSFZLoader *sfz_loader)
 {
   sfz_loader->flags = 0;
+  sfz_loader->connectable_flags = 0;
 
   /* add base plugin mutex */
   g_rec_mutex_init(&(sfz_loader->obj_mutex)); 

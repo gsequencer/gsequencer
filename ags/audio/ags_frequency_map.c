@@ -348,6 +348,7 @@ void
 ags_frequency_map_init(AgsFrequencyMap *frequency_map)
 {
   frequency_map->flags = 0;
+  frequency_map->connectable_flags = 0;
 
   /* add audio signal mutex */
   g_rec_mutex_init(&(frequency_map->obj_mutex)); 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,17 +71,13 @@ typedef struct _AgsChannelClass AgsChannelClass;
 
 /**
  * AgsChannelFlags:
- * @AGS_CHANNEL_ADDED_TO_REGISTRY: the channel was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_CHANNEL_CONNECTED: indicates the channel was connected by calling #AgsConnectable::connect()
  * @AGS_CHANNEL_BYPASS: don't apply any data
  *
  * Enum values to control the behavior or indicate internal state of #AgsChannel by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CHANNEL_ADDED_TO_REGISTRY  = 1,
-  AGS_CHANNEL_CONNECTED          = 1 <<  1,
-  AGS_CHANNEL_BYPASS             = 1 <<  2,
+  AGS_CHANNEL_BYPASS             = 1,
 }AgsChannelFlags;
 
 #define AGS_CHANNEL_ERROR (ags_channel_error_quark())
@@ -95,6 +91,7 @@ struct _AgsChannel
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   guint ability_flags;
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];

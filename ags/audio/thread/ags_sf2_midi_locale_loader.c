@@ -239,6 +239,7 @@ void
 ags_sf2_midi_locale_loader_init(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader)
 {
   sf2_midi_locale_loader->flags = 0;
+  sf2_midi_locale_loader->connectable_flags = 0;
 
   /* add base plugin mutex */
   g_rec_mutex_init(&(sf2_midi_locale_loader->obj_mutex));

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -355,8 +355,6 @@ ags_channel_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_CHANNEL_ADDED_TO_REGISTRY, "AGS_CHANNEL_ADDED_TO_REGISTRY", "channel-added-to-registry" },
-      { AGS_CHANNEL_CONNECTED, "AGS_CHANNEL_CONNECTED", "channel-connected" },
       { AGS_CHANNEL_BYPASS, "AGS_CHANNEL_BYPASS", "channel-bypass" },
       { 0, NULL, NULL }
     };
@@ -1211,6 +1209,7 @@ ags_channel_init(AgsChannel *channel)
   gchar *str;
 
   channel->flags = 0;
+  channel->connectable_flags = 0;
   channel->ability_flags = 0;
   channel->behaviour_flags = 0;
   memset(channel->staging_flags, 0, AGS_SOUND_SCOPE_LAST * sizeof(guint));
@@ -2445,11 +2444,20 @@ ags_channel_is_ready(AgsConnectable *connectable)
   AgsChannel *channel;
   
   gboolean is_ready;
+  
+  GRecMutex *channel_mutex;
 
   channel = AGS_CHANNEL(connectable);
 
-  /* check is added */
-  is_ready = ags_channel_test_flags(channel, AGS_CHANNEL_ADDED_TO_REGISTRY);
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
+  /* check is ready */
+  g_rec_mutex_lock(channel_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (channel->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(channel_mutex);
   
   return(is_ready);
 }
@@ -2468,15 +2476,24 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *channel_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
   
   channel = AGS_CHANNEL(connectable);
 
-  ags_channel_set_flags(channel, AGS_CHANNEL_ADDED_TO_REGISTRY);
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
-  application_context = ags_application_context_get_instance();
+  g_rec_mutex_lock(channel_mutex);
+
+  channel->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+
+  g_rec_mutex_unlock(channel_mutex);
 
   registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -2602,11 +2619,20 @@ ags_channel_is_connected(AgsConnectable *connectable)
   AgsChannel *channel;
   
   gboolean is_connected;
+  
+  GRecMutex *channel_mutex;
 
   channel = AGS_CHANNEL(connectable);
 
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
   /* check is connected */
-  is_connected = ags_channel_test_flags(channel, AGS_CHANNEL_CONNECTED);
+  g_rec_mutex_lock(channel_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (channel->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(channel_mutex);
   
   return(is_connected);
 }
@@ -2621,13 +2647,22 @@ ags_channel_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *channel_mutex;
+
+  channel = AGS_CHANNEL(connectable);
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  channel = AGS_CHANNEL(connectable);
+  g_rec_mutex_lock(channel_mutex);
 
-  ags_channel_set_flags(channel, AGS_CHANNEL_CONNECTED);
+  channel->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_rec_mutex_unlock(channel_mutex);
 
 #ifdef AGS_DEBUG
   g_message("connecting channel");
@@ -2756,13 +2791,22 @@ ags_channel_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *channel_mutex;
+
+  channel = AGS_CHANNEL(connectable);
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  channel = AGS_CHANNEL(connectable);
-  
-  ags_channel_unset_flags(channel, AGS_CHANNEL_CONNECTED);
+  g_rec_mutex_lock(channel_mutex);
+
+  channel->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_rec_mutex_unlock(channel_mutex);
   
 #ifdef AGS_DEBUG
   g_message("disconnecting channel");

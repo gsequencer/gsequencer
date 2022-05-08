@@ -33,6 +33,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
+#include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
@@ -98,13 +99,19 @@ ags_functional_test_util_driver_dispatch(GSource *source,
 					 GSourceFunc callback,
 					 gpointer user_data)
 {
+  Display *display;
+
+  display = ags_test_get_display();
+
   g_main_context_iteration(g_main_context_default(),
 			   FALSE);
 
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
+  XUnlockDisplay(display);
   
   usleep(4000);
   
+  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
 
   g_main_context_iteration(g_main_context_default(),
@@ -116,17 +123,17 @@ ags_functional_test_util_driver_dispatch(GSource *source,
 gboolean
 ags_functional_test_timeout(gpointer data)
 {
-  g_main_context_iteration(g_main_context_default(),
-			   FALSE);
+  Display *display;
 
+  display = ags_test_get_display();
+  
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
+  XUnlockDisplay(display);
   
   usleep(4000);
-  
-  g_rec_mutex_lock(ags_test_get_driver_mutex());
 
-  g_main_context_iteration(g_main_context_default(),
-			   FALSE);
+  XLockDisplay(display);
+  g_rec_mutex_lock(ags_test_get_driver_mutex());
 
   return(G_SOURCE_CONTINUE);
 }
@@ -234,10 +241,14 @@ ags_functional_test_util_do_run(int argc, char **argv,
   GSource *driver_source;
   GSourceFuncs driver_funcs;
 
+  Display *display;
+
   GError *error;
-    
+
+  XInitThreads();
+  
   /* app */
-  gsequencer_app = ags_gsequencer_application_new("org.nongnu.gsequencer.gsequencer",
+  gsequencer_app = ags_gsequencer_application_new("org.nongnu.gsequencer.gsequencer-test",
 						  G_APPLICATION_IS_LAUNCHER);
 
   error = NULL;
@@ -252,6 +263,9 @@ ags_functional_test_util_do_run(int argc, char **argv,
 		      "Welcome to Advanced Gtk+ Sequencer - Test");
 
   /* application context */
+  display = ags_test_get_display();
+
+  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
  
   thread = g_thread_new("libgsequencer.so - functional test",
@@ -269,7 +283,7 @@ ags_functional_test_util_do_run(int argc, char **argv,
   g_source_attach(driver_source,
   		  g_main_context_default());
 #else
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT,
+  g_timeout_add((guint) AGS_UI_PROVIDER_DEFAULT_TIMEOUT,
 		ags_functional_test_timeout,
 		NULL);
 #endif
@@ -2911,18 +2925,12 @@ ags_functional_test_util_machine_editor_dialog_open(guint nth_machine)
   if(!AGS_IS_MACHINE(machine)){
     return(FALSE);
   }
-  
-  ags_test_enter();
 
   /* activate hide */
-  success = TRUE;
-  
-  ags_functional_test_util_machine_menu_button_click(nth_machine,
-						     machine->context_menu_button,
-						     path_strv,
-						     "machine.properties");
-
-  ags_test_leave();
+  success = ags_functional_test_util_machine_menu_button_click(nth_machine,
+							       machine->context_menu_button,
+							       path_strv,
+							       "machine.properties");
 
   return(success);
 }

@@ -54,7 +54,8 @@ struct _AgsFrequencyMap
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

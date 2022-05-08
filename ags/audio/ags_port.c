@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,6 +135,28 @@ ags_port_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PORT_CONVERT_ALWAYS, "AGS_PORT_CONVERT_ALWAYS", "port-convert-always" },
+      { AGS_PORT_USE_LADSPA_FLOAT, "AGS_PORT_USE_LADSPA_FLOAT", "port-use-ladspa-float" },
+      { AGS_PORT_IS_OUTPUT, "AGS_PORT_IS_OUTPUT", "port-is-output" },
+      { AGS_PORT_INFINITE_RANGE, "AGS_PORT_INFINITE_RANGE", "port-infinite-range" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -431,6 +453,7 @@ void
 ags_port_init(AgsPort *port)
 {
   port->flags = 0; // AGS_PORT_CONVERT_ALWAYS;
+  port->connectable_flags = 0;
 
   /* port mutex */
   g_rec_mutex_init(&(port->obj_mutex));
@@ -869,11 +892,20 @@ ags_port_is_ready(AgsConnectable *connectable)
   AgsPort *port;
   
   gboolean is_ready;
+  
+  GRecMutex *port_mutex;
 
   port = AGS_PORT(connectable);
 
-  /* check is added */
-  is_ready = ags_port_test_flags(port, AGS_PORT_ADDED_TO_REGISTRY);
+  /* get port mutex */
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
+
+  /* check is ready */
+  g_rec_mutex_lock(port_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(port_mutex);
   
   return(is_ready);
 }
@@ -890,15 +922,24 @@ ags_port_add_to_registry(AgsConnectable *connectable)
 
   GList *list;
 
+  GRecMutex *port_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
+  application_context = ags_application_context_get_instance();
+
   port = AGS_PORT(connectable);
 
-  ags_port_set_flags(port, AGS_PORT_ADDED_TO_REGISTRY);
+  /* get port mutex */
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
-  application_context = ags_application_context_get_instance();
+  g_rec_mutex_lock(port_mutex);
+
+  port->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+
+  g_rec_mutex_unlock(port_mutex);
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -960,11 +1001,20 @@ ags_port_is_connected(AgsConnectable *connectable)
   AgsPort *port;
   
   gboolean is_connected;
+  
+  GRecMutex *port_mutex;
 
   port = AGS_PORT(connectable);
 
+  /* get port mutex */
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
+
   /* check is connected */
-  is_connected = ags_port_test_flags(port, AGS_PORT_CONNECTED);
+  g_rec_mutex_lock(port_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(port_mutex);
   
   return(is_connected);
 }
@@ -978,13 +1028,20 @@ ags_port_connect(AgsConnectable *connectable)
 
   GRecMutex *port_mutex;
 
+  port = AGS_PORT(connectable);
+
+  /* get port mutex */
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
-  port = AGS_PORT(connectable);
+  g_rec_mutex_lock(port_mutex);
 
-  ags_port_set_flags(port, AGS_PORT_CONNECTED);  
+  port->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_rec_mutex_unlock(port_mutex);
 }
 
 void
@@ -996,13 +1053,20 @@ ags_port_disconnect(AgsConnectable *connectable)
 
   GRecMutex *port_mutex;
 
+  port = AGS_PORT(connectable);
+
+  /* get port mutex */
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  port = AGS_PORT(connectable);
+  g_rec_mutex_lock(port_mutex);
 
-  ags_port_unset_flags(port, AGS_PORT_CONNECTED);    
+  port->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**

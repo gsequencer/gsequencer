@@ -201,6 +201,7 @@ void
 ags_sfz_instrument_loader_init(AgsSFZInstrumentLoader *sfz_instrument_loader)
 {
   sfz_instrument_loader->flags = 0;
+  sfz_instrument_loader->connectable_flags = 0;
 
   /* add base plugin mutex */
   g_rec_mutex_init(&(sfz_instrument_loader->obj_mutex));
