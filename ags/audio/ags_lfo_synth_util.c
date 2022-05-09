@@ -2958,12 +2958,118 @@ ags_lfo_synth_util_compute_sawtooth(AgsLFOSynthUtil *lfo_synth_util)
 void
 ags_lfo_synth_util_compute_triangle_s8(AgsLFOSynthUtil *lfo_synth_util)
 {
+  gint8 *source, *tmp_source;
+
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  gdouble lfo_depth;
+  gdouble tuning;
+  guint offset;
+  guint frame_count;
+  guint i, i_stop;
+
   if(lfo_synth_util == NULL ||
      lfo_synth_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  source = lfo_synth_util->source;
+  
+  samplerate = lfo_synth_util->samplerate;
+
+  frequency = lfo_synth_util->frequency;
+  phase = lfo_synth_util->phase;
+
+  lfo_depth = lfo_synth_util->lfo_depth;
+  tuning = lfo_synth_util->tuning;
+  
+  offset = lfo_synth_util->offset;
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
+
+  for(i = 0; i < i_stop; i++){
+    ags_v8double v_buffer, v_triangle;
+
+    tmp_source = source;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(tmp_source),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride),
+      (gdouble) *(tmp_source += lfo_synth_util->source_stride)
+    };
+
+    //TODO:JK: implement me
+
+    *(source) = (gint8) v_buffer[0];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[1];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[2];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[3];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[4];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[5];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[6];
+    *(source += lfo_synth_util->source_stride) = (gint8) v_buffer[7];
+
+    source += lfo_synth_util->source_stride;    
+      
+    i += 8;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    tmp_source = source;
+
+    double v_buffer[] = {
+      (double) *(tmp_source),
+      (double) *(tmp_source += lfo_synth_util->source_stride),
+      (double) *(tmp_source += lfo_synth_util->source_stride),
+      (double) *(tmp_source += lfo_synth_util->source_stride),
+      (double) *(tmp_source += lfo_synth_util->source_stride),
+      (double) *(tmp_source += lfo_synth_util->source_stride),
+      (double) *(tmp_source += lfo_synth_util->source_stride),
+      (double) *(tmp_source += lfo_synth_util->source_stride)};
+
+    //TODO:JK: implement me
+
+    *(source) = (gint8) ret_v_buffer[0];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[1];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[2];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[3];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[4];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[5];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[6];
+    *(source += lfo_synth_util->source_stride) = (gint8) ret_v_buffer[7];
+
+    source += lfo_synth_util->source_stride;
+
+    i += 8;
+  }
+#else
+  i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    //TODO:JK: implement me
+    
+    source += (8 * lfo_synth_util->source_stride);
+    i += 8;
+  }
+#endif
+
+  for(; i < lfo_synth_util->buffer_length;){
+    //TODO:JK: implement me
+
+    source += lfo_synth_util->source_stride;
+    i++;
+  }
 }
 
 /**
