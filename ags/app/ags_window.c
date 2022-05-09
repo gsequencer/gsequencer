@@ -278,11 +278,14 @@ ags_window_init(AgsWindow *window)
 		       (GtkWidget *) vbox);
   
   /* menubar */
-  //  if(window->shows_menu_bar)
-  {
+  if(window->shows_menu_bar){
     AgsGSequencerApplication *gsequencer_app;
 
     gsequencer_app = AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
+
+    window->menu_bar = gtk_popover_menu_bar_new_from_model(gsequencer_app->menubar);
+    gtk_box_append(vbox,
+		   window->menu_bar);
     
     gtk_application_set_menubar(gsequencer_app,
 				gsequencer_app->menubar);

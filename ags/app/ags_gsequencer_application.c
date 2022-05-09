@@ -566,7 +566,7 @@ ags_gsequencer_application_startup(GApplication *app)
 		     item);
 
   g_menu_insert_submenu(gsequencer_app->menubar,
-			0,
+			-1,
 			i18n("File"),
 			gsequencer_app->file_menu);
   
@@ -578,7 +578,7 @@ ags_gsequencer_application_startup(GApplication *app)
   gsequencer_app->add_menu = gtk_builder_get_object(builder,
 						    "ags-add-menu");
 
-  g_menu_insert_submenu(gsequencer_app->menubar,
+  g_menu_insert_submenu(gsequencer_app->edit_menu,
 			0,
 			i18n("Add"),
 			gsequencer_app->add_menu);
@@ -594,7 +594,7 @@ ags_gsequencer_application_startup(GApplication *app)
 		     item);  
 
   g_menu_insert_submenu(gsequencer_app->menubar,
-			0,
+			-1,
 			i18n("Edit"),
 			gsequencer_app->edit_menu);
 
@@ -612,7 +612,7 @@ ags_gsequencer_application_startup(GApplication *app)
 		     item);
 
   g_menu_insert_submenu(gsequencer_app->menubar,
-			0,
+			-1,
 			i18n("MIDI"),
 			gsequencer_app->midi_menu);
 
@@ -630,7 +630,7 @@ ags_gsequencer_application_startup(GApplication *app)
 		     item);
 
   g_menu_insert_submenu(gsequencer_app->menubar,
-			0,
+			-1,
 			i18n("Help"),
 			gsequencer_app->help_menu);
 }
