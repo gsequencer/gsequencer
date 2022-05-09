@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -240,6 +240,8 @@ ags_fx_lfo_channel_class_init(AgsFxLfoChannelClass *fx_lfo_channel)
 void
 ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 {
+  guint i;
+  
   AGS_RECALL(fx_lfo_channel)->name = "ags-fx-lfo";
   AGS_RECALL(fx_lfo_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_lfo_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -364,6 +366,13 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   ags_recall_add_port((AgsRecall *) fx_lfo_channel,
 		      fx_lfo_channel->lfo_tuning);
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_lfo_channel->input_data[i] = ags_fx_lfo_channel_input_data_alloc();
+      
+    fx_lfo_channel->input_data[i]->parent = fx_lfo_channel;
+  }
 }
 
 void
@@ -683,8 +692,16 @@ void
 ags_fx_lfo_channel_finalize(GObject *gobject)
 {
   AgsFxLfoChannel *fx_lfo_channel;
+
+  guint i;
   
   fx_lfo_channel = AGS_FX_LFO_CHANNEL(gobject);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_lfo_channel_input_data_free(fx_lfo_channel->input_data[i]);
+
+    fx_lfo_channel->input_data[i] = NULL;
+  }
 
   /* enabled */
   if(fx_lfo_channel->enabled != NULL){
@@ -955,6 +972,50 @@ ags_fx_lfo_channel_get_lfo_tuning_plugin_port()
   g_mutex_unlock(&mutex);
 
   return(plugin_port);
+}
+
+/**
+ * ags_fx_lfo_channel_input_data_alloc:
+ * 
+ * Allocate #AgsFxLfoChannelInputData-struct
+ * 
+ * Returns: the new #AgsFxLfoChannelInputData-struct
+ * 
+ * Since: 4.0.0
+ */
+AgsFxLfoChannelInputData*
+ags_fx_lfo_channel_input_data_alloc()
+{
+  AgsFxLfoChannelInputData *input_data;
+
+  input_data = (AgsFxLfoChannelInputData *) g_malloc(sizeof(AgsFxLfoChannelInputData));
+
+  g_rec_mutex_init(&(input_data->strct_mutex));
+
+  input_data->parent = NULL;
+
+  input_data->lfo_synth_util = ags_lfo_synth_util_alloc();
+
+  return(input_data);
+}
+
+/**
+ * ags_fx_lfo_channel_input_data_free:
+ * @input_data: the #AgsFxLfoChannelInputData-struct
+ * 
+ * Free @input_data.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_lfo_channel_input_data_free(AgsFxLfoChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return;
+  }
+  ags_lfo_synth_util_free(input_data->lfo_synth_util);  
+  
+  g_free(input_data);
 }
 
 /**

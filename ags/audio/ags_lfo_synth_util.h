@@ -25,9 +25,15 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_synth_enums.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_LFO_SYNTH_UTIL         (ags_lfo_synth_util_get_type())
+
+#define AGS_LFO_SYNTH_UTIL_DEFAULT_FREQUENCY (12.0)
+#define AGS_LFO_SYNTH_UTIL_DEFAULT_LFO_DEPTH (0.0)
+#define AGS_LFO_SYNTH_UTIL_DEFAULT_TUNING (0.0)
 
 typedef struct _AgsLFOSynthUtil AgsLFOSynthUtil;
 
@@ -53,6 +59,11 @@ struct _AgsLFOSynthUtil
 };
 
 GType ags_lfo_synth_util_get_type(void);
+
+AgsLFOSynthUtil* ags_lfo_synth_util_alloc();
+
+gpointer ags_lfo_synth_util_copy(AgsLFOSynthUtil *ptr);
+void ags_lfo_synth_util_free(AgsLFOSynthUtil *ptr);
 
 gpointer ags_lfo_synth_util_get_source(AgsLFOSynthUtil *lfo_synth_util);
 void ags_lfo_synth_util_set_source(AgsLFOSynthUtil *lfo_synth_util,

@@ -148,7 +148,6 @@ EXTRA_DIST = config.rpath \
 	ags/lib/AUTHORS \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
-	ags/audio/recall/AUTHORS \
 	ags/app/ui/ags_add_menu.ui \
 	ags/app/ui/ags_edit_menu.ui \
 	ags/app/ui/ags_meta_data_window.ui \

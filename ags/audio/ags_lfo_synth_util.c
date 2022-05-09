@@ -25,9 +25,6 @@
 #include <math.h>
 #include <complex.h>
 
-gpointer ags_lfo_synth_util_strct_copy(gpointer ptr);
-void ags_lfo_synth_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_lfo_synth_util
  * @short_description: low frequency oscillator synth util
@@ -48,8 +45,8 @@ ags_lfo_synth_util_get_type(void)
 
     ags_type_lfo_synth_util =
       g_boxed_type_register_static("AgsLFOSynthUtil",
-				   (GBoxedCopyFunc) ags_lfo_synth_util_strct_copy,
-				   (GBoxedFreeFunc) ags_lfo_synth_util_strct_free);
+				   (GBoxedCopyFunc) ags_lfo_synth_util_copy,
+				   (GBoxedFreeFunc) ags_lfo_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_lfo_synth_util);
   }
@@ -57,19 +54,96 @@ ags_lfo_synth_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_lfo_synth_util_strct_copy(gpointer ptr)
+/**
+ * ags_lfo_synth_util_alloc:
+ *
+ * Allocate #AgsLFOSynthUtil-struct
+ *
+ * Returns: a new #AgsLFOSynthUtil-struct
+ *
+ * Since: 4.0.0
+ */
+AgsLFOSynthUtil*
+ags_lfo_synth_util_alloc()
 {
-  gpointer retval;
+  AgsLFOSynthUtil *ptr;
 
-  retval = g_memdup(ptr, sizeof(AgsLFOSynthUtil));
- 
-  return(retval);
+  ptr = (AgsLFOSynthUtil *) g_new(AgsLFOSynthUtil,
+				 1);
+
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  ptr->samplerate = 0;
+  
+  ptr->frequency = AGS_LFO_SYNTH_UTIL_DEFAULT_FREQUENCY;
+  ptr->phase = 0.0;
+  
+  ptr->lfo_synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+  ptr->lfo_depth = AGS_LFO_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+  ptr->tuning = AGS_LFO_SYNTH_UTIL_DEFAULT_TUNING;
+
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  return(ptr);
 }
 
-void
-ags_lfo_synth_util_strct_free(gpointer ptr)
+/**
+ * ags_lfo_synth_util_copy:
+ * @ptr: the original #AgsLFOSynthUtil-struct
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsLFOSynthUtil-struct
+ *
+ * Since: 4.0.0
+ */
+gpointer
+ags_lfo_synth_util_copy(AgsLFOSynthUtil *ptr)
 {
+  AgsLFOSynthUtil *new_ptr;
+  
+  new_ptr = (AgsLFOSynthUtil *) g_new(AgsLFOSynthUtil,
+				     1);
+  
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->frequency = ptr->frequency;
+  new_ptr->phase = ptr->phase;
+
+  new_ptr->lfo_synth_oscillator_mode = ptr->lfo_synth_oscillator_mode;
+
+  new_ptr->lfo_depth = ptr->lfo_depth;
+  new_ptr->tuning = ptr->tuning;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+  
+  return(new_ptr);
+}
+
+/**
+ * ags_lfo_synth_util_free:
+ * @ptr: the #AgsLFOSynthUtil-struct
+ *
+ * Free the memory of @ptr.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_lfo_synth_util_free(AgsLFOSynthUtil *ptr)
+{
+  g_free(ptr->source);
+  
   g_free(ptr);
 }
 

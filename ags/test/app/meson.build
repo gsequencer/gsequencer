@@ -9,7 +9,7 @@ configure_file(output: 'config.h', configuration: ags_config)
 
 interactive_test_dependencies = [
   common_test_dependencies,
-  dependency('gtk+-3.0'),
+  dependency('gtk4'),
   xml2_dependency,
   soup_dependency,
   instpatch_dependency,
@@ -40,31 +40,6 @@ libgsequencer_test = static_library(
 )
 
 interactive_tests = [
-  'ags_functional_audio_config_test',
-  'ags_functional_automation_editor_workflow_test',
-  'ags_functional_line_member_add_and_destroy_test',
-  'ags_functional_loop_000_xml_test',
-  'ags_functional_loop_001_xml_test',
-  'ags_functional_loop_002_xml_test',
-  'ags_functional_loop_003_xml_test',
-  'ags_functional_loop_004_xml_test',
-  'ags_functional_loop_005_xml_test',
-  'ags_functional_loop_006_xml_test',
-  'ags_functional_loop_007_xml_test',
-  'ags_functional_loop_008_xml_test',
-  'ags_functional_loop_010_xml_test',
-  'ags_functional_machine_add_and_destroy_test',
-  'ags_functional_machine_link_test',
-  'ags_functional_notation_editor_workflow_test',
-  'ags_functional_notation_edit_test',
-  'ags_xorg_application_context_test',
-  'machine/ags_functional_drum_test',
-  'machine/ags_functional_ffplayer_test',
-  'machine/ags_functional_hybrid_synth_test',
-  'machine/ags_functional_matrix_test',
-  'machine/ags_functional_mixer_test',
-  'machine/ags_functional_panel_test',
-  'machine/ags_functional_synth_test',
 ]
 
 foreach interactive_test : interactive_tests
