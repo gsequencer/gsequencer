@@ -65,13 +65,13 @@ void ags_dial_snapshot(GtkWidget *widget,
 
 gboolean ags_dial_button_press_is_down_event(AgsDial *dial,
 					     gdouble x, gdouble y,
-					     gint padding_left, guint padding_top);
+					     gint padding_left, gint padding_top);
 gboolean ags_dial_button_press_is_up_event(AgsDial *dial,
 					   gdouble x, gdouble y,
-					   gint padding_left, guint padding_top);
+					   gint padding_left, gint padding_top);
 gboolean ags_dial_button_press_is_dial_event(AgsDial *dial,
 					     gdouble x, gdouble y,
-					     gint padding_left, guint padding_top,
+					     gint padding_left, gint padding_top,
 					     gint dial_left_position);
 
 gboolean ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
@@ -106,10 +106,10 @@ void ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
 					     gdouble x,
 					     gdouble y);
 
-gboolean ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
-				  gdouble x,
-				  gdouble y,
-				  AgsDial *dial);
+void ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
+			      gdouble x,
+			      gdouble y,
+			      AgsDial *dial);
 
 void ags_dial_draw(AgsDial *dial,
 		   cairo_t *cr,
@@ -432,8 +432,8 @@ ags_dial_init(AgsDial *dial)
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
 
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_dial_motion_callback), dial);
+  g_signal_connect_after(event_controller, "motion",
+			 G_CALLBACK(ags_dial_motion_callback), dial);
   
   dial->flags = (AGS_DIAL_WITH_BUTTONS |
 		 AGS_DIAL_SEEMLESS_MODE |
@@ -743,7 +743,7 @@ ags_dial_snapshot(GtkWidget *widget,
 gboolean
 ags_dial_button_press_is_down_event(AgsDial *dial,
 				    gdouble x, gdouble y,
-				    gint padding_left, guint padding_top)
+				    gint padding_left, gint padding_top)
 {
   if(x >= padding_left &&
      x <= padding_left + dial->button_width &&
@@ -758,7 +758,7 @@ ags_dial_button_press_is_down_event(AgsDial *dial,
 gboolean
 ags_dial_button_press_is_up_event(AgsDial *dial,
 				  gdouble x, gdouble y,
-				  gint padding_left, guint padding_top)
+				  gint padding_left, gint padding_top)
 {
   gint offset;
 
@@ -777,7 +777,7 @@ ags_dial_button_press_is_up_event(AgsDial *dial,
 gboolean
 ags_dial_button_press_is_dial_event(AgsDial *dial,
 				    gdouble x, gdouble y,
-				    gint padding_left, guint padding_top,
+				    gint padding_left, gint padding_top,
 				    gint dial_left_position)
 {
   if(x >= dial_left_position &&
@@ -808,7 +808,7 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   guint width, height;
   gint padding_left, padding_top;
   gint dial_left_position;
-
+  
   dial->flags |= AGS_DIAL_MOUSE_BUTTON_PRESSED;
 
   widget_width = gtk_widget_get_width((GtkWidget *) dial);
@@ -826,8 +826,8 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   width = 2 * (button_height + radius + outline_strength + 2) + (margin_left + margin_right);
   height = 2 * (radius + outline_strength + 1);
 
-  padding_top = (widget_height - height) / 2;
-  padding_left = (widget_width - width) / 2;
+  padding_top = (widget_height - height + 2) / 2;
+  padding_left = (widget_width - width + 2) / 2;
 
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
     if(ags_dial_button_press_is_down_event(dial,
@@ -845,6 +845,12 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					     x, y,
 					     padding_left, padding_top,
 					     dial_left_position)){
+	dial->gravity_x = x;
+	dial->gravity_y = y;
+	dial->current_x = x;
+	dial->current_y = y;
+
+	dial->flags |= AGS_DIAL_MOTION_CAPTURING_INIT;
 	dial->flags |= AGS_DIAL_MOTION_CAPTURING;
       }
     }
@@ -1053,12 +1059,17 @@ ags_dial_modifiers_callback(GtkEventControllerKey *event_controller,
   return(FALSE);
 }
 
-gboolean
+void
 ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
 			 gdouble x,
 			 gdouble y,
 			 AgsDial *dial)
 {
+  gint widget_width, widget_height;
+
+  widget_width = gtk_widget_get_width((GtkWidget *) dial);
+  widget_height = gtk_widget_get_height((GtkWidget *) dial);
+
   if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
     if((AGS_DIAL_SEEMLESS_MODE & (dial->flags)) != 0){
       if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
@@ -1093,8 +1104,6 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
       }
     }
   }
-
-  return(FALSE);
 }
 
 void
@@ -1200,8 +1209,8 @@ ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
   width = 2 * (button_height + radius + outline_strength + 2) + (margin_left + margin_right);
   height = 2 * (radius + outline_strength + 1);
 
-  padding_top = (widget_height - height) / 2;
-  padding_left = (widget_width - width) / 2;
+  padding_top = (widget_height - height + 2) / 2;
+  padding_left = (widget_width - width + 2) / 2;
     
   x1 = x - (1.0 + dial->button_width + dial->margin_left + radius + padding_left);
   y1 = y - (dial->outline_strength + radius + padding_top);
