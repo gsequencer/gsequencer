@@ -1459,8 +1459,8 @@ ags_dial_draw(AgsDial *dial,
   width = 2 * (button_width + radius + outline_strength + 1);
   height = 2 * (radius + outline_strength + 1);
   
-  padding_top = (widget_height - height) / 2;
-  padding_left = (widget_width - width) / 2;
+  padding_top = (widget_height - height + 2) / 2;
+  padding_left = (widget_width - width + 2) / 2;
   
   /*  */
 //  cairo_surface_flush(cairo_get_target(cr));

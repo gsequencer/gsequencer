@@ -146,8 +146,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer *) online_help_window,
-		    (GtkWidget *) vbox);
+  gtk_window_set_child(online_help_window,
+		       (GtkWidget *) vbox);
 
   grid = gtk_grid_new();
   gtk_box_append((GtkBox *) vbox,
@@ -166,7 +166,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   vadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
 
-  online_help_window->pdf_vscrollbar = gtk_vscrollbar_new(vadjustment);
+  online_help_window->pdf_vscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+							 vadjustment);
   gtk_grid_attach(grid,
 		  (GtkWidget *) online_help_window->pdf_vscrollbar,
 		  1, 0,
@@ -174,7 +175,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   
   hadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
   
-  online_help_window->pdf_hscrollbar = gtk_hscrollbar_new(hadjustment);
+  online_help_window->pdf_hscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+							 hadjustment);
   gtk_grid_attach(grid,
 		  (GtkWidget *) online_help_window->pdf_hscrollbar,
 		  0, 1,
@@ -305,16 +307,18 @@ ags_online_help_window_connect(AgsConnectable *connectable)
   online_help_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
 #if defined(AGS_WITH_POPPLER)
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "draw",
-			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback), online_help_window);
+  gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
+				 ags_online_help_window_pdf_drawing_area_draw_callback,
+				 online_help_window,
+				 NULL);
 
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "configure-event",
-			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_configure_callback), online_help_window);
+  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "resize",
+			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_resize_callback), online_help_window);
 
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_vscrollbar), "value-changed",
+  g_signal_connect_after(G_OBJECT(gtk_scrollbar_get_adjustment(online_help_window->pdf_vscrollbar)), "value-changed",
 			 G_CALLBACK(ags_online_help_window_pdf_vscrollbar_value_changed_callback), online_help_window);
 
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_hscrollbar), "value-changed",
+  g_signal_connect_after(G_OBJECT(gtk_scrollbar_get_adjustment(online_help_window->pdf_hscrollbar)), "value-changed",
 			 G_CALLBACK(ags_online_help_window_pdf_hscrollbar_value_changed_callback), online_help_window);
 #endif  
 }
@@ -333,12 +337,14 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
   online_help_window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
 #if defined(AGS_WITH_POPPLER)
+  gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
+				 NULL,
+				 online_help_window,
+				 NULL);
+
   g_object_disconnect(G_OBJECT(online_help_window->pdf_drawing_area),
-		      "any_signal::draw",
-		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback),
-		      online_help_window,
-		      "any_signal::configure-event",
-		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_configure_callback),
+		      "any_signal::resize",
+		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_resize_callback),
 		      online_help_window,
 		      NULL);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,18 +39,19 @@ void ags_online_help_window_load_changed(WebKitWebView *web_view,
 					 AgsOnlineHelpWindow *online_help_window);
 #endif
 
-gboolean ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_area,
-							       cairo_t *cr,
-							       AgsOnlineHelpWindow *online_help_window);
+void ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_area,
+							   cairo_t *cr,
+							   int width, int height,
+							   AgsOnlineHelpWindow *online_help_window);
 
-gboolean ags_online_help_window_pdf_drawing_area_configure_callback(GtkWidget *pdf_drawing_area,
-								    GdkEvent  *event,
-								    AgsOnlineHelpWindow *online_help_window);
+void ags_online_help_window_pdf_drawing_area_resize_callback(GtkWidget *pdf_drawing_area,
+							     gint width, gint height,
+							     AgsOnlineHelpWindow *online_help_window);
 
-void ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkRange *vscrollbar,
+void ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkAdjustment *vscrollbar,
 								  AgsOnlineHelpWindow *online_help_window);
 
-void ags_online_help_window_pdf_hscrollbar_value_changed_callback(GtkRange *hscrollbar,
+void ags_online_help_window_pdf_hscrollbar_value_changed_callback(GtkAdjustment *hscrollbar,
 								  AgsOnlineHelpWindow *online_help_window);
 
 void ags_online_help_window_home_callback(GtkWidget *button,
