@@ -643,17 +643,25 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
 			       position);
 
     list = start_list;
-    
-    while(list != NULL){
-      group = AGS_MACHINE_RADIO_BUTTON(start_list->data);
 
-      g_object_set(list->data,
-		   "group", group,
-		   NULL);
+    while(list != NULL){
+      if(list != start_list){
+	group = AGS_MACHINE_RADIO_BUTTON(start_list->data);
+	
+	g_object_set(list->data,
+		     "group", group,
+		     NULL);
+      }else{
+	group = NULL;
+	
+	g_object_set(list->data,
+		     "group", group,
+		     NULL);
+      }
       
       list = list->next;
     }
-
+    
     g_list_free(machine_selector->machine_radio_button);
 
     machine_selector->machine_radio_button = g_list_reverse(start_list);

@@ -54,11 +54,11 @@ midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@
 
 if WITH_W32API
-LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -Wl,-subsystem,windows
+LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
 
-gsequencer_LDFLAGS += -Wl,-subsystem,windows
+gsequencer_LDFLAGS += -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
 
-midi2xml_LDFLAGS += -Wl,-subsystem,windows
+midi2xml_LDFLAGS += -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
 endif
 
 # 
@@ -148,8 +148,10 @@ EXTRA_DIST = config.rpath \
 	ags/lib/AUTHORS \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
+	ags/app/ags_gsequencer.gresource.xml \
 	ags/app/ui/ags_add_menu.ui \
 	ags/app/ui/ags_edit_menu.ui \
+	ags/app/ui/ags_machine_menu.ui \
 	ags/app/ui/ags_meta_data_window.ui \
 	ags/app/ui/ags_primary_menu.ui \
 	ags/test/app/examples/ags-loop-000.xml \
@@ -2372,6 +2374,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_export_window.h \
 	ags/app/ags_generic_preferences_callbacks.h \
 	ags/app/ags_generic_preferences.h \
+	ags/app/ags_gsequencer_resource.h \
 	ags/app/ags_ladspa_browser_callbacks.h \
 	ags/app/ags_ladspa_browser.h \
 	ags/app/ags_lv2_browser_callbacks.h \
