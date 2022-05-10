@@ -20,6 +20,15 @@
 #ifndef __AGS_GSEQUENCER_RESOURCE_H__
 #define __AGS_GSEQUENCER_RESOURCE_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 GResource* ags_gsequencer_get_resource(void);
 
 #endif /*__AGS_GSEQUENCER_RESOURCE_H__*/
