@@ -25,6 +25,7 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_gsequencer_application.h>
+#include <ags/app/ags_gsequencer_resource.h>
 
 #include <ags/app/file/ags_simple_file.h>
 

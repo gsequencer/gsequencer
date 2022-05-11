@@ -3638,7 +3638,15 @@ gen-marshallers:
 	echo "generated marshallers in ags/widget/"
 
 compile-resources:
-	glib-compile-resources --target=ags/app/ags_gsequencer_resource.c --generate-source ags/app/ags_gsequencer.gresource.xml
+	glib-compile-resources --target=ags/app/ags_gsequencer_resource.template.c --generate-source ags/app/ags_gsequencer.gresource.xml
+	glib-compile-resources --target=ags/app/ags_gsequencer_resource.template.h --generate-header ags/app/ags_gsequencer.gresource.xml
+	cat ags_license_header > ags/app/ags_gsequencer_resource.h
+	echo -e "" >> ags/app/ags_gsequencer_resource.h
+	cat ags/app/ags_gsequencer_resource.template.h >> ags/app/ags_gsequencer_resource.h
+	cat ags_gsequencer_resource_header > ags/app/ags_gsequencer_resource.c
+	cat ags/app/ags_gsequencer_resource.template.c >> ags/app/ags_gsequencer_resource.c
+	rm -f ags/app/ags_gsequencer_resource.template.h
+	rm -f ags/app/ags_gsequencer_resource.template.c
 	echo "compiled resources in ags/app/"
 
 check-gettext:
