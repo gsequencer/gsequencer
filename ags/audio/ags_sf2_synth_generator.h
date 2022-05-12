@@ -25,6 +25,12 @@
 
 #include <ags/libags.h>
 
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_LIBINSTPATCH)
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/audio/ags_sf2_synth_util.h>
 
 G_BEGIN_DECLS

@@ -234,7 +234,7 @@ ags_automation_edit_box_notify_height_request_callback(GObject *gobject,
 GList*
 ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box)
 {
-  g_return_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box));
+  g_return_val_if_fail(AGS_IS_AUTOMATION_EDIT_BOX(automation_edit_box), NULL);
 
   return(g_list_reverse(g_list_copy(automation_edit_box->automation_edit)));
 }

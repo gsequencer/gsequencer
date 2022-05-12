@@ -1285,7 +1285,7 @@ ags_machine_set_machine_name(AgsMachine *machine,
 			     gchar *machine_name)
 {
 
-  g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
+  g_return_if_fail(AGS_IS_MACHINE(machine));
 
   g_object_set(machine,
 	       "machine-name", machine_name,

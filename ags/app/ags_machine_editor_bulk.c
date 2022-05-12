@@ -609,7 +609,7 @@ ags_machine_editor_bulk_to_xml_node(AgsMachineEditorBulk *machine_editor_bulk)
 	       "direction",
 	       "input");
   }else{
-    return;
+    return(NULL);
   }
 
   /* link */

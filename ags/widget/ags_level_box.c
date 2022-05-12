@@ -226,7 +226,7 @@ ags_level_box_notify_height_request_callback(GObject *gobject,
 GList*
 ags_level_box_get_level(AgsLevelBox *level_box)
 {
-  g_return_if_fail(AGS_IS_LEVEL_BOX(level_box));
+  g_return_val_if_fail(AGS_IS_LEVEL_BOX(level_box), NULL);
 
   return(g_list_reverse(g_list_copy(level_box->level)));
 }

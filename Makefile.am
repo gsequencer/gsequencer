@@ -169,6 +169,8 @@ EXTRA_DIST = config.rpath \
 	gsequencer.share/images/README
 
 EXTRA_DIST += \
+	ags_license_header \
+	ags_gsequencer_resource_header \
 	license-notice-gnu-agpl-3-0+-c.txt \
 	license-notice-gnu-fdl-1-3-xml.txt \
 	license-notice-gnu-gpl-3-0+-c.txt \
@@ -3209,6 +3211,11 @@ gsequencerheaders = \
 
 gsequencer_c_sources = \
 	ags/gsequencer_main.c
+
+if WITH_W32API
+gsequencer_c_sources += \
+	ags/app/ags_gsequencer_resource.c
+endif
 
 midi2xml_CPPFLAGS = -std=gnu99 $(CPPFLAGS) 
 midi2xml_CFLAGS += $(CFLAGS) -I./ $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)

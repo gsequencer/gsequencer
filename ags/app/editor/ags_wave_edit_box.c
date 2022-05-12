@@ -226,7 +226,7 @@ ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
 GList*
 ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box)
 {
-  g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
+  g_return_val_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box), NULL);
 
   return(g_list_reverse(g_list_copy(wave_edit_box->wave_edit)));
 }

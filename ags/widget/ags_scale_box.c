@@ -226,7 +226,7 @@ ags_scale_box_notify_height_request_callback(GObject *gobject,
 GList*
 ags_scale_box_get_scale(AgsScaleBox *scale_box)
 {
-  g_return_if_fail(AGS_IS_SCALE_BOX(scale_box));
+  g_return_val_if_fail(AGS_IS_SCALE_BOX(scale_box), NULL);
 
   return(g_list_reverse(g_list_copy(scale_box->scale)));
 }
