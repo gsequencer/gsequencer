@@ -318,9 +318,9 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectPadClass, resize_lines),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 

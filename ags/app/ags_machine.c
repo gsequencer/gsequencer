@@ -351,9 +351,9 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_pads),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
@@ -3715,7 +3715,7 @@ ags_machine_check_message(AgsMachine *machine)
 
 	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
 				  "channel-type");
-	channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	channel_type = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
 	  
 	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
 				  "pads");

@@ -321,9 +321,9 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_pads),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1419,9 +1419,9 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_pads),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   /**
@@ -7862,9 +7862,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
     message->parameter_name[0] = "channel-type";
     
     g_value_init(&(message->value[0]),
-		 G_TYPE_ULONG);
-    g_value_set_ulong(&(message->value[0]),
-		      channel_type);
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(message->value[0]),
+			channel_type);
 
     /* pads */
     message->parameter_name[1] = "pads";
