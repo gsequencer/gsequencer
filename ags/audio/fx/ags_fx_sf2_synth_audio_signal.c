@@ -527,7 +527,12 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 				       buffer_size, audio_buffer_util_format);
 
+    /* compute SF2 synth */
+    g_rec_mutex_lock(source_stream_mutex);
+    
     ags_sf2_synth_util_compute(channel_data->synth);
+
+    g_rec_mutex_unlock(source_stream_mutex);
 
     ags_sf2_synth_util_set_source(channel_data->synth,
 				  NULL);
@@ -550,9 +555,14 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
       ags_chorus_util_set_base_key(channel_data->chorus_util,
 				   (gdouble) midi_note - 48.0);
+
+      /* compute chorus */
+      g_rec_mutex_lock(source_stream_mutex);
       
       ags_chorus_util_compute(channel_data->chorus_util);
 
+      g_rec_mutex_unlock(source_stream_mutex);
+      
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);
 

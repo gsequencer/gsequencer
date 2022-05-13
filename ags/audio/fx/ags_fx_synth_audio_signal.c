@@ -1423,6 +1423,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	    }
 	  }
 	  
+	  g_rec_mutex_lock(source_stream_mutex);
+	  
 	  switch(ags_synth_util_get_synth_oscillator_mode(channel_data->synth_0)){
 	  case AGS_SYNTH_OSCILLATOR_SIN:
 	  {
@@ -1452,6 +1454,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	  }
 	}
 
+	g_rec_mutex_unlock(source_stream_mutex);
+
 	if(sync_reset != 0 && i_reset + sync_reset < buffer_size * (guint) floor(i / buffer_size) + buffer_size){
 	  i = i_reset + sync_reset;
 
@@ -1465,6 +1469,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	}
       }      
     }else{
+      g_rec_mutex_lock(source_stream_mutex);
+
       switch(ags_synth_util_get_synth_oscillator_mode(channel_data->synth_0)){
       case AGS_SYNTH_OSCILLATOR_SIN:
       {
@@ -1492,6 +1498,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       }
       break;
       }
+
+      g_rec_mutex_unlock(source_stream_mutex);
     }
 
     ags_synth_util_set_source(channel_data->synth_0,
@@ -1682,6 +1690,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	    }
 	  }
 	  
+	  g_rec_mutex_lock(source_stream_mutex);
+	  
 	  switch(ags_synth_util_get_synth_oscillator_mode(channel_data->synth_1)){
 	  case AGS_SYNTH_OSCILLATOR_SIN:
 	  {
@@ -1711,6 +1721,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	  }
 	}
 
+	g_rec_mutex_unlock(source_stream_mutex);
+
 	if(sync_reset != 0 && i_reset + sync_reset < buffer_size * (guint) floor(i / buffer_size) + buffer_size){
 	  i = i_reset + sync_reset;
 
@@ -1724,6 +1736,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	}
       }      
     }else{
+      g_rec_mutex_lock(source_stream_mutex);
+
       switch(ags_synth_util_get_synth_oscillator_mode(channel_data->synth_1)){
       case AGS_SYNTH_OSCILLATOR_SIN:
       {
@@ -1753,6 +1767,8 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       }
     }
     
+    g_rec_mutex_unlock(source_stream_mutex);
+    
     ags_synth_util_set_source(channel_data->synth_1,
 			      NULL);
 
@@ -1776,7 +1792,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_noise_util_set_offset(channel_data->noise_util,
 				floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
       
+      g_rec_mutex_lock(source_stream_mutex);
+
       ags_noise_util_compute(channel_data->noise_util);
+
+      g_rec_mutex_unlock(source_stream_mutex);
 
       /* reset source and destination */
       ags_noise_util_set_source(channel_data->noise_util,
@@ -1803,8 +1823,12 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 				       channel_data->pitch_type,
 				       format);
       
+      g_rec_mutex_lock(source_stream_mutex);
+
       ags_common_pitch_util_pitch(channel_data->pitch_util,
 				  channel_data->pitch_type);
+
+      g_rec_mutex_unlock(source_stream_mutex);
 
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);
@@ -1828,7 +1852,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_fluid_iir_filter_util_set_destination(channel_data->low_pass_filter,
 						source->stream_current->data);
 
+      g_rec_mutex_lock(source_stream_mutex);
+
       ags_fluid_iir_filter_util_process(channel_data->low_pass_filter);
+
+      g_rec_mutex_unlock(source_stream_mutex);
 
       /* reset */
       ags_fluid_iir_filter_util_set_source(channel_data->low_pass_filter,
@@ -1846,7 +1874,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_fluid_iir_filter_util_set_destination(channel_data->high_pass_filter,
 						source->stream_current->data);
 
+      g_rec_mutex_lock(source_stream_mutex);
+
       ags_fluid_iir_filter_util_process(channel_data->high_pass_filter);
+
+      g_rec_mutex_unlock(source_stream_mutex);
 
       /* reset */
       ags_fluid_iir_filter_util_set_source(channel_data->low_pass_filter,
@@ -1875,7 +1907,11 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_chorus_util_set_base_key(channel_data->chorus_util,
 				   (gdouble) midi_note - 48.0);
       
+      g_rec_mutex_lock(source_stream_mutex);
+
       ags_chorus_util_compute(channel_data->chorus_util);
+
+      g_rec_mutex_unlock(source_stream_mutex);
 
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);

@@ -437,11 +437,10 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_ulong("task-type",
+  param_spec = g_param_spec_gtype("task-type",
 				  i18n_pspec("task type to apply"),
 				  i18n_pspec("The task type to apply the port"),
-				  0, G_MAXULONG, 
-				  G_TYPE_NONE,
+				  AGS_TYPE_TASK,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TASK_TYPE,
@@ -1063,7 +1062,7 @@ ags_line_member_set_property(GObject *gobject,
     {
       GType type;
 
-      type = g_value_get_ulong(value);
+      type = g_value_get_gtype(value);
       
       if(line_member->task_type == type){
 	return;
@@ -1176,7 +1175,7 @@ ags_line_member_get_property(GObject *gobject,
     break;
   case PROP_TASK_TYPE:
     {
-      g_value_set_ulong(value, line_member->task_type);
+      g_value_set_gtype(value, line_member->task_type);
     }
     break;
   default:

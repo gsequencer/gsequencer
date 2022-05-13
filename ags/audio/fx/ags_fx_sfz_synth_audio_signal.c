@@ -525,7 +525,11 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 				       buffer_size, audio_buffer_util_format);
 
+    g_rec_mutex_lock(source_stream_mutex);
+
     ags_sfz_synth_util_compute(channel_data->synth);
+
+    g_rec_mutex_unlock(source_stream_mutex);
 
     /* chorus */
     if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
@@ -546,7 +550,11 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_chorus_util_set_base_key(channel_data->chorus_util,
 				   (gdouble) midi_note - 48.0);
       
+      g_rec_mutex_lock(source_stream_mutex);
+
       ags_chorus_util_compute(channel_data->chorus_util);
+
+      g_rec_mutex_unlock(source_stream_mutex);
 
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, audio_buffer_util_format);
