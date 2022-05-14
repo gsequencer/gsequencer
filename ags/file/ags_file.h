@@ -93,13 +93,13 @@ struct _AgsFile
 
   GRecMutex obj_mutex;
 
-  gchar *app_encoding;
+  const gchar *app_encoding;
   
   FILE *out;
   xmlChar *buffer;
 
   gchar *filename;
-  gchar *encoding;
+  const gchar *encoding;
   gchar *dtd;
 
   gchar *audio_format;
@@ -187,7 +187,7 @@ xmlDoc* ags_file_xml_new_doc(AgsFile *file,
 			     gchar *version);
 
 xmlNode* ags_file_xml_new_node(AgsFile *file,
-			       xmlNs *namespace,
+			       xmlNs *xml_namespace,
 			       gchar *node_name);
 xmlNode* ags_file_xml_get_root_element(AgsFile *file,
 				       xmlDoc *doc);
