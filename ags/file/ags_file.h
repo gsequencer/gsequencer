@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 #define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
 #define AGS_FILE_GET_OBJ_MUTEX(obj) (&(((AgsFile *) obj)->obj_mutex))
+
+#define AGS_FILE_DEFAULT_APP_ENCODING "C.UTF-8"
 
 #define AGS_FILE_DEFAULT_ENCODING "UTF-8"
 #define AGS_FILE_DEFAULT_DTD "ags_file.dtd"
@@ -91,6 +93,8 @@ struct _AgsFile
 
   GRecMutex obj_mutex;
 
+  gchar *app_encoding;
+  
   FILE *out;
   xmlChar *buffer;
 
@@ -177,6 +181,47 @@ GObject* ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref);
 void ags_file_add_lookup(AgsFile *file, GObject *file_lookup);
 
 void ags_file_add_launch(AgsFile *file, GObject *file_launch);
+
+/* tree manipulation */
+xmlDoc* ags_file_xml_new_doc(AgsFile *file,
+			     gchar *version);
+
+xmlNode* ags_file_xml_new_node(AgsFile *file,
+			       xmlNs *namespace,
+			       gchar *node_name);
+xmlNode* ags_file_xml_get_root_element(AgsFile *file,
+				       xmlDoc *doc);
+void ags_file_xml_set_root_element(AgsFile *file,
+				   xmlDoc *doc,
+				   xmlNode *root_node);
+void ags_file_xml_add_child(AgsFile *file,
+			    xmlNode *parent,
+			    xmlNode *child);
+
+gchar* ags_file_xml_get_node_name(AgsFile *file,
+				  xmlNode *node);
+
+xmlNode* ags_file_xml_get_node_parent(AgsFile *file,
+				      xmlNode *node);
+xmlNode* ags_file_xml_get_node_next(AgsFile *file,
+				    xmlNode *node);
+xmlNode* ags_file_xml_get_node_children(AgsFile *file,
+					xmlNode *node);
+
+gchar* ags_file_xml_get_prop(AgsFile *file,
+			     xmlNode *node,
+			     gchar *prop_name);
+void ags_file_xml_set_prop(AgsFile *file,
+			   xmlNode *node,
+			   gchar *prop_name,
+			   gchar *prop_value);
+
+gchar* ags_file_xml_get_content(AgsFile *file,
+				xmlNode *node);
+void ags_file_xml_set_content(AgsFile *file,
+			      xmlNode *node,
+			      gchar *content,
+			      gboolean is_cdata);
 
 /*  */
 void ags_file_open(AgsFile *file,

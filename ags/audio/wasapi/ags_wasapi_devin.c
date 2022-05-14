@@ -1572,7 +1572,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     WAVEFORMATEXTENSIBLE wave_format;
     WAVEFORMATEX *desired_format, *internal_format;
 
-    wchar_t dev_id[1024];
+    gunichar2 *dev_id;
 
     REFERENCE_TIME min_duration;
 
@@ -1582,6 +1582,8 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 
     g_message("WASAPI initialize");    
 
+    dev_id = NULL;
+    
     CoInitialize(0);
   
     if(CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, (void **) &dev_enumerator)){
@@ -1600,8 +1602,11 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     }
 
     if(wasapi_devin->device != NULL){
-      memset(dev_id, 0, 1024 * sizeof(WCHAR));
-      swprintf(dev_id, 1024, L"%S", wasapi_devin->device);
+      dev_id = g_utf8_to_utf16(wasapi_devin->device,
+			       -1,
+			       NULL,
+			       NULL,
+			       NULL);
 
       if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
 	if(error != NULL){

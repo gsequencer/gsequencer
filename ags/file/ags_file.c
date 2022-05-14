@@ -440,12 +440,23 @@ ags_file_error_quark()
 void
 ags_file_init(AgsFile *file)
 {
+  gchar *app_encoding;
   
   file->flags = 0;
 
   /* add file mutex */
   g_rec_mutex_init(&(file->obj_mutex));
 
+  file->app_encoding = g_strdup(AGS_FILE_DEFAULT_APP_ENCODING);
+
+  app_encoding = g_getenv("LANG");
+
+  if(app_encoding != NULL){
+    g_free(file->app_encoding);
+    
+    file->app_encoding = g_strdup(app_encoding);
+  }    
+  
   file->out = NULL;
   file->buffer = NULL;
 
@@ -1214,6 +1225,266 @@ ags_file_add_launch(AgsFile *file, GObject *file_launch)
   }
   
   g_rec_mutex_unlock(file_mutex);
+}
+
+/**
+ * ags_file_xml_new_doc:
+ * @file: the #AgsFile
+ * @version: the version
+ *
+ * Create #xmlDoc-struct.
+ *
+ * Returns: (transfer full): the newly created #xmlDoc-struct
+ * 
+ * Since: 4.0.0
+ */
+xmlDoc*
+ags_file_xml_new_doc(AgsFile *file,
+		     gchar *version)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_new_node:
+ * @file: the #AgsFile
+ * @namespace: the namespace
+ * @node_name: the XML node name
+ *
+ * Create #xmlNode-struct.
+ * 
+ * Returns: (transfer full): the newly created #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_new_node(AgsFile *file,
+		      xmlNs *namespace,
+		      gchar *node_name)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_get_root_element:
+ * @file: the #AgsFile
+ * @doc: the #xmlDoc-struct
+ *
+ * Get root element of @doc.
+ * 
+ * Returns: (transfer none): the root element of #xmlDoc-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_root_element(AgsFile *file,
+			      xmlDoc *doc)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_set_root_element:
+ * @file: the #AgsFile
+ * @doc: the #xmlDoc-struct
+ * @root_node: (transfer full): the #xmlNode-struct as root node
+ * 
+ * Set root element @root_node of @doc.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_set_root_element(AgsFile *file,
+			      xmlDoc *doc,
+			      xmlNode *root_node)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_file_xml_add_child:
+ * @file: the #AgsFile
+ * @parent: the parent #xmlNode-struct
+ * @child: (transfer full): the child #xmlNode-struct
+ * 
+ * Set root element @root_node of @doc.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_add_child(AgsFile *file,
+		       xmlNode *parent,
+		       xmlNode *child)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_file_xml_get_node_name:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get node name of @node.
+ * 
+ * Returns: (transfer full): the node name of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_file_xml_get_node_name(AgsFile *file,
+			   xmlNode *node)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_get_parent:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get parent of @node.
+ * 
+ * Returns: (transfer none): the parent of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_node_parent(AgsFile *file,
+			     xmlNode *node)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_get_next:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get next of @node.
+ * 
+ * Returns: (transfer none): the next of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_node_next(AgsFile *file,
+			   xmlNode *node)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_get_children:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get children of @node.
+ * 
+ * Returns: (transfer none): the children of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_node_children(AgsFile *file,
+			       xmlNode *node)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_get_prop:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ * @prop_name: property name
+ *
+ * Get property of @node.
+ * 
+ * Returns: (transfer full): the property of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_file_xml_get_prop(AgsFile *file,
+		      xmlNode *node,
+		      gchar *prop_name)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_set_prop:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ * @prop_name: property name
+ * @prop_value: property value
+ *
+ * Set property of @node.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_set_prop(AgsFile *file,
+		      xmlNode *node,
+		      gchar *prop_name,
+		      gchar *prop_value)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_file_xml_get_content:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get content of @node.
+ * 
+ * Returns: (transfer full): the content of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_file_xml_get_content(AgsFile *file,
+			 xmlNode *node)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * ags_file_xml_set_content:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ * @content: the content
+ * @is_cdata: if content is CDATA
+ *
+ * Set content of @node.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_set_content(AgsFile *file,
+			 xmlNode *node,
+			 gchar *content,
+			 gboolean is_cdata)
+{
+  //TODO:JK: implement me
 }
 
 void

@@ -26,6 +26,7 @@ ags (4.0.0)
 	* removed deprecated ags_fluid_interpolate_4th_order_util.[ch] functions
 	* removed deprecated ags_fluid_interpolate_7th_order_util.[ch] functions
 	* removed ags_generic_pitch_util.[ch]
+	* TODO:JK: extended AgsFile by adding libxml2 wrapper functions
 	* TODO:JK: refactored LV2 parser
 	* TODO:JK: implemented AgsVector
 	* TODO:JK: implemented AgsSoundDirection
