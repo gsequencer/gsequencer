@@ -1685,13 +1685,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
       
       /* get buffer */
-      if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
+      if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_0){
 	nth_buffer = 1;
-      }else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
+      }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_1){
 	nth_buffer = 2;
-      }else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
+      }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_2){
 	nth_buffer = 3;
-      }else if((AGS_JACK_DEVIN_BUFFER3 & jack_devin->flags) != 0){
+      }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_3){
 	nth_buffer = 0;
       }else{
 	/* iterate */
@@ -1752,13 +1752,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 				  jack_devin->buffer_size);
 	
 	if(!no_event && in != NULL){
-	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);
+	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->app_buffer[nth_buffer]);
 	    
-	  ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->buffer[nth_buffer], jack_devin->pcm_channels, i,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->app_buffer[nth_buffer], jack_devin->pcm_channels, i,
 						      in, 1, 0,
 						      jack_devin->buffer_size, copy_mode);
 	    
-	  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);	    
+	  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->app_buffer[nth_buffer]);	    
 	}
 
 	port = port->next;

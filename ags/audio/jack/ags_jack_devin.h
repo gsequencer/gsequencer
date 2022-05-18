@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,40 +41,43 @@ typedef struct _AgsJackDevinClass AgsJackDevinClass;
 
 /**
  * AgsJackDevinFlags:
- * @AGS_JACK_DEVIN_ADDED_TO_REGISTRY: the JACK devin was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_JACK_DEVIN_CONNECTED: indicates the JACK devin was connected by calling #AgsConnectable::connect()
- * @AGS_JACK_DEVIN_BUFFER0: ring-buffer 0
- * @AGS_JACK_DEVIN_BUFFER1: ring-buffer 1
- * @AGS_JACK_DEVIN_BUFFER2: ring-buffer 2
- * @AGS_JACK_DEVIN_BUFFER3: ring-buffer 3
- * @AGS_JACK_DEVIN_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_JACK_DEVIN_INITIALIZED: the soundcard was initialized
+ * @AGS_JACK_DEVIN_START_RECORD: capture starting
  * @AGS_JACK_DEVIN_RECORD: do capture
  * @AGS_JACK_DEVIN_SHUTDOWN: stop capture
- * @AGS_JACK_DEVIN_START_RECORD: capture starting
  * @AGS_JACK_DEVIN_NONBLOCKING: do non-blocking calls
- * @AGS_JACK_DEVIN_INITIALIZED: the soundcard was initialized
+ * @AGS_JACK_DEVIN_ATTACK_FIRST: use first attack, instead of second one
  *
  * Enum values to control the behavior or indicate internal state of #AgsJackDevin by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_JACK_DEVIN_ADDED_TO_REGISTRY              = 1,
-  AGS_JACK_DEVIN_CONNECTED                      = 1 <<  1,
+  AGS_JACK_DEVIN_INITIALIZED                    = 1,
+  AGS_JACK_DEVIN_START_RECORD                   = 1 <<  1,
+  AGS_JACK_DEVIN_RECORD                         = 1 <<  2,
+  AGS_JACK_DEVIN_SHUTDOWN                       = 1 <<  3,
 
-  AGS_JACK_DEVIN_BUFFER0                        = 1 <<  2,
-  AGS_JACK_DEVIN_BUFFER1                        = 1 <<  3,
-  AGS_JACK_DEVIN_BUFFER2                        = 1 <<  4,
-  AGS_JACK_DEVIN_BUFFER3                        = 1 <<  5,
+  AGS_JACK_DEVIN_NONBLOCKING                    = 1 <<  4,
 
-  AGS_JACK_DEVIN_ATTACK_FIRST                   = 1 <<  6,
+  AGS_JACK_DEVIN_ATTACK_FIRST                   = 1 <<  5,
+}AgsJackDevinFlags;
 
-  AGS_JACK_DEVIN_RECORD                         = 1 <<  7,
-  AGS_JACK_DEVIN_SHUTDOWN                       = 1 <<  6,
-  AGS_JACK_DEVIN_START_RECORD                   = 1 <<  8,
-
-  AGS_JACK_DEVIN_NONBLOCKING                    = 1 <<  9,
-  AGS_JACK_DEVIN_INITIALIZED                    = 1 << 10,
-  }AgsJackDevinFlags;
+/**
+ * AgsJackDevinAppBufferMode:
+ * @AGS_JACK_DEVIN_APP_BUFFER_0: ring-buffer 0
+ * @AGS_JACK_DEVIN_APP_BUFFER_1: ring-buffer 1
+ * @AGS_JACK_DEVIN_APP_BUFFER_2: ring-buffer 2
+ * @AGS_JACK_DEVIN_APP_BUFFER_3: ring-buffer 3
+ * 
+ * Enum values to indicate internal state of #AgsJackDevin application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_JACK_DEVIN_APP_BUFFER_0,
+  AGS_JACK_DEVIN_APP_BUFFER_1,
+  AGS_JACK_DEVIN_APP_BUFFER_2,
+  AGS_JACK_DEVIN_APP_BUFFER_3,
+}AgsJackDevinAppBufferMode;
 
 /**
  * AgsJackDevinSyncFlags:
@@ -107,6 +110,7 @@ struct _AgsJackDevin
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   volatile guint sync_flags;
   
   GRecMutex obj_mutex;
@@ -119,8 +123,10 @@ struct _AgsJackDevin
   guint buffer_size;
   guint samplerate;
   
-  GRecMutex **buffer_mutex;
-  void** buffer;
+  guint app_buffer_mode;
+
+  GRecMutex **app_buffer_mutex;
+  void** app_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;

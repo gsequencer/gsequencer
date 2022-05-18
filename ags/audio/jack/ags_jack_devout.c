@@ -2490,11 +2490,6 @@ ags_jack_devout_get_next_buffer(AgsSoundcard *soundcard)
   GRecMutex *jack_devout_mutex;  
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
-
-  //  g_message("next - 0x%0x", ((AGS_JACK_DEVOUT_BUFFER0 |
-  //				AGS_JACK_DEVOUT_BUFFER1 |
-  //				AGS_JACK_DEVOUT_BUFFER2 |
-  //				AGS_JACK_DEVOUT_BUFFER3) & (jack_devout->flags)));
   
   /* get jack devout mutex */
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);

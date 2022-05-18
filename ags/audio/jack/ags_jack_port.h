@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,8 +47,6 @@ typedef struct _AgsJackPortClass AgsJackPortClass;
 
 /**
  * AgsJackPortFlags:
- * @AGS_JACK_PORT_ADDED_TO_REGISTRY: the JACK port was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_JACK_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_PORT_REGISTERED: the port was registered
  * @AGS_JACK_PORT_IS_AUDIO: the port provides audio data
  * @AGS_JACK_PORT_IS_MIDI: the port provides midi data
@@ -59,13 +57,11 @@ typedef struct _AgsJackPortClass AgsJackPortClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_JACK_PORT_ADDED_TO_REGISTRY  = 1,
-  AGS_JACK_PORT_CONNECTED          = 1 <<  1,
-  AGS_JACK_PORT_REGISTERED         = 1 <<  2,
-  AGS_JACK_PORT_IS_AUDIO           = 1 <<  3,
-  AGS_JACK_PORT_IS_MIDI            = 1 <<  4,
-  AGS_JACK_PORT_IS_OUTPUT          = 1 <<  5,
-  AGS_JACK_PORT_IS_INPUT           = 1 <<  6,
+  AGS_JACK_PORT_REGISTERED         = 1,
+  AGS_JACK_PORT_IS_AUDIO           = 1 <<  1,
+  AGS_JACK_PORT_IS_MIDI            = 1 <<  2,
+  AGS_JACK_PORT_IS_OUTPUT          = 1 <<  3,
+  AGS_JACK_PORT_IS_INPUT           = 1 <<  4,
 }AgsJackPortFlags;
 
 struct _AgsJackPort
@@ -73,7 +69,8 @@ struct _AgsJackPort
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GObject *jack_client;

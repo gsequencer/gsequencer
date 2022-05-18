@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -563,6 +563,7 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   
   /* flags */
   jack_devin->flags = 0;
+  jack_devin->connectable_flags = 0;
   g_atomic_int_set(&(jack_devin->sync_flags),
 		   AGS_JACK_DEVIN_PASS_THROUGH);
 
@@ -583,28 +584,23 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   jack_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   jack_devin->format = ags_soundcard_helper_config_get_format(config);
 
-  /*  */
-  jack_devin->card_uri = NULL;
-  jack_devin->jack_client = NULL;
-
-  jack_devin->port_name = NULL;
-  jack_devin->jack_port = NULL;
-
   /* buffer */
-  jack_devin->buffer_mutex = (GRecMutex **) malloc(4 * sizeof(GRecMutex *));
+  jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_0;
+
+  jack_devin->app_buffer_mutex = (GRecMutex **) g_malloc(4 * sizeof(GRecMutex *));
 
   for(i = 0; i < 4; i++){
-    jack_devin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    jack_devin->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
-    g_rec_mutex_init(jack_devin->buffer_mutex[i]);
+    g_rec_mutex_init(jack_devin->app_buffer_mutex[i]);
   }
 
-  jack_devin->buffer = (void **) malloc(4 * sizeof(void*));
+  jack_devin->app_buffer = (void **) g_malloc(4 * sizeof(void*));
 
-  jack_devin->buffer[0] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
-  jack_devin->buffer[1] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
-  jack_devin->buffer[2] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
-  jack_devin->buffer[3] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
+  jack_devin->app_buffer[0] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
+  jack_devin->app_buffer[1] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
+  jack_devin->app_buffer[2] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
+  jack_devin->app_buffer[3] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * sizeof(gint16));
   
   ags_jack_devin_realloc_buffer(jack_devin);
   
@@ -630,11 +626,11 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   }
 
   /* delay and attack */
-  jack_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(gdouble));
+  jack_devin->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					   sizeof(gdouble));
   
-  jack_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					sizeof(guint));
+  jack_devin->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					  sizeof(guint));
 
   ags_jack_devin_adjust_delay_and_attack(jack_devin);
   
@@ -653,6 +649,13 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   jack_devin->do_loop = FALSE;
 
   jack_devin->loop_offset = 0;
+
+  /*  */
+  jack_devin->card_uri = NULL;
+  jack_devin->jack_client = NULL;
+
+  jack_devin->port_name = NULL;
+  jack_devin->jack_port = NULL;
 
   /* callback mutex */
   g_mutex_init(&(jack_devin->callback_mutex));
@@ -963,7 +966,7 @@ ags_jack_devin_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(jack_devin_mutex);
 
-      g_value_set_pointer(value, jack_devin->buffer);
+      g_value_set_pointer(value, jack_devin->app_buffer);
 
       g_rec_mutex_unlock(jack_devin_mutex);
     }
@@ -1054,16 +1057,16 @@ ags_jack_devin_finalize(GObject *gobject)
   jack_devin = AGS_JACK_DEVIN(gobject);
 
   /* free output buffer */
-  free(jack_devin->buffer[0]);
-  free(jack_devin->buffer[1]);
-  free(jack_devin->buffer[2]);
-  free(jack_devin->buffer[3]);
+  g_free(jack_devin->app_buffer[0]);
+  g_free(jack_devin->app_buffer[1]);
+  g_free(jack_devin->app_buffer[2]);
+  g_free(jack_devin->app_buffer[3]);
 
   /* free buffer array */
-  free(jack_devin->buffer);
+  g_free(jack_devin->app_buffer);
 
   /* free AgsAttack */
-  free(jack_devin->attack);
+  g_free(jack_devin->attack);
 
   /* jack client */
   if(jack_devin->jack_client != NULL){
@@ -1115,10 +1118,19 @@ ags_jack_devin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *jack_devin_mutex;
+
   jack_devin = AGS_JACK_DEVIN(connectable);
 
-  /* check is added */
-  is_ready = ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_ADDED_TO_REGISTRY);
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
+  /* check is ready */
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (jack_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(jack_devin_mutex);
   
   return(is_ready);
 }
@@ -1128,13 +1140,22 @@ ags_jack_devin_add_to_registry(AgsConnectable *connectable)
 {
   AgsJackDevin *jack_devin;
 
+  GRecMutex *jack_devin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   jack_devin = AGS_JACK_DEVIN(connectable);
 
-  ags_jack_devin_set_flags(jack_devin, AGS_JACK_DEVIN_ADDED_TO_REGISTRY);
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  jack_devin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(jack_devin_mutex);
 }
 
 void
@@ -1142,13 +1163,22 @@ ags_jack_devin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsJackDevin *jack_devin;
 
+  GRecMutex *jack_devin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   jack_devin = AGS_JACK_DEVIN(connectable);
 
-  ags_jack_devin_unset_flags(jack_devin, AGS_JACK_DEVIN_ADDED_TO_REGISTRY);
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  jack_devin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(jack_devin_mutex);
 }
 
 xmlNode*
@@ -1189,10 +1219,19 @@ ags_jack_devin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *jack_devin_mutex;
+
   jack_devin = AGS_JACK_DEVIN(connectable);
 
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
   /* check is connected */
-  is_connected = ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_CONNECTED);
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (jack_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(jack_devin_mutex);
   
   return(is_connected);
 }
@@ -1201,6 +1240,8 @@ void
 ags_jack_devin_connect(AgsConnectable *connectable)
 {
   AgsJackDevin *jack_devin;
+
+  GRecMutex *jack_devin_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1208,22 +1249,37 @@ ags_jack_devin_connect(AgsConnectable *connectable)
 
   jack_devin = AGS_JACK_DEVIN(connectable);
 
-  ags_jack_devin_set_flags(jack_devin, AGS_JACK_DEVIN_CONNECTED);
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  jack_devin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(jack_devin_mutex);
 }
 
 void
 ags_jack_devin_disconnect(AgsConnectable *connectable)
 {
-
   AgsJackDevin *jack_devin;
+
+  GRecMutex *jack_devin_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   jack_devin = AGS_JACK_DEVIN(connectable);
+
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
+
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  jack_devin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_jack_devin_unset_flags(jack_devin, AGS_JACK_DEVIN_CONNECTED);
+  g_rec_mutex_unlock(jack_devin_mutex);
 }
 
 /**
@@ -1769,15 +1825,15 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
   }
   
   /* prepare for capture */
-  jack_devin->flags |= (AGS_JACK_DEVIN_BUFFER3 |
-			AGS_JACK_DEVIN_START_RECORD |
+  jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_3;
+  jack_devin->flags |= (AGS_JACK_DEVIN_START_RECORD |
 			AGS_JACK_DEVIN_RECORD |
 			AGS_JACK_DEVIN_NONBLOCKING);
 
-  memset(jack_devin->buffer[0], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
-  memset(jack_devin->buffer[1], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
-  memset(jack_devin->buffer[2], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
-  memset(jack_devin->buffer[3], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[0], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[1], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[2], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[3], 0, jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
 
   /*  */
   jack_devin->tact_counter = 0.0;
@@ -1998,11 +2054,8 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   callback_mutex = &(jack_devin->callback_mutex);
   callback_finish_mutex = &(jack_devin->callback_finish_mutex);
   
-  jack_devin->flags &= (~(AGS_JACK_DEVIN_BUFFER0 |
-			  AGS_JACK_DEVIN_BUFFER1 |
-			  AGS_JACK_DEVIN_BUFFER2 |
-			  AGS_JACK_DEVIN_BUFFER3 |
-			  AGS_JACK_DEVIN_RECORD));
+  jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_0;
+  jack_devin->flags &= (~(AGS_JACK_DEVIN_RECORD));
 
   g_atomic_int_or(&(jack_devin->sync_flags),
 		  AGS_JACK_DEVIN_PASS_THROUGH);
@@ -2069,10 +2122,10 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
     g_critical("ags_jack_devin_free(): unsupported word size");
   }
 
-  memset(jack_devin->buffer[1], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
-  memset(jack_devin->buffer[2], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
-  memset(jack_devin->buffer[3], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
-  memset(jack_devin->buffer[0], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[1], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[2], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[3], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  memset(jack_devin->app_buffer[0], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
 
   g_rec_mutex_unlock(jack_devin_mutex);
 }
@@ -2349,20 +2402,29 @@ ags_jack_devin_get_buffer(AgsSoundcard *soundcard)
   AgsJackDevin *jack_devin;
 
   void *buffer;
+
+  GRecMutex *jack_devin_mutex;  
   
   jack_devin = AGS_JACK_DEVIN(soundcard);
+  
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
-  if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER0)){
-    buffer = jack_devin->buffer[0];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER1)){
-    buffer = jack_devin->buffer[1];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER2)){
-    buffer = jack_devin->buffer[2];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER3)){
-    buffer = jack_devin->buffer[3];
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_0){
+    buffer = jack_devin->app_buffer[0];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_1){
+    buffer = jack_devin->app_buffer[1];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_2){
+    buffer = jack_devin->app_buffer[2];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_3){
+    buffer = jack_devin->app_buffer[3];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(jack_devin_mutex);
 
   return(buffer);
 }
@@ -2373,25 +2435,29 @@ ags_jack_devin_get_next_buffer(AgsSoundcard *soundcard)
   AgsJackDevin *jack_devin;
 
   void *buffer;
+
+  GRecMutex *jack_devin_mutex;  
   
   jack_devin = AGS_JACK_DEVIN(soundcard);
+  
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
-  //  g_message("next - 0x%0x", ((AGS_JACK_DEVIN_BUFFER0 |
-  //				AGS_JACK_DEVIN_BUFFER1 |
-  //				AGS_JACK_DEVIN_BUFFER2 |
-  //				AGS_JACK_DEVIN_BUFFER3) & (jack_devin->flags)));
+  g_rec_mutex_lock(jack_devin_mutex);
 
-  if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER0)){
-    buffer = jack_devin->buffer[1];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER1)){
-    buffer = jack_devin->buffer[2];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER2)){
-    buffer = jack_devin->buffer[3];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER3)){
-    buffer = jack_devin->buffer[0];
+  if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_0){
+    buffer = jack_devin->app_buffer[1];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_1){
+    buffer = jack_devin->app_buffer[2];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_2){
+    buffer = jack_devin->app_buffer[3];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_3){
+    buffer = jack_devin->app_buffer[0];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(jack_devin_mutex);
 
   return(buffer);
 }
@@ -2402,27 +2468,36 @@ ags_jack_devin_get_prev_buffer(AgsSoundcard *soundcard)
   AgsJackDevin *jack_devin;
 
   void *buffer;
+
+  GRecMutex *jack_devin_mutex;  
   
   jack_devin = AGS_JACK_DEVIN(soundcard);
+  
+  /* get jack devin mutex */
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
-  if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER0)){
-    buffer = jack_devin->buffer[3];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER1)){
-    buffer = jack_devin->buffer[0];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER2)){
-    buffer = jack_devin->buffer[1];
-  }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER3)){
-    buffer = jack_devin->buffer[2];
+  g_rec_mutex_lock(jack_devin_mutex);
+
+  if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_0){
+    buffer = jack_devin->app_buffer[3];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_1){
+    buffer = jack_devin->app_buffer[0];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_2){
+    buffer = jack_devin->app_buffer[1];
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_3){
+    buffer = jack_devin->app_buffer[2];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(jack_devin_mutex);
 
   return(buffer);
 }
 
 void
 ags_jack_devin_lock_buffer(AgsSoundcard *soundcard,
-			    void *buffer)
+			   void *buffer)
 {
   AgsJackDevin *jack_devin;
 
@@ -2432,15 +2507,15 @@ ags_jack_devin_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(jack_devin->buffer != NULL){
-    if(buffer == jack_devin->buffer[0]){
-      buffer_mutex = jack_devin->buffer_mutex[0];
-    }else if(buffer == jack_devin->buffer[1]){
-      buffer_mutex = jack_devin->buffer_mutex[1];
-    }else if(buffer == jack_devin->buffer[2]){
-      buffer_mutex = jack_devin->buffer_mutex[2];
-    }else if(buffer == jack_devin->buffer[3]){
-      buffer_mutex = jack_devin->buffer_mutex[3];
+  if(jack_devin->app_buffer != NULL){
+    if(buffer == jack_devin->app_buffer[0]){
+      buffer_mutex = jack_devin->app_buffer_mutex[0];
+    }else if(buffer == jack_devin->app_buffer[1]){
+      buffer_mutex = jack_devin->app_buffer_mutex[1];
+    }else if(buffer == jack_devin->app_buffer[2]){
+      buffer_mutex = jack_devin->app_buffer_mutex[2];
+    }else if(buffer == jack_devin->app_buffer[3]){
+      buffer_mutex = jack_devin->app_buffer_mutex[3];
     }
   }
   
@@ -2452,7 +2527,7 @@ ags_jack_devin_lock_buffer(AgsSoundcard *soundcard,
 
 void
 ags_jack_devin_unlock_buffer(AgsSoundcard *soundcard,
-			      void *buffer)
+			     void *buffer)
 {
   AgsJackDevin *jack_devin;
 
@@ -2462,15 +2537,15 @@ ags_jack_devin_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(jack_devin->buffer != NULL){
-    if(buffer == jack_devin->buffer[0]){
-      buffer_mutex = jack_devin->buffer_mutex[0];
-    }else if(buffer == jack_devin->buffer[1]){
-      buffer_mutex = jack_devin->buffer_mutex[1];
-    }else if(buffer == jack_devin->buffer[2]){
-      buffer_mutex = jack_devin->buffer_mutex[2];
-    }else if(buffer == jack_devin->buffer[3]){
-      buffer_mutex = jack_devin->buffer_mutex[3];
+  if(jack_devin->app_buffer != NULL){
+    if(buffer == jack_devin->app_buffer[0]){
+      buffer_mutex = jack_devin->app_buffer_mutex[0];
+    }else if(buffer == jack_devin->app_buffer[1]){
+      buffer_mutex = jack_devin->app_buffer_mutex[1];
+    }else if(buffer == jack_devin->app_buffer[2]){
+      buffer_mutex = jack_devin->app_buffer_mutex[2];
+    }else if(buffer == jack_devin->app_buffer[3]){
+      buffer_mutex = jack_devin->app_buffer_mutex[3];
     }
   }
 
@@ -2745,18 +2820,14 @@ ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
   /* switch buffer flag */
   g_rec_mutex_lock(jack_devin_mutex);
 
-  if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
-    jack_devin->flags &= (~AGS_JACK_DEVIN_BUFFER0);
-    jack_devin->flags |= AGS_JACK_DEVIN_BUFFER1;
-  }else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
-    jack_devin->flags &= (~AGS_JACK_DEVIN_BUFFER1);
-    jack_devin->flags |= AGS_JACK_DEVIN_BUFFER2;
-  }else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
-    jack_devin->flags &= (~AGS_JACK_DEVIN_BUFFER2);
-    jack_devin->flags |= AGS_JACK_DEVIN_BUFFER3;
-  }else if((AGS_JACK_DEVIN_BUFFER3 & (jack_devin->flags)) != 0){
-    jack_devin->flags &= (~AGS_JACK_DEVIN_BUFFER3);
-    jack_devin->flags |= AGS_JACK_DEVIN_BUFFER0;
+  if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_0){
+    jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_1;
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_1){
+    jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_2;
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_2){
+    jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_3;
+  }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_3){
+    jack_devin->app_buffer_mode = AGS_JACK_DEVIN_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(jack_devin_mutex);
@@ -2889,11 +2960,11 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
 					     jack_port);
     
       if(jack_devin->port_name == NULL){
-	jack_devin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+	jack_devin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
 	jack_devin->port_name[0] = g_strdup(str);
       }else{
-	jack_devin->port_name = (gchar **) realloc(jack_devin->port_name,
-						   (i + 2) * sizeof(gchar *));
+	jack_devin->port_name = (gchar **) g_realloc(jack_devin->port_name,
+						     (i + 2) * sizeof(gchar *));
 	jack_devin->port_name[i] = g_strdup(str);
       }
       
@@ -2932,40 +3003,40 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
 
     g_rec_mutex_lock(jack_devin_mutex);
     
-    jack_devin->port_name = (gchar **) realloc(jack_devin->port_name,
-					       (jack_devin->pcm_channels + 1) * sizeof(gchar *));
+    jack_devin->port_name = (gchar **) g_realloc(jack_devin->port_name,
+						 (jack_devin->pcm_channels + 1) * sizeof(gchar *));
     jack_devin->port_name[jack_devin->pcm_channels] = NULL;
 
     g_rec_mutex_unlock(jack_devin_mutex);
   }
   
   /* AGS_JACK_DEVIN_BUFFER_0 */
-  if(jack_devin->buffer[0] != NULL){
-    free(jack_devin->buffer[0]);
+  if(jack_devin->app_buffer[0] != NULL){
+    g_free(jack_devin->app_buffer[0]);
   }
   
-  jack_devin->buffer[0] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  jack_devin->app_buffer[0] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
   
   /* AGS_JACK_DEVIN_BUFFER_1 */
-  if(jack_devin->buffer[1] != NULL){
-    free(jack_devin->buffer[1]);
+  if(jack_devin->app_buffer[1] != NULL){
+    g_free(jack_devin->app_buffer[1]);
   }
 
-  jack_devin->buffer[1] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  jack_devin->app_buffer[1] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
   
   /* AGS_JACK_DEVIN_BUFFER_2 */
-  if(jack_devin->buffer[2] != NULL){
-    free(jack_devin->buffer[2]);
+  if(jack_devin->app_buffer[2] != NULL){
+    g_free(jack_devin->app_buffer[2]);
   }
 
-  jack_devin->buffer[2] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  jack_devin->app_buffer[2] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
   
   /* AGS_JACK_DEVIN_BUFFER_3 */
-  if(jack_devin->buffer[3] != NULL){
-    free(jack_devin->buffer[3]);
+  if(jack_devin->app_buffer[3] != NULL){
+    g_free(jack_devin->app_buffer[3]);
   }
   
-  jack_devin->buffer[3] = (void *) malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
+  jack_devin->app_buffer[3] = (void *) g_malloc(jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
 }
 
 /**

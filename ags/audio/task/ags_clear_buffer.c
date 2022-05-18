@@ -393,25 +393,35 @@ ags_clear_buffer_launch(AgsTask *task)
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->app_buffer[nth_buffer]);
   }else if(AGS_IS_JACK_DEVIN(clear_buffer->device)){
     AgsJackDevin *jack_devin;
+
+    GRecMutex *jack_devin_mutex;
     
     jack_devin = (AgsJackDevin *) clear_buffer->device;
+
+    /* get jack devin mutex */
+    jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
     
     /* retrieve nth buffer */    
-    if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER0)){
+    g_rec_mutex_lock(jack_devin_mutex);
+    
+    /* retrieve nth buffer */    
+    if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_0){
       nth_buffer = 2;
-    }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER1)){
+    }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_1){
       nth_buffer = 3;
-    }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER2)){
+    }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_2){
       nth_buffer = 0;
-    }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER3)){
+    }else if(jack_devin->app_buffer_mode == AGS_JACK_DEVIN_APP_BUFFER_3){
       nth_buffer = 1;
     }
     
-    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->buffer[nth_buffer]);
-    
-    memset(jack_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+    g_rec_mutex_unlock(jack_devin_mutex);
 
-    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->buffer[nth_buffer]);
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->app_buffer[nth_buffer]);
+    
+    memset(jack_devin->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->app_buffer[nth_buffer]);
   }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
     AgsPulseDevout *pulse_devout;
     
