@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -403,6 +403,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   guint denominator, numerator;
 
   jack_midiin->flags = 0;
+  jack_midiin->connectable_flags = 0;
 
   g_atomic_int_set(&(jack_midiin->sync_flags),
 		   AGS_JACK_MIDIIN_PASS_THROUGH);

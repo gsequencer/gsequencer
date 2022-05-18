@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -299,6 +299,7 @@ ags_jack_server_init(AgsJackServer *jack_server)
 {
   /* flags */
   jack_server->flags = 0;
+  jack_server->connectable_flags = 0;
 
   /* server mutex */
   g_rec_mutex_init(&(jack_server->obj_mutex));
@@ -669,10 +670,19 @@ ags_jack_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *jack_server_mutex;
+
   jack_server = AGS_JACK_SERVER(connectable);
 
-  /* check is added */
-  is_ready = ags_jack_server_test_flags(jack_server, AGS_JACK_SERVER_ADDED_TO_REGISTRY);
+  /* get jack server mutex */
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
+
+  /* check is ready */
+  g_rec_mutex_lock(jack_server_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (jack_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(jack_server_mutex);
   
   return(is_ready);
 }
@@ -682,13 +692,22 @@ ags_jack_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsJackServer *jack_server;
 
+  GRecMutex *jack_server_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   jack_server = AGS_JACK_SERVER(connectable);
 
-  ags_jack_server_set_flags(jack_server, AGS_JACK_SERVER_ADDED_TO_REGISTRY);
+  /* get jack server mutex */
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
+
+  g_rec_mutex_lock(jack_server_mutex);
+
+  jack_server->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(jack_server_mutex);
 }
 
 void
@@ -696,13 +715,22 @@ ags_jack_server_remove_from_registry(AgsConnectable *connectable)
 {
   AgsJackServer *jack_server;
 
+  GRecMutex *jack_server_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   jack_server = AGS_JACK_SERVER(connectable);
 
-  ags_jack_server_unset_flags(jack_server, AGS_JACK_SERVER_ADDED_TO_REGISTRY);
+  /* get jack server mutex */
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
+
+  g_rec_mutex_lock(jack_server_mutex);
+
+  jack_server->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(jack_server_mutex);
 }
 
 xmlNode*
@@ -743,10 +771,19 @@ ags_jack_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *jack_server_mutex;
+
   jack_server = AGS_JACK_SERVER(connectable);
 
+  /* get jack server mutex */
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
+
   /* check is connected */
-  is_connected = ags_jack_server_test_flags(jack_server, AGS_JACK_SERVER_CONNECTED);
+  g_rec_mutex_lock(jack_server_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (jack_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(jack_server_mutex);
   
   return(is_connected);
 }
@@ -766,10 +803,14 @@ ags_jack_server_connect(AgsConnectable *connectable)
 
   jack_server = AGS_JACK_SERVER(connectable);
 
-  ags_jack_server_set_flags(jack_server, AGS_JACK_SERVER_CONNECTED);
-
   /* get jack server mutex */
   jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
+
+  g_rec_mutex_lock(jack_server_mutex);
+
+  jack_server->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(jack_server_mutex);
 
   list =
     list_start = g_list_copy(jack_server->client);
@@ -798,10 +839,14 @@ ags_jack_server_disconnect(AgsConnectable *connectable)
 
   jack_server = AGS_JACK_SERVER(connectable);
   
-  ags_jack_server_unset_flags(jack_server, AGS_JACK_SERVER_CONNECTED);
-
   /* get jack server mutex */
   jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
+
+  g_rec_mutex_lock(jack_server_mutex);
+
+  jack_server->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(jack_server_mutex);
 
   /* client */
   list =

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,24 +52,12 @@ G_BEGIN_DECLS
 typedef struct _AgsJackServer AgsJackServer;
 typedef struct _AgsJackServerClass AgsJackServerClass;
 
-/**
- * AgsJackServerFlags:
- * @AGS_JACK_SERVER_ADDED_TO_REGISTRY: the JACK server was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_JACK_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsJackServer by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_JACK_SERVER_ADDED_TO_REGISTRY  = 1,
-  AGS_JACK_SERVER_CONNECTED          = 1 <<  1,
-}AgsJackServerFlags;
-
 struct _AgsJackServer
 {
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 

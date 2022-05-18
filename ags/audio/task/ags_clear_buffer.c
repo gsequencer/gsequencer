@@ -363,10 +363,17 @@ ags_clear_buffer_launch(AgsTask *task)
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devin->app_buffer[nth_buffer]);
   }else if(AGS_IS_JACK_DEVOUT(clear_buffer->device)){
     AgsJackDevout *jack_devout;
+
+    GRecMutex *jack_devout_mutex;
     
     jack_devout = (AgsJackDevout *) clear_buffer->device;
+
+    /* get jack devout mutex */
+    jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
     
     /* retrieve nth buffer */    
+    g_rec_mutex_lock(jack_devout_mutex);
+    
     if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_0){
       nth_buffer = 2;
     }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_1){
@@ -377,6 +384,8 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 1;
     }
             
+    g_rec_mutex_unlock(jack_devout_mutex);
+    
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->app_buffer[nth_buffer]);
     
     memset(jack_devout->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);

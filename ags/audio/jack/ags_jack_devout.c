@@ -1188,7 +1188,7 @@ ags_jack_devout_is_ready(AgsConnectable *connectable)
   /* get jack devout mutex */
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
-  /* check is added */
+  /* check is ready */
   g_rec_mutex_lock(jack_devout_mutex);
 
   is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (jack_devout->connectable_flags)) != 0) ? TRUE: FALSE;
