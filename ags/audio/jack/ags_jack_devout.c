@@ -596,13 +596,6 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   jack_devout->format = ags_soundcard_helper_config_get_format(config);
 
-  /*  */
-  jack_devout->card_uri = NULL;
-  jack_devout->jack_client = NULL;
-
-  jack_devout->port_name = NULL;
-  jack_devout->jack_port = NULL;
-
   /* app buffer */
   jack_devout->app_buffer_mode = AGS_JACK_DEVOUT_APP_BUFFER_0;
 
@@ -677,6 +670,13 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->do_loop = FALSE;
 
   jack_devout->loop_offset = 0;
+
+  /*  */
+  jack_devout->card_uri = NULL;
+  jack_devout->jack_client = NULL;
+
+  jack_devout->port_name = NULL;
+  jack_devout->jack_port = NULL;
 
   /* callback mutex */
   g_mutex_init(&(jack_devout->callback_mutex));
@@ -758,7 +758,7 @@ ags_jack_devout_set_property(GObject *gobject,
       for(i = 4 * jack_devout->sub_block_count * pcm_channels; i < 4 * jack_devout->sub_block_count * old_pcm_channels; i++){
 	g_rec_mutex_clear(jack_devout->sub_block_mutex[i]);
 
-	free(jack_devout->sub_block_mutex[i]);
+	g_free(jack_devout->sub_block_mutex[i]);
       }
 
       jack_devout->sub_block_mutex = (GRecMutex **) g_realloc(jack_devout->sub_block_mutex,
@@ -1270,7 +1270,7 @@ ags_jack_devout_xml_compose(AgsConnectable *connectable)
 
 void
 ags_jack_devout_xml_parse(AgsConnectable *connectable,
-		      xmlNode *node)
+			  xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -2105,7 +2105,7 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   callback_mutex = &(jack_devout->callback_mutex);
   callback_finish_mutex = &(jack_devout->callback_finish_mutex);
 
-  jack_devout->app_buffer_mode = 0;
+  jack_devout->app_buffer_mode = AGS_JACK_DEVOUT_APP_BUFFER_0;
   jack_devout->flags &= (~(AGS_JACK_DEVOUT_PLAY));
 
   g_atomic_int_or(&(jack_devout->sync_flags),

@@ -1573,29 +1573,29 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	      if(in_event.size > 0){
 		nth_buffer = 0;
 		
-		if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+		if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_0){
 		  nth_buffer = 1;
-		}else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+		}else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_1){
 		  nth_buffer = 2;
-		}else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+		}else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_2){
 		  nth_buffer = 3;
-		}else if((AGS_JACK_MIDIIN_BUFFER3 & jack_midiin->flags) != 0){
+		}else if(jack_midiin->app_buffer_mode == AGS_JACK_MIDIIN_APP_BUFFER_3){
 		  nth_buffer = 0;
 		}
 
-		if(ceil((jack_midiin->buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[nth_buffer] / 4096.0)){
-		  if(jack_midiin->buffer[nth_buffer] == NULL){
-		    jack_midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
+		if(ceil((jack_midiin->app_buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0)){
+		  if(jack_midiin->app_buffer[nth_buffer] == NULL){
+		    jack_midiin->app_buffer[nth_buffer] = g_malloc(4096 * sizeof(char));
 		  }else{
-		    jack_midiin->buffer[nth_buffer] = realloc(jack_midiin->buffer[nth_buffer],
-							      (ceil(jack_midiin->buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+		    jack_midiin->app_buffer[nth_buffer] = g_realloc(jack_midiin->app_buffer[nth_buffer],
+								    (ceil(jack_midiin->app_buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
 		  }
 		}
 
-		memcpy(&(jack_midiin->buffer[nth_buffer][jack_midiin->buffer_size[nth_buffer]]),
+		memcpy(&(jack_midiin->app_buffer[nth_buffer][jack_midiin->app_buffer_size[nth_buffer]]),
 		       in_event.buffer,
 		       in_event.size);
-		jack_midiin->buffer_size[nth_buffer] += in_event.size;
+		jack_midiin->app_buffer_size[nth_buffer] += in_event.size;
 	      }
 
 	    }	  
