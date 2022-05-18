@@ -1226,6 +1226,7 @@ ags_noise_util_compute_float
 ags_noise_util_compute_double
 ags_noise_util_compute_complex
 ags_noise_util_compute
+ags_fx_factory_get_type
 ags_fx_factory_create_flags_get_type
 ags_fx_factory_create
 ags_oss_midiin_get_type

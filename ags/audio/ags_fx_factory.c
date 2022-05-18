@@ -188,6 +188,9 @@
  * Factory function to instantiate fx recalls.
  */
 
+void ags_fx_factory_class_init(AgsFxFactoryClass *fx_factory_class);
+void ags_fx_factory_init(AgsFxFactory *fx_factory);
+
 gint ags_fx_factory_get_output_position(AgsAudio *audio,
 					gint position);
 gint ags_fx_factory_get_input_position(AgsAudio *audio,
@@ -396,6 +399,8 @@ GList* ags_fx_factory_create_vst3(AgsAudio *audio,
 				  guint create_flags, guint recall_flags);
 #endif
 
+static gpointer ags_fx_factory_parent_class = NULL;
+
 GType
 ags_fx_factory_get_type(void)
 {
@@ -404,14 +409,23 @@ ags_fx_factory_get_type(void)
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_fx_factory = 0;
 
-#if 0
-    //TODO:JK: implement me
-    ags_type_fx_factory =
-      g_boxed_type_register_static("AgsFxFactory",
-				   (GBoxedCopyFunc) ags_fx_factory_copy,
-				   (GBoxedFreeFunc) ags_fx_factory_free);
-#endif
-    
+    static const GTypeInfo ags_fx_factory_info = {
+      sizeof (AgsFxFactoryClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_fx_factory_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsFxFactory),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_fx_factory_init,
+    };
+
+    ags_type_fx_factory = g_type_register_static(G_TYPE_OBJECT,
+						 "AgsFxFactory",
+						 &ags_fx_factory_info,
+						 0);
+
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_factory);
   }
 
@@ -442,6 +456,23 @@ ags_fx_factory_create_flags_get_type()
   }
   
   return g_flags_type_id__volatile;
+}
+
+void
+ags_fx_factory_class_init(AgsFxFactoryClass *fx_factory)
+{
+  GObjectClass *gobject;
+
+  ags_fx_factory_parent_class = g_type_class_peek_parent(fx_factory);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) fx_factory;
+}
+
+void
+ags_fx_factory_init(AgsFxFactory *fx_factory)
+{
+  //empty
 }
 
 gint
