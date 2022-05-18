@@ -60,6 +60,15 @@ typedef enum{
   AGS_FX_FACTORY_LIVE      = 1 << 7,
 }AgsFxFactoryCreateFlags;
 
+typedef struct _AgsFxFactory AgsFxFactory;
+
+struct _AgsFxFactory
+{
+  //empty
+};
+
+GType ags_fx_factory_get_type(void);
+
 GType ags_fx_factory_create_flags_get_type();
 
 GList* ags_fx_factory_create(AgsAudio *audio,

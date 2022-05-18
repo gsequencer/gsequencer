@@ -355,8 +355,6 @@ ags_audio_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_AUDIO_ADDED_TO_REGISTRY, "AGS_AUDIO_ADDED_TO_REGISTRY", "audio-added-to-registry" },
-      { AGS_AUDIO_CONNECTED, "AGS_AUDIO_CONNECTED", "audio-connected" },
       { AGS_AUDIO_NO_OUTPUT, "AGS_AUDIO_NO_OUTPUT", "audio-no-output" },
       { AGS_AUDIO_NO_INPUT, "AGS_AUDIO_NO_INPUT", "audio-no-input" },
       { AGS_AUDIO_SYNC, "AGS_AUDIO_SYNC", "audio-sync" },
@@ -1685,6 +1683,7 @@ ags_audio_init(AgsAudio *audio)
   gchar *str0, *str1;
 
   audio->flags = 0;
+  audio->connectable_flags = 0;
   audio->ability_flags = 0;
   audio->behaviour_flags = 0;
   memset(audio->staging_flags, 0, AGS_SOUND_SCOPE_LAST * sizeof(guint));
@@ -3974,10 +3973,19 @@ ags_audio_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_mutex;
+
   audio = AGS_AUDIO(connectable);
 
-  /* check is added */
-  is_ready = ags_audio_test_flags(audio, AGS_AUDIO_ADDED_TO_REGISTRY);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* check is ready */
+  g_rec_mutex_lock(audio_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_mutex);
   
   return(is_ready);
 }
@@ -3995,13 +4003,22 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
 
   GList *list;
   
+  GRecMutex *audio_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   audio = AGS_AUDIO(connectable);
 
-  ags_audio_set_flags(audio, AGS_AUDIO_ADDED_TO_REGISTRY);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -4058,9 +4075,24 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
 void
 ags_audio_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsAudio *audio;
+
+  GRecMutex *audio_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  audio = AGS_AUDIO(connectable);
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_mutex);
 
   //TODO:JK: implement me
 }
@@ -4103,10 +4135,19 @@ ags_audio_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_mutex;
+
   audio = AGS_AUDIO(connectable);
 
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
   /* check is connected */
-  is_connected = ags_audio_test_flags(audio, AGS_AUDIO_CONNECTED);
+  g_rec_mutex_lock(audio_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_mutex);
   
   return(is_connected);
 }
@@ -4119,13 +4160,22 @@ ags_audio_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *audio_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio = AGS_AUDIO(connectable);
 
-  ags_audio_set_flags(audio, AGS_AUDIO_CONNECTED);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_mutex);
 
 #ifdef AGS_DEBUG
   g_message("connecting audio");
@@ -4236,13 +4286,22 @@ ags_audio_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *audio_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio = AGS_AUDIO(connectable);
 
-  ags_audio_unset_flags(audio, AGS_AUDIO_CONNECTED);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_mutex);
 
 #ifdef AGS_DEBUG
   g_message("disconnecting audio");

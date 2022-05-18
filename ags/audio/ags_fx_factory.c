@@ -397,6 +397,28 @@ GList* ags_fx_factory_create_vst3(AgsAudio *audio,
 #endif
 
 GType
+ags_fx_factory_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_fx_factory = 0;
+
+#if 0
+    //TODO:JK: implement me
+    ags_type_fx_factory =
+      g_boxed_type_register_static("AgsFxFactory",
+				   (GBoxedCopyFunc) ags_fx_factory_copy,
+				   (GBoxedFreeFunc) ags_fx_factory_free);
+#endif
+    
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_factory);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+GType
 ags_fx_factory_create_flags_get_type()
 {
   static volatile gsize g_flags_type_id__volatile;
