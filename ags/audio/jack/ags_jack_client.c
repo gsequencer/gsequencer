@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -240,6 +240,7 @@ ags_jack_client_init(AgsJackClient *jack_client)
 {
   /* flags */
   jack_client->flags = 0;
+  jack_client->connectable_flags = 0;
 
   /* jack client mutex */
   g_rec_mutex_init(&(jack_client->obj_mutex));
@@ -559,10 +560,19 @@ ags_jack_client_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *jack_client_mutex;
+
   jack_client = AGS_JACK_CLIENT(connectable);
 
-  /* check is added */
-  is_ready = ags_jack_client_test_flags(jack_client, AGS_JACK_CLIENT_ADDED_TO_REGISTRY);
+  /* get jack client mutex */
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
+
+  /* test */
+  g_rec_mutex_lock(jack_client_mutex);
+
+  is_ready = (AGS_CONNECTABLE_ADDED_TO_REGISTRY & (jack_client->connectable_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(jack_client_mutex);
   
   return(is_ready);
 }
@@ -572,13 +582,23 @@ ags_jack_client_add_to_registry(AgsConnectable *connectable)
 {
   AgsJackClient *jack_client;
 
+  GRecMutex *jack_client_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   jack_client = AGS_JACK_CLIENT(connectable);
 
-  ags_jack_client_set_flags(jack_client, AGS_JACK_CLIENT_ADDED_TO_REGISTRY);
+  /* get jack client mutex */
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
+
+  /* set added to registry */
+  g_rec_mutex_lock(jack_client_mutex);
+
+  jack_client->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(jack_client_mutex);
 }
 
 void
@@ -586,13 +606,23 @@ ags_jack_client_remove_from_registry(AgsConnectable *connectable)
 {
   AgsJackClient *jack_client;
 
+  GRecMutex *jack_client_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   jack_client = AGS_JACK_CLIENT(connectable);
 
-  ags_jack_client_unset_flags(jack_client, AGS_JACK_CLIENT_ADDED_TO_REGISTRY);
+  /* get jack client mutex */
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
+
+  /* set added to registry */
+  g_rec_mutex_lock(jack_client_mutex);
+
+  jack_client->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(jack_client_mutex);
 }
 
 xmlNode*
@@ -633,10 +663,19 @@ ags_jack_client_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *jack_client_mutex;
+
   jack_client = AGS_JACK_CLIENT(connectable);
 
-  /* check is connected */
-  is_connected = ags_jack_client_test_flags(jack_client, AGS_JACK_CLIENT_CONNECTED);
+  /* get jack client mutex */
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
+
+  /* test */
+  g_rec_mutex_lock(jack_client_mutex);
+
+  is_connected = (AGS_CONNECTABLE_CONNECTED & (jack_client->connectable_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(jack_client_mutex);
   
   return(is_connected);
 }
@@ -656,10 +695,15 @@ ags_jack_client_connect(AgsConnectable *connectable)
 
   jack_client = AGS_JACK_CLIENT(connectable);
 
-  ags_jack_client_set_flags(jack_client, AGS_JACK_CLIENT_CONNECTED);
-
   /* get jack client mutex */
   jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
+
+  /* set connected */
+  g_rec_mutex_lock(jack_client_mutex);
+
+  jack_client->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(jack_client_mutex);
 
   /* port */
   g_rec_mutex_lock(jack_client_mutex);
@@ -694,10 +738,15 @@ ags_jack_client_disconnect(AgsConnectable *connectable)
 
   jack_client = AGS_JACK_CLIENT(connectable);
   
-  ags_jack_client_unset_flags(jack_client, AGS_JACK_CLIENT_CONNECTED);
-
   /* get jack client mutex */
   jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
+
+  /* unset connected */
+  g_rec_mutex_lock(jack_client_mutex);
+
+  jack_client->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(jack_client_mutex);
 
   /* port */
   g_rec_mutex_lock(jack_client_mutex);
@@ -1829,13 +1878,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
       
       /* get buffer */
-      if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
+      if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_0){
 	nth_buffer = 3;
-      }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+      }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_1){
 	nth_buffer = 0;
-      }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+      }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_2){
 	nth_buffer = 1;
-      }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+      }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_3){
 	nth_buffer = 2;
       }else{
 	/* iterate */
@@ -1896,13 +1945,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 				   jack_devout->buffer_size);
 	
 	if(!no_event && out != NULL){
-	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->buffer[nth_buffer]);
+	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->app_buffer[nth_buffer]);
 	    
 	  ags_audio_buffer_util_copy_buffer_to_buffer(out, 1, 0,
-						      jack_devout->buffer[nth_buffer], jack_devout->pcm_channels, i,
+						      jack_devout->app_buffer[nth_buffer], jack_devout->pcm_channels, i,
 						      jack_devout->buffer_size, copy_mode);
 	  
-	  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->buffer[nth_buffer]);	    
+	  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->app_buffer[nth_buffer]);	    
 	}
 
 	port = port->next;

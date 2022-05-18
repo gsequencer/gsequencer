@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -252,8 +252,6 @@ ags_alsa_devout_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY, "AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY", "alsa-devout-added-to-registry" },
-      { AGS_ALSA_DEVOUT_CONNECTED, "AGS_ALSA_DEVOUT_CONNECTED", "alsa-devout-connected" },
       { AGS_ALSA_DEVOUT_INITIALIZED, "AGS_ALSA_DEVOUT_INITIALIZED", "alsa-devout-initialized" },
       { AGS_ALSA_DEVOUT_START_PLAY, "AGS_ALSA_DEVOUT_START_PLAY", "alsa-devout-start-play" },
       { AGS_ALSA_DEVOUT_PLAY, "AGS_ALSA_DEVOUT_PLAY", "alsa-devout-play" },

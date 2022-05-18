@@ -367,21 +367,21 @@ ags_clear_buffer_launch(AgsTask *task)
     jack_devout = (AgsJackDevout *) clear_buffer->device;
     
     /* retrieve nth buffer */    
-    if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER0)){
+    if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_0){
       nth_buffer = 2;
-    }else if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER1)){
+    }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_1){
       nth_buffer = 3;
-    }else if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER2)){
+    }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_2){
       nth_buffer = 0;
-    }else if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER3)){
+    }else if(jack_devout->app_buffer_mode == AGS_JACK_DEVOUT_APP_BUFFER_3){
       nth_buffer = 1;
     }
             
-    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->buffer[nth_buffer]);
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->app_buffer[nth_buffer]);
     
-    memset(jack_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+    memset(jack_devout->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
 
-    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->buffer[nth_buffer]);
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->app_buffer[nth_buffer]);
   }else if(AGS_IS_JACK_DEVIN(clear_buffer->device)){
     AgsJackDevin *jack_devin;
     
