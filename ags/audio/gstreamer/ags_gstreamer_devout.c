@@ -3270,49 +3270,49 @@ ags_gstreamer_devout_realloc_buffer(AgsGstreamerDevout *gstreamer_devout)
   
   gstreamer_devout->app_buffer[0] = (void *) g_malloc(gstreamer_devout->pcm_channels * gstreamer_devout->buffer_size * word_size);
   
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_1 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_1 */
   if(gstreamer_devout->app_buffer[1] != NULL){
     g_free(gstreamer_devout->app_buffer[1]);
   }
 
   gstreamer_devout->app_buffer[1] = (void *) g_malloc(gstreamer_devout->pcm_channels * gstreamer_devout->buffer_size * word_size);
   
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_2 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_2 */
   if(gstreamer_devout->app_buffer[2] != NULL){
     g_free(gstreamer_devout->app_buffer[2]);
   }
 
   gstreamer_devout->app_buffer[2] = (void *) g_malloc(gstreamer_devout->pcm_channels * gstreamer_devout->buffer_size * word_size);
   
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_3 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_3 */
   if(gstreamer_devout->app_buffer[3] != NULL){
     g_free(gstreamer_devout->app_buffer[3]);
   }
   
   gstreamer_devout->app_buffer[3] = (void *) g_malloc(gstreamer_devout->pcm_channels * gstreamer_devout->buffer_size * word_size);
 
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_4 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_4 */
   if(gstreamer_devout->app_buffer[4] != NULL){
     g_free(gstreamer_devout->app_buffer[4]);
   }
   
   gstreamer_devout->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_5 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_5 */
   if(gstreamer_devout->app_buffer[5] != NULL){
     g_free(gstreamer_devout->app_buffer[5]);
   }
   
   gstreamer_devout->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_6 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_6 */
   if(gstreamer_devout->app_buffer[6] != NULL){
     g_free(gstreamer_devout->app_buffer[6]);
   }
   
   gstreamer_devout->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_GSTREAMER_DEVOUT_BUFFER_7 */
+  /* AGS_GSTREAMER_DEVOUT_APP_BUFFER_7 */
   if(gstreamer_devout->app_buffer[7] != NULL){
     g_free(gstreamer_devout->app_buffer[7]);
   }

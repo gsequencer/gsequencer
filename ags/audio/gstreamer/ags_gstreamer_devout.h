@@ -41,12 +41,12 @@ typedef struct _AgsGstreamerDevoutClass AgsGstreamerDevoutClass;
 
 /**
  * AgsGstreamerDevoutFlags:
- * @AGS_GSTREAMER_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_GSTREAMER_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_GSTREAMER_DEVOUT_START_PLAY: playback starting
  * @AGS_GSTREAMER_DEVOUT_PLAY: do playback
  * @AGS_GSTREAMER_DEVOUT_SHUTDOWN: stop playback
- * @AGS_GSTREAMER_DEVOUT_START_PLAY: playback starting
  * @AGS_GSTREAMER_DEVOUT_NONBLOCKING: do non-blocking calls
- * @AGS_GSTREAMER_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_GSTREAMER_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
  *
  * Enum values to control the behavior or indicate internal state of #AgsGstreamerDevout by
  * enable/disable as flags.
@@ -60,7 +60,7 @@ typedef enum{
 
   AGS_GSTREAMER_DEVOUT_NONBLOCKING                    = 1 <<  4,
   
-  AGS_GSTREAMER_DEVOUT_ATTACK_FIRST                   = 1 <<  5
+  AGS_GSTREAMER_DEVOUT_ATTACK_FIRST                   = 1 <<  5,
 }AgsGstreamerDevoutFlags;
 
 /**
@@ -69,6 +69,10 @@ typedef enum{
  * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_1: ring-buffer 1
  * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_2: ring-buffer 2
  * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_3: ring-buffer 3
+ * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_4: ring-buffer 4
+ * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_5: ring-buffer 5
+ * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_6: ring-buffer 6
+ * @AGS_GSTREAMER_DEVOUT_APP_BUFFER_7: ring-buffer 7
  * 
  * Enum values to indicate internal state of #AgsGstreamerDevout application buffer by
  * setting mode.
@@ -178,6 +182,7 @@ struct _AgsGstreamerDevoutClass
 };
 
 GType ags_gstreamer_devout_get_type();
+GType ags_gstreamer_devout_flags_get_type();
 
 GQuark ags_gstreamer_devout_error_quark();
 
