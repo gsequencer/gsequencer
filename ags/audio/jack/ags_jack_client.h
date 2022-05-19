@@ -90,6 +90,7 @@ struct _AgsJackClientClass
 };
 
 GType ags_jack_client_get_type();
+GType ags_jack_client_flags_get_type();
 
 gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
 void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);

@@ -1974,6 +1974,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   /* do playback */
   g_rec_mutex_lock(jack_devout_mutex);
   
+  jack_devout->app_buffer_mode = AGS_JACK_DEVOUT_APP_BUFFER_0;
   jack_devout->flags &= (~AGS_JACK_DEVOUT_START_PLAY);
   
   if((AGS_JACK_DEVOUT_INITIALIZED & (jack_devout->flags)) == 0){
@@ -2598,7 +2599,6 @@ ags_jack_devout_lock_buffer(AgsSoundcard *soundcard,
     g_rec_mutex_lock(buffer_mutex);
   }
 }
-
 
 void
 ags_jack_devout_unlock_buffer(AgsSoundcard *soundcard,

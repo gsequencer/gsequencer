@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,8 +45,6 @@ typedef struct _AgsGstreamerPortClass AgsGstreamerPortClass;
 
 /**
  * AgsGstreamerPortFlags:
- * @AGS_GSTREAMER_PORT_ADDED_TO_REGISTRY: the GSTREAMER port was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_GSTREAMER_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_GSTREAMER_PORT_REGISTERED: the port was registered
  * @AGS_GSTREAMER_PORT_IS_AUDIO: the port provides audio data
  * @AGS_GSTREAMER_PORT_IS_MIDI: the port provides midi data
@@ -57,13 +55,11 @@ typedef struct _AgsGstreamerPortClass AgsGstreamerPortClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_GSTREAMER_PORT_ADDED_TO_REGISTRY  = 1,
-  AGS_GSTREAMER_PORT_CONNECTED          = 1 <<  1,
-  AGS_GSTREAMER_PORT_REGISTERED         = 1 <<  2,
-  AGS_GSTREAMER_PORT_IS_AUDIO           = 1 <<  3,
-  AGS_GSTREAMER_PORT_IS_MIDI            = 1 <<  4,
-  AGS_GSTREAMER_PORT_IS_OUTPUT          = 1 <<  5,
-  AGS_GSTREAMER_PORT_IS_INPUT           = 1 <<  6,
+  AGS_GSTREAMER_PORT_REGISTERED         = 1,
+  AGS_GSTREAMER_PORT_IS_AUDIO           = 1 <<  1,
+  AGS_GSTREAMER_PORT_IS_MIDI            = 1 <<  2,
+  AGS_GSTREAMER_PORT_IS_OUTPUT          = 1 <<  3,
+  AGS_GSTREAMER_PORT_IS_INPUT           = 1 <<  4,
 }AgsGstreamerPortFlags;
 
 struct _AgsGstreamerPort
@@ -71,6 +67,7 @@ struct _AgsGstreamerPort
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -115,6 +112,7 @@ struct _AgsGstreamerPortClass
 };
 
 GType ags_gstreamer_port_get_type();
+GType ags_gstreamer_port_flags_get_type();
 
 gboolean ags_gstreamer_port_test_flags(AgsGstreamerPort *gstreamer_port, guint flags);
 void ags_gstreamer_port_set_flags(AgsGstreamerPort *gstreamer_port, guint flags);

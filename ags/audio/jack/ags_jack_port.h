@@ -93,6 +93,7 @@ struct _AgsJackPortClass
 };
 
 GType ags_jack_port_get_type();
+GType ags_jack_port_flags_get_type();
 
 gboolean ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags);
 void ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags);

@@ -866,6 +866,7 @@ ags_lfo_synth_util_compute_impulse_double
 ags_lfo_synth_util_compute_impulse_complex
 ags_lfo_synth_util_compute_impulse
 ags_jack_client_get_type
+ags_jack_client_flags_get_type
 ags_jack_client_test_flags
 ags_jack_client_set_flags
 ags_jack_client_unset_flags
@@ -881,6 +882,7 @@ ags_jack_client_activate
 ags_jack_client_deactivate
 ags_jack_client_new
 ags_jack_devout_get_type
+ags_jack_devout_flags_get_type
 ags_jack_devout_error_quark
 ags_jack_devout_test_flags
 ags_jack_devout_set_flags
@@ -902,6 +904,7 @@ ags_jack_server_connect_client
 ags_jack_server_disconnect_client
 ags_jack_server_new
 ags_jack_midiin_get_type
+ags_jack_midiin_flags_get_type
 ags_jack_midiin_error_quark
 ags_jack_midiin_test_flags
 ags_jack_midiin_set_flags
@@ -909,6 +912,7 @@ ags_jack_midiin_unset_flags
 ags_jack_midiin_switch_buffer_flag
 ags_jack_midiin_new
 ags_jack_port_get_type
+ags_jack_port_flags_get_type
 ags_jack_port_test_flags
 ags_jack_port_set_flags
 ags_jack_port_unset_flags
@@ -917,6 +921,7 @@ ags_jack_port_register
 ags_jack_port_unregister
 ags_jack_port_new
 ags_jack_devin_get_type
+ags_jack_devin_flags_get_type
 ags_jack_devin_error_quark
 ags_jack_devin_test_flags
 ags_jack_devin_set_flags
@@ -1230,6 +1235,7 @@ ags_fx_factory_get_type
 ags_fx_factory_create_flags_get_type
 ags_fx_factory_create
 ags_oss_midiin_get_type
+ags_oss_midiin_flags_get_type
 ags_oss_midiin_error_quark
 ags_oss_midiin_test_flags
 ags_oss_midiin_set_flags
@@ -1464,6 +1470,7 @@ ags_recall_dependency_find_dependency_by_provider
 ags_recall_dependency_resolve
 ags_recall_dependency_new
 ags_gstreamer_client_get_type
+ags_gstreamer_client_flags_get_type
 ags_gstreamer_client_test_flags
 ags_gstreamer_client_set_flags
 ags_gstreamer_client_unset_flags
@@ -1492,6 +1499,7 @@ ags_gstreamer_server_disconnect_client
 ags_gstreamer_server_start_poll
 ags_gstreamer_server_new
 ags_gstreamer_port_get_type
+ags_gstreamer_port_flags_get_type
 ags_gstreamer_port_test_flags
 ags_gstreamer_port_set_flags
 ags_gstreamer_port_unset_flags

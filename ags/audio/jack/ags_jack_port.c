@@ -113,6 +113,29 @@ ags_jack_port_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_jack_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_JACK_PORT_REGISTERED, "AGS_JACK_PORT_REGISTERED", "jack-port-registered" },
+      { AGS_JACK_PORT_IS_AUDIO, "AGS_JACK_PORT_IS_AUDIO", "jack-port-is-audio" },
+      { AGS_JACK_PORT_IS_MIDI, "AGS_JACK_PORT_IS_MIDI", "jack-port-is-midi" },
+      { AGS_JACK_PORT_IS_OUTPUT, "AGS_JACK_PORT_IS_OUTPUT", "jack-port-is-output" },
+      { AGS_JACK_PORT_IS_INPUT, "AGS_JACK_PORT_IS_INPUT", "jack-port-is-input" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsJackPortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_jack_port_class_init(AgsJackPortClass *jack_port)
 {

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -282,6 +282,7 @@ ags_gstreamer_server_init(AgsGstreamerServer *gstreamer_server)
 {
   /* flags */
   gstreamer_server->flags = 0;
+  gstreamer_server->connectable_flags = 0;
 
   /* server mutex */
   g_rec_mutex_init(&(gstreamer_server->obj_mutex)); 
@@ -601,10 +602,19 @@ ags_gstreamer_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *gstreamer_server_mutex;
+
   gstreamer_server = AGS_GSTREAMER_SERVER(connectable);
 
-  /* check is added */
-  is_ready = ags_gstreamer_server_test_flags(gstreamer_server, AGS_GSTREAMER_SERVER_ADDED_TO_REGISTRY);
+  /* get gstreamer server mutex */
+  gstreamer_server_mutex = AGS_GSTREAMER_SERVER_GET_OBJ_MUTEX(gstreamer_server);
+
+  /* check is ready */
+  g_rec_mutex_lock(gstreamer_server_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (gstreamer_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_server_mutex);
   
   return(is_ready);
 }
@@ -614,13 +624,22 @@ ags_gstreamer_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsGstreamerServer *gstreamer_server;
 
+  GRecMutex *gstreamer_server_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   gstreamer_server = AGS_GSTREAMER_SERVER(connectable);
 
-  ags_gstreamer_server_set_flags(gstreamer_server, AGS_GSTREAMER_SERVER_ADDED_TO_REGISTRY);
+  /* get gstreamer server mutex */
+  gstreamer_server_mutex = AGS_GSTREAMER_SERVER_GET_OBJ_MUTEX(gstreamer_server);
+
+  g_rec_mutex_lock(gstreamer_server_mutex);
+
+  gstreamer_server->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(gstreamer_server_mutex);
 }
 
 void
@@ -628,13 +647,22 @@ ags_gstreamer_server_remove_from_registry(AgsConnectable *connectable)
 {
   AgsGstreamerServer *gstreamer_server;
 
+  GRecMutex *gstreamer_server_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   gstreamer_server = AGS_GSTREAMER_SERVER(connectable);
 
-  ags_gstreamer_server_unset_flags(gstreamer_server, AGS_GSTREAMER_SERVER_ADDED_TO_REGISTRY);
+  /* get gstreamer server mutex */
+  gstreamer_server_mutex = AGS_GSTREAMER_SERVER_GET_OBJ_MUTEX(gstreamer_server);
+
+  g_rec_mutex_lock(gstreamer_server_mutex);
+
+  gstreamer_server->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(gstreamer_server_mutex);
 }
 
 xmlNode*
@@ -675,10 +703,19 @@ ags_gstreamer_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *gstreamer_server_mutex;
+
   gstreamer_server = AGS_GSTREAMER_SERVER(connectable);
 
+  /* get gstreamer server mutex */
+  gstreamer_server_mutex = AGS_GSTREAMER_SERVER_GET_OBJ_MUTEX(gstreamer_server);
+
   /* check is connected */
-  is_connected = ags_gstreamer_server_test_flags(gstreamer_server, AGS_GSTREAMER_SERVER_CONNECTED);
+  g_rec_mutex_lock(gstreamer_server_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (gstreamer_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_server_mutex);
   
   return(is_connected);
 }
@@ -698,10 +735,14 @@ ags_gstreamer_server_connect(AgsConnectable *connectable)
 
   gstreamer_server = AGS_GSTREAMER_SERVER(connectable);
 
-  ags_gstreamer_server_set_flags(gstreamer_server, AGS_GSTREAMER_SERVER_CONNECTED);
-
   /* get gstreamer server mutex */
   gstreamer_server_mutex = AGS_GSTREAMER_SERVER_GET_OBJ_MUTEX(gstreamer_server);
+
+  g_rec_mutex_lock(gstreamer_server_mutex);
+
+  gstreamer_server->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(gstreamer_server_mutex);
 
   list =
     list_start = g_list_copy(gstreamer_server->client);
@@ -729,11 +770,15 @@ ags_gstreamer_server_disconnect(AgsConnectable *connectable)
   }
 
   gstreamer_server = AGS_GSTREAMER_SERVER(connectable);
-  
-  ags_gstreamer_server_unset_flags(gstreamer_server, AGS_GSTREAMER_SERVER_CONNECTED);
 
   /* get gstreamer server mutex */
   gstreamer_server_mutex = AGS_GSTREAMER_SERVER_GET_OBJ_MUTEX(gstreamer_server);
+
+  g_rec_mutex_lock(gstreamer_server_mutex);
+
+  gstreamer_server->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(gstreamer_server_mutex);
 
   /* client */
   list =

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,6 +117,26 @@ ags_gstreamer_client_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_gstreamer_client_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_GSTREAMER_CLIENT_ACTIVATED, "AGS_GSTREAMER_CLIENT_ACTIVATED", "gstreamer-client-activated" },
+      { AGS_GSTREAMER_CLIENT_READY, "AGS_GSTREAMER_CLIENT_READY", "gstreamer-client-ready" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsGstreamerClientFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_gstreamer_client_class_init(AgsGstreamerClientClass *gstreamer_client)
 {
@@ -224,9 +244,9 @@ ags_gstreamer_client_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_gstreamer_client_init(AgsGstreamerClient *gstreamer_client)
 {
-
   /* flags */
   gstreamer_client->flags = 0;
+  gstreamer_client->connectable_flags = 0;
 
   /* client mutex */
   g_rec_mutex_init(&(gstreamer_client->obj_mutex));
@@ -544,10 +564,19 @@ ags_gstreamer_client_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *gstreamer_client_mutex;
+
   gstreamer_client = AGS_GSTREAMER_CLIENT(connectable);
 
-  /* check is added */
-  is_ready = ags_gstreamer_client_test_flags(gstreamer_client, AGS_GSTREAMER_CLIENT_ADDED_TO_REGISTRY);
+  /* get gstreamer client mutex */
+  gstreamer_client_mutex = AGS_GSTREAMER_CLIENT_GET_OBJ_MUTEX(gstreamer_client);
+
+  /* test */
+  g_rec_mutex_lock(gstreamer_client_mutex);
+
+  is_ready = (AGS_CONNECTABLE_ADDED_TO_REGISTRY & (gstreamer_client->connectable_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(gstreamer_client_mutex);
   
   return(is_ready);
 }
@@ -557,13 +586,23 @@ ags_gstreamer_client_add_to_registry(AgsConnectable *connectable)
 {
   AgsGstreamerClient *gstreamer_client;
 
+  GRecMutex *gstreamer_client_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   gstreamer_client = AGS_GSTREAMER_CLIENT(connectable);
 
-  ags_gstreamer_client_set_flags(gstreamer_client, AGS_GSTREAMER_CLIENT_ADDED_TO_REGISTRY);
+  /* get gstreamer client mutex */
+  gstreamer_client_mutex = AGS_GSTREAMER_CLIENT_GET_OBJ_MUTEX(gstreamer_client);
+
+  /* set added to registry */
+  g_rec_mutex_lock(gstreamer_client_mutex);
+
+  gstreamer_client->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(gstreamer_client_mutex);
 }
 
 void
@@ -571,13 +610,23 @@ ags_gstreamer_client_remove_from_registry(AgsConnectable *connectable)
 {
   AgsGstreamerClient *gstreamer_client;
 
+  GRecMutex *gstreamer_client_mutex;
+  
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   gstreamer_client = AGS_GSTREAMER_CLIENT(connectable);
 
-  ags_gstreamer_client_unset_flags(gstreamer_client, AGS_GSTREAMER_CLIENT_ADDED_TO_REGISTRY);
+  /* get gstreamer client mutex */
+  gstreamer_client_mutex = AGS_GSTREAMER_CLIENT_GET_OBJ_MUTEX(gstreamer_client);
+
+  /* set added to registry */
+  g_rec_mutex_lock(gstreamer_client_mutex);
+
+  gstreamer_client->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(gstreamer_client_mutex);
 }
 
 xmlNode*
@@ -618,10 +667,19 @@ ags_gstreamer_client_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *gstreamer_client_mutex;
+
   gstreamer_client = AGS_GSTREAMER_CLIENT(connectable);
 
-  /* check is connected */
-  is_connected = ags_gstreamer_client_test_flags(gstreamer_client, AGS_GSTREAMER_CLIENT_CONNECTED);
+  /* get gstreamer client mutex */
+  gstreamer_client_mutex = AGS_GSTREAMER_CLIENT_GET_OBJ_MUTEX(gstreamer_client);
+
+  /* test */
+  g_rec_mutex_lock(gstreamer_client_mutex);
+
+  is_connected = (AGS_CONNECTABLE_CONNECTED & (gstreamer_client->connectable_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(gstreamer_client_mutex);
   
   return(is_connected);
 }
@@ -641,10 +699,15 @@ ags_gstreamer_client_connect(AgsConnectable *connectable)
 
   gstreamer_client = AGS_GSTREAMER_CLIENT(connectable);
 
-  ags_gstreamer_client_set_flags(gstreamer_client, AGS_GSTREAMER_CLIENT_CONNECTED);
-
   /* get gstreamer client mutex */
   gstreamer_client_mutex = AGS_GSTREAMER_CLIENT_GET_OBJ_MUTEX(gstreamer_client);
+
+  /* set connected */
+  g_rec_mutex_lock(gstreamer_client_mutex);
+
+  gstreamer_client->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(gstreamer_client_mutex);
 
   /* port */
   g_rec_mutex_lock(gstreamer_client_mutex);
@@ -679,10 +742,15 @@ ags_gstreamer_client_disconnect(AgsConnectable *connectable)
 
   gstreamer_client = AGS_GSTREAMER_CLIENT(connectable);
   
-  ags_gstreamer_client_unset_flags(gstreamer_client, AGS_GSTREAMER_CLIENT_CONNECTED);
-
   /* get gstreamer client mutex */
   gstreamer_client_mutex = AGS_GSTREAMER_CLIENT_GET_OBJ_MUTEX(gstreamer_client);
+
+  /* unset connected */
+  g_rec_mutex_lock(gstreamer_client_mutex);
+
+  gstreamer_client->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(gstreamer_client_mutex);
 
   /* port */
   g_rec_mutex_lock(gstreamer_client_mutex);
