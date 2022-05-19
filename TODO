@@ -7,6 +7,8 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: fix AgsResampleUtil don't discard quality for gint32, gint64, gdouble and AgsComplex
+* TODO:JK: fix ags_turtle_test.c
 * TODO:JK: fix ags_turtle_test.c
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: implemented AgsConnectableFlags
