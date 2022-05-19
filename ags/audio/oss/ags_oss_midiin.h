@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,8 +49,6 @@ typedef struct _AgsOssMidiinClass AgsOssMidiinClass;
 
 /**
  * AgsOssMidiinFlags:
- * @AGS_OSS_MIDIIN_ADDED_TO_REGISTRY: the oss_midiin was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_OSS_MIDIIN_CONNECTED: indicates the oss_midiin was connected by calling #AgsConnectable::connect()
  * @AGS_OSS_MIDIIN_INITIALIZED: recording is initialized
  * @AGS_OSS_MIDIIN_START_RECORD: just started recording
  * @AGS_OSS_MIDIIN_RECORD: is recording
@@ -63,17 +61,14 @@ typedef struct _AgsOssMidiinClass AgsOssMidiinClass;
  */
 typedef enum
 {
-  AGS_OSS_MIDIIN_ADDED_TO_REGISTRY  = 1,
-  AGS_OSS_MIDIIN_CONNECTED          = 1 <<  1,
+  AGS_OSS_MIDIIN_INITIALIZED        = 1,
 
-  AGS_OSS_MIDIIN_INITIALIZED        = 1 <<  2,
+  AGS_OSS_MIDIIN_START_RECORD       = 1 <<  1,
+  AGS_OSS_MIDIIN_RECORD             = 1 <<  2,
+  AGS_OSS_MIDIIN_SHUTDOWN           = 1 <<  3,
 
-  AGS_OSS_MIDIIN_START_RECORD       = 1 <<  3,
-  AGS_OSS_MIDIIN_RECORD             = 1 <<  4,
-  AGS_OSS_MIDIIN_SHUTDOWN           = 1 <<  5,
-
-  AGS_OSS_MIDIIN_NONBLOCKING        = 1 <<  6,
-  AGS_OSS_MIDIIN_ATTACK_FIRST       = 1 <<  7,
+  AGS_OSS_MIDIIN_NONBLOCKING        = 1 <<  4,
+  AGS_OSS_MIDIIN_ATTACK_FIRST       = 1 <<  5,
 }AgsOssMidiinFlags;
 
 /**
@@ -151,6 +146,7 @@ struct _AgsOssMidiin
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   volatile guint sync_flags;
 
   GRecMutex obj_mutex;

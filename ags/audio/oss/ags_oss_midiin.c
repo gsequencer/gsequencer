@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -378,6 +378,7 @@ ags_oss_midiin_init(AgsOssMidiin *oss_midiin)
   guint denominator, numerator;
 
   oss_midiin->flags = 0;
+  oss_midiin->connectable_flags = 0;
   
   /* insert oss_midiin mutex */
   g_rec_mutex_init(&(oss_midiin->obj_mutex));
@@ -683,10 +684,19 @@ ags_oss_midiin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *oss_midiin_mutex;
+
   oss_midiin = AGS_OSS_MIDIIN(connectable);
 
-  /* check is added */
-  is_ready = ags_oss_midiin_test_flags(oss_midiin, AGS_OSS_MIDIIN_ADDED_TO_REGISTRY);
+  /* get oss midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  /* check is ready */
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (oss_midiin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(oss_midiin_mutex);
   
   return(is_ready);
 }
@@ -696,13 +706,22 @@ ags_oss_midiin_add_to_registry(AgsConnectable *connectable)
 {
   AgsOssMidiin *oss_midiin;
 
+  GRecMutex *oss_midiin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   oss_midiin = AGS_OSS_MIDIIN(connectable);
 
-  ags_oss_midiin_set_flags(oss_midiin, AGS_OSS_MIDIIN_ADDED_TO_REGISTRY);
+  /* get oss midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  oss_midiin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(oss_midiin_mutex);
 }
 
 void
@@ -710,13 +729,22 @@ ags_oss_midiin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsOssMidiin *oss_midiin;
 
+  GRecMutex *oss_midiin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   oss_midiin = AGS_OSS_MIDIIN(connectable);
 
-  ags_oss_midiin_unset_flags(oss_midiin, AGS_OSS_MIDIIN_ADDED_TO_REGISTRY);
+  /* get oss midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  oss_midiin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(oss_midiin_mutex);
 }
 
 xmlNode*
@@ -757,10 +785,19 @@ ags_oss_midiin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *oss_midiin_mutex;
+
   oss_midiin = AGS_OSS_MIDIIN(connectable);
 
+  /* get oss midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
   /* check is connected */
-  is_connected = ags_oss_midiin_test_flags(oss_midiin, AGS_OSS_MIDIIN_CONNECTED);
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (oss_midiin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(oss_midiin_mutex);
   
   return(is_connected);
 }
@@ -769,6 +806,8 @@ void
 ags_oss_midiin_connect(AgsConnectable *connectable)
 {
   AgsOssMidiin *oss_midiin;
+
+  GRecMutex *oss_midiin_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -776,7 +815,14 @@ ags_oss_midiin_connect(AgsConnectable *connectable)
 
   oss_midiin = AGS_OSS_MIDIIN(connectable);
 
-  ags_oss_midiin_set_flags(oss_midiin, AGS_OSS_MIDIIN_CONNECTED);
+  /* get oss midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  oss_midiin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(oss_midiin_mutex);
 }
 
 void
@@ -785,13 +831,22 @@ ags_oss_midiin_disconnect(AgsConnectable *connectable)
 
   AgsOssMidiin *oss_midiin;
 
+  GRecMutex *oss_midiin_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   oss_midiin = AGS_OSS_MIDIIN(connectable);
+
+  /* get oss midiin mutex */
+  oss_midiin_mutex = AGS_OSS_MIDIIN_GET_OBJ_MUTEX(oss_midiin);
+
+  g_rec_mutex_lock(oss_midiin_mutex);
+
+  oss_midiin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_oss_midiin_unset_flags(oss_midiin, AGS_OSS_MIDIIN_CONNECTED);
+  g_rec_mutex_unlock(oss_midiin_mutex);
 }
 
 /**
