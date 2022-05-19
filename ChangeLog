@@ -5,8 +5,12 @@ ags (4.0.0)
 	* modified GType from gulong to gpointer in marshallers
 	* migrated libgsequencer.so to Gtk-4
 	* migrated libags_gui.so to Gtk-4
+	* migrated libags_server.so to libsoup-3.0
+	* migrated libags_audio.so to libsoup-3.0
 	* implemented AgsCartesian properties
 	* implemented ags_common_pitch_util.[ch]
+	* refactored libgsequencer.so to use AgsConnectableFlags
+	* refactored libags_audio.so to use AgsConnectableFlags
 	* refactored AgsMachineSelector
 	* improved ags_fast_pitch_util.[ch]
 	* improved ags_hq_pitch_util.[ch]
@@ -21,6 +25,7 @@ ags (4.0.0)
 	* removed deprecated ags_audio_buffer_util.[ch] functions
 	* removed deprecated ags_synth_util.[ch] functions
 	* removed deprecated ags_fm_synth_util.[ch] functions
+	* removed deprecated ags_lfo_synth_util.[ch] functions
 	* removed deprecated ags_fluid_interpolate_none_util.[ch] functions
 	* removed deprecated ags_fluid_interpolate_linear_util.[ch] functions
 	* removed deprecated ags_fluid_interpolate_4th_order_util.[ch] functions
@@ -28,31 +33,6 @@ ags (4.0.0)
 	* removed ags_generic_pitch_util.[ch]
 	* TODO:JK: extended AgsFile by adding libxml2 wrapper functions
 	* TODO:JK: refactored AgsSimpleFile
-	* TODO:JK: refactored LV2 parser
-	* TODO:JK: implemented AgsVector
-	* TODO:JK: implemented AgsSoundDirection
-	* TODO:JK: implemented AgsAudioManager with ui-scope
-	* TODO:JK: improved AgsMessageEnvelope with ui-scope
-	* TODO:JK: refactored AgsConnectableFlags
-	* fixed typo in ags_function.h
-	* TODO:JK: implemented pitch selection of ags-synth
-	* TODO:JK: implemented pitch selection of ags-fm-synth
-	* TODO:JK: implemented pitch selection of ags-sf2-synth
-	* TODO:JK: implemented pitch selection of ags-sfz-synth
-	* TODO:JK: refactor use GFile instead of FILE
-	* TODO:JK: fixed AgsWave clipboard
-
-ags (4.0.0-alpha)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* major API improvements
-	* migrated libgsequencer.so to Gtk-4
-	* migrated libags_gui.so to Gtk-4
-	* implemented AgsCartesian properties
-	* removed AgsDevout, AgsDevin and AgsMidiin
-	* removed ags/audio/recall
-	* removed ags_recall_factory.[ch], ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]
-	* TODO:JK: removed deprecated ags_audio_buffer_util.[ch] functions
 	* TODO:JK: refactored LV2 parser
 	* TODO:JK: implemented AgsVector
 	* TODO:JK: implemented AgsSoundDirection

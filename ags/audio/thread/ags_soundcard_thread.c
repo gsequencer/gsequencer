@@ -534,15 +534,8 @@ ags_soundcard_thread_stop(AgsThread *thread)
       ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
     }else{
       /* reset flags */
-      AGS_WASAPI_DEVOUT(soundcard)->flags &= (~(AGS_WASAPI_DEVOUT_BUFFER0 |
-						AGS_WASAPI_DEVOUT_BUFFER1 |
-						AGS_WASAPI_DEVOUT_BUFFER2 |
-						AGS_WASAPI_DEVOUT_BUFFER3 |
-						AGS_WASAPI_DEVOUT_BUFFER4 |
-						AGS_WASAPI_DEVOUT_BUFFER5 |
-						AGS_WASAPI_DEVOUT_BUFFER6 |
-						AGS_WASAPI_DEVOUT_BUFFER7 |
-						AGS_WASAPI_DEVOUT_PLAY |
+      AGS_WASAPI_DEVOUT(soundcard)->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_0;
+      AGS_WASAPI_DEVOUT(soundcard)->flags &= (~(AGS_WASAPI_DEVOUT_PLAY |
 						AGS_WASAPI_DEVOUT_INITIALIZED |
 						AGS_WASAPI_DEVOUT_SHUTDOWN));
       
@@ -555,15 +548,8 @@ ags_soundcard_thread_stop(AgsThread *thread)
       ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
     }else{
       /* reset flags */
-      AGS_WASAPI_DEVIN(soundcard)->flags &= (~(AGS_WASAPI_DEVIN_BUFFER0 |
-					       AGS_WASAPI_DEVIN_BUFFER1 |
-					       AGS_WASAPI_DEVIN_BUFFER2 |
-					       AGS_WASAPI_DEVIN_BUFFER3 |
-					       AGS_WASAPI_DEVIN_BUFFER4 |
-					       AGS_WASAPI_DEVIN_BUFFER5 |
-					       AGS_WASAPI_DEVIN_BUFFER6 |
-					       AGS_WASAPI_DEVIN_BUFFER7 |
-					       AGS_WASAPI_DEVIN_RECORD |
+      AGS_WASAPI_DEVIN(soundcard)->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_0;
+      AGS_WASAPI_DEVIN(soundcard)->flags &= (~(AGS_WASAPI_DEVIN_RECORD |
 					       AGS_WASAPI_DEVIN_INITIALIZED |
 					       AGS_WASAPI_DEVIN_SHUTDOWN));
       

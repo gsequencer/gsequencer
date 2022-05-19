@@ -128,6 +128,9 @@ struct _AgsJackDevin
   GRecMutex **app_buffer_mutex;
   void** app_buffer;
 
+  guint sub_block_count;
+  GRecMutex **sub_block_mutex;
+
   double bpm; // beats per minute
   gdouble delay_factor;
   

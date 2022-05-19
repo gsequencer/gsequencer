@@ -1556,6 +1556,7 @@ ags_midi_add_track
 ags_midi_remove_track
 ags_midi_new
 ags_wasapi_devin_get_type
+ags_wasapi_devin_flags_get_type
 ags_wasapi_devin_error_quark
 ags_wasapi_devin_test_flags
 ags_wasapi_devin_set_flags
@@ -1565,6 +1566,7 @@ ags_wasapi_devin_adjust_delay_and_attack
 ags_wasapi_devin_realloc_buffer
 ags_wasapi_devin_new
 ags_wasapi_devout_get_type
+ags_wasapi_devout_flags_get_type
 ags_wasapi_devout_error_quark
 ags_wasapi_devout_test_flags
 ags_wasapi_devout_set_flags
