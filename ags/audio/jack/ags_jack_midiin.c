@@ -184,6 +184,30 @@ ags_jack_midiin_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_jack_midiin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_JACK_MIDIIN_INITIALIZED, "AGS_JACK_MIDIIN_INITIALIZED", "jack-midiin-initialized" },
+      { AGS_JACK_MIDIIN_START_RECORD, "AGS_JACK_MIDIIN_START_RECORD", "jack-midiin-start-record" },
+      { AGS_JACK_MIDIIN_RECORD, "AGS_JACK_MIDIIN_RECORD", "jack-midiin-record" },
+      { AGS_JACK_MIDIIN_SHUTDOWN, "AGS_JACK_MIDIIN_SHUTDOWN", "jack-midiin-shutdown" },
+      { AGS_JACK_MIDIIN_NONBLOCKING, "AGS_JACK_MIDIIN_NONBLOCKING", "jack-midiin-nonblocking" },
+      { AGS_JACK_MIDIIN_ATTACK_FIRST, "AGS_JACK_MIDIIN_ATTACK_FIRST", "jack-midiin-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsJackMidiinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 {

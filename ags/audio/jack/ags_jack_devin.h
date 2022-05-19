@@ -167,6 +167,7 @@ struct _AgsJackDevinClass
 };
 
 GType ags_jack_devin_get_type();
+GType ags_jack_devin_flags_get_type();
 
 GQuark ags_jack_devin_error_quark();
 

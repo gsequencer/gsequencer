@@ -162,6 +162,7 @@ struct _AgsJackMidiinClass
 };
 
 GType ags_jack_midiin_get_type();
+GType ags_jack_midiin_flags_get_type();
 
 GQuark ags_jack_midiin_error_quark();
 

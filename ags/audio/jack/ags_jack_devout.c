@@ -238,6 +238,30 @@ ags_jack_devout_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_jack_devout_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_JACK_DEVOUT_INITIALIZED, "AGS_JACK_DEVOUT_INITIALIZED", "jack-devout-initialized" },
+      { AGS_JACK_DEVOUT_START_PLAY, "AGS_JACK_DEVOUT_START_PLAY", "jack-devout-start-play" },
+      { AGS_JACK_DEVOUT_PLAY, "AGS_JACK_DEVOUT_PLAY", "jack-devout-play" },
+      { AGS_JACK_DEVOUT_SHUTDOWN, "AGS_JACK_DEVOUT_SHUTDOWN", "jack-devout-shutdown" },
+      { AGS_JACK_DEVOUT_NONBLOCKING, "AGS_JACK_DEVOUT_NONBLOCKING", "jack-devout-nonblocking" },
+      { AGS_JACK_DEVOUT_ATTACK_FIRST, "AGS_JACK_DEVOUT_ATTACK_FIRST", "jack-devout-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsJackDevoutFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
 {

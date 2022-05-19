@@ -189,6 +189,7 @@ struct _AgsOssMidiinClass
 };
 
 GType ags_oss_midiin_get_type();
+GType ags_oss_midiin_flags_get_type();
 
 GQuark ags_oss_midiin_error_quark();
 

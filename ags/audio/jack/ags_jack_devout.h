@@ -173,6 +173,7 @@ struct _AgsJackDevoutClass
 };
 
 GType ags_jack_devout_get_type();
+GType ags_jack_devout_flags_get_type();
 
 GQuark ags_jack_devout_error_quark();
 

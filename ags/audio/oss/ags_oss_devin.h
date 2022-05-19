@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,8 +47,6 @@ typedef struct _AgsOssDevinClass AgsOssDevinClass;
 
 /**
  * AgsOssDevinFlags:
- * @AGS_OSS_DEVIN_ADDED_TO_REGISTRY: the oss_devin was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_OSS_DEVIN_CONNECTED: indicates the oss_devin was connected by calling #AgsConnectable::connect()
  * @AGS_OSS_DEVIN_INITIALIZED: the soundcard was initialized
  * @AGS_OSS_DEVIN_START_RECORD: capture starting
  * @AGS_OSS_DEVIN_RECORD: do capture
@@ -61,18 +59,15 @@ typedef struct _AgsOssDevinClass AgsOssDevinClass;
  */
 typedef enum
 {
-  AGS_OSS_DEVIN_ADDED_TO_REGISTRY  = 1,
-  AGS_OSS_DEVIN_CONNECTED          = 1 <<  1,
+  AGS_OSS_DEVIN_INITIALIZED        = 1,
 
-  AGS_OSS_DEVIN_INITIALIZED        = 1 <<  2,
+  AGS_OSS_DEVIN_START_RECORD       = 1 <<  1,
+  AGS_OSS_DEVIN_RECORD             = 1 <<  2,
+  AGS_OSS_DEVIN_SHUTDOWN           = 1 <<  3,
 
-  AGS_OSS_DEVIN_START_RECORD       = 1 <<  3,
-  AGS_OSS_DEVIN_RECORD             = 1 <<  4,
-  AGS_OSS_DEVIN_SHUTDOWN           = 1 <<  5,
+  AGS_OSS_DEVIN_NONBLOCKING        = 1 <<  4,
 
-  AGS_OSS_DEVIN_NONBLOCKING        = 1 <<  6,
-
-  AGS_OSS_DEVIN_ATTACK_FIRST       = 1 <<  7,
+  AGS_OSS_DEVIN_ATTACK_FIRST       = 1 <<  5,
 }AgsOssDevinFlags;
 
 /**
@@ -135,7 +130,8 @@ struct _AgsOssDevin
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

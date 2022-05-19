@@ -296,6 +296,30 @@ ags_oss_midiin_class_init(AgsOssMidiinClass *oss_midiin)
   /* AgsOssMidiinClass */
 }
 
+GType
+ags_oss_midiin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSS_MIDIIN_INITIALIZED, "AGS_OSS_MIDIIN_INITIALIZED", "oss-midiin-initialized" },
+      { AGS_OSS_MIDIIN_START_RECORD, "AGS_OSS_MIDIIN_START_RECORD", "oss-midiin-start-record" },
+      { AGS_OSS_MIDIIN_RECORD, "AGS_OSS_MIDIIN_RECORD", "oss-midiin-record" },
+      { AGS_OSS_MIDIIN_SHUTDOWN, "AGS_OSS_MIDIIN_SHUTDOWN", "oss-midiin-shutdown" },
+      { AGS_OSS_MIDIIN_NONBLOCKING, "AGS_OSS_MIDIIN_NONBLOCKING", "oss-midiin-nonblocking" },
+      { AGS_OSS_MIDIIN_ATTACK_FIRST, "AGS_OSS_MIDIIN_ATTACK_FIRST", "oss-midiin-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOssMidiinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 GQuark
 ags_oss_midiin_error_quark()
 {
