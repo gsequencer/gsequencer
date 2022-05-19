@@ -72,6 +72,28 @@ ags_fluid_iir_filter_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_fluid_iir_filter_type_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_FLUID_IIR_DISABLED, "AGS_FLUID_IIR_DISABLED", "fluid-iir-disabled" },
+      { AGS_FLUID_IIR_LOWPASS, "AGS_FLUID_IIR_LOWPASS", "fluid-iir-lowpass" },
+      { AGS_FLUID_IIR_HIGHPASS, "AGS_FLUID_IIR_HIGHPASS", "fluid-iir-highpass" },
+      { AGS_FLUID_IIR_LAST, "AGS_FLUID_IIR_LAST", "fluid-iir-last" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsFluidIIRFilterType"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 /**
  * ags_fluid_iir_filter_util_alloc:
  * 

@@ -43,6 +43,13 @@ G_BEGIN_DECLS
 typedef struct _AgsOscParser AgsOscParser;
 typedef struct _AgsOscParserClass AgsOscParserClass;
 
+/**
+ * AgsOscParserFlags:
+ * @AGS_OSC_PARSER_EOF: the parser reached EOF
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsOscParser by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_OSC_PARSER_EOF        = 1,
 }AgsOscParserFlags;

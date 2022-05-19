@@ -151,6 +151,27 @@ ags_osc_xmlrpc_controller_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_osc_xmlrpc_controller_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED", "osc_xmlrpc_controller-delegate-started" },
+      { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING", "osc_xmlrpc_controller-delegate-running" },
+      { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING", "osc_xmlrpc_controller-delegate-terminating" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscXmlrpcControllerFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_controller)
 {

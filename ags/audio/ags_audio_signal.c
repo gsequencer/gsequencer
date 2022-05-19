@@ -174,8 +174,6 @@ ags_audio_signal_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY, "AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY", "audio-signal-added-to-registry" },
-      { AGS_AUDIO_SIGNAL_CONNECTED, "AGS_AUDIO_SIGNAL_CONNECTED", "audio-signal-connected" },
       { AGS_AUDIO_SIGNAL_TEMPLATE, "AGS_AUDIO_SIGNAL_template", "audio-signal-template" },
       { AGS_AUDIO_SIGNAL_RT_TEMPLATE, "AGS_AUDIO_SIGNAL_RT_TEMPLATE", "audio-signal-rt-template" },
       { AGS_AUDIO_SIGNAL_MASTER, "AGS_AUDIO_SIGNAL_MASTER", "audio-signal-master" },
@@ -782,6 +780,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   double _Complex z;
 
   audio_signal->flags = 0;
+  audio_signal->connectable_flags = 0;
 
   /* audio signal mutex */
   g_rec_mutex_init(&(audio_signal->obj_mutex)); 
@@ -1746,10 +1745,20 @@ ags_audio_signal_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_signal_mutex;
+
   audio_signal = AGS_AUDIO_SIGNAL(connectable);
 
-  is_ready = ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY);
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
+  /* check is ready */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_signal->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_signal_mutex);
+  
   return(is_ready);
 }
 
@@ -1763,13 +1772,22 @@ ags_audio_signal_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *audio_signal_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   audio_signal = AGS_AUDIO_SIGNAL(connectable);
 
-  ags_audio_signal_set_flags(audio_signal, AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY);
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -1787,9 +1805,24 @@ ags_audio_signal_add_to_registry(AgsConnectable *connectable)
 void
 ags_audio_signal_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsAudioSignal *audio_signal;
+
+  GRecMutex *audio_signal_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  audio_signal = AGS_AUDIO_SIGNAL(connectable);
+
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
 
   //TODO:JK: implement me
 }
@@ -1832,10 +1865,20 @@ ags_audio_signal_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_signal_mutex;
+
   audio_signal = AGS_AUDIO_SIGNAL(connectable);
 
-  is_connected = ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_CONNECTED);
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
+  /* check is connected */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_signal->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_signal_mutex);
+  
   return(is_connected);
 }
 
@@ -1844,13 +1887,22 @@ ags_audio_signal_connect(AgsConnectable *connectable)
 {
   AgsAudioSignal *audio_signal;
 
+  GRecMutex *audio_signal_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_signal = AGS_AUDIO_SIGNAL(connectable);
+
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_audio_signal_set_flags(audio_signal, AGS_AUDIO_SIGNAL_CONNECTED);
+  g_rec_mutex_unlock(audio_signal_mutex);
 }
 
 void
@@ -1858,13 +1910,22 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
 {
   AgsAudioSignal *audio_signal;
 
+  GRecMutex *audio_signal_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_signal = AGS_AUDIO_SIGNAL(connectable);
 
-  ags_audio_signal_unset_flags(audio_signal, AGS_AUDIO_SIGNAL_CONNECTED);
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  audio_signal->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
 }
 
 /**

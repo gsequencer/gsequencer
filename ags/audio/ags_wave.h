@@ -99,6 +99,7 @@ struct _AgsWaveClass
 };
 
 GType ags_wave_get_type(void);
+GType ags_wave_flags_get_type();
 
 GRecMutex* ags_wave_get_obj_mutex(AgsWave *wave);
 

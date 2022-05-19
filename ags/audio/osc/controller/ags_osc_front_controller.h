@@ -39,6 +39,15 @@ G_BEGIN_DECLS
 typedef struct _AgsOscFrontController AgsOscFrontController;
 typedef struct _AgsOscFrontControllerClass AgsOscFrontControllerClass;
 
+/**
+ * AgsOscFrontControllerFlags:
+ * AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED:
+ * AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING:
+ * AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING:
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsOscFrontController by
+ * enable/disable as flags. 
+ */
 typedef enum{
   AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED        = 1,
   AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING        = 1 <<  1,
@@ -76,6 +85,7 @@ struct _AgsOscFrontControllerClass
 };
 
 GType ags_osc_front_controller_get_type();
+GType ags_osc_front_controller_flags_get_type();
 
 gboolean ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, guint flags);
 void ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags);

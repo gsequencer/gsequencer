@@ -112,6 +112,28 @@ ags_osc_client_get_type(void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_osc_client_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSC_CLIENT_INET4, "AGS_OSC_CLIENT_INET4", "osc-client-inet4" },
+      { AGS_OSC_CLIENT_INET6, "AGS_OSC_CLIENT_INET6", "osc-client-inet6" },
+      { AGS_OSC_CLIENT_UDP, "AGS_OSC_CLIENT_UDP", "osc-client-udp" },
+      { AGS_OSC_CLIENT_TCP, "AGS_OSC_CLIENT_TCP", "osc-client-tcp" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscClientFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_osc_client_class_init(AgsOscClientClass *osc_client)
 {
@@ -287,6 +309,7 @@ void
 ags_osc_client_init(AgsOscClient *osc_client)
 {
   osc_client->flags = AGS_OSC_CLIENT_INET4;
+  osc_client->connectable_flags = 0;
   
   /* osc client mutex */
   g_rec_mutex_init(&(osc_client->obj_mutex));

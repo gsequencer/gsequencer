@@ -35,6 +35,15 @@ G_BEGIN_DECLS
 
 typedef struct _AgsFluidIIRFilterUtil AgsFluidIIRFilterUtil;
 
+/**
+ * AgsFluidIIRFilterType:
+ * @AGS_FLUID_IIR_DISABLED: disabled
+ * @AGS_FLUID_IIR_LOWPASS: low-pass
+ * @AGS_FLUID_IIR_HIGHPASS: high-pass
+ * @AGS_FLUID_IIR_LAST: last entry
+ * 
+ * Enum values to specify filter type of #AgsFluidIIRFilterUtil.
+ */
 typedef enum{
   AGS_FLUID_IIR_DISABLED,
   AGS_FLUID_IIR_LOWPASS,
@@ -83,6 +92,7 @@ struct _AgsFluidIIRFilterUtil
 };
 
 GType ags_fluid_iir_filter_util_get_type(void);
+GType ags_fluid_iir_filter_type_get_type();
 
 AgsFluidIIRFilterUtil* ags_fluid_iir_filter_util_alloc();
 

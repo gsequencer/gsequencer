@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,6 @@ typedef struct _AgsPlaybackClass AgsPlaybackClass;
 
 /**
  * AgsPlaybackFlags:
- * @AGS_PLAYBACK_CONNECTED: indicates the playback was connected by calling #AgsConnectable::connect()
  * @AGS_PLAYBACK_SINGLE_THREADED: single threaded
  * @AGS_PLAYBACK_SUPER_THREADED_CHANNEL: super threaded channel
  *
@@ -52,9 +51,8 @@ typedef struct _AgsPlaybackClass AgsPlaybackClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PLAYBACK_CONNECTED                    = 1,
-  AGS_PLAYBACK_SINGLE_THREADED              = 1 <<  1,
-  AGS_PLAYBACK_SUPER_THREADED_CHANNEL       = 1 <<  2,
+  AGS_PLAYBACK_SINGLE_THREADED              = 1,
+  AGS_PLAYBACK_SUPER_THREADED_CHANNEL       = 1 <<  1,
 }AgsPlaybackFlags;
 
 struct _AgsPlayback
@@ -62,7 +60,8 @@ struct _AgsPlayback
   GObject gobject;
   
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GObject *playback_domain;
@@ -83,6 +82,7 @@ struct _AgsPlaybackClass
 };
 
 GType ags_playback_get_type();
+GType ags_playback_flags_get_type();
 
 gboolean ags_playback_test_flags(AgsPlayback *playback, guint flags);
 void ags_playback_set_flags(AgsPlayback *playback, guint flags);

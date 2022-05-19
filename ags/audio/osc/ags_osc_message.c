@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -210,6 +210,9 @@ ags_osc_message_class_init(AgsOscMessageClass *osc_message)
 void
 ags_osc_message_init(AgsOscMessage *osc_message)
 {
+  osc_message->flags = 0;
+  osc_message->connectable_flags = 0;
+
   /* osc message mutex */
   g_rec_mutex_init(&(osc_message->obj_mutex));
 

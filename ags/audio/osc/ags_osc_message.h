@@ -46,6 +46,9 @@ typedef struct _AgsOscMessageClass AgsOscMessageClass;
 struct _AgsOscMessage
 {
   GObject gobject;
+
+  guint flags;
+  guint connectable_flags;
   
   GRecMutex obj_mutex;
 

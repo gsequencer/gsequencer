@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,8 +44,6 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 
 /**
  * AgsAudioSignalFlags:
- * @AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY: the audio signal was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_AUDIO_SIGNAL_CONNECTED: indicates the audio signal was connected by calling #AgsConnectable::connect()
  * @AGS_AUDIO_SIGNAL_TEMPLATE: the audio signal acts as a template
  * @AGS_AUDIO_SIGNAL_RT_TEMPLATE: the audio signal acts as a realtime template
  * @AGS_AUDIO_SIGNAL_MASTER: the audio signal needs master
@@ -58,8 +56,6 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY    = 1,
-  AGS_AUDIO_SIGNAL_CONNECTED            = 1 <<  1,
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  2,
   AGS_AUDIO_SIGNAL_RT_TEMPLATE          = 1 <<  3,
   AGS_AUDIO_SIGNAL_MASTER               = 1 <<  4,
@@ -74,7 +70,8 @@ struct _AgsAudioSignal
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

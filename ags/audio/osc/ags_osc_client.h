@@ -73,7 +73,8 @@ struct _AgsOscClient
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
   
   gchar *ip4;
@@ -123,6 +124,7 @@ struct _AgsOscClientClass
 };
 
 GType ags_osc_client_get_type(void);
+GType ags_osc_client_flags_get_type();
 
 gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);

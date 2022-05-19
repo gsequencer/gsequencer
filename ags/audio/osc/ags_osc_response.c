@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -177,6 +177,7 @@ void
 ags_osc_response_init(AgsOscResponse *osc_response)
 {
   osc_response->flags = 0;
+  osc_response->connectable_flags = 0;
   
   /* osc response mutex */
   g_rec_mutex_init(&(osc_response->obj_mutex));

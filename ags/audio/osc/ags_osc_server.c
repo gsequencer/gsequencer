@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -118,6 +118,34 @@ ags_osc_server_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_osc_server_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSC_SERVER_STARTED, "AGS_OSC_SERVER_STARTED", "osc-server-started" },
+      { AGS_OSC_SERVER_RUNNING, "AGS_OSC_SERVER_RUNNING", "osc-server-running" },
+      { AGS_OSC_SERVER_TERMINATING, "AGS_OSC_SERVER_TERMINATING", "osc-server-terminating" },
+      { AGS_OSC_SERVER_INET4, "AGS_OSC_SERVER_INET4", "osc-server-inet4" },
+      { AGS_OSC_SERVER_INET6, "AGS_OSC_SERVER_INET6", "osc-server-inet6" },
+      { AGS_OSC_SERVER_UDP, "AGS_OSC_SERVER_UDP", "osc-server-udp" },
+      { AGS_OSC_SERVER_TCP, "AGS_OSC_SERVER_TCP", "osc-server-tcp" },
+      { AGS_OSC_SERVER_UNIX, "AGS_OSC_SERVER_UNIX", "osc-server-started" },
+      { AGS_OSC_SERVER_ANY_ADDRESS, "AGS_OSC_SERVER_ANY_ADDRESS", "osc-server-any-address" },
+      { AGS_OSC_SERVER_AUTO_START, "AGS_OSC_SERVER_AUTO_START", "osc-server-auto-start" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscServerFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -334,6 +362,7 @@ void
 ags_osc_server_init(AgsOscServer *osc_server)
 {
   osc_server->flags = 0;
+  osc_server->connectable_flags = 0;
   
   /* osc server mutex */
   g_rec_mutex_init(&(osc_server->obj_mutex));

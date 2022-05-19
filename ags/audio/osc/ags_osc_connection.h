@@ -66,7 +66,8 @@ struct _AgsOscConnection
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GObject *osc_server;
