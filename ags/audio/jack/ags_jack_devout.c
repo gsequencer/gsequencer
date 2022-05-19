@@ -1123,6 +1123,8 @@ ags_jack_devout_finalize(GObject *gobject)
   
   jack_devout = AGS_JACK_DEVOUT(gobject);
 
+  ags_uuid_free(jack_devout->uuid);
+  
   for(i = 0; i < 4; i++){
     g_rec_mutex_clear(jack_devout->app_buffer_mutex[i]);
 

@@ -226,36 +226,48 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							"icon-name", "media-skip-backward",
+							"has-tooltip", TRUE,
+							"tooltip-text", i18n("skip backward"),
 							NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->rewind);
 
   navigation->previous = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						    "icon-name", "media-seek-backward",
+						    "has-tooltip", TRUE,
+						    "tooltip-text", i18n("seek backward"),
 						    NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->previous);
 
   navigation->play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 						      "icon-name", "media-playback-start",
+						      "has-tooltip", TRUE,
+						      "tooltip-text", i18n("playback"),
 						      NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->play);
 
   navigation->stop = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						"icon-name", "media-playback-stop",
+						"has-tooltip", TRUE,
+						"tooltip-text", i18n("stop"),
 						NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->stop);
 
   navigation->next = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						"icon-name", "media-seek-forward",
+						"has-tooltip", TRUE,
+						"tooltip-text", i18n("seek forward"),
 						NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->next);
 
   navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							 "icon-name", "media-skip-forward",
+							 "has-tooltip", TRUE,
+							 "tooltip-text", i18n("skip forward"),
 							 NULL);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->forward);

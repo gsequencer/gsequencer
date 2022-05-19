@@ -1122,7 +1122,27 @@ ags_gstreamer_devout_finalize(GObject *gobject)
 {
   AgsGstreamerDevout *gstreamer_devout;
 
+  guint i;
+
   gstreamer_devout = AGS_GSTREAMER_DEVOUT(gobject);
+
+  ags_uuid_free(gstreamer_devout->uuid);
+
+  for(i = 0; i < 8; i++){
+    g_rec_mutex_clear(gstreamer_devout->app_buffer_mutex[i]);
+
+    g_free(gstreamer_devout->app_buffer_mutex[i]);
+  }
+  
+  g_free(gstreamer_devout->app_buffer_mutex);
+  
+  for(i = 0; i < 8 * gstreamer_devout->sub_block_count * gstreamer_devout->pcm_channels; i++){
+    g_rec_mutex_clear(gstreamer_devout->sub_block_mutex[i]);
+
+    g_free(gstreamer_devout->sub_block_mutex[i]);
+  }
+
+  g_free(gstreamer_devout->sub_block_mutex);
 
   /* free output buffer */
   g_free(gstreamer_devout->app_buffer[0]);
@@ -1137,7 +1157,7 @@ ags_gstreamer_devout_finalize(GObject *gobject)
   /* free buffer array */
   g_free(gstreamer_devout->app_buffer);
 
-  /* free AgsAttack */
+  g_free(gstreamer_devout->delay);
   g_free(gstreamer_devout->attack);
 
   /* gstreamer client */

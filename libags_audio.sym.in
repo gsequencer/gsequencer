@@ -2012,6 +2012,7 @@ ags_acceleration_set_y
 ags_acceleration_duplicate
 ags_acceleration_new
 ags_wave_get_type
+ags_wave_flags_get_type
 ags_wave_get_obj_mutex
 ags_wave_test_flags
 ags_wave_set_flags
@@ -2061,6 +2062,7 @@ ags_fifoout_adjust_delay_and_attack
 ags_fifoout_realloc_buffer
 ags_fifoout_new
 ags_audio_unit_devout_get_type
+ags_audio_unit_devout_flags_get_type
 ags_audio_unit_devout_error_quark
 ags_audio_unit_devout_test_flags
 ags_audio_unit_devout_set_flags

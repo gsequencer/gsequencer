@@ -36,9 +36,10 @@ G_BEGIN_DECLS
 
 #define AGS_JACK_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsJackDevout *) obj)->obj_mutex))
 
+#define AGS_JACK_DEVOUT_DEFAULT_APP_BUFFER_SIZE (4)
+
 typedef struct _AgsJackDevout AgsJackDevout;
 typedef struct _AgsJackDevoutClass AgsJackDevoutClass;
-
 /**
  * AgsJackDevoutFlags:
  * @AGS_JACK_DEVOUT_INITIALIZED: the soundcard was initialized

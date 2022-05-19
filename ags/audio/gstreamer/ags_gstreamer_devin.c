@@ -1068,6 +1068,8 @@ ags_gstreamer_devin_dispose(GObject *gobject)
 
   gstreamer_devin = AGS_GSTREAMER_DEVIN(gobject);
 
+  ags_uuid_free(gstreamer_devin->uuid);
+
   /* gstreamer client */
   if(gstreamer_devin->gstreamer_client != NULL){
     g_object_unref(gstreamer_devin->gstreamer_client);
@@ -1090,7 +1092,17 @@ ags_gstreamer_devin_finalize(GObject *gobject)
 {
   AgsGstreamerDevin *gstreamer_devin;
 
+  guint i;
+  
   gstreamer_devin = AGS_GSTREAMER_DEVIN(gobject);
+
+  for(i = 0; i < 8; i++){
+    g_rec_mutex_clear(gstreamer_devin->app_buffer_mutex[i]);
+
+    g_free(gstreamer_devin->app_buffer_mutex[i]);
+  }
+
+  g_free(gstreamer_devin->app_buffer_mutex);
 
   /* free output buffer */
   g_free(gstreamer_devin->app_buffer[0]);
@@ -1105,7 +1117,7 @@ ags_gstreamer_devin_finalize(GObject *gobject)
   /* free buffer array */
   g_free(gstreamer_devin->app_buffer);
 
-  /* free AgsAttack */
+  g_free(gstreamer_devin->delay);
   g_free(gstreamer_devin->attack);
 
   /* gstreamer client */

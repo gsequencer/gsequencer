@@ -1078,7 +1078,19 @@ ags_jack_devin_finalize(GObject *gobject)
 {
   AgsJackDevin *jack_devin;
 
+  guint i;
+
   jack_devin = AGS_JACK_DEVIN(gobject);
+
+  ags_uuid_free(jack_devin->uuid);
+
+  for(i = 0; i < 4; i++){
+    g_rec_mutex_clear(jack_devin->app_buffer_mutex[i]);
+
+    g_free(jack_devin->app_buffer_mutex[i]);
+  }
+  
+  g_free(jack_devin->app_buffer_mutex);
 
   /* free output buffer */
   g_free(jack_devin->app_buffer[0]);
@@ -1089,7 +1101,7 @@ ags_jack_devin_finalize(GObject *gobject)
   /* free buffer array */
   g_free(jack_devin->app_buffer);
 
-  /* free AgsAttack */
+  g_free(jack_devin->delay);
   g_free(jack_devin->attack);
 
   /* jack client */
