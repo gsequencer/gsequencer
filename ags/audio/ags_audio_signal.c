@@ -2745,8 +2745,6 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   resample_util.buffer_length = allocated_buffer_length;
   resample_util.format = format;
   resample_util.samplerate = old_samplerate;
-
-  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
   
   resample_util.target_samplerate = samplerate;
 

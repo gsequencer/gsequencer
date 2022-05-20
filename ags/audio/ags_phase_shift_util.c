@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,9 +22,6 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-gpointer ags_phase_shift_util_strct_copy(gpointer ptr);
-void ags_phase_shift_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_phase_shift_util
  * @short_description: phase shift util
@@ -34,7 +31,6 @@ void ags_phase_shift_util_strct_free(gpointer ptr);
  *
  * Utility functions to compute phase shift.
  */
-
 
 GType
 ags_phase_shift_util_get_type(void)
@@ -46,8 +42,8 @@ ags_phase_shift_util_get_type(void)
 
     ags_type_phase_shift_util =
       g_boxed_type_register_static("AgsPhaseShiftUtil",
-				   (GBoxedCopyFunc) ags_phase_shift_util_strct_copy,
-				   (GBoxedFreeFunc) ags_phase_shift_util_strct_free);
+				   (GBoxedCopyFunc) ags_phase_shift_util_copy,
+				   (GBoxedFreeFunc) ags_phase_shift_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_phase_shift_util);
   }
@@ -55,20 +51,444 @@ ags_phase_shift_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_phase_shift_util_strct_copy(gpointer ptr)
+/**
+ * ags_phase_shift_util_alloc:
+ *
+ * Allocate #AgsPhaseShiftUtil-struct
+ *
+ * Returns: a new #AgsPhaseShiftUtil-struct
+ *
+ * Since: 4.0.0
+ */
+AgsPhaseShiftUtil*
+ags_phase_shift_util_alloc()
 {
-  gpointer retval;
+  AgsPhaseShiftUtil *ptr;
 
-  retval = g_memdup(ptr, sizeof(AgsPhaseShiftUtil));
- 
-  return(retval);
+  ptr = (AgsPhaseShiftUtil *) g_new(AgsPhaseShiftUtil,
+				     1);
+
+  ptr->destination = NULL;
+  ptr->destination_stride = 1;
+
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->format = AGS_PHASE_SHIFT_UTIL_DEFAULT_FORMAT;
+
+  return(ptr);
 }
 
-void
-ags_phase_shift_util_strct_free(gpointer ptr)
+/**
+ * ags_phase_shift_util_copy:
+ * @ptr: the original #AgsPhaseShiftUtil-struct
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsPhaseShiftUtil-struct
+ *
+ * Since: 4.0.0
+ */
+gpointer
+ags_phase_shift_util_copy(AgsPhaseShiftUtil *ptr)
 {
+  AgsPhaseShiftUtil *new_ptr;
+  
+  new_ptr = (AgsPhaseShiftUtil *) g_new(AgsPhaseShiftUtil,
+					 1);
+  
+  new_ptr->destination = ptr->destination;
+  new_ptr->destination_stride = ptr->destination_stride;
+
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+
+  return(new_ptr);
+}
+
+/**
+ * ags_phase_shift_util_free:
+ * @ptr: the #AgsPhaseShiftUtil-struct
+ *
+ * Free the memory of @ptr.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_free(AgsPhaseShiftUtil *ptr)
+{
+  g_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    g_free(ptr->source);
+  }
+  
   g_free(ptr);
+}
+
+/**
+ * ags_phase_shift_util_get_destination:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get destination buffer of @phase_shift_util.
+ * 
+ * Returns: the destination buffer
+ * 
+ * Since: 4.0.0
+ */
+gpointer
+ags_phase_shift_util_get_destination(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(NULL);
+  }
+
+  return(phase_shift_util->destination);
+}
+
+/**
+ * ags_phase_shift_util_set_destination:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @destination: the destination buffer
+ *
+ * Set @destination buffer of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_destination(AgsPhaseShiftUtil *phase_shift_util,
+				     gpointer destination)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->destination = destination;
+}
+
+/**
+ * ags_phase_shift_util_get_destination_stride:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get destination stride of @phase_shift_util.
+ * 
+ * Returns: the destination buffer stride
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_phase_shift_util_get_destination_stride(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(0);
+  }
+
+  return(phase_shift_util->destination_stride);
+}
+
+/**
+ * ags_phase_shift_util_set_destination_stride:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @destination_stride: the destination buffer stride
+ *
+ * Set @destination stride of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_destination_stride(AgsPhaseShiftUtil *phase_shift_util,
+					    guint destination_stride)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->destination_stride = destination_stride;
+}
+
+/**
+ * ags_phase_shift_util_get_source:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get source buffer of @phase_shift_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 4.0.0
+ */
+gpointer
+ags_phase_shift_util_get_source(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(NULL);
+  }
+
+  return(phase_shift_util->source);
+}
+
+/**
+ * ags_phase_shift_util_set_source:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_source(AgsPhaseShiftUtil *phase_shift_util,
+				gpointer source)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->source = source;
+}
+
+/**
+ * ags_phase_shift_util_get_source_stride:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get source stride of @phase_shift_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_phase_shift_util_get_source_stride(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(0);
+  }
+
+  return(phase_shift_util->source_stride);
+}
+
+/**
+ * ags_phase_shift_util_set_source_stride:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_source_stride(AgsPhaseShiftUtil *phase_shift_util,
+				       guint source_stride)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->source_stride = source_stride;
+}
+
+/**
+ * ags_phase_shift_util_get_buffer_length:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get buffer length of @phase_shift_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_phase_shift_util_get_buffer_length(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(0);
+  }
+
+  return(phase_shift_util->buffer_length);
+}
+
+/**
+ * ags_phase_shift_util_set_buffer_length:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_buffer_length(AgsPhaseShiftUtil *phase_shift_util,
+				       guint buffer_length)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_phase_shift_util_get_format:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get format of @phase_shift_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 4.0.0
+ */
+guint
+ags_phase_shift_util_get_format(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(0);
+  }
+
+  return(phase_shift_util->format);
+}
+
+/**
+ * ags_phase_shift_util_set_format:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @format: the format
+ *
+ * Set @format of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_format(AgsPhaseShiftUtil *phase_shift_util,
+				guint format)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->format = format;
+}
+
+/**
+ * ags_phase_shift_util_get_frequency:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get frequency of @phase_shift_util.
+ * 
+ * Returns: the frequency
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_phase_shift_util_get_frequency(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(1.0);
+  }
+
+  return(phase_shift_util->frequency);
+}
+
+/**
+ * ags_phase_shift_util_set_frequency:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @frequency: the frequency
+ *
+ * Set @frequency of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_frequency(AgsPhaseShiftUtil *phase_shift_util,
+				   gdouble frequency)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->frequency = frequency;
+}
+
+/**
+ * ags_phase_shift_util_get_amount:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get amount of @phase_shift_util.
+ * 
+ * Returns: the amount
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_phase_shift_util_get_amount(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(1.0);
+  }
+
+  return(phase_shift_util->amount);
+}
+
+/**
+ * ags_phase_shift_util_set_amount:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @amount: the amount
+ *
+ * Set @amount of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_amount(AgsPhaseShiftUtil *phase_shift_util,
+				gdouble amount)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->amount = amount;
+}
+
+
+/**
+ * ags_phase_shift_util_get_phase:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * 
+ * Get phase of @phase_shift_util.
+ * 
+ * Returns: the phase
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_phase_shift_util_get_phase(AgsPhaseShiftUtil *phase_shift_util)
+{
+  if(phase_shift_util == NULL){
+    return(1.0);
+  }
+
+  return(phase_shift_util->phase);
+}
+
+/**
+ * ags_phase_shift_util_set_phase:
+ * @phase_shift_util: the #AgsPhaseShiftUtil-struct
+ * @phase: the phase
+ *
+ * Set @phase of @phase_shift_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_phase_shift_util_set_phase(AgsPhaseShiftUtil *phase_shift_util,
+			       gdouble phase)
+{
+  if(phase_shift_util == NULL){
+    return;
+  }
+
+  phase_shift_util->phase = phase;
 }
 
 /**

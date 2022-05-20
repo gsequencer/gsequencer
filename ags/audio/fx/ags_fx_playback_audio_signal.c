@@ -332,8 +332,6 @@ ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
       resample_util.buffer_length = allocated_buffer_length;
       resample_util.format = format;
       resample_util.samplerate = samplerate;
-
-      resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
   
       resample_util.target_samplerate = target_samplerate;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,8 +80,6 @@ ags_volume_util_alloc()
   ptr->buffer_length = 0;
   ptr->format = AGS_VOLUME_UTIL_DEFAULT_FORMAT;
 
-  ptr->audio_buffer_util_format = AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
-  
   ptr->volume = 1.0;
 
   return(ptr);
@@ -113,8 +111,6 @@ ags_volume_util_copy(AgsVolumeUtil *ptr)
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
-
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
 
   new_ptr->volume = ptr->volume;
 
@@ -379,48 +375,6 @@ ags_volume_util_set_format(AgsVolumeUtil *volume_util,
   }
 
   volume_util->format = format;
-
-  volume_util->audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-}
-
-/**
- * ags_volume_util_get_audio_buffer_util_format:
- * @volume_util: the #AgsVolumeUtil-struct
- * 
- * Get audio buffer util format of @volume_util.
- * 
- * Returns: the audio buffer util format
- * 
- * Since: 3.9.2
- */
-guint
-ags_volume_util_get_audio_buffer_util_format(AgsVolumeUtil *volume_util)
-{
-  if(volume_util == NULL){
-    return(0);
-  }
-
-  return(volume_util->audio_buffer_util_format);
-}
-
-/**
- * ags_volume_util_set_audio_buffer_util_format:
- * @volume_util: the #AgsVolumeUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
- *
- * Set @audio_buffer_util_format of @volume_util.
- *
- * Since: 3.9.2
- */
-void
-ags_volume_util_set_audio_buffer_util_format(AgsVolumeUtil *volume_util,
-					     guint audio_buffer_util_format)
-{
-  if(volume_util == NULL){
-    return;
-  }
-
-  volume_util->audio_buffer_util_format = audio_buffer_util_format;
 }
 
 /**
@@ -1374,43 +1328,43 @@ ags_volume_util_compute(AgsVolumeUtil *volume_util)
     return;
   }
 
-  switch(volume_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(volume_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_volume_util_compute_s8(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_volume_util_compute_s16(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_volume_util_compute_s24(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_volume_util_compute_s32(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_volume_util_compute_s64(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_volume_util_compute_float(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_volume_util_compute_double(volume_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_volume_util_compute_complex(volume_util);
   }

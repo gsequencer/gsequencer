@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,8 +48,6 @@ struct _AgsPeakUtil
   guint buffer_length;
   guint format;
   guint samplerate;
-
-  guint audio_buffer_util_format;
   
   gdouble harmonic_rate;
   gdouble pressure_factor;
@@ -83,10 +81,6 @@ void ags_peak_util_set_format(AgsPeakUtil *peak_util,
 guint ags_peak_util_get_samplerate(AgsPeakUtil *peak_util);
 void ags_peak_util_set_samplerate(AgsPeakUtil *peak_util,
 				  guint samplerate);
-
-guint ags_peak_util_get_audio_buffer_util_format(AgsPeakUtil *peak_util);
-void ags_peak_util_set_audio_buffer_util_format(AgsPeakUtil *peak_util,
-						guint audio_buffer_util_format);
 
 gdouble ags_peak_util_get_harmonic_rate(AgsPeakUtil *peak_util);
 void ags_peak_util_set_harmonic_rate(AgsPeakUtil *peak_util,

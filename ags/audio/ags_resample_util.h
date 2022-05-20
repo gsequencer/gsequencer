@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,8 +56,6 @@ struct _AgsResampleUtil
   guint format;
   guint samplerate;
 
-  guint audio_buffer_util_format;
-
   guint target_samplerate;
 };
 
@@ -96,10 +94,6 @@ void ags_resample_util_set_format(AgsResampleUtil *resample_util,
 guint ags_resample_util_get_samplerate(AgsResampleUtil *resample_util);
 void ags_resample_util_set_samplerate(AgsResampleUtil *resample_util,
 				      guint samplerate);
-
-guint ags_resample_util_get_audio_buffer_util_format(AgsResampleUtil *resample_util);
-void ags_resample_util_set_audio_buffer_util_format(AgsResampleUtil *resample_util,
-						    guint audio_buffer_util_format);
 
 guint ags_resample_util_get_target_samplerate(AgsResampleUtil *resample_util);
 void ags_resample_util_set_target_samplerate(AgsResampleUtil *resample_util,

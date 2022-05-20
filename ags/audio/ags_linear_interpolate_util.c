@@ -417,46 +417,6 @@ ags_linear_interpolate_util_set_samplerate(AgsLinearInterpolateUtil *linear_inte
 }
 
 /**
- * ags_linear_interpolate_util_get_audio_buffer_util_format:
- * @linear_interpolate_util: the #AgsLinearInterpolateUtil-struct
- * 
- * Get audio buffer util format of @linear_interpolate_util.
- * 
- * Returns: the audio buffer util format
- * 
- * Since: 3.9.7
- */
-guint
-ags_linear_interpolate_util_get_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util)
-{
-  if(linear_interpolate_util == NULL){
-    return(0);
-  }
-
-  return(linear_interpolate_util->audio_buffer_util_format);
-}
-
-/**
- * ags_linear_interpolate_util_set_audio_buffer_util_format:
- * @linear_interpolate_util: the #AgsLinearInterpolateUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
- *
- * Set @audio_buffer_util_format of @linear_interpolate_util.
- *
- * Since: 3.9.7
- */
-void
-ags_linear_interpolate_util_set_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util,
-							 guint audio_buffer_util_format)
-{
-  if(linear_interpolate_util == NULL){
-    return;
-  }
-
-  linear_interpolate_util->audio_buffer_util_format = audio_buffer_util_format;
-}
-
-/**
  * ags_linear_interpolate_util_get_factor:
  * @linear_interpolate_util: the #AgsLinearInterpolateUtil-struct
  * 

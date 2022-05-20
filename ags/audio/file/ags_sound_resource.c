@@ -553,8 +553,6 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 	resample_util.format = format;
 	resample_util.samplerate = samplerate;
 
-	resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-  
 	resample_util.target_samplerate = target_samplerate;
 
 	ags_resample_util_compute(&resample_util);  
@@ -795,8 +793,6 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	resample_util.buffer_length = allocated_buffer_length;
 	resample_util.format = format;
 	resample_util.samplerate = samplerate;
-
-	resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
   
 	resample_util.target_samplerate = target_samplerate;
 

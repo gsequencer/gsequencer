@@ -1188,8 +1188,6 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     resample_util.buffer_length = allocated_buffer_length;
     resample_util.format = buffer_format;
     resample_util.samplerate = buffer_samplerate;
-
-    resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(buffer_format);
   
     resample_util.target_samplerate = samplerate;
 

@@ -472,8 +472,6 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	  resample_util.buffer_length = allocated_buffer_length;
 	  resample_util.format = source_format;
 	  resample_util.samplerate = source_samplerate;
-
-	  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(source_format);
   
 	  resample_util.target_samplerate = destination_samplerate;
 
@@ -542,8 +540,6 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	      resample_util.buffer_length = allocated_buffer_length;
 	      resample_util.format = source_format;
 	      resample_util.samplerate = source_samplerate;
-
-	      resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(source_format);
   
 	      resample_util.target_samplerate = destination_samplerate;
 
@@ -663,8 +659,6 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	    resample_util.buffer_length = allocated_buffer_length;
 	    resample_util.format = source_format;
 	    resample_util.samplerate = source_samplerate;
-
-	    resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(source_format);
   
 	    resample_util.target_samplerate = destination_samplerate;
 

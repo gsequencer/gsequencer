@@ -683,8 +683,6 @@ ags_sfz_instrument_loader_run(void *ptr)
     template->volume_util->buffer_length = buffer_length;
     template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
 
-    template->volume_util->audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
-    
     template->samplerate = samplerate;
     template->buffer_length = buffer_length;
     template->format = format;

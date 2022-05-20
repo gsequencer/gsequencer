@@ -993,8 +993,6 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     volume_util.buffer_length = buffer_size;
     volume_util.format = AGS_SOUNDCARD_DOUBLE;
 
-    volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
-    
     volume_util.volume = pressure;
 
     ags_volume_util_compute_double(&volume_util);

@@ -368,7 +368,6 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
   synth_resample_util->format = template_resample_util->format;
   synth_resample_util->samplerate = template_resample_util->samplerate;
 
-  synth_resample_util->audio_buffer_util_format = template_resample_util->audio_buffer_util_format;
   synth_resample_util->target_samplerate = template_resample_util->target_samplerate;
 
   /* HQ pitch util */

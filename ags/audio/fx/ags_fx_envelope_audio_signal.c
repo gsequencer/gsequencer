@@ -372,8 +372,6 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
     
     fx_envelope_audio_signal->envelope_util.format = format;
     
-    fx_envelope_audio_signal->envelope_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-    
     if(start_note != NULL){
       note = start_note;
   
@@ -481,8 +479,6 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	    volume_util.buffer_length = buffer_size;
 	    volume_util.format = format;
 
-	    volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-    
 	    volume_util.volume = current_volume;
 
 	    ags_volume_util_compute(&volume_util);
@@ -745,8 +741,6 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 
 	      volume_util.buffer_length = buffer_size;
 	      volume_util.format = format;
-
-	      volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
     
 	      volume_util.volume = current_volume;
 

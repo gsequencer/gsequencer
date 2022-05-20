@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,7 +33,6 @@ G_BEGIN_DECLS
 #define AGS_VOLUME_UTIL(ptr) ((AgsVolumeUtil *)(ptr))
 
 #define AGS_VOLUME_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 
 typedef struct _AgsVolumeUtil AgsVolumeUtil;
 
@@ -47,8 +46,6 @@ struct _AgsVolumeUtil
   
   guint buffer_length;
   guint format;
-
-  guint audio_buffer_util_format;
   
   gdouble volume;
 };
@@ -84,10 +81,6 @@ void ags_volume_util_set_buffer_length(AgsVolumeUtil *volume_util,
 guint ags_volume_util_get_format(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_format(AgsVolumeUtil *volume_util,
 				guint format);
-
-guint ags_volume_util_get_audio_buffer_util_format(AgsVolumeUtil *volume_util);
-void ags_volume_util_set_audio_buffer_util_format(AgsVolumeUtil *volume_util,
-						  guint audio_buffer_util_format);
 
 gdouble ags_volume_util_get_volume(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_volume(AgsVolumeUtil *volume_util,

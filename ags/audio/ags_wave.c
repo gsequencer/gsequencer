@@ -1334,8 +1334,6 @@ ags_wave_set_samplerate(AgsWave *wave,
   resample_util.buffer_length = allocated_buffer_length;
   resample_util.format = format;
   resample_util.samplerate = old_samplerate;
-
-  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
   
   resample_util.target_samplerate = samplerate;
 
@@ -3425,8 +3423,6 @@ ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
 	  resample_util.buffer_length = allocated_buffer_length;
 	  resample_util.format = format_val;
 	  resample_util.samplerate = samplerate_val;
-
-	  resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format_val);
   
 	  resample_util.target_samplerate = wave_samplerate;
 
@@ -3942,8 +3938,6 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	    resample_util.buffer_length = allocated_buffer_length;
 	    resample_util.format = format_val;
 	    resample_util.samplerate = samplerate_val;
-
-	    resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format_val);
   
 	    resample_util.target_samplerate = wave_samplerate;
 
@@ -4049,8 +4043,6 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	      resample_util.buffer_length = allocated_buffer_length;
 	      resample_util.format = format_val;
 	      resample_util.samplerate = samplerate_val;
-
-	      resample_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format_val);
   
 	      resample_util.target_samplerate = wave_samplerate;
 
