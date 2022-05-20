@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,25 +52,13 @@ G_BEGIN_DECLS
 typedef struct _AgsPattern AgsPattern;
 typedef struct _AgsPatternClass AgsPatternClass;
 
-/**
- * AgsPatternFlags:
- * @AGS_PATTERN_ADDED_TO_REGISTRY: the pattern was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_PATTERN_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsPattern by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_PATTERN_ADDED_TO_REGISTRY     = 1,
-  AGS_PATTERN_CONNECTED             = 1 <<  1,
-}AgsPatternFlags;
-
 struct _AgsPattern
 {
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,10 +42,17 @@ G_BEGIN_DECLS
 typedef struct _AgsRecyclingContext AgsRecyclingContext;
 typedef struct _AgsRecyclingContextClass AgsRecyclingContextClass;
 
+/**
+ * AgsRecyclingContextFlags:
+ * @AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT: chained to output
+ * @AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT: chained to input
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecyclingContext by
+ * enable/disable as flags.
+ */
 typedef enum{
-  AGS_RECYCLING_CONTEXT_CONNECTED           = 1,
-  AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT   = 1 <<  1,
-  AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT    = 1 <<  2,
+  AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT   = 1,
+  AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT    = 1 <<  1,
 }AgsRecyclingContextFlags;
 
 struct _AgsRecyclingContext
@@ -53,6 +60,7 @@ struct _AgsRecyclingContext
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   gint sound_scope;
 
   GRecMutex obj_mutex;
@@ -72,6 +80,7 @@ struct _AgsRecyclingContextClass
 };
 
 GType ags_recycling_context_get_type();
+GType ags_recycling_context_flags_get_type();
 
 GList* ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope);
 

@@ -241,6 +241,7 @@ ags_gstreamer_devin_flags_get_type()
       { AGS_GSTREAMER_DEVIN_INITIALIZED, "AGS_GSTREAMER_DEVIN_INITIALIZED", "gstreamer-devin-initialized" },
       { AGS_GSTREAMER_DEVIN_START_RECORD, "AGS_GSTREAMER_DEVIN_START_RECORD", "gstreamer-devin-start-record" },
       { AGS_GSTREAMER_DEVIN_RECORD, "AGS_GSTREAMER_DEVIN_RECORD", "gstreamer-devin-record" },
+      { AGS_GSTREAMER_DEVIN_SHUTDOWN, "AGS_GSTREAMER_DEVIN_SHUTDOWN", "gstreamer-devin-shutdown" },
       { AGS_GSTREAMER_DEVIN_NONBLOCKING, "AGS_GSTREAMER_DEVIN_NONBLOCKING", "gstreamer-devin-nonblocking" },
       { AGS_GSTREAMER_DEVIN_ATTACK_FIRST, "AGS_GSTREAMER_DEVIN_ATTACK_FIRST", "gstreamer-devin-attack-first" },
       { 0, NULL, NULL }
@@ -1103,6 +1104,14 @@ ags_gstreamer_devin_finalize(GObject *gobject)
   }
 
   g_free(gstreamer_devin->app_buffer_mutex);
+  
+  for(i = 0; i < 8 * gstreamer_devin->sub_block_count * gstreamer_devin->pcm_channels; i++){
+    g_rec_mutex_clear(gstreamer_devin->sub_block_mutex[i]);
+
+    g_free(gstreamer_devin->sub_block_mutex[i]);
+  }
+
+  g_free(gstreamer_devin->sub_block_mutex);
 
   /* free output buffer */
   g_free(gstreamer_devin->app_buffer[0]);
@@ -2614,7 +2623,6 @@ ags_gstreamer_devin_lock_buffer(AgsSoundcard *soundcard,
     g_rec_mutex_lock(buffer_mutex);
   }
 }
-
 
 void
 ags_gstreamer_devin_unlock_buffer(AgsSoundcard *soundcard,

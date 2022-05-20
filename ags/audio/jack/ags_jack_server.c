@@ -813,7 +813,9 @@ ags_jack_server_connect(AgsConnectable *connectable)
   g_rec_mutex_unlock(jack_server_mutex);
 
   list =
-    list_start = g_list_copy(jack_server->client);
+    list_start = g_list_copy_deep(jack_server->client,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -821,7 +823,8 @@ ags_jack_server_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
@@ -850,7 +853,9 @@ ags_jack_server_disconnect(AgsConnectable *connectable)
 
   /* client */
   list =
-    list_start = g_list_copy(jack_server->client);
+    list_start = g_list_copy_deep(jack_server->client,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -858,7 +863,8 @@ ags_jack_server_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

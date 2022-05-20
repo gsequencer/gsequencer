@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -296,6 +296,7 @@ ags_pattern_init(AgsPattern *pattern)
 {
   /* base initialization */
   pattern->flags = 0;
+  pattern->connectable_flags = 0;
 
   /* pattern mutex */
   g_rec_mutex_init(&(pattern->obj_mutex));
@@ -653,10 +654,19 @@ ags_pattern_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *pattern_mutex;
+
   pattern = AGS_PATTERN(connectable);
 
-  /* check is added */
-  is_ready = ags_pattern_test_flags(pattern, AGS_PATTERN_ADDED_TO_REGISTRY);
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  /* check is ready */
+  g_rec_mutex_lock(pattern_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (pattern->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pattern_mutex);
   
   return(is_ready);
 }
@@ -672,6 +682,8 @@ ags_pattern_add_to_registry(AgsConnectable *connectable)
   AgsApplicationContext *application_context;
 
   GList *list;
+  
+  GRecMutex *pattern_mutex;
 
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -679,7 +691,14 @@ ags_pattern_add_to_registry(AgsConnectable *connectable)
   
   pattern = AGS_PATTERN(connectable);
 
-  ags_pattern_set_flags(pattern, AGS_PATTERN_ADDED_TO_REGISTRY);
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  g_rec_mutex_lock(pattern_mutex);
+
+  pattern->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(pattern_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -699,9 +718,24 @@ ags_pattern_add_to_registry(AgsConnectable *connectable)
 void
 ags_pattern_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsPattern *pattern;
+  
+  GRecMutex *pattern_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  pattern = AGS_PATTERN(connectable);
+
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  g_rec_mutex_lock(pattern_mutex);
+
+  pattern->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(pattern_mutex);
 
   //TODO:JK: implement me
 }
@@ -744,10 +778,19 @@ ags_pattern_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *pattern_mutex;
+
   pattern = AGS_PATTERN(connectable);
 
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
   /* check is connected */
-  is_connected = ags_pattern_test_flags(pattern, AGS_PATTERN_CONNECTED);
+  g_rec_mutex_lock(pattern_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pattern->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pattern_mutex);
   
   return(is_connected);
 }
@@ -767,7 +810,14 @@ ags_pattern_connect(AgsConnectable *connectable)
 
   pattern = AGS_PATTERN(connectable);
 
-  ags_pattern_set_flags(pattern, AGS_PATTERN_CONNECTED);  
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  g_rec_mutex_lock(pattern_mutex);
+
+  pattern->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(pattern_mutex);
 }
 
 void
@@ -785,7 +835,14 @@ ags_pattern_disconnect(AgsConnectable *connectable)
 
   pattern = AGS_PATTERN(connectable);
 
-  ags_pattern_unset_flags(pattern, AGS_PATTERN_CONNECTED);    
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  g_rec_mutex_lock(pattern_mutex);
+
+  pattern->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(pattern_mutex);
 }
 
 /**

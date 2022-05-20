@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 
 #define AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsGstreamerDevin *) obj)->obj_mutex))
 
+#define AGS_GSTREAMER_DEVIN_DEFAULT_APP_BUFFER_SIZE (8)
+
 typedef struct _AgsGstreamerDevin AgsGstreamerDevin;
 typedef struct _AgsGstreamerDevinClass AgsGstreamerDevinClass;
 

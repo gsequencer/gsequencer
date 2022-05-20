@@ -248,6 +248,7 @@ ags_gstreamer_devout_flags_get_type()
       { AGS_GSTREAMER_DEVOUT_INITIALIZED, "AGS_GSTREAMER_DEVOUT_INITIALIZED", "gstreamer-devout-initialized" },
       { AGS_GSTREAMER_DEVOUT_START_PLAY, "AGS_GSTREAMER_DEVOUT_START_PLAY", "gstreamer-devout-start-play" },
       { AGS_GSTREAMER_DEVOUT_PLAY, "AGS_GSTREAMER_DEVOUT_PLAY", "gstreamer-devout-play" },
+      { AGS_GSTREAMER_DEVOUT_SHUTDOWN, "AGS_GSTREAMER_DEVOUT_SHUTDOWN", "gstreamer-devout-shutdown" },
       { AGS_GSTREAMER_DEVOUT_NONBLOCKING, "AGS_GSTREAMER_DEVOUT_NONBLOCKING", "gstreamer-devout-nonblocking" },
       { AGS_GSTREAMER_DEVOUT_ATTACK_FIRST, "AGS_GSTREAMER_DEVOUT_ATTACK_FIRST", "gstreamer-devout-attack-first" },
       { 0, NULL, NULL }

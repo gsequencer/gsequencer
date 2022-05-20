@@ -248,6 +248,7 @@ ags_audio_unit_devout_flags_get_type()
       { AGS_AUDIO_UNIT_DEVOUT_INITIALIZED, "AGS_AUDIO_UNIT_DEVOUT_INITIALIZED", "audio-unit-devout-initialized" },
       { AGS_AUDIO_UNIT_DEVOUT_START_PLAY, "AGS_AUDIO_UNIT_DEVOUT_START_PLAY", "audio-unit-devout-start-play" },
       { AGS_AUDIO_UNIT_DEVOUT_PLAY, "AGS_AUDIO_UNIT_DEVOUT_PLAY", "audio-unit-devout-play" },
+      { AGS_AUDIO_UNIT_DEVOUT_SHUTDOWN, "AGS_AUDIO_UNIT_DEVOUT_SHUTDOWN", "audio-unit-devout-shutdown" },
       { AGS_AUDIO_UNIT_DEVOUT_NONBLOCKING, "AGS_AUDIO_UNIT_DEVOUT_NONBLOCKING", "audio-unit-devout-nonblocking" },
       { AGS_AUDIO_UNIT_DEVOUT_ATTACK_FIRST, "AGS_AUDIO_UNIT_DEVOUT_ATTACK_FIRST", "audio-unit-devout-attack-first" },
       { 0, NULL, NULL }

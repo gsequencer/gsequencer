@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,6 +137,29 @@ ags_audio_unit_port_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_audio_unit_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_AUDIO_UNIT_PORT_REGISTERED, "AGS_AUDIO_UNIT_PORT_REGISTERED", "audio_unit-port-registered" },
+      { AGS_AUDIO_UNIT_PORT_IS_AUDIO, "AGS_AUDIO_UNIT_PORT_IS_AUDIO", "audio_unit-port-is-audio" },
+      { AGS_AUDIO_UNIT_PORT_IS_MIDI, "AGS_AUDIO_UNIT_PORT_IS_MIDI", "audio_unit-port-is-midi" },
+      { AGS_AUDIO_UNIT_PORT_IS_OUTPUT, "AGS_AUDIO_UNIT_PORT_IS_OUTPUT", "audio_unit-port-is-output" },
+      { AGS_AUDIO_UNIT_PORT_IS_INPUT, "AGS_AUDIO_UNIT_PORT_IS_INPUT", "audio_unit-port-is-input" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioUnitPortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_audio_unit_port_class_init(AgsAudioUnitPortClass *audio_unit_port)
 {
@@ -239,6 +262,7 @@ ags_audio_unit_port_init(AgsAudioUnitPort *audio_unit_port)
   
   /* flags */
   audio_unit_port->flags = 0;
+  audio_unit_port->connectable_flags = 0;
 
   /* port mutex */
   g_rec_mutex_init(&(audio_unit_port->obj_mutex));
@@ -535,10 +559,19 @@ ags_audio_unit_port_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_unit_port_mutex;
+
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* check is added */
-  is_ready = ags_audio_unit_port_test_flags(audio_unit_port, AGS_AUDIO_UNIT_PORT_ADDED_TO_REGISTRY);
+  /* get audio_unit port mutex */
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
+
+  /* check is ready */
+  g_rec_mutex_lock(audio_unit_port_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_unit_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_unit_port_mutex);
   
   return(is_ready);
 }
@@ -548,13 +581,22 @@ ags_audio_unit_port_add_to_registry(AgsConnectable *connectable)
 {
   AgsAudioUnitPort *audio_unit_port;
 
+  GRecMutex *audio_unit_port_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  ags_audio_unit_port_set_flags(audio_unit_port, AGS_AUDIO_UNIT_PORT_ADDED_TO_REGISTRY);
+  /* get audio_unit port mutex */
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
+
+  g_rec_mutex_lock(audio_unit_port_mutex);
+
+  audio_unit_port->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_unit_port_mutex);
 }
 
 void
@@ -562,13 +604,22 @@ ags_audio_unit_port_remove_from_registry(AgsConnectable *connectable)
 {
   AgsAudioUnitPort *audio_unit_port;
 
+  GRecMutex *audio_unit_port_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  ags_audio_unit_port_unset_flags(audio_unit_port, AGS_AUDIO_UNIT_PORT_ADDED_TO_REGISTRY);
+  /* get audio_unit port mutex */
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
+
+  g_rec_mutex_lock(audio_unit_port_mutex);
+
+  audio_unit_port->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_unit_port_mutex);
 }
 
 xmlNode*
@@ -609,10 +660,19 @@ ags_audio_unit_port_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_unit_port_mutex;
+
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
+  /* get audio_unit port mutex */
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
+
   /* check is connected */
-  is_connected = ags_audio_unit_port_test_flags(audio_unit_port, AGS_AUDIO_UNIT_PORT_CONNECTED);
+  g_rec_mutex_lock(audio_unit_port_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_unit_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_unit_port_mutex);
   
   return(is_connected);
 }
@@ -621,6 +681,8 @@ void
 ags_audio_unit_port_connect(AgsConnectable *connectable)
 {
   AgsAudioUnitPort *audio_unit_port;
+
+  GRecMutex *audio_unit_port_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -628,22 +690,37 @@ ags_audio_unit_port_connect(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  ags_audio_unit_port_set_flags(audio_unit_port, AGS_AUDIO_UNIT_PORT_CONNECTED);
+  /* get audio_unit port mutex */
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
+
+  g_rec_mutex_lock(audio_unit_port_mutex);
+
+  audio_unit_port->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_unit_port_mutex);
 }
 
 void
 ags_audio_unit_port_disconnect(AgsConnectable *connectable)
 {
-
   AgsAudioUnitPort *audio_unit_port;
+
+  GRecMutex *audio_unit_port_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
+
+  /* get audio_unit port mutex */
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
+
+  g_rec_mutex_lock(audio_unit_port_mutex);
+
+  audio_unit_port->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_audio_unit_port_unset_flags(audio_unit_port, AGS_AUDIO_UNIT_PORT_CONNECTED);
+  g_rec_mutex_unlock(audio_unit_port_mutex);
 }
 
 /**

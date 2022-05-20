@@ -728,7 +728,9 @@ ags_jack_client_connect(AgsConnectable *connectable)
   g_rec_mutex_lock(jack_client_mutex);
 
   list =
-    list_start = g_list_copy(jack_client->port);
+    list_start = g_list_copy_deep(jack_client->port,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   g_rec_mutex_unlock(jack_client_mutex);
 
@@ -738,7 +740,8 @@ ags_jack_client_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
@@ -771,7 +774,9 @@ ags_jack_client_disconnect(AgsConnectable *connectable)
   g_rec_mutex_lock(jack_client_mutex);
 
   list =
-    list_start = g_list_copy(jack_client->port);
+    list_start = g_list_copy_deep(jack_client->port,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   g_rec_mutex_unlock(jack_client_mutex);
 
@@ -781,7 +786,8 @@ ags_jack_client_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
