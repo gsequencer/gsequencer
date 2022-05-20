@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -189,7 +189,7 @@ void ags_midi_file_write_track_data(AgsMidiFile *midi_file,
 void ags_midi_file_read_notation(AgsMidiFile *midi_file);
 void ags_mid_file_read_midi(AgsMidiFile *midi_file);
 
-AgsMidiFile* ags_midi_file_new(gchar *filename);
+AgsMidiFile* ags_midi_file_new();
 
 G_END_DECLS
 

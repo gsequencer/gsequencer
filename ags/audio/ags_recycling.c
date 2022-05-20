@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,6 +140,25 @@ ags_recycling_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_recycling_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_RECYCLING_MUTED, "AGS_RECYCLING_MUTED", "recycling-muted" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRecyclingFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -456,6 +475,7 @@ ags_recycling_init(AgsRecycling *recycling)
   gchar *str0, *str1;
 
   recycling->flags = 0;
+  recycling->connectable_flags = 0;
 
   /* add recycling mutex */
   g_rec_mutex_init(&(recycling->obj_mutex));
@@ -1015,9 +1035,19 @@ ags_recycling_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *recycling_mutex;
+
   recycling = AGS_RECYCLING(connectable);
 
-  is_ready = ags_recycling_test_flags(recycling, AGS_RECYCLING_ADDED_TO_REGISTRY);
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  /* check is ready */
+  g_rec_mutex_lock(recycling_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (recycling->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recycling_mutex);
   
   return(is_ready);
 }
@@ -1033,6 +1063,8 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
   AgsApplicationContext *application_context;
 
   GList *start_list, *list;
+  
+  GRecMutex *recycling_mutex;
 
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -1040,9 +1072,16 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
   
   recycling = AGS_RECYCLING(connectable);
 
-  application_context = ags_application_context_get_instance();
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
-  ags_recycling_set_flags(recycling, AGS_RECYCLING_ADDED_TO_REGISTRY);
+  g_rec_mutex_lock(recycling_mutex);
+
+  recycling->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(recycling_mutex);
+
+  application_context = ags_application_context_get_instance();
 
   registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -1074,9 +1113,24 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
 void
 ags_recycling_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsRecycling *recycling;
+
+  GRecMutex *recycling_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  recycling = AGS_RECYCLING(connectable);
+
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  g_rec_mutex_lock(recycling_mutex);
+
+  recycling->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(recycling_mutex);
 
   //TODO:JK: implement me
 }
@@ -1119,9 +1173,19 @@ ags_recycling_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *recycling_mutex;
+
   recycling = AGS_RECYCLING(connectable);
 
-  is_connected = ags_recycling_test_flags(recycling, AGS_RECYCLING_CONNECTED);
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  /* check is connected */
+  g_rec_mutex_lock(recycling_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (recycling->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recycling_mutex);
   
   return(is_connected);
 }
@@ -1133,13 +1197,22 @@ ags_recycling_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *recycling_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
   
   recycling = AGS_RECYCLING(connectable);
 
-  ags_recycling_set_flags(recycling, AGS_RECYCLING_CONNECTED);
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  g_rec_mutex_lock(recycling_mutex);
+
+  recycling->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
   g_message("connecting recycling");
@@ -1169,13 +1242,22 @@ ags_recycling_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *recycling_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
   
   recycling = AGS_RECYCLING(connectable);
 
-  ags_recycling_unset_flags(recycling, AGS_RECYCLING_CONNECTED);
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  g_rec_mutex_lock(recycling_mutex);
+
+  recycling->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
   g_message("disconnecting recycling");

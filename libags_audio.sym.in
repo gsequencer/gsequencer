@@ -2614,6 +2614,7 @@ ags_crop_note_get_type
 ags_crop_note_set_selection
 ags_crop_note_new
 ags_recycling_get_type
+ags_recycling_flags_get_type
 ags_recycling_get_obj_mutex
 ags_recycling_test_flags
 ags_recycling_set_flags
@@ -2707,6 +2708,7 @@ ags_fluid_interpolate_4th_order_util_pitch_double
 ags_fluid_interpolate_4th_order_util_pitch_complex
 ags_fluid_interpolate_4th_order_util_pitch
 ags_track_get_type
+ags_track_flags_get_type
 ags_track_get_obj_mutex
 ags_track_lock
 ags_track_unlock
@@ -2933,6 +2935,7 @@ ags_recall_channel_run_get_source
 ags_recall_channel_run_set_source
 ags_recall_channel_run_new
 ags_recall_container_get_type
+ags_recall_container_flags_get_type
 ags_recall_container_test_flags
 ags_recall_container_set_flags
 ags_recall_container_unset_flags

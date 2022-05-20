@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,16 +43,12 @@ typedef struct _AgsRecyclingClass AgsRecyclingClass;
 
 /**
  * AgsRecyclingFlags:
- * @AGS_RECYCLING_ADDED_TO_REGISTRY: the recycling was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_RECYCLING_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_RECYCLING_MUTED: recycling is muted
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecycling by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECYCLING_ADDED_TO_REGISTRY  = 1,
-  AGS_RECYCLING_CONNECTED          = 1 <<  1,
   AGS_RECYCLING_MUTED              = 1 <<  2,
 }AgsRecyclingFlags;
 
@@ -61,7 +57,8 @@ struct _AgsRecycling
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -100,6 +97,7 @@ struct _AgsRecyclingClass
 };
 
 GType ags_recycling_get_type(void);
+GType ags_recycling_flags_get_type();
 
 GRecMutex* ags_recycling_get_obj_mutex(AgsRecycling *recycling);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,17 +43,13 @@ typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
 
 /**
  * AgsRecallContainerFlags:
- * @AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY: add to registry
- * @AGS_RECALL_CONTAINER_CONNECTED: indicates the recall container was connected by calling #AgsConnectable::connect()
  * @AGS_RECALL_CONTAINER_PLAY: bound to play context
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecallContainer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY   = 1,
-  AGS_RECALL_CONTAINER_CONNECTED           = 1 <<  1,
-  AGS_RECALL_CONTAINER_PLAY                = 1 <<  2,
+  AGS_RECALL_CONTAINER_PLAY                = 1,
 }AgsRecallContainerFlags;
 
 /**
@@ -75,7 +71,8 @@ struct _AgsRecallContainer
   GObject gobject;
   
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -99,6 +96,7 @@ struct _AgsRecallContainerClass
 };
 
 GType ags_recall_container_get_type();
+GType ags_recall_container_flags_get_type();
 
 gboolean ags_recall_container_test_flags(AgsRecallContainer *recall_container, guint flags);
 void ags_recall_container_set_flags(AgsRecallContainer *recall_container, guint flags);

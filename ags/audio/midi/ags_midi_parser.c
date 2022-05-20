@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2996,7 +2996,6 @@ ags_midi_parser_set_file_length(AgsMidiParser *midi_parser,
 
 /**
  * ags_midi_parser_new:
- * @file: (nullable): the FILE handle
  * 
  * Creates a new instance of #AgsMidiParser
  *
@@ -3005,12 +3004,11 @@ ags_midi_parser_set_file_length(AgsMidiParser *midi_parser,
  * Since: 3.0.0
  */
 AgsMidiParser*
-ags_midi_parser_new(FILE *file)
+ags_midi_parser_new()
 {
   AgsMidiParser *midi_parser;
   
   midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
-					       "file", file,
 					       NULL);
 
   
