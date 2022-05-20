@@ -816,7 +816,7 @@ ags_resample_util_compute_double(AgsResampleUtil *resample_util)
      resample_util->source == NULL){
     return;
   }
-
+  
   secret_rabbit = &(resample_util->secret_rabbit);
   
   destination = (gdouble *) resample_util->destination;
@@ -829,10 +829,16 @@ ags_resample_util_compute_double(AgsResampleUtil *resample_util)
 					     source, resample_util->source_stride,
 					     secret_rabbit->input_frames);
 
+  //  g_message("in %d", ags_synth_util_get_xcross_count_float(secret_rabbit->data_in,
+  //							   secret_rabbit->input_frames));
+
   src_simple(secret_rabbit,
 	     SRC_SINC_BEST_QUALITY,
 	     1);
 
+  //  g_message("out %d", ags_synth_util_get_xcross_count_float(secret_rabbit->data_out,
+  //							    secret_rabbit->output_frames));
+  
   memset(destination, 0, secret_rabbit->output_frames * sizeof(gdouble));
   
   ags_audio_buffer_util_copy_float_to_double(destination, resample_util->destination_stride,

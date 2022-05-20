@@ -1521,12 +1521,14 @@ ags_notation_edit_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->realize(widget);
 
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_signal_connect(frame_clock, "update", 
 		   G_CALLBACK(ags_notation_edit_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+#endif
 }
 
 void
@@ -1534,6 +1536,7 @@ ags_notation_edit_unrealize(GtkWidget *widget)
 {
   GdkFrameClock *frame_clock;
   
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_object_disconnect(frame_clock,
@@ -1543,6 +1546,7 @@ ags_notation_edit_unrealize(GtkWidget *widget)
 		      NULL);
 
   gdk_frame_clock_end_updating(frame_clock);
+#endif
 
   /* call parent */
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->unrealize(widget);

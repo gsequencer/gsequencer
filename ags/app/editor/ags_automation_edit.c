@@ -1252,7 +1252,7 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
 #endif
     
   /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
 
 void
@@ -1332,7 +1332,7 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
 #endif
     
   /* queue draw */
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
 
 void
@@ -1363,7 +1363,7 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
     automation_edit->selection_y1 = 0.0;
   }
     
-  gtk_widget_queue_draw((GtkWidget *) automation_edit);
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
 
 gboolean
@@ -1873,6 +1873,8 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   
   automation_edit->current_acceleration = NULL;
   g_object_unref(acceleration);
+
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
   
 void
@@ -1942,6 +1944,8 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
   /* delete acceleration */
   ags_composite_editor_delete_acceleration(editor,
 					   x, y);
+
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
   
 void
@@ -2032,6 +2036,8 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   ags_composite_editor_select_region(editor,
 				     x0, y0,
 				     x1, y1);
+
+  gtk_widget_queue_draw(automation_edit->drawing_area);
 }
 
 gboolean
@@ -2117,12 +2123,14 @@ ags_automation_edit_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->realize(widget);
 
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_signal_connect(frame_clock, "update", 
 		   G_CALLBACK(ags_automation_edit_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+#endif
 }
 
 void
@@ -2130,6 +2138,7 @@ ags_automation_edit_unrealize(GtkWidget *widget)
 {
   GdkFrameClock *frame_clock;
   
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_object_disconnect(frame_clock,
@@ -2139,7 +2148,8 @@ ags_automation_edit_unrealize(GtkWidget *widget)
 		      NULL);
 
   gdk_frame_clock_end_updating(frame_clock);
-
+#endif
+  
   /* call parent */
   GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->unrealize(widget);
 }
