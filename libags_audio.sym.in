@@ -3270,6 +3270,7 @@ ags_audio_file_manager_find_audio_file
 ags_audio_file_manager_get_instance
 ags_audio_file_manager_new
 ags_ipatch_get_type
+ags_ipatch_flags_get_type
 ags_ipatch_test_flags
 ags_ipatch_set_flags
 ags_ipatch_unset_flags
@@ -3420,6 +3421,7 @@ ags_audio_container_write
 ags_audio_container_flush
 ags_audio_container_new
 ags_sndfile_get_type
+ags_sndfile_flags_get_type
 ags_sndfile_test_flags
 ags_sndfile_set_flags
 ags_sndfile_unset_flags

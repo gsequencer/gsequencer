@@ -1,21 +1,21 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2020 Joël Krähemann
-  *
-  * This file is part of GSequencer.
-  *
-  * GSequencer is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * (at your option) any later version.
-  *
-  * GSequencer is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
-  */
+ * Copyright (C) 2005-2022 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <ags/audio/ags_fifoout.h>
 
@@ -234,18 +234,12 @@ ags_fifoout_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_FIFOOUT_ADDED_TO_REGISTRY, "AGS_FIFOOUT_ADDED_TO_REGISTRY", "fifoout-added-to-registry" },
-      { AGS_FIFOOUT_CONNECTED, "AGS_FIFOOUT_CONNECTED", "fifoout-connected" },
-      { AGS_FIFOOUT_BUFFER0, "AGS_FIFOOUT_BUFFER0", "fifoout-buffer0" },
-      { AGS_FIFOOUT_BUFFER1, "AGS_FIFOOUT_BUFFER1", "fifoout-buffer1" },
-      { AGS_FIFOOUT_BUFFER2, "AGS_FIFOOUT_BUFFER2", "fifoout-buffer2" },
-      { AGS_FIFOOUT_BUFFER3, "AGS_FIFOOUT_BUFFER3", "fifoout-buffer3" },
-      { AGS_FIFOOUT_ATTACK_FIRST, "AGS_FIFOOUT_ATTACK_FIRST", "fifoout-attack-first" },
+      { AGS_FIFOOUT_INITIALIZED, "AGS_FIFOOUT_INITIALIZED", "fifoout-initialized" },
+      { AGS_FIFOOUT_START_PLAY, "AGS_FIFOOUT_START_PLAY", "fifoout-start-play" },
       { AGS_FIFOOUT_PLAY, "AGS_FIFOOUT_PLAY", "fifoout-play" },
       { AGS_FIFOOUT_SHUTDOWN, "AGS_FIFOOUT_SHUTDOWN", "fifoout-shutdown" },
-      { AGS_FIFOOUT_START_PLAY, "AGS_FIFOOUT_START_PLAY", "fifoout-start-play" },
       { AGS_FIFOOUT_NONBLOCKING, "AGS_FIFOOUT_NONBLOCKING", "fifoout-nonblocking" },
-      { AGS_FIFOOUT_INITIALIZED, "AGS_FIFOOUT_INITIALIZED", "fifoout-initialized" },
+      { AGS_FIFOOUT_ATTACK_FIRST, "AGS_FIFOOUT_ATTACK_FIRST", "fifoout-attack-first" },
       { 0, NULL, NULL }
     };
 
@@ -548,8 +542,10 @@ ags_fifoout_init(AgsFifoout *fifoout)
   gchar *segmentation;
   
   guint denumerator, numerator;
+  guint i;
 
   fifoout->flags = 0;
+  fifoout->connectable_flags = 0;
   
   /* insert fifoout mutex */
   g_rec_mutex_init(&(fifoout->obj_mutex));
@@ -573,13 +569,31 @@ ags_fifoout_init(AgsFifoout *fifoout)
   fifoout->device = AGS_FIFOOUT_DEFAULT_DEVICE;
   fifoout->fifo_fd = -1;
 
-  /* buffer */
-  fifoout->buffer = (void **) malloc(4 * sizeof(void*));
+  /* app buffer */
+  fifoout->app_buffer_mode = AGS_FIFOOUT_APP_BUFFER_0;
 
-  fifoout->buffer[0] = NULL;
-  fifoout->buffer[1] = NULL;
-  fifoout->buffer[2] = NULL;
-  fifoout->buffer[3] = NULL;
+  fifoout->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
+
+  for(i = 0; i < AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    fifoout->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(fifoout->app_buffer_mutex[i]);
+  }
+  
+  fifoout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
+  fifoout->sub_block_mutex = (GRecMutex **) g_malloc(AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE * fifoout->sub_block_count * fifoout->pcm_channels * sizeof(GRecMutex *));
+
+  for(i = 0; i < AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE * fifoout->sub_block_count * fifoout->pcm_channels; i++){
+    fifoout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(fifoout->sub_block_mutex[i]);
+  }
+
+  fifoout->app_buffer = (void **) g_malloc(AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE * sizeof(void *));
+  
+  for(i = 0; i < AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    fifoout->app_buffer[i] = NULL;
+  }
   
   g_atomic_int_set(&(fifoout->available),
 		   FALSE);
@@ -613,10 +627,10 @@ ags_fifoout_init(AgsFifoout *fifoout)
   }
 
   /* delay and attack */
-  fifoout->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+  fifoout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 				      sizeof(gdouble));
   
-  fifoout->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+  fifoout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 				     sizeof(guint));
 
   ags_fifoout_adjust_delay_and_attack(fifoout);
@@ -897,7 +911,7 @@ ags_fifoout_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(fifoout_mutex);
 
-      g_value_set_pointer(value, fifoout->buffer);
+      g_value_set_pointer(value, fifoout->app_buffer);
 
       g_rec_mutex_unlock(fifoout_mutex);
     }
@@ -951,19 +965,36 @@ ags_fifoout_finalize(GObject *gobject)
 {
   AgsFifoout *fifoout;
 
+  guint i;
+
   fifoout = AGS_FIFOOUT(gobject);
 
-  /* free output buffer */
-  free(fifoout->buffer[0]);
-  free(fifoout->buffer[1]);
-  free(fifoout->buffer[2]);
-  free(fifoout->buffer[3]);
+  ags_uuid_free(fifoout->uuid);
 
-  /* free buffer array */
-  free(fifoout->buffer);
+  for(i = 0; i < AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(fifoout->app_buffer[i]);
+  }
 
-  /* free AgsAttack */
-  free(fifoout->attack);
+  g_free(fifoout->app_buffer);
+
+  for(i = 0; i < AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(fifoout->app_buffer_mutex[i]);
+    
+    g_free(fifoout->app_buffer_mutex[i]);
+  }
+
+  g_free(fifoout->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_FIFOOUT_DEFAULT_APP_BUFFER_SIZE * fifoout->sub_block_count * fifoout->pcm_channels; i++){
+    g_rec_mutex_clear(fifoout->sub_block_mutex[i]);
+    
+    g_free(fifoout->sub_block_mutex[i]);
+  }
+
+  g_free(fifoout->sub_block_mutex);
+  
+  g_free(fifoout->delay);
+  g_free(fifoout->attack);
   
   /* call parent */
   G_OBJECT_CLASS(ags_fifoout_parent_class)->finalize(gobject);
@@ -1006,10 +1037,19 @@ ags_fifoout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *fifoout_mutex;
+
   fifoout = AGS_FIFOOUT(connectable);
 
-  /* check is added */
-  is_ready = ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_ADDED_TO_REGISTRY);
+  /* get alsa devout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
+  /* check is ready */
+  g_rec_mutex_lock(fifoout_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (fifoout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(is_ready);
 }
@@ -1019,13 +1059,22 @@ ags_fifoout_add_to_registry(AgsConnectable *connectable)
 {
   AgsFifoout *fifoout;
 
+  GRecMutex *fifoout_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   fifoout = AGS_FIFOOUT(connectable);
 
-  ags_fifoout_set_flags(fifoout, AGS_FIFOOUT_ADDED_TO_REGISTRY);
+  /* get alsa devout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
+  g_rec_mutex_lock(fifoout_mutex);
+
+  fifoout->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 void
@@ -1033,13 +1082,22 @@ ags_fifoout_remove_from_registry(AgsConnectable *connectable)
 {
   AgsFifoout *fifoout;
 
+  GRecMutex *fifoout_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   fifoout = AGS_FIFOOUT(connectable);
 
-  ags_fifoout_unset_flags(fifoout, AGS_FIFOOUT_ADDED_TO_REGISTRY);
+  /* get alsa devout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
+  g_rec_mutex_lock(fifoout_mutex);
+
+  fifoout->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 xmlNode*
@@ -1080,10 +1138,19 @@ ags_fifoout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *fifoout_mutex;
+
   fifoout = AGS_FIFOOUT(connectable);
 
+  /* get alsa devout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
   /* check is connected */
-  is_connected = ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_CONNECTED);
+  g_rec_mutex_lock(fifoout_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (fifoout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(is_connected);
 }
@@ -1092,6 +1159,8 @@ void
 ags_fifoout_connect(AgsConnectable *connectable)
 {
   AgsFifoout *fifoout;
+
+  GRecMutex *fifoout_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1099,22 +1168,37 @@ ags_fifoout_connect(AgsConnectable *connectable)
 
   fifoout = AGS_FIFOOUT(connectable);
 
-  ags_fifoout_set_flags(fifoout, AGS_FIFOOUT_CONNECTED);
+  /* get alsa devout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
+  g_rec_mutex_lock(fifoout_mutex);
+
+  fifoout->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 void
 ags_fifoout_disconnect(AgsConnectable *connectable)
 {
-
   AgsFifoout *fifoout;
+
+  GRecMutex *fifoout_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   fifoout = AGS_FIFOOUT(connectable);
+
+  /* get alsa devout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
+  g_rec_mutex_lock(fifoout_mutex);
+
+  fifoout->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_fifoout_unset_flags(fifoout, AGS_FIFOOUT_CONNECTED);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 /**
@@ -1753,17 +1837,7 @@ ags_fifoout_get_buffer(AgsSoundcard *soundcard)
   
   fifoout = AGS_FIFOOUT(soundcard);
 
-  if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER0)){
-    buffer = fifoout->buffer[0];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER1)){
-    buffer = fifoout->buffer[1];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER2)){
-    buffer = fifoout->buffer[2];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER3)){
-    buffer = fifoout->buffer[3];
-  }else{
-    buffer = NULL;
-  }
+  buffer = fifoout->app_buffer[fifoout->app_buffer_mode];
 
   return(buffer);
 }
@@ -1777,21 +1851,10 @@ ags_fifoout_get_next_buffer(AgsSoundcard *soundcard)
   
   fifoout = AGS_FIFOOUT(soundcard);
 
-  //  g_message("next - 0x%0x", ((AGS_FIFOOUT_BUFFER0 |
-  //				AGS_FIFOOUT_BUFFER1 |
-  //				AGS_FIFOOUT_BUFFER2 |
-  //				AGS_FIFOOUT_BUFFER3) & (fifoout->flags)));
-
-  if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER0)){
-    buffer = fifoout->buffer[1];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER1)){
-    buffer = fifoout->buffer[2];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER2)){
-    buffer = fifoout->buffer[3];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER3)){
-    buffer = fifoout->buffer[0];
+  if(fifoout->app_buffer_mode == AGS_FIFOOUT_APP_BUFFER_3){
+    buffer = fifoout->app_buffer[AGS_FIFOOUT_APP_BUFFER_0];
   }else{
-    buffer = NULL;
+    buffer = fifoout->app_buffer[fifoout->app_buffer_mode + 1];
   }
 
   return(buffer);
@@ -1806,16 +1869,10 @@ ags_fifoout_get_prev_buffer(AgsSoundcard *soundcard)
   
   fifoout = AGS_FIFOOUT(soundcard);
 
-  if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER0)){
-    buffer = fifoout->buffer[3];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER1)){
-    buffer = fifoout->buffer[0];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER2)){
-    buffer = fifoout->buffer[1];
-  }else if(ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_BUFFER3)){
-    buffer = fifoout->buffer[2];
+  if(fifoout->app_buffer_mode == AGS_FIFOOUT_APP_BUFFER_0){
+    buffer = fifoout->app_buffer[AGS_FIFOOUT_APP_BUFFER_3];
   }else{
-    buffer = NULL;
+    buffer = fifoout->app_buffer[fifoout->app_buffer_mode - 1];
   }
 
   return(buffer);
@@ -2036,24 +2093,16 @@ ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
     return;
   }
 
-  /* get fifoout mutex */
+  /* get alsa devout mutex */
   fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* switch buffer flag */
   g_rec_mutex_lock(fifoout_mutex);
 
-  if((AGS_FIFOOUT_BUFFER0 & (fifoout->flags)) != 0){
-    fifoout->flags &= (~AGS_FIFOOUT_BUFFER0);
-    fifoout->flags |= AGS_FIFOOUT_BUFFER1;
-  }else if((AGS_FIFOOUT_BUFFER1 & (fifoout->flags)) != 0){
-    fifoout->flags &= (~AGS_FIFOOUT_BUFFER1);
-    fifoout->flags |= AGS_FIFOOUT_BUFFER2;
-  }else if((AGS_FIFOOUT_BUFFER2 & (fifoout->flags)) != 0){
-    fifoout->flags &= (~AGS_FIFOOUT_BUFFER2);
-    fifoout->flags |= AGS_FIFOOUT_BUFFER3;
-  }else if((AGS_FIFOOUT_BUFFER3 & (fifoout->flags)) != 0){
-    fifoout->flags &= (~AGS_FIFOOUT_BUFFER3);
-    fifoout->flags |= AGS_FIFOOUT_BUFFER0;
+  if(fifoout->app_buffer_mode < AGS_FIFOOUT_APP_BUFFER_3){
+    fifoout->app_buffer_mode += 1;
+  }else{
+    fifoout->app_buffer_mode = AGS_FIFOOUT_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(fifoout_mutex);
@@ -2183,33 +2232,33 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
 
   //NOTE:JK: there is no lock applicable to buffer
   
-  /* AGS_FIFOOUT_BUFFER_0 */
-  if(fifoout->buffer[0] != NULL){
-    free(fifoout->buffer[0]);
+  /* AGS_FIFOOUT_APP_BUFFER_0 */
+  if(fifoout->app_buffer[0] != NULL){
+    g_free(fifoout->app_buffer[0]);
   }
   
-  fifoout->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  fifoout->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_FIFOOUT_BUFFER_1 */
-  if(fifoout->buffer[1] != NULL){
-    free(fifoout->buffer[1]);
-  }
-
-  fifoout->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
-  
-  /* AGS_FIFOOUT_BUFFER_2 */
-  if(fifoout->buffer[2] != NULL){
-    free(fifoout->buffer[2]);
+  /* AGS_FIFOOUT_APP_BUFFER_1 */
+  if(fifoout->app_buffer[1] != NULL){
+    g_free(fifoout->app_buffer[1]);
   }
 
-  fifoout->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  fifoout->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_FIFOOUT_BUFFER_3 */
-  if(fifoout->buffer[3] != NULL){
-    free(fifoout->buffer[3]);
+  /* AGS_FIFOOUT_APP_BUFFER_2 */
+  if(fifoout->app_buffer[2] != NULL){
+    g_free(fifoout->app_buffer[2]);
+  }
+
+  fifoout->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+  
+  /* AGS_FIFOOUT_APP_BUFFER_3 */
+  if(fifoout->app_buffer[3] != NULL){
+    g_free(fifoout->app_buffer[3]);
   }
   
-  fifoout->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  fifoout->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**
