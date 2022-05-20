@@ -92,38 +92,15 @@ guint ags_frequency_aliase_util_get_format(AgsFrequencyAliaseUtil *frequency_ali
 void ags_frequency_aliase_util_set_format(AgsFrequencyAliaseUtil *frequency_aliase_util,
 					  guint format);
 
-void ags_frequency_aliase_util_compute_s8(gint8 *destination,
-					  gint8 *source,
-					  gint8 *phase_shifted_source,
-					  guint buffer_length);
-void ags_frequency_aliase_util_compute_s16(gint16 *destination,
-					   gint16 *source,
-					   gint16 *phase_shifted_source,
-					   guint buffer_length);
-void ags_frequency_aliase_util_compute_s24(gint32 *destination,
-					   gint32 *source,
-					   gint32 *phase_shifted_source,
-					   guint buffer_length);
-void ags_frequency_aliase_util_compute_s32(gint32 *destination,
-					   gint32 *source,
-					   gint32 *phase_shifted_source,
-					   guint buffer_length);
-void ags_frequency_aliase_util_compute_s64(gint64 *destination,
-					   gint64 *source,
-					   gint64 *phase_shifted_source,
-					   guint buffer_length);
-void ags_frequency_aliase_util_compute_float(gfloat *destination,
-					     gfloat *source,
-					     gfloat *phase_shifted_source,
-					     guint buffer_length);
-void ags_frequency_aliase_util_compute_double(gdouble *destination,
-					      gdouble *source,
-					      gdouble *phase_shifted_source,
-					      guint buffer_length);
-void ags_frequency_aliase_util_compute_complex(AgsComplex *destination,
-					       AgsComplex *source,
-					       AgsComplex *phase_shifted_source,
-					       guint buffer_length);
+void ags_frequency_aliase_util_process_s8(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s16(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s24(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s32(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_s64(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_float(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_double(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process_complex(AgsFrequencyAliaseUtil *frequency_aliase_util);
+void ags_frequency_aliase_util_process(AgsFrequencyAliaseUtil *frequency_aliase_util);
 
 G_END_DECLS
 

@@ -416,347 +416,504 @@ ags_frequency_aliase_util_set_format(AgsFrequencyAliaseUtil *frequency_aliase_ut
 }
 
 /**
- * ags_frequency_aliase_util_compute_s8:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_s8:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of signed 8 bit data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_s8(gint8 *destination,
-				     gint8 *source,
-				     gint8 *phase_shifted_source,
-				     guint buffer_length)
+ags_frequency_aliase_util_process_s8(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gint8 *destination;
+  gint8 *source;
+  gint8 *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
 
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
+  
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0 &&
-	phase_shifted_source[i] < 0) ||
-       (source[i] < 0 &&
-	-1 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0) ||
+       (source[i * source_stride] < 0 &&
+	-1 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0 &&
-	-1 * phase_shifted_source[i] > source[i])){
+	-1 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1: 1) * (gint8) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1: 1) * (gint8) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_s16:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_s16:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of signed 16 bit data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_s16(gint16 *destination,
-				      gint16 *source,
-				      gint16 *phase_shifted_source,
-				      guint buffer_length)
+ags_frequency_aliase_util_process_s16(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gint16 *destination;
+  gint16 *source;
+  gint16 *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0 &&
-	phase_shifted_source[i] < 0) ||
-       (source[i] < 0 &&
-	-1 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0) ||
+       (source[i * source_stride] < 0 &&
+	-1 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0 &&
-	-1 * phase_shifted_source[i] > source[i])){
+	-1 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1: 1) * (gint16) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1: 1) * (gint16) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_s24:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_s24:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of signed 24 bit data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_s24(gint32 *destination,
-				      gint32 *source,
-				      gint32 *phase_shifted_source,
-				      guint buffer_length)
+ags_frequency_aliase_util_process_s24(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gint32 *destination;
+  gint32 *source;
+  gint32 *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0 &&
-	phase_shifted_source[i] < 0) ||
-       (source[i] < 0 &&
-	-1 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0) ||
+       (source[i * source_stride] < 0 &&
+	-1 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0 &&
-	-1 * phase_shifted_source[i] > source[i])){
+	-1 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1: 1) * (gint32) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1: 1) * (gint32) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_s32:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_s32:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of signed 32 bit data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_s32(gint32 *destination,
-				      gint32 *source,
-				      gint32 *phase_shifted_source,
-				      guint buffer_length)
+ags_frequency_aliase_util_process_s32(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gint32 *destination;
+  gint32 *source;
+  gint32 *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0 &&
-	phase_shifted_source[i] < 0) ||
-       (source[i] < 0 &&
-	-1 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0) ||
+       (source[i * source_stride] < 0 &&
+	-1 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0 &&
-	-1 * phase_shifted_source[i] > source[i])){
+	-1 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1: 1) * (gint32) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1: 1) * (gint32) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_s64:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_s64:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of signed 64 bit data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_s64(gint64 *destination,
-				      gint64 *source,
-				      gint64 *phase_shifted_source,
-				      guint buffer_length)
+ags_frequency_aliase_util_process_s64(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gint64 *destination;
+  gint64 *source;
+  gint64 *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0 &&
-	phase_shifted_source[i] < 0) ||
-       (source[i] < 0 &&
-	-1 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0) ||
+       (source[i * source_stride] < 0 &&
+	-1 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0 &&
-	-1 * phase_shifted_source[i] > source[i])){
+	-1 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1: 1) * (gint64) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1: 1) * (gint64) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_float:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_float:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of single precision floating point data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_float(gfloat *destination,
-					gfloat *source,
-					gfloat *phase_shifted_source,
-					guint buffer_length)
+ags_frequency_aliase_util_process_float(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gfloat *destination;
+  gfloat *source;
+  gfloat *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0.0 &&
-	phase_shifted_source[i] < 0.0) ||
-       (source[i] < 0.0 &&
-	-1.0 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0.0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0.0) ||
+       (source[i * source_stride] < 0.0 &&
+	-1.0 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0.0 &&
-	-1.0 * phase_shifted_source[i] > source[i])){
+	-1.0 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1.0: 1.0) * (gfloat) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1.0: 1.0) * (gfloat) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_double:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_double:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of double precision floating point data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_double(gdouble *destination,
-					 gdouble *source,
-					 gdouble *phase_shifted_source,
-					 guint buffer_length)
+ags_frequency_aliase_util_process_double(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  gdouble *destination;
+  gdouble *source;
+  gdouble *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    if((source[i] < 0.0 &&
-	phase_shifted_source[i] < 0.0) ||
-       (source[i] < 0.0 &&
-	-1.0 * source[i] > phase_shifted_source[i]) ||
+    if((source[i * source_stride] < 0.0 &&
+	phase_shifted_source[i * phase_shifted_source_stride] < 0.0) ||
+       (source[i * source_stride] < 0.0 &&
+	-1.0 * source[i * source_stride] > phase_shifted_source[i * phase_shifted_source_stride]) ||
        (phase_shifted_source[i] < 0.0 &&
-	-1.0 * phase_shifted_source[i] > source[i])){
+	-1.0 * phase_shifted_source[i * phase_shifted_source_stride] > source[i * source_stride])){
       is_signed = TRUE;
     }
     
-    destination[i] = (is_signed ? -1.0: 1.0) * (gdouble) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    destination[i * destination_stride] = (is_signed ? -1.0: 1.0) * (gdouble) sqrt(pow((double) source[i * source_stride], 2.0) + pow((double) phase_shifted_source[i * phase_shifted_source_stride], 2.0));
   }
 }
 
 /**
- * ags_frequency_aliase_util_compute_complex:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @phase_shifted_source: the phase shifted source audio buffer
- * @buffer_length: the audio buffer's length
+ * ags_frequency_aliase_util_process_complex:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
- * Compute aliased audio buffer.
+ * Process phase shift of @frequency_aliase_util of complex floating point data.
  * 
- * Since: 3.8.0
+ * Since: 4.0.0
  */
 void
-ags_frequency_aliase_util_compute_complex(AgsComplex *destination,
-					  AgsComplex *source,
-					  AgsComplex *phase_shifted_source,
-					  guint buffer_length)
+ags_frequency_aliase_util_process_complex(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
+  AgsComplex *destination;
+  AgsComplex *source;
+  AgsComplex *phase_shifted_source;
+
+  guint buffer_length;
+  guint destination_stride;
+  guint source_stride;
+  guint phase_shifted_source_stride;
   guint i;
   gboolean is_signed;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     phase_shifted_source == NULL ||
-     buffer_length == 0){
+
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL){
     return;
   }
+
+  destination = frequency_aliase_util->destination;
+  destination_stride = frequency_aliase_util->destination_stride;
+
+  source = frequency_aliase_util->source;
+  source_stride = frequency_aliase_util->source_stride;
+
+  phase_shifted_source = frequency_aliase_util->phase_shifted_source;
+  phase_shifted_source_stride = frequency_aliase_util->phase_shifted_source_stride;
+
+  buffer_length = frequency_aliase_util->buffer_length;
 
   for(i = 0; i < buffer_length; i++){
     is_signed = FALSE;
 
-    //FIXME:JK: improve me
-    if(((gdouble) ags_complex_get(source + i) < 0.0 &&
-	(gdouble) ags_complex_get(phase_shifted_source + i) < 0.0) ||
-       ((gdouble) ags_complex_get(source + i) < 0.0 &&
-	-1.0 * (gdouble) ags_complex_get(source + i) > (gdouble) ags_complex_get(phase_shifted_source + i)) ||
-       ((gdouble) ags_complex_get(phase_shifted_source + i) < 0.0 &&
-	-1.0 * (gdouble) ags_complex_get(phase_shifted_source + i) > (gdouble) ags_complex_get(source + i))){
+    if(((double) ags_complex_get(source + (i * source_stride)) < 0.0 &&
+	(double) ags_complex_get(phase_shifted_source + (i * phase_shifted_source_stride)) < 0.0) ||
+       ((double) ags_complex_get(source + (i * source_stride)) < 0.0 &&
+	-1.0 * (double) ags_complex_get(source + (i * source_stride)) > (double) ags_complex_get(phase_shifted_source + (i * phase_shifted_source_stride))) ||
+       ((double) ags_complex_get(phase_shifted_source + (i * phase_shifted_source_stride)) < 0.0 &&
+	-1.0 * (double) ags_complex_get(phase_shifted_source + (i * phase_shifted_source_stride)) > (double) ags_complex_get(source + (i * source_stride)))){
       is_signed = TRUE;
     }
     
-    ags_complex_set(destination + i,
-		    (is_signed ? -1.0: 1.0) * (double _Complex) sqrt(pow((double) ags_complex_get(source + i), 2.0) + pow((double) ags_complex_get(phase_shifted_source + i), 2.0)));
+    ags_complex_set(destination + (i * destination_stride),
+		    (is_signed ? -1.0: 1.0) * sqrt(pow((double) ags_complex_get(source + (i * source_stride)), 2.0) + pow((double) ags_complex_get(phase_shifted_source + (i * phase_shifted_source_stride)), 2.0)));
+  }
+}
+
+/**
+ * ags_frequency_aliase_util_process:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
+ * 
+ * Process phase shift of @frequency_aliase_util.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_frequency_aliase_util_process(AgsFrequencyAliaseUtil *frequency_aliase_util)
+{
+  if(frequency_aliase_util == NULL ||
+     frequency_aliase_util->destination == NULL ||
+     frequency_aliase_util->source == NULL ||
+     frequency_aliase_util->phase_shifted_source == NULL){
+    return;
+  }
+
+  switch(frequency_aliase_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_frequency_aliase_util_process_s8(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_frequency_aliase_util_process_s16(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_frequency_aliase_util_process_s24(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_frequency_aliase_util_process_s32(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_frequency_aliase_util_process_s64(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_frequency_aliase_util_process_float(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_frequency_aliase_util_process_double(frequency_aliase_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_frequency_aliase_util_process_complex(frequency_aliase_util);
+  }
+  break;
   }
 }
