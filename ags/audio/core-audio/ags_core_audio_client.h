@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,8 +50,6 @@ typedef struct _AgsCoreAudioClientClass AgsCoreAudioClientClass;
 
 /**
  * AgsCoreAudioClientFlags:
- * @AGS_CORE_AUDIO_CLIENT_ADDED_TO_REGISTRY: the CoreAudio client was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_CORE_AUDIO_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_CORE_AUDIO_CLIENT_ACTIVATED: the client was activated
  * @AGS_CORE_AUDIO_CLIENT_READY: the client is ready
  * 
@@ -59,10 +57,8 @@ typedef struct _AgsCoreAudioClientClass AgsCoreAudioClientClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CORE_AUDIO_CLIENT_ADDED_TO_REGISTRY  = 1,
-  AGS_CORE_AUDIO_CLIENT_CONNECTED          = 1 <<  1,
-  AGS_CORE_AUDIO_CLIENT_ACTIVATED          = 1 <<  2,
-  AGS_CORE_AUDIO_CLIENT_READY              = 1 <<  3,
+  AGS_CORE_AUDIO_CLIENT_ACTIVATED          = 1,
+  AGS_CORE_AUDIO_CLIENT_READY              = 1 <<  1,
 }AgsCoreAudioClientFlags;
 
 struct _AgsCoreAudioClient
@@ -70,7 +66,8 @@ struct _AgsCoreAudioClient
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GObject *core_audio_server;
@@ -96,6 +93,7 @@ struct _AgsCoreAudioClientClass
 };
 
 GType ags_core_audio_client_get_type();
+GType ags_core_audio_client_flags_get_type();
 
 gboolean ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, guint flags);
 void ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, guint flags);

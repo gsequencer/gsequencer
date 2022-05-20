@@ -1083,22 +1083,35 @@ ags_pulse_devin_finalize(GObject *gobject)
 {
   AgsPulseDevin *pulse_devin;
 
+  guint i;
+  
   pulse_devin = AGS_PULSE_DEVIN(gobject);
 
-  /* free output buffer */
-  g_free(pulse_devin->app_buffer[0]);
-  g_free(pulse_devin->app_buffer[1]);
-  g_free(pulse_devin->app_buffer[2]);
-  g_free(pulse_devin->app_buffer[3]);
-  g_free(pulse_devin->app_buffer[4]);
-  g_free(pulse_devin->app_buffer[5]);
-  g_free(pulse_devin->app_buffer[6]);
-  g_free(pulse_devin->app_buffer[7]);
+  ags_uuid_free(pulse_devin->uuid);
 
-  /* free buffer array */
+  for(i = 0; i < AGS_PULSE_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(pulse_devin->app_buffer[i]);
+  }
+
   g_free(pulse_devin->app_buffer);
 
-  /* free AgsAttack */
+  for(i = 0; i < AGS_PULSE_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(pulse_devin->app_buffer_mutex[i]);
+    
+    g_free(pulse_devin->app_buffer_mutex[i]);
+  }
+
+  g_free(pulse_devin->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_PULSE_DEVIN_DEFAULT_APP_BUFFER_SIZE * pulse_devin->sub_block_count * pulse_devin->pcm_channels; i++){
+    g_rec_mutex_clear(pulse_devin->sub_block_mutex[i]);
+    
+    g_free(pulse_devin->sub_block_mutex[i]);
+  }
+
+  g_free(pulse_devin->sub_block_mutex);
+  
+  g_free(pulse_devin->delay);
   g_free(pulse_devin->attack);
 
   /* pulse client */

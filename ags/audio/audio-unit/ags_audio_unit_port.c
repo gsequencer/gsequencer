@@ -337,7 +337,7 @@ ags_audio_unit_port_set_property(GObject *gobject,
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(gobject);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   switch(prop_id){
@@ -436,7 +436,7 @@ ags_audio_unit_port_get_property(GObject *gobject,
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(gobject);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
   
   switch(prop_id){
@@ -533,7 +533,7 @@ ags_audio_unit_port_get_uuid(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port signal mutex */
+  /* get audio unit port signal mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* get UUID */
@@ -563,7 +563,7 @@ ags_audio_unit_port_is_ready(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* check is ready */
@@ -589,7 +589,7 @@ ags_audio_unit_port_add_to_registry(AgsConnectable *connectable)
   
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   g_rec_mutex_lock(audio_unit_port_mutex);
@@ -612,7 +612,7 @@ ags_audio_unit_port_remove_from_registry(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   g_rec_mutex_lock(audio_unit_port_mutex);
@@ -664,7 +664,7 @@ ags_audio_unit_port_is_connected(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* check is connected */
@@ -690,7 +690,7 @@ ags_audio_unit_port_connect(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   g_rec_mutex_lock(audio_unit_port_mutex);
@@ -713,7 +713,7 @@ ags_audio_unit_port_disconnect(AgsConnectable *connectable)
 
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   g_rec_mutex_lock(audio_unit_port_mutex);
@@ -745,7 +745,7 @@ ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
     return(FALSE);
   }
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* test */
@@ -776,7 +776,7 @@ ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
     return;
   }
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   //TODO:JK: add more?
@@ -807,7 +807,7 @@ ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
     return;
   }
 
-  /* get audio_unit port mutex */
+  /* get audio unit port mutex */
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   //TODO:JK: add more?
@@ -840,7 +840,7 @@ ags_audio_unit_port_find(GList *audio_unit_port,
   GRecMutex *audio_unit_port_mutex;
 
   while(audio_unit_port != NULL){
-    /* get audio_unit port mutex */
+    /* get audio unit port mutex */
     audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port->data);
 
     /* check port name */

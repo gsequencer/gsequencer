@@ -538,7 +538,7 @@ ags_audio_unit_client_get_uuid(AgsConnectable *connectable)
 
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* get UUID */
@@ -568,7 +568,7 @@ ags_audio_unit_client_is_ready(AgsConnectable *connectable)
 
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* test */
@@ -594,7 +594,7 @@ ags_audio_unit_client_add_to_registry(AgsConnectable *connectable)
   
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* set added to registry */
@@ -618,7 +618,7 @@ ags_audio_unit_client_remove_from_registry(AgsConnectable *connectable)
 
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* set added to registry */
@@ -671,7 +671,7 @@ ags_audio_unit_client_is_connected(AgsConnectable *connectable)
 
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* test */
@@ -699,7 +699,7 @@ ags_audio_unit_client_connect(AgsConnectable *connectable)
 
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* set connected */
@@ -742,7 +742,7 @@ ags_audio_unit_client_disconnect(AgsConnectable *connectable)
 
   audio_unit_client = AGS_AUDIO_UNIT_CLIENT(connectable);
   
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* unset connected */
@@ -791,7 +791,7 @@ ags_audio_unit_client_test_flags(AgsAudioUnitClient *audio_unit_client, guint fl
     return(FALSE);
   }
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* test */
@@ -822,7 +822,7 @@ ags_audio_unit_client_set_flags(AgsAudioUnitClient *audio_unit_client, guint fla
     return;
   }
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   //TODO:JK: add more?
@@ -853,7 +853,7 @@ ags_audio_unit_client_unset_flags(AgsAudioUnitClient *audio_unit_client, guint f
     return;
   }
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   //TODO:JK: add more?
@@ -915,7 +915,7 @@ ags_audio_unit_client_find(GList *audio_unit_client,
   while(audio_unit_client != NULL){
     current_audio_unit_client = AGS_AUDIO_UNIT_CLIENT(audio_unit_client->data);
     
-    /* get audio_unit client mutex */
+    /* get audio unit client mutex */
     audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(current_audio_unit_client);
 
     /* check uuid */
@@ -965,7 +965,7 @@ ags_audio_unit_client_open(AgsAudioUnitClient *audio_unit_client,
     return;
   }
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* check already open */
@@ -989,7 +989,7 @@ ags_audio_unit_client_open(AgsAudioUnitClient *audio_unit_client,
 	       "client-name", client_name,
 	       NULL);
 
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 }
 
@@ -1014,7 +1014,7 @@ ags_audio_unit_client_activate(AgsAudioUnitClient *audio_unit_client)
     return;
   }
   
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   if(ags_audio_unit_client_test_flags(audio_unit_client, AGS_AUDIO_UNIT_CLIENT_ACTIVATED)){
@@ -1067,7 +1067,7 @@ ags_audio_unit_client_deactivate(AgsAudioUnitClient *audio_unit_client)
     return;
   }
   
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   ags_audio_unit_client_unset_flags(audio_unit_client, AGS_AUDIO_UNIT_CLIENT_ACTIVATED);
@@ -1094,7 +1094,7 @@ ags_audio_unit_client_add_device(AgsAudioUnitClient *audio_unit_client,
     return;
   }
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* add device */
@@ -1128,7 +1128,7 @@ ags_audio_unit_client_remove_device(AgsAudioUnitClient *audio_unit_client,
     return;
   }
 
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
   
   /* remove */
@@ -1163,7 +1163,7 @@ ags_audio_unit_client_add_port(AgsAudioUnitClient *audio_unit_client,
     return;
   }
   
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* add port */
@@ -1197,7 +1197,7 @@ ags_audio_unit_client_remove_port(AgsAudioUnitClient *audio_unit_client,
     return;
   }
   
-  /* get audio_unit client mutex */
+  /* get audio unit client mutex */
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
 
   /* remove port */

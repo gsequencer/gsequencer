@@ -674,7 +674,7 @@ ags_audio_unit_server_is_ready(AgsConnectable *connectable)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* check is ready */
@@ -700,7 +700,7 @@ ags_audio_unit_server_add_to_registry(AgsConnectable *connectable)
   
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   g_rec_mutex_lock(audio_unit_server_mutex);
@@ -723,7 +723,7 @@ ags_audio_unit_server_remove_from_registry(AgsConnectable *connectable)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   g_rec_mutex_lock(audio_unit_server_mutex);
@@ -775,7 +775,7 @@ ags_audio_unit_server_is_connected(AgsConnectable *connectable)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* check is connected */
@@ -803,7 +803,7 @@ ags_audio_unit_server_connect(AgsConnectable *connectable)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   g_rec_mutex_lock(audio_unit_server_mutex);
@@ -844,7 +844,7 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
     
-  /* get audio_unit server mutex */
+  /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   g_rec_mutex_lock(audio_unit_server_mutex);

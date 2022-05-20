@@ -194,6 +194,29 @@ ags_core_audio_port_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_core_audio_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_CORE_AUDIO_PORT_REGISTERED, "AGS_CORE_AUDIO_PORT_REGISTERED", "core-audio-port-registered" },
+      { AGS_CORE_AUDIO_PORT_IS_AUDIO, "AGS_CORE_AUDIO_PORT_IS_AUDIO", "core-audio-port-is-audio" },
+      { AGS_CORE_AUDIO_PORT_IS_MIDI, "AGS_CORE_AUDIO_PORT_IS_MIDI", "core-audio-port-is-midi" },
+      { AGS_CORE_AUDIO_PORT_IS_OUTPUT, "AGS_CORE_AUDIO_PORT_IS_OUTPUT", "core-audio-port-is-output" },
+      { AGS_CORE_AUDIO_PORT_IS_INPUT, "AGS_CORE_AUDIO_PORT_IS_INPUT", "core-audio-port-is-input" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsCoreAudioPortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
 {
@@ -296,6 +319,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   
   /* flags */
   core_audio_port->flags = 0;
+  core_audio_port->connectable_flags = 0;
 
   /* port mutex */
   g_rec_mutex_init(&(core_audio_port->obj_mutex));
@@ -512,7 +536,7 @@ ags_core_audio_port_set_property(GObject *gobject,
 
   core_audio_port = AGS_CORE_AUDIO_PORT(gobject);
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   switch(prop_id){
@@ -611,7 +635,7 @@ ags_core_audio_port_get_property(GObject *gobject,
 
   core_audio_port = AGS_CORE_AUDIO_PORT(gobject);
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
   
   switch(prop_id){
@@ -716,7 +740,7 @@ ags_core_audio_port_get_uuid(AgsConnectable *connectable)
 
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
 
-  /* get core_audio port signal mutex */
+  /* get core audio port signal mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   /* get UUID */
@@ -742,10 +766,19 @@ ags_core_audio_port_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *core_audio_port_mutex;
+
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
 
-  /* check is added */
-  is_ready = ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY);
+  /* get core audio port mutex */
+  core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
+
+  /* check is ready */
+  g_rec_mutex_lock(core_audio_port_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (core_audio_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(core_audio_port_mutex);
   
   return(is_ready);
 }
@@ -755,13 +788,22 @@ ags_core_audio_port_add_to_registry(AgsConnectable *connectable)
 {
   AgsCoreAudioPort *core_audio_port;
 
+  GRecMutex *core_audio_port_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
 
-  ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY);
+  /* get core audio port mutex */
+  core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
+
+  g_rec_mutex_lock(core_audio_port_mutex);
+
+  core_audio_port->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(core_audio_port_mutex);
 }
 
 void
@@ -769,13 +811,22 @@ ags_core_audio_port_remove_from_registry(AgsConnectable *connectable)
 {
   AgsCoreAudioPort *core_audio_port;
 
+  GRecMutex *core_audio_port_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
 
-  ags_core_audio_port_unset_flags(core_audio_port, AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY);
+  /* get core audio port mutex */
+  core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
+
+  g_rec_mutex_lock(core_audio_port_mutex);
+
+  core_audio_port->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(core_audio_port_mutex);
 }
 
 xmlNode*
@@ -816,10 +867,19 @@ ags_core_audio_port_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *core_audio_port_mutex;
+
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
 
+  /* get core audio port mutex */
+  core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
+
   /* check is connected */
-  is_connected = ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_CONNECTED);
+  g_rec_mutex_lock(core_audio_port_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (core_audio_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(core_audio_port_mutex);
   
   return(is_connected);
 }
@@ -828,6 +888,8 @@ void
 ags_core_audio_port_connect(AgsConnectable *connectable)
 {
   AgsCoreAudioPort *core_audio_port;
+
+  GRecMutex *core_audio_port_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -835,22 +897,37 @@ ags_core_audio_port_connect(AgsConnectable *connectable)
 
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
 
-  ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_CONNECTED);
+  /* get core audio port mutex */
+  core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
+
+  g_rec_mutex_lock(core_audio_port_mutex);
+
+  core_audio_port->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(core_audio_port_mutex);
 }
 
 void
 ags_core_audio_port_disconnect(AgsConnectable *connectable)
 {
-
   AgsCoreAudioPort *core_audio_port;
+
+  GRecMutex *core_audio_port_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  /* get core audio port mutex */
+  core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
+
+  g_rec_mutex_lock(core_audio_port_mutex);
+
+  core_audio_port->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_core_audio_port_unset_flags(core_audio_port, AGS_CORE_AUDIO_PORT_CONNECTED);
+  g_rec_mutex_unlock(core_audio_port_mutex);
 }
 
 /**
@@ -875,7 +952,7 @@ ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags)
     return(FALSE);
   }
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   /* test */
@@ -906,7 +983,7 @@ ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags)
     return;
   }
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   //TODO:JK: add more?
@@ -937,7 +1014,7 @@ ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags)
     return;
   }
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   //TODO:JK: add more?
@@ -970,7 +1047,7 @@ ags_core_audio_port_find(GList *core_audio_port,
   GRecMutex *core_audio_port_mutex;
 
   while(core_audio_port != NULL){
-    /* get core_audio port mutex */
+    /* get core audio port mutex */
     core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port->data);
 
     /* check port name */
@@ -1078,7 +1155,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     return(-1);
   }
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   if(g_atomic_int_get(&(core_audio_port->queued)) > 0){
@@ -1240,7 +1317,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
     return(-1);
   }
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   if(g_atomic_int_get(&(core_audio_port->queued)) > 0){
@@ -1439,7 +1516,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     return;
   }
 
-  /* get core_audio server and application context */
+  /* get core audio server and application context */
   g_object_get(core_audio_client,
 	       "core-audio-server", &core_audio_server,
 	       NULL);
@@ -1450,7 +1527,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     return;
   }
 
-  /* get core_audio client mutex */
+  /* get core audio client mutex */
   core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(core_audio_client);
 
   /* get graph */
@@ -1473,7 +1550,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #endif
 #endif
   
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
   
   /* get port name */
@@ -1862,7 +1939,7 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   /*  */
@@ -2759,10 +2836,10 @@ ags_core_audio_port_set_cache_buffer_size(AgsCoreAudioPort *core_audio_port,
   GRecMutex *core_audio_port_mutex;
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
 #else
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
     
-  /* lock core_audio port */
+  /* lock core audio port */
   g_rec_mutex_lock(core_audio_port_mutex);
 
   switch(core_audio_port->format){
@@ -2825,10 +2902,10 @@ ags_core_audio_port_get_latency(AgsCoreAudioPort *core_audio_port)
 
   GRecMutex *core_audio_port_mutex;
 
-  /* get core_audio port mutex */
+  /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
     
-  /* lock core_audio port */
+  /* lock core audio port */
   g_rec_mutex_lock(core_audio_port_mutex);
 
   latency = 0;

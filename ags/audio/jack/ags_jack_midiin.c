@@ -428,7 +428,6 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 
   jack_midiin->flags = 0;
   jack_midiin->connectable_flags = 0;
-
   g_atomic_int_set(&(jack_midiin->sync_flags),
 		   AGS_JACK_MIDIIN_PASS_THROUGH);
 

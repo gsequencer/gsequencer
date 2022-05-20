@@ -1081,9 +1081,36 @@ ags_audio_unit_devin_finalize(GObject *gobject)
 {
   AgsAudioUnitDevin *audio_unit_devin;
 
+  guint i;
+  
   audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(gobject);
 
-  //TODO:JK: implement me
+  ags_uuid_free(audio_unit_devin->uuid);
+
+  for(i = 0; i < AGS_AUDIO_UNIT_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(audio_unit_devin->app_buffer[i]);
+  }
+
+  g_free(audio_unit_devin->app_buffer);
+
+  for(i = 0; i < AGS_AUDIO_UNIT_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(audio_unit_devin->app_buffer_mutex[i]);
+    
+    g_free(audio_unit_devin->app_buffer_mutex[i]);
+  }
+
+  g_free(audio_unit_devin->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_AUDIO_UNIT_DEVIN_DEFAULT_APP_BUFFER_SIZE * audio_unit_devin->sub_block_count * audio_unit_devin->pcm_channels; i++){
+    g_rec_mutex_clear(audio_unit_devin->sub_block_mutex[i]);
+    
+    g_free(audio_unit_devin->sub_block_mutex[i]);
+  }
+
+  g_free(audio_unit_devin->sub_block_mutex);
+  
+  g_free(audio_unit_devin->delay);
+  g_free(audio_unit_devin->attack);
   
   /* call parent */
   G_OBJECT_CLASS(ags_audio_unit_devin_parent_class)->finalize(gobject);
