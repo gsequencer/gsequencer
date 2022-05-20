@@ -116,25 +116,6 @@ ags_priority_get_type (void)
   return g_define_type_id__volatile;
 }
 
-GType
-ags_priority_flags_get_type()
-{
-  static volatile gsize g_flags_type_id__volatile;
-
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
-    static const GFlagsValue values[] = {
-      { AGS_PRIORITY_CONNECTED, "AGS_PRIORITY_CONNECTED", "priority-connected" },
-      { 0, NULL, NULL }
-    };
-
-    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPriorityFlags"), values);
-
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
-  }
-  
-  return g_flags_type_id__volatile;
-}
-
 void
 ags_priority_class_init(AgsPriorityClass *priority)
 {

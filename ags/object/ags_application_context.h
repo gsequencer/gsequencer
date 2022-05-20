@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,17 +59,13 @@ typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
 
 /**
  * AgsApplicationContextFlags:
- * @AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
- * @AGS_APPLICATION_CONTEXT_CONNECTED: indicates the application context was connected by calling #AgsConnectable::connect()
  * @AGS_APPLICATION_CONTEXT_TYPES_REGISTERED: indicates the types have been registered
  * 
  * Enum values to control the behavior or indicate internal state of #AgsApplicationContext by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY       = 1,
-  AGS_APPLICATION_CONTEXT_CONNECTED               = 1 <<  1,
-  AGS_APPLICATION_CONTEXT_TYPES_REGISTERED        = 1 <<  2,
+  AGS_APPLICATION_CONTEXT_TYPES_REGISTERED        = 1,
 }AgsApplicationContextFlags;
 
 struct _AgsApplicationContext
@@ -77,7 +73,8 @@ struct _AgsApplicationContext
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

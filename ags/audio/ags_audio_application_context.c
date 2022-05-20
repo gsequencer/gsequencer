@@ -682,7 +682,7 @@ ags_audio_application_context_connect(AgsConnectable *connectable)
   
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(connectable);
 
-  if(ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(audio_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -730,7 +730,7 @@ ags_audio_application_context_disconnect(AgsConnectable *connectable)
 
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(connectable);
 
-  if(!ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(audio_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

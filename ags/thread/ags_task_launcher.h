@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,25 +42,13 @@ G_BEGIN_DECLS
 typedef struct _AgsTaskLauncher AgsTaskLauncher;
 typedef struct _AgsTaskLauncherClass AgsTaskLauncherClass;
 
-/**
- * AgsTaskLauncherFlags:
- * @AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY: the task launcher was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_TASK_LAUNCHER_CONNECTED: the task launcher was connected by #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsTaskLauncher by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY       = 1,
-  AGS_TASK_LAUNCHER_CONNECTED               = 1 <<  1,
-}AgsTaskLauncherFlags;
-
 struct _AgsTaskLauncher
 {
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
   
   AgsUUID *uuid;

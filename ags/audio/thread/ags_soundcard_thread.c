@@ -348,7 +348,7 @@ ags_soundcard_thread_connect(AgsConnectable *connectable)
 
   soundcard_thread = AGS_THREAD(connectable);
 
-  if(ags_thread_test_flags(soundcard_thread, AGS_THREAD_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }  
 

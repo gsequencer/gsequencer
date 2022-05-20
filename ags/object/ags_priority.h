@@ -53,17 +53,6 @@ G_BEGIN_DECLS
 typedef struct _AgsPriority AgsPriority;
 typedef struct _AgsPriorityClass AgsPriorityClass;
 
-/**
- * AgsPriorityFlags:
- * @AGS_PRIORITY_CONNECTED: the priority was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsPriority by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_PRIORITY_CONNECTED    = 1,
-}AgsPriorityFlags;
-
 struct _AgsPriority
 {
   GObject gobject;

@@ -944,7 +944,7 @@ ags_gsequencer_application_context_connect(AgsConnectable *connectable)
 
   gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(connectable);
 
-  if(ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(gsequencer_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -993,7 +993,7 @@ ags_gsequencer_application_context_disconnect(AgsConnectable *connectable)
 
   gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(connectable);
 
-  if(!ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(gsequencer_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

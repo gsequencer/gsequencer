@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,26 +119,6 @@ ags_task_launcher_get_type()
   return g_define_type_id__volatile;
 }
 
-GType
-ags_task_launcher_flags_get_type()
-{
-  static volatile gsize g_flags_type_id__volatile;
-
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
-    static const GFlagsValue values[] = {
-      { AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY, "AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY", "task-launcher-added-to-registry" },
-      { AGS_TASK_LAUNCHER_CONNECTED, "AGS_TASK_LAUNCHER_CONNECTED", "task-launcher-connected" },
-      { 0, NULL, NULL }
-    };
-
-    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsTaskLauncherFlags"), values);
-
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
-  }
-  
-  return g_flags_type_id__volatile;
-}
-
 void
 ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher)
 {
@@ -236,6 +216,7 @@ void
 ags_task_launcher_init(AgsTaskLauncher *task_launcher)
 {
   task_launcher->flags = 0;
+  task_launcher->connectable_flags = 0;
 
   /* the obj mutex */
   g_rec_mutex_init(&(task_launcher->obj_mutex));
@@ -441,10 +422,19 @@ ags_task_launcher_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *task_launcher_mutex;
+
   task_launcher = AGS_TASK_LAUNCHER(connectable);
 
-  /* check is added */
-  is_ready = ags_task_launcher_test_flags(task_launcher, AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY);
+  /* get task launcher mutex */
+  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
+  /* check is ready */
+  g_rec_mutex_lock(task_launcher_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (task_launcher->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(task_launcher_mutex);
   
   return(is_ready);
 }
@@ -454,23 +444,45 @@ ags_task_launcher_add_to_registry(AgsConnectable *connectable)
 {
   AgsTaskLauncher *task_launcher;
 
+  GRecMutex *task_launcher_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   task_launcher = AGS_TASK_LAUNCHER(connectable);
 
-  ags_task_launcher_set_flags(task_launcher, AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY);
+  /* get task launcher mutex */
+  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
+  g_rec_mutex_lock(task_launcher_mutex);
+
+  task_launcher->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(task_launcher_mutex);
 }
 
 void
 ags_task_launcher_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsTaskLauncher *task_launcher;
+
+  GRecMutex *task_launcher_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
-  //TODO:JK: implement me
+  task_launcher = AGS_TASK_LAUNCHER(connectable);
+
+  /* get task launcher mutex */
+  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
+  g_rec_mutex_lock(task_launcher_mutex);
+
+  task_launcher->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(task_launcher_mutex);
 }
 
 xmlNode*
@@ -511,10 +523,19 @@ ags_task_launcher_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *task_launcher_mutex;
+
   task_launcher = AGS_TASK_LAUNCHER(connectable);
 
+  /* get task launcher mutex */
+  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
   /* check is connected */
-  is_connected = ags_task_launcher_test_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED);
+  g_rec_mutex_lock(task_launcher_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (task_launcher->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(task_launcher_mutex);
   
   return(is_connected);
 }
@@ -524,13 +545,22 @@ ags_task_launcher_connect(AgsConnectable *connectable)
 {
   AgsTaskLauncher *task_launcher;
 
+  GRecMutex *task_launcher_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   task_launcher = AGS_TASK_LAUNCHER(connectable);
 
-  ags_task_launcher_set_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED);
+  /* get task launcher mutex */
+  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
+  g_rec_mutex_lock(task_launcher_mutex);
+
+  task_launcher->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(task_launcher_mutex);
 }
 
 void
@@ -538,13 +568,22 @@ ags_task_launcher_disconnect(AgsConnectable *connectable)
 {
   AgsTaskLauncher *task_launcher;
 
+  GRecMutex *task_launcher_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   task_launcher = AGS_TASK_LAUNCHER(connectable);
 
-  ags_task_launcher_unset_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED);
+  /* get task launcher mutex */
+  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
+  g_rec_mutex_lock(task_launcher_mutex);
+
+  task_launcher->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(task_launcher_mutex);
 }
 
 /**
@@ -569,7 +608,7 @@ ags_task_launcher_test_flags(AgsTaskLauncher *task_launcher, guint flags)
     return(FALSE);
   }
 
-  /* get task_launcher mutex */
+  /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 
   /* test */
@@ -602,7 +641,7 @@ ags_task_launcher_set_flags(AgsTaskLauncher *task_launcher, guint flags)
     return;
   }
 
-  /* get task_launcher mutex */
+  /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 
   /* set flags */
@@ -633,7 +672,7 @@ ags_task_launcher_unset_flags(AgsTaskLauncher *task_launcher, guint flags)
     return;
   }
 
-  /* get task_launcher mutex */
+  /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 
   /* unset flags */

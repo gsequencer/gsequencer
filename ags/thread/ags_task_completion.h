@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,8 +42,6 @@ typedef struct _AgsTaskCompletionClass AgsTaskCompletionClass;
 
 /**
  * AgsTaskCompletionFlags:
- * @AGS_TASK_COMPLETION_ADDED_TO_REGISTRY: indicates the task completion was added to #AgsRegistry
- * @AGS_TASK_COMPLETION_CONNECTED: indicates the task completion was connected by calling #AgsConnectable::connect()
  * @AGS_TASK_COMPLETION_QUEUED: the assigned task has been queued
  * @AGS_TASK_COMPLETION_BUSY: the assigned task is busy
  * @AGS_TASK_COMPLETION_READY: the assigned task is ready
@@ -53,12 +51,10 @@ typedef struct _AgsTaskCompletionClass AgsTaskCompletionClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_TASK_COMPLETION_ADDED_TO_REGISTRY  = 1,
-  AGS_TASK_COMPLETION_CONNECTED          = 1 <<  1,
-  AGS_TASK_COMPLETION_QUEUED             = 1 <<  2,
-  AGS_TASK_COMPLETION_BUSY               = 1 <<  3,
-  AGS_TASK_COMPLETION_READY              = 1 <<  4,
-  AGS_TASK_COMPLETION_COMPLETED          = 1 <<  5,
+  AGS_TASK_COMPLETION_QUEUED             = 1,
+  AGS_TASK_COMPLETION_BUSY               = 1 <<  1,
+  AGS_TASK_COMPLETION_READY              = 1 <<  2,
+  AGS_TASK_COMPLETION_COMPLETED          = 1 <<  3,
 }AgsTaskCompletionFlags;
 
 struct _AgsTaskCompletion
@@ -66,6 +62,7 @@ struct _AgsTaskCompletion
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 

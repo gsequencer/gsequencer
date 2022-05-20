@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,8 +125,6 @@ ags_task_completion_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_TASK_COMPLETION_ADDED_TO_REGISTRY, "AGS_TASK_COMPLETION_ADDED_TO_REGISTRY", "task-completion-added-to-registry" },
-      { AGS_TASK_COMPLETION_CONNECTED, "AGS_TASK_COMPLETION_CONNECTED", "task-completion-connected" },
       { AGS_TASK_COMPLETION_QUEUED, "AGS_TASK_COMPLETION_QUEUED", "task-completion-queued" },
       { AGS_TASK_COMPLETION_BUSY, "AGS_TASK_COMPLETION_BUSY", "task-completion-busy" },
       { AGS_TASK_COMPLETION_READY, "AGS_TASK_COMPLETION_READY", "task-completion-ready" },
@@ -225,8 +223,8 @@ ags_task_completion_init(AgsTaskCompletion *task_completion)
 {
   int err;
   
-  g_atomic_int_set(&(task_completion->flags),
-		   0);
+  task_completion->flags = 0;
+  task_completion->connectable_flags = 0;
 
   /* task completion mutex */
   g_rec_mutex_init(&(task_completion->obj_mutex));
@@ -382,7 +380,7 @@ ags_task_completion_is_ready(AgsConnectable *connectable)
   /* check is added */
   g_rec_mutex_lock(task_completion_mutex);
 
-  is_ready = (((AGS_TASK_COMPLETION_ADDED_TO_REGISTRY & (task_completion->flags)) != 0) ? TRUE: FALSE);
+  is_ready = (((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (task_completion->connectable_flags)) != 0) ? TRUE: FALSE);
 
   g_rec_mutex_unlock(task_completion_mutex);
   
@@ -393,14 +391,23 @@ void
 ags_task_completion_add_to_registry(AgsConnectable *connectable)
 {
   AgsTaskCompletion *task_completion;
-  
+
+  GRecMutex *task_completion_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   task_completion = AGS_TASK_COMPLETION(connectable);
 
-  ags_task_completion_set_flags(task_completion, AGS_TASK_COMPLETION_ADDED_TO_REGISTRY);
+  /* get task completion mutex */
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
+
+  g_rec_mutex_lock(task_completion_mutex);
+
+  task_completion->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(task_completion_mutex);
 }
 
 void
@@ -408,13 +415,22 @@ ags_task_completion_remove_from_registry(AgsConnectable *connectable)
 {
   AgsTaskCompletion *task_completion;
 
+  GRecMutex *task_completion_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   task_completion = AGS_TASK_COMPLETION(connectable);
 
-  ags_task_completion_unset_flags(task_completion, AGS_TASK_COMPLETION_ADDED_TO_REGISTRY);
+  /* get task completion mutex */
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
+
+  g_rec_mutex_lock(task_completion_mutex);
+
+  task_completion->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(task_completion_mutex);
 }
 
 xmlNode*
@@ -465,7 +481,7 @@ ags_task_completion_is_connected(AgsConnectable *connectable)
   /* check is connected */
   g_rec_mutex_lock(task_completion_mutex);
 
-  is_connected = (((AGS_TASK_COMPLETION_CONNECTED & (task_completion->flags)) != 0) ? TRUE: FALSE);
+  is_connected = (((AGS_CONNECTABLE_CONNECTED & (task_completion->connectable_flags)) != 0) ? TRUE: FALSE);
   
   g_rec_mutex_unlock(task_completion_mutex);
   
@@ -477,11 +493,22 @@ ags_task_completion_connect(AgsConnectable *connectable)
 {
   AgsTaskCompletion *task_completion;
 
+  GRecMutex *task_completion_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   task_completion = AGS_TASK_COMPLETION(connectable);
+
+  /* get task completion mutex */
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
+
+  g_rec_mutex_lock(task_completion_mutex);
+
+  task_completion->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(task_completion_mutex);
 
   ags_task_completion_set_flags(task_completion,
 				AGS_TASK_COMPLETION_QUEUED);
@@ -495,11 +522,22 @@ ags_task_completion_disconnect(AgsConnectable *connectable)
 {
   AgsTaskCompletion *task_completion;
 
+  GRecMutex *task_completion_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   task_completion = AGS_TASK_COMPLETION(connectable);
+
+  /* get task completion mutex */
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
+
+  g_rec_mutex_lock(task_completion_mutex);
+
+  task_completion->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(task_completion_mutex);
 
   g_object_disconnect(task_completion->task,
 		      "any_signal::launch",

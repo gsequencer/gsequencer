@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,6 @@
 #include <ags/server/ags_registry.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
 
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_server.h>
@@ -28,7 +27,6 @@
 #include <ags/i18n.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);
-void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_registry_init(AgsRegistry *registry);
 void ags_registry_set_property(GObject *gobject,
 			       guint prop_id,
@@ -38,10 +36,6 @@ void ags_registry_get_property(GObject *gobject,
 			       guint prop_id,
 			       GValue *value,
 			       GParamSpec *param_spec);
-void ags_registry_add_to_registry(AgsConnectable *connectable);
-void ags_registry_remove_from_registry(AgsConnectable *connectable);
-void ags_registry_connect(AgsConnectable *connectable);
-void ags_registry_disconnect(AgsConnectable *connectable);
 void ags_registry_dispose(GObject *gobject);
 void ags_registry_finalize(GObject *gobject);
 
@@ -59,8 +53,8 @@ enum{
   PROP_0,
   PROP_SERVER,
 };
-
-static gpointer ags_registry_parent_class = NULL;
+			       
+static gpointer ags_registry_parent_class = NULL; 
 
 GType
 ags_registry_get_type()
@@ -82,45 +76,15 @@ ags_registry_get_type()
       (GInstanceInitFunc) ags_registry_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_registry_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_registry = g_type_register_static(G_TYPE_OBJECT,
 					       "AgsRegistry",
 					       &ags_registry_info,
 					       0);
 
-    g_type_add_interface_static(ags_type_registry,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
     g_once_init_leave(&g_define_type_id__volatile, ags_type_registry);
   }
 
   return g_define_type_id__volatile;
-}
-
-GType
-ags_registry_flags_get_type()
-{
-  static volatile gsize g_flags_type_id__volatile;
-
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
-    static const GFlagsValue values[] = {
-      { AGS_REGISTRY_ADDED_TO_REGISTRY, "AGS_REGISTRY_ADDED_TO_REGISTRY", "registry-added-to-registry" },
-      { AGS_REGISTRY_CONNECTED, "AGS_REGISTRY_CONNECTED", "registry-connected" },
-      { 0, NULL, NULL }
-    };
-
-    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRegistryFlags"), values);
-
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
-  }
-  
-  return g_flags_type_id__volatile;
 }
 
 void
@@ -156,15 +120,6 @@ ags_registry_class_init(AgsRegistryClass *registry)
   g_object_class_install_property(gobject,
 				  PROP_SERVER,
 				  param_spec);
-}
-
-void
-ags_registry_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->add_to_registry = ags_registry_add_to_registry;
-  connectable->remove_from_registry = ags_registry_remove_from_registry;
-  connectable->connect = ags_registry_connect;
-  connectable->disconnect = ags_registry_disconnect;
 }
 
 void
@@ -241,34 +196,6 @@ ags_registry_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_registry_add_to_registry(AgsConnectable *connectable)
-{
-  AgsRegistry *registry;
-
-  registry = AGS_REGISTRY(connectable);
-
-  //TODO:JK: implement me
-}
-
-void
-ags_registry_remove_from_registry(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_registry_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_registry_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void

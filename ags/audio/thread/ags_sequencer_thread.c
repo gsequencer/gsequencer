@@ -281,7 +281,7 @@ ags_sequencer_thread_connect(AgsConnectable *connectable)
 
   sequencer_thread = AGS_THREAD(connectable);
 
-  if(ags_thread_test_flags(sequencer_thread, AGS_THREAD_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }  
 

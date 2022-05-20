@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -151,8 +151,6 @@ ags_thread_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_THREAD_ADDED_TO_REGISTRY, "AGS_THREAD_ADDED_TO_REGISTRY", "thread-added-to-registry" },
-      { AGS_THREAD_CONNECTED, "AGS_THREAD_CONNECTED", "thread-connected" },
       { AGS_THREAD_UNREF_ON_EXIT, "AGS_THREAD_UNREF_ON_EXIT", "thread-unref-on-exit" },
       { AGS_THREAD_IMMEDIATE_SYNC, "AGS_THREAD_IMMEDIATE_SYNC", "thread-immediate-sync" },
       { AGS_THREAD_INTERMEDIATE_PRE_SYNC, "AGS_THREAD_INTERMEDIATE_PRE_SYNC", "thread-intermediate-pre-sync" },
@@ -427,6 +425,7 @@ ags_thread_init(AgsThread *thread)
 
   /* flags and status flags */
   thread->my_flags = 0;
+  thread->connectable_flags = 0;
   
   g_atomic_int_set(&(thread->status_flags),
 		   0);
@@ -682,10 +681,19 @@ ags_thread_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *thread_mutex;
+
   thread = AGS_THREAD(connectable);
 
-  /* check is added */
-  is_ready = ags_thread_test_flags(thread, AGS_THREAD_ADDED_TO_REGISTRY);
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+  /* check is ready */
+  g_rec_mutex_lock(thread_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (thread->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(thread_mutex);
   
   return(is_ready);
 }
@@ -695,23 +703,45 @@ ags_thread_add_to_registry(AgsConnectable *connectable)
 {
   AgsThread *thread;
 
+  GRecMutex *thread_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   thread = AGS_THREAD(connectable);
 
-  ags_thread_set_flags(thread, AGS_THREAD_ADDED_TO_REGISTRY);
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+  g_rec_mutex_lock(thread_mutex);
+
+  thread->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 void
 ags_thread_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsThread *thread;
+
+  GRecMutex *thread_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
-  //TODO:JK: implement me
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+  g_rec_mutex_lock(thread_mutex);
+
+  thread->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 xmlNode*
@@ -752,10 +782,19 @@ ags_thread_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *thread_mutex;
+
   thread = AGS_THREAD(connectable);
 
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
   /* check is connected */
-  is_connected = ags_thread_test_flags(thread, AGS_THREAD_CONNECTED);
+  g_rec_mutex_lock(thread_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (thread->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(thread_mutex);
   
   return(is_connected);
 }
@@ -766,13 +805,22 @@ ags_thread_connect(AgsConnectable *connectable)
   AgsThread *thread;
   AgsThread *children, *current_child, *next_child;
 
+  GRecMutex *thread_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   thread = AGS_THREAD(connectable);
 
-  ags_thread_set_flags(thread, AGS_THREAD_CONNECTED);
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+  g_rec_mutex_lock(thread_mutex);
+
+  thread->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(thread_mutex);
 
   /* recursive connect */
   children = ags_thread_children(thread);
@@ -802,13 +850,22 @@ ags_thread_disconnect(AgsConnectable *connectable)
   AgsThread *thread;
   AgsThread *children, *current_child, *next_child;
 
+  GRecMutex *thread_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   thread = AGS_THREAD(connectable);
 
-  ags_thread_unset_flags(thread, AGS_THREAD_CONNECTED);
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+  g_rec_mutex_lock(thread_mutex);
+
+  thread->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(thread_mutex);
 
   /* recursive connect */
   children = ags_thread_children(thread);
