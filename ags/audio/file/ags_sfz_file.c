@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -697,11 +697,20 @@ ags_sfz_file_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *sfz_file_mutex;
+
   sfz_file = AGS_SFZ_FILE(connectable);
 
-  /* check is ready */
-  is_ready = ags_sfz_file_test_flags(sfz_file, AGS_SFZ_FILE_ADDED_TO_REGISTRY);
+  /* get sfz_file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
+  /* check is ready */
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (sfz_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sfz_file_mutex);
+  
   return(is_ready);
 }
 
@@ -715,13 +724,22 @@ ags_sfz_file_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *sfz_file_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   sfz_file = AGS_SFZ_FILE(connectable);
 
-  ags_sfz_file_set_flags(sfz_file, AGS_SFZ_FILE_ADDED_TO_REGISTRY);
+  /* get sfz_file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  sfz_file->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(sfz_file_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -739,9 +757,24 @@ ags_sfz_file_add_to_registry(AgsConnectable *connectable)
 void
 ags_sfz_file_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsSFZFile *sfz_file;
+
+  GRecMutex *sfz_file_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  sfz_file = AGS_SFZ_FILE(connectable);
+
+  /* get sfz_file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  sfz_file->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(sfz_file_mutex);
 
   //TODO:JK: implement me
 }
@@ -784,11 +817,20 @@ ags_sfz_file_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *sfz_file_mutex;
+
   sfz_file = AGS_SFZ_FILE(connectable);
 
-  /* check is connected */
-  is_connected = ags_sfz_file_test_flags(sfz_file, AGS_SFZ_FILE_CONNECTED);
+  /* get sfz_file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
+  /* check is connected */
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (sfz_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sfz_file_mutex);
+  
   return(is_connected);
 }
 
@@ -797,13 +839,22 @@ ags_sfz_file_connect(AgsConnectable *connectable)
 {
   AgsSFZFile *sfz_file;
 
+  GRecMutex *sfz_file_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   sfz_file = AGS_SFZ_FILE(connectable);
+
+  /* get sfz_file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  sfz_file->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_sfz_file_set_flags(sfz_file, AGS_SFZ_FILE_CONNECTED);
+  g_rec_mutex_unlock(sfz_file_mutex);
 }
 
 void
@@ -811,13 +862,22 @@ ags_sfz_file_disconnect(AgsConnectable *connectable)
 {
   AgsSFZFile *sfz_file;
 
+  GRecMutex *sfz_file_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   sfz_file = AGS_SFZ_FILE(connectable);
 
-  ags_sfz_file_unset_flags(sfz_file, AGS_SFZ_FILE_CONNECTED);
+  /* get sfz_file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
+
+  g_rec_mutex_lock(sfz_file_mutex);
+
+  sfz_file->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(sfz_file_mutex);
 }
 
 gboolean

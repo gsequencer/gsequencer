@@ -211,8 +211,9 @@ ags_sfz_region_init(AgsSFZRegion *sfz_region)
   AgsConfig *config;
 
   sfz_region->flags = 0;
+  sfz_region->connectable_flags = 0;
 
-  /* add audio file mutex */
+  /* add sfz region mutex */
   g_rec_mutex_init(&(sfz_region->obj_mutex));
 
   /* uuid */
@@ -424,7 +425,7 @@ ags_sfz_region_get_uuid(AgsConnectable *connectable)
 
   sfz_region = AGS_SFZ_REGION(connectable);
 
-  /* get audio file mutex */
+  /* get sfz region mutex */
   sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
 
   /* get UUID */
@@ -450,11 +451,20 @@ ags_sfz_region_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *sfz_region_mutex;
+
   sfz_region = AGS_SFZ_REGION(connectable);
 
-  /* check is ready */  
-  is_ready = ags_sfz_region_test_flags(sfz_region, AGS_SFZ_REGION_ADDED_TO_REGISTRY);
+  /* get sfz region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
 
+  /* check is ready */
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (sfz_region->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sfz_region_mutex);
+  
   return(is_ready);
 }
 
@@ -468,13 +478,22 @@ ags_sfz_region_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *sfz_region_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   sfz_region = AGS_SFZ_REGION(connectable);
 
-  ags_sfz_region_set_flags(sfz_region, AGS_SFZ_REGION_ADDED_TO_REGISTRY);
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
+
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  sfz_region->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(sfz_region_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -492,9 +511,24 @@ ags_sfz_region_add_to_registry(AgsConnectable *connectable)
 void
 ags_sfz_region_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsSFZRegion *sfz_region;
+
+  GRecMutex *sfz_region_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  sfz_region = AGS_SFZ_REGION(connectable);
+
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
+
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  sfz_region->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(sfz_region_mutex);
 
   //TODO:JK: implement me
 }
@@ -537,11 +571,20 @@ ags_sfz_region_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *sfz_region_mutex;
+
   sfz_region = AGS_SFZ_REGION(connectable);
 
-  /* check is connected */
-  is_connected = ags_sfz_region_test_flags(sfz_region, AGS_SFZ_REGION_CONNECTED);
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
 
+  /* check is connected */
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (sfz_region->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sfz_region_mutex);
+  
   return(is_connected);
 }
 
@@ -550,13 +593,22 @@ ags_sfz_region_connect(AgsConnectable *connectable)
 {
   AgsSFZRegion *sfz_region;
 
+  GRecMutex *sfz_region_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   sfz_region = AGS_SFZ_REGION(connectable);
+
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
+
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  sfz_region->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_sfz_region_set_flags(sfz_region, AGS_SFZ_REGION_CONNECTED);
+  g_rec_mutex_unlock(sfz_region_mutex);
 }
 
 void
@@ -564,13 +616,22 @@ ags_sfz_region_disconnect(AgsConnectable *connectable)
 {
   AgsSFZRegion *sfz_region;
 
+  GRecMutex *sfz_region_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   sfz_region = AGS_SFZ_REGION(connectable);
 
-  ags_sfz_region_unset_flags(sfz_region, AGS_SFZ_REGION_CONNECTED);
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
+
+  g_rec_mutex_lock(sfz_region_mutex);
+
+  sfz_region->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(sfz_region_mutex);
 }
 
 /**

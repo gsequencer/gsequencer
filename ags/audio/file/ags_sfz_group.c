@@ -210,8 +210,9 @@ ags_sfz_group_init(AgsSFZGroup *sfz_group)
   AgsConfig *config;
 
   sfz_group->flags = 0;
+  sfz_group->connectable_flags = 0;
 
-  /* add audio file mutex */
+  /* add sfz group mutex */
   g_rec_mutex_init(&(sfz_group->obj_mutex)); 
 
   /* uuid */
@@ -422,7 +423,7 @@ ags_sfz_group_get_uuid(AgsConnectable *connectable)
 
   sfz_group = AGS_SFZ_GROUP(connectable);
 
-  /* get audio file mutex */
+  /* get sfz group mutex */
   sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
 
   /* get UUID */
@@ -448,11 +449,20 @@ ags_sfz_group_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *sfz_group_mutex;
+
   sfz_group = AGS_SFZ_GROUP(connectable);
 
-  /* check is ready */
-  is_ready = ags_sfz_group_test_flags(sfz_group, AGS_SFZ_GROUP_ADDED_TO_REGISTRY);
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
 
+  /* check is ready */
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (sfz_group->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sfz_group_mutex);
+  
   return(is_ready);
 }
 
@@ -466,13 +476,22 @@ ags_sfz_group_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *sfz_group_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   sfz_group = AGS_SFZ_GROUP(connectable);
 
-  ags_sfz_group_set_flags(sfz_group, AGS_SFZ_GROUP_ADDED_TO_REGISTRY);
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  sfz_group->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(sfz_group_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -490,9 +509,24 @@ ags_sfz_group_add_to_registry(AgsConnectable *connectable)
 void
 ags_sfz_group_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsSFZGroup *sfz_group;
+
+  GRecMutex *sfz_group_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  sfz_group = AGS_SFZ_GROUP(connectable);
+
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  sfz_group->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(sfz_group_mutex);
 
   //TODO:JK: implement me
 }
@@ -535,11 +569,20 @@ ags_sfz_group_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *sfz_group_mutex;
+
   sfz_group = AGS_SFZ_GROUP(connectable);
 
-  /* check is connected */
-  is_connected = ags_sfz_group_test_flags(sfz_group, AGS_SFZ_GROUP_CONNECTED);
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
 
+  /* check is connected */
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (sfz_group->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sfz_group_mutex);
+  
   return(is_connected);
 }
 
@@ -548,13 +591,22 @@ ags_sfz_group_connect(AgsConnectable *connectable)
 {
   AgsSFZGroup *sfz_group;
 
+  GRecMutex *sfz_group_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   sfz_group = AGS_SFZ_GROUP(connectable);
+
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  sfz_group->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_sfz_group_set_flags(sfz_group, AGS_SFZ_GROUP_CONNECTED);
+  g_rec_mutex_unlock(sfz_group_mutex);
 }
 
 void
@@ -562,13 +614,22 @@ ags_sfz_group_disconnect(AgsConnectable *connectable)
 {
   AgsSFZGroup *sfz_group;
 
+  GRecMutex *sfz_group_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   sfz_group = AGS_SFZ_GROUP(connectable);
 
-  ags_sfz_group_unset_flags(sfz_group, AGS_SFZ_GROUP_CONNECTED);
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+
+  g_rec_mutex_lock(sfz_group_mutex);
+
+  sfz_group->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(sfz_group_mutex);
 }
 
 /**

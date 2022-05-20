@@ -39,24 +39,12 @@ G_BEGIN_DECLS
 typedef struct _AgsSFZGroup AgsSFZGroup;
 typedef struct _AgsSFZGroupClass AgsSFZGroupClass;
 
-/**
- * AgsSFZGroupFlags:
- * @AGS_SFZ_GROUP_ADDED_TO_REGISTRY: the sfz group was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_SFZ_GROUP_CONNECTED: indicates the sfz group was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsSFZGroup by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_SFZ_GROUP_ADDED_TO_REGISTRY    = 1,
-  AGS_SFZ_GROUP_CONNECTED            = 1 <<  1,
-}AgsSFZGroupFlags;
-
 struct _AgsSFZGroup
 {
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 
