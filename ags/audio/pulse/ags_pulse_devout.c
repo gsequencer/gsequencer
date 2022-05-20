@@ -1129,23 +1129,43 @@ ags_pulse_devout_finalize(GObject *gobject)
 {
   AgsPulseDevout *pulse_devout;
 
+  guint i;
+
   pulse_devout = AGS_PULSE_DEVOUT(gobject);
 
+  ags_uuid_free(pulse_devout->uuid);
+
+  for(i = 0; i < 8; i++){
+    g_rec_mutex_clear(pulse_devout->app_buffer_mutex[i]);
+
+    g_free(pulse_devout->app_buffer_mutex[i]);
+  }
+  
+  g_free(pulse_devout->app_buffer_mutex);
+  
+  for(i = 0; i < 8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
+    g_rec_mutex_clear(pulse_devout->sub_block_mutex[i]);
+
+    g_free(pulse_devout->sub_block_mutex[i]);
+  }
+
+  g_free(pulse_devout->sub_block_mutex);
+
   /* free output buffer */
-  free(pulse_devout->app_buffer[0]);
-  free(pulse_devout->app_buffer[1]);
-  free(pulse_devout->app_buffer[2]);
-  free(pulse_devout->app_buffer[3]);
-  free(pulse_devout->app_buffer[4]);
-  free(pulse_devout->app_buffer[5]);
-  free(pulse_devout->app_buffer[6]);
-  free(pulse_devout->app_buffer[7]);
+  g_free(pulse_devout->app_buffer[0]);
+  g_free(pulse_devout->app_buffer[1]);
+  g_free(pulse_devout->app_buffer[2]);
+  g_free(pulse_devout->app_buffer[3]);
+  g_free(pulse_devout->app_buffer[4]);
+  g_free(pulse_devout->app_buffer[5]);
+  g_free(pulse_devout->app_buffer[6]);
+  g_free(pulse_devout->app_buffer[7]);
 
   /* free buffer array */
-  free(pulse_devout->app_buffer);
+  g_free(pulse_devout->app_buffer);
 
-  /* free AgsAttack */
-  free(pulse_devout->attack);
+  g_free(pulse_devout->delay);
+  g_free(pulse_devout->attack);
 
   /* pulse client */
   if(pulse_devout->pulse_client != NULL){
