@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,17 +41,13 @@ typedef struct _AgsAudioToolboxClass AgsAudioToolboxClass;
 
 /**
  * AgsAudioToolboxFlags:
- * @AGS_AUDIO_TOOLBOX_ADDED_TO_REGISTRY: the audio_toolbox was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_AUDIO_TOOLBOX_CONNECTED: indicates the audio_toolbox was connected by calling #AgsConnectable::connect()
- * @AGS_SNDFILE_FILL_CACHE: fill cache
+ * @AGS_AUDIO_TOOLBOX_FILL_CACHE: fill cache
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAudioToolbox by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_TOOLBOX_ADDED_TO_REGISTRY    = 1,
-  AGS_AUDIO_TOOLBOX_CONNECTED            = 1 <<  1,
-  AGS_AUDIO_TOOLBOX_FILL_CACHE           = 1 <<  2,
+  AGS_AUDIO_TOOLBOX_FILL_CACHE           = 1,
 }AgsAudioToolboxFlags;
 
 struct _AgsAudioToolbox

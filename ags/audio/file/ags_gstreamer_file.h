@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,25 +51,13 @@ G_BEGIN_DECLS
 typedef struct _AgsGstreamerFile AgsGstreamerFile;
 typedef struct _AgsGstreamerFileClass AgsGstreamerFileClass;
 
-/**
- * AgsGstreamerFileFlags:
- * @AGS_GSTREAMER_FILE_ADDED_TO_REGISTRY: the gstreamer_file was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_GSTREAMER_FILE_CONNECTED: indicates the gstreamer_file was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsGstreamerFile by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_GSTREAMER_FILE_ADDED_TO_REGISTRY    = 1,
-  AGS_GSTREAMER_FILE_CONNECTED            = 1 <<  1,
-}AgsGstreamerFileFlags;
-
 struct _AgsGstreamerFile
 {
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

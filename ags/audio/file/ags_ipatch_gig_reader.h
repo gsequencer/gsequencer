@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,19 +48,6 @@ typedef struct _AgsIpatchGigReader AgsIpatchGigReader;
 typedef struct _AgsIpatchGigReaderClass AgsIpatchGigReaderClass;
 
 /**
- * AgsIpatchGigReaderFlags:
- * @AGS_IPATCH_GIG_READER_ADDED_TO_REGISTRY: the ipatch sample was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_IPATCH_GIG_READER_CONNECTED: indicates the ipatch sample was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsIpatchGigReader by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_IPATCH_GIG_READER_ADDED_TO_REGISTRY    = 1,
-  AGS_IPATCH_GIG_READER_CONNECTED            = 1 <<  1,
-}AgsIpatchGigReaderFlags;
-
-/**
  * AgsGigLevel:
  * @AGS_GIG_FILENAME: filename
  * @AGS_GIG_IHDR: instrument header
@@ -79,6 +66,7 @@ struct _AgsIpatchGigReader
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,19 +48,6 @@ typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
 typedef struct _AgsIpatchSF2ReaderClass AgsIpatchSF2ReaderClass;
 
 /**
- * AgsIpatchSF2ReaderFlags:
- * @AGS_IPATCH_SF2_READER_ADDED_TO_REGISTRY: the ipatch sample was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_IPATCH_SF2_READER_CONNECTED: indicates the ipatch sample was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsIpatchSF2Reader by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_IPATCH_SF2_READER_ADDED_TO_REGISTRY    = 1,
-  AGS_IPATCH_SF2_READER_CONNECTED            = 1 <<  1,
-}AgsIpatchSF2ReaderFlags;
-
-/**
  * AgsSF2Level:
  * @AGS_SF2_FILENAME: filename
  * @AGS_SF2_PHDR: preset header
@@ -81,6 +68,7 @@ struct _AgsIpatchSF2Reader
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 

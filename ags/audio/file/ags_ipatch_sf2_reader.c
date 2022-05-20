@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -171,6 +171,7 @@ ags_ipatch_sf2_reader_init(AgsIpatchSF2Reader *ipatch_sf2_reader)
   guint i;
 
   ipatch_sf2_reader->flags = 0;
+  ipatch_sf2_reader->connectable_flags = 0;
 
   /* add audio file mutex */
   g_rec_mutex_init(&(ipatch_sf2_reader->obj_mutex));
@@ -353,11 +354,20 @@ ags_ipatch_sf2_reader_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *ipatch_sf2_reader_mutex;
+
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
-  /* check is ready */  
-  is_ready = ags_ipatch_sf2_reader_test_flags(ipatch_sf2_reader, AGS_IPATCH_SF2_READER_ADDED_TO_REGISTRY);
+  /* get ipatch_sf2_reader mutex */
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
+  /* check is ready */
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (ipatch_sf2_reader->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
+  
   return(is_ready);
 }
 
@@ -371,13 +381,22 @@ ags_ipatch_sf2_reader_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *ipatch_sf2_reader_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
-  ags_ipatch_sf2_reader_set_flags(ipatch_sf2_reader, AGS_IPATCH_SF2_READER_ADDED_TO_REGISTRY);
+  /* get ipatch sf2 reader mutex */
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
+
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
+
+  ipatch_sf2_reader->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -395,9 +414,24 @@ ags_ipatch_sf2_reader_add_to_registry(AgsConnectable *connectable)
 void
 ags_ipatch_sf2_reader_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsIpatchSF2Reader *ipatch_sf2_reader;
+
+  GRecMutex *ipatch_sf2_reader_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
+
+  /* get ipatch sf2 reader mutex */
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
+
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
+
+  ipatch_sf2_reader->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 
   //TODO:JK: implement me
 }
@@ -440,11 +474,20 @@ ags_ipatch_sf2_reader_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *ipatch_sf2_reader_mutex;
+
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
-  /* check is connected */
-  is_connected = ags_ipatch_sf2_reader_test_flags(ipatch_sf2_reader, AGS_IPATCH_SF2_READER_CONNECTED);
+  /* get ipatch sf2 reader mutex */
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
+  /* check is connected */
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (ipatch_sf2_reader->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
+  
   return(is_connected);
 }
 
@@ -453,13 +496,22 @@ ags_ipatch_sf2_reader_connect(AgsConnectable *connectable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
+  GRecMutex *ipatch_sf2_reader_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
+
+  /* get ipatch sf2 reader mutex */
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
+
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
+
+  ipatch_sf2_reader->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_ipatch_sf2_reader_set_flags(ipatch_sf2_reader, AGS_IPATCH_SF2_READER_CONNECTED);
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 }
 
 void
@@ -467,13 +519,22 @@ ags_ipatch_sf2_reader_disconnect(AgsConnectable *connectable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
+  GRecMutex *ipatch_sf2_reader_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
-  ags_ipatch_sf2_reader_unset_flags(ipatch_sf2_reader, AGS_IPATCH_SF2_READER_CONNECTED);
+  /* get ipatch sf2 reader mutex */
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
+
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
+
+  ipatch_sf2_reader->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 }
 
 /**
