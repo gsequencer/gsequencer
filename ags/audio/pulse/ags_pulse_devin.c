@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -225,6 +225,30 @@ ags_pulse_devin_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_pulse_devin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PULSE_DEVIN_INITIALIZED, "AGS_PULSE_DEVIN_INITIALIZED", "pulse-devin-initialized" },
+      { AGS_PULSE_DEVIN_START_RECORD, "AGS_PULSE_DEVIN_START_RECORD", "pulse-devin-start-record" },
+      { AGS_PULSE_DEVIN_RECORD, "AGS_PULSE_DEVIN_RECORD", "pulse-devin-record" },
+      { AGS_PULSE_DEVIN_SHUTDOWN, "AGS_PULSE_DEVIN_SHUTDOWN", "pulse-devin-shutdown" },
+      { AGS_PULSE_DEVIN_NONBLOCKING, "AGS_PULSE_DEVIN_NONBLOCKING", "pulse-devin-nonblocking" },
+      { AGS_PULSE_DEVIN_ATTACK_FIRST, "AGS_PULSE_DEVIN_ATTACK_FIRST", "pulse-devin-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPulseDevinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -551,9 +575,11 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   gchar *segmentation;
 
   guint denominator, numerator;
+  guint i;
   
   /* flags */
   pulse_devin->flags = 0;
+  pulse_devin->connectable_flags = 0;
   g_atomic_int_set(&(pulse_devin->sync_flags),
 		   AGS_PULSE_DEVIN_PASS_THROUGH);
 
@@ -574,25 +600,37 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   pulse_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   pulse_devin->format = ags_soundcard_helper_config_get_format(config);
 
-  /*  */
-  pulse_devin->card_uri = NULL;
-  pulse_devin->pulse_client = NULL;
-
-  pulse_devin->port_name = NULL;
-  pulse_devin->pulse_port = NULL;
-
   /* buffer */
-  pulse_devin->buffer = (void **) malloc(8 * sizeof(void*));
+  pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_0;
 
-  pulse_devin->buffer[0] = NULL;
-  pulse_devin->buffer[1] = NULL;
-  pulse_devin->buffer[2] = NULL;
-  pulse_devin->buffer[3] = NULL;
-  pulse_devin->buffer[4] = NULL;
-  pulse_devin->buffer[5] = NULL;
-  pulse_devin->buffer[6] = NULL;
-  pulse_devin->buffer[7] = NULL;
-  
+  pulse_devin->app_buffer_mutex = (GRecMutex **) g_malloc(8 * sizeof(GRecMutex *));
+
+  for(i = 0; i < 8; i++){
+    pulse_devin->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(pulse_devin->app_buffer_mutex[i]);
+  }
+
+  pulse_devin->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
+  pulse_devin->sub_block_mutex = (GRecMutex **) g_malloc(8 * pulse_devin->sub_block_count * pulse_devin->pcm_channels * sizeof(GRecMutex *));
+
+  for(i = 0; i < 8 * pulse_devin->sub_block_count * pulse_devin->pcm_channels; i++){
+    pulse_devin->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(pulse_devin->sub_block_mutex[i]);
+  }
+
+  pulse_devin->app_buffer = (void **) g_malloc(8 * sizeof(void*));
+
+  pulse_devin->app_buffer[0] = NULL;
+  pulse_devin->app_buffer[1] = NULL;
+  pulse_devin->app_buffer[2] = NULL;
+  pulse_devin->app_buffer[3] = NULL;
+  pulse_devin->app_buffer[4] = NULL;
+  pulse_devin->app_buffer[5] = NULL;
+  pulse_devin->app_buffer[6] = NULL;
+  pulse_devin->app_buffer[7] = NULL;
+
   ags_pulse_devin_realloc_buffer(pulse_devin);
   
   /* bpm */
@@ -617,11 +655,11 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   }
 
   /* delay and attack */
-  pulse_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					  sizeof(gdouble));
+  pulse_devin->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					    sizeof(gdouble));
   
-  pulse_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(guint));
+  pulse_devin->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					   sizeof(guint));
 
   ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
   
@@ -640,6 +678,13 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   pulse_devin->do_loop = FALSE;
 
   pulse_devin->loop_offset = 0;
+
+  /*  */
+  pulse_devin->card_uri = NULL;
+  pulse_devin->pulse_client = NULL;
+
+  pulse_devin->port_name = NULL;
+  pulse_devin->pulse_port = NULL;
 
   /* callback mutex */
   g_mutex_init(&(pulse_devin->callback_mutex));
@@ -950,7 +995,7 @@ ags_pulse_devin_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(pulse_devin_mutex);
 
-      g_value_set_pointer(value, pulse_devin->buffer);
+      g_value_set_pointer(value, pulse_devin->app_buffer);
 
       g_rec_mutex_unlock(pulse_devin_mutex);
     }
@@ -1041,20 +1086,20 @@ ags_pulse_devin_finalize(GObject *gobject)
   pulse_devin = AGS_PULSE_DEVIN(gobject);
 
   /* free output buffer */
-  free(pulse_devin->buffer[0]);
-  free(pulse_devin->buffer[1]);
-  free(pulse_devin->buffer[2]);
-  free(pulse_devin->buffer[3]);
-  free(pulse_devin->buffer[4]);
-  free(pulse_devin->buffer[5]);
-  free(pulse_devin->buffer[6]);
-  free(pulse_devin->buffer[7]);
+  g_free(pulse_devin->app_buffer[0]);
+  g_free(pulse_devin->app_buffer[1]);
+  g_free(pulse_devin->app_buffer[2]);
+  g_free(pulse_devin->app_buffer[3]);
+  g_free(pulse_devin->app_buffer[4]);
+  g_free(pulse_devin->app_buffer[5]);
+  g_free(pulse_devin->app_buffer[6]);
+  g_free(pulse_devin->app_buffer[7]);
 
   /* free buffer array */
-  free(pulse_devin->buffer);
+  g_free(pulse_devin->app_buffer);
 
   /* free AgsAttack */
-  free(pulse_devin->attack);
+  g_free(pulse_devin->attack);
 
   /* pulse client */
   if(pulse_devin->pulse_client != NULL){
@@ -1106,10 +1151,19 @@ ags_pulse_devin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(connectable);
 
-  /* check is added */
-  is_ready = ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_ADDED_TO_REGISTRY);
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
+  /* check is ready */
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (pulse_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_devin_mutex);
   
   return(is_ready);
 }
@@ -1119,13 +1173,22 @@ ags_pulse_devin_add_to_registry(AgsConnectable *connectable)
 {
   AgsPulseDevin *pulse_devin;
 
+  GRecMutex *pulse_devin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   pulse_devin = AGS_PULSE_DEVIN(connectable);
 
-  ags_pulse_devin_set_flags(pulse_devin, AGS_PULSE_DEVIN_ADDED_TO_REGISTRY);
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(pulse_devin_mutex);
 }
 
 void
@@ -1133,13 +1196,22 @@ ags_pulse_devin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsPulseDevin *pulse_devin;
 
+  GRecMutex *pulse_devin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   pulse_devin = AGS_PULSE_DEVIN(connectable);
 
-  ags_pulse_devin_unset_flags(pulse_devin, AGS_PULSE_DEVIN_ADDED_TO_REGISTRY);
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(pulse_devin_mutex);
 }
 
 xmlNode*
@@ -1180,10 +1252,19 @@ ags_pulse_devin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(connectable);
 
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
   /* check is connected */
-  is_connected = ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_CONNECTED);
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pulse_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_devin_mutex);
   
   return(is_connected);
 }
@@ -1192,29 +1273,46 @@ void
 ags_pulse_devin_connect(AgsConnectable *connectable)
 {
   AgsPulseDevin *pulse_devin;
-  
+
+  GRecMutex *pulse_devin_mutex;
+    
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   pulse_devin = AGS_PULSE_DEVIN(connectable);
 
-  ags_pulse_devin_set_flags(pulse_devin, AGS_PULSE_DEVIN_CONNECTED);
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(pulse_devin_mutex);
 }
 
 void
 ags_pulse_devin_disconnect(AgsConnectable *connectable)
 {
-
   AgsPulseDevin *pulse_devin;
+
+  GRecMutex *pulse_devin_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   pulse_devin = AGS_PULSE_DEVIN(connectable);
+
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_pulse_devin_unset_flags(pulse_devin, AGS_PULSE_DEVIN_CONNECTED);
+  g_rec_mutex_unlock(pulse_devin_mutex);
 }
 
 /**
@@ -1744,19 +1842,19 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
   }
   
   /* prepare for playback */
-  pulse_devin->flags |= (AGS_PULSE_DEVIN_BUFFER7 |
-			 AGS_PULSE_DEVIN_START_RECORD |
+  pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_7;  
+  pulse_devin->flags |= (AGS_PULSE_DEVIN_START_RECORD |
 			 AGS_PULSE_DEVIN_RECORD |
 			 AGS_PULSE_DEVIN_NONBLOCKING);
 
-  memset(pulse_devin->buffer[0], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[1], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[2], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[3], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[4], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[5], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[6], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[7], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[0], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[1], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[2], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[3], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[4], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[5], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[6], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[7], 0, pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
 
   /*  */
   pulse_devin->tact_counter = 0.0;
@@ -1962,15 +2060,8 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
   
-  pulse_devin->flags &= (~(AGS_PULSE_DEVIN_BUFFER0 |
-			   AGS_PULSE_DEVIN_BUFFER1 |
-			   AGS_PULSE_DEVIN_BUFFER2 |
-			   AGS_PULSE_DEVIN_BUFFER3 |
-			   AGS_PULSE_DEVIN_BUFFER4 |
-			   AGS_PULSE_DEVIN_BUFFER5 |
-			   AGS_PULSE_DEVIN_BUFFER6 |
-			   AGS_PULSE_DEVIN_BUFFER7 |
-			   AGS_PULSE_DEVIN_RECORD));
+  pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_0;
+  pulse_devin->flags &= (~(AGS_PULSE_DEVIN_RECORD));
 
   g_atomic_int_or(&(pulse_devin->sync_flags),
 		  AGS_PULSE_DEVIN_PASS_THROUGH);
@@ -2047,14 +2138,14 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
 
   g_rec_mutex_lock(pulse_devin_mutex);
   
-  memset(pulse_devin->buffer[0], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[1], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[2], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[3], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[4], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[5], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[6], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-  memset(pulse_devin->buffer[7], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[0], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[1], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[2], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[3], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[4], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[5], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[6], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  memset(pulse_devin->app_buffer[7], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
 
   g_rec_mutex_unlock(pulse_devin_mutex);
 }
@@ -2331,28 +2422,37 @@ ags_pulse_devin_get_buffer(AgsSoundcard *soundcard)
   AgsPulseDevin *pulse_devin;
 
   void *buffer;
+
+  GRecMutex *pulse_devin_mutex;  
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
 
-  if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER0)){
-    buffer = pulse_devin->buffer[0];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER1)){
-    buffer = pulse_devin->buffer[1];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER2)){
-    buffer = pulse_devin->buffer[2];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER3)){
-    buffer = pulse_devin->buffer[3];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER4)){
-    buffer = pulse_devin->buffer[4];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER5)){
-    buffer = pulse_devin->buffer[5];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER6)){
-    buffer = pulse_devin->buffer[6];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER7)){
-    buffer = pulse_devin->buffer[7];
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_0){
+    buffer = pulse_devin->app_buffer[0];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_1){
+    buffer = pulse_devin->app_buffer[1];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_2){
+    buffer = pulse_devin->app_buffer[2];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_3){
+    buffer = pulse_devin->app_buffer[3];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_4){
+    buffer = pulse_devin->app_buffer[4];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_5){
+    buffer = pulse_devin->app_buffer[5];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_6){
+    buffer = pulse_devin->app_buffer[6];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_7){
+    buffer = pulse_devin->app_buffer[7];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(pulse_devin_mutex);
 
   return(buffer);
 }
@@ -2363,28 +2463,37 @@ ags_pulse_devin_get_next_buffer(AgsSoundcard *soundcard)
   AgsPulseDevin *pulse_devin;
 
   void *buffer;
+
+  GRecMutex *pulse_devin_mutex;  
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
 
-  if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER0)){
-    buffer = pulse_devin->buffer[1];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER1)){
-    buffer = pulse_devin->buffer[2];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER2)){
-    buffer = pulse_devin->buffer[3];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER3)){
-    buffer = pulse_devin->buffer[4];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER4)){
-    buffer = pulse_devin->buffer[5];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER5)){
-    buffer = pulse_devin->buffer[6];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER6)){
-    buffer = pulse_devin->buffer[7];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER7)){
-    buffer = pulse_devin->buffer[8];
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_0){
+    buffer = pulse_devin->app_buffer[1];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_1){
+    buffer = pulse_devin->app_buffer[2];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_2){
+    buffer = pulse_devin->app_buffer[3];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_3){
+    buffer = pulse_devin->app_buffer[4];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_4){
+    buffer = pulse_devin->app_buffer[5];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_5){
+    buffer = pulse_devin->app_buffer[6];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_6){
+    buffer = pulse_devin->app_buffer[7];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_7){
+    buffer = pulse_devin->app_buffer[0];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(pulse_devin_mutex);
 
   return(buffer);
 }
@@ -2395,28 +2504,37 @@ ags_pulse_devin_get_prev_buffer(AgsSoundcard *soundcard)
   AgsPulseDevin *pulse_devin;
 
   void *buffer;
+
+  GRecMutex *pulse_devin_mutex;  
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER0)){
-    buffer = pulse_devin->buffer[7];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER1)){
-    buffer = pulse_devin->buffer[0];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER2)){
-    buffer = pulse_devin->buffer[1];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER3)){
-    buffer = pulse_devin->buffer[2];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER4)){
-    buffer = pulse_devin->buffer[3];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER5)){
-    buffer = pulse_devin->buffer[4];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER6)){
-    buffer = pulse_devin->buffer[5];
-  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER7)){
-    buffer = pulse_devin->buffer[6];
+  /* get pulse devin mutex */
+  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
+
+  g_rec_mutex_lock(pulse_devin_mutex);
+
+  if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_0){
+    buffer = pulse_devin->app_buffer[7];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_1){
+    buffer = pulse_devin->app_buffer[0];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_2){
+    buffer = pulse_devin->app_buffer[1];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_3){
+    buffer = pulse_devin->app_buffer[2];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_4){
+    buffer = pulse_devin->app_buffer[3];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_5){
+    buffer = pulse_devin->app_buffer[4];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_6){
+    buffer = pulse_devin->app_buffer[5];
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_7){
+    buffer = pulse_devin->app_buffer[6];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(pulse_devin_mutex);
 
   return(buffer);
 }
@@ -2687,30 +2805,22 @@ ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin)
   /* switch buffer flag */
   g_rec_mutex_lock(pulse_devin_mutex);
 
-  if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER0);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER1;
-  }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER1);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER2;
-  }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER2);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER3;
-  }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER3);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER4;
-  }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER4);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER5;
-  }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER5);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER6;
-  }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER6);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER7;
-  }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER7);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER0;
+  if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_0){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_1;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_1){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_2;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_2){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_3;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_3){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_4;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_4){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_5;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_5){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_6;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_6){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_7;
+  }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_7){
+    pulse_devin->app_buffer_mode = AGS_PULSE_DEVIN_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(pulse_devin_mutex);
@@ -2790,61 +2900,61 @@ ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin)
     return;
   }
   
-  /* AGS_PULSE_DEVIN_BUFFER_0 */
-  if(pulse_devin->buffer[0] != NULL){
-    free(pulse_devin->buffer[0]);
+  /* AGS_PULSE_DEVIN_APP_BUFFER_0 */
+  if(pulse_devin->app_buffer[0] != NULL){
+    g_free(pulse_devin->app_buffer[0]);
   }
   
-  pulse_devin->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devin->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_PULSE_DEVIN_BUFFER_1 */
-  if(pulse_devin->buffer[1] != NULL){
-    free(pulse_devin->buffer[1]);
-  }
-
-  pulse_devin->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
-  
-  /* AGS_PULSE_DEVIN_BUFFER_2 */
-  if(pulse_devin->buffer[2] != NULL){
-    free(pulse_devin->buffer[2]);
+  /* AGS_PULSE_DEVIN_APP_BUFFER_1 */
+  if(pulse_devin->app_buffer[1] != NULL){
+    g_free(pulse_devin->app_buffer[1]);
   }
 
-  pulse_devin->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devin->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_PULSE_DEVIN_BUFFER_3 */
-  if(pulse_devin->buffer[3] != NULL){
-    free(pulse_devin->buffer[3]);
+  /* AGS_PULSE_DEVIN_APP_BUFFER_2 */
+  if(pulse_devin->app_buffer[2] != NULL){
+    g_free(pulse_devin->app_buffer[2]);
   }
-  
-  pulse_devin->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVIN_BUFFER_4 */
-  if(pulse_devin->buffer[4] != NULL){
-    free(pulse_devin->buffer[4]);
+  pulse_devin->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+  
+  /* AGS_PULSE_DEVIN_APP_BUFFER_3 */
+  if(pulse_devin->app_buffer[3] != NULL){
+    g_free(pulse_devin->app_buffer[3]);
   }
   
-  pulse_devin->buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devin->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVIN_BUFFER_5 */
-  if(pulse_devin->buffer[5] != NULL){
-    free(pulse_devin->buffer[5]);
+  /* AGS_PULSE_DEVIN_APP_BUFFER_4 */
+  if(pulse_devin->app_buffer[4] != NULL){
+    g_free(pulse_devin->app_buffer[4]);
   }
   
-  pulse_devin->buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devin->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVIN_BUFFER_6 */
-  if(pulse_devin->buffer[6] != NULL){
-    free(pulse_devin->buffer[6]);
+  /* AGS_PULSE_DEVIN_APP_BUFFER_5 */
+  if(pulse_devin->app_buffer[5] != NULL){
+    g_free(pulse_devin->app_buffer[5]);
   }
   
-  pulse_devin->buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devin->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVIN_BUFFER_7 */
-  if(pulse_devin->buffer[7] != NULL){
-    free(pulse_devin->buffer[7]);
+  /* AGS_PULSE_DEVIN_APP_BUFFER_6 */
+  if(pulse_devin->app_buffer[6] != NULL){
+    g_free(pulse_devin->app_buffer[6]);
   }
   
-  pulse_devin->buffer[7] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devin->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  /* AGS_PULSE_DEVIN_APP_BUFFER_7 */
+  if(pulse_devin->app_buffer[7] != NULL){
+    g_free(pulse_devin->app_buffer[7]);
+  }
+  
+  pulse_devin->app_buffer[7] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**

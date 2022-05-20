@@ -140,6 +140,7 @@ void
 ags_jack_port_class_init(AgsJackPortClass *jack_port)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_jack_port_parent_class = g_type_class_peek_parent(jack_port);

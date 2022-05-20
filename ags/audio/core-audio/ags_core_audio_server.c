@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -287,6 +287,7 @@ ags_core_audio_server_init(AgsCoreAudioServer *core_audio_server)
 {
   /* flags */
   core_audio_server->flags = 0;
+  core_audio_server->connectable_flags = 0;
 
   /* server mutex */
   g_rec_mutex_init(&(core_audio_server->obj_mutex));
@@ -605,10 +606,19 @@ ags_core_audio_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *core_audio_server_mutex;
+
   core_audio_server = AGS_CORE_AUDIO_SERVER(connectable);
 
-  /* check is added */
-  is_ready = ags_core_audio_server_test_flags(core_audio_server, AGS_CORE_AUDIO_SERVER_ADDED_TO_REGISTRY);
+  /* get core_audio server mutex */
+  core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
+
+  /* check is ready */
+  g_rec_mutex_lock(core_audio_server_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (core_audio_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(core_audio_server_mutex);
   
   return(is_ready);
 }
@@ -618,13 +628,22 @@ ags_core_audio_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsCoreAudioServer *core_audio_server;
 
+  GRecMutex *core_audio_server_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   core_audio_server = AGS_CORE_AUDIO_SERVER(connectable);
 
-  ags_core_audio_server_set_flags(core_audio_server, AGS_CORE_AUDIO_SERVER_ADDED_TO_REGISTRY);
+  /* get core_audio server mutex */
+  core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
+
+  g_rec_mutex_lock(core_audio_server_mutex);
+
+  core_audio_server->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(core_audio_server_mutex);
 }
 
 void
@@ -632,13 +651,22 @@ ags_core_audio_server_remove_from_registry(AgsConnectable *connectable)
 {
   AgsCoreAudioServer *core_audio_server;
 
+  GRecMutex *core_audio_server_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(connectable);
 
-  ags_core_audio_server_unset_flags(core_audio_server, AGS_CORE_AUDIO_SERVER_ADDED_TO_REGISTRY);
+  /* get core_audio server mutex */
+  core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
+
+  g_rec_mutex_lock(core_audio_server_mutex);
+
+  core_audio_server->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(core_audio_server_mutex);
 }
 
 xmlNode*
@@ -679,10 +707,19 @@ ags_core_audio_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *core_audio_server_mutex;
+
   core_audio_server = AGS_CORE_AUDIO_SERVER(connectable);
 
+  /* get core_audio server mutex */
+  core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
+
   /* check is connected */
-  is_connected = ags_core_audio_server_test_flags(core_audio_server, AGS_CORE_AUDIO_SERVER_CONNECTED);
+  g_rec_mutex_lock(core_audio_server_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (core_audio_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(core_audio_server_mutex);
   
   return(is_connected);
 }
@@ -702,13 +739,19 @@ ags_core_audio_server_connect(AgsConnectable *connectable)
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(connectable);
 
-  ags_core_audio_server_set_flags(core_audio_server, AGS_CORE_AUDIO_SERVER_CONNECTED);
-
   /* get core_audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
+  g_rec_mutex_lock(core_audio_server_mutex);
+
+  core_audio_server->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(core_audio_server_mutex);
+
   list =
-    list_start = g_list_copy(core_audio_server->client);
+    list_start = g_list_copy_deep(core_audio_server->client,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -716,7 +759,8 @@ ags_core_audio_server_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
@@ -734,14 +778,20 @@ ags_core_audio_server_disconnect(AgsConnectable *connectable)
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(connectable);
   
-  ags_core_audio_server_unset_flags(core_audio_server, AGS_CORE_AUDIO_SERVER_CONNECTED);
-
   /* get core_audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
+  g_rec_mutex_lock(core_audio_server_mutex);
+
+  core_audio_server->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(core_audio_server_mutex);
+
   /* client */
   list =
-    list_start = g_list_copy(core_audio_server->client);
+    list_start = g_list_copy_deep(core_audio_server->client,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -749,7 +799,8 @@ ags_core_audio_server_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

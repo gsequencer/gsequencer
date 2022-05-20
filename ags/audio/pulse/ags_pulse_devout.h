@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,53 +36,59 @@ G_BEGIN_DECLS
 
 #define AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsPulseDevout *) obj)->obj_mutex))
 
+#define AGS_PULSE_DEVOUT_DEFAULT_APP_BUFFER_SIZE (8)
+
 typedef struct _AgsPulseDevout AgsPulseDevout;
 typedef struct _AgsPulseDevoutClass AgsPulseDevoutClass;
 
 /**
  * AgsPulseDevoutFlags:
- * @AGS_PULSE_DEVOUT_ADDED_TO_REGISTRY: the pulseaudio devout was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_PULSE_DEVOUT_CONNECTED: indicates the pulseaudio devout was connected by calling #AgsConnectable::connect()
- * @AGS_PULSE_DEVOUT_BUFFER0: ring-buffer 0
- * @AGS_PULSE_DEVOUT_BUFFER1: ring-buffer 1
- * @AGS_PULSE_DEVOUT_BUFFER2: ring-buffer 2
- * @AGS_PULSE_DEVOUT_BUFFER3: ring-buffer 3
- * @AGS_PULSE_DEVOUT_BUFFER4: ring-buffer 4
- * @AGS_PULSE_DEVOUT_BUFFER5: ring-buffer 5
- * @AGS_PULSE_DEVOUT_BUFFER6: ring-buffer 6
- * @AGS_PULSE_DEVOUT_BUFFER7: ring-buffer 7
- * @AGS_PULSE_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_PULSE_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_PULSE_DEVOUT_START_PLAY: playback starting
  * @AGS_PULSE_DEVOUT_PLAY: do playback
  * @AGS_PULSE_DEVOUT_SHUTDOWN: stop playback
- * @AGS_PULSE_DEVOUT_START_PLAY: playback starting
  * @AGS_PULSE_DEVOUT_NONBLOCKING: do non-blocking calls
- * @AGS_PULSE_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_PULSE_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
  *
  * Enum values to control the behavior or indicate internal state of #AgsPulseDevout by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PULSE_DEVOUT_ADDED_TO_REGISTRY              = 1,
-  AGS_PULSE_DEVOUT_CONNECTED                      = 1 <<  1,
+  AGS_PULSE_DEVOUT_INITIALIZED                    = 1,
 
-  AGS_PULSE_DEVOUT_BUFFER0                        = 1 <<  2,
-  AGS_PULSE_DEVOUT_BUFFER1                        = 1 <<  3,
-  AGS_PULSE_DEVOUT_BUFFER2                        = 1 <<  4,
-  AGS_PULSE_DEVOUT_BUFFER3                        = 1 <<  5,
-  AGS_PULSE_DEVOUT_BUFFER4                        = 1 <<  6,
-  AGS_PULSE_DEVOUT_BUFFER5                        = 1 <<  7,
-  AGS_PULSE_DEVOUT_BUFFER6                        = 1 <<  8,
-  AGS_PULSE_DEVOUT_BUFFER7                        = 1 <<  9,
+  AGS_PULSE_DEVOUT_START_PLAY                     = 1 <<  1,
+  AGS_PULSE_DEVOUT_PLAY                           = 1 <<  2,
+  AGS_PULSE_DEVOUT_SHUTDOWN                       = 1 <<  3,
 
-  AGS_PULSE_DEVOUT_ATTACK_FIRST                   = 1 << 10,
+  AGS_PULSE_DEVOUT_NONBLOCKING                    = 1 <<  4,
 
-  AGS_PULSE_DEVOUT_PLAY                           = 1 << 11,
-  AGS_PULSE_DEVOUT_SHUTDOWN                       = 1 << 12,
-  AGS_PULSE_DEVOUT_START_PLAY                     = 1 << 13,
-
-  AGS_PULSE_DEVOUT_NONBLOCKING                    = 1 << 14,
-  AGS_PULSE_DEVOUT_INITIALIZED                    = 1 << 15,
+  AGS_PULSE_DEVOUT_ATTACK_FIRST                   = 1 <<  5,
 }AgsPulseDevoutFlags;
+
+/**
+ * AgsPulseDevoutAppBufferMode:
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_0: ring-buffer 0
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_1: ring-buffer 1
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_2: ring-buffer 2
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_3: ring-buffer 3
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_4: ring-buffer 4
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_5: ring-buffer 5
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_6: ring-buffer 6
+ * @AGS_PULSE_DEVOUT_APP_BUFFER_7: ring-buffer 7
+ * 
+ * Enum values to indicate internal state of #AgsPulseDevout application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_PULSE_DEVOUT_APP_BUFFER_0,
+  AGS_PULSE_DEVOUT_APP_BUFFER_1,
+  AGS_PULSE_DEVOUT_APP_BUFFER_2,
+  AGS_PULSE_DEVOUT_APP_BUFFER_3,
+  AGS_PULSE_DEVOUT_APP_BUFFER_4,
+  AGS_PULSE_DEVOUT_APP_BUFFER_5,
+  AGS_PULSE_DEVOUT_APP_BUFFER_6,
+  AGS_PULSE_DEVOUT_APP_BUFFER_7,
+}AgsPulseDevoutAppBufferMode;
 
 /**
  * AgsPulseDevoutSyncFlags:
@@ -115,6 +121,7 @@ struct _AgsPulseDevout
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   volatile guint sync_flags;
   
   GRecMutex obj_mutex;
@@ -127,12 +134,14 @@ struct _AgsPulseDevout
   guint buffer_size;
   guint samplerate;
 
-  GRecMutex **buffer_mutex;
+  guint app_buffer_mode;
+
+  GRecMutex **app_buffer_mutex;
 
   guint sub_block_count;
   GRecMutex **sub_block_mutex;
 
-  void **buffer;
+  void **app_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;
@@ -175,6 +184,7 @@ struct _AgsPulseDevoutClass
 };
 
 GType ags_pulse_devout_get_type();
+GType ags_pulse_devout_flags_get_type();
 
 GQuark ags_pulse_devout_error_quark();
 

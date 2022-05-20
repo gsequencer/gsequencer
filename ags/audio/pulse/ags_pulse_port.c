@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,6 +130,29 @@ ags_pulse_port_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_pulse_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PULSE_PORT_REGISTERED, "AGS_PULSE_PORT_REGISTERED", "pulse-port-registered" },
+      { AGS_PULSE_PORT_IS_AUDIO, "AGS_PULSE_PORT_IS_AUDIO", "pulse-port-is-audio" },
+      { AGS_PULSE_PORT_IS_MIDI, "AGS_PULSE_PORT_IS_MIDI", "pulse-port-is-midi" },
+      { AGS_PULSE_PORT_IS_OUTPUT, "AGS_PULSE_PORT_IS_OUTPUT", "pulse-port-is-output" },
+      { AGS_PULSE_PORT_IS_INPUT, "AGS_PULSE_PORT_IS_INPUT", "pulse-port-is-input" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPulsePortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
 {
@@ -249,6 +272,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   
   /* flags */
   pulse_port->flags = 0;
+  pulse_port->connectable_flags = 0;
 
   /* port mutex */
   g_rec_mutex_init(&(pulse_port->obj_mutex));
@@ -690,10 +714,19 @@ ags_pulse_port_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *pulse_port_mutex;
+
   pulse_port = AGS_PULSE_PORT(connectable);
 
-  /* check is added */
-  is_ready = ags_pulse_port_test_flags(pulse_port, AGS_PULSE_PORT_ADDED_TO_REGISTRY);
+  /* get pulse port mutex */
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
+
+  /* check is ready */
+  g_rec_mutex_lock(pulse_port_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (pulse_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_port_mutex);
   
   return(is_ready);
 }
@@ -703,13 +736,22 @@ ags_pulse_port_add_to_registry(AgsConnectable *connectable)
 {
   AgsPulsePort *pulse_port;
 
+  GRecMutex *pulse_port_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   pulse_port = AGS_PULSE_PORT(connectable);
 
-  ags_pulse_port_set_flags(pulse_port, AGS_PULSE_PORT_ADDED_TO_REGISTRY);
+  /* get pulse port mutex */
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
+
+  g_rec_mutex_lock(pulse_port_mutex);
+
+  pulse_port->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(pulse_port_mutex);
 }
 
 void
@@ -717,13 +759,22 @@ ags_pulse_port_remove_from_registry(AgsConnectable *connectable)
 {
   AgsPulsePort *pulse_port;
 
+  GRecMutex *pulse_port_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   pulse_port = AGS_PULSE_PORT(connectable);
 
-  ags_pulse_port_unset_flags(pulse_port, AGS_PULSE_PORT_ADDED_TO_REGISTRY);
+  /* get pulse port mutex */
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
+
+  g_rec_mutex_lock(pulse_port_mutex);
+
+  pulse_port->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(pulse_port_mutex);
 }
 
 xmlNode*
@@ -764,10 +815,19 @@ ags_pulse_port_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *pulse_port_mutex;
+
   pulse_port = AGS_PULSE_PORT(connectable);
 
+  /* get pulse port mutex */
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
+
   /* check is connected */
-  is_connected = ags_pulse_port_test_flags(pulse_port, AGS_PULSE_PORT_CONNECTED);
+  g_rec_mutex_lock(pulse_port_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pulse_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_port_mutex);
   
   return(is_connected);
 }
@@ -776,6 +836,8 @@ void
 ags_pulse_port_connect(AgsConnectable *connectable)
 {
   AgsPulsePort *pulse_port;
+
+  GRecMutex *pulse_port_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -783,22 +845,37 @@ ags_pulse_port_connect(AgsConnectable *connectable)
 
   pulse_port = AGS_PULSE_PORT(connectable);
 
-  ags_pulse_port_set_flags(pulse_port, AGS_PULSE_PORT_CONNECTED);
+  /* get pulse port mutex */
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
+
+  g_rec_mutex_lock(pulse_port_mutex);
+
+  pulse_port->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(pulse_port_mutex);
 }
 
 void
 ags_pulse_port_disconnect(AgsConnectable *connectable)
 {
-
   AgsPulsePort *pulse_port;
+
+  GRecMutex *pulse_port_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   pulse_port = AGS_PULSE_PORT(connectable);
+
+  /* get pulse port mutex */
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
+
+  g_rec_mutex_lock(pulse_port_mutex);
+
+  pulse_port->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_pulse_port_unset_flags(pulse_port, AGS_PULSE_PORT_CONNECTED);
+  g_rec_mutex_unlock(pulse_port_mutex);
 }
 
 /**
@@ -1618,21 +1695,21 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     }
 
     /* get buffer */  
-    if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
+    if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_0){
       nth_buffer = 7;
-    }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_1){
       nth_buffer = 0;
-    }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_2){
       nth_buffer = 1;
-    }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_3){
       nth_buffer = 2;
-    }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_4){
       nth_buffer = 3;
-    }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_5){
       nth_buffer = 4;
-    }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_6){
       nth_buffer = 5;
-    }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_7){
       nth_buffer = 6;
     }else{
       empty_run = TRUE;
@@ -1669,21 +1746,21 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     }
     
     /* get buffer */  
-    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+    if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_0){
       nth_buffer = 7;
-    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_1){
       nth_buffer = 0;
-    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_2){
       nth_buffer = 1;
-    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_3){
       nth_buffer = 2;
-    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_4){
       nth_buffer = 3;
-    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_5){
       nth_buffer = 4;
-    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_6){
       nth_buffer = 5;
-    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_7){
       nth_buffer = 6;
     }else{
       empty_run = TRUE;
@@ -1716,21 +1793,21 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   if(pulse_devout != NULL){
     if(!empty_run){
       n_bytes = 0;
-      pa_stream_begin_write(stream, &(pulse_devout->buffer[nth_buffer]), &n_bytes);
+      pa_stream_begin_write(stream, &(pulse_devout->app_buffer[nth_buffer]), &n_bytes);
     
-      //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
+      //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->app_buffer[nth_buffer],
       //							pulse_devout->pcm_channels * pulse_devout->buffer_size));
 
-      ags_soundcard_lock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->buffer[nth_buffer]);	    
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->app_buffer[nth_buffer]);	    
 
       pa_stream_write(stream,
-		      pulse_devout->buffer[nth_buffer],
+		      pulse_devout->app_buffer[nth_buffer],
 		      count,
 		      NULL,
 		      0,
 		      PA_SEEK_RELATIVE);
 	  
-      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->buffer[nth_buffer]);	    
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->app_buffer[nth_buffer]);	    
 
       g_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
@@ -1794,7 +1871,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }else if(pulse_devin != NULL){
     if(!empty_run){
       pa_stream_peek(stream,
-		     &(pulse_devin->buffer[nth_buffer]),
+		     &(pulse_devin->app_buffer[nth_buffer]),
 		     &count);
       
       g_atomic_int_set(&(pulse_port->is_empty),

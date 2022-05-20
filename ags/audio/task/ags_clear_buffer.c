@@ -424,62 +424,80 @@ ags_clear_buffer_launch(AgsTask *task)
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->app_buffer[nth_buffer]);
   }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
     AgsPulseDevout *pulse_devout;
+
+    GRecMutex *pulse_devout_mutex;
     
     pulse_devout = (AgsPulseDevout *) clear_buffer->device;
+
+    /* get pulse devout mutex */
+    pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
     
     /* retrieve nth buffer */    
-    if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER0)){
+    g_rec_mutex_lock(pulse_devout_mutex);
+
+    if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_0){
       nth_buffer = 2;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER1)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_1){
       nth_buffer = 3;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER2)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_2){
       nth_buffer = 4;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER3)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_3){
       nth_buffer = 5;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER4)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_4){
       nth_buffer = 6;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER5)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_5){
       nth_buffer = 7;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER6)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_6){
       nth_buffer = 0;
-    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
+    }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_7){
       nth_buffer = 1;
     }
       
-    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->buffer[nth_buffer]);
-    
-    memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+    g_rec_mutex_unlock(pulse_devout_mutex);
 
-    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->buffer[nth_buffer]);
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->app_buffer[nth_buffer]);
+    
+    memset(pulse_devout->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->app_buffer[nth_buffer]);
   }else if(AGS_IS_PULSE_DEVIN(clear_buffer->device)){
     AgsPulseDevin *pulse_devin;
+
+    GRecMutex *pulse_devin_mutex;
     
     pulse_devin = (AgsPulseDevin *) clear_buffer->device;
+
+    /* get pulse devin mutex */
+    pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
     
     /* retrieve nth buffer */    
-    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+    g_rec_mutex_lock(pulse_devin_mutex);
+
+    if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_0){
       nth_buffer = 2;
-    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_1){
       nth_buffer = 3;
-    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_2){
       nth_buffer = 4;
-    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_3){
       nth_buffer = 5;
-    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_4){
       nth_buffer = 6;
-    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_5){
       nth_buffer = 7;
-    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_6){
       nth_buffer = 0;
-    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+    }else if(pulse_devin->app_buffer_mode == AGS_PULSE_DEVIN_APP_BUFFER_7){
       nth_buffer = 1;
     }
-      
-    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devin->buffer[nth_buffer]);
-    
-    memset(pulse_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
 
-    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devin->buffer[nth_buffer]);
+    g_rec_mutex_unlock(pulse_devin_mutex);
+      
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devin->app_buffer[nth_buffer]);
+    
+    memset(pulse_devin->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devin->app_buffer[nth_buffer]);
   }else if(AGS_IS_WASAPI_DEVOUT(clear_buffer->device)){
     AgsWasapiDevout *wasapi_devout;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,8 +49,6 @@ typedef struct _AgsPulseClientClass AgsPulseClientClass;
 
 /**
  * AgsPulseClientFlags:
- * @AGS_PULSE_CLIENT_ADDED_TO_REGISTRY: the PULSE client was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_PULSE_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_PULSE_CLIENT_ACTIVATED: the client was activated
  * @AGS_PULSE_CLIENT_READY: the client is ready
  * 
@@ -58,10 +56,8 @@ typedef struct _AgsPulseClientClass AgsPulseClientClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PULSE_CLIENT_ADDED_TO_REGISTRY  = 1,
-  AGS_PULSE_CLIENT_CONNECTED          = 1 <<  1,
-  AGS_PULSE_CLIENT_ACTIVATED          = 1 <<  2,
-  AGS_PULSE_CLIENT_READY              = 1 <<  3,
+  AGS_PULSE_CLIENT_ACTIVATED          = 1,
+  AGS_PULSE_CLIENT_READY              = 1 <<  1,
 }AgsPulseClientFlags;
 
 struct _AgsPulseClient
@@ -69,6 +65,7 @@ struct _AgsPulseClient
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
   
@@ -95,6 +92,7 @@ struct _AgsPulseClientClass
 };
 
 GType ags_pulse_client_get_type();
+GType ags_pulse_client_flags_get_type();
 
 gboolean ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags);
 void ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags);

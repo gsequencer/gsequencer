@@ -2948,6 +2948,7 @@ ags_recall_container_get_recall_channel_run
 ags_recall_container_find
 ags_recall_container_new
 ags_pulse_port_get_type
+ags_pulse_port_flags_get_type
 ags_pulse_port_test_flags
 ags_pulse_port_set_flags
 ags_pulse_port_unset_flags
@@ -2963,6 +2964,7 @@ ags_pulse_port_set_cache_buffer_size
 ags_pulse_port_get_latency
 ags_pulse_port_new
 ags_pulse_client_get_type
+ags_pulse_client_flags_get_type
 ags_pulse_client_test_flags
 ags_pulse_client_set_flags
 ags_pulse_client_unset_flags
@@ -2978,6 +2980,7 @@ ags_pulse_client_activate
 ags_pulse_client_deactivate
 ags_pulse_client_new
 ags_pulse_devin_get_type
+ags_pulse_devin_flags_get_type
 ags_pulse_devin_error_quark
 ags_pulse_devin_test_flags
 ags_pulse_devin_set_flags
@@ -3000,6 +3003,7 @@ ags_pulse_server_disconnect_client
 ags_pulse_server_start_poll
 ags_pulse_server_new
 ags_pulse_devout_get_type
+ags_pulse_devout_flags_get_type
 ags_pulse_devout_error_quark
 ags_pulse_devout_test_flags
 ags_pulse_devout_set_flags
@@ -3129,6 +3133,7 @@ ags_sfz_synth_generator_set_timestamp
 ags_sfz_synth_generator_compute
 ags_sfz_synth_generator_new
 ags_notation_get_type
+ags_notation_flags_get_type
 ags_notation_get_obj_mutex
 ags_notation_test_flags
 ags_notation_set_flags

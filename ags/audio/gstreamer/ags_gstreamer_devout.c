@@ -2644,7 +2644,6 @@ ags_gstreamer_devout_lock_buffer(AgsSoundcard *soundcard,
   }
 }
 
-
 void
 ags_gstreamer_devout_unlock_buffer(AgsSoundcard *soundcard,
 				   void *buffer)

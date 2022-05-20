@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,6 +104,7 @@ struct _AgsNotationClass
 };
 
 GType ags_notation_get_type();
+GType ags_notation_flags_get_type();
 
 GRecMutex* ags_notation_get_obj_mutex(AgsNotation *notation);
 
