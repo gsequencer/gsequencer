@@ -1211,6 +1211,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   gtk_grid_set_row_spacing(misc_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
+  gtk_widget_set_valign(misc_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(misc_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(misc_grid,
+			 FALSE);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) misc_grid);
 
@@ -1346,6 +1354,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   gtk_grid_set_row_spacing(low_pass_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
+  gtk_widget_set_valign(low_pass_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(low_pass_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(low_pass_grid,
+			 FALSE);
+
   gtk_box_append(band_hbox,
 		 (GtkWidget *) low_pass_grid);
 
@@ -1431,6 +1447,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
   gtk_grid_set_row_spacing(high_pass_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
+  gtk_widget_set_valign(high_pass_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(high_pass_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(high_pass_grid,
+			 FALSE);
+
   gtk_box_append(band_hbox,
 		 (GtkWidget *) high_pass_grid);
 
@@ -1515,6 +1539,14 @@ ags_hybrid_fm_synth_init(AgsHybridFMSynth *hybrid_fm_synth)
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
   gtk_grid_set_row_spacing(chorus_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_valign(chorus_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(chorus_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(chorus_grid,
+			 FALSE);
 
   gtk_box_append(vbox,
 		 (GtkWidget *) chorus_grid);

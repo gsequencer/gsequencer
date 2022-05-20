@@ -393,6 +393,14 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_grid_set_row_spacing(synth_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
+  gtk_widget_set_valign(synth_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(synth_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(synth_grid,
+			 FALSE);
+
   gtk_box_append(effect_vbox,
 		 (GtkWidget *) synth_grid);
 
@@ -508,6 +516,14 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
   gtk_grid_set_row_spacing(chorus_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_valign(chorus_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(chorus_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(chorus_grid,
+			 FALSE);
 
   gtk_box_append(effect_vbox,
 		 (GtkWidget *) chorus_grid);

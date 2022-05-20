@@ -881,7 +881,7 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
      strlen(filename) == 0){
     return;
   }
-
+  
   audiorec->wave_loader = 
     wave_loader = ags_wave_loader_new(AGS_MACHINE(audiorec)->audio,
 				      filename,
@@ -1115,7 +1115,6 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
 			 audiorec) != NULL){
     if(audiorec->wave_loader != NULL){
       if(ags_wave_loader_test_flags(audiorec->wave_loader, AGS_WAVE_LOADER_HAS_COMPLETED)){
-	g_object_run_dispose((GObject *) audiorec->wave_loader);
 	g_object_unref(audiorec->wave_loader);
 
 	audiorec->wave_loader = NULL;

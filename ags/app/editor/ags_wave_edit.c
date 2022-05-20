@@ -43,12 +43,14 @@ void ags_wave_edit_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
+void ags_wave_edit_dispose(GObject *gobject);
 void ags_wave_edit_finalize(GObject *gobject);
 
 void ags_wave_edit_connect(AgsConnectable *connectable);
 void ags_wave_edit_disconnect(AgsConnectable *connectable);
 
 void ags_wave_edit_realize(GtkWidget *widget);
+void ags_wave_edit_unrealize(GtkWidget *widget);
 
 void ags_wave_edit_measure(GtkWidget *widget,
 			   GtkOrientation orientation,
@@ -165,7 +167,7 @@ ags_wave_edit_get_type(void)
     static const GTypeInfo ags_wave_edit_info = {
       sizeof (AgsWaveEditClass),
       NULL, /* base_init */
-      NULL, /* base_finalize */
+      NULL, /* base_dispose */
       (GClassInitFunc) ags_wave_edit_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
@@ -211,6 +213,7 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
   gobject->set_property = ags_wave_edit_set_property;
   gobject->get_property = ags_wave_edit_get_property;
 
+  gobject->dispose = ags_wave_edit_dispose;
   gobject->finalize = ags_wave_edit_finalize;
 
   /* properties */
@@ -236,6 +239,7 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
   widget = (GtkWidgetClass *) wave_edit;
 
   widget->realize = ags_wave_edit_realize;
+  widget->unrealize = ags_wave_edit_unrealize;
 
   widget->measure = ags_wave_edit_measure;
   widget->size_allocate = ags_wave_edit_size_allocate;
@@ -454,6 +458,17 @@ ags_wave_edit_get_property(GObject *gobject,
 }
 
 void
+ags_wave_edit_dispose(GObject *gobject)
+{
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(gobject);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_wave_edit_parent_class)->dispose(gobject);
+}
+
+void
 ags_wave_edit_finalize(GObject *gobject)
 {
   AgsWaveEdit *wave_edit;
@@ -480,7 +495,7 @@ ags_wave_edit_connect(AgsConnectable *connectable)
   }
   
   wave_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-
+  
   /* drawing area */
   gtk_drawing_area_set_draw_func(wave_edit->drawing_area,
 				 ags_wave_edit_draw_callback,
@@ -1020,7 +1035,7 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   AGS_COMPOSITE_EDITOR(editor)->wave_edit->focused_edit = wave_edit;
   
   gtk_widget_grab_focus((GtkWidget *) wave_edit->drawing_area);
-
+  
   if(machine != NULL){    
     wave_edit->button_mask = AGS_WAVE_EDIT_BUTTON_1;
     
@@ -1035,7 +1050,7 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 							      x, y);
     }else if(selected_select){
       wave_edit->mode = AGS_WAVE_EDIT_SELECT_BUFFER;
-
+      
       ags_wave_edit_drawing_area_button_press_select_buffer(editor,
 							    toolbar,
 							    wave_edit,
@@ -1218,6 +1233,25 @@ ags_wave_edit_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_wave_edit_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_wave_edit_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+  
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_wave_edit_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->unrealize(widget);
 }
 
 void
@@ -2495,7 +2529,7 @@ ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr)
   ags_wave_edit_draw_segment(wave_edit, cr);
 
   /* wave */
-  ags_wave_edit_draw_wave(wave_edit, cr);
+  //  ags_wave_edit_draw_wave(wave_edit, cr);
   
   /* edit mode */
   switch(wave_edit->mode){

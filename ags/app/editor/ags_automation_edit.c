@@ -45,12 +45,14 @@ void ags_automation_edit_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
+void ags_automation_edit_dispose(GObject *gobject);
 void ags_automation_edit_finalize(GObject *gobject);
 
 void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 
 void ags_automation_edit_realize(GtkWidget *widget);
+void ags_automation_edit_unrealize(GtkWidget *widget);
 
 void ags_automation_edit_measure(GtkWidget *widget,
 				 GtkOrientation orientation,
@@ -246,6 +248,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   gobject->set_property = ags_automation_edit_set_property;
   gobject->get_property = ags_automation_edit_get_property;
 
+  gobject->dispose = ags_automation_edit_dispose;
   gobject->finalize = ags_automation_edit_finalize;
 
   /* properties */
@@ -387,6 +390,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   widget = (GtkWidgetClass *) automation_edit;
 
   widget->realize = ags_automation_edit_realize;
+  widget->unrealize = ags_automation_edit_unrealize;
 
   widget->measure = ags_automation_edit_measure;
   widget->size_allocate = ags_automation_edit_size_allocate;
@@ -722,6 +726,17 @@ ags_automation_edit_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_automation_edit_dispose(GObject *gobject)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  automation_edit = AGS_AUTOMATION_EDIT(gobject);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_edit_parent_class)->dispose(gobject);
 }
 
 void
@@ -2108,6 +2123,25 @@ ags_automation_edit_realize(GtkWidget *widget)
 		   G_CALLBACK(ags_automation_edit_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+}
+
+void
+ags_automation_edit_unrealize(GtkWidget *widget)
+{
+  GdkFrameClock *frame_clock;
+  
+  frame_clock = gtk_widget_get_frame_clock(widget);
+  
+  g_object_disconnect(frame_clock,
+		      "any_signal::update", 
+		      G_CALLBACK(ags_automation_edit_frame_clock_update_callback),
+		      widget,
+		      NULL);
+
+  gdk_frame_clock_end_updating(frame_clock);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->unrealize(widget);
 }
 
 void

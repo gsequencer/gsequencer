@@ -83,7 +83,7 @@ ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GValue capture_mode_value = {0,};
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     g_value_init(&capture_mode_value,
 		 G_TYPE_UINT64);
 
@@ -152,7 +152,7 @@ ags_audiorec_replace_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GValue capture_mode_value = {0,};
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     g_value_init(&capture_mode_value,
 		 G_TYPE_UINT64);
 
@@ -221,7 +221,7 @@ ags_audiorec_mix_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GValue capture_mode_value = {0,};
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     g_value_init(&capture_mode_value,
 		 G_TYPE_UINT64);
 
