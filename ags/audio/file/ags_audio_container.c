@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -412,6 +412,7 @@ ags_audio_container_init(AgsAudioContainer *audio_container)
   AgsConfig *config;
 
   audio_container->flags = 0;
+  audio_container->connectable_flags = 0;
 
   /* add audio container mutex */
   g_rec_mutex_init(&(audio_container->obj_mutex)); 
@@ -902,11 +903,20 @@ ags_audio_container_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_container_mutex;
+
   audio_container = AGS_AUDIO_CONTAINER(connectable);
 
-  /* check is ready */
-  is_ready = ags_audio_container_test_flags(audio_container, AGS_AUDIO_CONTAINER_ADDED_TO_REGISTRY);
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
 
+  /* check is ready */
+  g_rec_mutex_lock(audio_container_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_container->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_container_mutex);
+  
   return(is_ready);
 }
 
@@ -920,13 +930,22 @@ ags_audio_container_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *audio_container_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   audio_container = AGS_AUDIO_CONTAINER(connectable);
 
-  ags_audio_container_set_flags(audio_container, AGS_AUDIO_CONTAINER_ADDED_TO_REGISTRY);
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  audio_container->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_container_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -944,10 +963,25 @@ ags_audio_container_add_to_registry(AgsConnectable *connectable)
 void
 ags_audio_container_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsAudioContainer *audio_container;
+
+  GRecMutex *audio_container_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
+  audio_container = AGS_AUDIO_CONTAINER(connectable);
+
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  audio_container->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_container_mutex);
+  
   //TODO:JK: implement me
 }
 
@@ -989,11 +1023,20 @@ ags_audio_container_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_container_mutex;
+
   audio_container = AGS_AUDIO_CONTAINER(connectable);
 
-  /* check is connected */
-  is_connected = ags_audio_container_test_flags(audio_container, AGS_AUDIO_CONTAINER_CONNECTED);
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
 
+  /* check is connected */
+  g_rec_mutex_lock(audio_container_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_container->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_container_mutex);
+  
   return(is_connected);
 }
 
@@ -1002,13 +1045,22 @@ ags_audio_container_connect(AgsConnectable *connectable)
 {
   AgsAudioContainer *audio_container;
 
+  GRecMutex *audio_container_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_container = AGS_AUDIO_CONTAINER(connectable);
   
-  ags_audio_container_set_flags(audio_container, AGS_AUDIO_CONTAINER_CONNECTED);
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  audio_container->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_container_mutex);
 }
 
 void
@@ -1016,13 +1068,22 @@ ags_audio_container_disconnect(AgsConnectable *connectable)
 {
   AgsAudioContainer *audio_container;
 
+  GRecMutex *audio_container_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_container = AGS_AUDIO_CONTAINER(connectable);
 
-  ags_audio_container_unset_flags(audio_container, AGS_AUDIO_CONTAINER_CONNECTED);
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  audio_container->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_container_mutex);
 }
 
 /**

@@ -53,8 +53,6 @@ typedef struct _AgsAlsaDevinClass AgsAlsaDevinClass;
 
 /**
  * AgsAlsaDevinFlags:
- * @AGS_ALSA_DEVIN_ADDED_TO_REGISTRY: the alsa_devin was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_ALSA_DEVIN_CONNECTED: indicates the alsa_devin was connected by calling #AgsConnectable::connect()
  * @AGS_ALSA_DEVIN_INITIALIZED: the soundcard was initialized
  * @AGS_ALSA_DEVIN_START_RECORD: capture starting
  * @AGS_ALSA_DEVIN_RECORD: do capture
@@ -67,18 +65,15 @@ typedef struct _AgsAlsaDevinClass AgsAlsaDevinClass;
  */
 typedef enum
 {
-  AGS_ALSA_DEVIN_ADDED_TO_REGISTRY  = 1,
-  AGS_ALSA_DEVIN_CONNECTED          = 1 <<  1,
+  AGS_ALSA_DEVIN_INITIALIZED        = 1,
 
-  AGS_ALSA_DEVIN_INITIALIZED        = 1 <<  2,
+  AGS_ALSA_DEVIN_START_RECORD       = 1 <<  1,
+  AGS_ALSA_DEVIN_RECORD             = 1 <<  2,
+  AGS_ALSA_DEVIN_SHUTDOWN           = 1 <<  3,
 
-  AGS_ALSA_DEVIN_START_RECORD       = 1 <<  3,
-  AGS_ALSA_DEVIN_RECORD             = 1 <<  4,
-  AGS_ALSA_DEVIN_SHUTDOWN           = 1 <<  5,
+  AGS_ALSA_DEVIN_NONBLOCKING        = 1 <<  4,
 
-  AGS_ALSA_DEVIN_NONBLOCKING        = 1 <<  6,
-
-  AGS_ALSA_DEVIN_ATTACK_FIRST       = 1 <<  7,
+  AGS_ALSA_DEVIN_ATTACK_FIRST       = 1 <<  5,
 }AgsAlsaDevinFlags;
 
 /**
@@ -141,7 +136,8 @@ struct _AgsAlsaDevin
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

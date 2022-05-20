@@ -1230,7 +1230,6 @@ ags_oss_devin_connect(AgsConnectable *connectable)
 void
 ags_oss_devin_disconnect(AgsConnectable *connectable)
 {
-
   AgsOssDevin *oss_devin;
 
   GRecMutex *oss_devin_mutex;

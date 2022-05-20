@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -234,8 +234,6 @@ ags_alsa_devin_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_ALSA_DEVIN_ADDED_TO_REGISTRY, "AGS_ALSA_DEVIN_ADDED_TO_REGISTRY", "alsa-devin-added-to-registry" },
-      { AGS_ALSA_DEVIN_CONNECTED, "AGS_ALSA_DEVIN_CONNECTED", "alsa-devin-connected" },
       { AGS_ALSA_DEVIN_INITIALIZED, "AGS_ALSA_DEVIN_INITIALIZED", "alsa-devin-initialized" },
       { AGS_ALSA_DEVIN_START_RECORD, "AGS_ALSA_DEVIN_START_RECORD", "alsa-devin-start-record" },
       { AGS_ALSA_DEVIN_RECORD, "AGS_ALSA_DEVIN_RECORD", "alsa-devin-record" },
@@ -554,6 +552,7 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   guint i;
   
   alsa_devin->flags = 0;
+  alsa_devin->connectable_flags = 0;
 
   /* insert alsa devin mutex */
   g_rec_mutex_init(&(alsa_devin->obj_mutex));
@@ -1061,10 +1060,19 @@ ags_alsa_devin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *alsa_devin_mutex;
+
   alsa_devin = AGS_ALSA_DEVIN(connectable);
 
-  /* check is added */
-  is_ready = ags_alsa_devin_test_flags(alsa_devin, AGS_ALSA_DEVIN_ADDED_TO_REGISTRY);
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
+  /* check is ready */
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (alsa_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(alsa_devin_mutex);
   
   return(is_ready);
 }
@@ -1074,13 +1082,22 @@ ags_alsa_devin_add_to_registry(AgsConnectable *connectable)
 {
   AgsAlsaDevin *alsa_devin;
 
+  GRecMutex *alsa_devin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   alsa_devin = AGS_ALSA_DEVIN(connectable);
 
-  ags_alsa_devin_set_flags(alsa_devin, AGS_ALSA_DEVIN_ADDED_TO_REGISTRY);
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  alsa_devin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
 void
@@ -1088,13 +1105,22 @@ ags_alsa_devin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsAlsaDevin *alsa_devin;
 
+  GRecMutex *alsa_devin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   alsa_devin = AGS_ALSA_DEVIN(connectable);
 
-  ags_alsa_devin_unset_flags(alsa_devin, AGS_ALSA_DEVIN_ADDED_TO_REGISTRY);
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  alsa_devin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
 xmlNode*
@@ -1135,10 +1161,19 @@ ags_alsa_devin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *alsa_devin_mutex;
+
   alsa_devin = AGS_ALSA_DEVIN(connectable);
 
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
   /* check is connected */
-  is_connected = ags_alsa_devin_test_flags(alsa_devin, AGS_ALSA_DEVIN_CONNECTED);
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (alsa_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(alsa_devin_mutex);
   
   return(is_connected);
 }
@@ -1147,6 +1182,8 @@ void
 ags_alsa_devin_connect(AgsConnectable *connectable)
 {
   AgsAlsaDevin *alsa_devin;
+
+  GRecMutex *alsa_devin_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1154,22 +1191,37 @@ ags_alsa_devin_connect(AgsConnectable *connectable)
 
   alsa_devin = AGS_ALSA_DEVIN(connectable);
 
-  ags_alsa_devin_set_flags(alsa_devin, AGS_ALSA_DEVIN_CONNECTED);
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  alsa_devin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
 void
 ags_alsa_devin_disconnect(AgsConnectable *connectable)
 {
-
   AgsAlsaDevin *alsa_devin;
+
+  GRecMutex *alsa_devin_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   alsa_devin = AGS_ALSA_DEVIN(connectable);
+
+  /* get alsa devin mutex */
+  alsa_devin_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(alsa_devin);
+
+  g_rec_mutex_lock(alsa_devin_mutex);
+
+  alsa_devin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_alsa_devin_unset_flags(alsa_devin, AGS_ALSA_DEVIN_CONNECTED);
+  g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
 /**
