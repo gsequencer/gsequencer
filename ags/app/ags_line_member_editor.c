@@ -129,6 +129,9 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(line_member_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing((GtkBox *) line_member_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   line_member_editor->connectable_flags = 0;
   
   line_member_editor->entry_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -243,9 +246,6 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   while(list != NULL){
     ags_line_member_editor_remove_entry(line_member_editor,
 					list->data);
-
-    g_object_run_dispose(list->data);
-    g_object_unref(list->data);
     
     list = list->next;
   }

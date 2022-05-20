@@ -438,7 +438,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* iterate line member */
     if(current_line != NULL){
       for(nth = 0; entry != NULL;){
-	if(gtk_check_button_get_active(AGS_LINE_MEMBER_EDITOR_ENTRY(entry->data))){
+	if(gtk_check_button_get_active(AGS_LINE_MEMBER_EDITOR_ENTRY(entry->data)->check_button)){
 	  /* remove effect */
 	  ags_line_remove_plugin(current_line,
 				 nth);
@@ -492,7 +492,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* iterate line member */
     if(current_effect_line != NULL){
       for(nth = 0; entry != NULL;){
-	if(gtk_check_button_get_active(AGS_LINE_MEMBER_EDITOR_ENTRY(entry->data))){
+	if(gtk_check_button_get_active(AGS_LINE_MEMBER_EDITOR_ENTRY(entry->data)->check_button)){
 	  /* remove effect */
 	  ags_effect_line_remove_plugin(current_effect_line,
 					nth);

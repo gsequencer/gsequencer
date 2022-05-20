@@ -1181,6 +1181,12 @@ ags_line_add_line_member(AgsLine *line,
     line->line_member = g_list_prepend(line->line_member,
 				       line_member);
     
+    gtk_widget_set_vexpand((GtkWidget *) line_member,
+			   FALSE);
+
+    gtk_widget_set_valign((GtkWidget *) line_member,
+			  GTK_ALIGN_START);
+    
     ags_expander_add(line->line_member_expander,
 		     line_member,
 		     x, y,
@@ -3535,9 +3541,6 @@ ags_line_real_remove_plugin(AgsLine *line,
 
       ags_line_remove_line_member(line,
 				  list->data);
-
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
     }
     
     list = list->next;
@@ -3555,9 +3558,6 @@ ags_line_real_remove_plugin(AgsLine *line,
        AGS_EFFECT_SEPARATOR(list->data)->play_container == line_plugin->play_container){
       ags_line_remove_effect_separator(line,
 				       list->data);
-      
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
     }
     
     list = list->next;

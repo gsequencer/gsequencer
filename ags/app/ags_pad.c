@@ -882,6 +882,12 @@ ags_pad_add_line(AgsPad *pad,
     pad->line = g_list_prepend(pad->line,
 			       line);
     
+    gtk_widget_set_vexpand((GtkWidget *) line,
+			   FALSE);
+
+    gtk_widget_set_valign((GtkWidget *) line,
+			  GTK_ALIGN_START);
+
     ags_expander_set_add(pad->line_expander_set,
 			 line,
 			 x, y,

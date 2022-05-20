@@ -324,6 +324,11 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   
   machine_selector->shift_piano = NULL;
 
+  machine_selector->machine_radio_button_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+								      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(GTK_BOX(machine_selector),
+		 GTK_WIDGET(machine_selector->machine_radio_button_box));
+  
   machine_selector->machine_radio_button = NULL;
 
   machine_selector->machine_selection = NULL;
@@ -631,12 +636,8 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
 
     sibling = NULL;
 
-    if(position > 0){
-      sibling = g_list_nth_data(start_list,
-				position - 1);
-    }else{
-      sibling = gtk_widget_get_parent(machine_selector->menu_button);
-    }
+    sibling = g_list_nth_data(start_list,
+			      position);
     
     start_list = g_list_insert(start_list,
 			       machine_radio_button,
@@ -666,7 +667,7 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
 
     machine_selector->machine_radio_button = g_list_reverse(start_list);
 
-    gtk_box_insert_child_after((GtkBox *) machine_selector,
+    gtk_box_insert_child_after((GtkBox *) machine_selector->machine_radio_button_box,
 			       machine_radio_button,
 			       sibling);
   }
@@ -692,7 +693,7 @@ ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_sel
     machine_selector->machine_radio_button = g_list_remove(machine_selector->machine_radio_button,
 							   machine_radio_button);
     
-    gtk_box_remove((GtkBox *) machine_selector,
+    gtk_box_remove((GtkBox *) machine_selector->machine_radio_button_box,
 		   machine_radio_button);
   }
 }

@@ -80,6 +80,8 @@ struct _AgsMachineSelector
   
   GtkWidget *current;
   
+  GtkBox *machine_radio_button_box;
+
   GList *machine_radio_button;
   
   GtkDialog *machine_selection;
