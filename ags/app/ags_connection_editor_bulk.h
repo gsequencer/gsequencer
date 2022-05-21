@@ -47,13 +47,24 @@ struct _AgsConnectionEditorBulk
 
   guint connectable_flags;
 
-  GtkComboBox *soundcard;
+  GtkGrid *output_grid;
 
-  GtkSpinButton *first_line;
-  GtkSpinButton *first_soundcard_line;
+  GtkComboBox *output_soundcard;
 
-  GtkSpinButton *count;
+  GtkSpinButton *output_first_line;
+  GtkSpinButton *output_first_soundcard_line;
 
+  GtkSpinButton *output_count;
+
+  GtkGrid *input_grid;
+
+  GtkComboBox *input_soundcard;
+
+  GtkSpinButton *input_first_line;
+  GtkSpinButton *input_first_soundcard_line;
+
+  GtkSpinButton *input_count;
+  
   GtkButton *remove_bulk;
 };
 

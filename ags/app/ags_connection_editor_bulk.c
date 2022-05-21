@@ -137,12 +137,19 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   GtkGrid *grid;
   GtkLabel *label;
 
+  GtkCellRenderer *cell_renderer;
+  GtkListStore *model;
+  
   gtk_orientable_set_orientation(GTK_ORIENTABLE(connection_editor_bulk),
 				 GTK_ORIENTATION_VERTICAL);
   
   connection_editor_bulk->connectable_flags = 0;
 
-  grid = gtk_grid_new();
+  /* output */
+  grid =
+    connection_editor_bulk->output_grid = gtk_grid_new();
+  gtk_widget_set_visible(connection_editor_bulk->output_grid,
+			 FALSE);
 
   gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_START);
@@ -167,12 +174,26 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  0, 0,
 		  1, 1);
   
-  connection_editor_bulk->soundcard = (GtkComboBox *) gtk_combo_box_new();
+  connection_editor_bulk->output_soundcard = (GtkComboBox *) gtk_combo_box_new();
   gtk_grid_attach(grid,
-		  (GtkWidget *) connection_editor_bulk->soundcard,
+		  (GtkWidget *) connection_editor_bulk->output_soundcard,
 		  1, 0,
 		  1, 1);
 
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(connection_editor_bulk->output_soundcard),
+			     cell_renderer,
+			     FALSE); 
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(connection_editor_bulk->output_soundcard),
+				 cell_renderer,
+				 "text", 0,
+				 NULL);
+
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_combo_box_set_model(connection_editor_bulk->output_soundcard,
+			  model);
+  
   label = gtk_label_new(i18n("first line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
@@ -183,11 +204,11 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  0, 1,
 		  1, 1);
   
-  connection_editor_bulk->first_line = (GtkComboBox *) gtk_spin_button_new_with_range(0.0,
-										      0.0,
-										      1.0);
+  connection_editor_bulk->output_first_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											       0.0,
+											       1.0);
   gtk_grid_attach(grid,
-		  (GtkWidget *) connection_editor_bulk->first_line,
+		  (GtkWidget *) connection_editor_bulk->output_first_line,
 		  1, 1,
 		  1, 1);
 
@@ -201,11 +222,11 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  0, 2,
 		  1, 1);
   
-  connection_editor_bulk->first_soundcard_line = (GtkComboBox *) gtk_spin_button_new_with_range(0.0,
-											   0.0,
-											   1.0);
+  connection_editor_bulk->output_first_soundcard_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+													 0.0,
+													 1.0);
   gtk_grid_attach(grid,
-		  (GtkWidget *) connection_editor_bulk->first_soundcard_line,
+		  (GtkWidget *) connection_editor_bulk->output_first_soundcard_line,
 		  1, 2,
 		  1, 1);
 
@@ -219,11 +240,120 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  0, 3,
 		  1, 1);
   
-  connection_editor_bulk->count = (GtkComboBox *) gtk_spin_button_new_with_range(0.0,
-										 0.0,
-										 1.0);
+  connection_editor_bulk->output_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											  0.0,
+											  1.0);
   gtk_grid_attach(grid,
-		  (GtkWidget *) connection_editor_bulk->count,
+		  (GtkWidget *) connection_editor_bulk->output_count,
+		  1, 3,
+		  1, 1);
+
+  connection_editor_bulk->remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) connection_editor_bulk->remove_bulk,
+		  3, 3,
+		  1, 1);
+
+  /* input */
+  grid =
+    connection_editor_bulk->input_grid = gtk_grid_new();
+  gtk_widget_set_visible(connection_editor_bulk->input_grid,
+			 FALSE);
+
+  gtk_widget_set_valign((GtkWidget *) grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append((GtkBox *) connection_editor_bulk,
+		 (GtkWidget *) grid);
+
+  label = gtk_label_new(i18n("soundcard"));
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  connection_editor_bulk->input_soundcard = (GtkComboBox *) gtk_combo_box_new();
+  gtk_grid_attach(grid,
+		  (GtkWidget *) connection_editor_bulk->input_soundcard,
+		  1, 0,
+		  1, 1);
+
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(connection_editor_bulk->input_soundcard),
+			     cell_renderer,
+			     FALSE); 
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(connection_editor_bulk->input_soundcard),
+				 cell_renderer,
+				 "text", 0,
+				 NULL);
+
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_combo_box_set_model(connection_editor_bulk->input_soundcard,
+			  model);
+
+  label = gtk_label_new(i18n("first line"));
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  connection_editor_bulk->input_first_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											      0.0,
+											      1.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) connection_editor_bulk->input_first_line,
+		  1, 1,
+		  1, 1);
+
+  label = gtk_label_new(i18n("first soundcard line"));
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  connection_editor_bulk->input_first_soundcard_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+													0.0,
+													1.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) connection_editor_bulk->input_first_soundcard_line,
+		  1, 2,
+		  1, 1);
+
+  label = gtk_label_new(i18n("count"));
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  connection_editor_bulk->input_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											 0.0,
+											 1.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) connection_editor_bulk->input_count,
 		  1, 3,
 		  1, 1);
 
@@ -254,9 +384,12 @@ ags_connection_editor_bulk_connect(AgsConnectable *connectable)
 
   connection_editor_bulk->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  g_signal_connect_after(connection_editor_bulk->soundcard, "changed",
-			 G_CALLBACK(ags_connection_editor_bulk_soundcard_callback), connection_editor_bulk);
+  g_signal_connect_after(connection_editor_bulk->output_soundcard, "changed",
+			 G_CALLBACK(ags_connection_editor_bulk_output_soundcard_callback), connection_editor_bulk);
 
+  g_signal_connect_after(connection_editor_bulk->input_soundcard, "changed",
+			 G_CALLBACK(ags_connection_editor_bulk_input_soundcard_callback), connection_editor_bulk);
+  
   g_signal_connect(connection_editor_bulk->remove_bulk, "clicked",
 		   G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback), connection_editor_bulk);
 }
@@ -274,9 +407,15 @@ ags_connection_editor_bulk_disconnect(AgsConnectable *connectable)
   
   connection_editor_bulk->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  g_object_disconnect(connection_editor_bulk->soundcard,
+  g_object_disconnect(connection_editor_bulk->output_soundcard,
 		      "any_signal::changed",
-		      G_CALLBACK(ags_connection_editor_bulk_soundcard_callback),
+		      G_CALLBACK(ags_connection_editor_bulk_output_soundcard_callback),
+		      connection_editor_bulk,
+		      NULL);
+
+  g_object_disconnect(connection_editor_bulk->input_soundcard,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_connection_editor_bulk_input_soundcard_callback),
 		      connection_editor_bulk,
 		      NULL);
 
@@ -312,9 +451,64 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
 {
   AgsConnectionEditorBulk *connection_editor_bulk;
 
+  GtkTreeModel *model;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_soundcard, *soundcard;
+  
   connection_editor_bulk = AGS_CONNECTION_EDITOR_BULK(applicable);
 
-  //TODO:JK: implement me
+  application_context = ags_application_context_get_instance();
+  
+  start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  /* output soundcard */
+  model = gtk_combo_box_get_model(connection_editor_bulk->output_soundcard);
+
+  if(GTK_IS_LIST_STORE(model)){
+    gtk_list_store_clear(GTK_LIST_STORE(model));
+  }
+
+  soundcard = start_soundcard;
+  
+  while(soundcard != NULL){
+    GtkTreeIter iter;
+
+    gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+
+    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		       0, ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
+		       1, soundcard->data,
+		       -1);
+    
+    soundcard = soundcard->next;
+  }
+
+  /* input soundcard */
+  model = gtk_combo_box_get_model(connection_editor_bulk->input_soundcard);
+
+  if(GTK_IS_LIST_STORE(model)){
+    gtk_list_store_clear(GTK_LIST_STORE(model));
+  }
+
+  soundcard = start_soundcard;
+  
+  while(soundcard != NULL){
+    GtkTreeIter iter;
+
+    gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+
+    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		       0, ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
+		       1, soundcard->data,
+		       -1);
+    
+    soundcard = soundcard->next;
+  }
+
+  g_list_free_full(start_soundcard,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

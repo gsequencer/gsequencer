@@ -19,12 +19,29 @@
 
 #include <ags/app/ags_connection_editor_collection_callbacks.h>
 
+#include <ags/app/ags_connection_editor.h>
+
 void
 ags_connection_editor_collection_add_bulk_callback(GtkButton *button, AgsConnectionEditorCollection *connection_editor_collection)
 {
+  AgsConnectionEditor *connection_editor;
   AgsConnectionEditorBulk *bulk;
 
-  bulk = ags_connection_editor_bulk_new();  
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_collection,
+								      AGS_TYPE_CONNECTION_EDITOR);
+
+  bulk = ags_connection_editor_bulk_new();
+
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
+    gtk_widget_set_visible(bulk->output_grid,
+			   TRUE);
+  }
+
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
+    gtk_widget_set_visible(bulk->input_grid,
+			   TRUE);
+  }
+  
   ags_connection_editor_collection_add_bulk(connection_editor_collection,
 					    bulk);
 

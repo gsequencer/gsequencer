@@ -40,9 +40,6 @@ ags_machine_editor_bulk_remove_bulk_callback(GtkButton *button,
   machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
 										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
 
-  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
-										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
-
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_bulk,
 								AGS_TYPE_MACHINE_EDITOR);
 
