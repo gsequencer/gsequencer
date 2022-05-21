@@ -490,7 +490,7 @@ ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, A
 			     (GtkWidget *) gtk_label_new(i18n("input")));
 
     gtk_notebook_append_page(connection_editor->notebook,
-			     (GtkWidget *) connection_editor->output_collection_scrolled_window,
+			     (GtkWidget *) connection_editor->input_collection_scrolled_window,
 			     (GtkWidget *) gtk_label_new(i18n("bulk input")));
   }
 }

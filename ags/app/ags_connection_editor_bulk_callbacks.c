@@ -30,6 +30,15 @@ ags_connection_editor_bulk_remove_bulk_callback(GtkButton *button,
   AgsConnectionEditor *connection_editor;
   AgsConnectionEditorCollection *connection_editor_collection;
 
+  xmlNode *node;
+
+  GList *start_dialog_model, *dialog_model;
+  GList *start_list, *list;
+  
+  gint i, i_stop;
+
+  g_message("remove");
+  
   connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
 
@@ -37,9 +46,51 @@ ags_connection_editor_bulk_remove_bulk_callback(GtkButton *button,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   machine = connection_editor->machine;
+
+  list = 
+    start_list = ags_connection_editor_collection_get_bulk(connection_editor_collection);
+
+  i_stop = g_list_index(start_list,
+			connection_editor_bulk);
+  
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+  
+  node = NULL;
+
+  for(i = 0; dialog_model != NULL && i <= i_stop; i++){
+    if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT)){
+      dialog_model = ags_machine_find_dialog_model(machine,
+						   dialog_model,
+						   "ags-connection-editor-bulk",
+						   "direction",
+						   "output");
+    }else{
+      dialog_model = ags_machine_find_dialog_model(machine,
+						   dialog_model,
+						   "ags-connection-editor-bulk",
+						   "direction",
+						   "input");
+    }
+
+    if(dialog_model != NULL){
+      if(i == i_stop){
+	node = dialog_model->data;
+
+	ags_machine_remove_dialog_model(machine,
+					node);
+      }
+    
+      dialog_model = dialog_model->next;
+    }
+  }
   
   ags_connection_editor_collection_remove_bulk(connection_editor_collection,
 					       connection_editor_bulk);
+
+  g_list_free(start_dialog_model);
+  
+  g_list_free(start_list);
 }
 
 void

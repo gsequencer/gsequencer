@@ -390,8 +390,8 @@ ags_connection_editor_bulk_connect(AgsConnectable *connectable)
   g_signal_connect_after(connection_editor_bulk->input_soundcard, "changed",
 			 G_CALLBACK(ags_connection_editor_bulk_input_soundcard_callback), connection_editor_bulk);
   
-  g_signal_connect(connection_editor_bulk->remove_bulk, "clicked",
-		   G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback), connection_editor_bulk);
+  g_signal_connect_after(connection_editor_bulk->remove_bulk, "clicked",
+			 G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback), connection_editor_bulk);
 }
 
 void

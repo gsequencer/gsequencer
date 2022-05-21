@@ -46,5 +46,6 @@ ags_connection_editor_collection_add_bulk_callback(GtkButton *button, AgsConnect
 					    bulk);
 
   ags_applicable_reset(AGS_APPLICABLE(bulk));
+
   ags_connectable_connect(AGS_APPLICABLE(bulk));
 }
