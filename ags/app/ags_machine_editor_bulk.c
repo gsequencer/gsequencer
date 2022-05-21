@@ -618,6 +618,8 @@ ags_machine_editor_bulk_to_xml_node(AgsMachineEditorBulk *machine_editor_bulk)
 
   model = gtk_combo_box_get_model(machine_editor_bulk->link);
 
+  link = NULL;
+  
   gtk_combo_box_get_active_iter(machine_editor_bulk->link,
 				&iter);
   gtk_tree_model_get(model,

@@ -552,13 +552,173 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
 xmlNode*
 ags_connection_editor_bulk_to_xml_node(AgsConnectionEditorBulk *connection_editor_bulk)
 {
+  AgsConnectionEditor *connection_editor;
+  AgsConnectionEditorCollection *connection_editor_collection;
+
+  GtkTreeModel *model;
+
   xmlNode *node;
+  xmlNode *child;
   
+  GtkTreeIter iter;
+
   g_return_val_if_fail(AGS_IS_CONNECTION_EDITOR_BULK(connection_editor_bulk), NULL);
 
-  node = NULL;
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+								      AGS_TYPE_CONNECTION_EDITOR);  
 
-  //TODO:JK: implement me
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
+  
+  node = NULL;
+  
+  if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT)){
+    node = xmlNewNode(NULL,
+		      BAD_CAST "ags-connection-editor-bulk");
+    
+    xmlNewProp(node,
+	       "direction",
+	       "output");
+  }else if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_INPUT)){
+    node = xmlNewNode(NULL,
+		      BAD_CAST "ags-connection-editor-bulk");
+
+    xmlNewProp(node,
+	       "direction",
+	       "input");
+  }else{
+    return(NULL);
+  }
+
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
+    gchar *output_soundcard;
+    gchar *value;
+
+    /* output soundcard */
+    child = xmlNewNode(NULL,
+		       "output-soundcard");
+
+    model = gtk_combo_box_get_model(connection_editor_bulk->output_soundcard);
+
+    output_soundcard = NULL;
+    
+    gtk_combo_box_get_active_iter(connection_editor_bulk->output_soundcard,
+				  &iter);
+    gtk_tree_model_get(model,
+		       &iter,
+		       0, &output_soundcard,
+		       -1);
+  
+    xmlNodeAddContent(child,
+		      output_soundcard);
+    
+    /* output first line */
+    child = xmlNewNode(NULL,
+		       "output-first-line");
+
+    value = g_strdup_printf("%d",
+			    gtk_spin_button_get_value_as_int(connection_editor_bulk->output_first_line));
+  
+    xmlNewProp(child,
+	       "value",
+	       value);
+  
+    xmlAddChild(node,
+		child);
+
+    /* output first soundcard line */
+    child = xmlNewNode(NULL,
+		       "output-first-soundcard-line");
+
+    value = g_strdup_printf("%d",
+			    gtk_spin_button_get_value_as_int(connection_editor_bulk->output_first_soundcard_line));
+  
+    xmlNewProp(child,
+	       "value",
+	       value);
+  
+    xmlAddChild(node,
+		child);
+
+    /* output count */
+    child = xmlNewNode(NULL,
+		       "output-count");
+
+    value = g_strdup_printf("%d",
+			    gtk_spin_button_get_value_as_int(connection_editor_bulk->output_count));
+  
+    xmlNewProp(child,
+	       "value",
+	       value);
+  
+    xmlAddChild(node,
+		child);
+  }
+
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
+    gchar *input_soundcard;
+    gchar *value;
+
+    /* input soundcard */
+    child = xmlNewNode(NULL,
+		       "input-soundcard");
+
+    model = gtk_combo_box_get_model(connection_editor_bulk->input_soundcard);
+
+    input_soundcard = NULL;
+    
+    gtk_combo_box_get_active_iter(connection_editor_bulk->input_soundcard,
+				  &iter);
+    gtk_tree_model_get(model,
+		       &iter,
+		       0, &input_soundcard,
+		       -1);
+  
+    xmlNodeAddContent(child,
+		      input_soundcard);
+    
+    /* input first line */
+    child = xmlNewNode(NULL,
+		       "input-first-line");
+
+    value = g_strdup_printf("%d",
+			    gtk_spin_button_get_value_as_int(connection_editor_bulk->input_first_line));
+  
+    xmlNewProp(child,
+	       "value",
+	       value);
+  
+    xmlAddChild(node,
+		child);
+
+    /* input first soundcard line */
+    child = xmlNewNode(NULL,
+		       "input-first-soundcard-line");
+
+    value = g_strdup_printf("%d",
+			    gtk_spin_button_get_value_as_int(connection_editor_bulk->input_first_soundcard_line));
+  
+    xmlNewProp(child,
+	       "value",
+	       value);
+  
+    xmlAddChild(node,
+		child);
+
+    /* input count */
+    child = xmlNewNode(NULL,
+		       "input-count");
+
+    value = g_strdup_printf("%d",
+			    gtk_spin_button_get_value_as_int(connection_editor_bulk->input_count));
+  
+    xmlNewProp(child,
+	       "value",
+	       value);
+  
+    xmlAddChild(node,
+		child);
+  }
   
   return(node);
 }
@@ -581,7 +741,143 @@ ags_connection_editor_bulk_from_xml_node(AgsConnectionEditorBulk *connection_edi
   g_return_if_fail(AGS_IS_CONNECTION_EDITOR_BULK(connection_editor_bulk));
   g_return_if_fail(node != NULL);
 
-  //TODO:JK: implement me
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(BAD_CAST "output-soundcard",
+		     child->name,
+		     17)){
+	GtkTreeModel *model;
+
+	GtkTreeIter iter;
+	
+	xmlChar *output_soundcard;
+
+	output_soundcard = xmlNodeGetContent(child);
+
+	model = gtk_combo_box_get_model(connection_editor_bulk->output_soundcard);
+
+	if(gtk_tree_model_get_iter_first(model, &iter)){
+	  do{
+	    gchar *current_output_soundcard;
+	    
+	    gtk_tree_model_get(model,
+			       &iter,
+			       0, &current_output_soundcard,
+			       -1);
+
+	    if(!g_strcmp0(output_soundcard,
+			  current_output_soundcard)){
+	      break;
+	    }
+	  }while(gtk_tree_model_iter_next(model, &iter));
+	}
+
+	gtk_combo_box_set_active_iter(connection_editor_bulk->output_soundcard,
+				      &iter);
+      }else if(!xmlStrncmp(BAD_CAST "output-first-line",
+			   child->name,
+			   18)){
+	xmlChar *output_first_line;
+
+	output_first_line = xmlGetProp(child,
+				       BAD_CAST "value");
+
+	gtk_spin_button_set_value(connection_editor_bulk->output_first_line,
+				  g_ascii_strtod(output_first_line,
+						 NULL));
+      }else if(!xmlStrncmp(BAD_CAST "output-first-soundcard-line",
+			   child->name,
+			   28)){
+	xmlChar *output_first_soundcard_line;
+
+	output_first_soundcard_line = xmlGetProp(child,
+						 BAD_CAST "value");
+
+	gtk_spin_button_set_value(connection_editor_bulk->output_first_soundcard_line,
+				  g_ascii_strtod(output_first_soundcard_line,
+						 NULL));
+      }else if(!xmlStrncmp(BAD_CAST "output-count",
+			   child->name,
+			   13)){
+	xmlChar *output_count;
+
+	output_count = xmlGetProp(child,
+				  BAD_CAST "value");
+
+	gtk_spin_button_set_value(connection_editor_bulk->output_count,
+				  g_ascii_strtod(output_count,
+						 NULL));
+      }else if(!xmlStrncmp(BAD_CAST "input-soundcard",
+			   child->name,
+			   16)){
+	GtkTreeModel *model;
+
+	GtkTreeIter iter;
+	
+	xmlChar *input_soundcard;
+
+	input_soundcard = xmlNodeGetContent(child);
+
+	model = gtk_combo_box_get_model(connection_editor_bulk->input_soundcard);
+
+	if(gtk_tree_model_get_iter_first(model, &iter)){
+	  do{
+	    gchar *current_input_soundcard;
+	    
+	    gtk_tree_model_get(model,
+			       &iter,
+			       0, &current_input_soundcard,
+			       -1);
+
+	    if(!g_strcmp0(input_soundcard,
+			  current_input_soundcard)){
+	      break;
+	    }
+	  }while(gtk_tree_model_iter_next(model, &iter));
+	}
+
+	gtk_combo_box_set_active_iter(connection_editor_bulk->input_soundcard,
+				      &iter);
+      }else if(!xmlStrncmp(BAD_CAST "input-first-line",
+			   child->name,
+			   17)){
+	xmlChar *input_first_line;
+
+	input_first_line = xmlGetProp(child,
+				      BAD_CAST "value");
+
+	gtk_spin_button_set_value(connection_editor_bulk->input_first_line,
+				  g_ascii_strtod(input_first_line,
+						 NULL));
+      }else if(!xmlStrncmp(BAD_CAST "input-first-soundcard-line",
+			   child->name,
+			   27)){
+	xmlChar *input_first_soundcard_line;
+
+	input_first_soundcard_line = xmlGetProp(child,
+						BAD_CAST "value");
+
+	gtk_spin_button_set_value(connection_editor_bulk->input_first_soundcard_line,
+				  g_ascii_strtod(input_first_soundcard_line,
+						 NULL));
+      }else if(!xmlStrncmp(BAD_CAST "input-count",
+			   child->name,
+			   12)){
+	xmlChar *input_count;
+
+	input_count = xmlGetProp(child,
+				 BAD_CAST "value");
+
+	gtk_spin_button_set_value(connection_editor_bulk->input_count,
+				  g_ascii_strtod(input_count,
+						 NULL));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 /**

@@ -9,6 +9,8 @@ ags (4.0.0)
 	* migrated libags_audio.so to libsoup-3.0
 	* implemented AgsCartesian properties
 	* implemented ags_common_pitch_util.[ch]
+	* implemented AgsMachineEditorDialog made it more modular
+	* implemented AgsConnectionEditorDialog made it more modular
 	* refactored libgsequencer.so to use AgsConnectableFlags
 	* refactored libags_audio.so to use AgsConnectableFlags
 	* refactored AgsMachineSelector
