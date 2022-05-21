@@ -380,11 +380,15 @@ ags_connection_editor_connect(AgsConnectable *connectable)
 
   connection_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_editor_listing));
-  ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_editor_collection));
-
-  ags_connectable_connect(AGS_CONNECTABLE(connection_editor->input_editor_listing));
-  ags_connectable_connect(AGS_CONNECTABLE(connection_editor->input_editor_collection));
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_editor_listing));
+    ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_editor_collection));
+  }
+  
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    ags_connectable_connect(AGS_CONNECTABLE(connection_editor->input_editor_listing));
+    ags_connectable_connect(AGS_CONNECTABLE(connection_editor->input_editor_collection));
+  }
 }
 
 void
@@ -400,11 +404,15 @@ ags_connection_editor_disconnect(AgsConnectable *connectable)
   
   connection_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_editor_listing));
-  ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_editor_collection));
-
-  ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->input_editor_listing));
-  ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->input_editor_collection));
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_editor_listing));
+    ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_editor_collection));
+  }
+  
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->input_editor_listing));
+    ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->input_editor_collection));
+  }
 }
 
 void
@@ -414,11 +422,15 @@ ags_connection_editor_set_update(AgsApplicable *applicable, gboolean update)
 
   connection_editor = AGS_CONNECTION_EDITOR(applicable);
 
-  ags_applicable_set_update(AGS_APPLICABLE(connection_editor->output_editor_listing), update);
-  ags_applicable_set_update(AGS_APPLICABLE(connection_editor->output_editor_collection), update);
-
-  ags_applicable_set_update(AGS_APPLICABLE(connection_editor->input_editor_listing), update);
-  ags_applicable_set_update(AGS_APPLICABLE(connection_editor->input_editor_collection), update);
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    ags_applicable_set_update(AGS_APPLICABLE(connection_editor->output_editor_listing), update);
+    ags_applicable_set_update(AGS_APPLICABLE(connection_editor->output_editor_collection), update);
+  }
+  
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    ags_applicable_set_update(AGS_APPLICABLE(connection_editor->input_editor_listing), update);
+    ags_applicable_set_update(AGS_APPLICABLE(connection_editor->input_editor_collection), update);
+  }
 }
 
 void
@@ -428,13 +440,17 @@ ags_connection_editor_apply(AgsApplicable *applicable)
 
   connection_editor = AGS_CONNECTION_EDITOR(applicable);
 
-  ags_applicable_apply(AGS_APPLICABLE(connection_editor->output_editor_listing));
-  ags_applicable_apply(AGS_APPLICABLE(connection_editor->output_editor_collection));
-
-  ags_applicable_apply(AGS_APPLICABLE(connection_editor->input_editor_listing));
-  ags_applicable_apply(AGS_APPLICABLE(connection_editor->input_editor_collection));
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    ags_applicable_apply(AGS_APPLICABLE(connection_editor->output_editor_listing));
+    ags_applicable_apply(AGS_APPLICABLE(connection_editor->output_editor_collection));
+  }
+  
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    ags_applicable_apply(AGS_APPLICABLE(connection_editor->input_editor_listing));
+    ags_applicable_apply(AGS_APPLICABLE(connection_editor->input_editor_collection));
+  }
 }
-
+  
 void
 ags_connection_editor_reset(AgsApplicable *applicable)
 {
@@ -442,11 +458,15 @@ ags_connection_editor_reset(AgsApplicable *applicable)
 
   connection_editor = AGS_CONNECTION_EDITOR(applicable);
   
-  ags_applicable_reset(AGS_APPLICABLE(connection_editor->output_editor_listing));
-  ags_applicable_reset(AGS_APPLICABLE(connection_editor->output_editor_collection));
-
-  ags_applicable_reset(AGS_APPLICABLE(connection_editor->input_editor_listing));
-  ags_applicable_reset(AGS_APPLICABLE(connection_editor->input_editor_collection));
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    ags_applicable_reset(AGS_APPLICABLE(connection_editor->output_editor_listing));
+    ags_applicable_reset(AGS_APPLICABLE(connection_editor->output_editor_collection));
+  }
+  
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    ags_applicable_reset(AGS_APPLICABLE(connection_editor->input_editor_listing));
+    ags_applicable_reset(AGS_APPLICABLE(connection_editor->input_editor_collection));
+  }
 }
 
 void

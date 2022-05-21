@@ -357,11 +357,96 @@ ags_connection_editor_collection_apply(AgsApplicable *applicable)
 void
 ags_connection_editor_collection_reset(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+  AgsConnectionEditor *connection_editor;
   AgsConnectionEditorCollection *connection_editor_collection;
 
+  GList *start_dialog_model, *dialog_model;
   GList *start_bulk, *bulk;
 
   connection_editor_collection = AGS_CONNECTION_EDITOR_COLLECTION(applicable);
+
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_collection,
+								      AGS_TYPE_CONNECTION_EDITOR);
+
+  if(connection_editor == NULL){
+    return;
+  }
+  
+  machine = connection_editor->machine;
+
+  bulk =
+    start_bulk = ags_connection_editor_collection_get_bulk(connection_editor_collection);
+
+  while(bulk != NULL){
+    ags_connection_editor_collection_remove_bulk(connection_editor_collection,
+						 bulk->data);
+
+    /* iterate */
+    bulk = bulk->next;
+  }
+
+  g_list_free(start_bulk);
+
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+
+  while(dialog_model != NULL){
+    AgsConnectionEditorBulk *bulk;
+
+    xmlNode *node;
+
+    node = dialog_model->data;
+    
+    if(!g_strcmp0(node->name,
+		  "ags-connection-editor-bulk")){
+      xmlChar *direction;
+
+      direction = xmlGetProp(node,
+			     BAD_CAST "direction");
+
+      if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT) &&
+	 !g_strcmp0(direction, "output")){
+	bulk = ags_connection_editor_bulk_new();
+
+	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
+	  gtk_widget_set_visible(bulk->output_grid,
+				 TRUE);
+	}
+
+	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
+	  gtk_widget_set_visible(bulk->input_grid,
+				 TRUE);
+	}
+
+	ags_connection_editor_collection_add_bulk(connection_editor_collection,
+						  bulk);
+
+	ags_connectable_connect(AGS_CONNECTABLE(bulk));
+      }else if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_INPUT) &&
+	       !g_strcmp0(direction, "input")){
+	bulk = ags_connection_editor_bulk_new();
+
+	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
+	  gtk_widget_set_visible(bulk->output_grid,
+				 TRUE);
+	}
+
+	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
+	  gtk_widget_set_visible(bulk->input_grid,
+				 TRUE);
+	}
+
+	ags_connection_editor_collection_add_bulk(connection_editor_collection,
+						  bulk);
+
+	ags_connectable_connect(AGS_CONNECTABLE(bulk));
+      }
+    }
+    
+    /* iterate */
+    dialog_model = dialog_model->next;
+  }
 
   /* reset */
   bulk =

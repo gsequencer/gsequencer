@@ -398,9 +398,70 @@ ags_connection_editor_line_set_update(AgsApplicable *applicable, gboolean update
 void
 ags_connection_editor_line_apply(AgsApplicable *applicable)
 {
+  AgsConnectionEditor *connection_editor;
   AgsConnectionEditorLine *connection_editor_line;
 
   connection_editor_line = AGS_CONNECTION_EDITOR_LINE(applicable);
+
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_line->parent_pad,
+								      AGS_TYPE_CONNECTION_EDITOR);
+  /* output soundcard */
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
+    GObject *output_soundcard;
+    
+    GtkTreeModel *model;
+
+    GtkTreeIter iter;
+
+    guint output_line;
+
+    model = gtk_combo_box_get_model(connection_editor_line->output_soundcard);  
+
+    gtk_combo_box_get_active_iter(connection_editor_line->output_soundcard,
+				  &iter);
+
+    output_soundcard = NULL;
+
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &output_soundcard,
+		       -1);
+    output_line = (guint) gtk_spin_button_get_value_as_int(connection_editor_line->output_line);
+
+    ags_channel_set_output_soundcard(connection_editor_line->channel,
+				     output_soundcard);
+    ags_channel_set_output_soundcard_channel(connection_editor_line->channel,
+					     output_line);
+  }
+  
+  /* input soundcard */
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
+    GObject *input_soundcard;
+    
+    GtkTreeModel *model;
+
+    GtkTreeIter iter;
+
+    guint input_line;
+
+    model = gtk_combo_box_get_model(connection_editor_line->input_soundcard);  
+
+    gtk_combo_box_get_active_iter(connection_editor_line->input_soundcard,
+				  &iter);
+
+    input_soundcard = NULL;
+
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &input_soundcard,
+		       -1);
+    input_line = (guint) gtk_spin_button_get_value_as_int(connection_editor_line->input_line);
+
+    ags_channel_set_input_soundcard(connection_editor_line->channel,
+				    input_soundcard);
+    ags_channel_set_input_soundcard_channel(connection_editor_line->channel,
+					    input_line);
+  }
 }
 
 void

@@ -439,32 +439,298 @@ ags_connection_editor_bulk_set_update(AgsApplicable *applicable, gboolean update
 void
 ags_connection_editor_bulk_apply(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+  AgsConnectionEditor *connection_editor;
+  AgsConnectionEditorCollection *connection_editor_collection;
   AgsConnectionEditorBulk *connection_editor_bulk;
 
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+  
+  AgsChannel *start_input, *start_output;
+  AgsChannel *channel;
+  
+  AgsApplicationContext *application_context;
+
+  GObject *output_soundcard, *input_soundcard;
+
+  xmlNode *node;
+
+  GList *start_dialog_model, *dialog_model;
+  GList *start_list, *list;
+  
+  guint output_first_line, output_first_soundcard_line;
+  guint input_first_line, input_first_soundcard_line;
+  guint output_count;
+  guint input_count;
+  gint i, i_stop;
+  
   connection_editor_bulk = AGS_CONNECTION_EDITOR_BULK(applicable);
 
-  //TODO:JK: implement me
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
+
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+								      AGS_TYPE_CONNECTION_EDITOR);
+
+  machine = connection_editor->machine;
+
+  /* application context */  
+  application_context = ags_application_context_get_instance();
+
+  /* output  */
+  model = gtk_combo_box_get_model(connection_editor_bulk->output_soundcard);  
+
+  output_soundcard = NULL;
+  
+  if(model != NULL &&
+     gtk_combo_box_get_active_iter(connection_editor_bulk->output_soundcard,
+				   &iter)){
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &output_soundcard,
+		       -1);
+  }
+  
+  output_first_line = (guint) gtk_spin_button_get_value_as_int(connection_editor_bulk->output_first_line);
+  
+  output_first_soundcard_line = (guint) gtk_spin_button_get_value_as_int(connection_editor_bulk->output_first_soundcard_line);
+  
+  output_count = (guint) gtk_spin_button_get_value_as_int(connection_editor_bulk->output_count);
+
+  /* input  */
+  model = gtk_combo_box_get_model(connection_editor_bulk->input_soundcard);  
+
+  input_soundcard = NULL;
+
+  if(model != NULL &&
+     gtk_combo_box_get_active_iter(connection_editor_bulk->input_soundcard,
+				   &iter)){
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &input_soundcard,
+		       -1);
+  }
+  
+  input_first_line = (guint) gtk_spin_button_get_value_as_int(connection_editor_bulk->input_first_line);
+  
+  input_first_soundcard_line = (guint) gtk_spin_button_get_value_as_int(connection_editor_bulk->input_first_soundcard_line);
+  
+  input_count = (guint) gtk_spin_button_get_value_as_int(connection_editor_bulk->input_count);
+
+  /* apply output */
+  start_output = NULL;
+  start_input = NULL;
+
+  channel = NULL;  
+  
+  if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT)){
+    start_output = ags_audio_get_output(machine->audio);
+
+    channel = ags_channel_pad_nth(start_output,
+				  output_first_line);
+  }else{
+    start_input = ags_audio_get_input(machine->audio);
+
+    channel = ags_channel_pad_nth(start_input,
+				  output_first_line);
+  }
+
+  for(i = 0; i < output_count; i++){
+    AgsChannel *next_pad;
+
+    ags_channel_set_output_soundcard(channel,
+				     output_soundcard);
+    ags_channel_set_output_soundcard_channel(channel,
+					     output_first_soundcard_line + i);
+    
+    /* iterate */
+    next_pad = ags_channel_next_pad(channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
+    channel = next_pad;
+  }
+  
+  if(start_output){
+    g_object_unref(start_output);
+  }
+
+  if(start_input){
+    g_object_unref(start_input);
+  }
+
+  /* apply input */
+  start_output = NULL;
+  start_input = NULL;
+
+  channel = NULL;  
+  
+  if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT)){
+    start_output = ags_audio_get_output(machine->audio);
+
+    channel = ags_channel_pad_nth(start_output,
+				  output_first_line);
+  }else{
+    start_input = ags_audio_get_input(machine->audio);
+
+    channel = ags_channel_pad_nth(start_input,
+				  output_first_line);
+  }
+  
+  for(i = 0; i < input_count; i++){
+    AgsChannel *next_pad;
+    
+    ags_channel_set_input_soundcard(channel,
+				    input_soundcard);
+    ags_channel_set_input_soundcard_channel(channel,
+					    input_first_soundcard_line + i);
+    
+    /* iterate */
+    next_pad = ags_channel_next_pad(channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
+    channel = next_pad;
+  }
+  
+  if(start_output){
+    g_object_unref(start_output);
+  }
+
+  if(start_input){
+    g_object_unref(start_input);
+  }
+  
+  start_output = NULL;
+  start_input = NULL;
+
+  /* find model */
+  list = 
+    start_list = ags_connection_editor_collection_get_bulk(connection_editor_collection);
+  
+  i_stop = g_list_index(start_list,
+			connection_editor_bulk);
+  
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+  
+  node = NULL;
+
+  for(i = 0; dialog_model != NULL && i < i_stop; i++){
+    if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT)){
+      dialog_model = ags_machine_find_dialog_model(machine,
+						   dialog_model,
+						   "ags-connection-editor-bulk",
+						   "direction",
+						   "output");
+    }else if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_INPUT)){
+      dialog_model = ags_machine_find_dialog_model(machine,
+						   dialog_model,
+						   "ags-connection-editor-bulk",
+						   "direction",
+						   "input");
+    }
+
+    if(dialog_model != NULL){
+      if(i == i_stop){
+	node = dialog_model->data;
+
+	break;      
+      }
+    
+      dialog_model = dialog_model->next;
+    }
+  }
+
+  g_list_free(start_dialog_model);
+
+  if(node != NULL){
+    ags_machine_remove_dialog_model(machine,
+				    node);
+  }
+
+  node = ags_connection_editor_bulk_to_xml_node(connection_editor_bulk);
+  ags_machine_add_dialog_model(machine,
+			       node);
 }
 
 void
 ags_connection_editor_bulk_reset(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+  AgsConnectionEditor *connection_editor;
+  AgsConnectionEditorCollection *connection_editor_collection;
   AgsConnectionEditorBulk *connection_editor_bulk;
 
   GtkTreeModel *model;
 
   AgsApplicationContext *application_context;
+  
+  xmlNode *node;
+    
+  GtkTreeIter iter;
 
   GList *start_soundcard, *soundcard;
-  
-  GtkTreeIter iter;
+  GList *start_dialog_model, *dialog_model;
+  GList *start_list, *list;
+
+  gint i, i_stop;  
     
   connection_editor_bulk = AGS_CONNECTION_EDITOR_BULK(applicable);
 
   application_context = ags_application_context_get_instance();
+
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
+
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+								      AGS_TYPE_CONNECTION_EDITOR);
+
+  machine = connection_editor->machine;
   
   start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  list = 
+    start_list = ags_connection_editor_collection_get_bulk(connection_editor_collection);
+
+  i_stop = g_list_index(start_list,
+			connection_editor_bulk);
+  
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+  
+  node = NULL;
+
+  for(i = 0; dialog_model != NULL && i <= i_stop; i++){
+    if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT)){
+      dialog_model = ags_machine_find_dialog_model(machine,
+						   dialog_model,
+						   "ags-connection-editor-bulk",
+						   "direction",
+						   "output");
+    }else{
+      dialog_model = ags_machine_find_dialog_model(machine,
+						   dialog_model,
+						   "ags-connection-editor-bulk",
+						   "direction",
+						   "input");
+    }
+
+    if(dialog_model != NULL){
+      if(i == i_stop){
+	node = dialog_model->data;
+      }
+    
+      dialog_model = dialog_model->next;
+    }
+  }
+  
   /* output soundcard */
   model = gtk_combo_box_get_model(connection_editor_bulk->output_soundcard);
 
@@ -537,6 +803,15 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
 
   g_list_free_full(start_soundcard,
 		   (GDestroyNotify) g_object_unref);
+  
+  g_list_free(start_dialog_model);
+  
+  g_list_free(start_list);
+
+  if(node != NULL){
+    ags_connection_editor_bulk_from_xml_node(connection_editor_bulk,
+					     node);
+  }
 }
 
 /**
@@ -611,6 +886,9 @@ ags_connection_editor_bulk_to_xml_node(AgsConnectionEditorBulk *connection_edito
   
     xmlNodeAddContent(child,
 		      output_soundcard);
+  
+    xmlAddChild(node,
+		child);
     
     /* output first line */
     child = xmlNewNode(NULL,
@@ -676,6 +954,9 @@ ags_connection_editor_bulk_to_xml_node(AgsConnectionEditorBulk *connection_edito
   
     xmlNodeAddContent(child,
 		      input_soundcard);
+  
+    xmlAddChild(node,
+		child);
     
     /* input first line */
     child = xmlNewNode(NULL,
@@ -766,7 +1047,7 @@ ags_connection_editor_bulk_from_xml_node(AgsConnectionEditorBulk *connection_edi
 			       &iter,
 			       0, &current_output_soundcard,
 			       -1);
-
+	    
 	    if(!g_strcmp0(output_soundcard,
 			  current_output_soundcard)){
 	      break;

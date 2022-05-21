@@ -369,6 +369,10 @@ ags_machine_editor_collection_reset(AgsApplicable *applicable)
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_collection,
 								AGS_TYPE_MACHINE_EDITOR);
 
+  if(machine_editor == NULL){
+    return;
+  }
+  
   machine = machine_editor->machine;
 
   bulk =
