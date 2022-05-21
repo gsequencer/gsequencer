@@ -885,10 +885,10 @@ ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
   
   ags_connection_editor_set_machine(connection_editor_dialog->connection_editor,
 				    machine);
-  
-  ags_applicable_reset(AGS_APPLICABLE(connection_editor_dialog->connection_editor));
 
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor_dialog->connection_editor));
+  
+  ags_applicable_reset(AGS_APPLICABLE(connection_editor_dialog->connection_editor));
   
   gtk_widget_show(connection_editor_dialog);
 

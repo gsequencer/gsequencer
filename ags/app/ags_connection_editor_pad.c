@@ -461,6 +461,8 @@ ags_connection_editor_pad_reset(AgsApplicable *applicable)
     start_line = ags_connection_editor_pad_get_line(connection_editor_pad);
 
   while(line != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line->data));
+    
     ags_applicable_reset(AGS_APPLICABLE(line->data));
 
     /* iterate */

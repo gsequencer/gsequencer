@@ -7134,6 +7134,8 @@ ags_channel_get_output_soundcard(AgsChannel *channel)
     return(NULL);
   }
 
+  output_soundcard = NULL;
+
   g_object_get(channel,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
@@ -7324,6 +7326,55 @@ ags_channel_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard)
 }
 
 /**
+ * ags_channel_get_output_soundcard_channel:
+ * @channel: the #AgsChannel
+ *
+ * Get the output soundcard object of @channel.
+ *
+ * Returns: the output soundcard
+ * 
+ * Since: 4.0.0
+ */
+gint
+ags_channel_get_output_soundcard_channel(AgsChannel *channel)
+{
+  gint output_soundcard_channel;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  output_soundcard_channel = 0;
+  
+  g_object_get(channel,
+	       "output-soundcard-channel", &output_soundcard_channel,
+	       NULL);
+
+  return(output_soundcard_channel);
+}
+
+/**
+ * ags_channel_set_output_soundcard_channel:
+ * @channel: an #AgsChannel
+ * @output_soundcard_channel: the output soundcard channel
+ *
+ * Set the output soundcard channel of @channel.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_channel_set_output_soundcard_channel(AgsChannel *channel, gint output_soundcard_channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       NULL);
+}
+
+/**
  * ags_channel_get_input_soundcard:
  * @channel: the #AgsChannel
  *
@@ -7478,6 +7529,55 @@ ags_channel_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard)
 
   g_object_set(channel,
 	       "input-soundcard", input_soundcard,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_input_soundcard_channel:
+ * @channel: the #AgsChannel
+ *
+ * Get the input soundcard object of @channel.
+ *
+ * Returns: the input soundcard
+ * 
+ * Since: 4.0.0
+ */
+gint
+ags_channel_get_input_soundcard_channel(AgsChannel *channel)
+{
+  gint input_soundcard_channel;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  input_soundcard_channel = 0;
+  
+  g_object_get(channel,
+	       "input-soundcard-channel", &input_soundcard_channel,
+	       NULL);
+
+  return(input_soundcard_channel);
+}
+
+/**
+ * ags_channel_set_input_soundcard_channel:
+ * @channel: an #AgsChannel
+ * @input_soundcard_channel: the input soundcard channel
+ *
+ * Set the input soundcard channel of @channel.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_channel_set_input_soundcard_channel(AgsChannel *channel, gint input_soundcard_channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "input-soundcard-channel", input_soundcard_channel,
 	       NULL);
 }
 

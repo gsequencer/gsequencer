@@ -406,64 +406,160 @@ ags_connection_editor_line_apply(AgsApplicable *applicable)
 void
 ags_connection_editor_line_reset(AgsApplicable *applicable)
 {
+  AgsConnectionEditor *connection_editor;
   AgsConnectionEditorLine *connection_editor_line;
 
   GtkTreeModel *model;
 
   AgsApplicationContext *application_context;
 
+  GObject *output_soundcard, *input_soundcard;
+  
   GList *start_soundcard, *soundcard;
+  
+  GtkTreeIter iter;
+
+  gint position;
+  gboolean success;
   
   connection_editor_line = AGS_CONNECTION_EDITOR_LINE(applicable);
 
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_line->parent_pad,
+								      AGS_TYPE_CONNECTION_EDITOR);
+
   application_context = ags_application_context_get_instance();
+
+  output_soundcard = ags_channel_get_output_soundcard(connection_editor_line->channel);
+  input_soundcard = ags_channel_get_input_soundcard(connection_editor_line->channel);
   
   start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* output soundcard */
-  model = gtk_combo_box_get_model(connection_editor_line->output_soundcard);
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
+    model = gtk_combo_box_get_model(connection_editor_line->output_soundcard);
 
-  if(GTK_IS_LIST_STORE(model)){
-    gtk_list_store_clear(GTK_LIST_STORE(model));
-  }
+    if(GTK_IS_LIST_STORE(model)){
+      gtk_list_store_clear(GTK_LIST_STORE(model));
+    }
 
-  soundcard = start_soundcard;
-  
-  while(soundcard != NULL){
-    GtkTreeIter iter;
+    position = 0;
 
     gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		       0, ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
-		       1, soundcard->data,
+		       0, "NULL",
+		       1, NULL,
 		       -1);
-    
-    soundcard = soundcard->next;
-  }
+  
+    soundcard = start_soundcard;
 
+    success = FALSE;
+
+    position++;
+  
+    while(soundcard != NULL){
+      gchar *device;
+      gchar *str;
+
+      device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+    
+      str = g_strdup_printf("%s: %s", 
+			    G_OBJECT_TYPE_NAME(G_OBJECT(soundcard->data)),
+			    ((device != NULL) ? device: "(null)"));
+      
+      gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+
+      gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			 0, str,
+			 1, soundcard->data,
+			 -1);
+
+      if(soundcard->data == output_soundcard){
+	success = TRUE;
+      }
+    
+      if(!success){
+	position++;
+      }
+    
+      soundcard = soundcard->next;
+    }
+
+    if(success){
+      gint output_soundcard_channel;
+
+      output_soundcard_channel = ags_channel_get_output_soundcard_channel(connection_editor_line->channel);
+    
+      gtk_combo_box_set_active(connection_editor_line->output_soundcard,
+			       position);
+
+      gtk_spin_button_set_value(connection_editor_line->output_line,
+				(gdouble) output_soundcard_channel);
+    }
+  }
+  
   /* input soundcard */
-  model = gtk_combo_box_get_model(connection_editor_line->input_soundcard);
+  if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
+    model = gtk_combo_box_get_model(connection_editor_line->input_soundcard);
 
-  if(GTK_IS_LIST_STORE(model)){
-    gtk_list_store_clear(GTK_LIST_STORE(model));
-  }
+    if(GTK_IS_LIST_STORE(model)){
+      gtk_list_store_clear(GTK_LIST_STORE(model));
+    }
 
-  soundcard = start_soundcard;
-  
-  while(soundcard != NULL){
-    GtkTreeIter iter;
+    position = 0;
 
     gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		       0, ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
-		       1, soundcard->data,
+		       0, "NULL",
+		       1, NULL,
 		       -1);
-    
-    soundcard = soundcard->next;
-  }
 
+    soundcard = start_soundcard;
+
+    success = FALSE;
+
+    position++;
+  
+    while(soundcard != NULL){
+      gchar *device;
+      gchar *str;
+
+      device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+    
+      str = g_strdup_printf("%s: %s", 
+			    G_OBJECT_TYPE_NAME(G_OBJECT(soundcard->data)),
+			    ((device != NULL) ? device: "(null)"));
+      
+      gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+
+      gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			 0, str,
+			 1, soundcard->data,
+			 -1);
+
+      if(soundcard->data == output_soundcard){
+	success = TRUE;
+      }
+    
+      if(!success){
+	position++;
+      }
+    
+      soundcard = soundcard->next;
+    }
+
+    if(success){
+      gint input_soundcard_channel;
+
+      input_soundcard_channel = ags_channel_get_input_soundcard_channel(connection_editor_line->channel);
+    
+      gtk_combo_box_set_active(connection_editor_line->input_soundcard,
+			       position);
+
+      gtk_spin_button_set_value(connection_editor_line->input_line,
+				(gdouble) input_soundcard_channel);
+    }
+  }
+  
   g_list_free_full(start_soundcard,
 		   (GDestroyNotify) g_object_unref);
 }

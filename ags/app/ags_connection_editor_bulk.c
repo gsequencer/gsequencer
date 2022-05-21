@@ -457,6 +457,8 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
 
   GList *start_soundcard, *soundcard;
   
+  GtkTreeIter iter;
+    
   connection_editor_bulk = AGS_CONNECTION_EDITOR_BULK(applicable);
 
   application_context = ags_application_context_get_instance();
@@ -470,15 +472,28 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
     gtk_list_store_clear(GTK_LIST_STORE(model));
   }
 
+  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		     0, "NULL",
+		     1, NULL,
+		     -1);
+
   soundcard = start_soundcard;
   
   while(soundcard != NULL){
-    GtkTreeIter iter;
+    gchar *device;
+    gchar *str;
+
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+    
+    str = g_strdup_printf("%s: %s", 
+			  G_OBJECT_TYPE_NAME(G_OBJECT(soundcard->data)),
+			  ((device != NULL) ? device: "(null)"));
 
     gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		       0, ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
+		       0, str,
 		       1, soundcard->data,
 		       -1);
     
@@ -492,15 +507,28 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
     gtk_list_store_clear(GTK_LIST_STORE(model));
   }
 
+  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		     0, "NULL",
+		     1, NULL,
+		     -1);
+
   soundcard = start_soundcard;
   
   while(soundcard != NULL){
-    GtkTreeIter iter;
+    gchar *device;
+    gchar *str;
+
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+    
+    str = g_strdup_printf("%s: %s", 
+			  G_OBJECT_TYPE_NAME(G_OBJECT(soundcard->data)),
+			  ((device != NULL) ? device: "(null)"));
 
     gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		       0, ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
+		       0, str,
 		       1, soundcard->data,
 		       -1);
     

@@ -270,8 +270,14 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 GObject* ags_channel_get_output_soundcard(AgsChannel *channel);
 void ags_channel_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard);
 
+gint ags_channel_get_output_soundcard_channel(AgsChannel *channel);
+void ags_channel_set_output_soundcard_channel(AgsChannel *channel, gint output_soundcard_channel);
+
 GObject* ags_channel_get_input_soundcard(AgsChannel *channel);
 void ags_channel_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard);
+
+gint ags_channel_get_input_soundcard_channel(AgsChannel *channel);
+void ags_channel_set_input_soundcard_channel(AgsChannel *channel, gint input_soundcard_channel);
 
 /* presets */
 guint ags_channel_get_samplerate(AgsChannel *channel);
