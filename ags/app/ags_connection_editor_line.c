@@ -484,13 +484,29 @@ ags_connection_editor_line_reset(AgsApplicable *applicable)
       soundcard = soundcard->next;
     }
 
+    gtk_combo_box_set_active(connection_editor_line->output_soundcard,
+			     0);
+
     if(success){
+      guint pcm_channels;
       gint output_soundcard_channel;
+
+      pcm_channels = 0;
+
+      ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+				&pcm_channels,
+				NULL,
+				NULL,
+				NULL);  
 
       output_soundcard_channel = ags_channel_get_output_soundcard_channel(connection_editor_line->channel);
     
       gtk_combo_box_set_active(connection_editor_line->output_soundcard,
 			       position);
+
+      gtk_spin_button_set_range(connection_editor_line->output_line,
+				0.0,
+				(gdouble) pcm_channels - 1.0);
 
       gtk_spin_button_set_value(connection_editor_line->output_line,
 				(gdouble) output_soundcard_channel);
@@ -536,7 +552,7 @@ ags_connection_editor_line_reset(AgsApplicable *applicable)
 			 1, soundcard->data,
 			 -1);
 
-      if(soundcard->data == output_soundcard){
+      if(soundcard->data == input_soundcard){
 	success = TRUE;
       }
     
@@ -546,14 +562,30 @@ ags_connection_editor_line_reset(AgsApplicable *applicable)
     
       soundcard = soundcard->next;
     }
+    
+    gtk_combo_box_set_active(connection_editor_line->input_soundcard,
+			     0);
 
     if(success){
+      guint pcm_channels;
       gint input_soundcard_channel;
+
+      pcm_channels = 0;
+
+      ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
+				&pcm_channels,
+				NULL,
+				NULL,
+				NULL);  
 
       input_soundcard_channel = ags_channel_get_input_soundcard_channel(connection_editor_line->channel);
     
       gtk_combo_box_set_active(connection_editor_line->input_soundcard,
 			       position);
+
+      gtk_spin_button_set_range(connection_editor_line->input_line,
+				0.0,
+				(gdouble) pcm_channels - 1.0);
 
       gtk_spin_button_set_value(connection_editor_line->input_line,
 				(gdouble) input_soundcard_channel);
