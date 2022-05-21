@@ -76,7 +76,7 @@ ags_connection_editor_bulk_output_soundcard_callback(GtkComboBox *combo_box, Ags
 
   gtk_spin_button_set_range(connection_editor_bulk->output_first_line,
 			    0.0,
-			    first_line_upper);
+			    first_line_upper - 1.0);
   
   output_soundcard = NULL;
   
@@ -99,7 +99,7 @@ ags_connection_editor_bulk_output_soundcard_callback(GtkComboBox *combo_box, Ags
 
   gtk_spin_button_set_range(connection_editor_bulk->output_first_soundcard_line,
 			    0.0,
-			    (gdouble) pcm_channels);
+			    (gdouble) pcm_channels - 1.0);
 
   first_soundcard_line_upper = (gdouble) pcm_channels;
 
@@ -148,7 +148,7 @@ ags_connection_editor_bulk_input_soundcard_callback(GtkComboBox *combo_box, AgsC
 
   gtk_spin_button_set_range(connection_editor_bulk->input_first_line,
 			    0.0,
-			    first_line_upper);
+			    first_line_upper - 1.0);
   
   input_soundcard = NULL;
   
@@ -171,7 +171,7 @@ ags_connection_editor_bulk_input_soundcard_callback(GtkComboBox *combo_box, AgsC
 
   gtk_spin_button_set_range(connection_editor_bulk->input_first_soundcard_line,
 			    0.0,
-			    (gdouble) pcm_channels);
+			    (gdouble) pcm_channels - 1.0);
 
   first_soundcard_line_upper = (gdouble) pcm_channels;
 

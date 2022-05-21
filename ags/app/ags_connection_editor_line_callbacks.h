@@ -33,6 +33,9 @@
 
 G_BEGIN_DECLS
 
+void ags_connection_editor_line_output_soundcard_callback(GtkComboBox *combo_box, AgsConnectionEditorLine *connection_editor_line);
+
+void ags_connection_editor_line_input_soundcard_callback(GtkComboBox *combo_box, AgsConnectionEditorLine *connection_editor_line);
 
 G_END_DECLS
 

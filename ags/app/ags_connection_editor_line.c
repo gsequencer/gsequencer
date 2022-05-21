@@ -353,6 +353,12 @@ ags_connection_editor_line_connect(AgsConnectable *connectable)
   }
 
   connection_editor_line->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_signal_connect_after(connection_editor_line->output_soundcard, "changed",
+			 G_CALLBACK(ags_connection_editor_line_output_soundcard_callback), connection_editor_line);
+
+  g_signal_connect_after(connection_editor_line->input_soundcard, "changed",
+			 G_CALLBACK(ags_connection_editor_line_input_soundcard_callback), connection_editor_line);
 }
 
 void
@@ -367,6 +373,18 @@ ags_connection_editor_line_disconnect(AgsConnectable *connectable)
   }
   
   connection_editor_line->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_object_disconnect(connection_editor_line->output_soundcard,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_connection_editor_line_output_soundcard_callback),
+		      connection_editor_line,
+		      NULL);
+
+  g_object_disconnect(connection_editor_line->input_soundcard,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_connection_editor_line_input_soundcard_callback),
+		      connection_editor_line,
+		      NULL);
 }
 
 void

@@ -18,3 +18,73 @@
  */
 
 #include <ags/app/ags_connection_editor_line_callbacks.h>
+
+void
+ags_connection_editor_line_output_soundcard_callback(GtkComboBox *combo_box, AgsConnectionEditorLine *connection_editor_line)
+{
+  GtkTreeModel *model;
+
+  GObject *output_soundcard;
+
+  GtkTreeIter iter;
+
+  guint pcm_channels;
+
+  output_soundcard = NULL;
+  
+  model = gtk_combo_box_get_model(connection_editor_line->output_soundcard);
+
+  if(gtk_combo_box_get_active_iter(connection_editor_line->output_soundcard,
+				   &iter)){
+    gtk_tree_model_get(GTK_TREE_MODEL(model), &iter,
+		       1, &output_soundcard,
+		       -1);    
+  }
+
+  pcm_channels = 0;
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			    &pcm_channels,
+			    NULL,
+			    NULL,
+			    NULL);  
+
+  gtk_spin_button_set_range(connection_editor_line->output_line,
+			    0.0,
+			    (gdouble) pcm_channels - 1.0);
+}
+
+void
+ags_connection_editor_line_input_soundcard_callback(GtkComboBox *combo_box, AgsConnectionEditorLine *connection_editor_line)
+{
+  GtkTreeModel *model;
+
+  GObject *input_soundcard;
+
+  GtkTreeIter iter;
+
+  guint pcm_channels;
+
+  input_soundcard = NULL;
+  
+  model = gtk_combo_box_get_model(connection_editor_line->input_soundcard);
+
+  if(gtk_combo_box_get_active_iter(connection_editor_line->input_soundcard,
+				   &iter)){
+    gtk_tree_model_get(GTK_TREE_MODEL(model), &iter,
+		       1, &input_soundcard,
+		       -1);    
+  }
+
+  pcm_channels = 0;
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
+			    &pcm_channels,
+			    NULL,
+			    NULL,
+			    NULL);  
+
+  gtk_spin_button_set_range(connection_editor_line->input_line,
+			    0.0,
+			    (gdouble) pcm_channels - 1.0);
+}
