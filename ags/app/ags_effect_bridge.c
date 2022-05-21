@@ -20,6 +20,7 @@
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bridge_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/i18n.h>
@@ -375,6 +376,11 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
+  gtk_grid_set_column_spacing(effect_bridge,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(effect_bridge,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   effect_bridge->flags = 0;
   effect_bridge->connectable_flags = 0;
 

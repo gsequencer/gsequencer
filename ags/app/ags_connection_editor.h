@@ -48,10 +48,18 @@ G_BEGIN_DECLS
 typedef struct _AgsConnectionEditor AgsConnectionEditor;
 typedef struct _AgsConnectionEditorClass AgsConnectionEditorClass;
 
+typedef enum{
+  AGS_CONNECTION_EDITOR_SHOW_OUTPUT             = 1,
+  AGS_CONNECTION_EDITOR_SHOW_INPUT              = 1 <<  1,
+  AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT   = 1 <<  2,
+  AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT    = 1 <<  3,
+}AgsConnectionEditorFlags;
+
 struct _AgsConnectionEditor
 {
   GtkGrid grid;
 
+  guint flags;
   guint connectable_flags;
   
   gchar *version;
@@ -61,11 +69,17 @@ struct _AgsConnectionEditor
 
   GtkNotebook *notebook;
 
-  AgsConnectionEditorListing *output_listing_editor;
-  AgsConnectionEditorCollection *output_collection_editor;
+  GtkScrolledWindow *output_listing_scrolled_window;
+  AgsConnectionEditorListing *output_editor_listing;
 
-  AgsConnectionEditorListing *input_listing_editor;
-  AgsConnectionEditorCollection *input_collection_editor;
+  GtkScrolledWindow *output_collection_scrolled_window;
+  AgsConnectionEditorCollection *output_editor_collection;
+
+  GtkScrolledWindow *input_listing_scrolled_window;  
+  AgsConnectionEditorListing *input_editor_listing;
+  
+  GtkScrolledWindow *input_collection_scrolled_window;
+  AgsConnectionEditorCollection *input_editor_collection;
 };
 
 struct _AgsConnectionEditorClass

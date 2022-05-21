@@ -47,6 +47,10 @@ struct _AgsConnectionEditorPad
 {
   GtkBox box;
 
+  guint connectable_flags;
+  
+  AgsChannel *channel;
+
   GtkExpander *expander;
   
   GList *line;
@@ -61,7 +65,13 @@ struct _AgsConnectionEditorPadClass
 
 GType ags_connection_editor_pad_get_type(void);
 
-AgsConnectionEditorPad* ags_connection_editor_pad_new();
+GList* ags_connection_editor_pad_get_line(AgsConnectionEditorPad *connection_editor_pad);
+void ags_connection_editor_pad_add_line(AgsConnectionEditorPad *connection_editor_pad,
+					AgsConnectionEditorLine *line);
+void ags_connection_editor_pad_remove_line(AgsConnectionEditorPad *connection_editor_pad,
+					   AgsConnectionEditorLine *line);
+
+AgsConnectionEditorPad* ags_connection_editor_pad_new(AgsChannel *channel);
 
 G_END_DECLS
 

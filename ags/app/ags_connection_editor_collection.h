@@ -47,6 +47,10 @@ struct _AgsConnectionEditorCollection
 {
   GtkBox box;
 
+  guint connectable_flags;
+  
+  GType channel_type;
+
   GtkCheckButton *enabled;
 
   GList *bulk;
@@ -63,7 +67,13 @@ struct _AgsConnectionEditorCollectionClass
 
 GType ags_connection_editor_collection_get_type(void);
 
-AgsConnectionEditorCollection* ags_connection_editor_collection_new();
+GList* ags_connection_editor_collection_get_bulk(AgsConnectionEditorCollection *connection_editor_collection);
+void ags_connection_editor_collection_add_bulk(AgsConnectionEditorCollection *connection_editor_collection,
+					       AgsConnectionEditorBulk *bulk);
+void ags_connection_editor_collection_remove_bulk(AgsConnectionEditorCollection *connection_editor_collection,
+						  AgsConnectionEditorBulk *bulk);
+
+AgsConnectionEditorCollection* ags_connection_editor_collection_new(GType channel_type);
 
 G_END_DECLS
 

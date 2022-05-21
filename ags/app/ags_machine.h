@@ -189,7 +189,7 @@ struct _AgsMachine
   GtkDialog *rename;
   GtkDialog *rename_audio;
   GtkDialog *reposition_audio;
-  GtkDialog *connection_editor;
+  GtkDialog *connection_editor_dialog;
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;
   GtkDialog *envelope_info;

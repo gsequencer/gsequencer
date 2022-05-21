@@ -1,20 +1,36 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
- *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * GSequencer is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
- */
+  * Copyright (C) 2005-2022 Joël Krähemann
+  *
+  * This file is part of GSequencer.
+  *
+  * GSequencer is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  *
+  * GSequencer is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+  */
 
 #include <ags/app/ags_connection_editor_bulk_callbacks.h>
+
+#include <ags/app/ags_connection_editor.h>
+#include <ags/app/ags_connection_editor_collection.h>
+
+void
+ags_connection_editor_bulk_remove_bulk_callback(GtkButton *button,
+						AgsConnectionEditorBulk *connection_editor_bulk)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_connection_editor_bulk_soundcard_callback(GtkComboBox *combo_box, AgsConnectionEditorBulk *connection_editor_bulk)
+{
+  //TODO:JK: implement me
+}

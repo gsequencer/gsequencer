@@ -47,6 +47,9 @@ struct _AgsConnectionEditorListing
 {
   GtkBox box;
 
+  guint flags;
+  guint connectable_flags;
+  
   GType channel_type;
   
   GtkCheckButton *enabled;
@@ -63,7 +66,13 @@ struct _AgsConnectionEditorListingClass
 
 GType ags_connection_editor_listing_get_type(void);
 
-AgsConnectionEditorListing* ags_connection_editor_listing_new();
+GList* ags_connection_editor_listing_get_pad(AgsConnectionEditorListing *connection_editor_listing);
+void ags_connection_editor_listing_add_pad(AgsConnectionEditorListing *connection_editor_listing,
+					   AgsConnectionEditorPad *pad);
+void ags_connection_editor_listing_remove_pad(AgsConnectionEditorListing *connection_editor_listing,
+					      AgsConnectionEditorPad *pad);
+
+AgsConnectionEditorListing* ags_connection_editor_listing_new(GType channel_type);
 
 G_END_DECLS
 

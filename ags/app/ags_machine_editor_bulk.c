@@ -48,7 +48,7 @@ static gpointer ags_machine_editor_bulk_parent_class = NULL;
  * @include: ags/app/ags_machine_editor_bulk.h
  *
  * #AgsMachineEditorBulk is a composite widget to edit all aspects of #AgsAudio.
- * It consists of multiple child editor_bulks.
+ * It consists of multiple child editor bulks.
  */
 
 GType

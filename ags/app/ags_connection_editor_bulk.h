@@ -44,6 +44,17 @@ typedef struct _AgsConnectionEditorBulkClass AgsConnectionEditorBulkClass;
 struct _AgsConnectionEditorBulk
 {
   GtkBox box;
+
+  guint connectable_flags;
+
+  GtkComboBox *soundcard;
+
+  GtkSpinButton *first_line;
+  GtkSpinButton *first_soundcard_line;
+
+  GtkSpinButton *count;
+
+  GtkButton *remove_bulk;
 };
 
 struct _AgsConnectionEditorBulkClass
@@ -52,6 +63,10 @@ struct _AgsConnectionEditorBulkClass
 };
 
 GType ags_connection_editor_bulk_get_type(void);
+
+xmlNode* ags_connection_editor_bulk_to_xml_node(AgsConnectionEditorBulk *connection_editor_bulk);
+void ags_connection_editor_bulk_from_xml_node(AgsConnectionEditorBulk *connection_editor_bulk,
+					      xmlNode *node);
 
 AgsConnectionEditorBulk* ags_connection_editor_bulk_new();
 

@@ -728,7 +728,7 @@ ags_machine_init(AgsMachine *machine)
   machine->rename = NULL;
   machine->rename_audio = NULL;
   machine->reposition_audio = NULL;
-  machine->connection_editor = NULL;
+  machine->connection_editor_dialog = NULL;
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
 

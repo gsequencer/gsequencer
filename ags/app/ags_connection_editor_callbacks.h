@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,13 +32,6 @@
 #include <ags/app/ags_connection_editor.h>
 
 G_BEGIN_DECLS
-
-int ags_connection_editor_apply_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
-int ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
-int ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
-
-gboolean ags_connection_editor_delete_event(GtkWidget *dialog, gint response,
-					    AgsConnectionEditor *connection_editor);
 
 G_END_DECLS
 

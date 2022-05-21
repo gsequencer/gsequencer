@@ -20,6 +20,8 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_machine_editor_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
@@ -199,6 +201,11 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
+  gtk_grid_set_column_spacing(machine_editor,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(machine_editor,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   machine_editor->connectable_flags = 0;
 
   machine_editor->version = AGS_MACHINE_EDITOR_DEFAULT_VERSION;
@@ -242,6 +249,12 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("output")));
 
   machine_editor->output_editor_listing = ags_machine_editor_listing_new(AGS_TYPE_OUTPUT);  
+
+  gtk_widget_set_halign(machine_editor->output_editor_listing,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(machine_editor->output_editor_listing,
+			GTK_ALIGN_START);
+
   gtk_scrolled_window_set_child(scrolled_window,
 				machine_editor->output_editor_listing);
   
@@ -290,6 +303,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("link output")));
 
   machine_editor->output_editor_collection = ags_machine_editor_collection_new(AGS_TYPE_OUTPUT);  
+
   gtk_scrolled_window_set_child(scrolled_window,
 				machine_editor->output_editor_collection);
 

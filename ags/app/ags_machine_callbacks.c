@@ -27,11 +27,15 @@
 #include <ags/app/ags_midi_dialog.h>
 #include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine_editor_dialog.h>
+#include <ags/app/ags_connection_editor_dialog.h>
 
 #include <ags/app/export/ags_wave_export_dialog.h>
 
 #include <ags/app/editor/ags_envelope_dialog.h>
 #include <ags/app/editor/ags_machine_radio_button.h>
+
+#include <ags/app/machine/ags_panel.h>
+#include <ags/app/machine/ags_audiorec.h>
 
 #include <ags/i18n.h>
 
@@ -42,6 +46,7 @@ void ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsM
 void ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+void ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 void
@@ -763,7 +768,7 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
 
   gchar *str;
 
-  str = g_strdup_printf("%s:%s %s",
+  str = g_strdup_printf("%s:%s - %s",
 			G_OBJECT_TYPE_NAME(machine),
 			machine->machine_name,
 			i18n("properties"));
@@ -836,10 +841,61 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    ags_applicable_apply(AGS_APPLICABLE(AGS_CONNECTION_EDITOR_DIALOG(widget)->connection_editor));    
+  }
+
+  gtk_window_destroy(widget);
+}
+
+void
 ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
 				      AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  AgsConnectionEditorDialog *connection_editor_dialog;
+
+  gchar *str;
+
+  if(!AGS_IS_PANEL(machine) &&
+     !AGS_IS_AUDIOREC(machine)){
+    return;
+  }
+  
+  str = g_strdup_printf("%s:%s - %s",
+			G_OBJECT_TYPE_NAME(machine),
+			machine->machine_name,
+			i18n("connections"));
+  
+  connection_editor_dialog =
+    machine->connection_editor_dialog = ags_connection_editor_dialog_new(str,
+									 (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
+													       AGS_TYPE_WINDOW));
+
+  if(AGS_IS_PANEL(machine)){
+    connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_OUTPUT |
+							   AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT);
+  }
+
+  if(AGS_IS_AUDIOREC(machine)){
+    connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_INPUT |
+							   AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT);
+  }
+  
+  ags_connection_editor_set_machine(connection_editor_dialog->connection_editor,
+				    machine);
+  
+  ags_applicable_reset(AGS_APPLICABLE(connection_editor_dialog->connection_editor));
+
+  ags_connectable_connect(AGS_CONNECTABLE(connection_editor_dialog->connection_editor));
+  
+  gtk_widget_show(connection_editor_dialog);
+
+  g_signal_connect(connection_editor_dialog, "response",
+		   G_CALLBACK(ags_connection_editor_dialog_response_callback), machine);
+  
+  g_free(str);
 }
 
 void

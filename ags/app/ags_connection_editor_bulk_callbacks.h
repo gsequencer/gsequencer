@@ -33,6 +33,10 @@
 
 G_BEGIN_DECLS
 
+void ags_connection_editor_bulk_remove_bulk_callback(GtkButton *button,
+						     AgsConnectionEditorBulk *connection_editor_bulk);
+void ags_connection_editor_bulk_soundcard_callback(GtkComboBox *combo_box,
+						   AgsConnectionEditorBulk *connection_editor_bulk);
 
 G_END_DECLS
 

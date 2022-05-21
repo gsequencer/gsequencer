@@ -45,9 +45,21 @@ struct _AgsConnectionEditorLine
 {
   GtkBox box;
 
+  guint connectable_flags;
+
+  GtkWidget *parent_pad;
+  
+  AgsChannel *channel;
+
+  GtkBox *output_box;
+
+  GtkLabel *output_label;  
   GtkComboBox *output_soundcard;
   GtkSpinButton *output_line;
   
+  GtkBox *input_box;
+
+  GtkLabel *input_label;  
   GtkComboBox *input_soundcard;
   GtkSpinButton *input_line;
 };
