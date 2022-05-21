@@ -142,13 +142,16 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(generic_preferences),
 				 GTK_ORIENTATION_VERTICAL);
 
+  gtk_box_set_spacing(generic_preferences,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("autosave thread"));
   gtk_box_append((GtkBox *) generic_preferences,
 		 (GtkWidget *) generic_preferences->autosave_thread);
 		     
   /* segmentation */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) generic_preferences,
 		 (GtkWidget *) hbox);
 
@@ -166,7 +169,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 
   /* engine mode */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) generic_preferences,
 		 (GtkWidget *) hbox);
 
@@ -192,7 +195,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   
   /* GUI scale factor */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) generic_preferences,
 		 (GtkWidget *) hbox);
 

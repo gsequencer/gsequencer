@@ -143,6 +143,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(soundcard_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing(soundcard_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   soundcard_editor->flags = 0;
   
   soundcard_editor->soundcard = NULL;
@@ -273,7 +276,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   soundcard_editor->remove_port = NULL;
 
   soundcard_editor->port_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						       0);
+						       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->port_hbox,
 			GTK_ALIGN_FILL);

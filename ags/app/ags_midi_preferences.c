@@ -140,6 +140,9 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(midi_preferences),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(midi_preferences,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);  
   
   g_signal_connect((GObject *) midi_preferences, "notify::parent",
 		   G_CALLBACK(ags_midi_preferences_notify_parent_callback), NULL);
@@ -163,10 +166,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 		 (GtkWidget *) scrolled_window);
   
   midi_preferences->sequencer_editor_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-								  0);
-
-  gtk_box_set_spacing(midi_preferences->sequencer_editor_box,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+								  AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) midi_preferences->sequencer_editor_box);

@@ -134,6 +134,9 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(sequencer_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing(sequencer_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   sequencer_editor->flags = 0;
   
   sequencer_editor->sequencer = NULL;
@@ -241,7 +244,7 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   sequencer_editor->remove_jack = NULL;
 
   sequencer_editor->jack_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						       0);
+						       AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_widget_set_valign(sequencer_editor->jack_hbox,
 			GTK_ALIGN_FILL);

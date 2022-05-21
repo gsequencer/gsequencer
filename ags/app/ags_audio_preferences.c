@@ -145,6 +145,9 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(audio_preferences),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(audio_preferences,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);  
   
   g_signal_connect((GObject *) audio_preferences, "notify::parent",
 		   G_CALLBACK(ags_audio_preferences_notify_parent_callback), NULL);

@@ -132,6 +132,9 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_orientable_set_orientation(GTK_ORIENTABLE(performance_preferences),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing(performance_preferences,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   performance_preferences->flags = 0;
   
   /* auto-sense */
@@ -151,7 +154,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 
   /* thread-pool - max unused threads */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(GTK_BOX(performance_preferences),
 		 GTK_WIDGET(hbox));
 
@@ -167,7 +170,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   
   /* max precision */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(GTK_BOX(performance_preferences),
 		 GTK_WIDGET(hbox));
 

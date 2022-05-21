@@ -74,6 +74,10 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
 					      guint page_n,
 					      AgsPreferences *preferences)
 {
+  if((AGS_PREFERENCES_SHUTDOWN & (preferences->flags)) != 0){
+    return;
+  }
+  
   if(page_n == 1){
     gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
 
