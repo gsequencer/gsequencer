@@ -36,8 +36,6 @@ ags_connection_editor_bulk_remove_bulk_callback(GtkButton *button,
   GList *start_list, *list;
   
   gint i, i_stop;
-
-  g_message("remove");
   
   connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);

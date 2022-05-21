@@ -248,9 +248,9 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 3,
 		  1, 1);
 
-  connection_editor_bulk->remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
+  connection_editor_bulk->output_remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
   gtk_grid_attach(grid,
-		  (GtkWidget *) connection_editor_bulk->remove_bulk,
+		  (GtkWidget *) connection_editor_bulk->output_remove_bulk,
 		  3, 3,
 		  1, 1);
 
@@ -357,9 +357,9 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 3,
 		  1, 1);
 
-  connection_editor_bulk->remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
+  connection_editor_bulk->input_remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
   gtk_grid_attach(grid,
-		  (GtkWidget *) connection_editor_bulk->remove_bulk,
+		  (GtkWidget *) connection_editor_bulk->input_remove_bulk,
 		  3, 3,
 		  1, 1);
 }
@@ -386,11 +386,14 @@ ags_connection_editor_bulk_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(connection_editor_bulk->output_soundcard, "changed",
 			 G_CALLBACK(ags_connection_editor_bulk_output_soundcard_callback), connection_editor_bulk);
+  
+  g_signal_connect_after(connection_editor_bulk->output_remove_bulk, "clicked",
+			 G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback), connection_editor_bulk);
 
   g_signal_connect_after(connection_editor_bulk->input_soundcard, "changed",
 			 G_CALLBACK(ags_connection_editor_bulk_input_soundcard_callback), connection_editor_bulk);
   
-  g_signal_connect_after(connection_editor_bulk->remove_bulk, "clicked",
+  g_signal_connect_after(connection_editor_bulk->input_remove_bulk, "clicked",
 			 G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback), connection_editor_bulk);
 }
 
@@ -413,13 +416,19 @@ ags_connection_editor_bulk_disconnect(AgsConnectable *connectable)
 		      connection_editor_bulk,
 		      NULL);
 
+  g_object_disconnect(connection_editor_bulk->output_remove_bulk,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback),
+		      connection_editor_bulk,
+		      NULL);
+
   g_object_disconnect(connection_editor_bulk->input_soundcard,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_connection_editor_bulk_input_soundcard_callback),
 		      connection_editor_bulk,
 		      NULL);
 
-  g_object_disconnect(connection_editor_bulk->remove_bulk,
+  g_object_disconnect(connection_editor_bulk->input_remove_bulk,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_connection_editor_bulk_remove_bulk_callback),
 		      connection_editor_bulk,

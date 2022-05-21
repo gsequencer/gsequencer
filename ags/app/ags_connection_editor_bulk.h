@@ -55,6 +55,8 @@ struct _AgsConnectionEditorBulk
   GtkSpinButton *output_first_soundcard_line;
 
   GtkSpinButton *output_count;
+  
+  GtkButton *output_remove_bulk;
 
   GtkGrid *input_grid;
 
@@ -65,7 +67,7 @@ struct _AgsConnectionEditorBulk
 
   GtkSpinButton *input_count;
   
-  GtkButton *remove_bulk;
+  GtkButton *input_remove_bulk;
 };
 
 struct _AgsConnectionEditorBulkClass
