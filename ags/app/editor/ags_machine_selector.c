@@ -636,8 +636,10 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
 
     sibling = NULL;
 
-    sibling = g_list_nth_data(start_list,
-			      position);
+    if(position > 0){
+      sibling = g_list_nth_data(start_list,
+				position - 1);
+    }
     
     start_list = g_list_insert(start_list,
 			       machine_radio_button,
