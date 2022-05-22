@@ -47,6 +47,8 @@ struct _AgsResizeEditor
 
   guint connectable_flags;
   
+  GtkWidget *parent_machine_editor;
+
   GtkCheckButton *enabled;
   
   GtkSpinButton *audio_channels;

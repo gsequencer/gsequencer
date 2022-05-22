@@ -51,6 +51,8 @@ struct _AgsMachineEditorCollection
   
   GType channel_type;
   
+  GtkWidget *parent_machine_editor;
+  
   GtkCheckButton *enabled;
 
   GList *bulk;

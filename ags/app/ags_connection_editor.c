@@ -243,6 +243,8 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   connection_editor->output_editor_listing = ags_connection_editor_listing_new(AGS_TYPE_OUTPUT);  
 
+  connection_editor->output_editor_listing->parent_connection_editor = connection_editor;
+  
   gtk_widget_set_halign(connection_editor->output_editor_listing,
 			GTK_ALIGN_START);
   gtk_widget_set_valign(connection_editor->output_editor_listing,
@@ -267,6 +269,8 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   connection_editor->output_editor_collection = ags_connection_editor_collection_new(AGS_TYPE_OUTPUT);  
 
+  connection_editor->output_editor_collection->parent_connection_editor = connection_editor;
+
   gtk_scrolled_window_set_child(scrolled_window,
 				connection_editor->output_editor_collection);
 
@@ -285,6 +289,8 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 			GTK_ALIGN_FILL);
 
   connection_editor->input_editor_listing = ags_connection_editor_listing_new(AGS_TYPE_INPUT);  
+
+  connection_editor->input_editor_listing->parent_connection_editor = connection_editor;
 
   gtk_widget_set_halign(connection_editor->input_editor_listing,
 			GTK_ALIGN_START);
@@ -309,6 +315,8 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 			GTK_ALIGN_FILL);
 
   connection_editor->input_editor_collection = ags_connection_editor_collection_new(AGS_TYPE_INPUT);  
+
+  connection_editor->input_editor_collection->parent_connection_editor = connection_editor;
 
   gtk_widget_set_halign(connection_editor->output_editor_listing,
 			GTK_ALIGN_START);

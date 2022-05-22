@@ -51,6 +51,8 @@ struct _AgsConnectionEditorCollection
   
   GType channel_type;
 
+  GtkWidget *parent_connection_editor;
+
   GtkCheckButton *enabled;
 
   GList *bulk;

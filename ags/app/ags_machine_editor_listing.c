@@ -172,6 +172,8 @@ ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing)
 
   machine_editor_listing->channel_type = G_TYPE_NONE;
 
+  machine_editor_listing->parent_machine_editor = NULL;
+
   machine_editor_listing->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
 
   gtk_widget_set_halign(machine_editor_listing->enabled,

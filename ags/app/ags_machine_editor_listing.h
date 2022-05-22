@@ -56,6 +56,8 @@ struct _AgsMachineEditorListing
   guint connectable_flags;
   
   GType channel_type;
+
+  GtkWidget *parent_machine_editor;
   
   GtkCheckButton *enabled;
 

@@ -59,7 +59,7 @@ struct _AgsMachineEditor
   gchar *version;
   gchar *build_id;
 
-  GtkWidet *parent_dialog;
+  GtkWidget *parent_dialog;
   
   AgsMachine *machine;
 

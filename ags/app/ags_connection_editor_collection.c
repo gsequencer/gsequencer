@@ -170,6 +170,8 @@ ags_connection_editor_collection_init(AgsConnectionEditorCollection *connection_
 
   connection_editor_collection->channel_type = G_TYPE_NONE;
 
+  connection_editor_collection->parent_connection_editor = NULL;
+  
   connection_editor_collection->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
 
   gtk_widget_set_halign(connection_editor_collection->enabled,

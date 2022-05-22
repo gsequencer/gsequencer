@@ -170,6 +170,8 @@ ags_machine_editor_collection_init(AgsMachineEditorCollection *machine_editor_co
 
   machine_editor_collection->channel_type = G_TYPE_NONE;
 
+  machine_editor_collection->parent_machine_editor = NULL;
+
   machine_editor_collection->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
 
   gtk_widget_set_halign(machine_editor_collection->enabled,

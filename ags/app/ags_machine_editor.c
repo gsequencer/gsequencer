@@ -252,6 +252,8 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->output_editor_listing = ags_machine_editor_listing_new(AGS_TYPE_OUTPUT);  
 
+  machine_editor->output_editor_listing->parent_machine_editor = machine_editor;
+
   gtk_widget_set_halign(machine_editor->output_editor_listing,
 			GTK_ALIGN_START);
   gtk_widget_set_valign(machine_editor->output_editor_listing,
@@ -279,6 +281,8 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->input_editor_listing = ags_machine_editor_listing_new(AGS_TYPE_INPUT);  
 
+  machine_editor->input_editor_listing->parent_machine_editor = machine_editor;
+  
   gtk_widget_set_halign(machine_editor->input_editor_listing,
 			GTK_ALIGN_START);
   gtk_widget_set_valign(machine_editor->input_editor_listing,
@@ -306,6 +310,8 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->output_editor_collection = ags_machine_editor_collection_new(AGS_TYPE_OUTPUT);  
 
+  machine_editor->output_editor_collection->parent_machine_editor = machine_editor;
+
   gtk_scrolled_window_set_child(scrolled_window,
 				machine_editor->output_editor_collection);
 
@@ -327,6 +333,8 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("link input")));
 
   machine_editor->input_editor_collection = ags_machine_editor_collection_new(AGS_TYPE_INPUT);  
+
+  machine_editor->input_editor_collection->parent_machine_editor = machine_editor;
 
   gtk_widget_set_halign(machine_editor->output_editor_listing,
 			GTK_ALIGN_START);
@@ -353,6 +361,9 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 
   machine_editor->resize_editor = ags_resize_editor_new();
+
+  machine_editor->resize_editor->parent_machine_editor = machine_editor;
+
   gtk_scrolled_window_set_child(scrolled_window,
 				machine_editor->resize_editor);
 }
