@@ -1861,15 +1861,34 @@ void
 ags_line_member_chained_event(AgsLineMember *line_member)
 {
   AgsMachine *machine;
+  AgsLine *line;
+  AgsEffectLine *effect_line;
 
   if(!AGS_IS_LINE_MEMBER(line_member) ||
      (AGS_LINE_MEMBER_BLOCK_CHAINED & (line_member->flags)) != 0){
     return;
   }
-  
-  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-						   AGS_TYPE_MACHINE);
 
+  machine = NULL;
+    
+  line = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+						AGS_TYPE_LINE);
+
+  effect_line = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+						       AGS_TYPE_EFFECT_LINE);
+
+  if(line != NULL){  
+    machine = (AgsMachine *) gtk_widget_get_ancestor(line->pad,
+						     AGS_TYPE_MACHINE);
+  }else if(effect_line != NULL){
+    machine = (AgsMachine *) gtk_widget_get_ancestor(effect_line,
+						     AGS_TYPE_MACHINE);
+  }
+
+  if(machine == NULL){
+    return;
+  }
+  
   if((AGS_MACHINE_STICKY_CONTROLS & (machine->flags)) != 0){
     AgsPad *pad;
     AgsEffectPad *effect_pad;

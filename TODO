@@ -11,15 +11,12 @@ Free Documentation License".
 * TODO:JK: fix ags_turtle_test.c
 * TODO:JK: fix ags_turtle_test.c
 * TODO:JK: implemented AgsUiOscRenewController
-* FIXME:JK: make indicator orientable
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
 * TODO:JK: implemented support for GtkApplication
 * TODO:JK: migrated AgsBasePlugin to GModule
-* TODO:JK: removed AgsMenuBar
 * TODO:JK: migrated to gi18n.h?
 * TODO:JK: migrated unit-tests to GTest?
-* TODO:JK: move ags/X to ags/ui
 * TODO:JK: check recall id cleanup
 * TODO:JK: added unit-tests
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
@@ -28,7 +25,6 @@ Free Documentation License".
 * TODO:JK: improve thread-safety to LADSPA and DSSI
 * TODO:JK: removed ags_id_generator.[ch]
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
-* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
 * TODO:JK: implemented AgsScaleArea properties
 * TODO:JK: implemented AgsApplicationContext properties
 * TODO:JK: implement AgsConnectable properly

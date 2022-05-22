@@ -35,6 +35,8 @@
 #include <ags/app/editor/ags_machine_radio_button.h>
 
 #include <ags/app/machine/ags_panel.h>
+#include <ags/app/machine/ags_drum.h>
+#include <ags/app/machine/ags_matrix.h>
 #include <ags/app/machine/ags_audiorec.h>
 
 #include <ags/i18n.h>
@@ -851,6 +853,11 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 					    window,
 					    machine);
 
+  if(AGS_IS_DRUM(machine) ||
+     AGS_IS_MATRIX(machine)){
+    ags_envelope_dialog_add_pattern_tab(envelope_dialog);
+  }
+  
   gtk_widget_show((GtkWidget *) envelope_dialog);
   
   g_free(title);

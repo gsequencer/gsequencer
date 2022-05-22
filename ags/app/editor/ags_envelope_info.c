@@ -20,6 +20,7 @@
 #include <ags/app/editor/ags_envelope_info.h>
 #include <ags/app/editor/ags_envelope_info_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 
@@ -155,6 +156,9 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(envelope_info),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(envelope_info,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   envelope_info->flags = 0;
 

@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 
@@ -162,6 +163,9 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(pattern_envelope),
 				 GTK_ORIENTATION_VERTICAL);
 
+  gtk_box_set_spacing(pattern_envelope,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   pattern_envelope->flags = 0;
 
   pattern_envelope->version = AGS_PATTERN_ENVELOPE_DEFAULT_VERSION;
@@ -294,6 +298,22 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 TRUE);
+
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_box_append((GtkBox *) pattern_envelope,
 		 GTK_WIDGET(grid));
 
@@ -444,7 +464,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		  1, 1);
 
   control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				   0);
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(grid,
 		  GTK_WIDGET(control),
 		  1, i,

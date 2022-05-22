@@ -159,6 +159,9 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(envelope_editor),
 				 GTK_ORIENTATION_VERTICAL);
 
+  gtk_box_set_spacing(envelope_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   envelope_editor->flags = 0;
   envelope_editor->connectable_flags = 0;
 
@@ -179,7 +182,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		 (GtkWidget *) frame);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_frame_set_child(frame,
 		      (GtkWidget *) hbox);
   
@@ -308,7 +311,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		  1, 1);
 
   control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				   0);
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_hexpand(control,
 			 TRUE);
