@@ -450,6 +450,10 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   /**/
   live_lv2_bridge->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						 AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_hexpand(live_lv2_bridge->vbox,
+			 FALSE);
+  
   gtk_frame_set_child(AGS_MACHINE(live_lv2_bridge)->frame,
 		      (GtkWidget *) live_lv2_bridge->vbox);
 
@@ -501,6 +505,9 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->parent_machine = live_lv2_bridge;
 
+  gtk_widget_set_hexpand(AGS_MACHINE(live_lv2_bridge)->bridge,
+			 FALSE);
+
   gtk_box_append(live_lv2_bridge->vbox,
 		 (GtkWidget *) AGS_MACHINE(live_lv2_bridge)->bridge);
 
@@ -512,9 +519,9 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 			     AGS_EFFECT_BULK_SHOW_LABELS));
 
   gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,

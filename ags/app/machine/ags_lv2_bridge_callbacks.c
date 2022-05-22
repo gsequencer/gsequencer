@@ -123,6 +123,9 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 	}else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 	  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				       ((val != 0.0) ? TRUE: FALSE));
+	}else if(GTK_IS_CHECK_BUTTON(child_widget)){
+	  gtk_check_button_set_active((GtkCheckButton *) child_widget,
+				       ((val != 0.0) ? TRUE: FALSE));
 	}else if(GTK_IS_BUTTON(child_widget)){
 	  g_signal_emit_by_name((GtkButton *) child_widget,
 				"clicked");
@@ -262,6 +265,14 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					       TRUE);
 		}
+	      }else if(GTK_IS_CHECK_BUTTON(child_widget)){
+		if(lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index] == 0.0){
+		  gtk_check_button_set_active((GtkCheckButton *) child_widget,
+					       FALSE);
+		}else{
+		  gtk_check_button_set_active((GtkCheckButton *) child_widget,
+					       TRUE);
+		}
 	      }else if(AGS_IS_DIAL(child_widget)){
 		gfloat port_val;
 		gdouble val;
@@ -394,6 +405,14 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
 					   FALSE);
 	    }else{
 	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					   TRUE);
+	    }
+	  }else if(GTK_IS_CHECK_BUTTON(child_widget)){
+	    if(value == 0.0){
+	      gtk_check_button_set_active((GtkCheckButton *) child_widget,
+					   FALSE);
+	    }else{
+	      gtk_check_button_set_active((GtkCheckButton *) child_widget,
 					   TRUE);
 	    }
 	  }else if(AGS_IS_DIAL(child_widget)){
@@ -591,7 +610,7 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
 }
 
 void
-ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Bridge *lv2_bridge)
+ags_lv2_bridge_check_button_toggled_callback(GtkWidget *check_button, AgsLv2Bridge *lv2_bridge)
 {
   AgsBulkMember *bulk_member;
 
@@ -611,7 +630,7 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
   bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(check_button,
 							  AGS_TYPE_BULK_MEMBER);
 
-  is_active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
+  is_active = gtk_check_button_get_active((GtkCheckButton *) check_button);
   
   port_index = bulk_member->port_index;
   val = is_active ? 1.0: 0.0;
@@ -642,7 +661,7 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
 }
 
 void
-ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Bridge *lv2_bridge)
+ags_lv2_bridge_toggle_button_toggled_callback(GtkWidget *toggle_button, AgsLv2Bridge *lv2_bridge)
 {
   AgsBulkMember *bulk_member;
 

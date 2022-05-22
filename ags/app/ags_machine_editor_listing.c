@@ -322,6 +322,10 @@ ags_machine_editor_listing_apply(AgsApplicable *applicable)
 
   machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(applicable);
 
+  if(!gtk_check_button_get_active(machine_editor_listing->enabled)){
+    return;
+  }
+  
   pad =
     start_pad = ags_machine_editor_listing_get_pad(machine_editor_listing);
 

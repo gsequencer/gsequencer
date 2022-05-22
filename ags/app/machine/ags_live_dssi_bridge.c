@@ -334,7 +334,11 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   live_dssi_bridge->dssi_descriptor = NULL;
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+  
   gtk_frame_set_child(AGS_MACHINE(live_dssi_bridge)->frame,
 		      (GtkWidget *) vbox);
 
@@ -357,6 +361,9 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->parent_machine = live_dssi_bridge;
 
+  gtk_widget_set_hexpand(AGS_MACHINE(live_dssi_bridge)->bridge,
+			 FALSE);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge);
   
@@ -368,9 +375,9 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 			     AGS_EFFECT_BULK_SHOW_LABELS));
 
   gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(AGS_MACHINE(live_dssi_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,

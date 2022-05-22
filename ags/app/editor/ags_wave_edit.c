@@ -2236,7 +2236,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 			fg_color.green,
 			opacity * fg_color.alpha);
   
-  cairo_set_line_width(cr, 2.0);
+  cairo_set_line_width(cr, 1.0);
 
   //  cairo_scale(cr,
   //	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);

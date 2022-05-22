@@ -635,6 +635,8 @@ ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachin
     ags_machine_set_machine_name(machine,
 				 text);
   }
+
+  machine->rename = NULL;
   
   gtk_window_destroy(widget);
 }
@@ -672,6 +674,8 @@ ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, Ags
 		 "name", text,
 		 NULL);
   }
+
+  machine->rename_audio = NULL;
   
   gtk_window_destroy(widget);
 }
@@ -727,6 +731,8 @@ ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response,
 		   (GFunc) g_object_unref,
 		   NULL);
   }
+
+  machine->reposition_audio = NULL;
   
   gtk_window_destroy(widget);
 }
@@ -756,9 +762,11 @@ void
 ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
   if(response == GTK_RESPONSE_ACCEPT){
-    ags_applicable_apply(AGS_APPLICABLE(AGS_MACHINE_EDITOR_DIALOG(widget)->machine_editor));    
+    ags_applicable_apply(AGS_APPLICABLE(AGS_MACHINE_EDITOR_DIALOG(widget)->machine_editor));
   }
 
+  machine->machine_editor_dialog = NULL;
+  
   gtk_window_destroy(widget);
 }
 

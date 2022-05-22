@@ -343,6 +343,10 @@ ags_connection_editor_collection_apply(AgsApplicable *applicable)
 
   connection_editor_collection = AGS_CONNECTION_EDITOR_COLLECTION(applicable);
 
+  if(!gtk_check_button_get_active(connection_editor_collection->enabled)){
+    return;
+  }
+
   bulk =
     start_bulk = ags_connection_editor_collection_get_bulk(connection_editor_collection);
 

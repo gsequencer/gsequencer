@@ -2564,6 +2564,20 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 		  width, height);
   cairo_fill(cr);
 
+  /* draw note shadow */
+  cairo_set_line_width(cr, 2.0);
+
+  cairo_set_source_rgba(cr,
+			highlight_color.red,
+			highlight_color.blue,
+			highlight_color.green,
+			opacity * highlight_color.alpha);
+  
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_stroke(cr);
+  
   /* check note selected */
   if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
     double selected_x, selected_y;

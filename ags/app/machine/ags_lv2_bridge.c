@@ -821,11 +821,11 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
       g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			     G_CALLBACK(ags_lv2_bridge_spin_button_changed_callback), lv2_bridge);
     }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-      g_signal_connect_after(GTK_WIDGET(control), "clicked",
-			     G_CALLBACK(ags_lv2_bridge_check_button_clicked_callback), lv2_bridge);
+      g_signal_connect_after(GTK_WIDGET(control), "toggled",
+			     G_CALLBACK(ags_lv2_bridge_check_button_toggled_callback), lv2_bridge);
     }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-      g_signal_connect_after(GTK_WIDGET(control), "clicked",
-			     G_CALLBACK(ags_lv2_bridge_toggle_button_clicked_callback), lv2_bridge);
+      g_signal_connect_after(GTK_WIDGET(control), "toggled",
+			     G_CALLBACK(ags_lv2_bridge_toggle_button_toggled_callback), lv2_bridge);
     }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
       g_signal_connect_after(GTK_WIDGET(control), "clicked",
 			     G_CALLBACK(ags_lv2_bridge_button_clicked_callback), lv2_bridge);
@@ -895,14 +895,14 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
       g_object_disconnect(GTK_WIDGET(control),
-			  "any_signal::clicked",
-			  G_CALLBACK(ags_lv2_bridge_check_button_clicked_callback),
+			  "any_signal::toggled",
+			  G_CALLBACK(ags_lv2_bridge_check_button_toggled_callback),
 			  lv2_bridge,
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
       g_object_disconnect(GTK_WIDGET(control),
-			  "any_signal::clicked",
-			  G_CALLBACK(ags_lv2_bridge_toggle_button_clicked_callback),
+			  "any_signal::toggled",
+			  G_CALLBACK(ags_lv2_bridge_toggle_button_toggled_callback),
 			  lv2_bridge,
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){

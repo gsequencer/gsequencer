@@ -343,6 +343,10 @@ ags_machine_editor_collection_apply(AgsApplicable *applicable)
 
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(applicable);
 
+  if(!gtk_check_button_get_active(machine_editor_collection->enabled)){
+    return;
+  }
+
   bulk =
     start_bulk = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 

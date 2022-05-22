@@ -322,6 +322,10 @@ ags_connection_editor_listing_apply(AgsApplicable *applicable)
 
   connection_editor_listing = AGS_CONNECTION_EDITOR_LISTING(applicable);
 
+  if(!gtk_check_button_get_active(connection_editor_listing->enabled)){
+    return;
+  }
+
   pad =
     start_pad = ags_connection_editor_listing_get_pad(connection_editor_listing);
 

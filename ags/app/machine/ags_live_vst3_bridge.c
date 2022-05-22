@@ -394,6 +394,9 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->parent_machine = live_vst3_bridge;
 
+  gtk_widget_set_hexpand(AGS_MACHINE(live_vst3_bridge)->bridge,
+			 FALSE);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(live_vst3_bridge)->bridge);
   
@@ -405,9 +408,9 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
 			     AGS_EFFECT_BULK_SHOW_LABELS));
 
   gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(AGS_MACHINE(live_vst3_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input,
@@ -624,6 +627,9 @@ ags_live_vst3_bridge_connect(AgsConnectable *connectable)
     }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
       g_signal_connect_after(GTK_WIDGET(control), "clicked",
 			     G_CALLBACK(ags_live_vst3_bridge_toggle_button_clicked_callback), live_vst3_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_vst3_bridge_check_button_clicked_callback), live_vst3_bridge);
     }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
       g_signal_connect_after(GTK_WIDGET(control), "clicked",
 			     G_CALLBACK(ags_live_vst3_bridge_button_clicked_callback), live_vst3_bridge);
@@ -1353,6 +1359,13 @@ ags_live_vst3_bridge_reload_port(AgsLiveVst3Bridge *live_vst3_bridge)
 	    active = (value != 0.0) ? TRUE: FALSE;
 	
 	    gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					 active);
+	  }else if(GTK_IS_CHECK_BUTTON(child_widget)){
+	    gboolean active;
+
+	    active = (value != 0.0) ? TRUE: FALSE;
+	
+	    gtk_check_button_set_active((GtkCheckButton *) child_widget,
 					 active);
 	  }else if(GTK_IS_BUTTON(child_widget)){
 	    g_signal_emit_by_name((GtkButton *) child_widget,

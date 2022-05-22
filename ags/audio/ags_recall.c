@@ -2174,7 +2174,7 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
   g_rec_mutex_lock(recall_mutex);
 
-  recall->connectable_flags &= (AGS_CONNECTABLE_CONNECTED);
+  recall->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_rec_mutex_unlock(recall_mutex);
 
