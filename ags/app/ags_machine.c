@@ -527,8 +527,9 @@ ags_machine_init(AgsMachine *machine)
 			  G_ACTION(action));
 
   /* sticky controls */
-  action = g_simple_action_new("sticky_controls",
-			       NULL);
+  action = g_simple_action_new_stateful("sticky_controls",
+					NULL,
+					g_variant_new_boolean(FALSE));
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_machine_sticky_controls_callback), machine);
   g_action_map_add_action(G_ACTION_MAP(action_group),

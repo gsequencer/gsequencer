@@ -797,7 +797,23 @@ void
 ags_machine_sticky_controls_callback(GAction *action, GVariant *parameter,
 				     AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  GVariant *variant;
+
+  variant = g_action_get_state(action);
+
+  if(g_variant_get_boolean(variant)){
+    g_object_set(action,
+		 "state", g_variant_new_boolean(FALSE),
+		 NULL);
+
+    machine->flags &= (~AGS_MACHINE_STICKY_CONTROLS);
+  }else{
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
+    machine->flags |= AGS_MACHINE_STICKY_CONTROLS;
+  }
 }
 
 void
