@@ -1881,7 +1881,12 @@ ags_line_member_chained_event(AgsLineMember *line_member)
     machine = (AgsMachine *) gtk_widget_get_ancestor(line->pad,
 						     AGS_TYPE_MACHINE);
   }else if(effect_line != NULL){
-    machine = (AgsMachine *) gtk_widget_get_ancestor(effect_line,
+    AgsEffectPad *effect_pad;
+    
+    effect_pad = (AgsEffectPad *) gtk_widget_get_ancestor(effect_line,
+							  AGS_TYPE_EFFECT_PAD);
+
+    machine = (AgsMachine *) gtk_widget_get_ancestor(effect_pad->parent_bridge,
 						     AGS_TYPE_MACHINE);
   }
 

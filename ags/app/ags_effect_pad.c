@@ -393,6 +393,8 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
 
   effect_pad->channel = NULL;
 
+  effect_pad->parent_bridge = NULL;
+
   effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
 
   effect_pad->effect_line = NULL;

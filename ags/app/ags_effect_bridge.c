@@ -1128,6 +1128,8 @@ ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
   if(g_list_find(effect_bridge->output_effect_pad, effect_pad) == NULL){
     effect_bridge->output_effect_pad = g_list_prepend(effect_bridge->output_effect_pad,
 						      effect_pad);
+
+    effect_pad->parent_bridge = effect_bridge;
     
     gtk_box_append(effect_bridge->output,
 		   effect_pad);
@@ -1153,6 +1155,8 @@ ags_effect_bridge_remove_output_effect_pad(AgsEffectBridge *effect_bridge,
   if(g_list_find(effect_bridge->output_effect_pad, effect_pad) != NULL){
     effect_bridge->output_effect_pad = g_list_remove(effect_bridge->output_effect_pad,
 						     effect_pad);
+
+    effect_pad->parent_bridge = NULL;
     
     gtk_box_remove(effect_bridge->output,
 		   effect_pad);
