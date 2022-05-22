@@ -79,6 +79,9 @@ ags_machine_editor_dialog_init(AgsMachineEditorDialog *machine_editor_dialog)
 {
   machine_editor_dialog->machine_editor = ags_machine_editor_new(NULL);
 
+  /* set parent */
+  machine_editor_dialog->machine_editor->parent_dialog = machine_editor_dialog;
+  
   gtk_widget_set_hexpand(machine_editor_dialog->machine_editor,
 			 TRUE);
   gtk_widget_set_vexpand(machine_editor_dialog->machine_editor,

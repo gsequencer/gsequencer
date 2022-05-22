@@ -373,7 +373,6 @@ ags_plugin_set_ports
 ags_plugin_read
 ags_plugin_write
 ags_priority_get_type
-ags_priority_flags_get_type
 ags_priority_load_defaults
 ags_priority_load_from_file
 ags_priority_set_value

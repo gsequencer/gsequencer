@@ -75,7 +75,6 @@ struct _AgsRegistryEntry
 };
 
 GType ags_registry_get_type();
-GType ags_registry_flags_get_type();
 
 AgsRegistryEntry* ags_registry_entry_alloc();
 void ags_registry_entry_free(AgsRegistryEntry *registry_entry);

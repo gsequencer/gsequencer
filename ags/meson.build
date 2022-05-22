@@ -212,7 +212,7 @@ libags = library('ags',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_dependencies,
-  version: '3.0.0',
+  version: '4.0.0',
   install: true,
 )
 
@@ -246,7 +246,7 @@ libags_thread = library('ags_thread',
   link_with: [
     libags,
   ],
-  version: '3.0.0',
+  version: '4.0.0',
   install: true,
 )
 
@@ -290,7 +290,7 @@ libags_server = library('libags_server',
     libags,
     libags_thread,
   ],
-  version: '3.0.0',
+  version: '4.0.0',
   install: true,
 )
 
@@ -722,7 +722,7 @@ libags_audio = library('ags_audio',
     libags_thread,
     libags_server,
   ],
-  version: '3.0.0',
+  version: '4.0.0',
   install: true,
 )
 
@@ -802,7 +802,7 @@ if get_option('vst3')
     cpp_args: cxx_compiler_flags,
     dependencies: libags_vst_dependencies,
     include_directories: [includes],
-    version: '3.0.0',
+    version: '4.0.0',
     install: true,
   )
 
@@ -839,7 +839,7 @@ libags_gui = library('ags_gui',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_gui_dependencies,
-  version: '3.0.0',
+  version: '4.0.0',
   install: true,
 )
 
@@ -2025,7 +2025,7 @@ if build_gir
     [ libags, libags_thread, libags_server ],
     sources: libags_sources + libags_headers + libags_thread_sources + libags_thread_headers + libags_server_sources + libags_server_headers,
     namespace: 'Ags',
-    nsversion: '3.0',
+    nsversion: '4.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'Ags',
@@ -2041,7 +2041,7 @@ if build_gir
     libags_audio,
     sources: libags_audio_sources + libags_audio_headers,
     namespace: 'AgsAudio',
-    nsversion: '3.0',
+    nsversion: '4.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsAudio',
@@ -2058,7 +2058,7 @@ if build_gir
     libags_gui,
     sources: libags_gui_sources + libags_gui_headers,
     namespace: 'AgsGui',
-    nsversion: '3.0',
+    nsversion: '4.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsGui',

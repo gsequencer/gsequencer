@@ -147,7 +147,6 @@ ags_controller_lookup_resource
 ags_controller_query_security_context
 ags_controller_new
 ags_registry_get_type
-ags_registry_flags_get_type
 ags_registry_entry_alloc
 ags_registry_entry_free
 ags_registry_add_entry

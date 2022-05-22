@@ -78,7 +78,6 @@ struct _AgsPriorityClass
 };
 
 GType ags_priority_get_type();
-GType ags_priority_flags_get_type();
 
 void ags_priority_load_defaults(AgsPriority *priority);
 void ags_priority_load_from_file(AgsPriority *priority, gchar *filename);

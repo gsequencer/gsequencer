@@ -199,7 +199,6 @@ ags_ladspa_manager_get_ladspa_plugin
 ags_ladspa_manager_get_instance
 ags_ladspa_manager_new
 ags_lv2_preset_get_type
-ags_lv2_preset_flags_get_type
 ags_lv2_port_preset_alloc
 ags_lv2_port_preset_free
 ags_lv2_preset_parse_turtle
