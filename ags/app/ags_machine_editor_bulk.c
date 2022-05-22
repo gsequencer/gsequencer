@@ -139,6 +139,9 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_bulk),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(machine_editor_bulk,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   machine_editor_bulk->connectable_flags = 0;
 

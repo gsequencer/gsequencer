@@ -902,7 +902,24 @@ void
 ags_machine_midi_connection_callback(GAction *action, GVariant *parameter,
 				     AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  AgsMidiDialog *midi_dialog;
+  
+  if(machine->midi_dialog == NULL){
+    midi_dialog = ags_midi_dialog_new(machine);
+    machine->midi_dialog = (GtkDialog *) midi_dialog;
+    midi_dialog->flags |= (AGS_MIDI_DIALOG_IO_OPTIONS |
+			   AGS_MIDI_DIALOG_MAPPING |
+			   AGS_MIDI_DIALOG_DEVICE);
+
+    ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
+    ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
+
+    gtk_widget_show((GtkWidget *) midi_dialog);
+  }else{
+    midi_dialog = (AgsMidiDialog *) machine->midi_dialog;
+  }
+
+  gtk_widget_show((GtkWidget *) midi_dialog);
 }
 
 void

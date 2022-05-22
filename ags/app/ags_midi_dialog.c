@@ -174,6 +174,7 @@ ags_midi_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 {
+  GtkBox *content_area;
   GtkLabel *label;
   GtkGrid *grid;
   GtkBox *hbox;
@@ -189,15 +190,25 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   midi_dialog->machine = NULL;
 
+  content_area = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog));
+
+  gtk_widget_set_valign(content_area,
+			GTK_ALIGN_START);
+  gtk_widget_set_vexpand(content_area,
+			 FALSE);
+  
+  gtk_box_set_spacing(content_area,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   /* connection */
   midi_dialog->io_options = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						   0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
+						   AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 (GtkWidget *) midi_dialog->io_options);
 
   /* midi channel */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(midi_dialog->io_options,
 		 (GtkWidget *) hbox);
   
@@ -223,11 +234,17 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* mapping */
   midi_dialog->mapping = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
+						AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 GTK_WIDGET(midi_dialog->mapping));
 
   grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_box_append(midi_dialog->mapping,
 		 (GtkWidget *) grid);
   
@@ -375,8 +392,8 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* device */
   midi_dialog->device = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					       0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
+					       AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 (GtkWidget *) midi_dialog->device);
 
   grid = (GtkGrid *) gtk_grid_new();

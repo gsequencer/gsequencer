@@ -142,6 +142,9 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(connection_editor_bulk),
 				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(connection_editor_bulk,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   connection_editor_bulk->connectable_flags = 0;
 
