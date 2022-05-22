@@ -372,6 +372,9 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 
   /* effect bridge */
   AGS_MACHINE(vst3_bridge)->bridge = ags_effect_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->parent_machine = vst3_bridge;
+
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(vst3_bridge)->bridge);  
 

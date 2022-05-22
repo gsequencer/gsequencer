@@ -72,6 +72,8 @@ struct _AgsLineMember
 
   guint flags;
   guint port_flags;
+
+  GtkWidget *parent_line;
   
   GType widget_type;
   guint widget_orientation;

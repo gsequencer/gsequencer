@@ -287,6 +287,9 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->effect_index = 0;
 
   AGS_MACHINE(ladspa_bridge)->bridge = ags_effect_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->parent_machine = ladspa_bridge;
+
   gtk_frame_set_child(AGS_MACHINE(ladspa_bridge)->frame,
 		      (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 

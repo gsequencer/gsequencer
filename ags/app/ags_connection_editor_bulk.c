@@ -148,6 +148,8 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   
   connection_editor_bulk->connectable_flags = 0;
 
+  connection_editor_bulk->parent_connection_editor_collection = NULL;
+  
   /* output */
   grid =
     connection_editor_bulk->output_grid = gtk_grid_new();

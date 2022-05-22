@@ -881,6 +881,8 @@ ags_pad_add_line(AgsPad *pad,
   if(g_list_find(pad->line, line) == NULL){
     pad->line = g_list_prepend(pad->line,
 			       line);
+
+    line->parent_pad = pad;
     
     gtk_widget_set_vexpand((GtkWidget *) line,
 			   FALSE);
@@ -914,6 +916,8 @@ ags_pad_remove_line(AgsPad *pad,
   if(g_list_find(pad->line, line) != NULL){
     pad->line = g_list_remove(pad->line,
 			      line);
+
+    line->parent_pad = NULL;
     
     ags_expander_set_remove(pad->line_expander_set,
 			    line);
@@ -965,7 +969,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       }
 	
       line = (AgsLine *) g_object_new(line_type,
-				      "pad", pad,
+				      "parent-pad", pad,
 				      "channel", channel,
 				      NULL);
 

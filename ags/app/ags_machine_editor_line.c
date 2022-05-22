@@ -174,7 +174,7 @@ ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line)
   
   machine_editor_line->connectable_flags = 0;
 
-  machine_editor_line->parent_pad = NULL;
+  machine_editor_line->parent_machine_editor_pad = NULL;
 
   machine_editor_line->channel = NULL;
 

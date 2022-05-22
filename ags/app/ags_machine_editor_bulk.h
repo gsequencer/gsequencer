@@ -47,6 +47,8 @@ struct _AgsMachineEditorBulk
 
   guint connectable_flags;
 
+  GtkWidget *parent_machine_editor_collection;
+  
   GtkComboBox *link;
   
   GtkSpinButton *first_line;

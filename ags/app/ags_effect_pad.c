@@ -393,7 +393,7 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
 
   effect_pad->channel = NULL;
 
-  effect_pad->parent_bridge = NULL;
+  effect_pad->parent_effect_bridge = NULL;
 
   effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
 
@@ -920,6 +920,8 @@ ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
   if(g_list_find(effect_pad->effect_line, effect_line) == NULL){
     effect_pad->effect_line = g_list_prepend(effect_pad->effect_line,
 					     effect_line);
+
+    effect_line->parent_effect_pad = effect_pad;
     
     gtk_grid_attach(effect_pad->effect_line_grid,
 		    effect_line,
@@ -947,7 +949,9 @@ ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
   if(g_list_find(effect_pad->effect_line, effect_line) != NULL){
     effect_pad->effect_line = g_list_remove(effect_pad->effect_line,
 					    effect_line);
-    
+
+    effect_line->parent_effect_pad = NULL;
+        
     gtk_grid_remove(effect_pad->effect_line_grid,
 		    effect_line);
   }

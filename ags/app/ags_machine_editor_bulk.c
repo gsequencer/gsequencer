@@ -145,6 +145,8 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
   
   machine_editor_bulk->connectable_flags = 0;
 
+  machine_editor_bulk->parent_machine_editor_collection = NULL;
+  
   grid = gtk_grid_new();
 
   gtk_widget_set_valign((GtkWidget *) grid,

@@ -25,6 +25,7 @@
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line.h>
+#include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_pad.h>
 #include <ags/app/ags_effect_line.h>
 
@@ -511,7 +512,9 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
 			AGS_LINE_MEMBER_APPLY_RECALL);
   line_member->port_flags = 0;
-  
+
+  line_member->parent_line = NULL;
+
   line_member->widget_type = AGS_TYPE_DIAL;
   line_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
   dial = (AgsDial *) ags_dial_new();
@@ -1689,37 +1692,39 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   if(!AGS_IS_LINE_MEMBER(line_member)){
     return(NULL);
   }
-
+  
   specifier = line_member->specifier;
 
   if(specifier == NULL){
     return(NULL);
   }
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member->parent_line),
 						   AGS_TYPE_MACHINE);
+
+  if(AGS_IS_LINE(line_member->parent_line)){
+    machine = AGS_PAD(AGS_LINE(line_member->parent_line)->parent_pad)->parent_machine;
+  }else if(AGS_IS_EFFECT_LINE(line_member->parent_line)){
+    machine = AGS_EFFECT_BRIDGE(AGS_EFFECT_PAD(AGS_EFFECT_LINE(line_member->parent_line)->parent_effect_pad)->parent_effect_bridge)->parent_machine;
+  }else{
+    return(NULL);
+  }
 
   if(machine == NULL){
     return(NULL);
   }
   
-  parent = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-				   AGS_TYPE_LINE);
+  parent = line_member->parent_line;
 
   audio = machine->audio;
   
-  if(parent != NULL){
+  if(AGS_IS_LINE(parent)){
     channel = AGS_LINE(parent)->channel;
+  }else if(AGS_IS_EFFECT_LINE(parent)){
+    channel = AGS_EFFECT_LINE(parent)->channel;
   }else{
-    parent = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-				     AGS_TYPE_EFFECT_LINE);
-
-    if(parent != NULL){
-      channel = AGS_EFFECT_LINE(parent)->channel;
-    }else{
-      return(NULL);
-    }
-  }    
+    return(NULL);
+  }
   
   audio_port = NULL;
   channel_port = NULL;
@@ -1878,15 +1883,14 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 						       AGS_TYPE_EFFECT_LINE);
 
   if(line != NULL){  
-    machine = (AgsMachine *) gtk_widget_get_ancestor(line->pad,
+    machine = (AgsMachine *) gtk_widget_get_ancestor(line->parent_pad,
 						     AGS_TYPE_MACHINE);
   }else if(effect_line != NULL){
     AgsEffectPad *effect_pad;
     
-    effect_pad = (AgsEffectPad *) gtk_widget_get_ancestor(effect_line,
-							  AGS_TYPE_EFFECT_PAD);
+    effect_pad = (AgsEffectPad *) effect_line->parent_effect_pad;
 
-    machine = (AgsMachine *) gtk_widget_get_ancestor(effect_pad->parent_bridge,
+    machine = (AgsMachine *) gtk_widget_get_ancestor(effect_pad->parent_effect_bridge,
 						     AGS_TYPE_MACHINE);
   }
 
@@ -1903,11 +1907,18 @@ ags_line_member_chained_event(AgsLineMember *line_member)
     
     gboolean is_active;
 
-    pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-					     AGS_TYPE_PAD);
+    pad = NULL;
+    effect_pad = NULL;
+    
+    if(line_member->parent_line != NULL &&
+       AGS_IS_LINE(line_member->parent_line)){
+      pad = AGS_LINE(line_member->parent_line)->parent_pad;
+    }
 
-    effect_pad = (AgsEffectPad *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-							  AGS_TYPE_EFFECT_PAD);
+    if(line_member->parent_line != NULL &&
+       AGS_IS_EFFECT_LINE(line_member->parent_line)){
+      effect_pad = AGS_EFFECT_LINE(line_member->parent_line)->parent_effect_pad;
+    }
 
     is_active = FALSE;
 

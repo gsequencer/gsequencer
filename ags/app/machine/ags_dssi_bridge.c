@@ -359,6 +359,9 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 
   /* effect bridge */
   AGS_MACHINE(dssi_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->parent_machine = dssi_bridge;
+
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge);
   

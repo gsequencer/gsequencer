@@ -75,7 +75,7 @@ struct _AgsEffectPad
     
   AgsChannel *channel;
   
-  GtkWidget *parent_bridge;
+  GtkWidget *parent_effect_bridge;
 
   guint cols;
 

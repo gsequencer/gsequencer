@@ -1728,6 +1728,8 @@ ags_machine_add_output_pad(AgsMachine *machine,
   if(g_list_find(machine->output_pad, output_pad) == NULL){
     machine->output_pad = g_list_prepend(machine->output_pad,
 					 output_pad);
+
+    output_pad->parent_machine = machine;
     
     gtk_grid_attach(machine->output_pad_grid,
 		    output_pad,
@@ -1755,6 +1757,8 @@ ags_machine_remove_output_pad(AgsMachine *machine,
   if(g_list_find(machine->output_pad, output_pad) != NULL){
     machine->output_pad = g_list_remove(machine->output_pad,
 					output_pad);
+
+    output_pad->parent_machine = NULL;
     
     gtk_grid_remove(machine->output_pad_grid,
 		    output_pad);
@@ -1804,6 +1808,8 @@ ags_machine_add_input_pad(AgsMachine *machine,
   if(g_list_find(machine->input_pad, input_pad) == NULL){
     machine->input_pad = g_list_prepend(machine->input_pad,
 					input_pad);
+
+    input_pad->parent_machine = machine;
     
     gtk_grid_attach(machine->input_pad_grid,
 		    input_pad,
@@ -1831,6 +1837,8 @@ ags_machine_remove_input_pad(AgsMachine *machine,
   if(g_list_find(machine->input_pad, input_pad) != NULL){
     machine->input_pad = g_list_remove(machine->input_pad,
 				       input_pad);
+
+    input_pad->parent_machine = NULL;
     
     gtk_grid_remove(machine->input_pad_grid,
 		    input_pad);

@@ -132,7 +132,7 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
-  PROP_PAD,
+  PROP_PARENT_PAD,
   PROP_CHANNEL,
 };
 
@@ -255,19 +255,19 @@ ags_line_class_init(AgsLineClass *line)
 				  param_spec);
 
   /**
-   * AgsLine:pad:
+   * AgsLine:parent-pad:
    *
-   * The assigned #AgsPad.
+   * The assigned parent #AgsPad.
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_object("pad",
+  param_spec = g_param_spec_object("parent-pad",
 				   i18n_pspec("parent pad"),
 				   i18n_pspec("The pad which is its parent"),
 				   AGS_TYPE_PAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PAD,
+				  PROP_PARENT_PAD,
 				  param_spec);
 
   /**
@@ -555,10 +555,10 @@ ags_line_init(AgsLine *line)
 
   line->channel = NULL;
 
+  line->parent_pad = NULL;
+  
   //  gtk_widget_set_can_focus(line,
   //			   TRUE);
-
-  line->pad = NULL;
   
   line->label = (GtkLabel *) gtk_label_new(NULL);
   gtk_box_append((GtkBox *) line,
@@ -649,25 +649,25 @@ ags_line_set_property(GObject *gobject,
 			    format, old_format);
   }
   break;
-  case PROP_PAD:
+  case PROP_PARENT_PAD:
   {
-    GtkWidget *pad;
+    GtkWidget *parent_pad;
 
-    pad = (GtkWidget *) g_value_get_object(value);
+    parent_pad = (GtkWidget *) g_value_get_object(value);
 
-    if(line->pad == pad){
+    if(line->parent_pad == parent_pad){
       return;
     }
 
-    if(line->pad != NULL){
-      g_object_unref(G_OBJECT(line->pad));
+    if(line->parent_pad != NULL){
+      g_object_unref(G_OBJECT(line->parent_pad));
     }
 
-    if(pad != NULL){
-      g_object_ref(G_OBJECT(pad));
+    if(parent_pad != NULL){
+      g_object_ref(G_OBJECT(parent_pad));
     }
       
-    line->pad = pad;
+    line->parent_pad = parent_pad;
   }
   break;
   case PROP_CHANNEL:
@@ -714,10 +714,10 @@ ags_line_get_property(GObject *gobject,
 		     line->format);
   }
   break;
-  case PROP_PAD:
+  case PROP_PARENT_PAD:
   {
     g_value_set_object(value,
-		       line->pad);
+		       line->parent_pad);
   }
   break;
   case PROP_CHANNEL:
@@ -1180,6 +1180,8 @@ ags_line_add_line_member(AgsLine *line,
   if(g_list_find(line->line_member, line_member) == NULL){
     line->line_member = g_list_prepend(line->line_member,
 				       line_member);
+
+    line_member->parent_line = line;
     
     gtk_widget_set_vexpand((GtkWidget *) line_member,
 			   FALSE);
@@ -1213,6 +1215,8 @@ ags_line_remove_line_member(AgsLine *line,
   if(g_list_find(line->line_member, line_member) != NULL){
     line->line_member = g_list_remove(line->line_member,
 				      line_member);
+
+    line_member->parent_line = NULL;
     
     ags_expander_remove(line->line_member_expander,
 			line_member);
@@ -4067,7 +4071,7 @@ ags_line_indicator_refresh_timeout(GtkWidget *widget)
 
 /**
  * ags_line_new:
- * @pad: the parent pad
+ * @parent_pad: the parent pad
  * @channel: the #AgsChannel to visualize
  *
  * Create a new instance of #AgsLine
@@ -4077,12 +4081,12 @@ ags_line_indicator_refresh_timeout(GtkWidget *widget)
  * Since: 3.0.0
  */
 AgsLine*
-ags_line_new(GtkWidget *pad, AgsChannel *channel)
+ags_line_new(GtkWidget *parent_pad, AgsChannel *channel)
 {
   AgsLine *line;
 
   line = (AgsLine *) g_object_new(AGS_TYPE_LINE,
-				  "pad", pad,
+				  "parent-pad", parent_pad,
 				  "channel", channel,
 				  NULL);
 

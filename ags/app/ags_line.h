@@ -78,7 +78,7 @@ struct _AgsLine
 
   AgsChannel *channel;
   
-  GtkWidget *pad;
+  GtkWidget *parent_pad;
 
   GtkLabel *label;
   GtkToggleButton *group;

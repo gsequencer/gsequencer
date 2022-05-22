@@ -391,6 +391,9 @@ ags_live_vst3_bridge_init(AgsLiveVst3Bridge *live_vst3_bridge)
   
   /* effect bridge */
   AGS_MACHINE(live_vst3_bridge)->bridge = ags_effect_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->parent_machine = live_vst3_bridge;
+
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(live_vst3_bridge)->bridge);
   

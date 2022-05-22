@@ -48,6 +48,8 @@ struct _AgsConnectionEditorPad
   GtkBox box;
 
   guint connectable_flags;
+
+  GtkWidget *parent_connection_editor_listing;
   
   AgsChannel *channel;
 

@@ -49,6 +49,8 @@ struct _AgsMachineEditorPad
 
   guint connectable_flags;
   
+  GtkWidget *parent_machine_editor_listing;
+  
   AgsChannel *channel;
   
   GtkExpander *expander;

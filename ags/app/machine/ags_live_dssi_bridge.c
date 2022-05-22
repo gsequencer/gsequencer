@@ -354,6 +354,9 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 
   /* effect bridge */
   AGS_MACHINE(live_dssi_bridge)->bridge = ags_effect_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->parent_machine = live_dssi_bridge;
+
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge);
   

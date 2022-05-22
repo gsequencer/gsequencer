@@ -534,6 +534,8 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 
   effect_line->channel = NULL;
 
+  effect_line->parent_effect_pad = NULL;
+
   effect_line->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 						 NULL);
   gtk_box_append((GtkBox *) effect_line,
@@ -1071,6 +1073,8 @@ ags_effect_line_add_line_member(AgsEffectLine *effect_line,
   if(g_list_find(effect_line->line_member, line_member) == NULL){
     effect_line->line_member = g_list_prepend(effect_line->line_member,
 					      line_member);
+
+    line_member->parent_line = effect_line;
     
     gtk_grid_attach(effect_line->line_member_grid,
 		    line_member,
@@ -1098,6 +1102,8 @@ ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
   if(g_list_find(effect_line->line_member, line_member) != NULL){
     effect_line->line_member = g_list_remove(effect_line->line_member,
 					     line_member);
+
+    line_member->parent_line = NULL;
     
     gtk_grid_remove(effect_line->line_member_grid,
 		    line_member);

@@ -47,6 +47,8 @@ struct _AgsConnectionEditorBulk
 
   guint connectable_flags;
 
+  GtkWidget *parent_connection_editor_collection;
+  
   GtkGrid *output_grid;
 
   GtkComboBox *output_soundcard;

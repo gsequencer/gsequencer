@@ -728,6 +728,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(ffplayer)->bridge)->parent_machine = ffplayer;
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(ffplayer)->bridge);
 

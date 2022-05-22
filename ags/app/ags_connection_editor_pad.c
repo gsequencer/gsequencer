@@ -175,6 +175,8 @@ ags_connection_editor_pad_init(AgsConnectionEditorPad *connection_editor_pad)
 
   connection_editor_pad->connectable_flags = 0;
 
+  connection_editor_pad->parent_connection_editor_listing = NULL;
+  
   connection_editor_pad->channel = NULL;
 
   connection_editor_pad->expander = (GtkExpander *) gtk_expander_new(i18n("pad"));
@@ -516,7 +518,7 @@ ags_connection_editor_pad_add_line(AgsConnectionEditorPad *connection_editor_pad
     connection_editor_pad->line = g_list_prepend(connection_editor_pad->line,
 						 line);
 
-    line->parent_pad = connection_editor_pad;
+    line->parent_connection_editor_pad = connection_editor_pad;
     
     gtk_box_append(connection_editor_pad->line_box,
 		   line);
@@ -543,7 +545,7 @@ ags_connection_editor_pad_remove_line(AgsConnectionEditorPad *connection_editor_
     connection_editor_pad->line = g_list_remove(connection_editor_pad->line,
 						line);
 
-    line->parent_pad = NULL;
+    line->parent_connection_editor_pad = NULL;
     
     gtk_box_remove(connection_editor_pad->line_box,
 		   line);

@@ -239,7 +239,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
     machine_editor_line = AGS_MACHINE_EDITOR_LINE(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 									  AGS_TYPE_MACHINE_EDITOR_LINE));
 
-    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(machine_editor_line->parent_pad,
+    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(machine_editor_line->parent_machine_editor_pad,
 								AGS_TYPE_MACHINE_EDITOR));
 
     machine = machine_editor->machine;
@@ -363,7 +363,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
   machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor(link_editor,
 									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_line->parent_pad,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_line->parent_machine_editor_pad,
 								AGS_TYPE_MACHINE_EDITOR);
 
   model = gtk_combo_box_get_model(link_editor->combo);

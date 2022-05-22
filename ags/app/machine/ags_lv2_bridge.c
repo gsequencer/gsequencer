@@ -487,6 +487,9 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   
   /* effect bridge */  
   AGS_MACHINE(lv2_bridge)->bridge = ags_effect_bridge_new(audio);
+
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->parent_machine = lv2_bridge;
+
   gtk_box_append(lv2_bridge->vbox,
 		 (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
 

@@ -76,6 +76,8 @@ struct _AgsEffectLine
   guint format;
 
   AgsChannel *channel;
+  
+  GtkWidget *parent_effect_pad;
 
   GtkLabel *label;
   GtkToggleButton *group;

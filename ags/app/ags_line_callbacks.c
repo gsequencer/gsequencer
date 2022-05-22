@@ -42,8 +42,7 @@ ags_line_group_toggled_callback(GtkWidget *widget, AgsLine *line)
 
   GList *start_list, *list;
 
-  pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line),
-					   AGS_TYPE_PAD);
+  pad = (AgsPad *) line->parent_pad;
 
   list =
     start_list = ags_pad_get_line(pad);
@@ -99,7 +98,7 @@ ags_line_stop_callback(AgsLine *line,
   
   gboolean reset_active;
 
-  pad = AGS_PAD(line->pad);
+  pad = AGS_PAD(line->parent_pad);
   
   if((AGS_PAD_BLOCK_STOP & (pad->flags)) != 0){
     return;

@@ -181,7 +181,7 @@ ags_connection_editor_line_init(AgsConnectionEditorLine *connection_editor_line)
   
   connection_editor_line->connectable_flags = 0;
 
-  connection_editor_line->parent_pad = NULL;
+  connection_editor_line->parent_connection_editor_pad = NULL;
 
   connection_editor_line->channel = NULL;
 
@@ -403,7 +403,7 @@ ags_connection_editor_line_apply(AgsApplicable *applicable)
 
   connection_editor_line = AGS_CONNECTION_EDITOR_LINE(applicable);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_line->parent_pad,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_line->parent_connection_editor_pad,
 								      AGS_TYPE_CONNECTION_EDITOR);
   /* output soundcard */
   if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
@@ -485,7 +485,7 @@ ags_connection_editor_line_reset(AgsApplicable *applicable)
   
   connection_editor_line = AGS_CONNECTION_EDITOR_LINE(applicable);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_line->parent_pad,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_line->parent_connection_editor_pad,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   application_context = ags_application_context_get_instance();

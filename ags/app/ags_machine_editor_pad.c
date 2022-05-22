@@ -175,6 +175,8 @@ ags_machine_editor_pad_init(AgsMachineEditorPad *machine_editor_pad)
 
   machine_editor_pad->connectable_flags = 0;
 
+  machine_editor_pad->parent_machine_editor_listing = NULL;
+  
   machine_editor_pad->channel = NULL;
 
   machine_editor_pad->expander = (GtkExpander *) gtk_expander_new(i18n("pad"));
@@ -494,7 +496,7 @@ ags_machine_editor_pad_add_line(AgsMachineEditorPad *machine_editor_pad,
     machine_editor_pad->line = g_list_prepend(machine_editor_pad->line,
 					      line);
 
-    line->parent_pad = machine_editor_pad;
+    line->parent_machine_editor_pad = machine_editor_pad;
     
     gtk_box_append(machine_editor_pad->line_box,
 		   line);
@@ -521,7 +523,7 @@ ags_machine_editor_pad_remove_line(AgsMachineEditorPad *machine_editor_pad,
     machine_editor_pad->line = g_list_remove(machine_editor_pad->line,
 					     line);
 
-    line->parent_pad = NULL;
+    line->parent_machine_editor_pad = NULL;
     
     gtk_box_remove(machine_editor_pad->line_box,
 		   line);

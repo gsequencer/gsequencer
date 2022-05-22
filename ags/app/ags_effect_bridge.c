@@ -384,6 +384,8 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   effect_bridge->flags = 0;
   effect_bridge->connectable_flags = 0;
 
+  effect_bridge->parent_machine = NULL;
+
   effect_bridge->name = NULL;
 
   effect_bridge->version = AGS_EFFECT_BRIDGE_DEFAULT_VERSION;
@@ -1129,7 +1131,7 @@ ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
     effect_bridge->output_effect_pad = g_list_prepend(effect_bridge->output_effect_pad,
 						      effect_pad);
 
-    effect_pad->parent_bridge = effect_bridge;
+    effect_pad->parent_effect_bridge = effect_bridge;
     
     gtk_box_append(effect_bridge->output,
 		   effect_pad);
@@ -1156,7 +1158,7 @@ ags_effect_bridge_remove_output_effect_pad(AgsEffectBridge *effect_bridge,
     effect_bridge->output_effect_pad = g_list_remove(effect_bridge->output_effect_pad,
 						     effect_pad);
 
-    effect_pad->parent_bridge = NULL;
+    effect_pad->parent_effect_bridge = NULL;
     
     gtk_box_remove(effect_bridge->output,
 		   effect_pad);
@@ -1200,6 +1202,8 @@ ags_effect_bridge_add_input_effect_pad(AgsEffectBridge *effect_bridge,
   if(g_list_find(effect_bridge->input_effect_pad, effect_pad) == NULL){
     effect_bridge->input_effect_pad = g_list_prepend(effect_bridge->input_effect_pad,
 						     effect_pad);
+
+    effect_pad->parent_effect_bridge = effect_bridge;
     
     gtk_box_append(effect_bridge->input,
 		   effect_pad);
@@ -1225,6 +1229,8 @@ ags_effect_bridge_remove_input_effect_pad(AgsEffectBridge *effect_bridge,
   if(g_list_find(effect_bridge->input_effect_pad, effect_pad) != NULL){
     effect_bridge->input_effect_pad = g_list_remove(effect_bridge->input_effect_pad,
 						    effect_pad);
+
+    effect_pad->parent_effect_bridge = NULL;
     
     gtk_box_remove(effect_bridge->input,
 		   effect_pad);

@@ -65,6 +65,8 @@ struct _AgsEffectBridge
 
   guint flags;
   guint connectable_flags;
+
+  GtkWidget *parent_machine;
   
   gchar *name;
 

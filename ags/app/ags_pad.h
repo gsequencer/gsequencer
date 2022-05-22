@@ -74,6 +74,8 @@ struct _AgsPad
 
   AgsChannel *channel;
 
+  GtkWidget *parent_machine;
+  
   guint cols;
   
   GList *line;

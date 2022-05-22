@@ -50,7 +50,7 @@ struct _AgsMachineEditorLine
 
   guint connectable_flags;
 
-  GtkWidget *parent_pad;
+  GtkWidget *parent_machine_editor_pad;
   
   AgsChannel *channel;
   
