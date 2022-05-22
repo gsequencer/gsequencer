@@ -20,6 +20,8 @@
 #include <ags/app/import/ags_track_collection.h>
 #include <ags/app/import/ags_track_collection_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/app/import/ags_track_mapper.h>
 
 #include <libxml/parser.h>
@@ -171,6 +173,9 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(track_collection),
 				 GTK_ORIENTATION_VERTICAL);
+  
+  gtk_box_set_spacing(track_collection,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   track_collection->midi_doc = NULL;
 

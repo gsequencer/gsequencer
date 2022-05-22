@@ -142,6 +142,9 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_collection),
 				 GTK_ORIENTATION_VERTICAL);
+  
+  gtk_box_set_spacing(machine_collection,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   machine_collection->flags = 0;
 
@@ -157,7 +160,7 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
 		 (GtkWidget *) scrolled_window);
   
   machine_collection->machine_mapper_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-								  0);
+								  AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_scrolled_window_set_child(scrolled_window,
 				(GtkWidget *) machine_collection->machine_mapper_box);
 }

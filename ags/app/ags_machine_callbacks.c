@@ -926,7 +926,19 @@ void
 ags_machine_audio_export_callback(GAction *action, GVariant *parameter,
 				  AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  AgsWaveExportDialog *wave_export_dialog;
+  
+  if(machine->wave_export_dialog == NULL){
+    wave_export_dialog = ags_wave_export_dialog_new(machine);
+    machine->wave_export_dialog = (GtkDialog *) wave_export_dialog;
+
+    ags_connectable_connect(AGS_CONNECTABLE(wave_export_dialog));
+    ags_applicable_reset(AGS_APPLICABLE(wave_export_dialog));
+  }else{
+    wave_export_dialog = (AgsWaveExportDialog *) machine->wave_export_dialog;
+  }
+
+  gtk_widget_show((GtkWidget *) wave_export_dialog);
 }
 
 void

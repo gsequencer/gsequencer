@@ -210,6 +210,11 @@ void
 ags_track_mapper_init(AgsTrackMapper *track_mapper)
 {
   gchar *str;
+
+  gtk_grid_set_column_spacing(track_mapper,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(track_mapper,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
   track_mapper->instrument = NULL;
   track_mapper->sequence = NULL;
@@ -233,7 +238,7 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 
   /* info box */
   track_mapper->info = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					      0);
+					      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) track_mapper->info,
 			GTK_ALIGN_FILL);

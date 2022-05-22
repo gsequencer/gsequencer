@@ -188,6 +188,7 @@ ags_wave_export_dialog_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 {  
+  GtkBox *content_area;
   GtkBox *hbox;
   GtkLabel *label;
 
@@ -197,12 +198,22 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 	       "title", i18n("Audio fast export"),
 	       NULL);
 
+  content_area = (GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(wave_export_dialog));
+
+  gtk_widget_set_valign(content_area,
+			GTK_ALIGN_START);
+  gtk_widget_set_vexpand(content_area,
+			 FALSE);
+  
+  gtk_box_set_spacing(content_area,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   wave_export_dialog->machine = NULL;
 
   /* filename */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 GTK_WIDGET(hbox));
 
   label = (GtkLabel *) gtk_label_new(i18n("file"));
@@ -224,8 +235,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 
   /* start tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 GTK_WIDGET(hbox));
   
   label = (GtkLabel *) gtk_label_new(i18n("start tact"));
@@ -245,8 +256,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   
   /* end tact */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 GTK_WIDGET(hbox));
   
   label = (GtkLabel *) gtk_label_new(i18n("end tact"));
@@ -266,8 +277,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 GTK_WIDGET(hbox));
 
   wave_export_dialog->duration = (GtkLabel *) gtk_label_new("0000:00.000");
@@ -279,8 +290,8 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 
   /* output format */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_append(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(content_area,
 		 GTK_WIDGET(hbox));
 
   label = (GtkLabel *) gtk_label_new(i18n("output format"));

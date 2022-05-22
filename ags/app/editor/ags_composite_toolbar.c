@@ -196,7 +196,132 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 		   G_CALLBACK(ags_composite_toolbar_paste_callback), composite_toolbar);
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
+  
+  /* enable all audio channels */
+  action = g_simple_action_new_stateful("enable_all_audio_channels",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
+  /* disable all audio channels */
+  action = g_simple_action_new_stateful("disable_all_audio_channels",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
+  /* enable all lines */
+  action = g_simple_action_new_stateful("enable_all_lines",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
+  /* disable all lines */
+  action = g_simple_action_new_stateful("disable_all_lines",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
 
+  /* move notes */
+  action = g_simple_action_new_stateful("move_notes",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_move_note_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* crop notes */
+  action = g_simple_action_new_stateful("crop_notes",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* select notes */
+  action = g_simple_action_new_stateful("select_notes",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_select_note_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* position notation cursor */
+  action = g_simple_action_new_stateful("position_notation_cursor",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* select accelerations */
+  action = g_simple_action_new_stateful("select_accelerations",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* ramp accelerations */
+  action = g_simple_action_new_stateful("ramp_accelerations",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* position automation cursor */
+  action = g_simple_action_new_stateful("position_automation_cursor",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* select buffers */
+  action = g_simple_action_new_stateful("select_buffers",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* position wave cursor */
+  action = g_simple_action_new_stateful("position_wave_cursor",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* time stretch buffers */
+  action = g_simple_action_new_stateful("time_stretch_buffers",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
   
   composite_toolbar->flags = 0;
   composite_toolbar->connectable_flags = 0;
@@ -1614,8 +1739,8 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
 	  current_value = g_value_get_uint(value + i);
 	  
 	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
-	    item = g_menu_item_new(i18n("select acceleration"),
-				   "composite_toolbar.select_acceleration");
+	    item = g_menu_item_new(i18n("select accelerations"),
+				   "composite_toolbar.select_accelerations");
 	    g_menu_append_item(menu,
 			       item);
 
@@ -1625,8 +1750,8 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
 	  current_value = g_value_get_uint(value + i);
 
 	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
-	    item = g_menu_item_new(i18n("ramp acceleration"),
-				   "composite_toolbar.ramp_acceleration");
+	    item = g_menu_item_new(i18n("ramp accelerations"),
+				   "composite_toolbar.ramp_accelerations");
 	    g_menu_append_item(menu,
 			       item);
 
@@ -1648,8 +1773,8 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
 	  current_value = g_value_get_uint(value + i);
 	  
 	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
-	    item = g_menu_item_new(i18n("select buffer"),
-				   "composite_toolbar.select_buffer");
+	    item = g_menu_item_new(i18n("select buffers"),
+				   "composite_toolbar.select_buffers");
 	    g_menu_append_item(menu,
 			       item);
 
@@ -1670,8 +1795,8 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
 	  current_value = g_value_get_uint(value + i);
 	  
 	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER & current_value) != 0){
-	    item = g_menu_item_new(i18n("time stretch buffer"),
-				   "composite_toolbar.time_stretch_buffer");
+	    item = g_menu_item_new(i18n("time stretch buffers"),
+				   "composite_toolbar.time_stretch_buffers");
 	    g_menu_append_item(menu,
 			       item);
 

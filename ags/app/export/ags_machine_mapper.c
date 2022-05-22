@@ -167,6 +167,11 @@ ags_machine_mapper_init(AgsMachineMapper *machine_mapper)
 {
   GtkLabel *label;
 
+  gtk_grid_set_column_spacing(machine_mapper,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(machine_mapper,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   machine_mapper->flags = 0;
   
   machine_mapper->machine = NULL;
