@@ -225,10 +225,10 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 		 (GtkWidget*) midi_export_wizard->file_chooser);
   
   gtk_dialog_add_buttons((GtkDialog *) midi_export_wizard,
-			 i18n("_Back"), GTK_RESPONSE_REJECT,
-			 i18n("_Forward"), GTK_RESPONSE_ACCEPT,
-			 i18n("_OK"), GTK_RESPONSE_OK,
-			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+			 i18n("_Back"), GTK_RESPONSE_CANCEL,
+			 i18n("_Forward"), GTK_RESPONSE_OK,
+			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
+			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
 			 NULL);
 }
 

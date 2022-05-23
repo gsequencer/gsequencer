@@ -32,12 +32,18 @@
 
 #include <ags/app/machine/ags_drum.h>
 #include <ags/app/machine/ags_matrix.h>
-#include <ags/app/machine/ags_synth.h>
 #include <ags/app/machine/ags_syncsynth.h>
+#include <ags/app/machine/ags_fm_syncsynth.h>
+#include <ags/app/machine/ags_pitch_sampler.h>
+#include <ags/app/machine/ags_sfz_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
+#include <ags/app/machine/ags_sf2_synth.h>
 #endif
+
+#include <ags/app/machine/ags_hybrid_synth.h>
+#include <ags/app/machine/ags_hybrid_fm_synth.h>
 
 #include <math.h>
 
@@ -279,6 +285,27 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
   /* machine type */
   track_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
 
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsDrum");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsMatrix");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsSyncsynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsFMSyncsynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsPitchSampler");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsSFZSynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsFFPlayer");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsSF2Synth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsHybridSynth");
+  gtk_combo_box_text_append_text(track_mapper->machine_type,
+				 "AgsHybridFMSynth");
+  
   gtk_widget_set_valign((GtkWidget *) track_mapper->machine_type,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) track_mapper->machine_type,
@@ -504,14 +531,29 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SYNCSYNTH))){
     machine = (AgsMachine *) ags_syncsynth_new(default_soundcard);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_FM_SYNCSYNTH))){
+    machine = (AgsMachine *) ags_fm_syncsynth_new(default_soundcard);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_PITCH_SAMPLER))){
+    machine = (AgsMachine *) ags_pitch_sampler_new(default_soundcard);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_SFZ_SYNTH))){
+    machine = (AgsMachine *) ags_sfz_synth_new(default_soundcard);
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_FFPLAYER))){
     machine = (AgsMachine *) ags_ffplayer_new(default_soundcard);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_SF2_SYNTH))){
+    machine = (AgsMachine *) ags_sf2_synth_new(default_soundcard);
 #endif
   }else if(!g_ascii_strcasecmp(machine_type,
-			       g_type_name(AGS_TYPE_SYNTH))){
-    machine = (AgsMachine *) ags_synth_new(default_soundcard);
+			       g_type_name(AGS_TYPE_HYBRID_SYNTH))){
+    machine = (AgsMachine *) ags_hybrid_synth_new(default_soundcard);
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_HYBRID_FM_SYNTH))){
+    machine = (AgsMachine *) ags_hybrid_fm_synth_new(default_soundcard);
   }else{
     g_warning("unknown machine type");
 

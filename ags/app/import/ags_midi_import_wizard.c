@@ -206,10 +206,10 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		 (GtkWidget*) midi_import_wizard->track_collection);
   
   gtk_dialog_add_buttons((GtkDialog *) midi_import_wizard,
-			 i18n("_Back"), GTK_RESPONSE_REJECT,
-			 i18n("_Forward"), GTK_RESPONSE_ACCEPT,
-			 i18n("_OK"), GTK_RESPONSE_OK,
-			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+			 i18n("_Back"), GTK_RESPONSE_CANCEL,
+			 i18n("_Forward"), GTK_RESPONSE_OK,
+			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
+			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
 			 NULL);
 }
 
