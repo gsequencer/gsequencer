@@ -526,9 +526,6 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
       ags_audiorec_remove_indicator(audiorec,
 				    list->data);
       
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
-      
       list = list->next;
     }
 
@@ -572,9 +569,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
       while(list != NULL){
 	ags_audiorec_remove_indicator(audiorec,
 				      list->data);
-      
-	g_object_run_dispose(list->data);
-	g_object_unref(list->data);
       
 	list = list->next;
       }
