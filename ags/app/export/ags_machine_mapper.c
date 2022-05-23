@@ -225,20 +225,26 @@ ags_machine_mapper_init(AgsMachineMapper *machine_mapper)
 
   gtk_grid_attach((GtkGrid *) machine_mapper,
 		  (GtkWidget *) label,
-		  0, 3,
-		  2, 1);
+		  0, 2,
+		  1, 1);
 
   machine_mapper->sequence = (GtkEntry *) gtk_entry_new();
 
+  gtk_widget_set_size_request(machine_mapper->sequence,
+			      400, -1);
+
   gtk_widget_set_valign((GtkWidget *) machine_mapper->sequence,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) machine_mapper->sequence,
 			GTK_ALIGN_FILL);
 
+  gtk_editable_set_text(GTK_EDITABLE(machine_mapper->sequence),
+			i18n("default"));
+  
   gtk_grid_attach((GtkGrid *) machine_mapper,
 		  (GtkWidget *) machine_mapper->sequence,
-		  2, 3,
-		  2, 1);
+		  1, 2,
+		  1, 1);
 }
 
 void

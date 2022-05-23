@@ -195,6 +195,17 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
   track_collection->track_mapper_value = NULL;
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			TRUE);
+
   gtk_box_append((GtkBox *) track_collection,
 		 (GtkWidget *) scrolled_window);
   

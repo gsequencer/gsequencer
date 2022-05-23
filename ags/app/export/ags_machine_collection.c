@@ -156,6 +156,17 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
   machine_collection->machine_mapper_value = NULL;
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			TRUE);
+  
   gtk_box_append(GTK_BOX(machine_collection),
 		 (GtkWidget *) scrolled_window);
   
@@ -379,9 +390,6 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   while(list != NULL){
     ags_machine_collection_remove_machine_mapper(machine_collection,
 						 list->data);
-
-    g_object_run_dispose(list->data);
-    g_object_unref(list->data);
 
     list = list->next;
   }

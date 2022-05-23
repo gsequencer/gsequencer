@@ -20,6 +20,7 @@
 #include <ags/app/import/ags_midi_import_wizard.h>
 #include <ags/app/import/ags_midi_import_wizard_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/app/import/ags_track_collection.h>
@@ -159,13 +160,33 @@ ags_midi_import_wizard_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 {
+  AgsApplicationContext *application_context;
+  
   gtk_window_set_hide_on_close(midi_import_wizard,
 			       TRUE);
+
+  gtk_window_set_default_size(midi_import_wizard,
+			      600, 480);
+
+  application_context = ags_application_context_get_instance();
+
+  gtk_window_set_transient_for(midi_import_wizard,
+			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
   
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 
   /* file chooser */  
   midi_import_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+
+  gtk_widget_set_halign(midi_import_wizard->file_chooser,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(midi_import_wizard->file_chooser,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand(midi_import_wizard->file_chooser,
+			 TRUE);
+  gtk_widget_set_vexpand(midi_import_wizard->file_chooser,
+			TRUE);
   
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
 		     (GtkWidget *) midi_import_wizard->file_chooser);
@@ -175,6 +196,11 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 										0,
 										NULL,
 										NULL);
+
+  gtk_widget_set_halign(midi_import_wizard->track_collection,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(midi_import_wizard->track_collection,
+			GTK_ALIGN_FILL);
   
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
 		 (GtkWidget*) midi_import_wizard->track_collection);
