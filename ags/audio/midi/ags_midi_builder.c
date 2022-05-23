@@ -898,6 +898,10 @@ ags_midi_builder_finalize(GObject *gobject)
     
   midi_builder = (AgsMidiBuilder *) gobject;
 
+  if(midi_builder->file != NULL){
+    fclose(midi_builder->file);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_midi_builder_parent_class)->finalize(gobject);
 }
@@ -3294,6 +3298,7 @@ ags_midi_builder_write(AgsMidiBuilder *midi_builder)
   }
 
   fwrite(midi_builder->data, sizeof(guchar), midi_builder->length, midi_builder->file);
+  fflush(midi_builder->file);
 }
 
 /**

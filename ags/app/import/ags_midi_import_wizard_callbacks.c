@@ -54,10 +54,9 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
       if(ags_midi_import_wizard_test_flags(midi_import_wizard, AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER)){
 	AgsMidiParser *midi_parser;
 
-	GFile *f;
+	GFile *file;
 	
 	xmlDoc *midi_doc;
-	FILE *file;
 
 	gchar *filename;
 
@@ -69,23 +68,20 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 					 AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
 
 	/* parse */
-	f = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser));
+	file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser));
 
-	filename = g_file_get_path(f);
-	
-	file = fopen(filename,
-		     "r");
-	
-	midi_parser = ags_midi_parser_new(file);
+	filename = g_file_get_path(file);
+
+	midi_parser = ags_midi_parser_new_from_filename(filename);
 	midi_doc = ags_midi_parser_parse_full(midi_parser);
-//	xmlSaveFormatFileEnc("-", midi_doc, "UTF-8", 1);
+	//	xmlSaveFormatFileEnc("-", midi_doc, "UTF-8", 1);
 	
 	g_object_set(midi_import_wizard->track_collection,
 		     "midi-document", midi_doc,
 		      NULL);
 	ags_track_collection_parse((AgsTrackCollection *) midi_import_wizard->track_collection);
 
-	g_object_unref(f);
+	g_object_unref(file);
       }
     }
     break;

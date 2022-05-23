@@ -180,7 +180,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
   midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
 
   /* midi builder */
-  midi_export_wizard->midi_builder = ags_midi_builder_new(NULL);
+  midi_export_wizard->midi_builder = ags_midi_builder_new();
   midi_export_wizard->pulse_unit = AGS_MIDI_EXPORT_WIZARD_DEFAULT_PULSE_UNIT;
   
   /* machine collection */
@@ -319,10 +319,10 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
 
   AgsApplicationContext *application_context;
 
-  GFile *f;
-  
-  FILE *file;
+  GFile *file;
 
+  FILE *f;
+  
   GList *list, *start_list;
   
   gchar *filename;
@@ -349,7 +349,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   track_count = 0;
   
   while(list != NULL){
-    if(gtk_toggle_button_get_active((GtkToggleButton *) AGS_MACHINE_MAPPER(list->data)->enabled)){
+    if(gtk_check_button_get_active(AGS_MACHINE_MAPPER(list->data)->enabled)){
       track_count++;
     }
     
@@ -372,14 +372,12 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   midi_export_wizard->pulse_unit = division / 16.0;
   
   /* open file */
-  f = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser));
+  file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser));
 
-  filename = g_file_get_path(f);
-  
-  file = fopen(filename, "w");
-  g_object_set(midi_export_wizard->midi_builder,
-	       "file", file,
-	       NULL);
+  filename = g_file_get_path(file);
+
+  ags_midi_builder_open_filename(midi_export_wizard->midi_builder,
+				 filename);
 
   /* add header */
   ags_midi_builder_append_header(midi_export_wizard->midi_builder,
@@ -394,14 +392,11 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   /* build and write */
   ags_midi_builder_build(midi_export_wizard->midi_builder);
 
-  fwrite(midi_export_wizard->midi_builder->data,
-	 sizeof(unsigned char),
-	 midi_export_wizard->midi_builder->length,
-	 file);
-  fflush(file);
-  fclose(file);
+  ags_midi_builder_write(midi_export_wizard->midi_builder);
 
   g_free(filename);
+
+  g_object_unref(file);
 }
 
 void

@@ -504,7 +504,7 @@ ags_track_mapper_apply(AgsApplicable *applicable)
   
   track_mapper = AGS_TRACK_MAPPER(applicable);
 
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) track_mapper->enabled)){
+  if(!gtk_check_button_get_active(track_mapper->enabled)){
     return;
   }  
 
@@ -885,24 +885,6 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
   }
 
   g_object_unref(timestamp);
-  
-  /* populate machine_type */
-  gtk_combo_box_text_append_text(track_mapper->machine_type,
-				 g_type_name(AGS_TYPE_SYNCSYNTH));
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  gtk_combo_box_text_append_text(track_mapper->machine_type,
-				 g_type_name(AGS_TYPE_FFPLAYER));
-#endif
-  
-  gtk_combo_box_text_append_text(track_mapper->machine_type,
-				 g_type_name(AGS_TYPE_DRUM));
-    
-  gtk_combo_box_text_append_text(track_mapper->machine_type,
-				 g_type_name(AGS_TYPE_MATRIX));
-
-  gtk_combo_box_set_active(GTK_COMBO_BOX(track_mapper->machine_type),
-			   0);
 }
 
 /**

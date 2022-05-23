@@ -376,7 +376,7 @@ ags_machine_mapper_apply(AgsApplicable *applicable)
   
   machine_mapper = AGS_MACHINE_MAPPER(applicable);
 
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) machine_mapper->enabled)){
+  if(!gtk_check_button_get_active(machine_mapper->enabled)){
     return;
   }
 
