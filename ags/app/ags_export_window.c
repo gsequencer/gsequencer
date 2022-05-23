@@ -882,6 +882,7 @@ ags_export_window_stop_export(AgsExportWindow *export_window)
 
 /**
  * ags_export_window_new:
+ * @transient_for: the transient for #GtkWindow
  * 
  * Create a new instance of #AgsExportWindow
  * 
@@ -890,11 +891,12 @@ ags_export_window_stop_export(AgsExportWindow *export_window)
  * Since: 3.0.0
  */
 AgsExportWindow*
-ags_export_window_new()
+ags_export_window_new(GtkWindow *transient_for)
 {
   AgsExportWindow *export_window;
 
   export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
+						   "transient-for", transient_for,
 						   NULL);
 
   return(export_window);

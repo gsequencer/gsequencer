@@ -399,8 +399,6 @@ void ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_choo
 						 AgsExportSoundcard *export_soundcard)
 {
   if(response == GTK_RESPONSE_ACCEPT){
-    GtkEntryBuffer *entry_buffer;
-    
     GFile *file;
     
     char *filename;
@@ -409,14 +407,12 @@ void ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_choo
 
     filename = g_file_get_path(file);
 
-    entry_buffer = gtk_entry_get_buffer(export_soundcard->filename);
-    gtk_entry_buffer_set_text(entry_buffer,
-			      filename,
-			      -1);
+    gtk_editable_set_text(export_soundcard->filename,
+			  filename);
 
     g_object_unref(file);
     
-    g_free(file);
+    g_free(filename);
   }
   
   gtk_window_destroy((GtkWindow *) file_chooser);
@@ -440,4 +436,6 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
 								      NULL);
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_export_soundcard_open_response_callback), export_soundcard);
+
+  gtk_widget_show(file_chooser);
 }

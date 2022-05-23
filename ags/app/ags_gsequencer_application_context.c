@@ -2814,8 +2814,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   }  
 
   /* AgsExportWindow */
-  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
-						   NULL);
+  export_window = ags_export_window_new(window);
   ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
 				    export_window);
 

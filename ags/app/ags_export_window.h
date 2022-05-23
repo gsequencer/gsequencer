@@ -54,8 +54,6 @@ struct _AgsExportWindow
   GtkWindow window;
 
   guint flags;
-
-  GtkWidget *main_window;
   
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;
