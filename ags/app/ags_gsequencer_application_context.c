@@ -2824,9 +2824,9 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 					 export_soundcard);
   
   /* AgsMetaDataWindow */
-  //  widget = (GtkWidget *) ags_meta_data_window_new();
-  //  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
-  //				       widget);
+  widget = (GtkWidget *) ags_meta_data_window_new();
+  ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
+  				       widget);
 }
 
 void

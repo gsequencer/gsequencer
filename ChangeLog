@@ -34,19 +34,9 @@ ags (4.0.0)
 	* removed deprecated ags_fluid_interpolate_7th_order_util.[ch] functions
 	* removed ags_generic_pitch_util.[ch]
 	* extended AgsFile by adding libxml2 wrapper functions
-	* TODO:JK: refactored AgsSimpleFile improved reading XML
-	* TODO:JK: refactored LV2 parser
-	* TODO:JK: implemented AgsVector
-	* TODO:JK: implemented AgsSoundDirection
-	* TODO:JK: implemented AgsAudioManager with ui-scope
-	* TODO:JK: improved AgsMessageEnvelope with ui-scope
-	* TODO:JK: implemented pitch selection of ags-synth
-	* TODO:JK: implemented pitch selection of ags-fm-synth
-	* TODO:JK: implemented pitch selection of ags-sf2-synth
-	* TODO:JK: implemented pitch selection of ags-sfz-synth
 	* refactored AgsConnectableFlags
 	* fixed typo in ags_function.h
-	* TODO:JK: fixed AgsWave clipboard
+	* fixed AgsWave clipboard
 
 ags (3.18.2)
 

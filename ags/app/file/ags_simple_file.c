@@ -1151,9 +1151,9 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
 			       node,
 			       config);  
   
-  //  ags_simple_file_write_meta_data_window(simple_file,
-  //					 node,
-  //					 (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)));
+  ags_simple_file_write_meta_data_window(simple_file,
+  					 node,
+					 (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context)));
   
   ags_simple_file_write_window(simple_file,
 			       node,
@@ -1271,9 +1271,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	meta_data_window = ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
 
 	//FIXME:JK: not supported yet
-	//	ags_simple_file_read_meta_data_window(simple_file,
-	//				      child,
-	//					      (AgsMetaDataWindow **) &meta_data_window);
+	ags_simple_file_read_meta_data_window(simple_file,
+					      child,
+					      (AgsMetaDataWindow **) &meta_data_window);
       }
     }
 

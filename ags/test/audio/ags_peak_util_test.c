@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,8 +39,8 @@ void ags_peak_util_test_get_source_stride();
 void ags_peak_util_test_set_source_stride();
 void ags_peak_util_test_get_buffer_length();
 void ags_peak_util_test_set_buffer_length();
-void ags_peak_util_test_get_audio_buffer_util_format();
-void ags_peak_util_test_set_audio_buffer_util_format();
+void ags_peak_util_test_get_format();
+void ags_peak_util_test_set_format();
 void ags_peak_util_test_get_samplerate();
 void ags_peak_util_test_set_samplerate();
 void ags_peak_util_test_get_harmonic_rate();
@@ -102,7 +102,7 @@ ags_peak_util_test_alloc()
   CU_ASSERT(peak_util->source_stride == 1);
   
   CU_ASSERT(peak_util->buffer_length == 0);
-  CU_ASSERT(peak_util->audio_buffer_util_format == AGS_PEAK_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+  CU_ASSERT(peak_util->format == AGS_PEAK_UTIL_DEFAULT_FORMAT);
 
   CU_ASSERT(peak_util->peak == 0.0);
 }
@@ -132,7 +132,7 @@ ags_peak_util_test_copy()
   CU_ASSERT(copy_peak_util->source_stride == peak_util.source_stride);
   
   CU_ASSERT(copy_peak_util->buffer_length == peak_util.buffer_length);
-  CU_ASSERT(copy_peak_util->audio_buffer_util_format == peak_util.audio_buffer_util_format);
+  CU_ASSERT(copy_peak_util->format == peak_util.format);
 
   CU_ASSERT(copy_peak_util->samplerate == peak_util.samplerate);
 
@@ -245,36 +245,36 @@ ags_peak_util_test_set_buffer_length()
   peak_util.buffer_length = 0;
 
   ags_peak_util_set_buffer_length(&peak_util,
-				    512);
+				  512);
   
   CU_ASSERT(peak_util.buffer_length == 512);
 }
 
 void
-ags_peak_util_test_get_audio_buffer_util_format()
+ags_peak_util_test_get_format()
 {
   AgsPeakUtil peak_util;
 
-  peak_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  peak_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  CU_ASSERT(ags_peak_util_get_audio_buffer_util_format(&peak_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  CU_ASSERT(ags_peak_util_get_format(&peak_util) == AGS_SOUNDCARD_SIGNED_16_BIT);
   
-  peak_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  peak_util.format = AGS_SOUNDCARD_FLOAT;
 
-  CU_ASSERT(ags_peak_util_get_audio_buffer_util_format(&peak_util) == peak_util.audio_buffer_util_format);
+  CU_ASSERT(ags_peak_util_get_format(&peak_util) == peak_util.format);
 }
 
 void
-ags_peak_util_test_set_audio_buffer_util_format()
+ags_peak_util_test_set_format()
 {
   AgsPeakUtil peak_util;
   
-  peak_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  peak_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  ags_peak_util_set_audio_buffer_util_format(&peak_util,
-					       AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  ags_peak_util_set_format(&peak_util,
+			   AGS_SOUNDCARD_FLOAT);
   
-  CU_ASSERT(peak_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  CU_ASSERT(peak_util.format == AGS_SOUNDCARD_FLOAT);
 }
 
 void
@@ -399,7 +399,7 @@ ags_peak_util_test_compute_s8()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .format = AGS_SOUNDCARD_SIGNED_8_BIT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -423,7 +423,7 @@ ags_peak_util_test_compute_s16()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -447,7 +447,7 @@ ags_peak_util_test_compute_s24()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .format = AGS_SOUNDCARD_SIGNED_24_BIT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -471,7 +471,7 @@ ags_peak_util_test_compute_s32()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .format = AGS_SOUNDCARD_SIGNED_32_BIT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -495,7 +495,7 @@ ags_peak_util_test_compute_s64()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .format = AGS_SOUNDCARD_SIGNED_64_BIT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -519,7 +519,7 @@ ags_peak_util_test_compute_float()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .format = AGS_SOUNDCARD_FLOAT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -543,7 +543,7 @@ ags_peak_util_test_compute_double()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .format = AGS_SOUNDCARD_DOUBLE,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -567,7 +567,7 @@ ags_peak_util_test_compute_complex()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .format = AGS_SOUNDCARD_COMPLEX,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -591,7 +591,7 @@ ags_peak_util_test_compute()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .samplerate = 44100,
     .harmonic_rate = 440.0,
     .pressure_factor = 1.0,
@@ -630,8 +630,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsPeakUtil set source stride", ags_peak_util_test_set_source_stride) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPeakUtil get buffer length", ags_peak_util_test_get_buffer_length) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPeakUtil set buffer length", ags_peak_util_test_set_buffer_length) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPeakUtil get audio buffer util format", ags_peak_util_test_get_audio_buffer_util_format) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPeakUtil set audio buffer util format", ags_peak_util_test_set_audio_buffer_util_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPeakUtil get format", ags_peak_util_test_get_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPeakUtil set format", ags_peak_util_test_set_format) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPeakUtil get samplerate", ags_peak_util_test_get_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPeakUtil set samplerate", ags_peak_util_test_set_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPeakUtil get harmonic rate", ags_peak_util_test_get_harmonic_rate) == NULL) ||

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,8 +43,8 @@ void ags_volume_util_test_get_source_stride();
 void ags_volume_util_test_set_source_stride();
 void ags_volume_util_test_get_buffer_length();
 void ags_volume_util_test_set_buffer_length();
-void ags_volume_util_test_get_audio_buffer_util_format();
-void ags_volume_util_test_set_audio_buffer_util_format();
+void ags_volume_util_test_get_format();
+void ags_volume_util_test_set_format();
 void ags_volume_util_test_get_volume();
 void ags_volume_util_test_set_volume();
 void ags_volume_util_test_compute_s8();
@@ -109,7 +109,7 @@ ags_volume_util_test_alloc()
   CU_ASSERT(volume_util->source_stride == 1);
   
   CU_ASSERT(volume_util->buffer_length == 0);
-  CU_ASSERT(volume_util->audio_buffer_util_format == AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+  CU_ASSERT(volume_util->format == AGS_VOLUME_UTIL_DEFAULT_FORMAT);
 
   CU_ASSERT(volume_util->volume == 1.0);
 }
@@ -141,7 +141,7 @@ ags_volume_util_test_copy()
   CU_ASSERT(copy_volume_util->source_stride == volume_util.source_stride);
   
   CU_ASSERT(copy_volume_util->buffer_length == volume_util.buffer_length);
-  CU_ASSERT(copy_volume_util->audio_buffer_util_format == volume_util.audio_buffer_util_format);
+  CU_ASSERT(copy_volume_util->format == volume_util.format);
 
   CU_ASSERT(copy_volume_util->volume == volume_util.volume);
 }
@@ -316,30 +316,30 @@ ags_volume_util_test_set_buffer_length()
 }
 
 void
-ags_volume_util_test_get_audio_buffer_util_format()
+ags_volume_util_test_get_format()
 {
   AgsVolumeUtil volume_util;
 
-  volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  volume_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  CU_ASSERT(ags_volume_util_get_audio_buffer_util_format(&volume_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  CU_ASSERT(ags_volume_util_get_format(&volume_util) == AGS_SOUNDCARD_SIGNED_16_BIT);
   
-  volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  volume_util.format = AGS_SOUNDCARD_FLOAT;
 
-  CU_ASSERT(ags_volume_util_get_audio_buffer_util_format(&volume_util) == volume_util.audio_buffer_util_format);
+  CU_ASSERT(ags_volume_util_get_format(&volume_util) == volume_util.format);
 }
 
 void
-ags_volume_util_test_set_audio_buffer_util_format()
+ags_volume_util_test_set_format()
 {
   AgsVolumeUtil volume_util;
   
-  volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  volume_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  ags_volume_util_set_audio_buffer_util_format(&volume_util,
-					       AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  ags_volume_util_set_format(&volume_util,
+			     AGS_SOUNDCARD_FLOAT);
   
-  CU_ASSERT(volume_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  CU_ASSERT(volume_util.format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
 }
 
 void
@@ -381,10 +381,11 @@ ags_volume_util_test_compute_s8()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .format = AGS_SOUNDCARD_SIGNED_8_BIT,
     .volume = 0.5
   };
   
@@ -403,10 +404,11 @@ ags_volume_util_test_compute_s16()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .volume = 0.5
   };
   
@@ -425,10 +427,11 @@ ags_volume_util_test_compute_s24()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .format = AGS_SOUNDCARD_SIGNED_24_BIT,
     .volume = 0.5
   };
   
@@ -447,10 +450,11 @@ ags_volume_util_test_compute_s32()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .format = AGS_SOUNDCARD_SIGNED_32_BIT,
     .volume = 0.5
   };
   
@@ -469,10 +473,11 @@ ags_volume_util_test_compute_s64()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .format = AGS_SOUNDCARD_SIGNED_64_BIT,
     .volume = 0.5
   };
   
@@ -491,10 +496,11 @@ ags_volume_util_test_compute_float()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .format = AGS_SOUNDCARD_FLOAT,
     .volume = 0.5
   };
   
@@ -513,10 +519,11 @@ ags_volume_util_test_compute_double()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .format = AGS_SOUNDCARD_DOUBLE,
     .volume = 0.5
   };
   
@@ -535,10 +542,11 @@ ags_volume_util_test_compute_complex()
 
   volume_util = (AgsVolumeUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .format = AGS_SOUNDCARD_COMPLEX,
     .volume = 0.5
   };
   
@@ -560,7 +568,7 @@ ags_volume_util_test_compute()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .volume = 0.5
   };
   
@@ -600,8 +608,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsVolumeUtil set source stride", ags_volume_util_test_set_source_stride) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil get buffer length", ags_volume_util_test_get_buffer_length) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil set buffer length", ags_volume_util_test_set_buffer_length) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsVolumeUtil get audio buffer util format", ags_volume_util_test_get_audio_buffer_util_format) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsVolumeUtil set audio buffer util format", ags_volume_util_test_set_audio_buffer_util_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsVolumeUtil get format", ags_volume_util_test_get_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsVolumeUtil set format", ags_volume_util_test_set_format) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil get volume", ags_volume_util_test_get_volume) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil set volume", ags_volume_util_test_set_volume) == NULL) ||
      (CU_add_test(pSuite, "test of AgsVolumeUtil compute s8", ags_volume_util_test_compute_s8) == NULL) ||

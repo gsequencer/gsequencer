@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --enable-vst3
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --enable-vst3 --with-poppler
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 

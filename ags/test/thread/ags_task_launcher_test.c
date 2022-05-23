@@ -66,11 +66,11 @@ ags_task_launcher_test_test_flags()
 
   task_launcher->flags = 0;
 
-  CU_ASSERT(ags_task_launcher_test_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED) == FALSE);
+  CU_ASSERT(ags_task_launcher_test_flags(task_launcher, 0x1) == FALSE);
 
-  task_launcher->flags = AGS_TASK_LAUNCHER_CONNECTED;
+  task_launcher->flags = 0x1;
 
-  CU_ASSERT(ags_task_launcher_test_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED) == TRUE);
+  CU_ASSERT(ags_task_launcher_test_flags(task_launcher, 0x1) == TRUE);
 }
 
 void
@@ -82,9 +82,9 @@ ags_task_launcher_test_set_flags()
 
   task_launcher->flags = 0;
 
-  ags_task_launcher_set_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED);
+  ags_task_launcher_set_flags(task_launcher, 0x1);
 
-  CU_ASSERT((AGS_TASK_LAUNCHER_CONNECTED & (task_launcher->flags)) != 0);
+  CU_ASSERT((0x1 & (task_launcher->flags)) != 0);
 }
 
 void
@@ -94,11 +94,11 @@ ags_task_launcher_test_unset_flags()
 
   task_launcher = ags_task_launcher_new();
 
-  task_launcher->flags = AGS_TASK_LAUNCHER_CONNECTED;
+  task_launcher->flags = 0x1;
 
-  ags_task_launcher_unset_flags(task_launcher, AGS_TASK_LAUNCHER_CONNECTED);
+  ags_task_launcher_unset_flags(task_launcher, 0x1);
 
-  CU_ASSERT((AGS_TASK_LAUNCHER_CONNECTED & (task_launcher->flags)) == 0);
+  CU_ASSERT((0x1 & (task_launcher->flags)) == 0);
 }
 
 void

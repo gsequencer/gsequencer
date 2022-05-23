@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-22 05:59+0200\n"
+"POT-Creation-Date: 2022-05-23 13:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,27 +29,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ags/app/ags_connection_editor_bulk.c:170
-#: ags/app/ags_connection_editor_bulk.c:279 ags/app/ags_soundcard_editor.c:243
+#: ags/app/ags_connection_editor_bulk.c:172
+#: ags/app/ags_connection_editor_bulk.c:281 ags/app/ags_soundcard_editor.c:243
 #: ags/app/ags_export_soundcard.c:245
 msgid "soundcard"
 msgstr "karta dźwiękowa"
 
-#: ags/app/ags_connection_editor_bulk.c:200
-#: ags/app/ags_connection_editor_bulk.c:309
-#: ags/app/ags_machine_editor_bulk.c:179
+#: ags/app/ags_connection_editor_bulk.c:202
+#: ags/app/ags_connection_editor_bulk.c:311
+#: ags/app/ags_machine_editor_bulk.c:181
 msgid "first line"
 msgstr "pierwsza linia"
 
-#: ags/app/ags_connection_editor_bulk.c:218
-#: ags/app/ags_connection_editor_bulk.c:327
+#: ags/app/ags_connection_editor_bulk.c:220
+#: ags/app/ags_connection_editor_bulk.c:329
 #, fuzzy
 msgid "first soundcard line"
 msgstr "pierwsze łączenie linii"
 
-#: ags/app/ags_connection_editor_bulk.c:236
-#: ags/app/ags_connection_editor_bulk.c:345
-#: ags/app/ags_machine_editor_bulk.c:215
+#: ags/app/ags_connection_editor_bulk.c:238
+#: ags/app/ags_connection_editor_bulk.c:347
+#: ags/app/ags_machine_editor_bulk.c:217
 msgid "count"
 msgstr "licznik"
 
@@ -90,33 +90,33 @@ msgstr "efekt: "
 msgid "Ports"
 msgstr "Porty"
 
-#: ags/app/ags_machine_callbacks.c:648
+#: ags/app/ags_machine_callbacks.c:650
 #, fuzzy
 msgid "rename machine"
 msgstr "zmień nazwę pliku audio"
 
-#: ags/app/ags_machine_callbacks.c:685
+#: ags/app/ags_machine_callbacks.c:689
 msgid "rename audio"
 msgstr "zmień nazwę pliku audio"
 
-#: ags/app/ags_machine_callbacks.c:740
+#: ags/app/ags_machine_callbacks.c:746
 msgid "reposition audio"
 msgstr "przemieść plik audio"
 
-#: ags/app/ags_machine_callbacks.c:747 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:753 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:427 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr "pozycja"
 
-#: ags/app/ags_machine_callbacks.c:776
+#: ags/app/ags_machine_callbacks.c:784
 msgid "properties"
 msgstr "ustawienia"
 
-#: ags/app/ags_machine_callbacks.c:850
+#: ags/app/ags_machine_callbacks.c:858
 msgid "envelope"
 msgstr "koperta"
 
-#: ags/app/ags_machine_callbacks.c:892
+#: ags/app/ags_machine_callbacks.c:900
 msgid "connections"
 msgstr "powiązania"
 
@@ -125,7 +125,7 @@ msgstr "powiązania"
 msgid "Select audio file"
 msgstr "wybierz plik audio"
 
-#: ags/app/ags_machine_editor_dialog.c:99
+#: ags/app/ags_machine_editor_dialog.c:102
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:59
 #: ags/app/export/ags_midi_export_wizard.c:207
 #: ags/app/export/ags_wave_export_dialog.c:339 ags/app/ags_input_dialog.c:86
@@ -154,7 +154,7 @@ msgstr "wybierz plik audio"
 msgid "_OK"
 msgstr ""
 
-#: ags/app/ags_machine_editor_dialog.c:101
+#: ags/app/ags_machine_editor_dialog.c:104
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:58
 #: ags/app/export/ags_midi_export_wizard.c:208
 #: ags/app/export/ags_wave_export_dialog.c:343 ags/app/ags_input_dialog.c:88
@@ -205,21 +205,21 @@ msgstr "Nie"
 msgid "Cancel"
 msgstr "Kasuj"
 
-#: ags/app/ags_connection_editor.c:480 ags/app/ags_machine_editor.c:249
+#: ags/app/ags_connection_editor.c:488 ags/app/ags_machine_editor.c:251
 msgid "output"
 msgstr "wyjście"
 
-#: ags/app/ags_connection_editor.c:484
+#: ags/app/ags_connection_editor.c:492
 #, fuzzy
 msgid "bulk output"
 msgstr "połącz wyjście"
 
-#: ags/app/ags_connection_editor.c:490 ags/app/ags_machine_editor.c:276
+#: ags/app/ags_connection_editor.c:498 ags/app/ags_machine_editor.c:280
 #: ags/app/machine/ags_audiorec.c:335
 msgid "input"
 msgstr "wejście"
 
-#: ags/app/ags_connection_editor.c:494
+#: ags/app/ags_connection_editor.c:502
 #, fuzzy
 msgid "bulk input"
 msgstr "połącz wejście"
@@ -296,10 +296,10 @@ msgstr "pula wątków - max liczba nieużytych wątków"
 msgid "max precision of threads [Hz]"
 msgstr "max precyzja wątków [Hz]"
 
-#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:418
-#: ags/app/machine/ags_live_dssi_bridge.c:413
-#: ags/app/machine/ags_live_vst3_bridge.c:474
-#: ags/app/machine/ags_vst3_bridge.c:454
+#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:421
+#: ags/app/machine/ags_live_dssi_bridge.c:423
+#: ags/app/machine/ags_live_vst3_bridge.c:480
+#: ags/app/machine/ags_vst3_bridge.c:460
 msgid "Plugin file not present"
 msgstr "Wtyczka niedostępna"
 
@@ -376,11 +376,11 @@ msgstr ""
 #: ags/app/machine/ags_pitch_sampler.c:393
 #: ags/app/machine/ags_pitch_sampler.c:528 ags/app/machine/ags_ffplayer.c:478
 #: ags/app/machine/ags_ffplayer.c:606
-#: ags/app/ags_machine_editor_collection.c:173
+#: ags/app/ags_machine_editor_collection.c:175
 #: ags/app/import/ags_track_mapper.c:227
-#: ags/app/ags_connection_editor_listing.c:175
-#: ags/app/ags_connection_editor_collection.c:173
-#: ags/app/ags_machine_editor_listing.c:175
+#: ags/app/ags_connection_editor_listing.c:177
+#: ags/app/ags_connection_editor_collection.c:175
+#: ags/app/ags_machine_editor_listing.c:177
 msgid "enabled"
 msgstr "włączone"
 
@@ -881,7 +881,7 @@ msgstr "wybierz x1"
 
 #: ags/app/editor/ags_pattern_envelope.c:243
 #: ags/app/editor/ags_envelope_editor.c:180
-#: ags/app/machine/ags_live_lv2_bridge.c:491
+#: ags/app/machine/ags_live_lv2_bridge.c:495
 #: ags/app/machine/ags_lv2_bridge.c:480 ags/app/machine/ags_sf2_synth.c:413
 #: ags/app/machine/ags_ffplayer.c:361
 msgid "preset"
@@ -1041,7 +1041,7 @@ msgstr "pady wejściowe: "
 msgid "_Open"
 msgstr "Otwórz"
 
-#: ags/app/ags_machine_editor_pad.c:180 ags/app/ags_connection_editor_pad.c:180
+#: ags/app/ags_machine_editor_pad.c:182 ags/app/ags_connection_editor_pad.c:182
 msgid "pad"
 msgstr "pad"
 
@@ -1159,24 +1159,24 @@ msgstr "O Programie"
 msgid "Online help"
 msgstr "Pomoc Online"
 
-#: ags/app/ags_effect_line.c:542 ags/app/ags_line.c:567
+#: ags/app/ags_effect_line.c:544 ags/app/ags_line.c:567
 msgid "group"
 msgstr "grupa"
 
-#: ags/app/ags_effect_line.c:996 ags/app/ags_effect_line.c:1002
+#: ags/app/ags_effect_line.c:998 ags/app/ags_effect_line.c:1004
 #: ags/app/ags_line.c:1086 ags/app/ags_line.c:1092
 msgid "channel"
 msgstr "kanał"
 
-#: ags/app/ags_machine_editor.c:303
+#: ags/app/ags_machine_editor.c:309
 msgid "link output"
 msgstr "połącz wyjście"
 
-#: ags/app/ags_machine_editor.c:325
+#: ags/app/ags_machine_editor.c:333
 msgid "link input"
 msgstr "połącz wejście"
 
-#: ags/app/ags_machine_editor.c:351
+#: ags/app/ags_machine_editor.c:361
 msgid "resize channels"
 msgstr "zmień rozmiar kanałów"
 
@@ -1314,9 +1314,9 @@ msgstr "rozmiar bufora WASAPI"
 msgid "mute"
 msgstr ""
 
-#: ags/app/machine/ags_live_lv2_bridge.c:467
+#: ags/app/machine/ags_live_lv2_bridge.c:471
 #: ags/app/machine/ags_dssi_bridge.c:352 ags/app/machine/ags_lv2_bridge.c:458
-#: ags/app/machine/ags_live_dssi_bridge.c:347
+#: ags/app/machine/ags_live_dssi_bridge.c:351
 #: ags/app/machine/ags_live_vst3_bridge.c:358
 #: ags/app/machine/ags_sf2_synth.c:406 ags/app/machine/ags_vst3_bridge.c:340
 msgid "program"
@@ -1579,8 +1579,8 @@ msgstr "koniec pętli"
 msgid "Open SFZ file"
 msgstr "Otwórz Plik"
 
-#: ags/app/machine/ags_live_vst3_bridge.c:428
-#: ags/app/machine/ags_vst3_bridge.c:408
+#: ags/app/machine/ags_live_vst3_bridge.c:434
+#: ags/app/machine/ags_vst3_bridge.c:414
 #, fuzzy
 msgid "show VST3 UI"
 msgstr "pokaż interfejs graficzny"
@@ -1904,11 +1904,11 @@ msgstr ""
 msgid "Copyright"
 msgstr ""
 
-#: ags/app/ags_machine_editor_bulk.c:163
+#: ags/app/ags_machine_editor_bulk.c:165
 msgid "link"
 msgstr "łączenie"
 
-#: ags/app/ags_machine_editor_bulk.c:197
+#: ags/app/ags_machine_editor_bulk.c:199
 msgid "first link line"
 msgstr "pierwsze łączenie linii"
 
@@ -1943,6 +1943,36 @@ msgstr "szybkie ustawienia"
 
 #: ags/app/ags_port_editor.c:213
 msgid "Port control orientation"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:86
+msgid "author"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:104
+msgid "title"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:122
+msgid "album"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:140
+#, fuzzy
+msgid "release date"
+msgstr "wydanie"
+
+#: ags/app/ags_meta_data_window.c:158
+#, fuzzy
+msgid "copyright"
+msgstr "prawy"
+
+#: ags/app/ags_meta_data_window.c:176
+msgid "license"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:194
+msgid "comment"
 msgstr ""
 
 #: ags/app/ags_export_window.c:140

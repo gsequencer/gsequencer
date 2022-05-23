@@ -28,6 +28,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <cairo.h>
+#include <cairo-ps.h>
 
 #include <math.h>
 

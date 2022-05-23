@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2021,2022 Daniel Maksymow
+ * Copyright (C) 2005-2022 Daniel Maksymow
  *
  * This file is part of GSequencer.
  *
@@ -17,7 +17,6 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef AGS_META_DATA_WINDOW_H
 #define AGS_META_DATA_WINDOW_H
 
@@ -26,14 +25,19 @@
 
 G_BEGIN_DECLS
 
-#define AGS_TYPE_META_DATA_WINDOW (ags_meta_data_window_get_type())
+#define AGS_TYPE_META_DATA_WINDOW                (ags_meta_data_window_get_type())
+#define AGS_META_DATA_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_META_DATA_WINDOW, AgsMetaDataWindow))
+#define AGS_META_DATA_WINDOW_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_META_DATA_WINDOW, AgsMetaDataWindowClass))
+#define AGS_IS_META_DATA_WINDOW(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_META_DATA_WINDOW))
+#define AGS_IS_META_DATA_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_META_DATA_WINDOW))
+#define AGS_META_DATA_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_META_DATA_WINDOW, AgsMetaDataWindowClass))
 
-G_DECLARE_FINAL_TYPE(AgsMetaDataWindow, ags_meta_data_window, AGS,
-                     META_DATA_WINDOW, GtkWindow)
+typedef struct _AgsMetaDataWindow AgsMetaDataWindow;
+typedef struct _AgsMetaDataWindowClass AgsMetaDataWindowClass;
   
 struct _AgsMetaDataWindow
 {
-  GtkWindow parent;
+  GtkWindow window;
 
   GtkEntry *author;
   GtkEntry *title;
@@ -43,6 +47,13 @@ struct _AgsMetaDataWindow
   GtkEntry *license;
   GtkTextView *comment;
 };
+
+struct _AgsMetaDataWindowClass
+{
+  GtkWindowClass window;
+};
+
+GType ags_meta_data_window_get_type();
 
 AgsMetaDataWindow* ags_meta_data_window_new();
 
