@@ -394,9 +394,10 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   }
 }
 
-void ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_chooser,
-						 gint response,
-						 AgsExportSoundcard *export_soundcard)
+void
+ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_chooser,
+					    gint response,
+					    AgsExportSoundcard *export_soundcard)
 {
   if(response == GTK_RESPONSE_ACCEPT){
     GFile *file;

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-23 13:54+0200\n"
+"POT-Creation-Date: 2022-05-23 22:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,7 +127,7 @@ msgstr "wybierz plik audio"
 
 #: ags/app/ags_machine_editor_dialog.c:102
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:59
-#: ags/app/export/ags_midi_export_wizard.c:207
+#: ags/app/export/ags_midi_export_wizard.c:230
 #: ags/app/export/ags_wave_export_dialog.c:339 ags/app/ags_input_dialog.c:86
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:189
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:207
@@ -149,14 +149,14 @@ msgstr "wybierz plik audio"
 #: ags/app/machine/ags_ffplayer_callbacks.c:233
 #: ags/app/machine/ags_sf2_synth_callbacks.c:50
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:44
-#: ags/app/import/ags_midi_import_wizard.c:185 ags/app/ags_plugin_browser.c:271
+#: ags/app/import/ags_midi_import_wizard.c:211 ags/app/ags_plugin_browser.c:271
 #: ags/app/ags_preferences.c:240
 msgid "_OK"
 msgstr ""
 
 #: ags/app/ags_machine_editor_dialog.c:104
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:58
-#: ags/app/export/ags_midi_export_wizard.c:208
+#: ags/app/export/ags_midi_export_wizard.c:231
 #: ags/app/export/ags_wave_export_dialog.c:343 ags/app/ags_input_dialog.c:88
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:190
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:208
@@ -173,13 +173,13 @@ msgstr ""
 #: ags/app/editor/ags_add_sheet_page_dialog.c:205
 #: ags/app/editor/ags_move_note_dialog.c:211
 #: ags/app/editor/ags_select_note_dialog.c:249
-#: ags/app/ags_export_soundcard_callbacks.c:438 ags/app/ags_midi_dialog.c:449
+#: ags/app/ags_export_soundcard_callbacks.c:435 ags/app/ags_midi_dialog.c:449
 #: ags/app/machine/ags_audiorec_callbacks.c:44
 #: ags/app/machine/ags_sfz_synth_callbacks.c:51
 #: ags/app/machine/ags_ffplayer_callbacks.c:234
 #: ags/app/machine/ags_sf2_synth_callbacks.c:51
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:45
-#: ags/app/import/ags_midi_import_wizard.c:186 ags/app/ags_plugin_browser.c:272
+#: ags/app/import/ags_midi_import_wizard.c:212 ags/app/ags_plugin_browser.c:272
 #: ags/app/ags_preferences.c:241
 #, fuzzy
 msgid "_Cancel"
@@ -224,21 +224,21 @@ msgstr "wejście"
 msgid "bulk input"
 msgstr "połącz wejście"
 
-#: ags/app/ags_gsequencer_application_context.c:3357
+#: ags/app/ags_gsequencer_application_context.c:3356
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "nieznany backend karty dźwiękowej - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3367
+#: ags/app/ags_gsequencer_application_context.c:3366
 msgid "unknown soundcard backend - NULL"
 msgstr "nieznany backend karty dźwiękowej - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:3603
+#: ags/app/ags_gsequencer_application_context.c:3602
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "nieznany backend sekwencera - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3613
+#: ags/app/ags_gsequencer_application_context.c:3612
 msgid "unknown sequencer backend - NULL"
 msgstr "nieznany backend sekwencera - NULL"
 
@@ -309,18 +309,18 @@ msgid "selector"
 msgstr "zaznacz"
 
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:55
-#: ags/app/ags_export_soundcard_callbacks.c:435
+#: ags/app/ags_export_soundcard_callbacks.c:432
 #, fuzzy
 msgid "Export to file ..."
 msgstr "eksportuj do audio"
 
-#: ags/app/export/ags_midi_export_wizard.c:205
-#: ags/app/import/ags_midi_import_wizard.c:183
+#: ags/app/export/ags_midi_export_wizard.c:228
+#: ags/app/import/ags_midi_import_wizard.c:209
 msgid "_Back"
 msgstr ""
 
-#: ags/app/export/ags_midi_export_wizard.c:206
-#: ags/app/import/ags_midi_import_wizard.c:184
+#: ags/app/export/ags_midi_export_wizard.c:229
+#: ags/app/import/ags_midi_import_wizard.c:210
 msgid "_Forward"
 msgstr ""
 
@@ -377,7 +377,7 @@ msgstr ""
 #: ags/app/machine/ags_pitch_sampler.c:528 ags/app/machine/ags_ffplayer.c:478
 #: ags/app/machine/ags_ffplayer.c:606
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:227
+#: ags/app/import/ags_track_mapper.c:233
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -387,6 +387,10 @@ msgstr "włączone"
 #: ags/app/export/ags_machine_mapper.c:214
 msgid "sequence: "
 msgstr "sekwencje: "
+
+#: ags/app/export/ags_machine_mapper.c:242 ags/app/machine/ags_drum.c:360
+msgid "default"
+msgstr "domyślne"
 
 #: ags/app/ags_sequencer_editor.c:167 ags/app/ags_soundcard_editor.c:178
 #: ags/app/ags_export_soundcard.c:184
@@ -1035,7 +1039,7 @@ msgstr "pady wyjściowe: "
 msgid "input pads count"
 msgstr "pady wejściowe: "
 
-#: ags/app/ags_export_soundcard_callbacks.c:439 ags/app/machine/ags_drum.c:363
+#: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/machine/ags_drum.c:363
 #: ags/app/machine/ags_sfz_synth.c:305 ags/app/machine/ags_audiorec.c:299
 #: ags/app/machine/ags_sf2_synth.c:313 ags/app/machine/ags_ffplayer.c:400
 msgid "_Open"
@@ -1403,10 +1407,6 @@ msgstr "Otwórz plik audio"
 #: ags/app/machine/ags_drum.c:346
 msgid "kit"
 msgstr "zestaw"
-
-#: ags/app/machine/ags_drum.c:360
-msgid "default"
-msgstr "domyślne"
 
 #: ags/app/machine/ags_drum.c:396
 msgid "run"
@@ -1868,8 +1868,8 @@ msgstr "częstotliwość LFO"
 msgid "base key"
 msgstr "klucz podstawowy"
 
-#: ags/app/machine/ags_ffplayer.c:372 ags/app/import/ags_track_mapper.c:255
-#: ags/app/import/ags_track_mapper.c:368
+#: ags/app/machine/ags_ffplayer.c:372 ags/app/import/ags_track_mapper.c:261
+#: ags/app/import/ags_track_mapper.c:395
 msgid "instrument"
 msgstr "instrument"
 
@@ -1918,7 +1918,7 @@ msgstr "pierwsze łączenie linii"
 msgid "line"
 msgstr "linia"
 
-#: ags/app/import/ags_track_mapper.c:268 ags/app/import/ags_track_mapper.c:395
+#: ags/app/import/ags_track_mapper.c:274 ags/app/import/ags_track_mapper.c:422
 msgid "sequence"
 msgstr "sekwencja"
 

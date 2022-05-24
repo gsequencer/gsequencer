@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gio/gio.h>
+
 #include <libxml/tree.h>
 
 #include <unistd.h>
@@ -48,6 +50,9 @@ G_BEGIN_DECLS
 
 #define AGS_FILE_DEFAULT_AUDIO_FORMAT "raw"
 #define AGS_FILE_DEFAULT_AUDIO_ENCODING "base64"
+
+#define AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH (8192)
+#define AGS_FILE_CHARSET_CONVERTER_MAX_CONTENT_LENGTH (8388608) // max 8 MB
 
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
@@ -93,18 +98,21 @@ struct _AgsFile
 
   GRecMutex obj_mutex;
 
-  const gchar *app_encoding;
+  gchar *app_encoding;
   
   FILE *out;
   xmlChar *buffer;
 
   gchar *filename;
-  const gchar *encoding;
+  gchar *encoding;
   gchar *dtd;
 
   gchar *audio_format;
   gchar *audio_encoding;
 
+  GCharsetConverter *read_charset_converter;
+  GCharsetConverter *write_charset_converter;
+  
   xmlDoc *doc;
   xmlNode *root_node;
 

@@ -467,7 +467,12 @@ ags_file_init(AgsFile *file)
   file->audio_format = AGS_FILE_DEFAULT_AUDIO_FORMAT;
   file->audio_encoding = AGS_FILE_DEFAULT_AUDIO_ENCODING;
 
+  file->read_charset_converter = NULL;
+  file->write_charset_converter = NULL;
+  
   file->doc = NULL;
+  
+  file->root_node = NULL;
 
   file->id_refs = NULL;
   file->lookup = NULL;
@@ -1244,9 +1249,9 @@ ags_file_xml_new_doc(AgsFile *file,
 {
   xmlDoc *doc;
 
-  const gchar *app_encoding, *encoding;
+  gchar *app_encoding, *encoding;
 
-  gboolean is_env_set;
+  GError *error;
   
   if(!AGS_IS_FILE(file)){
     return(NULL);
@@ -1255,32 +1260,38 @@ ags_file_xml_new_doc(AgsFile *file,
   encoding = file->encoding;
   app_encoding = file->app_encoding;
 
-  is_env_set = TRUE;
-
   if(encoding == NULL){
     encoding = AGS_FILE_DEFAULT_ENCODING;
   }
 
   if(app_encoding == NULL){
     app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
   }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
   
   doc = xmlNewDoc(version);
 
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
+  error = NULL;
+  file->read_charset_converter = g_charset_converter_new(app_encoding,
+							 encoding,
+							 &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
   }
   
+  error = NULL;
+  file->write_charset_converter = g_charset_converter_new(encoding,
+							  app_encoding,
+							  &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
   return(doc);
 }
 
@@ -1302,45 +1313,35 @@ ags_file_xml_new_node(AgsFile *file,
 		      gchar *node_name)
 {
   xmlNode *node;
-  
-  const gchar *app_encoding, *encoding;
 
-   gboolean is_env_set;
+  xmlChar localized_node_name[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+
+  GError *error;
   
   if(!AGS_IS_FILE(file) ||
      node_name == NULL){
     return(NULL);
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      node_name,
+		      strlen(node_name),
+		      localized_node_name,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
 
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
   }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
 
   node = xmlNewNode(xml_namespace,
-		    node_name);
-
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
+		    localized_node_name);
   
   return(node);
 }
@@ -1361,45 +1362,14 @@ ags_file_xml_get_root_element(AgsFile *file,
 			      xmlDoc *doc)
 {
   xmlNode *root_node;
-  
-  const gchar *app_encoding, *encoding;
-
-   gboolean is_env_set;
-  
+    
   if(!AGS_IS_FILE(file) ||
      doc == NULL){
     return(NULL);
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
-
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
-
   root_node = xmlDocGetRootElement(doc);
 
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
-  
   return(root_node);
 }
 
@@ -1428,35 +1398,8 @@ ags_file_xml_set_root_element(AgsFile *file,
     return;
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
-
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
-
   xmlDocSetRootElement(doc,
 		       root_node);
-
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
 }
 
 /**
@@ -1473,46 +1416,15 @@ void
 ags_file_xml_add_child(AgsFile *file,
 		       xmlNode *parent,
 		       xmlNode *child)
-{
-  const gchar *app_encoding, *encoding;
-
-   gboolean is_env_set;
-  
+{  
   if(!AGS_IS_FILE(file) ||
      parent == NULL ||
      child == NULL){
     return;
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
-
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
-
   xmlAddChild(parent,
 	      child);
-
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
 }
 
 /**
@@ -1530,14 +1442,34 @@ gchar*
 ags_file_xml_get_node_name(AgsFile *file,
 			   xmlNode *node)
 {
+  gchar localized_node_name[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
   gchar *node_name;
+
+  GError *error;
   
   if(!AGS_IS_FILE(file) ||
      node == NULL){
     return(NULL);
   }
 
-  node_name = g_strdup(node->name);
+  error = NULL;
+  g_converter_convert(file->read_charset_converter,
+		      node->name,
+		      strlen(node->name),
+		      localized_node_name,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+  
+  node_name = g_strdup(localized_node_name);
 
   return(node_name);
 }
@@ -1629,10 +1561,10 @@ ags_file_xml_get_prop(AgsFile *file,
 		      gchar *prop_name)
 {
   xmlChar *str;
+  gchar localized_prop_value[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
   gchar *prop_value;  
-  const gchar *app_encoding, *encoding;
 
-   gboolean is_env_set;
+  GError *error;
   
   if(!AGS_IS_FILE(file) ||
      node == NULL ||
@@ -1640,40 +1572,29 @@ ags_file_xml_get_prop(AgsFile *file,
     return(NULL);
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
-
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
-
   str = xmlGetProp(node,
 		   BAD_CAST prop_name);
 
-  //TODO:JK: improve me
-  prop_value = g_strdup(str);
+  error = NULL;
+  g_converter_convert(file->read_charset_converter,
+		      str,
+		      strlen(str),
+		      localized_prop_value,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  prop_value = g_strdup(localized_prop_value);
 
   xmlFree(str);
-  
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
   
   return(prop_value);
 }
@@ -1695,9 +1616,10 @@ ags_file_xml_set_prop(AgsFile *file,
 		      gchar *prop_name,
 		      gchar *prop_value)
 {
-  const gchar *app_encoding, *encoding;
+  xmlChar localized_prop_name[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+  xmlChar localized_prop_value[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
 
-   gboolean is_env_set;
+  GError *error;
   
   if(!AGS_IS_FILE(file) ||
      node == NULL ||
@@ -1705,37 +1627,43 @@ ags_file_xml_set_prop(AgsFile *file,
     return;
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      prop_name,
+		      strlen(prop_name),
+		      localized_prop_name,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
 
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
   }
 
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      prop_value,
+		      strlen(prop_value),
+		      localized_prop_value,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
 
-    is_env_set = FALSE;
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
   }
   
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
-
-  //TODO:JK: improve me
   xmlNewProp(node,
-	     BAD_CAST prop_name,
-	     BAD_CAST prop_value);
-  
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
+	     BAD_CAST localized_prop_name,
+	     BAD_CAST localized_prop_value);
 }
 
 /**
@@ -1754,49 +1682,38 @@ ags_file_xml_get_content(AgsFile *file,
 			 xmlNode *node)
 {
   xmlChar *str;
+  gchar localized_content[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
   gchar *content;  
-  const gchar *app_encoding, *encoding;
 
-   gboolean is_env_set;
-  
+  GError *error;
+    
   if(!AGS_IS_FILE(file) ||
      node == NULL){
     return(NULL);
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
-
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
-  }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
-
   str = xmlNodeGetContent(node);
 
-  //TODO:JK: improve me
-  content = g_strdup(str);
+  error = NULL;
+  g_converter_convert(file->read_charset_converter,
+		      str,
+		      strlen(str),
+		      localized_content,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+  
+  content = g_strdup(localized_content);
 
   xmlFree(str);
-  
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
   
   return(content);
 }
@@ -1818,9 +1735,9 @@ ags_file_xml_set_content(AgsFile *file,
 			 gchar *content,
 			 gboolean is_cdata)
 {
-  const gchar *app_encoding, *encoding;
+  xmlChar localized_content[AGS_FILE_CHARSET_CONVERTER_MAX_CONTENT_LENGTH];
 
-   gboolean is_env_set;
+  GError *error;
   
   if(!AGS_IS_FILE(file) ||
      node == NULL ||
@@ -1828,45 +1745,36 @@ ags_file_xml_set_content(AgsFile *file,
     return;
   }
 
-  encoding = file->encoding;
-  app_encoding = file->app_encoding;
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      content,
+		      strlen(content),
+		      localized_content,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_CONTENT_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
 
-  is_env_set = TRUE;
-  
-  if(encoding == NULL){
-    encoding = AGS_FILE_DEFAULT_ENCODING;
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
   }
-
-  if(app_encoding == NULL){
-    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
-
-    is_env_set = FALSE;
-  }
-  
-  g_setenv("LANG",
-	   encoding,
-	   TRUE);
 
   if(is_cdata){
     xmlNode *cdata;
 
     cdata = xmlNewCDataBlock(file->doc,
-			     content,
-			     strlen(content));
+			     localized_content,
+			     strlen(localized_content));
     xmlAddChild(node,
 		cdata);
   }else{
     xmlNodeAddContent(node,
-		      content);
+		      localized_content);
   }
   
-  if(is_env_set){
-    g_setenv("LANG",
-	     app_encoding,
-	     TRUE);
-  }else{
-    g_unsetenv("LANG");
-  }
 }
 
 void

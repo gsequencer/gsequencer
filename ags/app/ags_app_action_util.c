@@ -593,10 +593,11 @@ ags_app_action_util_about()
 
   AgsApplicationContext *application_context;
 
+  GdkTexture *texture;
+  
   static FILE *file = NULL;
   struct stat sb;
   static gchar *license = NULL;
-  static GdkPixbuf *logo = NULL;
 
   gchar *license_filename;
   gchar *logo_filename;
@@ -705,19 +706,6 @@ ags_app_action_util_about()
 	logo_filename = g_strdup(logo_filename);
       }
 #endif
-
-      error = NULL;
-      logo = gdk_pixbuf_new_from_file(logo_filename,
-				      &error);
-  
-      //g_free(logo_filename);
-
-      if(error != NULL){
-	g_message("%s", error->message);
-
-	g_error_free(error);
-      }
-  
     }
   }
 
@@ -725,6 +713,9 @@ ags_app_action_util_about()
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  texture = gdk_texture_new_from_filename(logo_filename,
+					  NULL);
+  
   gtk_show_about_dialog((GtkWindow *) window,
 			"program-name", "gsequencer",
 			"authors", authors,
@@ -732,7 +723,7 @@ ags_app_action_util_about()
 			"version", AGS_VERSION,
 			"website", "http://nongnu.org/gsequencer",
 			"title", "Advanced Gtk+ Sequencer",
-			"logo", logo,
+			"logo", texture,
 			NULL);
 
   g_free(license_filename);
