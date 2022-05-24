@@ -33,24 +33,16 @@
     <xi:include href="xml/ags_expander.xml"/>
     <xi:include href="xml/ags_expander_set.xml"/>
     <xi:include href="xml/ags_indicator.xml"/>
-    <xi:include href="xml/ags_hindicator.xml"/>
-    <xi:include href="xml/ags_vindicator.xml"/>
     <xi:include href="xml/ags_led.xml"/>
     <xi:include href="xml/ags_led_array.xml"/>
-    <xi:include href="xml/ags_hled_array.xml"/>
-    <xi:include href="xml/ags_vled_array.xml"/>
     <xi:include href="xml/ags_level.xml"/>
     <xi:include href="xml/ags_level_box.xml"/>
-    <xi:include href="xml/ags_vlevel_box.xml"/>
-    <xi:include href="xml/ags_hlevel_box.xml"/>
     <xi:include href="xml/ags_scrolled_level_box.xml"/>
     <xi:include href="xml/ags_notebook.xml"/>
     <xi:include href="xml/ags_piano.xml"/>
     <xi:include href="xml/ags_scrolled_piano.xml"/>
     <xi:include href="xml/ags_scale.xml"/>
     <xi:include href="xml/ags_scale_box.xml"/>
-    <xi:include href="xml/ags_vscale_box.xml"/>
-    <xi:include href="xml/ags_hscale_box.xml"/>
     <xi:include href="xml/ags_scrolled_scale_box.xml"/>
     <xi:include href="xml/ags_ruler.xml"/>
   </chapter>  

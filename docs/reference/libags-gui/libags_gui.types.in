@@ -20,10 +20,6 @@ ags_cartesian_get_type
 ags_dial_get_type
 ags_expander_get_type
 ags_expander_set_get_type
-ags_hindicator_get_type
-ags_hled_array_get_type
-ags_hlevel_box_get_type
-ags_hscale_box_get_type
 ags_indicator_get_type
 ags_led_array_get_type
 ags_led_get_type
@@ -37,7 +33,3 @@ ags_scale_get_type
 ags_scrolled_level_box_get_type
 ags_scrolled_piano_get_type
 ags_scrolled_scale_box_get_type
-ags_vindicator_get_type
-ags_vled_array_get_type
-ags_vlevel_box_get_type
-ags_vscale_box_get_type
