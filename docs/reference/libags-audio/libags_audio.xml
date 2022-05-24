@@ -114,7 +114,6 @@
       <xi:include href="xml/ags_linear_interpolate_util.xml"/>
       <xi:include href="xml/ags_fourier_transform_util.xml"/>
       <xi:include href="xml/ags_fast_pitch_util.xml"/>
-      <xi:include href="xml/ags_generic_pitch_util.xml"/>
       <xi:include href="xml/ags_hq_pitch_util.xml"/>
       <xi:include href="xml/ags_time_stretch_util.xml"/>
       <xi:include href="xml/ags_phase_shift_util.xml"/>
@@ -124,12 +123,9 @@
       <xi:include href="xml/ags_envelope_util.xml"/>
       <xi:include href="xml/ags_peak_util.xml"/>
       <xi:include href="xml/ags_resample_util.xml"/>
-      <xi:include href="xml/ags_filter_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
       <xi:include href="xml/ags_fm_synth_util.xml"/>
-      <xi:include href="xml/ags_sf2_util.xml"/>
       <xi:include href="xml/ags_sf2_synth_util.xml"/>
-      <xi:include href="xml/ags_sfz_util.xml"/>
       <xi:include href="xml/ags_sfz_synth_util.xml"/>
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_synth_generator.xml"/>
@@ -149,7 +145,6 @@
       <xi:include href="xml/ags_fluid_interpolate_4th_order_util.xml"/>
       <xi:include href="xml/ags_fluid_interpolate_7th_order_util.xml"/>
       <xi:include href="xml/ags_fluid_iir_filter_util.xml"/>
-      <xi:include href="xml/ags_fluid_pitch_util.xml"/>
     </chapter>
 
     <chapter id="audio-freq">
@@ -554,13 +549,6 @@
 	Miscellaneous plugins to process audio data.
       </para>
 
-      <xi:include href="xml/ags_fx_chorus_audio.xml"/>
-      <xi:include href="xml/ags_fx_chorus_audio_processor.xml"/>
-      <xi:include href="xml/ags_fx_chorus_audio_signal.xml"/>
-      <xi:include href="xml/ags_fx_chorus_channel.xml"/>
-      <xi:include href="xml/ags_fx_chorus_channel_processor.xml"/>
-      <xi:include href="xml/ags_fx_chorus_recycling.xml"/>      
-
       <xi:include href="xml/ags_fx_ladspa_audio.xml"/>
       <xi:include href="xml/ags_fx_ladspa_audio_processor.xml"/>
       <xi:include href="xml/ags_fx_ladspa_audio_signal.xml"/>
@@ -592,7 +580,6 @@
       
       <xi:include href="xml/ags_add_audio.xml"/>
       <xi:include href="xml/ags_add_audio_signal.xml"/>
-      <xi:include href="xml/ags_add_effect.xml"/>
       <xi:include href="xml/ags_add_note.xml"/>
       <xi:include href="xml/ags_add_soundcard.xml"/>
       <xi:include href="xml/ags_apply_bpm.xml"/>
@@ -624,9 +611,7 @@
       <xi:include href="xml/ags_remove_audio_signal.xml"/>
       <xi:include href="xml/ags_remove_note.xml"/>
       <xi:include href="xml/ags_remove_soundcard.xml"/>
-      <xi:include href="xml/ags_reset_amplitude.xml"/>
       <xi:include href="xml/ags_reset_note.xml"/>
-      <xi:include href="xml/ags_reset_peak.xml"/>
       <xi:include href="xml/ags_reset_fx_peak.xml"/>
       <xi:include href="xml/ags_reset_fx_analyse.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>

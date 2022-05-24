@@ -25,7 +25,6 @@ AgsDestroyWorker AgsConnectable
 AgsGenericMainLoop AgsConnectable AgsMainLoop
 AgsReturnableThread AgsConnectable
 AgsFileLink AgsPlugin
-AgsRegistry AgsConnectable
 AgsServerStatus AgsConnectable
 AgsTaskCompletion AgsConnectable
 AgsTaskLauncher AgsConnectable

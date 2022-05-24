@@ -177,6 +177,10 @@ ags_buffer_util_char_buffer_write_float
 ags_buffer_util_char_buffer_write_double
 ags_buffer_util_char_buffer_write_complex
 ags_buffer_util_char_buffer_swap_bytes
+<SUBSECTION Public>
+AGS_TYPE_BUFFER_UTIL
+AgsBufferUtil
+ags_buffer_util_get_type
 </SECTION>
 
 <SECTION>
@@ -277,6 +281,7 @@ ags_complex_set
 ags_complex_get_term
 ags_complex_set_term
 <SUBSECTION Public>
+AGS_COMPLEX
 AGS_TYPE_COMPLEX
 AgsComplex
 ags_complex_get_type
@@ -346,6 +351,7 @@ ags_config_get_type
 <SECTION>
 <FILE>ags_connectable</FILE>
 <TITLE>AgsConnectable</TITLE>
+AgsConnectableFlags
 ags_connectable_get_uuid
 ags_connectable_has_resource
 ags_connectable_is_ready
@@ -465,6 +471,10 @@ ags_cursor_get_type
 <SECTION>
 <FILE>ags_destroy_util</FILE>
 ags_destroy_util_dispose_and_unref
+<SUBSECTION Public>
+AGS_TYPE_DESTROY_UTIL
+AgsDestroyUtil
+ags_destroy_util_get_type
 </SECTION>
 
 <SECTION>
@@ -504,11 +514,14 @@ ags_byte_order_get_type
 <FILE>ags_file</FILE>
 <TITLE>AgsFile</TITLE>
 AGS_FILE_GET_OBJ_MUTEX
+AGS_FILE_DEFAULT_APP_ENCODING
 AGS_FILE_DEFAULT_ENCODING
 AGS_FILE_DEFAULT_DTD
 AGS_FILE_CHECKSUM_LENGTH
 AGS_FILE_DEFAULT_AUDIO_FORMAT
 AGS_FILE_DEFAULT_AUDIO_ENCODING
+AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH
+AGS_FILE_CHARSET_CONVERTER_MAX_CONTENT_LENGTH
 AgsFileFlags
 AGS_FILE_ERROR
 AgsFileError
@@ -529,6 +542,19 @@ ags_file_find_id_ref_by_xpath
 ags_file_find_id_ref_by_reference
 ags_file_add_lookup
 ags_file_add_launch
+ags_file_xml_new_doc
+ags_file_xml_new_node
+ags_file_xml_get_root_element
+ags_file_xml_set_root_element
+ags_file_xml_add_child
+ags_file_xml_get_node_name
+ags_file_xml_get_node_parent
+ags_file_xml_get_node_next
+ags_file_xml_get_node_children
+ags_file_xml_get_prop
+ags_file_xml_set_prop
+ags_file_xml_get_content
+ags_file_xml_set_content
 ags_file_open
 ags_file_open_from_data
 ags_file_rw_open
@@ -663,18 +689,6 @@ ags_front_controller_get_type
 <FILE>ags_function</FILE>
 <TITLE>AgsFunction</TITLE>
 AGS_FUNCTION_GET_OBJ_MUTEX
-AgsFunctionFlags
-ags_function_collapse_parantheses
-ags_function_find_literals
-ags_function_literal_solve
-ags_function_push_equation
-ags_function_pop_equation
-ags_function_get_expanded
-ags_function_get_normalized
-ags_function_compute_term
-ags_function_symbolic_translate_value
-ags_function_substitute_values
-ags_function_translate_value
 ags_function_add_matrix
 ags_function_remove_matrix
 ags_function_new
@@ -722,6 +736,10 @@ ags_id_generator_create_uuid
 <SECTION>
 <FILE>ags_list_util</FILE>
 ags_list_util_find_type
+<SUBSECTION Public>
+AGS_TYPE_LIST_UTIL
+AgsListUtil
+ags_list_util_get_type
 </SECTION>
 
 <SECTION>
@@ -794,10 +812,10 @@ ags_cclosure_marshal_VOID__UINT_DOUBLE
 ags_cclosure_marshal_VOID__UINT_STRING_UINT
 ags_cclosure_marshal_VOID__UINT_POINTER_UINT
 ags_cclosure_marshal_VOID__INT64_UINT
-ags_cclosure_marshal_VOID__ULONG_UINT
-ags_cclosure_marshal_VOID__ULONG_UINT_BOOLEAN
+ags_cclosure_marshal_VOID__POINTER_UINT
+ags_cclosure_marshal_VOID__POINTER_UINT_BOOLEAN
 ags_cclosure_marshal_VOID__DOUBLE_DOUBLE
-ags_cclosure_marshal_VOID__ULONG_UINT_UINT
+ags_cclosure_marshal_VOID__POINTER_UINT_UINT
 ags_cclosure_marshal_VOID__STRING_UINT
 ags_cclosure_marshal_VOID__STRING_UINT_DOUBLE
 ags_cclosure_marshal_VOID__STRING_UINT_POINTER
@@ -807,12 +825,11 @@ ags_cclosure_marshal_VOID__STRING_STRING_STRING
 ags_cclosure_marshal_VOID__POINTER_INT
 ags_cclosure_marshal_VOID__POINTER_INT_POINTER
 ags_cclosure_marshal_VOID__POINTER_INT_INT_BOOLEAN
-ags_cclosure_marshal_VOID__POINTER_UINT
 ags_cclosure_marshal_VOID__POINTER_POINTER
-ags_cclosure_marshal_VOID__POINTER_UINT_UINT
 ags_cclosure_marshal_VOID__POINTER_UINT_POINTER
 ags_cclosure_marshal_VOID__POINTER_POINTER_UINT
 ags_cclosure_marshal_VOID__POINTER_POINTER_POINTER
+ags_cclosure_marshal_VOID__POINTER_STRING_STRING_STRING_INT
 ags_cclosure_marshal_VOID__POINTER_OBJECT_OBJECT_STRING_STRING_STRING_UINT_UINT_UINT_UINT_INT_UINT_UINT
 ags_cclosure_marshal_VOID__OBJECT_UINT
 ags_cclosure_marshal_VOID__OBJECT_UINT_UINT_UINT
@@ -820,7 +837,7 @@ ags_cclosure_marshal_VOID__OBJECT_OBJECT
 ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
 ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
 ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
-ags_cclosure_marshal_ULONG__VOID
+ags_cclosure_marshal_POINTER__VOID
 ags_cclosure_marshal_INT__VOID
 ags_cclosure_marshal_INT64__OBJECT
 ags_cclosure_marshal_UINT__VOID
@@ -831,8 +848,7 @@ ags_cclosure_marshal_BOOLEAN__OBJECT_OBJECT
 ags_cclosure_marshal_UINT__INT_UINT_POINTER
 ags_cclosure_marshal_DOUBLE__DOUBLE_BOOLEAN
 ags_cclosure_marshal_STRING__STRING_STRING
-ags_cclosure_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
-ags_cclosure_marshal_POINTER__VOID
+ags_cclosure_marshal_STRING__POINTER_STRING_STRING_STRING_STRING_UINT_POINTER
 ags_cclosure_marshal_POINTER__INT
 ags_cclosure_marshal_POINTER__UINT
 ags_cclosure_marshal_POINTER__POINTER
@@ -844,8 +860,8 @@ ags_cclosure_marshal_POINTER__POINTER_UINT
 ags_cclosure_marshal_POINTER__STRING_STRING
 ags_cclosure_marshal_POINTER__STRING_STRING_STRING
 ags_cclosure_marshal_POINTER__STRING_STRING_STRING_STRING
-ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT
-ags_cclosure_marshal_POINTER__ULONG_UINT_POINTER_POINTER
+ags_cclosure_marshal_POINTER__POINTER_POINTER_UINT
+ags_cclosure_marshal_POINTER__POINTER_UINT_POINTER_POINTER
 ags_cclosure_marshal_POINTER__OBJECT
 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT
 ags_cclosure_marshal_POINTER__OBJECT_POINTER_INT64
@@ -854,7 +870,8 @@ ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER
 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER
 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_UINT_POINTER_POINTER
 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_UINT_POINTER_POINTER
-ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING
+ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_STRING_STRING_STRING
+ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_POINTER_STRING_STRING_STRING
 ags_cclosure_marshal_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING
 ags_cclosure_marshal_POINTER__POINTER_STRING_STRING
 ags_cclosure_marshal_OBJECT__VOID
@@ -900,6 +917,10 @@ ags_math_util_find_symbol_all
 ags_math_util_is_term
 ags_math_util_split_polynomial
 ags_math_util_split_sum
+<SUBSECTION Public>
+AGS_TYPE_MATH_UTIL
+AgsMathUtil
+ags_math_util_get_type
 </SECTION>
 
 <SECTION>
@@ -1105,6 +1126,7 @@ ags_portlet_get_type
 <SECTION>
 <FILE>ags_priority</FILE>
 <TITLE>AgsPriority</TITLE>
+AGS_TYPE_PRIORITY_FLAGS
 AGS_PRIORITY_GET_OBJ_MUTEX
 AGS_PRIORITY_DEFAULT_VERSION
 AGS_PRIORITY_DEFAULT_BUILD_ID
@@ -1115,7 +1137,6 @@ AGS_PRIORITY_KEY_AUDIO_MAIN_LOOP
 AGS_PRIORITY_KEY_AUDIO
 AGS_PRIORITY_KEY_OSC_SERVER_MAIN_LOOP
 AGS_PRIORITY_KEY_GUI_MAIN_LOOP
-AgsPriorityFlags
 ags_priority_load_defaults
 ags_priority_load_from_file
 ags_priority_set_value
@@ -1129,10 +1150,8 @@ AGS_PRIORITY
 AGS_PRIORITY_CLASS
 AGS_PRIORITY_GET_CLASS
 AGS_TYPE_PRIORITY
-AGS_TYPE_PRIORITY_FLAGS
 AgsPriority
 AgsPriorityClass
-ags_priority_flags_get_type
 ags_priority_get_type
 </SECTION>
 
@@ -1145,8 +1164,8 @@ ags_regexec
 <SECTION>
 <FILE>ags_registry</FILE>
 <TITLE>AgsRegistry</TITLE>
+AGS_TYPE_REGISTRY_FLAGS
 AGS_REGISTRY_GET_OBJ_MUTEX
-AgsRegistryFlags
 AgsRegistryEntry
 ags_registry_entry_alloc
 ags_registry_entry_free
@@ -1160,16 +1179,15 @@ AGS_REGISTRY
 AGS_REGISTRY_CLASS
 AGS_REGISTRY_GET_CLASS
 AGS_TYPE_REGISTRY
-AGS_TYPE_REGISTRY_FLAGS
 AgsRegistry
 AgsRegistryClass
-ags_registry_flags_get_type
 ags_registry_get_type
 </SECTION>
 
 <SECTION>
 <FILE>ags_returnable_thread</FILE>
 <TITLE>AgsReturnableThread</TITLE>
+AGS_RETURNABLE_THREAD_GET_RESET_MUTEX
 AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE
 AgsReturnableThreadCallback
 AgsReturnableThreadFlags
@@ -1389,8 +1407,14 @@ ags_service_provider_get_type
 <FILE>ags_solver_matrix</FILE>
 <TITLE>AgsSolverMatrix</TITLE>
 AGS_SOLVER_MATRIX_GET_OBJ_MUTEX
+ags_solver_matrix_get_source_function
+ags_solver_matrix_set_source_function
+ags_solver_matrix_get_row_count
+ags_solver_matrix_get_column_count
+ags_solver_matrix_parse
 ags_solver_matrix_insert_vector
 ags_solver_matrix_remove_vector
+ags_solver_matrix_eliminate
 ags_solver_matrix_new
 <SUBSECTION Public>
 AGS_IS_SOLVER_MATRIX
@@ -1411,6 +1435,15 @@ AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX
 AGS_SOLVER_POLYNOMIAL_ERROR
 AgsSolverPolynomialError
 ags_solver_polynomial_error_quark
+ags_solver_polynomial_set_polynomial
+ags_solver_polynomial_get_polynomial
+ags_solver_polynomial_set_coefficient
+ags_solver_polynomial_get_coefficient
+ags_solver_polynomial_get_symbol
+ags_solver_polynomial_get_exponent
+ags_solver_polynomial_set_coefficient_value
+ags_solver_polynomial_get_coefficient_value
+ags_solver_polynomial_get_exponent_value
 ags_solver_polynomial_update
 ags_solver_polynomial_parse
 ags_solver_polynomial_add
@@ -1436,6 +1469,9 @@ ags_solver_polynomial_get_type
 <FILE>ags_solver_vector</FILE>
 <TITLE>AgsSolverVector</TITLE>
 AGS_SOLVER_VECTOR_GET_OBJ_MUTEX
+ags_solver_vector_get_source_polynomial
+ags_solver_vector_set_source_polynomial
+ags_solver_vector_get_polynomial_count
 ags_solver_vector_insert_polynomial
 ags_solver_vector_remove_polynomial
 ags_solver_vector_new
@@ -1585,6 +1621,10 @@ ags_strv_length
 ags_strv_contains
 ags_strv_index
 ags_strv_equal
+<SUBSECTION Public>
+AGS_TYPE_STRING_UTIL
+AgsStringUtil
+ags_string_util_get_type
 </SECTION>
 
 <SECTION>
@@ -1665,8 +1705,8 @@ ags_task_completion_get_type
 <SECTION>
 <FILE>ags_task_launcher</FILE>
 <TITLE>AgsTaskLauncher</TITLE>
+AGS_TYPE_TASK_LAUNCHER_FLAGS
 AGS_TASK_LAUNCHER_GET_OBJ_MUTEX
-AgsTaskLauncherFlags
 ags_task_launcher_test_flags
 ags_task_launcher_set_flags
 ags_task_launcher_unset_flags
@@ -1685,10 +1725,8 @@ AGS_TASK_LAUNCHER
 AGS_TASK_LAUNCHER_CLASS
 AGS_TASK_LAUNCHER_GET_CLASS
 AGS_TYPE_TASK_LAUNCHER
-AGS_TYPE_TASK_LAUNCHER_FLAGS
 AgsTaskLauncher
 AgsTaskLauncherClass
-ags_task_launcher_flags_get_type
 ags_task_launcher_get_type
 </SECTION>
 

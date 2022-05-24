@@ -20,9 +20,8 @@
 <FILE>ags_add_sheet_page_dialog</FILE>
 <TITLE>AgsAddSheetPageDialog</TITLE>
 AGS_ADD_SHEET_PAGE_DIALOG_MAX_NOTATION_X
-AgsAddSheetPageDialogFlags
 ags_add_sheet_page_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_ADD_SHEET_PAGE_DIALOG
 AGS_ADD_SHEET_PAGE_DIALOG_CLASS
 AGS_ADD_SHEET_PAGE_DIALOG_GET_CLASS
@@ -44,7 +43,7 @@ ags_add_sheet_page_dialog_response_callback
 <TITLE>AgsAnimationWindow</TITLE>
 ags_animation_window_progress_timeout
 ags_animation_window_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_ANIMATION_WINDOW
 AGS_ANIMATION_WINDOW_CLASS
 AGS_ANIMATION_WINDOW_GET_CLASS
@@ -104,8 +103,11 @@ ags_app_action_util_edit_sheet
 <FILE>ags_audio_preferences</FILE>
 <TITLE>AgsAudioPreferences</TITLE>
 AgsAudioPreferencesFlags
+ags_audio_preferences_get_soundcard_editor
+ags_audio_preferences_add_soundcard_editor
+ags_audio_preferences_remove_soundcard_editor
 ags_audio_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_AUDIO_PREFERENCES
 AGS_AUDIO_PREFERENCES_CLASS
 AGS_AUDIO_PREFERENCES_GET_CLASS
@@ -119,7 +121,7 @@ ags_audio_preferences_get_type
 
 <SECTION>
 <FILE>ags_audio_preferences_callbacks</FILE>
-ags_audio_preferences_parent_set_callback
+ags_audio_preferences_notify_parent_callback
 ags_audio_preferences_add_callback
 ags_audio_preferences_remove_soundcard_editor_callback
 ags_audio_preferences_enable_jack_callback
@@ -131,13 +133,18 @@ ags_audio_preferences_stop_jack_callback
 <FILE>ags_audiorec</FILE>
 <TITLE>AgsAudiorec</TITLE>
 AGS_AUDIOREC_INPUT_LINE
+AGS_AUDIOREC_DEFAULT_SEGMENT_WIDTH
+AGS_AUDIOREC_DEFAULT_SEGMENT_HEIGHT
 AgsAudiorecInputLine
+ags_audiorec_get_indicator
+ags_audiorec_add_indicator
+ags_audiorec_remove_indicator
 ags_audiorec_open_filename
 ags_audiorec_fast_export
 ags_audiorec_wave_loader_completed_timeout
 ags_audiorec_indicator_queue_draw_timeout
 ags_audiorec_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_AUDIOREC
 AGS_AUDIOREC_CLASS
 AGS_AUDIOREC_GET_CLASS
@@ -151,7 +158,6 @@ ags_audiorec_get_type
 
 <SECTION>
 <FILE>ags_audiorec_callbacks</FILE>
-ags_audiorec_parent_set_callback
 ags_audiorec_open_callback
 ags_audiorec_keep_data_callback
 ags_audiorec_replace_data_callback
@@ -195,7 +201,7 @@ ags_automation_edit_draw_acceleration
 ags_automation_edit_draw_automation
 ags_automation_edit_draw
 ags_automation_edit_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_AUTOMATION_EDIT
 AGS_AUTOMATION_EDIT_CLASS
 AGS_AUTOMATION_EDIT_GET_CLASS
@@ -211,9 +217,14 @@ ags_automation_edit_get_type
 <FILE>ags_automation_edit_box</FILE>
 <TITLE>AgsAutomationEditBox</TITLE>
 AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT
-AgsAutomationEditBoxFlags
+AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING
+ags_automation_edit_box_get_automation_edit
+ags_automation_edit_box_add_automation_edit
+ags_automation_edit_box_remove_automation_edit
+ags_automation_edit_box_child_width_request
+ags_automation_edit_box_child_height_request
 ags_automation_edit_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_AUTOMATION_EDIT_BOX
 AGS_AUTOMATION_EDIT_BOX_CLASS
 AGS_AUTOMATION_EDIT_BOX_GET_CLASS
@@ -228,67 +239,9 @@ ags_automation_edit_box_get_type
 <SECTION>
 <FILE>ags_automation_edit_callbacks</FILE>
 ags_automation_edit_draw_callback
-ags_automation_edit_drawing_area_configure_event
-ags_automation_edit_drawing_area_button_press_event
-ags_automation_edit_drawing_area_button_release_event
-ags_automation_edit_drawing_area_motion_notify_event
-ags_automation_edit_drawing_area_key_press_event
-ags_automation_edit_drawing_area_key_release_event
+ags_automation_edit_drawing_area_resize_callback
 ags_automation_edit_vscrollbar_value_changed
 ags_automation_edit_hscrollbar_value_changed
-</SECTION>
-
-<SECTION>
-<FILE>ags_automation_editor</FILE>
-<TITLE>AgsAutomationEditor</TITLE>
-AGS_AUTOMATION_EDITOR_CHILD
-AGS_AUTOMATION_EDITOR_MAX_VALUE_COUNT
-AGS_AUTOMATION_EDITOR_MAX_CONTROLS
-AGS_AUTOMATION_EDITOR_DEFAULT_VERSION
-AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID
-AgsAutomationEditorFlags
-ags_automation_editor_reset_audio_scrollbar
-ags_automation_editor_reset_output_scrollbar
-ags_automation_editor_reset_input_scrollbar
-ags_automation_editor_machine_changed
-ags_automation_editor_add_acceleration
-ags_automation_editor_delete_acceleration
-ags_automation_editor_select_region
-ags_automation_editor_select_all
-ags_automation_editor_paste
-ags_automation_editor_copy
-ags_automation_editor_cut
-ags_automation_editor_invert
-ags_automation_editor_new
-<SUBSECTION Standard>
-AGS_AUTOMATION_EDITOR
-AGS_AUTOMATION_EDITOR_CLASS
-AGS_AUTOMATION_EDITOR_GET_CLASS
-AGS_IS_AUTOMATION_EDITOR
-AGS_IS_AUTOMATION_EDITOR_CLASS
-AGS_TYPE_AUTOMATION_EDITOR
-AgsAutomationEditor
-AgsAutomationEditorClass
-ags_automation_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_automation_editor_callbacks</FILE>
-ags_automation_editor_audio_edit_configure_event
-ags_automation_editor_output_edit_configure_event
-ags_automation_editor_input_edit_configure_event
-ags_automation_editor_audio_vscrollbar_value_changed
-ags_automation_editor_audio_hscrollbar_value_changed
-ags_automation_editor_output_vscrollbar_value_changed
-ags_automation_editor_output_hscrollbar_value_changed
-ags_automation_editor_input_vscrollbar_value_changed
-ags_automation_editor_input_hscrollbar_value_changed
-ags_automation_editor_audio_automation_edit_hscrollbar_value_changed
-ags_automation_editor_output_automation_edit_hscrollbar_value_changed
-ags_automation_editor_input_automation_edit_hscrollbar_value_changed
-ags_automation_editor_machine_changed_callback
-ags_automation_editor_resize_audio_channels_callback
-ags_automation_editor_resize_pads_callback
 </SECTION>
 
 <SECTION>
@@ -297,7 +250,7 @@ ags_automation_editor_resize_pads_callback
 AgsAutomationMetaFlags
 ags_automation_meta_refresh
 ags_automation_meta_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_AUTOMATION_META
 AGS_AUTOMATION_META_CLASS
 AGS_AUTOMATION_META_GET_CLASS
@@ -315,82 +268,20 @@ ags_automation_meta_machine_changed_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_automation_toolbar</FILE>
-<TITLE>AgsAutomationToolbar</TITLE>
-AGS_AUTOMATION_TOOLBAR_DATA_CHANNEL
-AGS_AUTOMATION_TOOLBAR_DATA_PORT
-AgsAutomationToolbarFlags
-ags_automation_toolbar_load_port
-ags_automation_toolbar_apply_port
-ags_automation_toolbar_tool_popup_new
-ags_automation_toolbar_new
-<SUBSECTION Standard>
-AGS_AUTOMATION_TOOLBAR
-AGS_AUTOMATION_TOOLBAR_CLASS
-AGS_AUTOMATION_TOOLBAR_GET_CLASS
-AGS_IS_AUTOMATION_TOOLBAR
-AGS_IS_AUTOMATION_TOOLBAR_CLASS
-AGS_TYPE_AUTOMATION_TOOLBAR
-AgsAutomationToolbar
-AgsAutomationToolbarClass
-ags_automation_toolbar_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_automation_toolbar_callbacks</FILE>
-ags_automation_toolbar_machine_changed_callback
-ags_automation_toolbar_position_callback
-ags_automation_toolbar_edit_callback
-ags_automation_toolbar_clear_callback
-ags_automation_toolbar_select_callback
-ags_automation_toolbar_copy_or_cut_callback
-ags_automation_toolbar_paste_callback
-ags_automation_toolbar_match_line_callback
-ags_automation_toolbar_no_duplicates_callback
-ags_automation_toolbar_tool_popup_select_acceleration_callback
-ags_automation_toolbar_tool_popup_ramp_acceleration_callback
-ags_automation_toolbar_tool_popup_position_cursor_callback
-ags_automation_toolbar_tool_popup_enable_all_lines_callback
-ags_automation_toolbar_tool_popup_disable_all_lines_callback
-ags_automation_toolbar_zoom_callback
-ags_automation_toolbar_port_callback
-ags_automation_toolbar_opacity_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_automation_window</FILE>
-<TITLE>AgsAutomationWindow</TITLE>
-AgsAutomationWindowFlags
-ags_automation_window_new
-<SUBSECTION Standard>
-AGS_AUTOMATION_WINDOW
-AGS_AUTOMATION_WINDOW_CLASS
-AGS_AUTOMATION_WINDOW_GET_CLASS
-AGS_IS_AUTOMATION_WINDOW
-AGS_IS_AUTOMATION_WINDOW_CLASS
-AGS_TYPE_AUTOMATION_WINDOW
-AgsAutomationWindow
-AgsAutomationWindowClass
-ags_automation_window_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_automation_window_callbacks</FILE>
-
-</SECTION>
-
-<SECTION>
 <FILE>ags_bulk_member</FILE>
 <TITLE>AgsBulkMember</TITLE>
 AGS_BULK_PORT
 AGS_BULK_MEMBER_DEFAULT_VERSION
 AGS_BULK_MEMBER_DEFAULT_BUILD_ID
+AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH
+AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT
 AgsBulkMemberFlags
 AgsBulkMemberPortFlags
 AgsBulkPort
 ags_bulk_port_alloc
 ags_bulk_port_free
 ags_bulk_port_find
+ags_bulk_member_set_widget
 ags_bulk_member_get_widget
 ags_bulk_member_set_label
 ags_bulk_member_change_port
@@ -398,7 +289,7 @@ ags_bulk_member_find_port
 ags_bulk_member_find_effect_and_specifier
 ags_bulk_member_remap_bulk_port
 ags_bulk_member_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_BULK_MEMBER
 AGS_BULK_MEMBER_CLASS
 AGS_BULK_MEMBER_GET_CLASS
@@ -412,13 +303,12 @@ ags_bulk_member_get_type
 
 <SECTION>
 <FILE>ags_bulk_member_callbacks</FILE>
-ags_bulk_member_parent_set_callback
 ags_bulk_member_dial_changed_callback
 ags_bulk_member_vscale_changed_callback
 ags_bulk_member_hscale_changed_callback
 ags_bulk_member_spin_button_changed_callback
-ags_bulk_member_check_button_clicked_callback
-ags_bulk_member_toggle_button_clicked_callback
+ags_bulk_member_check_button_toggled_callback
+ags_bulk_member_toggle_button_toggled_callback
 ags_bulk_member_button_clicked_callback
 ags_bulk_member_port_safe_write_callback
 </SECTION>
@@ -444,7 +334,7 @@ ags_cell_pattern_unpaint_gutter_point
 ags_cell_pattern_blink_worker
 ags_cell_pattern_led_queue_draw_timeout
 ags_cell_pattern_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_CELL_PATTERN
 AGS_CELL_PATTERN_CLASS
 AGS_CELL_PATTERN_GET_CLASS
@@ -458,13 +348,11 @@ ags_cell_pattern_get_type
 
 <SECTION>
 <FILE>ags_cell_pattern_callbacks</FILE>
-ags_cell_pattern_draw_callback
-ags_cell_pattern_focus_in_callback
-ags_cell_pattern_drawing_area_configure_callback
-ags_cell_pattern_drawing_area_expose_callback
-ags_cell_pattern_drawing_area_button_press_callback
-ags_cell_pattern_drawing_area_key_press_event
-ags_cell_pattern_drawing_area_key_release_event
+ags_cell_pattern_gesture_click_pressed_callback
+ags_cell_pattern_gesture_click_released_callback
+ags_cell_pattern_key_pressed_callback
+ags_cell_pattern_key_released_callback
+ags_cell_pattern_modifiers_callback
 ags_cell_pattern_adjustment_value_changed_callback
 </SECTION>
 
@@ -473,7 +361,6 @@ ags_cell_pattern_adjustment_value_changed_callback
 <TITLE>AgsCompositeEdit</TITLE>
 AGS_COMPOSITE_EDIT_DEFAULT_SEGMENT_WIDTH
 AGS_COMPOSITE_EDIT_DEFAULT_SEGMENT_HEIGHT
-AgsCompositeEditFlags
 AgsCompositeEditScrollbar
 AgsCompositeEditChannelSelectorMode
 AgsCompositeEditEditMode
@@ -487,7 +374,7 @@ ags_composite_edit_unset_scrollbar
 ags_composite_edit_set_channel_selector_mode
 ags_composite_edit_set_edit_mode
 ags_composite_edit_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_COMPOSITE_EDIT
 AGS_COMPOSITE_EDIT_CLASS
 AGS_COMPOSITE_EDIT_GET_CLASS
@@ -512,7 +399,7 @@ ags_composite_edit_hscrollbar_callback
 <TITLE>AgsCompositeEditor</TITLE>
 AGS_COMPOSITE_EDITOR_DEFAULT_VERSION
 AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID
-AgsCompositeEditorFlags
+AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION
 AgsCompositeEditorEdit
 ags_composite_editor_test_flags
 ags_composite_editor_set_flags
@@ -532,7 +419,7 @@ ags_composite_editor_add_acceleration
 ags_composite_editor_delete_acceleration
 ags_composite_editor_select_region
 ags_composite_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_COMPOSITE_EDITOR
 AGS_COMPOSITE_EDITOR_CLASS
 AGS_COMPOSITE_EDITOR_GET_CLASS
@@ -570,7 +457,6 @@ AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET
 AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION
 AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE
 AGS_COMPOSITE_TOOLBAR_TOOL_PADDING
-AgsCompositeToolbarFlags
 AgsCompositeToolbarTool
 AgsCompositeToolbarAction
 AgsCompositeToolbarPasteMode
@@ -599,7 +485,8 @@ ags_composite_toolbar_load_port
 ags_composite_toolbar_set_selected_tool
 ags_composite_toolbar_scope_create_and_connect
 ags_composite_toolbar_new
-<SUBSECTION Standard>
+ags_zoom_combo_box_new
+<SUBSECTION Public>
 AGS_COMPOSITE_TOOLBAR
 AGS_COMPOSITE_TOOLBAR_CLASS
 AGS_COMPOSITE_TOOLBAR_GET_CLASS
@@ -654,7 +541,7 @@ AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID
 AgsConnectionEditorFlags
 ags_connection_editor_set_machine
 ags_connection_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_CONNECTION_EDITOR
 AGS_CONNECTION_EDITOR_CLASS
 AGS_CONNECTION_EDITOR_GET_CLASS
@@ -667,37 +554,151 @@ ags_connection_editor_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_connection_editor_callbacks</FILE>
-ags_connection_editor_apply_callback
-ags_connection_editor_ok_callback
-ags_connection_editor_cancel_callback
-ags_connection_editor_delete_event
+<FILE>ags_connection_editor_bulk</FILE>
+<TITLE>AgsConnectionEditorBulk</TITLE>
+ags_connection_editor_bulk_to_xml_node
+ags_connection_editor_bulk_from_xml_node
+ags_connection_editor_bulk_new
+<SUBSECTION Public>
+AGS_CONNECTION_EDITOR_BULK
+AGS_CONNECTION_EDITOR_BULK_CLASS
+AGS_CONNECTION_EDITOR_BULK_GET_CLASS
+AGS_IS_CONNECTION_EDITOR_BULK
+AGS_IS_CONNECTION_EDITOR_BULK_CLASS
+AGS_TYPE_CONNECTION_EDITOR_BULK
+AgsConnectionEditorBulk
+AgsConnectionEditorBulkClass
+ags_connection_editor_bulk_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_context_menu</FILE>
-<TITLE>AgsContextMenu</TITLE>
-AgsContextMenuFlags
-ags_context_menu_new
-<SUBSECTION Standard>
-AGS_CONTEXT_MENU
-AGS_CONTEXT_MENU_CLASS
-AGS_CONTEXT_MENU_GET_CLASS
-AGS_IS_CONTEXT_MENU
-AGS_IS_CONTEXT_MENU_CLASS
-AGS_TYPE_CONTEXT_MENU
-AgsContextMenu
-AgsContextMenuClass
-ags_context_menu_get_type
+<FILE>ags_connection_editor_bulk_callbacks</FILE>
+ags_connection_editor_bulk_remove_bulk_callback
+ags_connection_editor_bulk_output_soundcard_callback
+ags_connection_editor_bulk_input_soundcard_callback
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_callbacks</FILE>
+
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_collection</FILE>
+<TITLE>AgsConnectionEditorCollection</TITLE>
+ags_connection_editor_collection_get_bulk
+ags_connection_editor_collection_add_bulk
+ags_connection_editor_collection_remove_bulk
+ags_connection_editor_collection_new
+<SUBSECTION Public>
+AGS_CONNECTION_EDITOR_COLLECTION
+AGS_CONNECTION_EDITOR_COLLECTION_CLASS
+AGS_CONNECTION_EDITOR_COLLECTION_GET_CLASS
+AGS_IS_CONNECTION_EDITOR_COLLECTION
+AGS_IS_CONNECTION_EDITOR_COLLECTION_CLASS
+AGS_TYPE_CONNECTION_EDITOR_COLLECTION
+AgsConnectionEditorCollection
+AgsConnectionEditorCollectionClass
+ags_connection_editor_collection_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_collection_callbacks</FILE>
+ags_connection_editor_collection_add_bulk_callback
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_dialog</FILE>
+<TITLE>AgsConnectionEditorDialog</TITLE>
+ags_connection_editor_dialog_new
+<SUBSECTION Public>
+AGS_CONNECTION_EDITOR_DIALOG
+AGS_CONNECTION_EDITOR_DIALOG_CLASS
+AGS_CONNECTION_EDITOR_DIALOG_GET_CLASS
+AGS_IS_CONNECTION_EDITOR_DIALOG
+AGS_IS_CONNECTION_EDITOR_DIALOG_CLASS
+AGS_TYPE_CONNECTION_EDITOR_DIALOG
+AgsConnectionEditorDialog
+AgsConnectionEditorDialogClass
+ags_connection_editor_dialog_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_line</FILE>
+<TITLE>AgsConnectionEditorLine</TITLE>
+ags_connection_editor_line_new
+<SUBSECTION Public>
+AGS_CONNECTION_EDITOR_LINE
+AGS_CONNECTION_EDITOR_LINE_CLASS
+AGS_CONNECTION_EDITOR_LINE_GET_CLASS
+AGS_IS_CONNECTION_EDITOR_LINE
+AGS_IS_CONNECTION_EDITOR_LINE_CLASS
+AGS_TYPE_CONNECTION_EDITOR_LINE
+AgsConnectionEditorLine
+AgsConnectionEditorLineClass
+ags_connection_editor_line_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_line_callbacks</FILE>
+ags_connection_editor_line_output_soundcard_callback
+ags_connection_editor_line_input_soundcard_callback
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_listing</FILE>
+<TITLE>AgsConnectionEditorListing</TITLE>
+ags_connection_editor_listing_get_pad
+ags_connection_editor_listing_add_pad
+ags_connection_editor_listing_remove_pad
+ags_connection_editor_listing_new
+<SUBSECTION Public>
+AGS_CONNECTION_EDITOR_LISTING
+AGS_CONNECTION_EDITOR_LISTING_CLASS
+AGS_CONNECTION_EDITOR_LISTING_GET_CLASS
+AGS_IS_CONNECTION_EDITOR_LISTING
+AGS_IS_CONNECTION_EDITOR_LISTING_CLASS
+AGS_TYPE_CONNECTION_EDITOR_LISTING
+AgsConnectionEditorListing
+AgsConnectionEditorListingClass
+ags_connection_editor_listing_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_listing_callbacks</FILE>
+
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_pad</FILE>
+<TITLE>AgsConnectionEditorPad</TITLE>
+ags_connection_editor_pad_get_line
+ags_connection_editor_pad_add_line
+ags_connection_editor_pad_remove_line
+ags_connection_editor_pad_new
+<SUBSECTION Public>
+AGS_CONNECTION_EDITOR_PAD
+AGS_CONNECTION_EDITOR_PAD_CLASS
+AGS_CONNECTION_EDITOR_PAD_GET_CLASS
+AGS_IS_CONNECTION_EDITOR_PAD
+AGS_IS_CONNECTION_EDITOR_PAD_CLASS
+AGS_TYPE_CONNECTION_EDITOR_PAD
+AgsConnectionEditorPad
+AgsConnectionEditorPadClass
+ags_connection_editor_pad_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_connection_editor_pad_callbacks</FILE>
+
 </SECTION>
 
 <SECTION>
 <FILE>ags_crop_note_dialog</FILE>
 <TITLE>AgsCropNoteDialog</TITLE>
 AGS_CROP_NOTE_DIALOG_MAX_WIDTH
-AgsCropNoteDialogFlags
 ags_crop_note_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_CROP_NOTE_DIALOG
 AGS_CROP_NOTE_DIALOG_CLASS
 AGS_CROP_NOTE_DIALOG_GET_CLASS
@@ -719,7 +720,7 @@ ags_crop_note_dialog_absolute_callback
 <FILE>ags_desk</FILE>
 <TITLE>AgsDesk</TITLE>
 ags_desk_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DESK
 AGS_DESK_CLASS
 AGS_DESK_GET_CLASS
@@ -733,7 +734,6 @@ ags_desk_get_type
 
 <SECTION>
 <FILE>ags_desk_callbacks</FILE>
-ags_desk_parent_set_callback
 ags_desk_resize_audio_channels_callback
 ags_desk_resize_pads_callback
 </SECTION>
@@ -742,7 +742,7 @@ ags_desk_resize_pads_callback
 <FILE>ags_desk_file_chooser</FILE>
 <TITLE>AgsDeskFileChooser</TITLE>
 ags_desk_file_chooser_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DESK_FILE_CHOOSER
 AGS_DESK_FILE_CHOOSER_CLASS
 AGS_DESK_FILE_CHOOSER_GET_CLASS
@@ -761,7 +761,7 @@ AgsDeskPadFlags
 ags_desk_pad_add_filename
 ags_desk_pad_remove_nth_filename
 ags_desk_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DESK_PAD
 AGS_DESK_PAD_CLASS
 AGS_DESK_PAD_GET_CLASS
@@ -788,7 +788,7 @@ ags_desk_pad_remove_callback
 <FILE>ags_drum</FILE>
 <TITLE>AgsDrum</TITLE>
 ags_drum_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DRUM
 AGS_DRUM_CLASS
 AGS_DRUM_GET_CLASS
@@ -802,8 +802,6 @@ ags_drum_get_type
 
 <SECTION>
 <FILE>ags_drum_callbacks</FILE>
-ags_drum_parent_set_callback
-ags_drum_destroy_callback
 ags_drum_open_callback
 ags_drum_loop_button_callback
 ags_drum_length_spin_callback
@@ -816,7 +814,7 @@ ags_drum_stop_callback
 <FILE>ags_drum_input_line</FILE>
 <TITLE>AgsDrumInputLine</TITLE>
 ags_drum_input_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DRUM_INPUT_LINE
 AGS_DRUM_INPUT_LINE_CLASS
 AGS_DRUM_INPUT_LINE_GET_CLASS
@@ -838,7 +836,7 @@ ags_drum_input_line_get_type
 <TITLE>AgsDrumInputPad</TITLE>
 AgsDrumInputPadFlags
 ags_drum_input_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DRUM_INPUT_PAD
 AGS_DRUM_INPUT_PAD_CLASS
 AGS_DRUM_INPUT_PAD_GET_CLASS
@@ -861,7 +859,7 @@ ags_drum_input_pad_edit_callback
 <FILE>ags_drum_output_line</FILE>
 <TITLE>AgsDrumOutputLine</TITLE>
 ags_drum_output_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DRUM_OUTPUT_LINE
 AGS_DRUM_OUTPUT_LINE_CLASS
 AGS_DRUM_OUTPUT_LINE_GET_CLASS
@@ -883,7 +881,7 @@ ags_drum_output_line_resize_pads_callback
 <TITLE>AgsDrumOutputPad</TITLE>
 AgsDrumOutputPadFlags
 ags_drum_output_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DRUM_OUTPUT_PAD
 AGS_DRUM_OUTPUT_PAD_CLASS
 AGS_DRUM_OUTPUT_PAD_GET_CLASS
@@ -910,7 +908,7 @@ ags_dssi_bridge_input_map_recall
 ags_dssi_bridge_output_map_recall
 ags_dssi_bridge_load
 ags_dssi_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DSSI_BRIDGE
 AGS_DSSI_BRIDGE_CLASS
 AGS_DSSI_BRIDGE_GET_CLASS
@@ -924,35 +922,7 @@ ags_dssi_bridge_get_type
 
 <SECTION>
 <FILE>ags_dssi_bridge_callbacks</FILE>
-ags_dssi_bridge_parent_set_callback
 ags_dssi_bridge_program_changed_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_dssi_browser</FILE>
-<TITLE>AgsDssiBrowser</TITLE>
-AgsDssiBrowserFlags
-ags_dssi_browser_get_plugin_filename
-ags_dssi_browser_get_plugin_effect
-ags_dssi_browser_combo_box_controls_new
-ags_dssi_browser_preview_new
-ags_dssi_browser_new
-<SUBSECTION Standard>
-AGS_DSSI_BROWSER
-AGS_DSSI_BROWSER_CLASS
-AGS_DSSI_BROWSER_GET_CLASS
-AGS_IS_DSSI_BROWSER
-AGS_IS_DSSI_BROWSER_CLASS
-AGS_TYPE_DSSI_BROWSER
-AgsDssiBrowser
-AgsDssiBrowserClass
-ags_dssi_browser_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_dssi_browser_callbacks</FILE>
-ags_dssi_browser_plugin_filename_callback
-ags_dssi_browser_plugin_effect_callback
 </SECTION>
 
 <SECTION>
@@ -965,12 +935,18 @@ AgsEffectBridgeFlags
 ags_effect_bridge_samplerate_changed
 ags_effect_bridge_buffer_size_changed
 ags_effect_bridge_format_changed
+ags_effect_bridge_get_output_effect_pad
+ags_effect_bridge_add_output_effect_pad
+ags_effect_bridge_remove_output_effect_pad
+ags_effect_bridge_get_input_effect_pad
+ags_effect_bridge_add_input_effect_pad
+ags_effect_bridge_remove_input_effect_pad
 ags_effect_bridge_resize_audio_channels
 ags_effect_bridge_resize_pads
 ags_effect_bridge_map_recall
 ags_effect_bridge_find_port
 ags_effect_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EFFECT_BRIDGE
 AGS_EFFECT_BRIDGE_CLASS
 AGS_EFFECT_BRIDGE_GET_CLASS
@@ -997,17 +973,26 @@ AGS_EFFECT_BULK_DEFAULT_BUILD_ID
 AGS_EFFECT_BULK_COLUMNS_COUNT
 AgsEffectBulkFlags
 AgsEffectBulkPlugin
+ags_effect_bulk_test_flags
+ags_effect_bulk_set_flags
+ags_effect_bulk_unset_flags
 ags_effect_bulk_plugin_alloc
 ags_effect_bulk_plugin_free
 ags_effect_bulk_add_plugin
 ags_effect_bulk_remove_plugin
+ags_effect_bulk_get_bulk_member_entry
+ags_effect_bulk_add_bulk_member_entry
+ags_effect_bulk_remove_bulk_member_entry
+ags_effect_bulk_get_bulk_member
+ags_effect_bulk_add_bulk_member
+ags_effect_bulk_remove_bulk_member
 ags_effect_bulk_resize_audio_channels
 ags_effect_bulk_resize_pads
 ags_effect_bulk_map_recall
 ags_effect_bulk_find_port
-ags_effect_bulk_indicator_queue_draw_timeout
+ags_effect_bulk_indicator_refresh_timeout
 ags_effect_bulk_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EFFECT_BULK
 AGS_EFFECT_BULK_CLASS
 AGS_EFFECT_BULK_GET_CLASS
@@ -1029,6 +1014,22 @@ ags_effect_bulk_resize_pads_callback
 </SECTION>
 
 <SECTION>
+<FILE>ags_effect_bulk_entry</FILE>
+<TITLE>AgsEffectBulkEntry</TITLE>
+ags_effect_bulk_entry_new
+<SUBSECTION Public>
+AGS_EFFECT_BULK_ENTRY
+AGS_EFFECT_BULK_ENTRY_CLASS
+AGS_EFFECT_BULK_ENTRY_GET_CLASS
+AGS_IS_EFFECT_BULK_ENTRY
+AGS_IS_EFFECT_BULK_ENTRY_CLASS
+AGS_TYPE_EFFECT_BULK_ENTRY
+AgsEffectBulkEntry
+AgsEffectBulkEntryClass
+ags_effect_bulk_entry_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_effect_line</FILE>
 <TITLE>AgsEffectLine</TITLE>
 AGS_EFFECT_LINE_PLUGIN
@@ -1045,6 +1046,9 @@ ags_effect_line_samplerate_changed
 ags_effect_line_buffer_size_changed
 ags_effect_line_format_changed
 ags_effect_line_set_channel
+ags_effect_line_get_line_member
+ags_effect_line_add_line_member
+ags_effect_line_remove_line_member
 ags_effect_line_add_plugin
 ags_effect_line_remove_plugin
 ags_effect_line_map_recall
@@ -1054,7 +1058,7 @@ ags_effect_line_find_next_grouped
 ags_effect_line_check_message
 ags_effect_line_indicator_queue_draw_timeout
 ags_effect_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EFFECT_LINE
 AGS_EFFECT_LINE_CLASS
 AGS_EFFECT_LINE_GET_CLASS
@@ -1083,10 +1087,13 @@ ags_effect_pad_buffer_size_changed
 ags_effect_pad_format_changed
 ags_effect_pad_set_channel
 ags_effect_pad_resize_lines
+ags_effect_pad_get_effect_line
+ags_effect_pad_add_effect_line
+ags_effect_pad_remove_effect_line
 ags_effect_pad_map_recall
 ags_effect_pad_find_port
 ags_effect_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EFFECT_PAD
 AGS_EFFECT_PAD_CLASS
 AGS_EFFECT_PAD_GET_CLASS
@@ -1107,7 +1114,7 @@ ags_effect_pad_get_type
 <FILE>ags_effect_separator</FILE>
 <TITLE>AgsEffectSeparator</TITLE>
 ags_effect_separator_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EFFECT_SEPARATOR
 AGS_EFFECT_SEPARATOR_CLASS
 AGS_EFFECT_SEPARATOR_GET_CLASS
@@ -1128,7 +1135,7 @@ AgsEnvelopeDialogFlags
 ags_envelope_dialog_load_preset
 ags_envelope_dialog_add_pattern_tab
 ags_envelope_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_ENVELOPE_DIALOG
 AGS_ENVELOPE_DIALOG_CLASS
 AGS_ENVELOPE_DIALOG_GET_CLASS
@@ -1145,7 +1152,6 @@ ags_envelope_dialog_get_type
 ags_envelope_dialog_apply_callback
 ags_envelope_dialog_ok_callback
 ags_envelope_dialog_cancel_callback
-ags_envelope_dialog_delete_event
 </SECTION>
 
 <SECTION>
@@ -1161,7 +1167,7 @@ ags_envelope_editor_remove_preset
 ags_envelope_editor_reset_control
 ags_envelope_editor_plot
 ags_envelope_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_ENVELOPE_EDITOR
 AGS_ENVELOPE_EDITOR_CLASS
 AGS_ENVELOPE_EDITOR_GET_CLASS
@@ -1199,7 +1205,7 @@ AgsEnvelopeInfoFlags
 AgsEnvelopeInfoColumn
 ags_envelope_info_plot
 ags_envelope_info_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_ENVELOPE_INFO
 AGS_ENVELOPE_INFO_CLASS
 AGS_ENVELOPE_INFO_GET_CLASS
@@ -1224,7 +1230,7 @@ ags_equalizer10_remap_port
 ags_equalizer10_input_map_recall
 ags_equalizer10_output_map_recall
 ags_equalizer10_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EQUALIZER10
 AGS_EQUALIZER10_CLASS
 AGS_EQUALIZER10_GET_CLASS
@@ -1238,7 +1244,6 @@ ags_equalizer10_get_type
 
 <SECTION>
 <FILE>ags_equalizer10_callbacks</FILE>
-ags_equalizer10_parent_set_callback
 ags_equalizer10_peak_28hz_callback
 ags_equalizer10_peak_56hz_callback
 ags_equalizer10_peak_112hz_callback
@@ -1272,7 +1277,7 @@ ags_export_soundcard_set_card
 ags_export_soundcard_set_filename
 ags_export_soundcard_set_format
 ags_export_soundcard_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EXPORT_SOUNDCARD
 AGS_EXPORT_SOUNDCARD_CLASS
 AGS_EXPORT_SOUNDCARD_GET_CLASS
@@ -1295,11 +1300,14 @@ ags_export_soundcard_file_chooser_button_callback
 <FILE>ags_export_window</FILE>
 <TITLE>AgsExportWindow</TITLE>
 AgsExportWindowFlags
+ags_export_window_get_export_soundcard
 ags_export_window_add_export_soundcard
 ags_export_window_remove_export_soundcard
 ags_export_window_reload_soundcard_editor
+ags_export_window_start_export
+ags_export_window_stop_export
 ags_export_window_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EXPORT_WINDOW
 AGS_EXPORT_WINDOW_CLASS
 AGS_EXPORT_WINDOW_GET_CLASS
@@ -1317,6 +1325,7 @@ ags_export_window_add_export_soundcard_callback
 ags_export_window_remove_export_soundcard_callback
 ags_export_window_tact_callback
 ags_export_window_export_callback
+ags_export_window_stop_callback
 </SECTION>
 
 <SECTION>
@@ -1332,7 +1341,7 @@ ags_ffplayer_load_instrument
 ags_ffplayer_update
 ags_ffplayer_sf2_loader_completed_timeout
 ags_ffplayer_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FFPLAYER
 AGS_FFPLAYER_CLASS
 AGS_FFPLAYER_GET_CLASS
@@ -1348,7 +1357,7 @@ ags_ffplayer_get_type
 <FILE>ags_ffplayer_bridge</FILE>
 <TITLE>AgsFFPlayerBridge</TITLE>
 ags_ffplayer_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FFPLAYER_BRIDGE
 AGS_FFPLAYER_BRIDGE_CLASS
 AGS_FFPLAYER_BRIDGE_GET_CLASS
@@ -1373,7 +1382,7 @@ AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID
 AgsFFPlayerBulkInputFlags
 ags_ffplayer_bulk_input_input_map_recall
 ags_ffplayer_bulk_input_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FFPLAYER_BULK_INPUT
 AGS_FFPLAYER_BULK_INPUT_CLASS
 AGS_FFPLAYER_BULK_INPUT_GET_CLASS
@@ -1393,14 +1402,12 @@ ags_ffplayer_bulk_input_resize_pads_callback
 
 <SECTION>
 <FILE>ags_ffplayer_callbacks</FILE>
-ags_ffplayer_parent_set_callback
 ags_ffplayer_destroy_callback
 ags_ffplayer_draw_callback
 ags_ffplayer_open_clicked_callback
 ags_ffplayer_open_dialog_response_callback
 ags_ffplayer_preset_changed_callback
 ags_ffplayer_instrument_changed_callback
-ags_ffplayer_drawing_area_button_press_callback
 ags_ffplayer_hscrollbar_value_changed
 ags_ffplayer_update_callback
 ags_ffplayer_enable_aliase_callback
@@ -1415,7 +1422,7 @@ ags_ffplayer_volume_callback
 <FILE>ags_ffplayer_input_line</FILE>
 <TITLE>AgsFFPlayerInputLine</TITLE>
 ags_ffplayer_input_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FFPLAYER_INPUT_LINE
 AGS_FFPLAYER_INPUT_LINE_CLASS
 AGS_FFPLAYER_INPUT_LINE_GET_CLASS
@@ -1436,7 +1443,7 @@ ags_ffplayer_input_line_notify_channel_callback
 <FILE>ags_ffplayer_input_pad</FILE>
 <TITLE>AgsFFPlayerInputPad</TITLE>
 ags_ffplayer_input_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FFPLAYER_INPUT_PAD
 AGS_FFPLAYER_INPUT_PAD_CLASS
 AGS_FFPLAYER_INPUT_PAD_GET_CLASS
@@ -1462,7 +1469,7 @@ AGS_FM_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT
 AgsFMOscillatorFlags
 ags_fm_oscillator_control_changed
 ags_fm_oscillator_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FM_OSCILLATOR
 AGS_FM_OSCILLATOR_CLASS
 AGS_FM_OSCILLATOR_GET_CLASS
@@ -1499,12 +1506,13 @@ AgsFMSyncsynthFlags
 ags_fm_syncsynth_test_flags
 ags_fm_syncsynth_set_flags
 ags_fm_syncsynth_unset_flags
+ags_fm_syncsynth_get_fm_oscillator
 ags_fm_syncsynth_add_fm_oscillator
 ags_fm_syncsynth_remove_fm_oscillator
 ags_fm_syncsynth_reset_loop
 ags_fm_syncsynth_update
 ags_fm_syncsynth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FM_SYNCSYNTH
 AGS_FM_SYNCSYNTH_CLASS
 AGS_FM_SYNCSYNTH_GET_CLASS
@@ -1518,7 +1526,6 @@ ags_fm_syncsynth_get_type
 
 <SECTION>
 <FILE>ags_fm_syncsynth_callbacks</FILE>
-ags_fm_syncsynth_parent_set_callback
 ags_fm_syncsynth_samplerate_changed_callback
 ags_fm_syncsynth_fm_oscillator_control_changed_callback
 ags_fm_syncsynth_add_callback
@@ -1547,7 +1554,7 @@ ags_fm_synth_set_flags
 ags_fm_synth_unset_flags
 ags_fm_synth_update
 ags_fm_synth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FM_SYNTH
 AGS_FM_SYNTH_CLASS
 AGS_FM_SYNTH_GET_CLASS
@@ -1561,7 +1568,6 @@ ags_fm_synth_get_type
 
 <SECTION>
 <FILE>ags_fm_synth_callbacks</FILE>
-ags_fm_synth_parent_set_callback
 ags_fm_synth_auto_update_callback
 ags_fm_synth_update_callback
 ags_fm_synth_lower_callback
@@ -1571,7 +1577,7 @@ ags_fm_synth_lower_callback
 <FILE>ags_fm_synth_input_line</FILE>
 <TITLE>AgsFMSynthInputLine</TITLE>
 ags_fm_synth_input_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FM_SYNTH_INPUT_LINE
 AGS_FM_SYNTH_INPUT_LINE_CLASS
 AGS_FM_SYNTH_INPUT_LINE_GET_CLASS
@@ -1593,7 +1599,7 @@ ags_fm_synth_input_line_fm_oscillator_control_changed_callback
 <FILE>ags_fm_synth_input_pad</FILE>
 <TITLE>AgsFMSynthInputPad</TITLE>
 ags_fm_synth_input_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_FM_SYNTH_INPUT_PAD
 AGS_FM_SYNTH_INPUT_PAD_CLASS
 AGS_FM_SYNTH_INPUT_PAD_GET_CLASS
@@ -1610,7 +1616,7 @@ ags_fm_synth_input_pad_get_type
 <TITLE>AgsGenericPreferences</TITLE>
 AgsGenericPreferencesFlags
 ags_generic_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_GENERIC_PREFERENCES
 AGS_GENERIC_PREFERENCES_CLASS
 AGS_GENERIC_PREFERENCES_GET_CLASS
@@ -1632,7 +1638,7 @@ ags_generic_preferences_rt_safe_callback
 <FILE>ags_gsequencer_application</FILE>
 <TITLE>AgsGSequencerApplication</TITLE>
 ags_gsequencer_application_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_GSEQUENCER_APPLICATION
 AGS_GSEQUENCER_APPLICATION_CLASS
 AGS_GSEQUENCER_APPLICATION_GET_CLASS
@@ -1698,7 +1704,7 @@ ags_gsequencer_application_context_message_monitor_timeout
 ags_gsequencer_application_context_task_timeout
 ags_gsequencer_application_context_loader_timeout
 ags_gsequencer_application_context_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_GSEQUENCER_APPLICATION_CONTEXT
 AGS_GSEQUENCER_APPLICATION_CONTEXT_CLASS
 AGS_GSEQUENCER_APPLICATION_CONTEXT_GET_CLASS
@@ -1711,10 +1717,15 @@ ags_gsequencer_application_context_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_gsequencer_resource</FILE>
+ags_gsequencer_get_resource
+</SECTION>
+
+<SECTION>
 <FILE>ags_hybrid_fm_synth</FILE>
 <TITLE>AgsHybridFMSynth</TITLE>
 ags_hybrid_fm_synth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_HYBRID_FM_SYNTH
 AGS_HYBRID_FM_SYNTH_CLASS
 AGS_HYBRID_FM_SYNTH_GET_CLASS
@@ -1728,7 +1739,6 @@ ags_hybrid_fm_synth_get_type
 
 <SECTION>
 <FILE>ags_hybrid_fm_synth_callbacks</FILE>
-ags_hybrid_fm_synth_parent_set_callback
 ags_hybrid_fm_synth_synth_0_oscillator_callback
 ags_hybrid_fm_synth_synth_0_octave_callback
 ags_hybrid_fm_synth_synth_0_key_callback
@@ -1781,7 +1791,7 @@ ags_hybrid_fm_synth_volume_callback
 <FILE>ags_hybrid_synth</FILE>
 <TITLE>AgsHybridSynth</TITLE>
 ags_hybrid_synth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_HYBRID_SYNTH
 AGS_HYBRID_SYNTH_CLASS
 AGS_HYBRID_SYNTH_GET_CLASS
@@ -1795,7 +1805,6 @@ ags_hybrid_synth_get_type
 
 <SECTION>
 <FILE>ags_hybrid_synth_callbacks</FILE>
-ags_hybrid_synth_parent_set_callback
 ags_hybrid_synth_synth_0_oscillator_callback
 ags_hybrid_synth_synth_0_octave_callback
 ags_hybrid_synth_synth_0_key_callback
@@ -1848,76 +1857,23 @@ ags_hybrid_synth_volume_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_input_collection_editor</FILE>
-<TITLE>AgsInputCollectionEditor</TITLE>
-AgsInputCollectionEditorFlags
-ags_input_collection_editor_check
-ags_input_collection_editor_new
-<SUBSECTION Standard>
-AGS_INPUT_COLLECTION_EDITOR
-AGS_INPUT_COLLECTION_EDITOR_CLASS
-AGS_INPUT_COLLECTION_EDITOR_GET_CLASS
-AGS_IS_INPUT_COLLECTION_EDITOR
-AGS_IS_INPUT_COLLECTION_EDITOR_CLASS
-AGS_TYPE_INPUT_COLLECTION_EDITOR
-AgsInputCollectionEditor
-AgsInputCollectionEditorClass
-ags_input_collection_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_input_collection_editor_callbacks</FILE>
-ags_input_collection_editor_parent_set_callback
-ags_input_collection_editor_soundcard_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_input_editor</FILE>
-<TITLE>AgsInputEditor</TITLE>
-AGS_INPUT_EDITOR_DEFAULT_VERSION
-AGS_INPUT_EDITOR_DEFAULT_BUILD_ID
-AgsInputEditorFlags
-ags_input_editor_check
-ags_input_editor_new
-<SUBSECTION Standard>
-AGS_INPUT_EDITOR
-AGS_INPUT_EDITOR_CLASS
-AGS_INPUT_EDITOR_GET_CLASS
-AGS_IS_INPUT_EDITOR
-AGS_IS_INPUT_EDITOR_CLASS
-AGS_TYPE_INPUT_EDITOR
-AgsInputEditor
-AgsInputEditorClass
-ags_input_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_input_editor_callbacks</FILE>
-ags_input_editor_parent_set_callback
-ags_input_editor_soundcard_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_input_listing_editor</FILE>
-<TITLE>AgsInputListingEditor</TITLE>
-ags_input_listing_editor_add_children
-ags_input_listing_editor_new
-<SUBSECTION Standard>
-AGS_INPUT_LISTING_EDITOR
-AGS_INPUT_LISTING_EDITOR_CLASS
-AGS_INPUT_LISTING_EDITOR_GET_CLASS
-AGS_IS_INPUT_LISTING_EDITOR
-AGS_IS_INPUT_LISTING_EDITOR_CLASS
-AGS_TYPE_INPUT_LISTING_EDITOR
-AgsInputListingEditor
-AgsInputListingEditorClass
-ags_input_listing_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_input_listing_editor_callbacks</FILE>
-ags_input_listing_editor_parent_set_callback
-ags_input_listing_editor_resize_pads_callback
+<FILE>ags_input_dialog</FILE>
+<TITLE>AgsInputDialog</TITLE>
+AgsInputDialogFlags
+ags_input_dialog_test_flags
+ags_input_dialog_set_flags
+ags_input_dialog_unset_flags
+ags_input_dialog_new
+<SUBSECTION Public>
+AGS_INPUT_DIALOG
+AGS_INPUT_DIALOG_CLASS
+AGS_INPUT_DIALOG_GET_CLASS
+AGS_IS_INPUT_DIALOG
+AGS_IS_INPUT_DIALOG_CLASS
+AGS_TYPE_INPUT_DIALOG
+AgsInputDialog
+AgsInputDialogClass
+ags_input_dialog_get_type
 </SECTION>
 
 <SECTION>
@@ -1929,7 +1885,7 @@ AgsLadspaBridgeFlags
 ags_ladspa_bridge_input_map_recall
 ags_ladspa_bridge_output_map_recall
 ags_ladspa_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LADSPA_BRIDGE
 AGS_IS_LADSPA_BRIDGE_CLASS
 AGS_LADSPA_BRIDGE
@@ -1943,22 +1899,25 @@ ags_ladspa_bridge_get_type
 
 <SECTION>
 <FILE>ags_ladspa_bridge_callbacks</FILE>
-ags_ladspa_bridge_parent_set_callback
+
 </SECTION>
 
 <SECTION>
 <FILE>ags_ladspa_browser</FILE>
 <TITLE>AgsLadspaBrowser</TITLE>
-AgsLadspaBrowserFlags
+AGS_LADSPA_BROWSER_FILENAME_HEIGHT_REQUEST
+AGS_LADSPA_BROWSER_FILENAME_WIDTH_REQUEST
+AGS_LADSPA_BROWSER_EFFECT_HEIGHT_REQUEST
+AGS_LADSPA_BROWSER_EFFECT_WIDTH_REQUEST
 ags_ladspa_browser_get_plugin_filename
 ags_ladspa_browser_get_plugin_effect
-ags_ladspa_browser_combo_box_output_boolean_controls_new
-ags_ladspa_browser_combo_box_output_controls_new
-ags_ladspa_browser_combo_box_boolean_controls_new
-ags_ladspa_browser_combo_box_controls_new
+ags_ladspa_browser_get_port_editor
+ags_ladspa_browser_add_port_editor
+ags_ladspa_browser_remove_port_editor
+ags_ladspa_browser_clear
 ags_ladspa_browser_preview_new
 ags_ladspa_browser_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LADSPA_BROWSER
 AGS_IS_LADSPA_BROWSER_CLASS
 AGS_LADSPA_BROWSER
@@ -1994,6 +1953,12 @@ ags_line_buffer_size_changed
 ags_line_format_changed
 ags_line_set_channel
 ags_line_group_changed
+ags_line_get_line_member
+ags_line_add_line_member
+ags_line_remove_line_member
+ags_line_get_effect_separator
+ags_line_add_effect_separator
+ags_line_remove_effect_separator
 ags_line_add_plugin
 ags_line_remove_plugin
 ags_line_map_recall
@@ -2001,9 +1966,9 @@ ags_line_find_port
 ags_line_stop
 ags_line_find_next_grouped
 ags_line_check_message
-ags_line_indicator_queue_draw_timeout
+ags_line_indicator_refresh_timeout
 ags_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LINE
 AGS_IS_LINE_CLASS
 AGS_LINE
@@ -2018,34 +1983,8 @@ ags_line_get_type
 <SECTION>
 <FILE>ags_line_callbacks</FILE>
 ags_line_check_message_callback
-ags_line_group_clicked_callback
+ags_line_group_toggled_callback
 ags_line_stop_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_line_editor</FILE>
-<TITLE>AgsLineEditor</TITLE>
-AGS_LINE_EDITOR_DEFAULT_VERSION
-AGS_LINE_EDITOR_DEFAULT_BUILD_ID
-AgsLineEditorFlags
-ags_line_editor_set_channel
-ags_line_editor_new
-<SUBSECTION Standard>
-AGS_IS_LINE_EDITOR
-AGS_IS_LINE_EDITOR_CLASS
-AGS_LINE_EDITOR
-AGS_LINE_EDITOR_CLASS
-AGS_LINE_EDITOR_GET_CLASS
-AGS_TYPE_LINE_EDITOR
-AgsLineEditor
-AgsLineEditorClass
-ags_line_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_line_editor_callbacks</FILE>
-ags_line_editor_parent_set_callback
-ags_line_editor_show_callback
 </SECTION>
 
 <SECTION>
@@ -2053,15 +1992,18 @@ ags_line_editor_show_callback
 <TITLE>AgsLineMember</TITLE>
 AGS_LINE_MEMBER_DEFAULT_VERSION
 AGS_LINE_MEMBER_DEFAULT_BUILD_ID
+AGS_LINE_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH
+AGS_LINE_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT
 Agslinememberflags
 AgsLineMemberPortFlags
+ags_line_member_set_widget
 ags_line_member_get_widget
 ags_line_member_set_label
 ags_line_member_change_port
 ags_line_member_find_port
 ags_line_member_chained_event
 ags_line_member_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LINE_MEMBER
 AGS_IS_LINE_MEMBER_CLASS
 AGS_LINE_MEMBER
@@ -2075,21 +2017,22 @@ ags_line_member_get_type
 
 <SECTION>
 <FILE>ags_line_member_callbacks</FILE>
-ags_line_member_parent_set_callback
 ags_line_member_dial_changed_callback
 ags_line_member_scale_changed_callback
 ags_line_member_spin_button_changed_callback
-ags_line_member_check_button_clicked_callback
-ags_line_member_toggle_button_clicked_callback
+ags_line_member_check_button_toggled_callback
+ags_line_member_toggle_button_toggled_callback
 ags_line_member_button_clicked_callback
 </SECTION>
 
 <SECTION>
 <FILE>ags_line_member_editor</FILE>
 <TITLE>AgsLineMemberEditor</TITLE>
-AgsLineMemberEditorFlags
+ags_line_member_editor_get_entry
+ags_line_member_editor_add_entry
+ags_line_member_editor_remove_entry
 ags_line_member_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LINE_MEMBER_EDITOR
 AGS_IS_LINE_MEMBER_EDITOR_CLASS
 AGS_LINE_MEMBER_EDITOR
@@ -2109,33 +2052,19 @@ ags_line_member_editor_plugin_browser_response_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_link_collection_editor</FILE>
-<TITLE>AgsLinkCollectionEditor</TITLE>
-AgsLinkCollectionEditorFlags
-ags_link_collection_editor_check
-ags_link_collection_editor_check_first_line
-ags_link_collection_editor_check_first_link
-ags_link_collection_editor_check_count
-ags_link_collection_editor_new
-<SUBSECTION Standard>
-AGS_IS_LINK_COLLECTION_EDITOR
-AGS_IS_LINK_COLLECTION_EDITOR_CLASS
-AGS_LINK_COLLECTION_EDITOR
-AGS_LINK_COLLECTION_EDITOR_CLASS
-AGS_LINK_COLLECTION_EDITOR_GET_CLASS
-AGS_TYPE_LINK_COLLECTION_EDITOR
-AgsLinkCollectionEditor
-AgsLinkCollectionEditorClass
-ags_link_collection_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_link_collection_editor_callbacks</FILE>
-ags_link_collection_editor_parent_set_callback
-ags_link_collection_editor_link_callback
-ags_link_collection_editor_first_line_callback
-ags_link_collection_editor_first_link_callback
-ags_link_collection_editor_count_callback
+<FILE>ags_line_member_editor_entry</FILE>
+<TITLE>AgsLineMemberEditorEntry</TITLE>
+ags_line_member_editor_entry_new
+<SUBSECTION Public>
+AGS_IS_LINE_MEMBER_EDITOR_ENTRY
+AGS_IS_LINE_MEMBER_EDITOR_ENTRY_CLASS
+AGS_LINE_MEMBER_EDITOR_ENTRY
+AGS_LINE_MEMBER_EDITOR_ENTRY_CLASS
+AGS_LINE_MEMBER_EDITOR_ENTRY_GET_CLASS
+AGS_TYPE_LINE_MEMBER_EDITOR_ENTRY
+AgsLineMemberEditorEntry
+AgsLineMemberEditorEntryClass
+ags_line_member_editor_entry_get_type
 </SECTION>
 
 <SECTION>
@@ -2143,7 +2072,7 @@ ags_link_collection_editor_count_callback
 <TITLE>AgsLinkEditor</TITLE>
 AgsLinkEditorFlags
 ags_link_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LINK_EDITOR
 AGS_IS_LINK_EDITOR_CLASS
 AGS_LINK_EDITOR
@@ -2162,28 +2091,6 @@ ags_link_editor_combo_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_listing_editor</FILE>
-<TITLE>AgsListingEditor</TITLE>
-ags_listing_editor_add_children
-ags_listing_editor_new
-<SUBSECTION Standard>
-AGS_IS_LISTING_EDITOR
-AGS_IS_LISTING_EDITOR_CLASS
-AGS_LISTING_EDITOR
-AGS_LISTING_EDITOR_CLASS
-AGS_LISTING_EDITOR_GET_CLASS
-AGS_TYPE_LISTING_EDITOR
-AgsListingEditor
-AgsListingEditorClass
-ags_listing_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_listing_editor_callbacks</FILE>
-ags_listing_editor_resize_pads_callback
-</SECTION>
-
-<SECTION>
 <FILE>ags_live_dssi_bridge</FILE>
 <TITLE>AgsLiveDssiBridge</TITLE>
 AGS_LIVE_DSSI_BRIDGE_DEFAULT_VERSION
@@ -2193,7 +2100,7 @@ ags_live_dssi_bridge_input_map_recall
 ags_live_dssi_bridge_output_map_recall
 ags_live_dssi_bridge_load
 ags_live_dssi_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LIVE_DSSI_BRIDGE
 AGS_IS_LIVE_DSSI_BRIDGE_CLASS
 AGS_LIVE_DSSI_BRIDGE
@@ -2207,7 +2114,6 @@ ags_live_dssi_bridge_get_type
 
 <SECTION>
 <FILE>ags_live_dssi_bridge_callbacks</FILE>
-ags_live_dssi_bridge_parent_set_callback
 ags_live_dssi_bridge_program_changed_callback
 </SECTION>
 
@@ -2228,7 +2134,7 @@ ags_live_lv2_bridge_load_gui
 ags_live_lv2_bridge_load
 ags_live_lv2_bridge_lv2ui_idle_timeout
 ags_live_lv2_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LIVE_LV2_BRIDGE
 AGS_IS_LIVE_LV2_BRIDGE_CLASS
 AGS_LIVE_LV2_BRIDGE
@@ -2243,8 +2149,6 @@ ags_live_lv2_bridge_get_type
 <SECTION>
 <FILE>ags_live_lv2_bridge_callbacks</FILE>
 ags_live_lv2_bridge_parent_set_callback
-ags_live_lv2_bridge_show_gui_callback
-ags_live_lv2_bridge_delete_event_callback
 ags_live_lv2_bridge_lv2ui_cleanup_function
 ags_live_lv2_bridge_lv2ui_write_function
 ags_live_lv2_bridge_program_changed_callback
@@ -2255,46 +2159,6 @@ ags_live_lv2_bridge_spin_button_changed_callback
 ags_live_lv2_bridge_check_button_clicked_callback
 ags_live_lv2_bridge_toggle_button_clicked_callback
 ags_live_lv2_bridge_button_clicked_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_live_vst3_bridge</FILE>
-<TITLE>AgsLiveVst3Bridge</TITLE>
-AGS_LIVE_VST3_BRIDGE_DEFAULT_VERSION
-AGS_LIVE_VST3_BRIDGE_DEFAULT_BUILD_ID
-AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI
-AGS_LIVE_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE
-AgsLiveVst3BridgeFlags
-ags_live_vst3_bridge_input_map_recall
-ags_live_vst3_bridge_output_map_recall
-ags_live_vst3_bridge_load
-ags_live_vst3_bridge_reload_port
-ags_live_vst3_bridge_new
-<SUBSECTION Standard>
-AGS_IS_LIVE_VST3_BRIDGE
-AGS_IS_LIVE_VST3_BRIDGE_CLASS
-AGS_LIVE_VST3_BRIDGE
-AGS_LIVE_VST3_BRIDGE_CLASS
-AGS_LIVE_VST3_BRIDGE_GET_CLASS
-AGS_TYPE_LIVE_VST3_BRIDGE
-AgsLiveVst3Bridge
-AgsLiveVst3BridgeClass
-ags_live_vst3_bridge_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_live_vst3_bridge_callbacks</FILE>
-ags_live_vst3_bridge_parent_set_callback
-ags_live_vst3_bridge_show_gui_callback
-ags_live_vst3_bridge_program_changed_callback
-ags_live_vst3_bridge_perform_edit_callback
-ags_live_vst3_bridge_restart_component_callback
-ags_live_vst3_bridge_dial_changed_callback
-ags_live_vst3_bridge_scale_changed_callback
-ags_live_vst3_bridge_spin_button_changed_callback
-ags_live_vst3_bridge_check_button_clicked_callback
-ags_live_vst3_bridge_toggle_button_clicked_callback
-ags_live_vst3_bridge_button_clicked_callback
 </SECTION>
 
 <SECTION>
@@ -2314,7 +2178,7 @@ ags_lv2_bridge_load_gui
 ags_lv2_bridge_load
 ags_lv2_bridge_lv2ui_idle_timeout
 ags_lv2_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LV2_BRIDGE
 AGS_IS_LV2_BRIDGE_CLASS
 AGS_LV2_BRIDGE
@@ -2328,9 +2192,6 @@ ags_lv2_bridge_get_type
 
 <SECTION>
 <FILE>ags_lv2_bridge_callbacks</FILE>
-ags_lv2_bridge_parent_set_callback
-ags_lv2_bridge_show_gui_callback
-ags_lv2_bridge_delete_event_callback
 ags_lv2_bridge_lv2ui_cleanup_function
 ags_lv2_bridge_lv2ui_write_function
 ags_lv2_bridge_program_changed_callback
@@ -2338,24 +2199,27 @@ ags_lv2_bridge_preset_changed_callback
 ags_lv2_bridge_dial_changed_callback
 ags_lv2_bridge_scale_changed_callback
 ags_lv2_bridge_spin_button_changed_callback
-ags_lv2_bridge_check_button_clicked_callback
-ags_lv2_bridge_toggle_button_clicked_callback
+ags_lv2_bridge_check_button_toggled_callback
+ags_lv2_bridge_toggle_button_toggled_callback
 ags_lv2_bridge_button_clicked_callback
 </SECTION>
 
 <SECTION>
 <FILE>ags_lv2_browser</FILE>
 <TITLE>AgsLv2Browser</TITLE>
-AgsLv2BrowserFlags
+AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST
+AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST
+AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST
+AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST
 ags_lv2_browser_get_plugin_filename
 ags_lv2_browser_get_plugin_effect
-ags_lv2_browser_combo_box_output_boolean_controls_new
-ags_lv2_browser_combo_box_output_controls_new
-ags_lv2_browser_combo_box_boolean_controls_new
-ags_lv2_browser_combo_box_controls_new
+ags_lv2_browser_get_port_editor
+ags_lv2_browser_add_port_editor
+ags_lv2_browser_remove_port_editor
+ags_lv2_browser_clear
 ags_lv2_browser_preview_new
 ags_lv2_browser_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LV2_BROWSER
 AGS_IS_LV2_BROWSER_CLASS
 AGS_LV2_BROWSER
@@ -2391,10 +2255,18 @@ AgsMachineInputLine
 AgsMachineAutomationPort
 ags_machine_input_line_sort_func
 ags_machine_input_line_alloc
+ags_machine_get_machine_name
+ags_machine_set_machine_name
 ags_machine_reset_pattern_envelope
 ags_machine_automation_port_alloc
 ags_machine_automation_port_free
 ags_machine_automation_port_find_channel_type_with_control_name
+ags_machine_get_output_pad
+ags_machine_add_output_pad
+ags_machine_remove_output_pad
+ags_machine_get_input_pad
+ags_machine_add_input_pad
+ags_machine_remove_input_pad
 ags_machine_samplerate_changed
 ags_machine_buffer_size_changed
 ags_machine_format_changed
@@ -2408,19 +2280,18 @@ ags_machine_find_by_name
 ags_machine_playback_set_active
 ags_machine_set_run
 ags_machine_set_run_extended
+ags_machine_get_dialog_model
+ags_machine_add_dialog_model
+ags_machine_remove_dialog_model
+ags_machine_find_dialog_model
 ags_machine_get_possible_links
 ags_machine_get_possible_audio_output_connections
 ags_machine_get_possible_audio_input_connections
-ags_machine_file_chooser_dialog_new
 ags_machine_open_files
 ags_machine_copy_pattern
-ags_machine_popup_add_edit_options
-ags_machine_popup_add_connection_options
-ags_machine_popup_add_export_options
-ags_machine_popup_add_import_options
 ags_machine_check_message
 ags_machine_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MACHINE
 AGS_IS_MACHINE_CLASS
 AGS_MACHINE
@@ -2435,28 +2306,26 @@ ags_machine_get_type
 <SECTION>
 <FILE>ags_machine_callbacks</FILE>
 ags_machine_check_message_callback
-ags_machine_parent_set_callback
 ags_machine_map_recall_callback
-ags_machine_button_press_callback
-ags_machine_popup_move_up_activate_callback
-ags_machine_popup_move_down_activate_callback
-ags_machine_popup_hide_activate_callback
-ags_machine_popup_show_activate_callback
-ags_machine_popup_destroy_activate_callback
-ags_machine_popup_rename_activate_callback
-ags_machine_popup_rename_audio_activate_callback
-ags_machine_popup_reposition_audio_activate_callback
-ags_machine_popup_properties_activate_callback
-ags_machine_popup_sticky_controls_toggled_callback
-ags_machine_popup_copy_pattern_callback
-ags_machine_popup_paste_pattern_callback
-ags_machine_popup_envelope_callback
-ags_machine_popup_connection_editor_callback
-ags_machine_popup_midi_dialog_callback
-ags_machine_popup_midi_export_callback
-ags_machine_popup_wave_export_callback
-ags_machine_popup_midi_import_callback
-ags_machine_popup_wave_import_callback
+ags_machine_move_up_callback
+ags_machine_move_down_callback
+ags_machine_hide_callback
+ags_machine_show_callback
+ags_machine_destroy_callback
+ags_machine_rename_callback
+ags_machine_rename_audio_callback
+ags_machine_reposition_audio_callback
+ags_machine_properties_callback
+ags_machine_sticky_controls_callback
+ags_machine_copy_pattern_callback
+ags_machine_paste_pattern_callback
+ags_machine_envelope_callback
+ags_machine_audio_connection_callback
+ags_machine_midi_connection_callback
+ags_machine_audio_export_callback
+ags_machine_midi_export_callback
+ags_machine_audio_import_callback
+ags_machine_midi_import_callback
 ags_machine_open_response_callback
 ags_machine_play_callback
 ags_machine_resize_audio_channels_callback
@@ -2469,10 +2338,13 @@ ags_machine_active_playback_start_channel_launch_callback
 <FILE>ags_machine_collection</FILE>
 <TITLE>AgsMachineCollection</TITLE>
 AgsMachineCollectionFlags
+ags_machine_collection_get_machine_mapper
+ags_machine_collection_add_machine_mapper
+ags_machine_collection_remove_machine_mapper
 ags_machine_collection_reload
 ags_machine_collection_add_entry
 ags_machine_collection_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MACHINE_COLLECTION
 AGS_IS_MACHINE_COLLECTION_CLASS
 AGS_MACHINE_COLLECTION
@@ -2490,25 +2362,39 @@ ags_machine_collection_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_machine_collection_entry</FILE>
-<TITLE>AgsMachineCollectionEntry</TITLE>
-AgsMachineCollectionEntryFlags
-ags_machine_collection_entry_new
-<SUBSECTION Standard>
-AGS_IS_MACHINE_COLLECTION_ENTRY
-AGS_IS_MACHINE_COLLECTION_ENTRY_CLASS
-AGS_MACHINE_COLLECTION_ENTRY
-AGS_MACHINE_COLLECTION_ENTRY_CLASS
-AGS_MACHINE_COLLECTION_ENTRY_GET_CLASS
-AGS_TYPE_MACHINE_COLLECTION_ENTRY
-AgsMachineCollectionEntry
-AgsMachineCollectionEntryClass
-ags_machine_collection_entry_get_type
+<FILE>ags_machine_counter</FILE>
+<TITLE>AgsMachineCounter</TITLE>
+ags_machine_counter_increment
+ags_machine_counter_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_COUNTER
+AGS_IS_MACHINE_COUNTER_CLASS
+AGS_MACHINE_COUNTER
+AGS_MACHINE_COUNTER_CLASS
+AGS_MACHINE_COUNTER_GET_CLASS
+AGS_TYPE_MACHINE_COUNTER
+AgsMachineCounter
+AgsMachineCounterClass
+ags_machine_counter_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_machine_collection_entry_callbacks</FILE>
-
+<FILE>ags_machine_counter_manager</FILE>
+<TITLE>AgsMachineCounterManager</TITLE>
+ags_machine_counter_manager_load
+ags_machine_counter_manager_find_machine_counter
+ags_machine_counter_manager_get_instance
+ags_machine_counter_manager_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_COUNTER_MANAGER
+AGS_IS_MACHINE_COUNTER_MANAGER_CLASS
+AGS_MACHINE_COUNTER_MANAGER
+AGS_MACHINE_COUNTER_MANAGER_CLASS
+AGS_MACHINE_COUNTER_MANAGER_GET_CLASS
+AGS_TYPE_MACHINE_COUNTER_MANAGER
+AgsMachineCounterManager
+AgsMachineCounterManagerClass
+ags_machine_counter_manager_get_type
 </SECTION>
 
 <SECTION>
@@ -2516,15 +2402,9 @@ ags_machine_collection_entry_get_type
 <TITLE>AgsMachineEditor</TITLE>
 AGS_MACHINE_EDITOR_DEFAULT_VERSION
 AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID
-AgsMachineEditorFlags
-ags_machine_editor_add_children
 ags_machine_editor_set_machine
-ags_machine_editor_add_input
-ags_machine_editor_add_output
-ags_machine_editor_remove_input
-ags_machine_editor_remove_output
 ags_machine_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MACHINE_EDITOR
 AGS_IS_MACHINE_EDITOR_CLASS
 AGS_MACHINE_EDITOR
@@ -2537,17 +2417,171 @@ ags_machine_editor_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_machine_editor_bulk</FILE>
+<TITLE>AgsMachineEditorBulk</TITLE>
+ags_machine_editor_bulk_to_xml_node
+ags_machine_editor_bulk_from_xml_node
+ags_machine_editor_bulk_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_EDITOR_BULK
+AGS_IS_MACHINE_EDITOR_BULK_CLASS
+AGS_MACHINE_EDITOR_BULK
+AGS_MACHINE_EDITOR_BULK_CLASS
+AGS_MACHINE_EDITOR_BULK_GET_CLASS
+AGS_TYPE_MACHINE_EDITOR_BULK
+AgsMachineEditorBulk
+AgsMachineEditorBulkClass
+ags_machine_editor_bulk_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_bulk_callbacks</FILE>
+ags_machine_editor_bulk_remove_bulk_callback
+ags_machine_editor_bulk_link_callback
+</SECTION>
+
+<SECTION>
 <FILE>ags_machine_editor_callbacks</FILE>
-ags_machine_editor_apply_callback
-ags_machine_editor_ok_callback
-ags_machine_editor_cancel_callback
+
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_collection</FILE>
+<TITLE>AgsMachineEditorCollection</TITLE>
+ags_machine_editor_collection_get_bulk
+ags_machine_editor_collection_add_bulk
+ags_machine_editor_collection_remove_bulk
+ags_machine_editor_collection_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_EDITOR_COLLECTION
+AGS_IS_MACHINE_EDITOR_COLLECTION_CLASS
+AGS_MACHINE_EDITOR_COLLECTION
+AGS_MACHINE_EDITOR_COLLECTION_CLASS
+AGS_MACHINE_EDITOR_COLLECTION_GET_CLASS
+AGS_TYPE_MACHINE_EDITOR_COLLECTION
+AgsMachineEditorCollection
+AgsMachineEditorCollectionClass
+ags_machine_editor_collection_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_collection_callbacks</FILE>
+ags_machine_editor_collection_add_bulk_callback
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_dialog</FILE>
+<TITLE>AgsMachineEditorDialog</TITLE>
+ags_machine_editor_dialog_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_EDITOR_DIALOG
+AGS_IS_MACHINE_EDITOR_DIALOG_CLASS
+AGS_MACHINE_EDITOR_DIALOG
+AGS_MACHINE_EDITOR_DIALOG_CLASS
+AGS_MACHINE_EDITOR_DIALOG_GET_CLASS
+AGS_TYPE_MACHINE_EDITOR_DIALOG
+AgsMachineEditorDialog
+AgsMachineEditorDialogClass
+ags_machine_editor_dialog_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_line</FILE>
+<TITLE>AgsMachineEditorLine</TITLE>
+ags_machine_editor_line_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_EDITOR_LINE
+AGS_IS_MACHINE_EDITOR_LINE_CLASS
+AGS_MACHINE_EDITOR_LINE
+AGS_MACHINE_EDITOR_LINE_CLASS
+AGS_MACHINE_EDITOR_LINE_GET_CLASS
+AGS_TYPE_MACHINE_EDITOR_LINE
+AgsMachineEditorLine
+AgsMachineEditorLineClass
+ags_machine_editor_line_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_line_callbacks</FILE>
+
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_listing</FILE>
+<TITLE>AgsMachineEditorListing</TITLE>
+AgsMachineEditorListingFlags
+ags_machine_editor_listing_get_pad
+ags_machine_editor_listing_add_pad
+ags_machine_editor_listing_remove_pad
+ags_machine_editor_listing_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_EDITOR_LISTING
+AGS_IS_MACHINE_EDITOR_LISTING_CLASS
+AGS_MACHINE_EDITOR_LISTING
+AGS_MACHINE_EDITOR_LISTING_CLASS
+AGS_MACHINE_EDITOR_LISTING_GET_CLASS
+AGS_TYPE_MACHINE_EDITOR_LISTING
+AgsMachineEditorListing
+AgsMachineEditorListingClass
+ags_machine_editor_listing_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_listing_callbacks</FILE>
+
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_pad</FILE>
+<TITLE>AgsMachineEditorPad</TITLE>
+ags_machine_editor_pad_get_line
+ags_machine_editor_pad_add_line
+ags_machine_editor_pad_remove_line
+ags_machine_editor_pad_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_EDITOR_PAD
+AGS_IS_MACHINE_EDITOR_PAD_CLASS
+AGS_MACHINE_EDITOR_PAD
+AGS_MACHINE_EDITOR_PAD_CLASS
+AGS_MACHINE_EDITOR_PAD_GET_CLASS
+AGS_TYPE_MACHINE_EDITOR_PAD
+AgsMachineEditorPad
+AgsMachineEditorPadClass
+ags_machine_editor_pad_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_editor_pad_callbacks</FILE>
+
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_mapper</FILE>
+<TITLE>AgsMachineMapper</TITLE>
+AgsMachineMapperFlags
+ags_machine_mapper_new
+<SUBSECTION Public>
+AGS_IS_MACHINE_MAPPER
+AGS_IS_MACHINE_MAPPER_CLASS
+AGS_MACHINE_MAPPER
+AGS_MACHINE_MAPPER_CLASS
+AGS_MACHINE_MAPPER_GET_CLASS
+AGS_TYPE_MACHINE_MAPPER
+AgsMachineMapper
+AgsMachineMapperClass
+ags_machine_mapper_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_machine_mapper_callbacks</FILE>
+
 </SECTION>
 
 <SECTION>
 <FILE>ags_machine_radio_button</FILE>
 <TITLE>AgsMachineRadioButton</TITLE>
 ags_machine_radio_button_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MACHINE_RADIO_BUTTON
 AGS_IS_MACHINE_RADIO_BUTTON_CLASS
 AGS_MACHINE_RADIO_BUTTON
@@ -2568,12 +2602,14 @@ ags_machine_radio_button_notify_machine_name_callback
 <FILE>ags_machine_selection</FILE>
 <TITLE>AgsMachineSelection</TITLE>
 AGS_MACHINE_SELECTION_INDEX
-AgsMachineSelectionFlags
 AgsMachineSelectionEdit
 ags_machine_selection_set_edit
+ags_machine_selection_get_radio_button
+ags_machine_selection_add_radio_button
+ags_machine_selection_remove_radio_button
 ags_machine_selection_load_defaults
 ags_machine_selection_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MACHINE_SELECTION
 AGS_IS_MACHINE_SELECTION_CLASS
 AGS_MACHINE_SELECTION
@@ -2590,14 +2626,20 @@ ags_machine_selection_get_type
 <TITLE>AgsMachineSelector</TITLE>
 AgsMachineSelectorFlags
 AgsMachineSelectorEdit
+ags_machine_selector_test_flags
+ags_machine_selector_set_flags
+ags_machine_selector_unset_flags
+ags_machine_selector_popup_insert_machine
+ags_machine_selector_popup_remove_machine
+ags_machine_selector_get_machine_radio_button
+ags_machine_selector_insert_machine_radio_button
+ags_machine_selector_remove_machine_radio_button
 ags_machine_selector_set_edit
-ags_machine_selector_add_index
+ags_machine_selector_insert_index
 ags_machine_selector_remove_index
-ags_machine_selector_link_index
 ags_machine_selector_changed
-ags_machine_selector_popup_new
 ags_machine_selector_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MACHINE_SELECTOR
 AGS_IS_MACHINE_SELECTOR_CLASS
 AGS_MACHINE_SELECTOR
@@ -2611,14 +2653,21 @@ ags_machine_selector_get_type
 
 <SECTION>
 <FILE>ags_machine_selector_callbacks</FILE>
-ags_machine_selector_popup_add_tab_callback
-ags_machine_selector_popup_remove_tab_callback
-ags_machine_selector_popup_add_index_callback
-ags_machine_selector_popup_remove_index_callback
-ags_machine_selector_popup_link_index_callback
-ags_machine_selector_popup_reverse_mapping_callback
-ags_machine_selector_popup_shift_piano_callback
+ags_machine_selector_add_by_uuid_callback
 ags_machine_selector_radio_changed
+ags_machine_selector_reverse_mapping_callback
+ags_machine_selector_shift_a_callback
+ags_machine_selector_shift_a_sharp_callback
+ags_machine_selector_shift_h_callback
+ags_machine_selector_shift_c_callback
+ags_machine_selector_shift_c_sharp_callback
+ags_machine_selector_shift_d_callback
+ags_machine_selector_shift_d_sharp_callback
+ags_machine_selector_shift_e_callback
+ags_machine_selector_shift_f_callback
+ags_machine_selector_shift_f_sharp_callback
+ags_machine_selector_shift_g_callback
+ags_machine_selector_shift_g_sharp_callback
 </SECTION>
 
 <SECTION>
@@ -2657,7 +2706,7 @@ ags_machine_util_new_by_type_name
 ags_matrix_input_map_recall
 ags_matrix_output_map_recall
 ags_matrix_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MATRIX
 AGS_IS_MATRIX_CLASS
 AGS_MATRIX
@@ -2673,7 +2722,7 @@ ags_matrix_get_type
 <FILE>ags_matrix_bridge</FILE>
 <TITLE>AgsMatrixBridge</TITLE>
 ags_matrix_bridge_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MATRIX_BRIDGE
 AGS_IS_MATRIX_BRIDGE_CLASS
 AGS_MATRIX_BRIDGE
@@ -2694,7 +2743,7 @@ ags_matrix_bridge_get_type
 <FILE>ags_matrix_bulk_input</FILE>
 <TITLE>AgsMatrixBulkInput</TITLE>
 ags_matrix_bulk_input_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MATRIX_BULK_INPUT
 AGS_IS_MATRIX_BULK_INPUT_CLASS
 AGS_MATRIX_BULK_INPUT
@@ -2713,11 +2762,7 @@ ags_matrix_bulk_input_get_type
 
 <SECTION>
 <FILE>ags_matrix_callbacks</FILE>
-ags_matrix_parent_set_callback
 ags_matrix_index_callback
-ags_matrix_drawing_area_configure_callback
-ags_matrix_drawing_area_expose_callback
-ags_matrix_drawing_area_button_press_callback
 ags_matrix_adjustment_value_changed_callback
 ags_matrix_bpm_callback
 ags_matrix_length_spin_callback
@@ -2727,86 +2772,19 @@ ags_matrix_volume_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_menu_action_callbacks</FILE>
-AGS_MENU_ITEM_FILENAME_KEY
-AGS_MENU_ITEM_EFFECT_KEY
-ags_menu_action_open_callback
-ags_menu_action_save_callback
-ags_menu_action_save_as_callback
-ags_menu_action_export_callback
-ags_menu_action_quit_callback
-ags_menu_action_add_callback
-ags_menu_action_add_panel_callback
-ags_menu_action_add_mixer_callback
-ags_menu_action_add_spectrometer_callback
-ags_menu_action_add_equalizer_callback
-ags_menu_action_add_drum_callback
-ags_menu_action_add_matrix_callback
-ags_menu_action_add_synth_callback
-ags_menu_action_add_fm_synth_callback
-ags_menu_action_add_syncsynth_callback
-ags_menu_action_add_fm_syncsynth_callback
-ags_menu_action_add_hybrid_synth_callback
-ags_menu_action_add_hybrid_fm_synth_callback
-ags_menu_action_add_ffplayer_callback
-ags_menu_action_add_sf2_synth_callback
-ags_menu_action_add_pitch_sampler_callback
-ags_menu_action_add_sfz_synth_callback
-ags_menu_action_add_audiorec_callback
-ags_menu_action_add_desk_callback
-ags_menu_action_add_ladspa_bridge_callback
-ags_menu_action_add_dssi_bridge_callback
-ags_menu_action_add_lv2_bridge_callback
-ags_menu_action_add_vst3_bridge_callback
-ags_menu_action_add_live_dssi_bridge_callback
-ags_menu_action_add_live_lv2_bridge_callback
-ags_menu_action_add_live_vst3_bridge_callback
-ags_menu_action_notation_callback
-ags_menu_action_automation_callback
-ags_menu_action_wave_callback
-ags_menu_action_sheet_callback
-ags_menu_action_meta_data_callback
-ags_menu_action_preferences_callback
-ags_menu_action_midi_import_callback
-ags_menu_action_midi_export_track_callback
-ags_menu_action_midi_playback_callback
-ags_menu_action_online_help_callback
-ags_menu_action_about_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_menu_bar</FILE>
-<TITLE>AgsMenuBar</TITLE>
-AgsMenuBarFlags
-ags_zoom_menu_new
-ags_tact_menu_new
-ags_zoom_combo_box_new
-ags_tact_combo_box_new
-ags_ladspa_bridge_menu_new
-ags_dssi_bridge_menu_new
-ags_lv2_bridge_menu_new
-ags_vst3_bridge_menu_new
-ags_live_dssi_bridge_menu_new
-ags_live_lv2_bridge_menu_new
-ags_live_vst3_bridge_menu_new
-ags_menu_bar_new
-<SUBSECTION Standard>
-AGS_IS_MENU_BAR
-AGS_IS_MENU_BAR_CLASS
-AGS_MENU_BAR
-AGS_MENU_BAR_CLASS
-AGS_MENU_BAR_GET_CLASS
-AGS_TYPE_MENU_BAR
-AgsMenuBar
-AgsMenuBarClass
-ags_menu_bar_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_meta_data_window</FILE>
+<TITLE>AgsMetaDataWindow</TITLE>
+ags_meta_data_window_new
+<SUBSECTION Public>
+AGS_IS_META_DATA_WINDOW
+AGS_IS_META_DATA_WINDOW_CLASS
+AGS_META_DATA_WINDOW
+AGS_META_DATA_WINDOW_CLASS
+AGS_META_DATA_WINDOW_GET_CLASS
 AGS_TYPE_META_DATA_WINDOW
 AgsMetaDataWindow
-ags_meta_data_window_new
+AgsMetaDataWindowClass
+ags_meta_data_window_get_type
 </SECTION>
 
 <SECTION>
@@ -2817,7 +2795,7 @@ AGS_MIDI_DIALOG_DEFAULT_BUILD_ID
 AgsMidiDialogFlags
 ags_midi_dialog_load_sequencers
 ags_midi_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIDI_DIALOG
 AGS_IS_MIDI_DIALOG_CLASS
 AGS_MIDI_DIALOG
@@ -2834,7 +2812,6 @@ ags_midi_dialog_get_type
 ags_midi_dialog_apply_callback
 ags_midi_dialog_ok_callback
 ags_midi_dialog_cancel_callback
-ags_midi_dialog_delete_event
 </SECTION>
 
 <SECTION>
@@ -2852,7 +2829,7 @@ ags_midi_export_wizard_test_flags
 ags_midi_export_wizard_set_flags
 ags_midi_export_wizard_unset_flags
 ags_midi_export_wizard_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIDI_EXPORT_WIZARD
 AGS_IS_MIDI_EXPORT_WIZARD_CLASS
 AGS_MIDI_EXPORT_WIZARD
@@ -2877,7 +2854,7 @@ ags_midi_import_wizard_test_flags
 ags_midi_import_wizard_set_flags
 ags_midi_import_wizard_unset_flags
 ags_midi_import_wizard_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIDI_IMPORT_WIZARD
 AGS_IS_MIDI_IMPORT_WIZARD_CLASS
 AGS_MIDI_IMPORT_WIZARD
@@ -2897,9 +2874,11 @@ ags_midi_import_wizard_response_callback
 <SECTION>
 <FILE>ags_midi_preferences</FILE>
 <TITLE>AgsMidiPreferences</TITLE>
-AgsMidiPreferencesFlags
+ags_midi_preferences_get_sequencer_editor
+ags_midi_preferences_add_sequencer_editor
+ags_midi_preferences_remove_sequencer_editor
 ags_midi_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIDI_PREFERENCES
 AGS_IS_MIDI_PREFERENCES_CLASS
 AGS_MIDI_PREFERENCES
@@ -2913,7 +2892,7 @@ ags_midi_preferences_get_type
 
 <SECTION>
 <FILE>ags_midi_preferences_callbacks</FILE>
-ags_midi_preferences_parent_set_callback
+ags_midi_preferences_notify_parent_callback
 ags_midi_preferences_add_callback
 ags_midi_preferences_remove_sequencer_editor_callback
 </SECTION>
@@ -2922,7 +2901,7 @@ ags_midi_preferences_remove_sequencer_editor_callback
 <FILE>ags_mixer</FILE>
 <TITLE>AgsMixer</TITLE>
 ags_mixer_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIXER
 AGS_IS_MIXER_CLASS
 AGS_MIXER
@@ -2936,14 +2915,14 @@ ags_mixer_get_type
 
 <SECTION>
 <FILE>ags_mixer_callbacks</FILE>
-ags_mixer_parent_set_callback
+
 </SECTION>
 
 <SECTION>
 <FILE>ags_mixer_input_line</FILE>
 <TITLE>AgsMixerInputLine</TITLE>
 ags_mixer_input_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIXER_INPUT_LINE
 AGS_IS_MIXER_INPUT_LINE_CLASS
 AGS_MIXER_INPUT_LINE
@@ -2959,7 +2938,7 @@ ags_mixer_input_line_get_type
 <FILE>ags_mixer_input_pad</FILE>
 <TITLE>AgsMixerInputPad</TITLE>
 ags_mixer_input_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MIXER_INPUT_PAD
 AGS_IS_MIXER_INPUT_PAD_CLASS
 AGS_MIXER_INPUT_PAD
@@ -2976,9 +2955,8 @@ ags_mixer_input_pad_get_type
 <TITLE>AgsMoveNoteDialog</TITLE>
 AGS_MOVE_NOTE_DIALOG_MAX_X
 AGS_MOVE_NOTE_DIALOG_MAX_Y
-AgsMoveNoteDialogFlags
 ags_move_note_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_MOVE_NOTE_DIALOG
 AGS_IS_MOVE_NOTE_DIALOG_CLASS
 AGS_MOVE_NOTE_DIALOG
@@ -3000,10 +2978,13 @@ ags_move_note_dialog_absolute_callback
 <SECTION>
 <FILE>ags_navigation</FILE>
 <TITLE>AgsNavigation</TITLE>
+AGS_NAVIGATION_DEFAULT_BPM
 AGS_NAVIGATION_DEFAULT_TACT_STEP
 AGS_NAVIGATION_SEEK_STEPS
 AGS_NAVIGATION_REWIND_STEPS
-AGS_NAVIGATION_MEDIA_CONTROL_PADDING
+AGS_NAVIGATION_DURATION_ZERO
+AGS_NAVIGATION_MAX_POSITION_TACT
+AGS_NAVIGATION_MAX_POSITION_TICS
 AgsNavigationFlags
 ags_navigation_tact_to_time_string
 ags_navigation_relative_tact_to_time_string
@@ -3011,9 +2992,9 @@ ags_navigation_absolute_tact_to_time_string
 ags_navigation_update_time_string
 ags_navigation_set_seeking_sensitive
 ags_navigation_change_position
-ags_navigation_duration_time_queue_draw
+ags_navigation_duration_time_queue_draw_timeout
 ags_navigation_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_NAVIGATION
 AGS_IS_NAVIGATION_CLASS
 AGS_NAVIGATION
@@ -3073,7 +3054,7 @@ ags_notation_edit_draw_note
 ags_notation_edit_draw_notation
 ags_notation_edit_draw
 ags_notation_edit_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_NOTATION_EDIT
 AGS_IS_NOTATION_EDIT_CLASS
 AGS_NOTATION_EDIT
@@ -3088,55 +3069,9 @@ ags_notation_edit_get_type
 <SECTION>
 <FILE>ags_notation_edit_callbacks</FILE>
 ags_notation_edit_draw_callback
-ags_notation_edit_drawing_area_configure_event
-ags_notation_edit_drawing_area_button_press_event
-ags_notation_edit_drawing_area_button_release_event
-ags_notation_edit_drawing_area_motion_notify_event
-ags_notation_edit_drawing_area_key_press_event
-ags_notation_edit_drawing_area_key_release_event
+ags_notation_edit_drawing_area_resize_callback
 ags_notation_edit_vscrollbar_value_changed
 ags_notation_edit_hscrollbar_value_changed
-</SECTION>
-
-<SECTION>
-<FILE>ags_notation_editor</FILE>
-<TITLE>AgsNotationEditor</TITLE>
-AGS_NOTATION_EDITOR_DEFAULT_VERSION
-AGS_NOTATION_EDITOR_DEFAULT_BUILD_ID
-AGS_NOTATION_EDITOR_MAX_CONTROLS
-AgsNotationEditorFlags
-ags_notation_editor_machine_changed
-ags_notation_editor_add_note
-ags_notation_editor_delete_note
-ags_notation_editor_select_region
-ags_notation_editor_do_feedback
-ags_notation_editor_start_play_key
-ags_notation_editor_stop_play_key
-ags_notation_editor_select_all
-ags_notation_editor_paste
-ags_notation_editor_copy
-ags_notation_editor_cut
-ags_notation_editor_invert
-ags_notation_editor_new
-<SUBSECTION Standard>
-AGS_IS_NOTATION_EDITOR
-AGS_IS_NOTATION_EDITOR_CLASS
-AGS_NOTATION_EDITOR
-AGS_NOTATION_EDITOR_CLASS
-AGS_NOTATION_EDITOR_GET_CLASS
-AGS_TYPE_NOTATION_EDITOR
-AgsNotationEditor
-AgsNotationEditorClass
-ags_notation_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_notation_editor_callbacks</FILE>
-ags_notation_editor_machine_changed_callback
-ags_notation_editor_piano_key_pressed_callback
-ags_notation_editor_piano_key_released_callback
-ags_notation_editor_resize_audio_channels_callback
-ags_notation_editor_resize_pads_callback
 </SECTION>
 
 <SECTION>
@@ -3145,7 +3080,7 @@ ags_notation_editor_resize_pads_callback
 AgsNotationMetaFlags
 ags_notation_meta_refresh
 ags_notation_meta_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_NOTATION_META
 AGS_IS_NOTATION_META_CLASS
 AGS_NOTATION_META
@@ -3163,51 +3098,10 @@ ags_notation_meta_machine_changed_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_notation_toolbar</FILE>
-<TITLE>AgsNotationToolbar</TITLE>
-AgsNotationToolbarFlags
-ags_notation_toolbar_tool_popup_new
-ags_notation_toolbar_new
-<SUBSECTION Standard>
-AGS_IS_NOTATION_TOOLBAR
-AGS_IS_NOTATION_TOOLBAR_CLASS
-AGS_NOTATION_TOOLBAR
-AGS_NOTATION_TOOLBAR_CLASS
-AGS_NOTATION_TOOLBAR_GET_CLASS
-AGS_TYPE_NOTATION_TOOLBAR
-AgsNotationToolbar
-AgsNotationToolbarClass
-ags_notation_toolbar_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_notation_toolbar_callbacks</FILE>
-ags_notation_toolbar_position_callback
-ags_notation_toolbar_edit_callback
-ags_notation_toolbar_clear_callback
-ags_notation_toolbar_select_callback
-ags_notation_toolbar_copy_or_cut_callback
-ags_notation_toolbar_paste_callback
-ags_notation_toolbar_invert_callback
-ags_notation_toolbar_match_audio_channel_callback
-ags_notation_toolbar_no_duplicates_callback
-ags_notation_toolbar_tool_popup_move_note_callback
-ags_notation_toolbar_tool_popup_crop_note_callback
-ags_notation_toolbar_tool_popup_select_note_callback
-ags_notation_toolbar_tool_popup_position_cursor_callback
-ags_notation_toolbar_tool_popup_enable_all_lines_callback
-ags_notation_toolbar_tool_popup_disable_all_lines_callback
-ags_notation_toolbar_zoom_callback
-ags_notation_toolbar_mode_callback
-ags_notation_toolbar_opacity_callback
-</SECTION>
-
-<SECTION>
 <FILE>ags_online_help_window</FILE>
 <TITLE>AgsOnlineHelpWindow</TITLE>
-AgsOnlineHelpWindowFlags
 ags_online_help_window_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_ONLINE_HELP_WINDOW
 AGS_IS_ONLINE_HELP_WINDOW_CLASS
 AGS_ONLINE_HELP_WINDOW
@@ -3223,7 +3117,7 @@ ags_online_help_window_get_type
 <FILE>ags_online_help_window_callbacks</FILE>
 ags_online_help_window_load_changed
 ags_online_help_window_pdf_drawing_area_draw_callback
-ags_online_help_window_pdf_drawing_area_configure_callback
+ags_online_help_window_pdf_drawing_area_resize_callback
 ags_online_help_window_pdf_vscrollbar_value_changed_callback
 ags_online_help_window_pdf_hscrollbar_value_changed_callback
 ags_online_help_window_home_callback
@@ -3236,7 +3130,7 @@ ags_online_help_window_prev_callback
 <TITLE>AgsOscServerPreferences</TITLE>
 AgsOscServerPreferencesFlags
 ags_osc_server_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_OSC_SERVER_PREFERENCES
 AGS_IS_OSC_SERVER_PREFERENCES_CLASS
 AGS_OSC_SERVER_PREFERENCES
@@ -3269,7 +3163,7 @@ AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT
 AgsOscillatorFlags
 ags_oscillator_control_changed
 ags_oscillator_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_OSCILLATOR
 AGS_IS_OSCILLATOR_CLASS
 AGS_OSCILLATOR
@@ -3294,79 +3188,6 @@ ags_oscillator_sync_point_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_output_collection_editor</FILE>
-<TITLE>AgsOutputCollectionEditor</TITLE>
-AgsOutputCollectionEditorFlags
-ags_output_collection_editor_check
-ags_output_collection_editor_new
-<SUBSECTION Standard>
-AGS_IS_OUTPUT_COLLECTION_EDITOR
-AGS_IS_OUTPUT_COLLECTION_EDITOR_CLASS
-AGS_OUTPUT_COLLECTION_EDITOR
-AGS_OUTPUT_COLLECTION_EDITOR_CLASS
-AGS_OUTPUT_COLLECTION_EDITOR_GET_CLASS
-AGS_TYPE_OUTPUT_COLLECTION_EDITOR
-AgsOutputCollectionEditor
-AgsOutputCollectionEditorClass
-ags_output_collection_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_output_collection_editor_callbacks</FILE>
-ags_output_collection_editor_parent_set_callback
-ags_output_collection_editor_soundcard_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_output_editor</FILE>
-<TITLE>AgsOutputEditor</TITLE>
-AGS_OUTPUT_EDITOR_DEFAULT_VERSION
-AGS_OUTPUT_EDITOR_DEFAULT_BUILD_ID
-AgsOutputEditorFlags
-ags_output_editor_check
-ags_output_editor_new
-<SUBSECTION Standard>
-AGS_IS_OUTPUT_EDITOR
-AGS_IS_OUTPUT_EDITOR_CLASS
-AGS_OUTPUT_EDITOR
-AGS_OUTPUT_EDITOR_CLASS
-AGS_OUTPUT_EDITOR_GET_CLASS
-AGS_TYPE_OUTPUT_EDITOR
-AgsOutputEditor
-AgsOutputEditorClass
-ags_output_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_output_editor_callbacks</FILE>
-ags_output_editor_parent_set_callback
-ags_output_editor_soundcard_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_output_listing_editor</FILE>
-<TITLE>AgsOutputListingEditor</TITLE>
-ags_output_listing_editor_add_children
-ags_output_listing_editor_new
-<SUBSECTION Standard>
-AGS_IS_OUTPUT_LISTING_EDITOR
-AGS_IS_OUTPUT_LISTING_EDITOR_CLASS
-AGS_OUTPUT_LISTING_EDITOR
-AGS_OUTPUT_LISTING_EDITOR_CLASS
-AGS_OUTPUT_LISTING_EDITOR_GET_CLASS
-AGS_TYPE_OUTPUT_LISTING_EDITOR
-AgsOutputListingEditor
-AgsOutputListingEditorClass
-ags_output_listing_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_output_listing_editor_callbacks</FILE>
-ags_output_listing_editor_parent_set_callback
-ags_output_listing_editor_resize_pads_callback
-</SECTION>
-
-<SECTION>
 <FILE>ags_pad</FILE>
 <TITLE>AgsPad</TITLE>
 AGS_PAD_DEFAULT_VERSION
@@ -3376,12 +3197,15 @@ ags_pad_samplerate_changed
 ags_pad_buffer_size_changed
 ags_pad_format_changed
 ags_pad_set_channel
+ags_pad_get_line
+ags_pad_add_line
+ags_pad_remove_line
 ags_pad_resize_lines
 ags_pad_map_recall
 ags_pad_find_port
 ags_pad_play
 ags_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PAD
 AGS_IS_PAD_CLASS
 AGS_PAD
@@ -3401,35 +3225,10 @@ ags_pad_solo_clicked_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_pad_editor</FILE>
-<TITLE>AgsPadEditor</TITLE>
-AGS_PAD_EDITOR_DEFAULT_VERSION
-AGS_PAD_EDITOR_DEFAULT_BUILD_ID
-AgsPadEditorFlags
-ags_pad_editor_set_channel
-ags_pad_editor_new
-<SUBSECTION Standard>
-AGS_IS_PAD_EDITOR
-AGS_IS_PAD_EDITOR_CLASS
-AGS_PAD_EDITOR
-AGS_PAD_EDITOR_CLASS
-AGS_PAD_EDITOR_GET_CLASS
-AGS_TYPE_PAD_EDITOR
-AgsPadEditor
-AgsPadEditorClass
-ags_pad_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_pad_editor_callbacks</FILE>
-ags_pad_editor_resize_audio_channels_callback
-</SECTION>
-
-<SECTION>
 <FILE>ags_panel</FILE>
 <TITLE>AgsPanel</TITLE>
 ags_panel_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PANEL
 AGS_IS_PANEL_CLASS
 AGS_PANEL
@@ -3443,14 +3242,14 @@ ags_panel_get_type
 
 <SECTION>
 <FILE>ags_panel_callbacks</FILE>
-ags_panel_parent_set_callback
+
 </SECTION>
 
 <SECTION>
 <FILE>ags_panel_input_line</FILE>
 <TITLE>AgsPanelInputLine</TITLE>
 ags_panel_input_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PANEL_INPUT_LINE
 AGS_IS_PANEL_INPUT_LINE_CLASS
 AGS_PANEL_INPUT_LINE
@@ -3471,7 +3270,7 @@ ags_panel_input_line_get_type
 <FILE>ags_panel_input_pad</FILE>
 <TITLE>AgsPanelInputPad</TITLE>
 ags_panel_input_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PANEL_INPUT_PAD
 AGS_IS_PANEL_INPUT_PAD_CLASS
 AGS_PANEL_INPUT_PAD
@@ -3495,10 +3294,13 @@ AGS_PATTERN_BOX_N_INDICES
 AgsPatternBoxFlags
 AgsPatternBoxKeyMask
 AgsPatternBoxAction
+ags_pattern_box_get_pad
+ags_pattern_box_add_pad
+ags_pattern_box_remove_pad
 ags_pattern_box_led_queue_draw_timeout
 ags_pattern_box_set_pattern
 ags_pattern_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PATTERN_BOX
 AGS_IS_PATTERN_BOX_CLASS
 AGS_PATTERN_BOX
@@ -3512,10 +3314,6 @@ ags_pattern_box_get_type
 
 <SECTION>
 <FILE>ags_pattern_box_callbacks</FILE>
-ags_pattern_box_focus_in_callback
-ags_pattern_box_focus_out_callback
-ags_pattern_box_key_press_event
-ags_pattern_box_key_release_event
 ags_pattern_box_pad_callback
 ags_pattern_box_offset_callback
 </SECTION>
@@ -3536,7 +3334,7 @@ ags_pattern_envelope_reset_control
 ags_pattern_envelope_reset_tree_view
 ags_pattern_envelope_plot
 ags_pattern_envelope_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PATTERN_ENVELOPE
 AGS_IS_PATTERN_ENVELOPE_CLASS
 AGS_PATTERN_ENVELOPE
@@ -3575,11 +3373,28 @@ ags_pattern_envelope_preset_rename_response_callback
 </SECTION>
 
 <SECTION>
+<FILE>ags_pcm_file_chooser_dialog</FILE>
+<TITLE>AgsPCMFileChooserDialog</TITLE>
+AgsPCMFileChooserDialogFlags
+ags_pcm_file_chooser_dialog_new
+<SUBSECTION Public>
+AGS_IS_PCM_FILE_CHOOSER_DIALOG
+AGS_IS_PCM_FILE_CHOOSER_DIALOG_CLASS
+AGS_PCM_FILE_CHOOSER_DIALOG
+AGS_PCM_FILE_CHOOSER_DIALOG_CLASS
+AGS_PCM_FILE_CHOOSER_DIALOG_GET_CLASS
+AGS_TYPE_PCM_FILE_CHOOSER_DIALOG
+AgsPCMFileChooserDialog
+AgsPCMFileChooserDialogClass
+ags_pcm_file_chooser_dialog_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_performance_preferences</FILE>
 <TITLE>AgsPerformancePreferences</TITLE>
 AgsPerformancePreferencesFlags
 ags_performance_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PERFORMANCE_PREFERENCES
 AGS_IS_PERFORMANCE_PREFERENCES_CLASS
 AGS_PERFORMANCE_PREFERENCES
@@ -3603,13 +3418,14 @@ AGS_PITCH_SAMPLER_LFO_FREQ_MIN
 AGS_PITCH_SAMPLER_LFO_FREQ_MAX
 AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ
 AgsPitch_SamplerFlags
+ags_pitch_sampler_get_file
 ags_pitch_sampler_add_file
 ags_pitch_sampler_remove_file
 ags_pitch_sampler_open_filename
 ags_pitch_sampler_update
 ags_pitch_sampler_sfz_loader_completed_timeout
 ags_pitch_sampler_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PITCH_SAMPLER
 AGS_IS_PITCH_SAMPLER_CLASS
 AGS_PITCH_SAMPLER
@@ -3623,7 +3439,6 @@ ags_pitch_sampler_get_type
 
 <SECTION>
 <FILE>ags_pitch_sampler_callbacks</FILE>
-ags_pitch_sampler_parent_set_callback
 ags_pitch_sampler_open_callback
 ags_pitch_sampler_file_control_changed_callback
 ags_pitch_sampler_update_callback
@@ -3643,9 +3458,8 @@ ags_pitch_sampler_volume_callback
 <SECTION>
 <FILE>ags_pitch_sampler_file</FILE>
 <TITLE>AgsPitchSamplerFile</TITLE>
-AgsPitchSamplerFileFlags
 ags_pitch_sampler_file_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PITCH_SAMPLER_FILE
 AGS_IS_PITCH_SAMPLER_FILE_CLASS
 AGS_PITCH_SAMPLER_FILE
@@ -3663,35 +3477,12 @@ ags_pitch_sampler_file_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_playback_window</FILE>
-<TITLE>AgsPlaybackWindow</TITLE>
-AgsPlaybackWindowFlags
-ags_playback_window_new
-<SUBSECTION Standard>
-AGS_IS_PLAYBACK_WINDOW
-AGS_IS_PLAYBACK_WINDOW_CLASS
-AGS_PLAYBACK_WINDOW
-AGS_PLAYBACK_WINDOW_CLASS
-AGS_PLAYBACK_WINDOW_GET_CLASS
-AGS_TYPE_PLAYBACK_WINDOW
-AgsPlaybackWindow
-AgsPlaybackWindowClass
-ags_playback_window_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_playback_window_callbacks</FILE>
-
-</SECTION>
-
-<SECTION>
 <FILE>ags_plugin_browser</FILE>
 <TITLE>AgsPluginBrowser</TITLE>
-AgsPluginBrowserFlags
 ags_plugin_browser_get_plugin_filename
 ags_plugin_browser_get_plugin_effect
 ags_plugin_browser_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PLUGIN_BROWSER
 AGS_IS_PLUGIN_BROWSER_CLASS
 AGS_PLUGIN_BROWSER
@@ -3715,7 +3506,7 @@ ags_plugin_browser_response_callback
 AgsLadspaPluginPreferences
 ags_ladspa_plugin_preferences_alloc
 ags_plugin_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PLUGIN_PREFERENCES
 AGS_IS_PLUGIN_PREFERENCES_CLASS
 AGS_PLUGIN_PREFERENCES
@@ -3733,12 +3524,47 @@ ags_plugin_preferences_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_port_editor</FILE>
+<TITLE>AgsPortEditor</TITLE>
+AGS_PORT_EDITOR_CONTROL_BUTTON
+AGS_PORT_EDITOR_CONTROL_TOGGLE_BUTTON
+AGS_PORT_EDITOR_CONTROL_CHECK_BUTTON
+AGS_PORT_EDITOR_CONTROL_SPIN_BUTTON
+AGS_PORT_EDITOR_CONTROL_SCALE
+AGS_PORT_EDITOR_CONTROL_DIAL
+AGS_PORT_EDITOR_CONTROL_LED
+AGS_PORT_EDITOR_CONTROL_INDICATOR
+AGS_PORT_EDITOR_CONTROL_VECTOR
+AGS_PORT_EDITOR_CONTROL_PIANO
+AGS_PORT_EDITOR_CONTROL_CARTESIAN
+AgsPortEditorFlags
+ags_port_editor_test_flags
+ags_port_editor_set_flags
+ags_port_editor_unset_flags
+ags_port_editor_new
+<SUBSECTION Public>
+AGS_IS_PORT_EDITOR
+AGS_IS_PORT_EDITOR_CLASS
+AGS_PORT_EDITOR
+AGS_PORT_EDITOR_CLASS
+AGS_PORT_EDITOR_GET_CLASS
+AGS_TYPE_PORT_EDITOR
+AgsPortEditor
+AgsPortEditorClass
+ags_port_editor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_port_editor_callbacks</FILE>
+
+</SECTION>
+
+<SECTION>
 <FILE>ags_position_automation_cursor_dialog</FILE>
 <TITLE>AgsPositionAutomationCursorDialog</TITLE>
 AGS_POSITION_AUTOMATION_CURSOR_MAX_BEATS
-AgsPositionAutomationCursorDialogFlags
 ags_position_automation_cursor_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_POSITION_AUTOMATION_CURSOR_DIALOG
 AGS_IS_POSITION_AUTOMATION_CURSOR_DIALOG_CLASS
 AGS_POSITION_AUTOMATION_CURSOR_DIALOG
@@ -3760,9 +3586,8 @@ ags_position_automation_cursor_dialog_response_callback
 <TITLE>AgsPositionNotationCursorDialog</TITLE>
 AGS_POSITION_NOTATION_CURSOR_MAX_BEATS
 AGS_POSITION_NOTATION_CURSOR_MAX_KEYS
-AgsPositionNotationCursorDialogFlags
 ags_position_notation_cursor_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_POSITION_NOTATION_CURSOR_DIALOG
 AGS_IS_POSITION_NOTATION_CURSOR_DIALOG_CLASS
 AGS_POSITION_NOTATION_CURSOR_DIALOG
@@ -3784,9 +3609,8 @@ ags_position_notation_cursor_dialog_response_callback
 <TITLE>AgsPositionSheetCursorDialog</TITLE>
 AGS_POSITION_SHEET_CURSOR_MAX_BEATS
 AGS_POSITION_SHEET_CURSOR_MAX_KEYS
-AgsPositionSheetCursorDialogFlags
 ags_position_sheet_cursor_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_POSITION_SHEET_CURSOR_DIALOG
 AGS_IS_POSITION_SHEET_CURSOR_DIALOG_CLASS
 AGS_POSITION_SHEET_CURSOR_DIALOG
@@ -3807,9 +3631,9 @@ ags_position_sheet_cursor_dialog_response_callback
 <FILE>ags_position_wave_cursor_dialog</FILE>
 <TITLE>AgsPositionWaveCursorDialog</TITLE>
 AGS_POSITION_WAVE_CURSOR_MAX_BEATS
-AgsPositionWaveCursorDialogFlags
+AGS_POSITION_WAVE_CURSOR_MAX_CONTROLS
 ags_position_wave_cursor_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_POSITION_WAVE_CURSOR_DIALOG
 AGS_IS_POSITION_WAVE_CURSOR_DIALOG_CLASS
 AGS_POSITION_WAVE_CURSOR_DIALOG
@@ -3832,7 +3656,7 @@ ags_position_wave_cursor_dialog_response_callback
 AGS_PREFERENCES_DEFAULT_FILENAME
 AgsPreferencesFlags
 ags_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PREFERENCES
 AGS_IS_PREFERENCES_CLASS
 AGS_PREFERENCES
@@ -3846,79 +3670,18 @@ ags_preferences_get_type
 
 <SECTION>
 <FILE>ags_preferences_callbacks</FILE>
-ags_preferences_delete_event_callback
+ags_preferences_close_request_callback
 ags_preferences_response_callback
 ags_preferences_notebook_switch_page_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_property_collection_editor</FILE>
-<TITLE>AgsPropertyCollectionEditor</TITLE>
-ags_property_collection_editor_new
-<SUBSECTION Standard>
-AGS_IS_PROPERTY_COLLECTION_EDITOR
-AGS_IS_PROPERTY_COLLECTION_EDITOR_CLASS
-AGS_PROPERTY_COLLECTION_EDITOR
-AGS_PROPERTY_COLLECTION_EDITOR_CLASS
-AGS_PROPERTY_COLLECTION_EDITOR_GET_CLASS
-AGS_TYPE_PROPERTY_COLLECTION_EDITOR
-AgsPropertyCollectionEditor
-AgsPropertyCollectionEditorClass
-ags_property_collection_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_property_collection_editor_callbacks</FILE>
-ags_property_collection_editor_add_collection_callback
-ags_property_collection_editor_remove_collection_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_property_editor</FILE>
-<TITLE>AgsPropertyEditor</TITLE>
-AgsPropertyEditorFlags
-ags_property_editor_new
-<SUBSECTION Standard>
-AGS_IS_PROPERTY_EDITOR
-AGS_IS_PROPERTY_EDITOR_CLASS
-AGS_PROPERTY_EDITOR
-AGS_PROPERTY_EDITOR_CLASS
-AGS_PROPERTY_EDITOR_GET_CLASS
-AGS_TYPE_PROPERTY_EDITOR
-AgsPropertyEditor
-AgsPropertyEditorClass
-ags_property_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_property_editor_callbacks</FILE>
-ags_property_editor_enable_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_property_listing_editor</FILE>
-<TITLE>AgsPropertyListingEditor</TITLE>
-ags_property_listing_editor_new
-<SUBSECTION Standard>
-AGS_IS_PROPERTY_LISTING_EDITOR
-AGS_IS_PROPERTY_LISTING_EDITOR_CLASS
-AGS_PROPERTY_LISTING_EDITOR
-AGS_PROPERTY_LISTING_EDITOR_CLASS
-AGS_PROPERTY_LISTING_EDITOR_GET_CLASS
-AGS_TYPE_PROPERTY_LISTING_EDITOR
-AgsPropertyListingEditor
-AgsPropertyListingEditorClass
-ags_property_listing_editor_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_quit_dialog</FILE>
 <TITLE>AgsQuitDialog</TITLE>
-AgsQuitDialogFlags
 AgsQuitDialogQuestion
 ags_quit_dialog_fast_export
 ags_quit_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_QUIT_DIALOG
 AGS_IS_QUIT_DIALOG_CLASS
 AGS_QUIT_DIALOG
@@ -3941,9 +3704,8 @@ ags_quit_dialog_response_callback
 AGS_RAMP_ACCELERATION_MAX_BEATS
 AGS_RAMP_ACCELERATION_MAX_STEPS
 AGS_RAMP_ACCELERATION_DEFAULT_WIDTH
-AgsRampAccelerationDialogFlags
 ags_ramp_acceleration_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_RAMP_ACCELERATION_DIALOG
 AGS_IS_RAMP_ACCELERATION_DIALOG_CLASS
 AGS_RAMP_ACCELERATION_DIALOG
@@ -3965,9 +3727,8 @@ ags_ramp_acceleration_dialog_machine_changed_callback
 <SECTION>
 <FILE>ags_remove_sheet_page_dialog</FILE>
 <TITLE>AgsRemoveSheetPageDialog</TITLE>
-AgsRemoveSheetPageDialogFlags
 ags_remove_sheet_page_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_REMOVE_SHEET_PAGE_DIALOG
 AGS_IS_REMOVE_SHEET_PAGE_DIALOG_CLASS
 AGS_REMOVE_SHEET_PAGE_DIALOG
@@ -3988,7 +3749,7 @@ ags_remove_sheet_page_dialog_response_callback
 <FILE>ags_resize_editor</FILE>
 <TITLE>AgsResizeEditor</TITLE>
 ags_resize_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_RESIZE_EDITOR
 AGS_IS_RESIZE_EDITOR_CLASS
 AGS_RESIZE_EDITOR
@@ -4002,8 +3763,10 @@ AgsResizeEditorClass
 <SECTION>
 <FILE>ags_scrolled_automation_edit_box</FILE>
 <TITLE>AgsScrolledAutomationEditBox</TITLE>
+ags_scrolled_automation_edit_box_get_scrolled_window
+ags_scrolled_automation_edit_box_get_automation_edit_box
 ags_scrolled_automation_edit_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX
 AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX_CLASS
 AGS_SCROLLED_AUTOMATION_EDIT_BOX
@@ -4018,8 +3781,10 @@ ags_scrolled_automation_edit_box_get_type
 <SECTION>
 <FILE>ags_scrolled_wave_edit_box</FILE>
 <TITLE>AgsScrolledWaveEditBox</TITLE>
+ags_scrolled_wave_edit_box_get_scrolled_window
+ags_scrolled_wave_edit_box_get_wave_edit_box
 ags_scrolled_wave_edit_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCROLLED_WAVE_EDIT_BOX
 AGS_IS_SCROLLED_WAVE_EDIT_BOX_CLASS
 AGS_SCROLLED_WAVE_EDIT_BOX
@@ -4036,9 +3801,8 @@ ags_scrolled_wave_edit_box_get_type
 <TITLE>AgsSelectAccelerationDialog</TITLE>
 AGS_SELECT_ACCELERATION_MAX_BEATS
 AGS_SELECT_ACCELERATION_DEFAULT_WIDTH
-AgsSelectAccelerationDialogFlags
 ags_select_acceleration_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SELECT_ACCELERATION_DIALOG
 AGS_IS_SELECT_ACCELERATION_DIALOG_CLASS
 AGS_SELECT_ACCELERATION_DIALOG
@@ -4063,9 +3827,8 @@ ags_select_acceleration_dialog_machine_changed_callback
 <TITLE>AgsSelectBufferDialog</TITLE>
 AGS_SELECT_BUFFER_MAX_BEATS
 AGS_SELECT_BUFFER_DEFAULT_WIDTH
-AgsSelectBufferDialogFlags
 ags_select_buffer_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SELECT_BUFFER_DIALOG
 AGS_IS_SELECT_BUFFER_DIALOG_CLASS
 AGS_SELECT_BUFFER_DIALOG
@@ -4087,9 +3850,8 @@ ags_select_buffer_dialog_response_callback
 <TITLE>AgsSelectNoteDialog</TITLE>
 AGS_SELECT_NOTE_MAX_BEATS
 AGS_SELECT_NOTE_MAX_KEYS
-AgsSelectNoteDialogFlags
 ags_select_note_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SELECT_NOTE_DIALOG
 AGS_IS_SELECT_NOTE_DIALOG_CLASS
 AGS_SELECT_NOTE_DIALOG
@@ -4118,7 +3880,7 @@ ags_sequencer_editor_load_jack_card
 ags_sequencer_editor_load_alsa_card
 ags_sequencer_editor_load_oss_card
 ags_sequencer_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SEQUENCER_EDITOR
 AGS_IS_SEQUENCER_EDITOR_CLASS
 AGS_SEQUENCER_EDITOR
@@ -4142,7 +3904,7 @@ ags_sequencer_editor_remove_jack_callback
 <FILE>ags_server_preferences</FILE>
 <TITLE>AgsServerPreferences</TITLE>
 ags_server_preferences_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SERVER_PREFERENCES
 AGS_IS_SERVER_PREFERENCES_CLASS
 AGS_SERVER_PREFERENCES
@@ -4174,7 +3936,7 @@ ags_sf2_synth_load_bank
 ags_sf2_synth_load_midi_locale
 ags_sf2_synth_sf2_loader_completed_timeout
 ags_sf2_synth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SF2_SYNTH
 AGS_IS_SF2_SYNTH_CLASS
 AGS_SF2_SYNTH
@@ -4188,7 +3950,6 @@ ags_sf2_synth_get_type
 
 <SECTION>
 <FILE>ags_sf2_synth_callbacks</FILE>
-ags_sf2_synth_parent_set_callback
 ags_sf2_synth_destroy_callback
 ags_sf2_synth_open_clicked_callback
 ags_sf2_synth_bank_tree_view_callback
@@ -4215,7 +3976,7 @@ ags_sfz_synth_open_filename
 ags_sfz_synth_load_opcode
 ags_sfz_synth_sfz_loader_completed_timeout
 ags_sfz_synth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SFZ_SYNTH
 AGS_IS_SFZ_SYNTH_CLASS
 AGS_SFZ_SYNTH
@@ -4229,7 +3990,6 @@ ags_sfz_synth_get_type
 
 <SECTION>
 <FILE>ags_sfz_synth_callbacks</FILE>
-ags_sfz_synth_parent_set_callback
 ags_sfz_synth_destroy_callback
 ags_sfz_synth_open_clicked_callback
 ags_sfz_synth_synth_octave_callback
@@ -4260,7 +4020,7 @@ AgsSheetEditMode
 AgsSheetEditButtonMask
 AgsSheetEditKeyMask
 ags_sheet_edit_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SHEET_EDIT
 AGS_IS_SHEET_EDIT_CLASS
 AGS_SHEET_EDIT
@@ -4274,95 +4034,6 @@ ags_sheet_edit_get_type
 
 <SECTION>
 <FILE>ags_sheet_edit_callbacks</FILE>
-ags_sheet_edit_drawing_area_configure_event
-ags_sheet_edit_drawing_area_button_press_event
-ags_sheet_edit_drawing_area_button_release_event
-ags_sheet_edit_drawing_area_motion_notify_event
-ags_sheet_edit_drawing_area_key_press_event
-ags_sheet_edit_drawing_area_key_release_event
-</SECTION>
-
-<SECTION>
-<FILE>ags_sheet_editor</FILE>
-<TITLE>AgsSheetEditor</TITLE>
-AGS_SHEET_EDITOR_DEFAULT_VERSION
-AGS_SHEET_EDITOR_DEFAULT_BUILD_ID
-AGS_SHEET_EDITOR_MAX_CONTROLS
-AgsSheetEditorFlags
-ags_sheet_editor_machine_changed
-ags_sheet_editor_add_note
-ags_sheet_editor_delete_note
-ags_sheet_editor_select_region
-ags_sheet_editor_do_feedback
-ags_sheet_editor_select_all
-ags_sheet_editor_paste
-ags_sheet_editor_copy
-ags_sheet_editor_cut
-ags_sheet_editor_new
-<SUBSECTION Standard>
-AGS_IS_SHEET_EDITOR
-AGS_IS_SHEET_EDITOR_CLASS
-AGS_SHEET_EDITOR
-AGS_SHEET_EDITOR_CLASS
-AGS_SHEET_EDITOR_GET_CLASS
-AGS_TYPE_SHEET_EDITOR
-AgsSheetEditor
-AgsSheetEditorClass
-ags_sheet_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_sheet_editor_callbacks</FILE>
-ags_sheet_editor_machine_changed_callback
-ags_sheet_editor_resize_audio_channels_callback
-ags_sheet_editor_resize_pads_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_sheet_toolbar</FILE>
-<TITLE>AgsSheetToolbar</TITLE>
-AgsSheetToolbarFlags
-ags_sheet_toolbar_new
-<SUBSECTION Standard>
-AGS_IS_SHEET_TOOLBAR
-AGS_IS_SHEET_TOOLBAR_CLASS
-AGS_SHEET_TOOLBAR
-AGS_SHEET_TOOLBAR_CLASS
-AGS_SHEET_TOOLBAR_GET_CLASS
-AGS_TYPE_SHEET_TOOLBAR
-AgsSheetToolbar
-AgsSheetToolbarClass
-ags_sheet_toolbar_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_sheet_toolbar_callbacks</FILE>
-ags_sheet_toolbar_position_callback
-ags_sheet_toolbar_clear_callback
-ags_sheet_toolbar_select_callback
-ags_sheet_toolbar_copy_or_cut_callback
-ags_sheet_toolbar_paste_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_sheet_window</FILE>
-<TITLE>AgsSheetWindow</TITLE>
-AgsSheetWindowFlags
-ags_sheet_window_new
-<SUBSECTION Standard>
-AGS_IS_SHEET_WINDOW
-AGS_IS_SHEET_WINDOW_CLASS
-AGS_SHEET_WINDOW
-AGS_SHEET_WINDOW_CLASS
-AGS_SHEET_WINDOW_GET_CLASS
-AGS_TYPE_SHEET_WINDOW
-AgsSheetWindow
-AgsSheetWindowClass
-ags_sheet_window_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_sheet_window_callbacks</FILE>
 
 </SECTION>
 
@@ -4403,7 +4074,7 @@ ags_simple_file_read_resolve
 ags_simple_file_read_start
 ags_simple_file_read_config
 ags_simple_file_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SIMPLE_FILE
 AGS_IS_SIMPLE_FILE_CLASS
 AGS_SIMPLE_FILE
@@ -4419,7 +4090,7 @@ ags_simple_file_get_type
 <FILE>ags_simple_file_read</FILE>
 <TITLE>AgsSimpleFileRead</TITLE>
 ags_simple_file_read_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SIMPLE_FILE_READ
 AGS_IS_SIMPLE_FILE_READ_CLASS
 AGS_SIMPLE_FILE_READ
@@ -4435,7 +4106,7 @@ ags_simple_file_read_get_type
 <FILE>ags_simple_file_write</FILE>
 <TITLE>AgsSimpleFileWrite</TITLE>
 ags_simple_file_write_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SIMPLE_FILE_WRITE
 AGS_IS_SIMPLE_FILE_WRITE_CLASS
 AGS_SIMPLE_FILE_WRITE
@@ -4464,7 +4135,7 @@ ags_soundcard_editor_load_oss_card
 ags_soundcard_editor_show_wasapi_control
 ags_soundcard_editor_hide_wasapi_control
 ags_soundcard_editor_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SOUNDCARD_EDITOR
 AGS_IS_SOUNDCARD_EDITOR_CLASS
 AGS_SOUNDCARD_EDITOR
@@ -4503,7 +4174,7 @@ ags_spectrometer_cartesian_queue_draw_timeout
 ags_spectrometer_output_map_recall
 ags_spectrometer_input_map_recall
 ags_spectrometer_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SPECTROMETER
 AGS_IS_SPECTROMETER_CLASS
 AGS_SPECTROMETER
@@ -4517,7 +4188,7 @@ ags_spectrometer_get_type
 
 <SECTION>
 <FILE>ags_spectrometer_callbacks</FILE>
-ags_spectrometer_parent_set_callback
+
 </SECTION>
 
 <SECTION>
@@ -4529,12 +4200,13 @@ AgsSyncsynthFlags
 ags_syncsynth_test_flags
 ags_syncsynth_set_flags
 ags_syncsynth_unset_flags
+ags_syncsynth_get_oscillator
 ags_syncsynth_add_oscillator
 ags_syncsynth_remove_oscillator
 ags_syncsynth_reset_loop
 ags_syncsynth_update
 ags_syncsynth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SYNCSYNTH
 AGS_IS_SYNCSYNTH_CLASS
 AGS_SYNCSYNTH
@@ -4548,7 +4220,6 @@ ags_syncsynth_get_type
 
 <SECTION>
 <FILE>ags_syncsynth_callbacks</FILE>
-ags_syncsynth_parent_set_callback
 ags_syncsynth_samplerate_changed_callback
 ags_syncsynth_oscillator_control_changed_callback
 ags_syncsynth_add_callback
@@ -4572,7 +4243,7 @@ ags_synth_set_flags
 ags_synth_unset_flags
 ags_synth_update
 ags_synth_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SYNTH
 AGS_IS_SYNTH_CLASS
 AGS_SYNTH
@@ -4586,7 +4257,6 @@ ags_synth_get_type
 
 <SECTION>
 <FILE>ags_synth_callbacks</FILE>
-ags_synth_parent_set_callback
 ags_synth_auto_update_callback
 ags_synth_update_callback
 ags_synth_lower_callback
@@ -4596,7 +4266,7 @@ ags_synth_lower_callback
 <FILE>ags_synth_input_line</FILE>
 <TITLE>AgsSynthInputLine</TITLE>
 ags_synth_input_line_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SYNTH_INPUT_LINE
 AGS_IS_SYNTH_INPUT_LINE_CLASS
 AGS_SYNTH_INPUT_LINE
@@ -4618,7 +4288,7 @@ ags_synth_input_line_oscillator_control_changed_callback
 <FILE>ags_synth_input_pad</FILE>
 <TITLE>AgsSynthInputPad</TITLE>
 ags_synth_input_pad_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SYNTH_INPUT_PAD
 AGS_IS_SYNTH_INPUT_PAD_CLASS
 AGS_SYNTH_INPUT_PAD
@@ -4637,9 +4307,8 @@ AGS_TIME_STRETCH_BUFFER_MAX_FREQUENCY
 AGS_TIME_STRETCH_BUFFER_DEFAULT_FREQUENCY
 AGS_TIME_STRETCH_BUFFER_MAX_BPM
 AGS_TIME_STRETCH_BUFFER_DEFAULT_BPM
-AgsTimeStretchBufferDialogFlags
 ags_time_stretch_buffer_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_TIME_STRETCH_BUFFER_DIALOG
 AGS_IS_TIME_STRETCH_BUFFER_DIALOG_CLASS
 AGS_TIME_STRETCH_BUFFER_DIALOG
@@ -4659,10 +4328,13 @@ ags_time_stretch_buffer_dialog_response_callback
 <SECTION>
 <FILE>ags_track_collection</FILE>
 <TITLE>AgsTrackCollection</TITLE>
+ags_track_collection_get_track_mapper
+ags_track_collection_add_track_mapper
+ags_track_collection_remove_track_mapper
 ags_track_collection_parse
 ags_track_collection_add_mapper
 ags_track_collection_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_TRACK_COLLECTION
 AGS_IS_TRACK_COLLECTION_CLASS
 AGS_TRACK_COLLECTION
@@ -4680,27 +4352,27 @@ ags_track_collection_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_track_collection_mapper</FILE>
-<TITLE>AgsTrackCollectionMapper</TITLE>
-AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS
+<FILE>ags_track_mapper</FILE>
+<TITLE>AgsTrackMapper</TITLE>
+AGS_TRACK_MAPPER_DEFAULT_BEATS
 AGS_MIDI_DEFAULT_BEATS
-ags_track_collection_mapper_find_instrument_with_sequence
-ags_track_collection_mapper_map
-ags_track_collection_mapper_new
-<SUBSECTION Standard>
-AGS_IS_TRACK_COLLECTION_MAPPER
-AGS_IS_TRACK_COLLECTION_MAPPER_CLASS
-AGS_TRACK_COLLECTION_MAPPER
-AGS_TRACK_COLLECTION_MAPPER_CLASS
-AGS_TRACK_COLLECTION_MAPPER_GET_CLASS
-AGS_TYPE_TRACK_COLLECTION_MAPPER
-AgsTrackCollectionMapper
-AgsTrackCollectionMapperClass
-ags_track_collection_mapper_get_type
+ags_track_mapper_find_instrument_with_sequence
+ags_track_mapper_map
+ags_track_mapper_new
+<SUBSECTION Public>
+AGS_IS_TRACK_MAPPER
+AGS_IS_TRACK_MAPPER_CLASS
+AGS_TRACK_MAPPER
+AGS_TRACK_MAPPER_CLASS
+AGS_TRACK_MAPPER_GET_CLASS
+AGS_TYPE_TRACK_MAPPER
+AgsTrackMapper
+AgsTrackMapperClass
+ags_track_mapper_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_track_collection_mapper_callbacks</FILE>
+<FILE>ags_track_mapper_callbacks</FILE>
 
 </SECTION>
 
@@ -4711,7 +4383,7 @@ AGS_UI_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH
 ags_ui_osc_renew_controller_set_data
 ags_ui_osc_renew_controller_check_message_callback
 ags_ui_osc_renew_controller_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_UI_OSC_RENEW_CONTROLLER
 AGS_IS_UI_OSC_RENEW_CONTROLLER_CLASS
 AGS_TYPE_UI_OSC_RENEW_CONTROLLER
@@ -4728,6 +4400,9 @@ ags_ui_osc_renew_controller_get_type
 <TITLE>AgsUiProvider</TITLE>
 AGS_UI_PROVIDER_DEFAULT_TIMEOUT
 AGS_UI_PROVIDER_DEFAULT_PADDING
+AGS_UI_PROVIDER_DEFAULT_SPACING
+AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING
+AGS_UI_PROVIDER_DEFAULT_ROW_SPACING
 AGS_UI_PROVIDER_DEFAULT_MARGIN_END
 ags_ui_provider_get_show_animation
 ags_ui_provider_set_show_animation
@@ -4746,12 +4421,6 @@ ags_ui_provider_get_animation_window
 ags_ui_provider_set_animation_window
 ags_ui_provider_get_window
 ags_ui_provider_set_window
-ags_ui_provider_get_automation_window
-ags_ui_provider_set_automation_window
-ags_ui_provider_get_wave_window
-ags_ui_provider_set_wave_window
-ags_ui_provider_get_sheet_window
-ags_ui_provider_set_sheet_window
 ags_ui_provider_get_export_window
 ags_ui_provider_set_export_window
 ags_ui_provider_get_online_help_window
@@ -4772,14 +4441,13 @@ ags_ui_provider_get_machine
 ags_ui_provider_set_machine
 ags_ui_provider_get_composite_editor
 ags_ui_provider_set_composite_editor
-ags_ui_provider_use_composite_editor
 ags_ui_provider_get_navigation
 ags_ui_provider_set_navigation
 ags_ui_provider_get_app
 ags_ui_provider_set_app
 ags_ui_provider_get_meta_data_window
 ags_ui_provider_set_meta_data_window
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_UI_PROVIDER
 AGS_IS_UI_PROVIDER_INTERFACE
 AGS_TYPE_UI_PROVIDER
@@ -4789,108 +4457,6 @@ AGS_UI_PROVIDER_INTERFACE
 AgsUiProvider
 AgsUiProviderInterface
 ags_ui_provider_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_vautomation_edit_box</FILE>
-<TITLE>AgsVAutomationEditBox</TITLE>
-ags_vautomation_edit_box_new
-<SUBSECTION Standard>
-AGS_IS_VAUTOMATION_EDIT_BOX
-AGS_IS_VAUTOMATION_EDIT_BOX_CLASS
-AGS_TYPE_VAUTOMATION_EDIT_BOX
-AGS_VAUTOMATION_EDIT_BOX
-AGS_VAUTOMATION_EDIT_BOX_CLASS
-AGS_VAUTOMATION_EDIT_BOX_GET_CLASS
-AgsVAutomationEditBox
-AgsVAutomationEditBoxClass
-ags_vautomation_edit_box_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_vst3_bridge</FILE>
-<TITLE>AgsVst3Bridge</TITLE>
-AGS_VST3_BRIDGE_DEFAULT_VERSION
-AGS_VST3_BRIDGE_DEFAULT_BUILD_ID
-AGS_VST3_BRIDGE_BLOCK_CONTROL_VST3_UI
-AGS_VST3_BRIDGE_BLOCK_CONTROL_BRIDGE
-AgsVst3BridgeFlags
-ags_vst3_bridge_input_map_recall
-ags_vst3_bridge_output_map_recall
-ags_vst3_bridge_load
-ags_vst3_bridge_reload_port
-ags_vst3_bridge_new
-<SUBSECTION Standard>
-AGS_IS_VST3_BRIDGE
-AGS_IS_VST3_BRIDGE_CLASS
-AGS_TYPE_VST3_BRIDGE
-AGS_VST3_BRIDGE
-AGS_VST3_BRIDGE_CLASS
-AGS_VST3_BRIDGE_GET_CLASS
-AgsVst3Bridge
-AgsVst3BridgeClass
-ags_vst3_bridge_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_vst3_bridge_callbacks</FILE>
-ags_vst3_bridge_parent_set_callback
-ags_vst3_bridge_show_gui_callback
-ags_vst3_bridge_program_changed_callback
-ags_vst3_bridge_perform_edit_callback
-ags_vst3_bridge_restart_component_callback
-ags_vst3_bridge_dial_changed_callback
-ags_vst3_bridge_scale_changed_callback
-ags_vst3_bridge_spin_button_changed_callback
-ags_vst3_bridge_check_button_clicked_callback
-ags_vst3_bridge_toggle_button_clicked_callback
-ags_vst3_bridge_button_clicked_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_vst3_browser</FILE>
-<TITLE>AgsVst3Browser</TITLE>
-AgsVst3BrowserFlags
-ags_vst3_browser_get_plugin_filename
-ags_vst3_browser_get_plugin_effect
-ags_vst3_browser_combo_box_output_boolean_controls_new
-ags_vst3_browser_combo_box_output_controls_new
-ags_vst3_browser_combo_box_boolean_controls_new
-ags_vst3_browser_combo_box_controls_new
-ags_vst3_browser_preview_new
-ags_vst3_browser_new
-<SUBSECTION Standard>
-AGS_IS_VST3_BROWSER
-AGS_IS_VST3_BROWSER_CLASS
-AGS_TYPE_VST3_BROWSER
-AGS_VST3_BROWSER
-AGS_VST3_BROWSER_CLASS
-AGS_VST3_BROWSER_GET_CLASS
-AgsVst3Browser
-AgsVst3BrowserClass
-ags_vst3_browser_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_vst3_browser_callbacks</FILE>
-ags_vst3_browser_plugin_filename_callback
-ags_vst3_browser_plugin_uri_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_vwave_edit_box</FILE>
-<TITLE>AgsVWaveEditBox</TITLE>
-ags_vwave_edit_box_new
-<SUBSECTION Standard>
-AGS_IS_VWAVE_EDIT_BOX
-AGS_IS_VWAVE_EDIT_BOX_CLASS
-AGS_TYPE_VWAVE_EDIT_BOX
-AGS_VWAVE_EDIT_BOX
-AGS_VWAVE_EDIT_BOX_CLASS
-AGS_VWAVE_EDIT_BOX_GET_CLASS
-AgsVWaveEditBox
-AgsVWaveEditBoxClass
-ags_vwave_edit_box_get_type
 </SECTION>
 
 <SECTION>
@@ -4928,7 +4494,7 @@ ags_wave_edit_draw_buffer
 ags_wave_edit_draw_wave
 ags_wave_edit_draw
 ags_wave_edit_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_WAVE_EDIT
 AGS_IS_WAVE_EDIT_CLASS
 AGS_TYPE_WAVE_EDIT
@@ -4943,10 +4509,15 @@ ags_wave_edit_get_type
 <SECTION>
 <FILE>ags_wave_edit_box</FILE>
 <TITLE>AgsWaveEditBox</TITLE>
-AGS_WAVE_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT
-AgsWaveEditBoxFlags
+AGS_WAVE_EDIT_BOX_DEFAULT_WAVE_HEIGHT
+AGS_WAVE_EDIT_BOX_DEFAULT_SPACING
+ags_wave_edit_box_get_wave_edit
+ags_wave_edit_box_add_wave_edit
+ags_wave_edit_box_remove_wave_edit
+ags_wave_edit_box_child_width_request
+ags_wave_edit_box_child_height_request
 ags_wave_edit_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_WAVE_EDIT_BOX
 AGS_IS_WAVE_EDIT_BOX_CLASS
 AGS_TYPE_WAVE_EDIT_BOX
@@ -4961,57 +4532,9 @@ ags_wave_edit_box_get_type
 <SECTION>
 <FILE>ags_wave_edit_callbacks</FILE>
 ags_wave_edit_draw_callback
-ags_wave_edit_drawing_area_configure_event
-ags_wave_edit_drawing_area_button_press_event
-ags_wave_edit_drawing_area_button_release_event
-ags_wave_edit_drawing_area_motion_notify_event
-ags_wave_edit_drawing_area_key_press_event
-ags_wave_edit_drawing_area_key_release_event
+ags_wave_edit_drawing_area_resize_callback
 ags_wave_edit_vscrollbar_value_changed
 ags_wave_edit_hscrollbar_value_changed
-</SECTION>
-
-<SECTION>
-<FILE>ags_wave_editor</FILE>
-<TITLE>AgsWaveEditor</TITLE>
-AGS_WAVE_EDITOR_MAX_VALUE_COUNT
-AGS_WAVE_EDITOR_MAX_CONTROLS
-AGS_WAVE_EDITOR_DEFAULT_VERSION
-AGS_WAVE_EDITOR_DEFAULT_BUILD_ID
-AgsWaveEditorFlags
-ags_wave_editor_reset_scrollbar
-ags_wave_editor_reset_audio_scrollbar
-ags_wave_editor_reset_output_scrollbar
-ags_wave_editor_reset_input_scrollbar
-ags_wave_editor_machine_changed
-ags_wave_editor_select_region
-ags_wave_editor_select_all
-ags_wave_editor_paste
-ags_wave_editor_copy
-ags_wave_editor_cut
-ags_wave_editor_invert
-ags_wave_editor_new
-<SUBSECTION Standard>
-AGS_IS_WAVE_EDITOR
-AGS_IS_WAVE_EDITOR_CLASS
-AGS_TYPE_WAVE_EDITOR
-AGS_WAVE_EDITOR
-AGS_WAVE_EDITOR_CLASS
-AGS_WAVE_EDITOR_GET_CLASS
-AgsWaveEditor
-AgsWaveEditorClass
-ags_wave_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_wave_editor_callbacks</FILE>
-ags_wave_editor_edit_configure_event
-ags_wave_editor_vscrollbar_value_changed
-ags_wave_editor_hscrollbar_value_changed
-ags_wave_editor_wave_edit_hscrollbar_value_changed
-ags_wave_editor_machine_changed_callback
-ags_wave_editor_resize_audio_channels_callback
-ags_wave_editor_resize_pads_callback
 </SECTION>
 
 <SECTION>
@@ -5030,7 +4553,7 @@ AGS_WAVE_EXPORT_DIALOG_FORMAT_MPEG
 AgsWaveExportDialogFlags
 ags_wave_export_dialog_update_duration
 ags_wave_export_dialog_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_WAVE_EXPORT_DIALOG
 AGS_IS_WAVE_EXPORT_DIALOG_CLASS
 AGS_TYPE_WAVE_EXPORT_DIALOG
@@ -5050,7 +4573,6 @@ ags_wave_export_dialog_end_tact_callback
 ags_wave_export_dialog_apply_callback
 ags_wave_export_dialog_ok_callback
 ags_wave_export_dialog_cancel_callback
-ags_wave_export_dialog_delete_event
 </SECTION>
 
 <SECTION>
@@ -5059,7 +4581,7 @@ ags_wave_export_dialog_delete_event
 AgsWaveMetaFlags
 ags_wave_meta_refresh
 ags_wave_meta_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_WAVE_META
 AGS_IS_WAVE_META_CLASS
 AGS_TYPE_WAVE_META
@@ -5077,71 +4599,12 @@ ags_wave_meta_machine_changed_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_wave_toolbar</FILE>
-<TITLE>AgsWaveToolbar</TITLE>
-AgsWaveToolbarFlags
-ags_wave_toolbar_tool_popup_new
-ags_wave_toolbar_new
-<SUBSECTION Standard>
-AGS_IS_WAVE_TOOLBAR
-AGS_IS_WAVE_TOOLBAR_CLASS
-AGS_TYPE_WAVE_TOOLBAR
-AGS_WAVE_TOOLBAR
-AGS_WAVE_TOOLBAR_CLASS
-AGS_WAVE_TOOLBAR_GET_CLASS
-AgsWaveToolbar
-AgsWaveToolbarClass
-ags_wave_toolbar_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_wave_toolbar_callbacks</FILE>
-ags_wave_toolbar_position_callback
-ags_wave_toolbar_select_callback
-ags_wave_toolbar_copy_or_cut_callback
-ags_wave_toolbar_paste_callback
-ags_wave_toolbar_match_line_callback
-ags_wave_toolbar_tool_popup_select_buffer_callback
-ags_wave_toolbar_tool_popup_position_cursor_callback
-ags_wave_toolbar_tool_popup_enable_all_lines_callback
-ags_wave_toolbar_tool_popup_disable_all_lines_callback
-ags_wave_toolbar_zoom_callback
-ags_wave_toolbar_opacity_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_wave_window</FILE>
-<TITLE>AgsWaveWindow</TITLE>
-AgsWaveWindowFlags
-ags_wave_window_new
-<SUBSECTION Standard>
-AGS_IS_WAVE_WINDOW
-AGS_IS_WAVE_WINDOW_CLASS
-AGS_TYPE_WAVE_WINDOW
-AGS_WAVE_WINDOW
-AGS_WAVE_WINDOW_CLASS
-AGS_WAVE_WINDOW_GET_CLASS
-AgsWaveWindow
-AgsWaveWindowClass
-ags_wave_window_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_wave_window_callbacks</FILE>
-
-</SECTION>
-
-<SECTION>
 <FILE>ags_window</FILE>
 <TITLE>AgsWindow</TITLE>
-AGS_MACHINE_COUNTER
 AgsWindowFlags
-AgsMachineCounter
-ags_window_standard_machine_counter_alloc
-ags_window_find_machine_counter
-ags_window_increment_machine_counter
-ags_window_decrement_machine_counter
-ags_machine_counter_alloc
+ags_window_get_machine
+ags_window_add_machine
+ags_window_remove_machine
 ags_window_load_add_menu_ladspa
 ags_window_load_add_menu_dssi
 ags_window_load_add_menu_lv2
@@ -5152,7 +4615,7 @@ ags_window_load_add_menu_live_vst3
 ags_window_show_error
 ags_window_load_file_timeout
 ags_window_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_WINDOW
 AGS_IS_WINDOW_CLASS
 AGS_TYPE_WINDOW
@@ -5167,7 +4630,5 @@ ags_window_get_type
 <SECTION>
 <FILE>ags_window_callbacks</FILE>
 ags_window_setup_completed_callback
-ags_window_delete_event_callback
-ags_window_button_press_event
 </SECTION>
 

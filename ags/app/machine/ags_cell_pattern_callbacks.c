@@ -141,6 +141,8 @@ ags_cell_pattern_key_pressed_callback(GtkEventControllerKey *event_controller,
     }
     break;
   }
+
+  return(TRUE);
 }
 
 gboolean

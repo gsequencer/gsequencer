@@ -27,7 +27,7 @@ if WITH_W32API
 else
 if WITH_OSXAPI
 else
-CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security
+CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security -Werror=return-type
 endif
 endif
 
@@ -313,18 +313,18 @@ if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES) $(libags_thread_la_SOURCES) $(libags_server_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
 
 Ags-4.0.gir: libags.la libags_thread.la libags_server.la
-Ags_4_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4
+Ags_4_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0
 Ags_4_0_gir_C_INCLUDES = ags/libags.h
 Ags_4_0_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
 Ags_4_0_gir_LIBS = libags.la libags_thread.la libags_server.la
 Ags_4_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
 Ags_4_0_gir_NAMESPACE = Ags
 Ags_4_0_gir_VERSION = 4.0
-Ags_4_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=4.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-4.0.gir
+Ags_4_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=4.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-4.0.gir
 INTROSPECTION_GIRS += Ags-4.0.gir
 
 AgsAudio-4.0.gir: libags_audio.la $(top_builddir)/Ags-4.0.gir
-AgsAudio_4_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4 Gst-1.0 GstBase-1.0 GstAudio-1.0 Ags-4.0
+AgsAudio_4_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0 Gst-1.0 GstBase-1.0 GstAudio-1.0 Ags-4.0
 AgsAudio_4_0_gir_C_INCLUDES = ags/libags-audio.h
 AgsAudio_4_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS)
 AgsAudio_4_0_gir_LIBS = libags_audio.la
@@ -332,7 +332,7 @@ AgsAudio_4_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
 
 AgsAudio_4_0_gir_NAMESPACE = AgsAudio
 AgsAudio_4_0_gir_VERSION = 4.0
-AgsAudio_4_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gst-1.0 --include=GstBase-1.0 --include=GstAudio-1.0 --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-4.0 --namespace=AgsAudio --nsversion=4.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-4.0.gir
+AgsAudio_4_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gst-1.0 --include=GstBase-1.0 --include=GstAudio-1.0 --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-4.0 --namespace=AgsAudio --nsversion=4.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-4.0.gir
 INTROSPECTION_GIRS += AgsAudio-4.0.gir
 
 AgsGui-4.0.gir: libags_gui.la

@@ -22,6 +22,7 @@ ags_application_context_get_type
 ags_auth_security_context_get_type
 ags_authentication_get_type
 ags_authentication_manager_get_type
+ags_buffer_util_get_type
 ags_business_group_get_type
 ags_business_group_manager_get_type
 ags_byte_order_get_type
@@ -35,6 +36,7 @@ ags_controller_get_type
 ags_conversion_get_type
 ags_countable_get_type
 ags_cursor_get_type
+ags_destroy_util_get_type
 ags_destroy_worker_get_type
 ags_file_flags_get_type
 ags_file_get_type
@@ -45,8 +47,10 @@ ags_file_lookup_get_type
 ags_front_controller_get_type
 ags_function_get_type
 ags_generic_main_loop_get_type
+ags_list_util_get_type
 ags_log_get_type
 ags_main_loop_get_type
+ags_math_util_get_type
 ags_message_delivery_get_type
 ags_message_envelope_get_type
 ags_message_queue_get_type
@@ -56,9 +60,7 @@ ags_password_store_manager_get_type
 ags_plugin_controller_get_type
 ags_plugin_get_type
 ags_portlet_get_type
-ags_priority_flags_get_type
 ags_priority_get_type
-ags_registry_flags_get_type
 ags_registry_get_type
 ags_returnable_thread_flags_get_type
 ags_returnable_thread_get_type
@@ -79,11 +81,11 @@ ags_sound_server_get_type
 ags_soundcard_capability_get_type
 ags_soundcard_format_get_type
 ags_soundcard_get_type
+ags_string_util_get_type
 ags_tactable_get_type
 ags_task_completion_flags_get_type
 ags_task_completion_get_type
 ags_task_get_type
-ags_task_launcher_flags_get_type
 ags_task_launcher_get_type
 ags_thread_application_context_flags_get_type
 ags_thread_application_context_get_type
