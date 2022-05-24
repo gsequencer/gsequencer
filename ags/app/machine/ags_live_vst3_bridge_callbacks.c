@@ -288,6 +288,8 @@ ags_live_vst3_bridge_restart_component_callback(AgsVstIComponentHandler *icompon
   if((AGS_VST_KPARAM_VALUES_CHANGED & (flags)) != 0){
     ags_live_vst3_bridge_reload_port(live_vst3_bridge);
   }
+  
+  return(0);
 }
 
 void

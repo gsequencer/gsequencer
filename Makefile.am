@@ -27,7 +27,7 @@ if WITH_W32API
 else
 if WITH_OSXAPI
 else
-CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security
+CPPFLAGS += -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security -Werror=return-type
 endif
 endif
 

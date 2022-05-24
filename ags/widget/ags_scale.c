@@ -708,6 +708,8 @@ ags_scale_key_released_callback(GtkEventControllerKey *event_controller,
     break;
     }
   }
+
+  return(key_handled);
 }
 
 gboolean
@@ -763,6 +765,8 @@ ags_scale_gesture_click_pressed_callback(GtkGestureClick *event_controller,
     ags_scale_value_changed(scale,
 			    default_value);
   }
+
+  return(TRUE);
 }
 
 gboolean
@@ -802,6 +806,8 @@ ags_scale_gesture_click_released_callback(GtkGestureClick *event_controller,
     
     scale->button_state &= (~AGS_SCALE_BUTTON_1_PRESSED);
   }
+
+  return(TRUE);
 }
 
 gboolean
@@ -847,6 +853,8 @@ ags_scale_motion_callback(GtkEventControllerMotion *event_controller,
 			      new_default_value);
     }
   }
+
+  return(TRUE);
 }
 
 void

@@ -1,3 +1,8 @@
+ags (4.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added -Werror=return-type C preprocessor flags
+
 ags (4.0.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
