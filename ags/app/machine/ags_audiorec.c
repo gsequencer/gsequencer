@@ -320,16 +320,20 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		 (GtkWidget *) audiorec->keep_data);
 
   audiorec->replace_data = (GtkCheckButton *) gtk_check_button_new_with_label("replace");
-  gtk_check_button_set_group(audiorec->keep_data,
-			     audiorec->replace_data);
+  gtk_check_button_set_group(audiorec->replace_data,
+			     audiorec->keep_data);
   gtk_box_append(radio_hbox,
 		 (GtkWidget *) audiorec->replace_data);
   
   audiorec->mix_data = (GtkCheckButton *) gtk_check_button_new_with_label("mix");
-  gtk_check_button_set_group(audiorec->keep_data,
-			     audiorec->mix_data);
+  gtk_check_button_set_group(audiorec->mix_data,
+			     audiorec->keep_data);
   gtk_box_append(radio_hbox,
 		 (GtkWidget *) audiorec->mix_data);
+
+  /* radio active */
+  gtk_check_button_set_active(audiorec->keep_data,
+			      TRUE);
   
   /* frame - hindicator */
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));

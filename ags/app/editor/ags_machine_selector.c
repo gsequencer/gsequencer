@@ -552,6 +552,7 @@ ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selector,
   g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
   g_return_if_fail(AGS_IS_MACHINE(machine));
 
+  //TODO:JK: improve me
   action_name = g_strdup_printf("add-%s",
 				machine->uid);
   
@@ -636,6 +637,8 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
 
     sibling = NULL;
 
+    group = NULL;
+    
     if(position > 0){
       sibling = g_list_nth_data(start_list,
 				position - 1);
@@ -647,24 +650,22 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
 
     list = start_list;
 
-    while(list != NULL){
-      if(list != start_list){
-	group = AGS_MACHINE_RADIO_BUTTON(start_list->data);
-	
-	g_object_set(list->data,
-		     "group", group,
-		     NULL);
-      }else{
-	group = NULL;
-	
-	g_object_set(list->data,
-		     "group", group,
-		     NULL);
-      }
-      
+    if(list != NULL){
+      group = AGS_MACHINE_RADIO_BUTTON(start_list->data);
+
+      gtk_check_button_set_group(list->data,
+				 NULL);
+
       list = list->next;
+      
+      while(list != NULL){
+	gtk_check_button_set_group(list->data,
+				   group);
+      
+	list = list->next;
+      }
     }
-    
+      
     g_list_free(machine_selector->machine_radio_button);
 
     machine_selector->machine_radio_button = g_list_reverse(start_list);
@@ -672,6 +673,14 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
     gtk_box_insert_child_after((GtkBox *) machine_selector->machine_radio_button_box,
 			       machine_radio_button,
 			       sibling);
+
+    if(machine_radio_button != group){
+      gtk_check_button_set_group(machine_radio_button,
+				 group);
+    }
+
+    gtk_check_button_set_active(machine_radio_button,
+				TRUE);
   }
 }
 
