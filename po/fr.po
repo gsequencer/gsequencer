@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-23 22:38+0200\n"
+"POT-Creation-Date: 2022-05-24 04:18+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -215,7 +215,7 @@ msgid "bulk output"
 msgstr "lien sortant"
 
 #: ags/app/ags_connection_editor.c:498 ags/app/ags_machine_editor.c:280
-#: ags/app/machine/ags_audiorec.c:335
+#: ags/app/machine/ags_audiorec.c:339
 msgid "input"
 msgstr "intrant"
 
