@@ -125,7 +125,7 @@ ags_fx_notation_audio_processor_test_new()
 void
 ags_fx_notation_audio_processor_test_run_inter()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNotation *notation;
@@ -253,7 +253,7 @@ ags_fx_notation_audio_processor_test_run_inter()
 void
 ags_fx_notation_audio_processor_test_key_on()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -395,7 +395,7 @@ ags_fx_notation_audio_processor_test_key_on()
 void
 ags_fx_notation_audio_processor_test_key_off()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -537,7 +537,7 @@ ags_fx_notation_audio_processor_test_key_off()
 void
 ags_fx_notation_audio_processor_test_key_pressure()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -679,7 +679,7 @@ ags_fx_notation_audio_processor_test_key_pressure()
 void
 ags_fx_notation_audio_processor_test_play()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -798,7 +798,7 @@ ags_fx_notation_audio_processor_test_play()
 void
 ags_fx_notation_audio_processor_test_record()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -917,7 +917,7 @@ ags_fx_notation_audio_processor_test_record()
 void
 ags_fx_notation_audio_processor_test_feed()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;
@@ -1036,7 +1036,7 @@ ags_fx_notation_audio_processor_test_feed()
 void
 ags_fx_notation_audio_processor_test_counter_change()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *input;
   AgsNote *note;

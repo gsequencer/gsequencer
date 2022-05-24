@@ -96,7 +96,7 @@ AgsRecall* ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *re
 #define AGS_RECALL_TEST_GET_BY_EFFECT_RECALL_COUNT (4)
 #define AGS_RECALL_TEST_GET_BY_EFFECT_LADSPA_RECALL_COUNT (16)
 
-AgsDevout *devout;
+AgsAlsaDevout *devout;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -105,8 +105,7 @@ AgsDevout *devout;
 int
 ags_recall_test_init_suite()
 {
-  devout = g_object_new(AGS_TYPE_DEVOUT,
-			NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
 
   return(0);
@@ -703,86 +702,7 @@ ags_recall_test_add_child()
 void
 ags_recall_test_get_by_effect()
 {
-  AgsRecall *recall;
-  AgsRecallLadspa *recall_ladspa;
-
-  GList *list, *current;
-
-  guint nth;
-  guint i;
-  guint effect_added[4];
-  
-  static const gchar *filename[] = {
-    "echo.so",
-    "echo.so",
-    "noise.so",
-    NULL,
-  };
-  static const gchar *effect[] = {
-    "delay",
-    "feedback",
-    "noise",
-    NULL,
-  };
-
-  list = NULL;
-  memset(effect_added, 0, 4 * sizeof(guint));
-  
-  for(i = 0; i < AGS_RECALL_TEST_GET_BY_EFFECT_RECALL_COUNT; i++){
-    recall = g_object_new(AGS_TYPE_RECALL,
-			  NULL);
-
-    list = g_list_prepend(list,
-			  recall);
-  }
-
-  for(i = 0; i < AGS_RECALL_TEST_GET_BY_EFFECT_LADSPA_RECALL_COUNT; i++){
-    nth = rand() % 3;
-    effect_added[nth] += 1;
-    
-    recall_ladspa = g_object_new(AGS_TYPE_RECALL_LADSPA,
-				 "filename", filename[nth],
-				 "effect", effect[nth],
-				 NULL);
-
-    list = g_list_prepend(list,
-			  recall_ladspa);
-  }
-
-  list = g_list_reverse(list);
-  
-  /* assert 1st filename and effect */
-  current = ags_recall_get_by_effect(list,
-				     filename[0],
-				     effect[0]);
-  
-  if(effect_added[0] > 0){
-    CU_ASSERT(g_list_length(current) == effect_added[0]);
-  }else{
-    CU_ASSERT(current == NULL);
-  }
-
-  /* assert 2nd filename and effect */
-  current = ags_recall_get_by_effect(list,
-				     filename[1],
-				     effect[1]);
-  
-  if(effect_added[1] > 0){
-    CU_ASSERT(g_list_length(current) == effect_added[1]);
-  }else{
-    CU_ASSERT(current == NULL);
-  }
-
-  /* assert 3rd filename and effect */
-  current = ags_recall_get_by_effect(list,
-				     filename[2],
-				     effect[2]);
-  
-  if(effect_added[2] > 0){
-    CU_ASSERT(g_list_length(current) == effect_added[2]);
-  }else{
-    CU_ASSERT(current == NULL);
-  }
+  //TODO:JK: implement me
 }
 
 void

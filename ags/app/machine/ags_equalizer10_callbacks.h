@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_equalizer10.h>
 
 G_BEGIN_DECLS
-
-void ags_equalizer10_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsEqualizer10 *equalizer10);
 
 void ags_equalizer10_peak_28hz_callback(GtkRange *range,
 					AgsEqualizer10 *equalizer10);

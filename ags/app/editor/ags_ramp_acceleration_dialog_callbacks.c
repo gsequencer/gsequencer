@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,9 +24,9 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_automation_window.h>
-#include <ags/app/ags_automation_editor.h>
 #include <ags/app/ags_machine.h>
+
+#include <ags/app/editor/ags_automation_edit.h>
 
 void
 ags_ramp_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
@@ -60,6 +60,7 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 {
   AgsWindow *window;
   AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
 
   AgsChannel *start_channel;
   AgsChannel *channel, *next_channel;
@@ -73,43 +74,21 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   gchar *specifier;
 
   GType channel_type;
-  
-  gboolean use_composite_editor;
-  
+    
   /* application context */
   application_context = ags_application_context_get_instance();
-
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  machine = NULL;
+  composite_editor = window->composite_editor;
 
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
-    
-    composite_editor = window->composite_editor;
+  machine = composite_editor->selected_machine;
 
-    machine = composite_editor->selected_machine;
-
-    if(composite_editor->automation_edit->focused_edit == NULL){
-      return;
-    }
-    
-    channel_type = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type;
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-
-    machine = automation_editor->selected_machine;
-
-    if(automation_editor->focused_automation_edit == NULL){
-      return;
-    }
-    
-    channel_type = automation_editor->focused_automation_edit->channel_type;
+  if(composite_editor->automation_edit->focused_edit == NULL){
+    return;
   }
+    
+  channel_type = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type;
   
   if(machine == NULL){
     return;
@@ -322,7 +301,7 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 }
 
 void
-ags_ramp_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+ags_ramp_acceleration_dialog_machine_changed_callback(AgsCompositeEditor *composite_editor,
 						      AgsMachine *machine,
 						      AgsRampAccelerationDialog *ramp_acceleration_dialog)
 {

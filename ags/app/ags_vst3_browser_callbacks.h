@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,10 +33,14 @@
 
 G_BEGIN_DECLS
 
-void ags_vst3_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+void ags_vst3_browser_plugin_filename_callback(GtkTreeView *tree_view,
+					       GtkTreePath *path,
+					       GtkTreeViewColumn *column,
 					       AgsVst3Browser *vst3_browser);
-void ags_vst3_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
-					  AgsVst3Browser *vst3_browser);
+void ags_vst3_browser_plugin_effect_callback(GtkTreeView *tree_view,
+					     GtkTreePath *path,
+					     GtkTreeViewColumn *column,
+					     AgsVst3Browser *vst3_browser);
 
 G_END_DECLS
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,9 +33,6 @@
 #include <ags/app/machine/ags_drum.h>
 
 G_BEGIN_DECLS
-
-void ags_drum_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDrum *drum);
-void ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum);
 
 /* controls */
 void ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_resample_util.h>
 
 #include <ags/audio/fx/ags_fx_playback_audio.h>
 
@@ -1153,19 +1154,47 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
   do_resample = FALSE;
   
   if(samplerate != buffer_samplerate){
+    AgsResampleUtil resample_util;
+
+    guint allocated_buffer_length;
+
+    allocated_buffer_length = buffer_size;
+
+    if(allocated_buffer_length < buffer_buffer_size){
+      allocated_buffer_length = buffer_buffer_size;
+    }
+
     do_resample = TRUE;
 
-    buffer_data = ags_stream_alloc(buffer_size,
+    buffer_data = ags_stream_alloc(allocated_buffer_length,
 				   buffer_format);
 
     g_rec_mutex_lock(buffer_mutex);
 
-    ags_audio_buffer_util_resample_with_buffer(buffer->data, 1,
-					       buffer_format, buffer_samplerate,
-					       buffer_buffer_size,
-					       samplerate,
-					       buffer_size,
-					       buffer_data);
+    resample_util.secret_rabbit.src_ratio = buffer_samplerate / samplerate;
+
+    resample_util.secret_rabbit.input_frames = buffer_buffer_size;
+    resample_util.secret_rabbit.data_in = g_malloc(allocated_buffer_length * sizeof(gfloat));
+
+    resample_util.secret_rabbit.output_frames = buffer_size;
+    resample_util.secret_rabbit.data_out = g_malloc(allocated_buffer_length * sizeof(gfloat));
+  
+    resample_util.destination = buffer_data;
+    resample_util.destination_stride = 1;
+
+    resample_util.source = buffer->data;
+    resample_util.source_stride = 1;
+
+    resample_util.buffer_length = allocated_buffer_length;
+    resample_util.format = buffer_format;
+    resample_util.samplerate = buffer_samplerate;
+  
+    resample_util.target_samplerate = samplerate;
+
+    ags_resample_util_compute(&resample_util);  
+
+    g_free(resample_util.secret_rabbit.data_out);
+    g_free(resample_util.secret_rabbit.data_in);
     
     g_rec_mutex_unlock(buffer_mutex);
     

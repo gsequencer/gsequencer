@@ -73,6 +73,7 @@ struct _AgsTrackClass
 };
 
 GType ags_track_get_type();
+GType ags_track_flags_get_type();
 
 GRecMutex* ags_track_get_obj_mutex(AgsTrack *track);
 

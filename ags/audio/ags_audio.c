@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,8 +48,6 @@
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/audio/midi/ags_midi_file.h>
-
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #include <ags/audio/fx/ags_fx_playback_audio_processor.h>
 #include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
@@ -357,8 +355,6 @@ ags_audio_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_AUDIO_ADDED_TO_REGISTRY, "AGS_AUDIO_ADDED_TO_REGISTRY", "audio-added-to-registry" },
-      { AGS_AUDIO_CONNECTED, "AGS_AUDIO_CONNECTED", "audio-connected" },
       { AGS_AUDIO_NO_OUTPUT, "AGS_AUDIO_NO_OUTPUT", "audio-no-output" },
       { AGS_AUDIO_NO_INPUT, "AGS_AUDIO_NO_INPUT", "audio-no-input" },
       { AGS_AUDIO_SYNC, "AGS_AUDIO_SYNC", "audio-sync" },
@@ -387,6 +383,7 @@ void
 ags_audio_class_init(AgsAudioClass *audio)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_audio_parent_class = g_type_class_peek_parent(audio);
@@ -1420,9 +1417,9 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_pads),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   /**
@@ -1686,6 +1683,7 @@ ags_audio_init(AgsAudio *audio)
   gchar *str0, *str1;
 
   audio->flags = 0;
+  audio->connectable_flags = 0;
   audio->ability_flags = 0;
   audio->behaviour_flags = 0;
   memset(audio->staging_flags, 0, AGS_SOUND_SCOPE_LAST * sizeof(guint));
@@ -3975,10 +3973,19 @@ ags_audio_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_mutex;
+
   audio = AGS_AUDIO(connectable);
 
-  /* check is added */
-  is_ready = ags_audio_test_flags(audio, AGS_AUDIO_ADDED_TO_REGISTRY);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* check is ready */
+  g_rec_mutex_lock(audio_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_mutex);
   
   return(is_ready);
 }
@@ -3996,13 +4003,22 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
 
   GList *list;
   
+  GRecMutex *audio_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   audio = AGS_AUDIO(connectable);
 
-  ags_audio_set_flags(audio, AGS_AUDIO_ADDED_TO_REGISTRY);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -4059,9 +4075,24 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
 void
 ags_audio_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsAudio *audio;
+
+  GRecMutex *audio_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  audio = AGS_AUDIO(connectable);
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_mutex);
 
   //TODO:JK: implement me
 }
@@ -4104,10 +4135,19 @@ ags_audio_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_mutex;
+
   audio = AGS_AUDIO(connectable);
 
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
   /* check is connected */
-  is_connected = ags_audio_test_flags(audio, AGS_AUDIO_CONNECTED);
+  g_rec_mutex_lock(audio_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_mutex);
   
   return(is_connected);
 }
@@ -4120,13 +4160,22 @@ ags_audio_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *audio_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio = AGS_AUDIO(connectable);
 
-  ags_audio_set_flags(audio, AGS_AUDIO_CONNECTED);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_mutex);
 
 #ifdef AGS_DEBUG
   g_message("connecting audio");
@@ -4237,13 +4286,22 @@ ags_audio_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;
 
+  GRecMutex *audio_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio = AGS_AUDIO(connectable);
 
-  ags_audio_unset_flags(audio, AGS_AUDIO_CONNECTED);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  audio->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_mutex);
 
 #ifdef AGS_DEBUG
   g_message("disconnecting audio");
@@ -7863,9 +7921,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
     message->parameter_name[0] = "channel-type";
     
     g_value_init(&(message->value[0]),
-		 G_TYPE_ULONG);
-    g_value_set_ulong(&(message->value[0]),
-		      channel_type);
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(message->value[0]),
+			channel_type);
 
     /* pads */
     message->parameter_name[1] = "pads";
@@ -13691,8 +13749,7 @@ ags_audio_recall_done_callback(AgsRecall *recall,
   gint sound_scope;
   
   if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
-     (AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
-      AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
+     (AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
       AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(recall) ||
       AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR(recall))){
     sound_scope = ags_recall_get_sound_scope(recall);
@@ -15024,9 +15081,16 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       }
       
       if(audio_channels > audio_file->file_audio_channels){
-	channel = ags_channel_nth(channel,
-				  audio_channels - audio_file->file_audio_channels);
-	g_object_unref(channel);
+	AgsChannel *nth_channel;
+	
+	nth_channel = ags_channel_nth(channel,
+				      audio_channels - audio_file->file_audio_channels);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
+
+	channel = nth_channel;
       }
 
       g_object_run_dispose(audio_file);

@@ -44,9 +44,8 @@ struct _AgsPluginControllerInterface
   GTypeInterface ginterface;
 
   gpointer (*do_request)(AgsPluginController *plugin_controller,
-			 SoupMessage *msg,
+			 SoupServerMessage *msg,
 			 GHashTable *query,
-			 SoupClientContext *client,
 			 GObject *security_context,
 			 gchar *path,
 			 gchar *login,
@@ -56,9 +55,8 @@ struct _AgsPluginControllerInterface
 GType ags_plugin_controller_get_type();
 
 gpointer ags_plugin_controller_do_request(AgsPluginController *plugin_controller,
-					  SoupMessage *msg,
+					  SoupServerMessage *msg,
 					  GHashTable *query,
-					  SoupClientContext *client,
 					  GObject *security_context,
 					  gchar *path,
 					  gchar *login,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,25 +90,6 @@ ags_lv2_preset_get_type()
   }
 
   return g_define_type_id__volatile;
-}
-
-GType
-ags_lv2_preset_flags_get_type()
-{
-  static volatile gsize g_flags_type_id__volatile;
-
-  if(g_once_init_enter (&g_flags_type_id__volatile)){
-    static const GFlagsValue values[] = {
-      { AGS_LV2_PRESET_CONNECTED, "AGS_LV2_PRESET_CONNECTED", "lv2-preset-connected" },
-      { 0, NULL, NULL }
-    };
-
-    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLv2PresetFlags"), values);
-
-    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
-  }
-  
-  return g_flags_type_id__volatile;
 }
 
 void

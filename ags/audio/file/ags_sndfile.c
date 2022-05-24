@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,6 +170,26 @@ ags_sndfile_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_sndfile_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_SNDFILE_VIRTUAL, "AGS_SNDFILE_VIRTUAL", "sndfile-virtual" },
+      { AGS_SNDFILE_FILL_CACHE, "AGS_SNDFILE_FILL_CACHE", "sndfile-fill-cache" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSndfileFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_sndfile_class_init(AgsSndfileClass *sndfile)
 {
@@ -323,6 +343,7 @@ ags_sndfile_init(AgsSndfile *sndfile)
   AgsConfig *config;
 
   sndfile->flags = AGS_SNDFILE_FILL_CACHE;
+  sndfile->connectable_flags = 0;
 
   /* add audio file mutex */
   g_rec_mutex_init(&(sndfile->obj_mutex));  
@@ -587,11 +608,20 @@ ags_sndfile_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *sndfile_mutex;
+
   sndfile = AGS_SNDFILE(connectable);
 
-  /* check is ready */
-  is_ready = ags_sndfile_test_flags(sndfile, AGS_SNDFILE_ADDED_TO_REGISTRY);
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
+  /* check is ready */
+  g_rec_mutex_lock(sndfile_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (sndfile->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sndfile_mutex);
+  
   return(is_ready);
 }
 
@@ -605,13 +635,22 @@ ags_sndfile_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *sndfile_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   sndfile = AGS_SNDFILE(connectable);
 
-  ags_sndfile_set_flags(sndfile, AGS_SNDFILE_ADDED_TO_REGISTRY);
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  sndfile->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(sndfile_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -629,9 +668,24 @@ ags_sndfile_add_to_registry(AgsConnectable *connectable)
 void
 ags_sndfile_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsSndfile *sndfile;
+
+  GRecMutex *sndfile_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  sndfile = AGS_SNDFILE(connectable);
+
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  sndfile->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(sndfile_mutex);
 
   //TODO:JK: implement me
 }
@@ -674,11 +728,20 @@ ags_sndfile_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *sndfile_mutex;
+
   sndfile = AGS_SNDFILE(connectable);
 
-  /* check is connected */
-  is_connected = ags_sndfile_test_flags(sndfile, AGS_SNDFILE_CONNECTED);
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
+  /* check is connected */
+  g_rec_mutex_lock(sndfile_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (sndfile->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(sndfile_mutex);
+  
   return(is_connected);
 }
 
@@ -687,13 +750,22 @@ ags_sndfile_connect(AgsConnectable *connectable)
 {
   AgsSndfile *sndfile;
 
+  GRecMutex *sndfile_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   sndfile = AGS_SNDFILE(connectable);
+
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  sndfile->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_sndfile_set_flags(sndfile, AGS_SNDFILE_CONNECTED);
+  g_rec_mutex_unlock(sndfile_mutex);
 }
 
 void
@@ -701,13 +773,22 @@ ags_sndfile_disconnect(AgsConnectable *connectable)
 {
   AgsSndfile *sndfile;
 
+  GRecMutex *sndfile_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   sndfile = AGS_SNDFILE(connectable);
 
-  ags_sndfile_unset_flags(sndfile, AGS_SNDFILE_CONNECTED);
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  sndfile->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(sndfile_mutex);
 }
 
 /**

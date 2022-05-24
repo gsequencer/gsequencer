@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,11 +71,10 @@ typedef struct _AgsWaveEdit AgsWaveEdit;
 typedef struct _AgsWaveEditClass AgsWaveEditClass;
 
 typedef enum{
-  AGS_WAVE_EDIT_CONNECTED                   = 1,
-  AGS_WAVE_EDIT_AUTO_SCROLL                 = 1 <<  1,
-  AGS_WAVE_EDIT_SHOW_RULER                  = 1 <<  2,
-  AGS_WAVE_EDIT_SHOW_VSCROLLBAR             = 1 <<  3,
-  AGS_WAVE_EDIT_SHOW_HSCROLLBAR             = 1 <<  4,
+  AGS_WAVE_EDIT_AUTO_SCROLL                 = 1,
+  AGS_WAVE_EDIT_SHOW_RULER                  = 1 <<  1,
+  AGS_WAVE_EDIT_SHOW_VSCROLLBAR             = 1 <<  2,
+  AGS_WAVE_EDIT_SHOW_HSCROLLBAR             = 1 <<  3,
 }AgsWaveEditFlags;
 
 typedef enum{
@@ -97,9 +96,10 @@ typedef enum{
 
 struct _AgsWaveEdit
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;
@@ -135,13 +135,13 @@ struct _AgsWaveEdit
   unsigned char *wave_data;
   int stride;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsWaveEditClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_wave_edit_get_type(void);

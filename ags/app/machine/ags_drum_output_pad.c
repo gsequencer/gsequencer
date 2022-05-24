@@ -126,7 +126,7 @@ ags_drum_output_pad_connect(AgsConnectable *connectable)
 
   drum_output_pad = AGS_DRUM_OUTPUT_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (AGS_PAD(drum_output_pad)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PAD(drum_output_pad)->connectable_flags)) != 0){
     return;
   }
 

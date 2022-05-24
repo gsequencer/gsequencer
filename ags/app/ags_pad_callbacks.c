@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,15 +28,13 @@ void
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsLine *line;
-  GtkContainer *container;
-  GList *list, *list_start;
+  
+  GList *start_list, *list;
 
-  if(gtk_toggle_button_get_active(pad->group)){
-    container = (GtkContainer *) pad->expander_set;
+  list =
+    start_list = ags_pad_get_line(pad);
 
-    list_start = 
-      list = gtk_container_get_children(container);
-    
+  if(gtk_toggle_button_get_active(pad->group)){    
     while(list != NULL){
       line = AGS_LINE(list->data);
 
@@ -46,19 +44,12 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
       list = list->next;
     }
-
-    g_list_free(list_start);
   }else{
-    container = (GtkContainer *) pad->expander_set;
-
-    list_start = 
-      list = gtk_container_get_children(container);
-    
     while(list != NULL){
       line = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(line->group)){
-	g_list_free(list_start);
+	g_list_free(start_list);
 	
 	return;
       }
@@ -66,16 +57,16 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
       list = list->next;
     }
 
-    g_list_free(list_start);
     gtk_toggle_button_set_active(pad->group, TRUE);
   }
+
+  g_list_free(start_list);
 }
 
 void
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
-  GtkContainer *container;
 
   AgsChannel *current, *next_pad, *next_current;
 
@@ -83,15 +74,15 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   AgsApplicationContext *application_context;
 
-  GList *list, *list_start;
   GList *start_task;
+  GList *start_list, *list;
 
   gboolean is_output;
+  
+  application_context = ags_application_context_get_instance();
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
-  
-  application_context = ags_application_context_get_instance();
 
   /*  */
   start_task = NULL;
@@ -136,22 +127,26 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
   }else{
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
-      is_output = (AGS_IS_OUTPUT(pad->channel))? TRUE: FALSE;
+      is_output = (AGS_IS_OUTPUT(pad->channel)) ? TRUE: FALSE;
 
-      container = (GtkContainer *) (is_output ? machine->output: machine->input);
-
-      list_start = 
-	list = gtk_container_get_children(container);
+      if(is_output){
+	list =
+	  start_list = ags_machine_get_output_pad(machine);
+      }else{
+	list =
+	  start_list = ags_machine_get_input_pad(machine);
+      }
 
       while(!gtk_toggle_button_get_active(AGS_PAD(list->data)->solo)){
 	list = list->next;
       }
 
-      g_list_free(list_start);
-
-      gtk_toggle_button_set_active(AGS_PAD(list->data)->solo, FALSE);
+      gtk_toggle_button_set_active(AGS_PAD(list->data)->solo,
+				   FALSE);
 
       machine->flags &= ~(AGS_MACHINE_SOLO);
+
+      g_list_free(start_list);
     }
 
     /* unmute */
@@ -197,34 +192,46 @@ void
 ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
-  GtkContainer *container;
-
-  GList *list, *list_start;
-
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
+  
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
+						     AGS_TYPE_MACHINE);
 
   if(gtk_toggle_button_get_active(pad->solo)){
-    container = (GtkContainer *) (AGS_IS_OUTPUT(pad->channel) ? machine->output: machine->input);
+    GList *start_list, *list;
 
-    if(gtk_toggle_button_get_active(pad->mute))
-      gtk_toggle_button_set_active(pad->mute, FALSE);
+    gboolean is_output;
 
-    list_start = 
-      list = gtk_container_get_children(container);
+    is_output = (AGS_IS_OUTPUT(pad->channel)) ? TRUE: FALSE;
 
+    if(gtk_toggle_button_get_active(pad->mute)){
+      gtk_toggle_button_set_active(pad->mute,
+				   FALSE);
+    }
+
+    if(is_output){
+      list =
+	start_list = ags_machine_get_output_pad(machine);
+    }else{
+      list =
+	start_list = ags_machine_get_input_pad(machine);
+    }
+    
     while(list != NULL){
       if(list->data == pad){
 	list = list->next;
+
 	continue;
       }
 
-      gtk_toggle_button_set_active(AGS_PAD(list->data)->mute, TRUE);
+      gtk_toggle_button_set_active(AGS_PAD(list->data)->mute,
+				   TRUE);
 
       list = list->next;
     }
 
-    g_list_free(list_start);
     machine->flags |= (AGS_MACHINE_SOLO);
+
+    g_list_free(start_list);
   }else{
     machine->flags &= ~(AGS_MACHINE_SOLO);
   }

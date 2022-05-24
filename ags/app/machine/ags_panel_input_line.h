@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,7 +51,7 @@ struct _AgsPanelInputLine
   gchar *name;
   gchar *xml_type;
 
-  GtkLabel *soundcard_connection;
+  AgsLineMember *mute_check_button;
 };
 
 struct _AgsPanelInputLineClass

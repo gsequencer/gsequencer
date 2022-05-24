@@ -26,6 +26,8 @@
 
 #include <ags/app/machine/ags_panel.h>
 
+#include <ags/i18n.h>
+
 void ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line);
 void ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
@@ -35,7 +37,6 @@ void ags_panel_input_line_connect(AgsConnectable *connectable);
 void ags_panel_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_panel_input_line_show(GtkWidget *line);
-void ags_panel_input_line_show_all(GtkWidget *line);
 
 void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_panel_input_line_group_changed(AgsLine *line);
@@ -113,7 +114,6 @@ ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line)
   widget = (GtkWidgetClass *) panel_input_line;
 
   widget->show = ags_panel_input_line_show;
-  widget->show_all = ags_panel_input_line_show_all;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(panel_input_line);
@@ -135,25 +135,25 @@ void
 ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
-
+  GtkCheckButton *check_button;
+  
   /* mute line member */
-  panel_input_line->soundcard_connection = (GtkLabel *) gtk_label_new("(null)");
-  ags_expander_add(AGS_LINE(panel_input_line)->expander,
-		   GTK_WIDGET(panel_input_line->soundcard_connection),
-		   0, 0,
-		   1, 1);
+  line_member =
+    panel_input_line->mute_check_button = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+									 "widget-type", GTK_TYPE_CHECK_BUTTON,
+									 "plugin-name", "ags-fx-volume",
+									 "specifier", "./muted[0]",
+									 "control-port", "1/2",
+									 NULL);
 
-  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type", GTK_TYPE_CHECK_BUTTON,
-					       "widget-label", "mute",
-					       "plugin-name", "ags-fx-volume",
-					       "specifier", "./muted[0]",
-					       "control-port", "1/2",
-					       NULL);
-  ags_expander_add(AGS_LINE(panel_input_line)->expander,
-		   GTK_WIDGET(line_member),
-		   1, 0,
-		   1, 1);
+  check_button = ags_line_member_get_widget(line_member);
+  gtk_check_button_set_label(check_button,
+			     i18n("mute"));
+  
+  ags_line_add_line_member(AGS_LINE(panel_input_line),
+			   GTK_WIDGET(line_member),
+			   1, 0,
+			   1, 1);
 }
 
 void
@@ -171,7 +171,7 @@ ags_panel_input_line_connect(AgsConnectable *connectable)
 
   panel_input_line = AGS_PANEL_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(panel_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(panel_input_line)->connectable_flags)) != 0){
     return;
   }
   
@@ -187,7 +187,7 @@ ags_panel_input_line_disconnect(AgsConnectable *connectable)
 
   panel_input_line = AGS_PANEL_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(panel_input_line)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(panel_input_line)->connectable_flags)) == 0){
     return;
   }
 
@@ -200,14 +200,6 @@ void
 ags_panel_input_line_show(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show(line);
-
-  //  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
-}
-
-void
-ags_panel_input_line_show_all(GtkWidget *line)
-{
-  GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show_all(line);
 
   //  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
@@ -249,17 +241,19 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   if(AGS_IS_SOUNDCARD(output_soundcard)){
     device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
 
-    /* label */
     str = g_strdup_printf("%s:%s[%d]",
 			  G_OBJECT_TYPE_NAME(output_soundcard),
 			  device,
 			  output_soundcard_channel);
-    gtk_label_set_label(panel_input_line->soundcard_connection,
-			str);
     
-    g_free(str);
+    g_object_set(panel_input_line->mute_check_button,
+		 "widget-label", str,
+		 NULL);
 
     g_object_unref(output_soundcard);
+
+    g_free(device);
+    g_free(str);    
   }
   
 #ifdef AGS_DEBUG

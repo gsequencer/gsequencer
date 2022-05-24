@@ -48,13 +48,10 @@ G_BEGIN_DECLS
 #define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.8.0"
 #define AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
 
+#define AGS_COMPOSITE_EDITOR_DEFAULT_PANED_POSITION (300)
+
 typedef struct _AgsCompositeEditor AgsCompositeEditor;
 typedef struct _AgsCompositeEditorClass AgsCompositeEditorClass;
-
-typedef enum{
-  AGS_COMPOSITE_EDITOR_ADDED_TO_REGISTRY     = 1,
-  AGS_COMPOSITE_EDITOR_CONNECTED             = 1 << 1,
-}AgsCompositeEditorFlags;
 
 typedef enum{
   AGS_COMPOSITE_EDITOR_EDIT_NOTATION    = 1,
@@ -68,6 +65,7 @@ struct _AgsCompositeEditor
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   guint edit;
   
   gchar *version;

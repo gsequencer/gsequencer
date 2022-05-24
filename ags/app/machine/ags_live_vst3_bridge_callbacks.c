@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,33 +32,8 @@
 #endif
 
 void
-ags_live_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLiveVst3Bridge *live_vst3_bridge)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_LIVE_VST3_BRIDGE)->counter);
-
-  g_object_set(AGS_MACHINE(live_vst3_bridge),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_LIVE_VST3_BRIDGE);
-
-  g_free(str);
-}
-
-void
-ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *live_vst3_bridge)
+ags_live_vst3_bridge_show_vst3_ui_callback(GAction *action, GVariant *parameter,
+					   AgsLiveVst3Bridge *live_vst3_bridge)
 {
   AgsVst3Plugin *vst3_plugin;
 
@@ -189,6 +164,8 @@ ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst
 AgsVstTResult
 ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsLiveVst3Bridge *live_vst3_bridge)
 {
+  AgsEffectBridge *effect_bridge;
+
   AgsVst3Plugin *vst3_plugin;
   AgsPluginPort *plugin_port;
 
@@ -210,6 +187,8 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   vst3_plugin = live_vst3_bridge->vst3_plugin;
 
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
+
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge);
 
   g_rec_mutex_lock(base_plugin_mutex);
   
@@ -241,7 +220,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 							     id,
 							     value_normalized);
 
-  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->grid);
+  start_bulk_member = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   bulk_member = start_bulk_member;
   
@@ -276,7 +255,8 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 	  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				       active);
 	}else if(GTK_IS_BUTTON(child_widget)){
-	  gtk_button_clicked((GtkButton *) child_widget);
+	  g_signal_emit_by_name((GtkButton *) child_widget,
+				"clicked");
 	}
 
 	if(block_scope == NULL){

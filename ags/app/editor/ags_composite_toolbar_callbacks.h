@@ -34,41 +34,61 @@
 
 G_BEGIN_DECLS
 
-void ags_composite_toolbar_position_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_edit_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_clear_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_select_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_position_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_edit_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_clear_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_select_callback(GtkToggleButton *button, AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_invert_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_copy_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_cut_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_paste_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_invert_callback(GtkButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_copy_callback(GtkButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_cut_callback(GtkButton *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_paste_callback(GtkButton *button, AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_paste_match_audio_channel_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_paste_match_line_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_paste_no_duplicates_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_paste_match_audio_channel_callback(GAction *action, GVariant *parameter,
+							      AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_paste_match_line_callback(GAction *action, GVariant *parameter,
+						     AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_paste_no_duplicates_callback(GAction *action, GVariant *parameter,
+							AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_menu_tool_popup_notation_move_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_notation_move_note_callback(GAction *action, GVariant *parameter,
+								       AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback(GAction *action, GVariant *parameter,
+								       AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GAction *action, GVariant *parameter,
+									 AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GAction *action, GVariant *parameter,
+									     AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_sheet_add_page_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_sheet_remove_page_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback(GAction *action, GVariant *parameter,
+									  AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_sheet_add_page_callback(GAction *action, GVariant *parameter,
+								   AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_sheet_remove_page_callback(GAction *action, GVariant *parameter,
+								      AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GAction *action, GVariant *parameter,
+										   AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GAction *action, GVariant *parameter,
+										 AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback(GAction *action, GVariant *parameter,
+									       AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback(GAction *action, GVariant *parameter,
+								       AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GAction *action, GVariant *parameter,
+									 AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback(GAction *action, GVariant *parameter,
+									     AgsCompositeToolbar *composite_toolbar);
 
-void ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
-void ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GAction *action, GVariant *parameter,
+									      AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GAction *action, GVariant *parameter,
+									       AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback(GAction *action, GVariant *parameter,
+								     AgsCompositeToolbar *composite_toolbar);
+void ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GAction *action, GVariant *parameter,
+								      AgsCompositeToolbar *composite_toolbar);
 
 void ags_composite_toolbar_port_callback(GtkComboBox *combo_box, AgsCompositeToolbar *composite_toolbar);
 

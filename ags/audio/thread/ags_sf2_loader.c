@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -201,6 +201,7 @@ void
 ags_sf2_loader_init(AgsSF2Loader *sf2_loader)
 {
   sf2_loader->flags = 0;
+  sf2_loader->connectable_flags = 0;
 
   /* add base plugin mutex */
   g_rec_mutex_init(&(sf2_loader->obj_mutex));

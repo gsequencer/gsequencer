@@ -43,9 +43,8 @@ typedef struct _AgsMidiImportWizard AgsMidiImportWizard;
 typedef struct _AgsMidiImportWizardClass AgsMidiImportWizardClass;
 
 typedef enum{
-  AGS_MIDI_IMPORT_WIZARD_CONNECTED               = 1,
-  AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER       = 1 << 1,
-  AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION   = 1 << 2,
+  AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER       = 1,
+  AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION   = 1 << 1,
 }AgsMidiImportWizardFlags;
 
 struct _AgsMidiImportWizard
@@ -53,6 +52,7 @@ struct _AgsMidiImportWizard
   GtkDialog dialog;
 
   guint flags;
+  guint connectable_flags;
   
   GtkWidget *file_chooser;
   GtkWidget *track_collection;

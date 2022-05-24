@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,7 +63,7 @@ void ags_pulse_devout_remove_from_registry(AgsConnectable *connectable);
 xmlNode* ags_pulse_devout_list_resource(AgsConnectable *connectable);
 xmlNode* ags_pulse_devout_xml_compose(AgsConnectable *connectable);
 void ags_pulse_devout_xml_parse(AgsConnectable *connectable,
-			       xmlNode *node);
+				xmlNode *node);
 gboolean ags_pulse_devout_is_connected(AgsConnectable *connectable);
 void ags_pulse_devout_connect(AgsConnectable *connectable);
 void ags_pulse_devout_disconnect(AgsConnectable *connectable);
@@ -236,6 +236,30 @@ ags_pulse_devout_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_pulse_devout_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PULSE_DEVOUT_INITIALIZED, "AGS_PULSE_DEVOUT_INITIALIZED", "pulse-devout-initialized" },
+      { AGS_PULSE_DEVOUT_START_PLAY, "AGS_PULSE_DEVOUT_START_PLAY", "pulse-devout-start-play" },
+      { AGS_PULSE_DEVOUT_PLAY, "AGS_PULSE_DEVOUT_PLAY", "pulse-devout-play" },
+      { AGS_PULSE_DEVOUT_SHUTDOWN, "AGS_PULSE_DEVOUT_SHUTDOWN", "pulse-devout-shutdown" },
+      { AGS_PULSE_DEVOUT_NONBLOCKING, "AGS_PULSE_DEVOUT_NONBLOCKING", "pulse-devout-nonblocking" },
+      { AGS_PULSE_DEVOUT_ATTACK_FIRST, "AGS_PULSE_DEVOUT_ATTACK_FIRST", "pulse-devout-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPulseDevoutFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -575,6 +599,7 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
     
   /* flags */
   pulse_devout->flags = 0;
+  pulse_devout->connectable_flags = 0;
   g_atomic_int_set(&(pulse_devout->sync_flags),
 		   AGS_PULSE_DEVOUT_PASS_THROUGH);
 
@@ -595,41 +620,36 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   pulse_devout->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   pulse_devout->format = ags_soundcard_helper_config_get_format(config);
 
-  /*  */
-  pulse_devout->card_uri = NULL;
-  pulse_devout->pulse_client = NULL;
-
-  pulse_devout->port_name = NULL;
-  pulse_devout->pulse_port = NULL;
-
   /* buffer */
-  pulse_devout->buffer_mutex = (GRecMutex **) malloc(8 * sizeof(GRecMutex *));
+  pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_0;
+
+  pulse_devout->app_buffer_mutex = (GRecMutex **) g_malloc(8 * sizeof(GRecMutex *));
 
   for(i = 0; i < 8; i++){
-    pulse_devout->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    pulse_devout->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
-    g_rec_mutex_init(pulse_devout->buffer_mutex[i]);
+    g_rec_mutex_init(pulse_devout->app_buffer_mutex[i]);
   }
-
+  
   pulse_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  pulse_devout->sub_block_mutex = (GRecMutex **) malloc(8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels * sizeof(GRecMutex *));
+  pulse_devout->sub_block_mutex = (GRecMutex **) g_malloc(8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels * sizeof(GRecMutex *));
 
   for(i = 0; i < 8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
-    pulse_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    pulse_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(pulse_devout->sub_block_mutex[i]);
   }
 
-  pulse_devout->buffer = (void **) malloc(8 * sizeof(void*));
+  pulse_devout->app_buffer = (void **) g_malloc(8 * sizeof(void*));
 
-  pulse_devout->buffer[0] = NULL;
-  pulse_devout->buffer[1] = NULL;
-  pulse_devout->buffer[2] = NULL;
-  pulse_devout->buffer[3] = NULL;
-  pulse_devout->buffer[4] = NULL;
-  pulse_devout->buffer[5] = NULL;
-  pulse_devout->buffer[6] = NULL;
-  pulse_devout->buffer[7] = NULL;
+  pulse_devout->app_buffer[0] = NULL;
+  pulse_devout->app_buffer[1] = NULL;
+  pulse_devout->app_buffer[2] = NULL;
+  pulse_devout->app_buffer[3] = NULL;
+  pulse_devout->app_buffer[4] = NULL;
+  pulse_devout->app_buffer[5] = NULL;
+  pulse_devout->app_buffer[6] = NULL;
+  pulse_devout->app_buffer[7] = NULL;
   
   ags_pulse_devout_realloc_buffer(pulse_devout);
   
@@ -678,6 +698,13 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   pulse_devout->do_loop = FALSE;
 
   pulse_devout->loop_offset = 0;
+
+  /*  */
+  pulse_devout->card_uri = NULL;
+  pulse_devout->pulse_client = NULL;
+
+  pulse_devout->port_name = NULL;
+  pulse_devout->pulse_port = NULL;
 
   /* callback mutex */
   g_mutex_init(&(pulse_devout->callback_mutex));
@@ -763,7 +790,7 @@ ags_pulse_devout_set_property(GObject *gobject,
       }
 
       pulse_devout->sub_block_mutex = (GRecMutex **) realloc(pulse_devout->sub_block_mutex,
-								   8 * pulse_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
+							     8 * pulse_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
 
       /* create if more pcm-channels */
       for(i = 8 * pulse_devout->sub_block_count * old_pcm_channels; i < 8 * pulse_devout->sub_block_count * pcm_channels; i++){
@@ -929,7 +956,7 @@ ags_pulse_devout_set_property(GObject *gobject,
 
       g_object_ref(pulse_port);
       pulse_devout->pulse_port = g_list_append(pulse_devout->pulse_port,
-					     pulse_port);
+					       pulse_port);
 
       g_rec_mutex_unlock(pulse_devout_mutex);
     }
@@ -1014,7 +1041,7 @@ ags_pulse_devout_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(pulse_devout_mutex);
 
-      g_value_set_pointer(value, pulse_devout->buffer);
+      g_value_set_pointer(value, pulse_devout->app_buffer);
 
       g_rec_mutex_unlock(pulse_devout_mutex);
     }
@@ -1102,23 +1129,43 @@ ags_pulse_devout_finalize(GObject *gobject)
 {
   AgsPulseDevout *pulse_devout;
 
+  guint i;
+
   pulse_devout = AGS_PULSE_DEVOUT(gobject);
 
+  ags_uuid_free(pulse_devout->uuid);
+
+  for(i = 0; i < 8; i++){
+    g_rec_mutex_clear(pulse_devout->app_buffer_mutex[i]);
+
+    g_free(pulse_devout->app_buffer_mutex[i]);
+  }
+  
+  g_free(pulse_devout->app_buffer_mutex);
+  
+  for(i = 0; i < 8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
+    g_rec_mutex_clear(pulse_devout->sub_block_mutex[i]);
+
+    g_free(pulse_devout->sub_block_mutex[i]);
+  }
+
+  g_free(pulse_devout->sub_block_mutex);
+
   /* free output buffer */
-  free(pulse_devout->buffer[0]);
-  free(pulse_devout->buffer[1]);
-  free(pulse_devout->buffer[2]);
-  free(pulse_devout->buffer[3]);
-  free(pulse_devout->buffer[4]);
-  free(pulse_devout->buffer[5]);
-  free(pulse_devout->buffer[6]);
-  free(pulse_devout->buffer[7]);
+  g_free(pulse_devout->app_buffer[0]);
+  g_free(pulse_devout->app_buffer[1]);
+  g_free(pulse_devout->app_buffer[2]);
+  g_free(pulse_devout->app_buffer[3]);
+  g_free(pulse_devout->app_buffer[4]);
+  g_free(pulse_devout->app_buffer[5]);
+  g_free(pulse_devout->app_buffer[6]);
+  g_free(pulse_devout->app_buffer[7]);
 
   /* free buffer array */
-  free(pulse_devout->buffer);
+  g_free(pulse_devout->app_buffer);
 
-  /* free AgsAttack */
-  free(pulse_devout->attack);
+  g_free(pulse_devout->delay);
+  g_free(pulse_devout->attack);
 
   /* pulse client */
   if(pulse_devout->pulse_client != NULL){
@@ -1170,10 +1217,19 @@ ags_pulse_devout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *pulse_devout_mutex;
+
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
-  /* check is added */
-  is_ready = ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_ADDED_TO_REGISTRY);
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  /* check is ready */
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (pulse_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_devout_mutex);
   
   return(is_ready);
 }
@@ -1183,13 +1239,22 @@ ags_pulse_devout_add_to_registry(AgsConnectable *connectable)
 {
   AgsPulseDevout *pulse_devout;
 
+  GRecMutex *pulse_devout_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
-  ags_pulse_devout_set_flags(pulse_devout, AGS_PULSE_DEVOUT_ADDED_TO_REGISTRY);
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  pulse_devout->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(pulse_devout_mutex);
 }
 
 void
@@ -1197,13 +1262,22 @@ ags_pulse_devout_remove_from_registry(AgsConnectable *connectable)
 {
   AgsPulseDevout *pulse_devout;
 
+  GRecMutex *pulse_devout_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
-  ags_pulse_devout_unset_flags(pulse_devout, AGS_PULSE_DEVOUT_ADDED_TO_REGISTRY);
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  pulse_devout->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(pulse_devout_mutex);
 }
 
 xmlNode*
@@ -1232,7 +1306,7 @@ ags_pulse_devout_xml_compose(AgsConnectable *connectable)
 
 void
 ags_pulse_devout_xml_parse(AgsConnectable *connectable,
-		      xmlNode *node)
+			   xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -1244,10 +1318,19 @@ ags_pulse_devout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *pulse_devout_mutex;
+
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
   /* check is connected */
-  is_connected = ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_CONNECTED);
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pulse_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_devout_mutex);
   
   return(is_connected);
 }
@@ -1256,6 +1339,8 @@ void
 ags_pulse_devout_connect(AgsConnectable *connectable)
 {
   AgsPulseDevout *pulse_devout;
+
+  GRecMutex *pulse_devout_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1263,22 +1348,37 @@ ags_pulse_devout_connect(AgsConnectable *connectable)
 
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
-  ags_pulse_devout_set_flags(pulse_devout, AGS_PULSE_DEVOUT_CONNECTED);
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  pulse_devout->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(pulse_devout_mutex);
 }
 
 void
 ags_pulse_devout_disconnect(AgsConnectable *connectable)
 {
-
   AgsPulseDevout *pulse_devout;
+
+  GRecMutex *pulse_devout_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
+
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  pulse_devout->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_pulse_devout_unset_flags(pulse_devout, AGS_PULSE_DEVOUT_CONNECTED);
+  g_rec_mutex_unlock(pulse_devout_mutex);
 }
 
 /**
@@ -1380,7 +1480,7 @@ ags_pulse_devout_unset_flags(AgsPulseDevout *pulse_devout, guint flags)
 
 void
 ags_pulse_devout_set_device(AgsSoundcard *soundcard,
-			   gchar *device)
+			    gchar *device)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -1508,10 +1608,10 @@ ags_pulse_devout_get_device(AgsSoundcard *soundcard)
 
 void
 ags_pulse_devout_set_presets(AgsSoundcard *soundcard,
-			    guint channels,
-			    guint rate,
-			    guint buffer_size,
-			    guint format)
+			     guint channels,
+			     guint rate,
+			     guint buffer_size,
+			     guint format)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -1527,10 +1627,10 @@ ags_pulse_devout_set_presets(AgsSoundcard *soundcard,
 
 void
 ags_pulse_devout_get_presets(AgsSoundcard *soundcard,
-			    guint *channels,
-			    guint *rate,
-			    guint *buffer_size,
-			    guint *format)
+			     guint *channels,
+			     guint *rate,
+			     guint *buffer_size,
+			     guint *format)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -1565,7 +1665,7 @@ ags_pulse_devout_get_presets(AgsSoundcard *soundcard,
 
 void
 ags_pulse_devout_list_cards(AgsSoundcard *soundcard,
-			   GList **card_id, GList **card_name)
+			    GList **card_id, GList **card_name)
 {
   AgsPulseClient *pulse_client;
   AgsPulseDevout *pulse_devout;
@@ -1859,19 +1959,19 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   }
   
   /* prepare for playback */
-  pulse_devout->flags |= (AGS_PULSE_DEVOUT_BUFFER7 |
-			  AGS_PULSE_DEVOUT_START_PLAY |
+  pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_7;
+  pulse_devout->flags |= (AGS_PULSE_DEVOUT_START_PLAY |
 			  AGS_PULSE_DEVOUT_PLAY |
 			  AGS_PULSE_DEVOUT_NONBLOCKING);
 
-  memset(pulse_devout->buffer[0], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[1], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[2], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[3], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[4], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[5], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[6], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[7], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[0], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[1], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[2], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[3], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[4], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[5], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[6], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[7], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
 
   /*  */
   pulse_devout->tact_counter = 0.0;
@@ -2297,15 +2397,8 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
   
-  pulse_devout->flags &= (~(AGS_PULSE_DEVOUT_BUFFER0 |
-			    AGS_PULSE_DEVOUT_BUFFER1 |
-			    AGS_PULSE_DEVOUT_BUFFER2 |
-			    AGS_PULSE_DEVOUT_BUFFER3 |
-			    AGS_PULSE_DEVOUT_BUFFER4 |
-			    AGS_PULSE_DEVOUT_BUFFER5 |
-			    AGS_PULSE_DEVOUT_BUFFER6 |
-			    AGS_PULSE_DEVOUT_BUFFER7 |
-			    AGS_PULSE_DEVOUT_PLAY));
+  pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_0;
+  pulse_devout->flags &= (~(AGS_PULSE_DEVOUT_PLAY));
 
   g_atomic_int_or(&(pulse_devout->sync_flags),
 		  AGS_PULSE_DEVOUT_PASS_THROUGH);
@@ -2382,14 +2475,14 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
 
   g_rec_mutex_lock(pulse_devout_mutex);
   
-  memset(pulse_devout->buffer[0], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[1], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[2], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[3], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[4], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[5], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[6], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[7], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[0], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[1], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[2], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[3], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[4], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[5], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[6], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->app_buffer[7], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
 
   g_rec_mutex_unlock(pulse_devout_mutex);
 }
@@ -2464,7 +2557,7 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
 
 void
 ags_pulse_devout_offset_changed(AgsSoundcard *soundcard,
-			       guint note_offset)
+				guint note_offset)
 {
   AgsPulseDevout *pulse_devout;
   
@@ -2490,7 +2583,7 @@ ags_pulse_devout_offset_changed(AgsSoundcard *soundcard,
 
 void
 ags_pulse_devout_set_bpm(AgsSoundcard *soundcard,
-			gdouble bpm)
+			 gdouble bpm)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -2537,7 +2630,7 @@ ags_pulse_devout_get_bpm(AgsSoundcard *soundcard)
 
 void
 ags_pulse_devout_set_delay_factor(AgsSoundcard *soundcard,
-				 gdouble delay_factor)
+				  gdouble delay_factor)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -2666,28 +2759,37 @@ ags_pulse_devout_get_buffer(AgsSoundcard *soundcard)
   AgsPulseDevout *pulse_devout;
 
   void *buffer;
+
+  GRecMutex *pulse_devout_mutex;  
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+  
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
-  if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER0)){
-    buffer = pulse_devout->buffer[0];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER1)){
-    buffer = pulse_devout->buffer[1];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER2)){
-    buffer = pulse_devout->buffer[2];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER3)){
-    buffer = pulse_devout->buffer[3];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER4)){
-    buffer = pulse_devout->buffer[4];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER5)){
-    buffer = pulse_devout->buffer[5];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER6)){
-    buffer = pulse_devout->buffer[6];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
-    buffer = pulse_devout->buffer[7];
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_0){
+    buffer = pulse_devout->app_buffer[0];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_1){
+    buffer = pulse_devout->app_buffer[1];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_2){
+    buffer = pulse_devout->app_buffer[2];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_3){
+    buffer = pulse_devout->app_buffer[3];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_4){
+    buffer = pulse_devout->app_buffer[4];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_5){
+    buffer = pulse_devout->app_buffer[5];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_6){
+    buffer = pulse_devout->app_buffer[6];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_7){
+    buffer = pulse_devout->app_buffer[7];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(pulse_devout_mutex);
 
   return(buffer);
 }
@@ -2698,28 +2800,37 @@ ags_pulse_devout_get_next_buffer(AgsSoundcard *soundcard)
   AgsPulseDevout *pulse_devout;
 
   void *buffer;
+
+  GRecMutex *pulse_devout_mutex;  
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+  
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
-  if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER0)){
-    buffer = pulse_devout->buffer[1];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER1)){
-    buffer = pulse_devout->buffer[2];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER2)){
-    buffer = pulse_devout->buffer[3];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER3)){
-    buffer = pulse_devout->buffer[4];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER4)){
-    buffer = pulse_devout->buffer[5];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER5)){
-    buffer = pulse_devout->buffer[6];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER6)){
-    buffer = pulse_devout->buffer[7];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
-    buffer = pulse_devout->buffer[0];
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_0){
+    buffer = pulse_devout->app_buffer[1];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_1){
+    buffer = pulse_devout->app_buffer[2];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_2){
+    buffer = pulse_devout->app_buffer[3];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_3){
+    buffer = pulse_devout->app_buffer[4];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_4){
+    buffer = pulse_devout->app_buffer[5];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_5){
+    buffer = pulse_devout->app_buffer[6];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_6){
+    buffer = pulse_devout->app_buffer[7];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_7){
+    buffer = pulse_devout->app_buffer[0];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(pulse_devout_mutex);
 
   return(buffer);
 }
@@ -2730,28 +2841,37 @@ ags_pulse_devout_get_prev_buffer(AgsSoundcard *soundcard)
   AgsPulseDevout *pulse_devout;
 
   void *buffer;
+
+  GRecMutex *pulse_devout_mutex;  
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
-  if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER0)){
-    buffer = pulse_devout->buffer[7];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER1)){
-    buffer = pulse_devout->buffer[0];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER2)){
-    buffer = pulse_devout->buffer[1];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER3)){
-    buffer = pulse_devout->buffer[2];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER4)){
-    buffer = pulse_devout->buffer[3];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER5)){
-    buffer = pulse_devout->buffer[4];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER6)){
-    buffer = pulse_devout->buffer[5];
-  }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
-    buffer = pulse_devout->buffer[6];
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  g_rec_mutex_lock(pulse_devout_mutex);
+
+  if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_0){
+    buffer = pulse_devout->app_buffer[7];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_1){
+    buffer = pulse_devout->app_buffer[0];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_2){
+    buffer = pulse_devout->app_buffer[1];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_3){
+    buffer = pulse_devout->app_buffer[2];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_4){
+    buffer = pulse_devout->app_buffer[3];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_5){
+    buffer = pulse_devout->app_buffer[4];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_6){
+    buffer = pulse_devout->app_buffer[5];
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_7){
+    buffer = pulse_devout->app_buffer[6];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(pulse_devout_mutex);
 
   return(buffer);
 }
@@ -2768,23 +2888,23 @@ ags_pulse_devout_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(pulse_devout->buffer != NULL){
-    if(buffer == pulse_devout->buffer[0]){
-      buffer_mutex = pulse_devout->buffer_mutex[0];
-    }else if(buffer == pulse_devout->buffer[1]){
-      buffer_mutex = pulse_devout->buffer_mutex[1];
-    }else if(buffer == pulse_devout->buffer[2]){
-      buffer_mutex = pulse_devout->buffer_mutex[2];
-    }else if(buffer == pulse_devout->buffer[3]){
-      buffer_mutex = pulse_devout->buffer_mutex[3];
-    }else if(buffer == pulse_devout->buffer[4]){
-      buffer_mutex = pulse_devout->buffer_mutex[4];
-    }else if(buffer == pulse_devout->buffer[5]){
-      buffer_mutex = pulse_devout->buffer_mutex[5];
-    }else if(buffer == pulse_devout->buffer[6]){
-      buffer_mutex = pulse_devout->buffer_mutex[6];
-    }else if(buffer == pulse_devout->buffer[7]){
-      buffer_mutex = pulse_devout->buffer_mutex[7];
+  if(pulse_devout->app_buffer != NULL){
+    if(buffer == pulse_devout->app_buffer[0]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[0];
+    }else if(buffer == pulse_devout->app_buffer[1]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[1];
+    }else if(buffer == pulse_devout->app_buffer[2]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[2];
+    }else if(buffer == pulse_devout->app_buffer[3]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[3];
+    }else if(buffer == pulse_devout->app_buffer[4]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[4];
+    }else if(buffer == pulse_devout->app_buffer[5]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[5];
+    }else if(buffer == pulse_devout->app_buffer[6]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[6];
+    }else if(buffer == pulse_devout->app_buffer[7]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[7];
     }
   }
   
@@ -2805,23 +2925,23 @@ ags_pulse_devout_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(pulse_devout->buffer != NULL){
-    if(buffer == pulse_devout->buffer[0]){
-      buffer_mutex = pulse_devout->buffer_mutex[0];
-    }else if(buffer == pulse_devout->buffer[1]){
-      buffer_mutex = pulse_devout->buffer_mutex[1];
-    }else if(buffer == pulse_devout->buffer[2]){
-      buffer_mutex = pulse_devout->buffer_mutex[2];
-    }else if(buffer == pulse_devout->buffer[3]){
-      buffer_mutex = pulse_devout->buffer_mutex[3];
-    }else if(buffer == pulse_devout->buffer[4]){
-      buffer_mutex = pulse_devout->buffer_mutex[4];
-    }else if(buffer == pulse_devout->buffer[5]){
-      buffer_mutex = pulse_devout->buffer_mutex[5];
-    }else if(buffer == pulse_devout->buffer[6]){
-      buffer_mutex = pulse_devout->buffer_mutex[6];
-    }else if(buffer == pulse_devout->buffer[7]){
-      buffer_mutex = pulse_devout->buffer_mutex[7];
+  if(pulse_devout->app_buffer != NULL){
+    if(buffer == pulse_devout->app_buffer[0]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[0];
+    }else if(buffer == pulse_devout->app_buffer[1]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[1];
+    }else if(buffer == pulse_devout->app_buffer[2]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[2];
+    }else if(buffer == pulse_devout->app_buffer[3]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[3];
+    }else if(buffer == pulse_devout->app_buffer[4]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[4];
+    }else if(buffer == pulse_devout->app_buffer[5]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[5];
+    }else if(buffer == pulse_devout->app_buffer[6]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[6];
+    }else if(buffer == pulse_devout->app_buffer[7]){
+      buffer_mutex = pulse_devout->app_buffer_mutex[7];
     }
   }
 
@@ -2901,7 +3021,7 @@ ags_pulse_devout_get_start_note_offset(AgsSoundcard *soundcard)
 
 void
 ags_pulse_devout_set_note_offset(AgsSoundcard *soundcard,
-				guint note_offset)
+				 guint note_offset)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -2946,7 +3066,7 @@ ags_pulse_devout_get_note_offset(AgsSoundcard *soundcard)
 
 void
 ags_pulse_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
-					 guint note_offset_absolute)
+					  guint note_offset_absolute)
 {
   AgsPulseDevout *pulse_devout;
   
@@ -2991,8 +3111,8 @@ ags_pulse_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
 
 void
 ags_pulse_devout_set_loop(AgsSoundcard *soundcard,
-			 guint loop_left, guint loop_right,
-			 gboolean do_loop)
+			  guint loop_left, guint loop_right,
+			  gboolean do_loop)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -3019,8 +3139,8 @@ ags_pulse_devout_set_loop(AgsSoundcard *soundcard,
 
 void
 ags_pulse_devout_get_loop(AgsSoundcard *soundcard,
-			 guint *loop_left, guint *loop_right,
-			 gboolean *do_loop)
+			  guint *loop_left, guint *loop_right,
+			  gboolean *do_loop)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -3127,22 +3247,22 @@ ags_pulse_devout_trylock_sub_block(AgsSoundcard *soundcard,
 
   success = FALSE;
   
-  if(pulse_devout->buffer != NULL){
-    if(buffer == pulse_devout->buffer[0]){
+  if(pulse_devout->app_buffer != NULL){
+    if(buffer == pulse_devout->app_buffer[0]){
       sub_block_mutex = pulse_devout->sub_block_mutex[sub_block];
-    }else if(buffer == pulse_devout->buffer[1]){
+    }else if(buffer == pulse_devout->app_buffer[1]){
       sub_block_mutex = pulse_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[2]){
+    }else if(buffer == pulse_devout->app_buffer[2]){
       sub_block_mutex = pulse_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[3]){
+    }else if(buffer == pulse_devout->app_buffer[3]){
       sub_block_mutex = pulse_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[4]){
+    }else if(buffer == pulse_devout->app_buffer[4]){
       sub_block_mutex = pulse_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[5]){
+    }else if(buffer == pulse_devout->app_buffer[5]){
       sub_block_mutex = pulse_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[6]){
+    }else if(buffer == pulse_devout->app_buffer[6]){
       sub_block_mutex = pulse_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[7]){
+    }else if(buffer == pulse_devout->app_buffer[7]){
       sub_block_mutex = pulse_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3183,22 +3303,22 @@ ags_pulse_devout_unlock_sub_block(AgsSoundcard *soundcard,
   
   sub_block_mutex = NULL;
   
-  if(pulse_devout->buffer != NULL){
-    if(buffer == pulse_devout->buffer[0]){
+  if(pulse_devout->app_buffer != NULL){
+    if(buffer == pulse_devout->app_buffer[0]){
       sub_block_mutex = pulse_devout->sub_block_mutex[sub_block];
-    }else if(buffer == pulse_devout->buffer[1]){
+    }else if(buffer == pulse_devout->app_buffer[1]){
       sub_block_mutex = pulse_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[2]){
+    }else if(buffer == pulse_devout->app_buffer[2]){
       sub_block_mutex = pulse_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[3]){
+    }else if(buffer == pulse_devout->app_buffer[3]){
       sub_block_mutex = pulse_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[4]){
+    }else if(buffer == pulse_devout->app_buffer[4]){
       sub_block_mutex = pulse_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[5]){
+    }else if(buffer == pulse_devout->app_buffer[5]){
       sub_block_mutex = pulse_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[6]){
+    }else if(buffer == pulse_devout->app_buffer[6]){
       sub_block_mutex = pulse_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == pulse_devout->buffer[7]){
+    }else if(buffer == pulse_devout->app_buffer[7]){
       sub_block_mutex = pulse_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3231,30 +3351,22 @@ ags_pulse_devout_switch_buffer_flag(AgsPulseDevout *pulse_devout)
   /* switch buffer flag */
   g_rec_mutex_lock(pulse_devout_mutex);
 
-  if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER0);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER1;
-  }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER1);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER2;
-  }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER2);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER3;
-  }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER3);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER4;
-  }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER4);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER5;
-  }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER5);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER6;
-  }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER6);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER7;
-  }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
-    pulse_devout->flags &= (~AGS_PULSE_DEVOUT_BUFFER7);
-    pulse_devout->flags |= AGS_PULSE_DEVOUT_BUFFER0;
+  if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_0){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_1;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_1){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_2;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_2){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_3;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_3){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_4;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_4){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_5;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_5){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_6;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_6){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_7;
+  }else if(pulse_devout->app_buffer_mode == AGS_PULSE_DEVOUT_APP_BUFFER_7){
+    pulse_devout->app_buffer_mode = AGS_PULSE_DEVOUT_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(pulse_devout_mutex);
@@ -3334,61 +3446,61 @@ ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
     return;
   }
   
-  /* AGS_PULSE_DEVOUT_BUFFER_0 */
-  if(pulse_devout->buffer[0] != NULL){
-    free(pulse_devout->buffer[0]);
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_0 */
+  if(pulse_devout->app_buffer[0] != NULL){
+    free(pulse_devout->app_buffer[0]);
   }
   
-  pulse_devout->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devout->app_buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_PULSE_DEVOUT_BUFFER_1 */
-  if(pulse_devout->buffer[1] != NULL){
-    free(pulse_devout->buffer[1]);
-  }
-
-  pulse_devout->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
-  
-  /* AGS_PULSE_DEVOUT_BUFFER_2 */
-  if(pulse_devout->buffer[2] != NULL){
-    free(pulse_devout->buffer[2]);
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_1 */
+  if(pulse_devout->app_buffer[1] != NULL){
+    free(pulse_devout->app_buffer[1]);
   }
 
-  pulse_devout->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devout->app_buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_PULSE_DEVOUT_BUFFER_3 */
-  if(pulse_devout->buffer[3] != NULL){
-    free(pulse_devout->buffer[3]);
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_2 */
+  if(pulse_devout->app_buffer[2] != NULL){
+    free(pulse_devout->app_buffer[2]);
   }
-  
-  pulse_devout->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVOUT_BUFFER_4 */
-  if(pulse_devout->buffer[4] != NULL){
-    free(pulse_devout->buffer[4]);
+  pulse_devout->app_buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_3 */
+  if(pulse_devout->app_buffer[3] != NULL){
+    free(pulse_devout->app_buffer[3]);
   }
   
-  pulse_devout->buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devout->app_buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVOUT_BUFFER_5 */
-  if(pulse_devout->buffer[5] != NULL){
-    free(pulse_devout->buffer[5]);
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_4 */
+  if(pulse_devout->app_buffer[4] != NULL){
+    free(pulse_devout->app_buffer[4]);
   }
   
-  pulse_devout->buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devout->app_buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVOUT_BUFFER_6 */
-  if(pulse_devout->buffer[6] != NULL){
-    free(pulse_devout->buffer[6]);
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_5 */
+  if(pulse_devout->app_buffer[5] != NULL){
+    free(pulse_devout->app_buffer[5]);
   }
   
-  pulse_devout->buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devout->app_buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_PULSE_DEVOUT_BUFFER_7 */
-  if(pulse_devout->buffer[7] != NULL){
-    free(pulse_devout->buffer[7]);
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_6 */
+  if(pulse_devout->app_buffer[6] != NULL){
+    free(pulse_devout->app_buffer[6]);
   }
   
-  pulse_devout->buffer[7] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  pulse_devout->app_buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
+
+  /* AGS_PULSE_DEVOUT_APP_BUFFER_7 */
+  if(pulse_devout->app_buffer[7] != NULL){
+    free(pulse_devout->app_buffer[7]);
+  }
+  
+  pulse_devout->app_buffer[7] = (void *) malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**

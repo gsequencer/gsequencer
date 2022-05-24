@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.18.2],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[4.0.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -40,6 +40,11 @@ AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debug],
                                      [enable debug symbols (default is no)])],
               [],
               [enable_debug=no])
+
+AC_ARG_ENABLE(devel, [AS_HELP_STRING([--enable-devel],
+                                     [enable devel mode (default is no)])],
+              [],
+              [enable_devel=no])
 
 AC_ARG_ENABLE(introspection, [AS_HELP_STRING([--enable-introspection],
                                              [enable introspection symbols (default is no)])],
@@ -85,11 +90,6 @@ AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
                                       [enable OS X API (default is no)])],
               [],
               [enable_osxapi=no])
-
-AC_ARG_ENABLE(mac-integration, [AS_HELP_STRING([--enable-mac-integration],
-                                      [enable OS X mac integration (default is no)])],
-              [],
-              [enable_mac_integration=no])
 
 AC_ARG_ENABLE(osx-dmg-env, [AS_HELP_STRING([--enable-osx-dmg-env],
                                       [enable OS X DMG environment (default is no)])],
@@ -180,12 +180,6 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
                                 [experimental (default is no)])],
               [],
               [enable_experimental=no])
-
-AC_ARG_WITH([webkit],
-            [AS_HELP_STRING([--without-webkit],
-                            [disable support for webkit])],
-            [],
-            [with_webkit=yes])
 
 AC_ARG_WITH([poppler],
             [AS_HELP_STRING([--with-poppler],
@@ -303,14 +297,6 @@ AS_IF([test "x$enable_osxapi" != xno],
       AC_MSG_NOTICE([OS X api enabled])],
       [AC_MSG_NOTICE([OS X api disabled])])
 AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
-
-AS_IF([test "x$enable_mac_integration" != xno],
-      [AC_DEFINE([AGS_WITH_MAC_INTEGRATION], [1], [mac integration enabled])
-       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
-       AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
-       AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
-       AC_MSG_NOTICE([mac integration enabled])],
-      [AC_MSG_NOTICE([mac integration disabled])])
 
 AS_IF([test "x$enable_osx_dmg_env" != xno],
       [AC_DEFINE([AGS_OSX_DMG_ENV], [1], [OS X DMG environment enabled])
@@ -438,7 +424,7 @@ PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.52.0])
+PKG_CHECK_MODULES([LIBSOUP], [libsoup-3.0 >= 3.0.0])
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 
@@ -450,6 +436,13 @@ AS_IF([test "x$enable_debug" != xno],
       AC_MSG_NOTICE([debug enabled])],
       [AC_MSG_NOTICE([debug disabled])])
 AM_CONDITIONAL([AGS_WITH_DEBUG], [test "x$enable_debug" == xyes])
+
+AS_IF([test "x$enable_devel" != xno],
+      [AC_DEFINE([AGS_WITH_DEVEL], [1], [devel mode enabled])
+      
+      AC_MSG_NOTICE([devel enabled])],
+      [AC_MSG_NOTICE([devel disabled])])
+AM_CONDITIONAL([AGS_WITH_DEVEL], [test "x$enable_devel" == xyes])
 
 AS_IF([test "x$enable_public_libgsequencer" != xno],
       [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])
@@ -497,18 +490,10 @@ PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
-PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.18.0])
+PKG_CHECK_MODULES([GTK], [gtk4 >= 4.0.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-AS_IF([test "x$with_webkit" != xno],
-      [PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
-       AC_SUBST(WEBKITGTK_CFLAGS)
-       AC_SUBST(WEBKITGTK_LIBS)
-       AC_DEFINE([AGS_WITH_WEBKIT], [1],
-                 [Define if you have webkit])
-      ])
-      
 AS_IF([test "x$with_poppler" != xno],
       [PKG_CHECK_MODULES([POPPLER], [poppler-glib >= 0.71.0])
        AC_SUBST(POPPLER_CFLAGS)

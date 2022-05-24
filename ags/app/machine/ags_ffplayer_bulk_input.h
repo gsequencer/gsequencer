@@ -54,7 +54,7 @@ typedef enum{
 struct _AgsFFPlayerBulkInput
 {
   AgsEffectBulk effect_bulk;
-
+  
   guint mapped_input_pad;
 };
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_hybrid_synth.h>
 
 G_BEGIN_DECLS
-
-void ags_hybrid_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsHybridSynth *hybrid_synth);
 
 void ags_hybrid_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth);
 

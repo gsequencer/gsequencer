@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,15 +52,11 @@ G_BEGIN_DECLS
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
 
-typedef enum{
-  AGS_ONLINE_HELP_WINDOW_CONNECTED     = 1,
-}AgsOnlineHelpWindowFlags;
-
 struct _AgsOnlineHelpWindow
 {
   GtkWindow window;
 
-  guint flags;
+  guint connectable_flags;
   
   GtkButton *home;
 
@@ -69,19 +65,19 @@ struct _AgsOnlineHelpWindow
 
   GtkEntry *location;
 
-  gchar *start_filename;
+  gchar *start_filename;  
   
 #if defined(AGS_WITH_WEBKIT)
   WebKitWebView *web_view;
 #else
   gpointer web_view;
 #endif
-  
+
   gint max_width;
   gint max_height;
 
-  GtkVScrollbar *pdf_vscrollbar;
-  GtkHScrollbar *pdf_hscrollbar;
+  GtkScrollbar *pdf_vscrollbar;
+  GtkScrollbar *pdf_hscrollbar;
   
   GtkWidget *pdf_drawing_area;
   
@@ -99,7 +95,7 @@ struct _AgsOnlineHelpWindowClass
 
 GType ags_online_help_window_get_type(void);
 
-AgsOnlineHelpWindow* ags_online_help_window_new();
+AgsOnlineHelpWindow* ags_online_help_window_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

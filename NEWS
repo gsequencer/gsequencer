@@ -10,6 +10,35 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 4.0.0
+================================
+
+* Migrated to Gtk4, provide header bar in GSequencer.
+* Migrated to libsoup-3.0.
+* Improved libgsequencer.so, added spacings and tool tips.
+* Refactored objects to make use of AgsConnectableFlags and give it a
+  dedicated field.
+* Refactored utility functions to provide a uniform API by passing utility
+  boxed type.
+* Removed deprecated ags/audio/recall.
+* Removed deprecated utility functions.
+* Dropped functional integration tests.
+
+Overview of Changes in AGS 3.17.0
+================================
+
+* Implemented AgsSFZSynth computing just in time synth using ags-fx-sfz-synth.
+
+Overview of Changes in AGS 3.16.0
+================================
+
+* Implemented AgsSF2Synth computing just in time synth using ags-fx-sf2-synth.
+
+Overview of Changes in AGS 3.15.0
+================================
+
+* Implemented AgsHybridFMSynth computing just in time synth using ags-fx-fm-synth.
+
 Overview of Changes in AGS 3.15.0
 ================================
 

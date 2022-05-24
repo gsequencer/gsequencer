@@ -34,12 +34,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_generic_recall_channel_run.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_ladspa_run.h>
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_recall_lv2_run.h>
-#include <ags/audio/ags_recall_dssi.h>
-#include <ags/audio/ags_recall_dssi_run.h>
 
 #include <ags/audio/alsa/ags_alsa_devout.h>
 #include <ags/audio/alsa/ags_alsa_devin.h>
@@ -73,33 +67,6 @@
 #include <ags/audio/wasapi/ags_wasapi_devin.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
-
-#include <ags/audio/recall/ags_play_audio.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -715,7 +682,7 @@ ags_audio_application_context_connect(AgsConnectable *connectable)
   
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(connectable);
 
-  if(ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(audio_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -739,7 +706,7 @@ ags_audio_application_context_connect(AgsConnectable *connectable)
   
   /* sequencer */
   sequencer = 
-    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(audio_application_context->sequencer));
+    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(audio_application_context));
 
   while(sequencer != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(sequencer->data));
@@ -763,7 +730,7 @@ ags_audio_application_context_disconnect(AgsConnectable *connectable)
 
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(connectable);
 
-  if(!ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(audio_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1688,13 +1655,16 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
 
+  AgsConfig *config;
+  
   GMainContext *server_main_context;
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
   GMainLoop *main_loop;
-  GThread *main_loop_thread;
 
-  GList *start_queue;
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
 
@@ -1712,15 +1682,16 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   g_main_context_ref(server_main_context);
 
   audio_application_context->server_main_context = server_main_context;
-  
+
   main_loop = g_main_loop_new(server_main_context,
 			      TRUE);
 
   g_thread_new("Advanced Gtk+ Sequencer - server main loop",
-	       ags_audio_application_context_server_main_loop_thread,
+	       (GThreadFunc) ags_audio_application_context_server_main_loop_thread,
 	       main_loop);
-  
+
   /* audio main context and main loop */
+#if 1
   audio_main_context = g_main_context_new();
   g_main_context_ref(audio_main_context);
 
@@ -1730,8 +1701,11 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
 			      TRUE);
 
   g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
-	       ags_audio_application_context_audio_main_loop_thread,
+	       (GThreadFunc) ags_audio_application_context_audio_main_loop_thread,
 	       main_loop);
+#else
+  audio_application_context->audio_main_context = NULL;  
+#endif
 
   /* OSC server main context and main loop */
   osc_server_main_context = g_main_context_new();
@@ -1744,6 +1718,12 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
 
   /* AgsAudioLoop */
   audio_loop = (AgsThread *) ags_audio_loop_new();
+  ags_audio_loop_set_do_fx_staging((AgsAudioLoop *) audio_loop,
+				   TRUE);
+  ags_audio_loop_set_staging_program((AgsAudioLoop *) audio_loop,
+				     staging_program,
+				     1);
+  
   g_object_ref(audio_loop);
   
   application_context->main_loop = (GObject *) audio_loop;
@@ -1767,8 +1747,8 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   /* wait for audio loop */
   g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  if(!ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
-    ags_thread_set_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT);
+  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
     while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
 	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
@@ -1776,8 +1756,11 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
 		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
   }
-
+    
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
+
+  g_atomic_int_set(&(application_context->is_ready),
+		   1);
 }
 
 void
@@ -1785,6 +1768,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 {
   AgsAudioApplicationContext *audio_application_context;
 
+  GObject *soundcard;
+  GObject *sequencer;
   AgsJackServer *jack_server;
   AgsPulseServer *pulse_server;
   AgsCoreAudioServer *core_audio_server;
@@ -1794,63 +1779,62 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   AgsLadspaManager *ladspa_manager;
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
-  AgsLv2uiManager *lv2ui_manager;
-  AgsLv2WorkerManager *lv2_worker_manager;
 
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
   
-  AgsServer *server;
+  AgsLv2uiManager *lv2ui_manager;
+  AgsLv2WorkerManager *lv2_worker_manager;
 
+  AgsServer *server;
+  
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
   AgsThread *sequencer_thread;
   AgsDestroyWorker *destroy_worker;
   AgsTaskLauncher *task_launcher;
-  AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
-  AgsMessageQueue *audio_message_queue;
 
   AgsLog *log;
   AgsConfig *config;
 
-  GObject *soundcard;
-  GObject *sequencer;
-
   GList *list;  
-
-#ifndef AGS_W32API
+  
+#if !defined(AGS_W32API)
   struct passwd *pw;
-
+  
   uid_t uid;
 #endif
 
   gchar *blacklist_path;
   gchar *blacklist_filename;
+  gchar *filename;
   gchar *server_group;
   gchar *soundcard_group;
   gchar *sequencer_group;
   gchar *osc_server_group;
   gchar *str;
   gchar *capability;
-#if defined AGS_W32API
+#if defined(AGS_W32API)
   gchar *app_dir;
 #endif
-    
-  guint i;
+
+  guint i, j;
+  gboolean no_config;
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
   gboolean is_output;
-
-  GRecMutex *application_context_mutex;
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
+
+  while(!g_atomic_int_get(&(application_context->is_ready))){
+    usleep(4);
+  }
   
-  /* get mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
+  /* call parent */
+  //  AGS_APPLICATION_CONTEXT_CLASS(ags_audio_application_context_parent_class)->setup(application_context);
 
   /* config and log */
   config = ags_config_get_instance();
@@ -1862,30 +1846,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
-#if 0  //NOTE:JK: huh zombies might come to here
-  atexit(ags_audio_application_context_signal_cleanup);
-
-  /* Ignore interactive and job-control signals.  */
-#ifndef AGS_W32API
-  signal(SIGINT, SIG_IGN);
-  signal(SIGQUIT, SIG_IGN);
-  signal(SIGTSTP, SIG_IGN);
-  signal(SIGTTIN, SIG_IGN);
-  signal(SIGTTOU, SIG_IGN);
-  signal(SIGCHLD, SIG_IGN);
-
-#ifndef AGS_W32API
-  ags_sigact.sa_handler = ags_audio_application_context_signal_handler;
-  sigemptyset(&ags_sigact.sa_mask);
-  ags_sigact.sa_flags = 0;
-  sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
-  sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
-#endif
-#endif
-#endif
-  
   /* get user information */
-#if defined AGS_W32API
+#if defined(AGS_W32API)
   application_context = ags_application_context_get_instance();
 
   if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
@@ -1895,8 +1857,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     app_dir = NULL;
   }
   
-  blacklist_path = g_strdup_printf("%s\\%s",
+  blacklist_path = g_strdup_printf("%s%c%s",
 				   g_get_current_dir(),
+				   G_DIR_SEPARATOR,
 				   app_dir);
 
   g_free(app_dir);
@@ -1904,18 +1867,14 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   uid = getuid();
   pw = getpwuid(uid);
 
-  blacklist_path = g_strdup_printf("%s/%s",
+#if 1
+  blacklist_path = g_strdup_printf("%s%c%s",
 				   pw->pw_dir,
+				   G_DIR_SEPARATOR,
 				   AGS_DEFAULT_DIRECTORY);
 #endif
+#endif
   
-  /* message delivery */
-  message_delivery = ags_message_delivery_get_instance();
-
-  message_queue = ags_message_queue_new("libags");
-  ags_message_delivery_add_message_queue(message_delivery,
-					 (GObject *) message_queue);
-    
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
@@ -1947,6 +1906,14 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
+  /* load lv2ui manager */
+  lv2ui_manager = ags_lv2ui_manager_get_instance();  
+
+  blacklist_filename = g_strdup_printf("%s/lv2ui_plugin.blacklist",
+				       blacklist_path);
+  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
+				   blacklist_filename);
+
   /* load vst3 manager */
 #if defined(AGS_WITH_VST3)
   vst3_manager = ags_vst3_manager_get_instance();
@@ -1958,13 +1925,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   ags_vst3_manager_load_blacklist(vst3_manager,
 				  blacklist_filename);
 #endif
-  
+    
   audio_application_context->start_loader = TRUE;
   
-  /* launch audio */
-  ags_log_add_message(log,
-		      "* Launch audio");
-
   /* sound server */
   audio_application_context->sound_server = NULL;
 
@@ -2261,9 +2224,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 			       "use-cache");
 
     if(str != NULL &&
-       !g_strncasecmp(str,
-		      "false",
-		      5)){
+       !g_ascii_strncasecmp(str,
+			    "false",
+			    5)){
       use_cache = FALSE;
     }
 
@@ -2354,8 +2317,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   sequencer_group = g_strdup("sequencer");
   
   for(i = 0; ; i++){
-    guint pcm_channels, buffer_size, samplerate, format;
-
     if(!g_key_file_has_group(config->key_file,
 			     sequencer_group)){
       if(i == 0){
@@ -2454,7 +2415,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   }
 
   g_free(sequencer_group);
-
+  
   /* AgsServer */
   audio_application_context->server = NULL;
   server = NULL;
@@ -2558,28 +2519,28 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     }
 
     /* ip4 and ip6 address */
-    str = ags_config_get_value(config,
+    ip4 = ags_config_get_value(config,
 			       server_group,
 			       "ip4-address");
 
-    if(str != NULL){
+    if(ip4 != NULL){
       g_object_set(server,
-		   "ip4", str,
+		   "ip4", ip4,
 		   NULL);
       
-      g_free(str);
+      g_free(ip4);
     }
 
-    str = ags_config_get_value(config,
+    ip6 = ags_config_get_value(config,
 			       server_group,
 			       "ip6-address");
 
-    if(str != NULL){
+    if(ip6 != NULL){
       g_object_set(server,
-		   "ip6", str,
+		   "ip6", ip6,
 		   NULL);
       
-      g_free(str);
+      g_free(ip6);
     }
 
     /* server port */
@@ -2643,7 +2604,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data,
 							      soundcard_capability);
     ags_thread_add_child_extended(main_loop,
-				  (AgsThread *) soundcard_thread,
+				  soundcard_thread,
 				  TRUE, TRUE);
 
     /* export thread */
@@ -2894,14 +2855,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     ags_jack_server_connect_client(jack_server);
   }
 
-  /* set operating */
-  g_rec_mutex_lock(application_context_mutex);
-
   audio_application_context->setup_ready = TRUE;
-  
-  audio_application_context->is_operating = TRUE;
-
-  g_rec_mutex_unlock(application_context_mutex);
   
   /* unref */
   g_object_unref(main_loop);
@@ -2992,48 +2946,6 @@ ags_audio_application_context_register_types(AgsApplicationContext *application_
   ags_audio_loop_get_type();
   ags_soundcard_thread_get_type();
   ags_export_thread_get_type();
-
-  /* register recalls */
-  ags_play_audio_get_type();
-  ags_play_channel_get_type();
-  ags_play_channel_run_get_type();
-  ags_play_channel_run_master_get_type();
-
-  ags_stream_channel_get_type();
-  ags_stream_channel_run_get_type();
-
-  ags_loop_channel_get_type();
-  ags_loop_channel_run_get_type();
-
-  ags_copy_channel_get_type();
-  ags_copy_channel_run_get_type();
-
-  ags_volume_channel_get_type();
-  ags_volume_channel_run_get_type();
-
-  ags_peak_channel_get_type();
-  ags_peak_channel_run_get_type();
-
-  ags_recall_ladspa_get_type();
-  ags_generic_recall_channel_run_get_type();
-  ags_recall_ladspa_run_get_type();
-
-  ags_delay_audio_get_type();
-  ags_delay_audio_run_get_type();
-
-  ags_count_beats_audio_get_type();
-  ags_count_beats_audio_run_get_type();
-
-  ags_copy_pattern_audio_get_type();
-  ags_copy_pattern_audio_run_get_type();
-  ags_copy_pattern_channel_get_type();
-  ags_copy_pattern_channel_run_get_type();
-
-  ags_buffer_channel_get_type();
-  ags_buffer_channel_run_get_type();
-
-  ags_play_notation_audio_get_type();
-  ags_play_notation_audio_run_get_type();
 }
 
 void

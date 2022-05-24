@@ -72,13 +72,13 @@ ags_set_format_test_clean_suite()
 void
 ags_set_format_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsSetFormat *set_format;
 
   guint format;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
   ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
 					   devout);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),

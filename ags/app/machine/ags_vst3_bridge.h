@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -110,7 +110,7 @@ struct _AgsVst3Bridge
   gpointer ns_window;
   gpointer ns_view;
   
-  GtkMenu *vst3_menu;
+  GMenu *vst3_menu;
 
   GHashTable *block_control;
 };

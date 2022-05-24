@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,15 @@ G_BEGIN_DECLS
 typedef struct _AgsOscXmlrpcController AgsOscXmlrpcController;
 typedef struct _AgsOscXmlrpcControllerClass AgsOscXmlrpcControllerClass;
 
+/**
+ * AgsOscXmlrpcControllerFlags:
+ * AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED:
+ * AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING:
+ * AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING:
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsOscXmlrpcController by
+ * enable/disable as flags. 
+ */
 typedef enum{
   AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED        = 1,
   AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING        = 1 <<  1,
@@ -54,7 +63,7 @@ struct _AgsOscXmlrpcController
   AgsController controller;
 
   guint flags;
-
+  
   GObject *osc_xmlrpc_server;
   
   volatile gboolean do_reset;
@@ -76,6 +85,7 @@ struct _AgsOscXmlrpcControllerClass
 };
 
 GType ags_osc_xmlrpc_controller_get_type();
+GType ags_osc_xmlrpc_controller_flags_get_type();
 
 gboolean ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
 void ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/app/editor/ags_pattern_envelope_callbacks.h>
 
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/app/editor/ags_envelope_dialog.h>
@@ -1038,30 +1039,21 @@ void
 ags_pattern_envelope_preset_add_callback(GtkWidget *button,
 					 AgsPatternEnvelope *pattern_envelope)
 {
-  GtkDialog *dialog;
-  GtkEntry *entry;
+  AgsInputDialog *dialog;
 
   if(pattern_envelope->rename != NULL){
     return;
   }
   
-  pattern_envelope->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("preset name"),
-						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(pattern_envelope)),
-						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       i18n("_OK"),
-						       GTK_RESPONSE_ACCEPT,
-						       i18n("_Cancel"),
-						       GTK_RESPONSE_REJECT,
-						       NULL);
+  pattern_envelope->rename = 
+    dialog = (GtkDialog *) ags_input_dialog_new(i18n("preset name"),
+						(GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
+										      AGS_TYPE_ENVELOPE_DIALOG));
 
-  entry = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
-		     (GtkWidget *) entry,
-		     FALSE, FALSE,
-		     0);
+  ags_input_dialog_set_flags(dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
 
-  gtk_widget_show_all((GtkWidget *) dialog);
+  gtk_widget_show((GtkWidget *) dialog);
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_pattern_envelope_preset_rename_response_callback), (gpointer) pattern_envelope);
@@ -1123,8 +1115,7 @@ ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint res
 								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */
-    start_list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
-    text = gtk_editable_get_chars(GTK_EDITABLE(start_list->data),
+    text = gtk_editable_get_chars(GTK_EDITABLE(AGS_INPUT_DIALOG(widget)->string_input),
 				  0, -1);
 
     g_list_free(start_list);
@@ -1138,8 +1129,8 @@ ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint res
   }
   
   pattern_envelope->rename = NULL;
-  gtk_widget_destroy(widget);
+
+  gtk_window_destroy(widget);
 
   return(0);
 }
-

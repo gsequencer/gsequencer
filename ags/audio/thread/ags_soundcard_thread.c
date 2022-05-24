@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/audio/thread/ags_soundcard_thread.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_devin.h>
 
 #include <ags/audio/alsa/ags_alsa_devout.h>
 #include <ags/audio/alsa/ags_alsa_devin.h>
@@ -271,9 +268,7 @@ ags_soundcard_thread_set_property(GObject *gobject,
 		     NULL);
 
 	/* playback */
-	if(AGS_IS_DEVOUT(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
-	}else if(AGS_IS_ALSA_DEVOUT(soundcard)){
+	if(AGS_IS_ALSA_DEVOUT(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_OSS_DEVOUT(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
@@ -287,9 +282,7 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	}
 
 	/* capture */
-	if(AGS_IS_DEVIN(soundcard)){
-	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
-	}else if(AGS_IS_ALSA_DEVIN(soundcard)){
+	if(AGS_IS_ALSA_DEVIN(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}else if(AGS_IS_OSS_DEVIN(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
@@ -355,7 +348,7 @@ ags_soundcard_thread_connect(AgsConnectable *connectable)
 
   soundcard_thread = AGS_THREAD(connectable);
 
-  if(ags_thread_test_flags(soundcard_thread, AGS_THREAD_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }  
 
@@ -541,15 +534,8 @@ ags_soundcard_thread_stop(AgsThread *thread)
       ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
     }else{
       /* reset flags */
-      AGS_WASAPI_DEVOUT(soundcard)->flags &= (~(AGS_WASAPI_DEVOUT_BUFFER0 |
-						AGS_WASAPI_DEVOUT_BUFFER1 |
-						AGS_WASAPI_DEVOUT_BUFFER2 |
-						AGS_WASAPI_DEVOUT_BUFFER3 |
-						AGS_WASAPI_DEVOUT_BUFFER4 |
-						AGS_WASAPI_DEVOUT_BUFFER5 |
-						AGS_WASAPI_DEVOUT_BUFFER6 |
-						AGS_WASAPI_DEVOUT_BUFFER7 |
-						AGS_WASAPI_DEVOUT_PLAY |
+      AGS_WASAPI_DEVOUT(soundcard)->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_0;
+      AGS_WASAPI_DEVOUT(soundcard)->flags &= (~(AGS_WASAPI_DEVOUT_PLAY |
 						AGS_WASAPI_DEVOUT_INITIALIZED |
 						AGS_WASAPI_DEVOUT_SHUTDOWN));
       
@@ -562,15 +548,8 @@ ags_soundcard_thread_stop(AgsThread *thread)
       ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
     }else{
       /* reset flags */
-      AGS_WASAPI_DEVIN(soundcard)->flags &= (~(AGS_WASAPI_DEVIN_BUFFER0 |
-					       AGS_WASAPI_DEVIN_BUFFER1 |
-					       AGS_WASAPI_DEVIN_BUFFER2 |
-					       AGS_WASAPI_DEVIN_BUFFER3 |
-					       AGS_WASAPI_DEVIN_BUFFER4 |
-					       AGS_WASAPI_DEVIN_BUFFER5 |
-					       AGS_WASAPI_DEVIN_BUFFER6 |
-					       AGS_WASAPI_DEVIN_BUFFER7 |
-					       AGS_WASAPI_DEVIN_RECORD |
+      AGS_WASAPI_DEVIN(soundcard)->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_0;
+      AGS_WASAPI_DEVIN(soundcard)->flags &= (~(AGS_WASAPI_DEVIN_RECORD |
 					       AGS_WASAPI_DEVIN_INITIALIZED |
 					       AGS_WASAPI_DEVIN_SHUTDOWN));
       

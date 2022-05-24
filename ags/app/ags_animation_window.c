@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,9 +29,13 @@
 
 void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
-void ags_animation_window_show(GtkWidget *widget);
 
-gboolean ags_animation_window_draw(GtkWidget *widget, cairo_t *cr);
+void ags_animation_window_snapshot(GtkWidget *widget,
+				   GtkSnapshot *snapshot);
+
+void ags_animation_window_draw(GtkWidget *widget,
+			       cairo_t *cr,
+			       gboolean is_animation);
 
 static gpointer ags_animation_window_parent_class = NULL;
 
@@ -75,8 +79,7 @@ ags_animation_window_class_init(AgsAnimationWindowClass *animation_window)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) animation_window;
 
-  widget->draw = ags_animation_window_draw;
-//  widget->show = ags_animation_window_show;
+  widget->snapshot = ags_animation_window_snapshot;
 }
 
 void
@@ -99,9 +102,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   int stride;
   
   g_object_set(animation_window,
-	       "app-paintable", TRUE,
 	       "decorated", FALSE,
-	       "window-position", GTK_WIN_POS_CENTER,
 	       NULL);
 
   animation_window->message_count = 0;
@@ -226,14 +227,41 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 }
 
 void
-ags_animation_window_show(GtkWidget *widget)
+ags_animation_window_snapshot(GtkWidget *widget,
+			      GtkSnapshot *snapshot)
 {
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_animation_window_parent_class)->show(widget);
+  GtkStyleContext *style_context;
+
+  cairo_t *cr;
+
+  graphene_rect_t rect;
+  
+  int width, height;
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+  width = gtk_widget_get_width(widget);
+  height = gtk_widget_get_height(widget);
+  
+  graphene_rect_init(&rect,
+		     0.0, 0.0,
+		     (float) width, (float) height);
+  
+  cr = gtk_snapshot_append_cairo(snapshot,
+				 &rect);
+  
+  /* clear bg */
+  ags_animation_window_draw((AgsAnimationWindow *) widget,
+			    cr,
+			    TRUE);
+  
+  cairo_destroy(cr);
 }
 
-gboolean
-ags_animation_window_draw(GtkWidget *widget, cairo_t *cr)
+void
+ags_animation_window_draw(GtkWidget *widget,
+			  cairo_t *cr,
+			  gboolean is_animation)
 {
   AgsAnimationWindow *animation_window;
   
@@ -359,11 +387,8 @@ ags_animation_window_draw(GtkWidget *widget, cairo_t *cr)
   g_free(font_name);
   
   cairo_surface_mark_dirty(cairo_get_target(cr));
-//  cairo_destroy(cr);
 
   cairo_surface_destroy(surface);
-
-  return(FALSE);
 }
 
 gboolean

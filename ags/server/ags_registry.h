@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,19 +41,6 @@ typedef struct _AgsRegistry AgsRegistry;
 typedef struct _AgsRegistryClass AgsRegistryClass;
 typedef struct _AgsRegistryEntry AgsRegistryEntry;
 
-/**
- * AgsRegistryFlags:
- * @AGS_REGISTRY_ADDED_TO_REGISTRY: the registry was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_REGISTRY_CONNECTED: the registry was connected by #AgsConnectable::connect()
- *
- * Enum values to control the behavior or indicate internal state of #AgsRegistry by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_REGISTRY_ADDED_TO_REGISTRY   = 1,
-  AGS_REGISTRY_CONNECTED           = 1 <<  1,
-}AgsRegistryFlags;
-
 struct _AgsRegistry
 {
   GObject gobject;
@@ -88,7 +75,6 @@ struct _AgsRegistryEntry
 };
 
 GType ags_registry_get_type();
-GType ags_registry_flags_get_type();
 
 AgsRegistryEntry* ags_registry_entry_alloc();
 void ags_registry_entry_free(AgsRegistryEntry *registry_entry);

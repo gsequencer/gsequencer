@@ -22,10 +22,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_sheet_editor.h>
 #include <ags/app/ags_machine.h>
 
-#include <ags/app/editor/ags_sheet_toolbar.h>
 #include <ags/app/editor/ags_sheet_edit.h>
 
 #include <ags/i18n.h>
@@ -35,12 +33,13 @@ void ags_position_sheet_cursor_dialog_connectable_interface_init(AgsConnectableI
 void ags_position_sheet_cursor_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_sheet_cursor_dialog);
 void ags_position_sheet_cursor_dialog_finalize(GObject *gobject);
+
 void ags_position_sheet_cursor_dialog_connect(AgsConnectable *connectable);
 void ags_position_sheet_cursor_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_position_sheet_cursor_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_position_sheet_cursor_dialog_apply(AgsApplicable *applicable);
 void ags_position_sheet_cursor_dialog_reset(AgsApplicable *applicable);
-gboolean ags_position_sheet_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_position_sheet_cursor_dialog
@@ -108,9 +107,6 @@ void
 ags_position_sheet_cursor_dialog_class_init(AgsPositionSheetCursorDialogClass *position_sheet_cursor_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
-  GParamSpec *param_spec;
 
   ags_position_sheet_cursor_dialog_parent_class = g_type_class_peek_parent(position_sheet_cursor_dialog);
 
@@ -118,11 +114,6 @@ ags_position_sheet_cursor_dialog_class_init(AgsPositionSheetCursorDialogClass *p
   gobject = (GObjectClass *) position_sheet_cursor_dialog;
 
   gobject->finalize = ags_position_sheet_cursor_dialog_finalize;
-  
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) position_sheet_cursor_dialog;
-
-  widget->delete_event = ags_position_sheet_cursor_dialog_delete_event;
 }
 
 void
@@ -145,44 +136,41 @@ ags_position_sheet_cursor_dialog_applicable_interface_init(AgsApplicableInterfac
 void
 ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_sheet_cursor_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  position_sheet_cursor_dialog->flags = 0;
+  position_sheet_cursor_dialog->connectable_flags = 0;
 
   g_object_set(position_sheet_cursor_dialog,
 	       "title", i18n("position sheet cursor"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(position_sheet_cursor_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(position_sheet_cursor_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_sheet_cursor_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* set focus */
   position_sheet_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_toggle_button_set_active((GtkToggleButton *) position_sheet_cursor_dialog->set_focus,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(position_sheet_cursor_dialog->set_focus),
-		     FALSE, FALSE,
-		     0);  
+  gtk_check_button_set_active((GtkToggleButton *) position_sheet_cursor_dialog->set_focus,
+			      TRUE);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(position_sheet_cursor_dialog->set_focus));  
 
   /* position x - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* position x - label */
   label = (GtkLabel *) gtk_label_new(i18n("position x"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(label));
 
   /* position x - spin button */
   position_sheet_cursor_dialog->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -190,24 +178,19 @@ ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_she
 											      1.0);
   gtk_spin_button_set_value(position_sheet_cursor_dialog->position_x,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(position_sheet_cursor_dialog->position_x),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(position_sheet_cursor_dialog->position_x));
   
   /* position y - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* position y - label */
   label = (GtkLabel *) gtk_label_new(i18n("position y"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* position y - spin button */
   position_sheet_cursor_dialog->position_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -215,10 +198,8 @@ ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_she
 											      1.0);
   gtk_spin_button_set_value(position_sheet_cursor_dialog->position_y,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(position_sheet_cursor_dialog->position_y),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(position_sheet_cursor_dialog->position_y));
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) position_sheet_cursor_dialog,
@@ -235,11 +216,11 @@ ags_position_sheet_cursor_dialog_connect(AgsConnectable *connectable)
 
   position_sheet_cursor_dialog = AGS_POSITION_SHEET_CURSOR_DIALOG(connectable);
 
-  if((AGS_POSITION_SHEET_CURSOR_DIALOG_CONNECTED & (position_sheet_cursor_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (position_sheet_cursor_dialog->connectable_flags)) != 0){
     return;
   }
 
-  position_sheet_cursor_dialog->flags |= AGS_POSITION_SHEET_CURSOR_DIALOG_CONNECTED;
+  position_sheet_cursor_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(position_sheet_cursor_dialog, "response",
 		   G_CALLBACK(ags_position_sheet_cursor_dialog_response_callback), position_sheet_cursor_dialog);
@@ -252,11 +233,11 @@ ags_position_sheet_cursor_dialog_disconnect(AgsConnectable *connectable)
 
   position_sheet_cursor_dialog = AGS_POSITION_SHEET_CURSOR_DIALOG(connectable);
 
-  if((AGS_POSITION_SHEET_CURSOR_DIALOG_CONNECTED & (position_sheet_cursor_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (position_sheet_cursor_dialog->connectable_flags)) == 0){
     return;
   }
 
-  position_sheet_cursor_dialog->flags &= (~AGS_POSITION_SHEET_CURSOR_DIALOG_CONNECTED);
+  position_sheet_cursor_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(position_sheet_cursor_dialog),
 		      "any_signal::response",
@@ -291,16 +272,6 @@ void
 ags_position_sheet_cursor_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_position_sheet_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_position_sheet_cursor_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

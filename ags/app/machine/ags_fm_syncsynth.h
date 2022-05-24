@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,7 +80,10 @@ struct _AgsFMSyncsynth
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
-  GtkVBox *fm_oscillator;
+  GList *fm_oscillator;
+  
+  GtkBox *fm_oscillator_box;
+
   GtkButton *add;
   GtkButton *remove;
 
@@ -113,10 +116,11 @@ gboolean ags_fm_syncsynth_test_flags(AgsFMSyncsynth *fm_syncsynth, guint flags);
 void ags_fm_syncsynth_set_flags(AgsFMSyncsynth *fm_syncsynth, guint flags);
 void ags_fm_syncsynth_unset_flags(AgsFMSyncsynth *fm_syncsynth, guint flags);
 
+GList* ags_fm_syncsynth_get_fm_oscillator(AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 					AgsFMOscillator *fm_oscillator);
 void ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
-					   guint nth);
+					   AgsFMOscillator *fm_oscillator);
 
 void ags_fm_syncsynth_reset_loop(AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth);

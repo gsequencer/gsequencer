@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,6 +97,9 @@ ags_fluid_interpolate_none_util_alloc()
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
+  ptr->base_key = 0.0;
+  ptr->tuning = 0.0;
+
   ptr->phase_increment = 0.0;
 
   return(ptr);
@@ -129,6 +132,9 @@ ags_fluid_interpolate_none_util_copy(AgsFluidInterpolateNoneUtil *ptr)
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->base_key = ptr->base_key;
+  new_ptr->tuning = ptr->tuning;
 
   new_ptr->phase_increment = ptr->phase_increment;
 
@@ -436,12 +442,118 @@ ags_fluid_interpolate_none_util_set_samplerate(AgsFluidInterpolateNoneUtil *flui
 }
 
 /**
- * ags_fluid_interpolate_none_util_get_fluid_interpolate_none:
+ * ags_fluid_interpolate_none_util_get_base_key:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
  * 
- * Get phase_increment of @fluid_interpolate_none_util.
+ * Get base key of @fluid_interpolate_none_util.
  * 
- * Returns: the phase_increment
+ * Returns: the base key
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_fluid_interpolate_none_util_get_base_key(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util)
+{
+  if(fluid_interpolate_none_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_interpolate_none_util->base_key);
+}
+
+/**
+ * ags_fluid_interpolate_none_util_set_base_key:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * @base_key: the base key
+ *
+ * Set @base_key of @fluid_interpolate_none_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_fluid_interpolate_none_util_set_base_key(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+					     gdouble base_key)
+{
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  if(fluid_interpolate_none_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_none_util->base_key = base_key;
+
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+  
+  phase_incr = (exp2(((double) base_key + (fluid_interpolate_none_util->tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+  
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  fluid_interpolate_none_util->phase_increment = phase_incr;
+}
+
+/**
+ * ags_fluid_interpolate_none_util_get_tuning:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * 
+ * Get tuning of @fluid_interpolate_none_util.
+ * 
+ * Returns: the tuning
+ * 
+ * Since: 4.0.0
+ */
+gdouble
+ags_fluid_interpolate_none_util_get_tuning(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util)
+{
+  if(fluid_interpolate_none_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_interpolate_none_util->tuning);
+}
+
+/**
+ * ags_fluid_interpolate_none_util_set_tuning:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * @tuning: the tuning
+ *
+ * Set @tuning of @fluid_interpolate_none_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_fluid_interpolate_none_util_set_tuning(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+					   gdouble tuning)
+{
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  if(fluid_interpolate_none_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_none_util->tuning = tuning;
+
+  root_pitch_hz = exp2(((double) fluid_interpolate_none_util->base_key - 48.0) / 12.0) * 440.0;
+  
+  phase_incr = (exp2(((double) fluid_interpolate_none_util->base_key + (tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+  
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  fluid_interpolate_none_util->phase_increment = phase_incr;
+}
+
+/**
+ * ags_fluid_interpolate_none_util_get_phase_increment:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * 
+ * Get phase increment of @fluid_interpolate_none_util.
+ * 
+ * Returns: the phase increment
  * 
  * Since: 3.9.6
  */
@@ -992,446 +1104,5 @@ ags_fluid_interpolate_none_util_pitch(AgsFluidInterpolateNoneUtil *fluid_interpo
   break;
   default:
     g_warning("unknown format");
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_s8:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_s8(gint8 *destination,
-					gint8 *source,
-					guint buffer_length,
-					gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_s16:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_s16(gint16 *destination,
-					 gint16 *source,
-					 guint buffer_length,
-					 gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_s24:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_s24(gint32 *destination,
-					 gint32 *source,
-					 guint buffer_length,
-					 gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_s32:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_s32(gint32 *destination,
-					 gint32 *source,
-					 guint buffer_length,
-					 gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_s64:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_s64(gint64 *destination,
-					 gint64 *source,
-					 guint buffer_length,
-					 gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_float:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_float(gfloat *destination,
-					   gfloat *source,
-					   guint buffer_length,
-					   gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_double:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_double(gdouble *destination,
-					    gdouble *source,
-					    guint buffer_length,
-					    gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    destination[dsp_i] = source[dsp_phase_index];
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-  }
-}
-
-/**
- * ags_fluid_interpolate_none_util_fill_complex:
- * @destination: the destination audio buffer
- * @source: the source audio buffer
- * @buffer_length: the buffer length
- * @phase_incr: the phase increment
- * 
- * Perform fluid interpolate none on @buffer and return the result in @output_buffer.
- * 
- * Since: 3.8.12
- */
-void
-ags_fluid_interpolate_none_util_fill_complex(AgsComplex *destination,
-					     AgsComplex *source,
-					     guint buffer_length,
-					     gdouble phase_incr)
-{
-  guint destination_stride, source_stride;
-  guint64 dsp_phase;
-  guint64 dsp_phase_incr;
-  guint dsp_i;
-  guint dsp_phase_index;
-  guint end_index;
-  
-  if(destination == NULL ||
-     source == NULL ||
-     buffer_length == 0){
-    return;
-  }
-
-  dsp_phase = 0;
-  
-  /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
-
-  end_index = buffer_length - 1;
-
-  dsp_i = 0;
-
-  /* round to nearest point */
-  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
-
-  /* interpolate sequence of sample points */
-  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
-    /* write destination */
-    ags_complex_set(destination + dsp_i,
-		    ags_complex_get(source + dsp_phase_index));
-
-    /* increment phase */
-    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
-
-    /* round to nearest point */
-    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
   }
 }

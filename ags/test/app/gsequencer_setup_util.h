@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+gpointer ags_test_get_display();
+
 void ags_test_enter();
 void ags_test_leave();
 

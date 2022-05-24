@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -274,6 +274,7 @@ ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
   AgsConfig *config;
 
   ipatch_sample->flags = 0;
+  ipatch_sample->connectable_flags = 0;
 
   /* add audio file mutex */
   g_rec_mutex_init(&(ipatch_sample->obj_mutex));
@@ -521,11 +522,20 @@ ags_ipatch_sample_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  /* check is ready */
-  is_ready = ags_ipatch_sample_test_flags(ipatch_sample, AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY);
+  /* get ipatch_sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
+  /* check is ready */
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (ipatch_sample->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(ipatch_sample_mutex);
+  
   return(is_ready);
 }
 
@@ -539,13 +549,22 @@ ags_ipatch_sample_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *ipatch_sample_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  ags_ipatch_sample_set_flags(ipatch_sample, AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY);
+  /* get ipatch_sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  ipatch_sample->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -563,9 +582,24 @@ ags_ipatch_sample_add_to_registry(AgsConnectable *connectable)
 void
 ags_ipatch_sample_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsIpatchSample *ipatch_sample;
+
+  GRecMutex *ipatch_sample_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  /* get ipatch_sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  ipatch_sample->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 
   //TODO:JK: implement me
 }
@@ -608,11 +642,20 @@ ags_ipatch_sample_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  /* check is connected */
-  is_connected = ags_ipatch_sample_test_flags(ipatch_sample, AGS_IPATCH_SAMPLE_CONNECTED);
+  /* get ipatch_sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
+  /* check is connected */
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (ipatch_sample->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(ipatch_sample_mutex);
+  
   return(is_connected);
 }
 
@@ -621,13 +664,22 @@ ags_ipatch_sample_connect(AgsConnectable *connectable)
 {
   AgsIpatchSample *ipatch_sample;
 
+  GRecMutex *ipatch_sample_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  /* get ipatch_sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  ipatch_sample->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_ipatch_sample_set_flags(ipatch_sample, AGS_IPATCH_SAMPLE_CONNECTED);
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 
 void
@@ -635,13 +687,22 @@ ags_ipatch_sample_disconnect(AgsConnectable *connectable)
 {
   AgsIpatchSample *ipatch_sample;
 
+  GRecMutex *ipatch_sample_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  ags_ipatch_sample_unset_flags(ipatch_sample, AGS_IPATCH_SAMPLE_CONNECTED);
+  /* get ipatch_sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  ipatch_sample->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 
 gboolean

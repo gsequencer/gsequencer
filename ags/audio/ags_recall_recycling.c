@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,8 +29,6 @@
 #include <ags/audio/ags_recall_audio_signal.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/recall/ags_stream_recycling.h>
 
 #include <ags/i18n.h>
 

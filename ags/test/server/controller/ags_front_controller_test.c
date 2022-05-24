@@ -88,7 +88,6 @@ ags_front_controller_test_do_request()
   response = ags_front_controller_do_request(front_controller,
 					     NULL,
 					     NULL,
-					     NULL,
 					     security_context,
 					     "/ags-xmlrpc/status",
 					     "ags-test-login",

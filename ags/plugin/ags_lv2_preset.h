@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,17 +45,6 @@ typedef struct _AgsLv2Preset AgsLv2Preset;
 typedef struct _AgsLv2PresetClass AgsLv2PresetClass;
 typedef struct _AgsLv2PortPreset AgsLv2PortPreset;
 
-/**
- * AgsLv2PresetFlags:
- * @AGS_LV2_PRESET_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsLv2Preset by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_LV2_PRESET_CONNECTED    = 1,
-}AgsLv2PresetFlags;
-
 struct _AgsLv2Preset
 {
   GObject gobject;
@@ -92,7 +81,6 @@ struct _AgsLv2PortPreset
 };
 
 GType ags_lv2_preset_get_type(void);
-GType ags_lv2_preset_flags_get_type();
 
 AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symbol,
 					    GType port_type);

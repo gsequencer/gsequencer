@@ -53,7 +53,7 @@ void ags_mixer_input_line_map_recall(AgsLine *line,
 static gpointer ags_mixer_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_input_line_parent_connectable_interface;
 
-extern GHashTable *ags_line_indicator_queue_draw;
+extern GHashTable *ags_line_indicator_refresh;
 
 GType
 ags_mixer_input_line_get_type()
@@ -127,7 +127,8 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   /* volume indicator */
   line_member =
     mixer_input_line->volume_indicator = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-									"widget-type", AGS_TYPE_VINDICATOR,
+									"widget-type", AGS_TYPE_INDICATOR,
+									"widget-orientation", GTK_ORIENTATION_VERTICAL,
 									"margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 									"plugin-name", "ags-fx-peak",
 									"specifier", "./peak[0]",
@@ -135,15 +136,17 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 									NULL);
   line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
 			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
-  ags_expander_add(AGS_LINE(mixer_input_line)->expander,
-		   GTK_WIDGET(line_member),
-		   0, 0,
-		   1, 1);
-  widget = gtk_bin_get_child(GTK_BIN(line_member));
+  ags_line_add_line_member(AGS_LINE(mixer_input_line),
+			   line_member,
+			   0, 0,
+			   1, 1);
+  
+  widget = ags_line_member_get_widget(line_member);
   AGS_LINE(mixer_input_line)->indicator = widget;
-  g_hash_table_insert(ags_line_indicator_queue_draw,
-		      widget, ags_line_indicator_queue_draw_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
+  
+  g_hash_table_insert(ags_line_indicator_refresh,
+		      widget, ags_line_indicator_refresh_timeout);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_refresh_timeout, (gpointer) widget);
 
   /* volume */
   line_member =
@@ -155,12 +158,12 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 								      "specifier", "./volume[0]",
 								      "control-port", "2/2",
 								      NULL);
-  ags_expander_add(AGS_LINE(mixer_input_line)->expander,
-		   GTK_WIDGET(line_member),
-		   1, 0,
-		   1, 1);
+  ags_line_add_line_member(AGS_LINE(mixer_input_line),
+			   line_member,
+			   1, 0,
+			   1, 1);
 
-  widget = gtk_bin_get_child(GTK_BIN(line_member));
+  widget = ags_line_member_get_widget(line_member);
 
   gtk_scale_set_digits(GTK_SCALE(widget),
 		       3);
@@ -182,7 +185,7 @@ ags_mixer_input_line_connect(AgsConnectable *connectable)
 
   mixer_input_line = AGS_MIXER_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(mixer_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(mixer_input_line)->connectable_flags)) != 0){
     return;
   }
 
@@ -196,7 +199,7 @@ ags_mixer_input_line_disconnect(AgsConnectable *connectable)
 
   mixer_input_line = AGS_MIXER_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(mixer_input_line)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(mixer_input_line)->connectable_flags)) == 0){
     return;
   }
 

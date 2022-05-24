@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,34 +74,26 @@ ags_apply_tact_test_clean_suite()
 void
 ags_apply_tact_test_launch_scope_recall()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
-  AgsDelayAudio *delay_audio;
 
   AgsApplyTact *apply_tact;
 
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
   g_object_ref(devout);
   
   audio = ags_audio_new(devout);
   g_object_ref(audio);
-
-  delay_audio = ags_delay_audio_new(audio);
-  g_object_set(delay_audio,
-	       "output-soundcard", devout,
-	       NULL);
   
-  apply_tact = ags_apply_tact_new(delay_audio,
-				AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_RECALL_TACT);
+  apply_tact = ags_apply_tact_new(NULL,
+				  AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_RECALL_TACT);
   
   CU_ASSERT(AGS_IS_APPLY_TACT(apply_tact));
-  CU_ASSERT(apply_tact->scope == delay_audio);
+  CU_ASSERT(apply_tact->scope == NULL);
   CU_ASSERT(apply_tact->tact == AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_RECALL_TACT);
   
   /* test */
   ags_task_launch(apply_tact);
-
-  CU_ASSERT(ags_tactable_get_tact(AGS_TACTABLE(delay_audio)) == AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_RECALL_TACT);
 }
 
 void
@@ -128,28 +120,19 @@ ags_apply_tact_test_launch_scope_channel()
 void
 ags_apply_tact_test_launch_scope_audio()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
-  AgsDelayAudio *delay_audio;
 
   AgsApplyTact *apply_tact;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
   g_object_ref(devout);
 
   audio = ags_audio_new(NULL);
   g_object_ref(audio);
-
-  delay_audio = ags_delay_audio_new(audio);
-  g_object_set(delay_audio,
-	       "output-soundcard", devout,
-	       NULL);
-  ags_audio_add_recall(audio,
-		       delay_audio,
-		       FALSE);
   
   apply_tact = ags_apply_tact_new(audio,
-				AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_AUDIO_TACT);
+				  AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_AUDIO_TACT);
   
   CU_ASSERT(AGS_IS_APPLY_TACT(apply_tact));
   CU_ASSERT(apply_tact->scope == audio);
@@ -157,22 +140,20 @@ ags_apply_tact_test_launch_scope_audio()
   
   /* test */
   ags_task_launch(apply_tact);
-
-  CU_ASSERT(ags_tactable_get_tact(AGS_TACTABLE(delay_audio)) == AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_AUDIO_TACT);
 }
 
 void
 ags_apply_tact_test_launch_scope_soundcard()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsApplyTact *apply_tact;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
 
   apply_tact = ags_apply_tact_new(devout,
-				AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_SOUNDCARD_TACT);
+				  AGS_APPLY_TACT_TEST_LAUNCH_SCOPE_SOUNDCARD_TACT);
   
   CU_ASSERT(AGS_IS_APPLY_TACT(apply_tact));
   CU_ASSERT(apply_tact->scope == devout);
@@ -187,11 +168,11 @@ ags_apply_tact_test_launch_scope_soundcard()
 void
 ags_apply_tact_test_launch_scope_sequencer()
 {
-  AgsMidiin *midiin;
+  AgsAlsaMidiin *midiin;
 
   AgsApplyTact *apply_tact;
   
-  midiin = ags_midiin_new(NULL);
+  midiin = ags_alsa_midiin_new();
   g_object_ref(midiin);
 
   apply_tact = ags_apply_tact_new(midiin,
@@ -210,8 +191,8 @@ ags_apply_tact_test_launch_scope_sequencer()
 void
 ags_apply_tact_test_launch_scope_application_context()
 {
-  AgsDevout *devout;
-  AgsMidiin *midiin;
+  AgsAlsaDevout *devout;
+  AgsAlsaMidiin *midiin;
   AgsAudio *audio;
 
   AgsApplyTact *apply_tact;
@@ -221,12 +202,12 @@ ags_apply_tact_test_launch_scope_application_context()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
 
-  midiin = ags_midiin_new(application_context);
+  midiin = ags_alsa_midiin_new(application_context);
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, midiin));
   g_object_ref(midiin);

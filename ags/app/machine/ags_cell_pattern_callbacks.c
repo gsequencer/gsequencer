@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,112 +27,96 @@
 
 #include <math.h>
 
-void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note);
-
 gboolean
-ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern)
+ags_cell_pattern_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+						gint n_press,
+						gdouble x,
+						gdouble y,
+						AgsCellPattern *cell_pattern)
 {
-//  cairo_surface_flush(cairo_get_target(cr));
+  AgsMachine *machine;
 
-  cairo_push_group(cr);
+  AgsAudio *audio;
+  AgsChannel *start_input, *nth_channel;
 
-  /* the grid */
-  ags_cell_pattern_draw_grid(cell_pattern, cr);
+  GList *start_pattern;
+    
+  guint input_lines;
+  guint i, j;
+  guint index1;
 
-  /* the pattern */  
-  ags_cell_pattern_draw_matrix(cell_pattern, cr);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
 
-  ags_cell_pattern_draw_cursor(cell_pattern, cr);
+  audio = machine->audio;
+    
+  /* get some audio fields */
+  g_object_get(audio,
+	       "input-lines", &input_lines,
+	       "input", &start_input,
+	       NULL);
+    
+  /* get pattern position */        
+  i = (guint) floor((double) y / (double) cell_pattern->cell_height);
+  j = (guint) floor((double) x / (double) cell_pattern->cell_width);
 
-  /* paint */
-  cairo_pop_group_to_source(cr);
+  index1 = machine->bank_1;
 
-  cairo_paint(cr);
-  
-//  cairo_surface_mark_dirty(cairo_get_target(cr));
+  nth_channel = ags_channel_nth(start_input,
+				input_lines - ((guint) gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)) + i) - 1);
 
-  return(FALSE);
-}
+  if(nth_channel != NULL){
+    /* toggle pattern */
+    g_object_get(nth_channel,
+		 "pattern", &start_pattern,
+		 NULL);
 
-gboolean
-ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
-{
-  //TODO:JK: implement me, blink cursor
+    ags_pattern_toggle_bit(start_pattern->data,
+			   0, index1,
+			   j);
+      
+    g_object_unref(nth_channel);
+
+    g_list_free_full(start_pattern,
+		     g_object_unref);
+  }
+
+  /* unref */
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+    
+  /* queue draw */
+  gtk_widget_queue_draw((GtkWidget *) cell_pattern->drawing_area);
   
   return(TRUE);
 }
 
 gboolean
-ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsCellPattern *cell_pattern)
+ags_cell_pattern_gesture_click_released_callback(GtkGestureClick *event_controller,
+						 gint n_press,
+						 gdouble x,
+						 gdouble y,
+						 AgsCellPattern *cell_pattern)
 {
-  if(event->button == 1){
-    AgsMachine *machine;
-
-    AgsAudio *audio;
-    AgsChannel *start_input, *nth_channel;
-
-    GList *start_pattern;
-    
-    guint input_lines;
-    guint i, j;
-    guint index1;
-
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
-						     AGS_TYPE_MACHINE);
-
-    audio = machine->audio;
-    
-    /* get some audio fields */
-    g_object_get(audio,
-		 "input-lines", &input_lines,
-		 "input", &start_input,
-		 NULL);
-    
-    /* get pattern position */        
-    i = (guint) floor((double) event->y / (double) cell_pattern->cell_height);
-    j = (guint) floor((double) event->x / (double) cell_pattern->cell_width);
-
-    index1 = machine->bank_1;
-
-    nth_channel = ags_channel_nth(start_input,
-				  input_lines - ((guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + i) - 1);
-
-    if(nth_channel != NULL){
-      /* toggle pattern */
-      g_object_get(nth_channel,
-		   "pattern", &start_pattern,
-		   NULL);
-
-      ags_pattern_toggle_bit(start_pattern->data,
-			     0, index1,
-			     j);
-      
-      g_object_unref(nth_channel);
-
-      g_list_free_full(start_pattern,
-		       g_object_unref);
-    }
-
-    /* unref */
-    if(start_input != NULL){
-      g_object_unref(start_input);
-    }
-    
-    /* queue draw */
-    gtk_widget_queue_draw((GtkWidget *) cell_pattern->drawing_area);
-  }
-
+  //empty
+  
   return(FALSE);
 }
 
 gboolean
-ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
+ags_cell_pattern_key_pressed_callback(GtkEventControllerKey *event_controller,
+				      guint keyval,
+				      guint keycode,
+				      GdkModifierType state,
+				      AgsCellPattern *cell_pattern)
 {
-  if(event->keyval == GDK_KEY_Tab){
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab){
     return(FALSE);
   }
 
-  switch(event->keyval){
+  switch(keyval){
   case GDK_KEY_Control_L:
     {
       cell_pattern->key_mask |= AGS_CELL_PATTERN_KEY_L_CONTROL;
@@ -157,12 +141,14 @@ ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *ev
     }
     break;
   }
-  
-  return(TRUE);
 }
 
 gboolean
-ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
+ags_cell_pattern_key_released_callback(GtkEventControllerKey *event_controller,
+				       guint keyval,
+				       guint keycode,
+				       GdkModifierType state,
+				       AgsCellPattern *cell_pattern)
 {
   AgsMachine *machine;
   
@@ -171,8 +157,9 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   AgsChannel *channel, *nth_channel;
 
   guint input_lines;
-  
-  if(event->keyval == GDK_KEY_Tab){
+
+  if(keyval == GDK_KEY_Tab ||
+     keyval == GDK_KEY_ISO_Left_Tab){
     return(FALSE);
   }
 
@@ -187,7 +174,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	       "input-lines", &input_lines,
 	       NULL);
   
-  switch(event->keyval){
+  switch(keyval){
   case GDK_KEY_Control_L:
     {
       cell_pattern->key_mask &= (~AGS_CELL_PATTERN_KEY_L_CONTROL);
@@ -341,9 +328,9 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	}
       }
       
-      if(cell_pattern->cursor_y < gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar))){
-	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
-			    gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) - 1.0);
+      if(cell_pattern->cursor_y < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar))){
+	gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar),
+				 gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)) - 1.0);
       }
     }
     break;
@@ -394,9 +381,9 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	}
       }
       
-      if(cell_pattern->cursor_y >= gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
-			    gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + 1.0);
+      if(cell_pattern->cursor_y >= gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)) + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+	gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar),
+				 gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(cell_pattern->vscrollbar)) + 1.0);
       }
     }
     break;
@@ -464,153 +451,18 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   return(TRUE);
 }
 
+gboolean
+ags_cell_pattern_modifiers_callback(GtkEventControllerKey *event_controller,
+				    GdkModifierType keyval,
+				    AgsCellPattern *cell_pattern)
+{
+  //empty
+  
+  return(FALSE);
+}
+
 void
 ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *cell_pattern)
 {
   gtk_widget_queue_draw((GtkWidget *) cell_pattern->drawing_area);
-}
-
-void
-ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
-{
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsRecycling *first_recycling, *last_recycling;
-  AgsRecycling *recycling, *next_recycling, *end_recycling;
-  AgsAudioSignal *audio_signal;
-  AgsPlayback *playback;
-  AgsRecallID *recall_id;
-  
-  GObject *output_soundcard;
-  
-  gdouble delay;
-  guint samplerate;
-  
-  channel = AGS_START_CHANNEL(task)->channel;
-
-  /* get some fields */
-  g_object_get(channel,
-	       "audio", &audio,
-	       "output-soundcard", &output_soundcard,
-	       "playback", &playback,
-	       NULL);
-
-  g_object_unref(audio);
-
-  g_object_unref(output_soundcard);
-  
-  if(playback != NULL){
-    g_object_unref(playback);
-  }
-  
-  recall_id = ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK);
-
-#ifdef AGS_DEBUG
-  g_message("launch");
-#endif
-
-  if(playback == NULL ||
-     recall_id == NULL){
-    return;
-  }
-
-  /* get presets */
-  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
-			    NULL,
-			    &samplerate,
-			    NULL,
-			    NULL);
-
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
-
-  /* get some fields */
-  g_object_get(channel,
-	       "first-recycling", &first_recycling,
-	       "last-recycling", &last_recycling,
-	       NULL);
-
-  end_recycling = ags_recycling_next(last_recycling);
-  
-  /* add audio signal */
-  recycling = first_recycling;
-  g_object_ref(recycling);
-  
-  next_recycling = NULL;
-  
-  while(recycling != end_recycling){
-    if(!ags_recall_global_get_rt_safe()){
-      guint note_x0, note_x1;
-      
-      audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
-					  (GObject *) recycling,
-					  (GObject *) recall_id);
-      g_object_set(audio_signal,
-		   "note", note,
-		   NULL);
-
-      /* add audio signal */
-      g_object_get(note,
-		   "x0", &note_x0,
-		   "x1", &note_x1,
-		   NULL);
-
-      ags_recycling_create_audio_signal_with_frame_count(recycling,
-							 audio_signal,
-							 (note_x1 - note_x0) * ((gdouble) samplerate / delay),
-							 0.0, 0);
-      audio_signal->stream_current = audio_signal->stream;
-      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-  
-      /*
-       * emit add_audio_signal on AgsRecycling
-       */
-      ags_recycling_add_audio_signal(recycling,
-				     audio_signal);
-    }else{
-      GList *start_list, *list;
-
-      g_object_get(recycling,
-		   "audio-signal", &start_list,
-		   NULL);
-      
-      audio_signal = NULL;
-      list = ags_audio_signal_find_by_recall_id(start_list,
-						(GObject *) recall_id);
-	    
-      if(list != NULL){
-	audio_signal = list->data;
-
-	g_object_set(audio_signal,
-		     "note", note,
-		     NULL);
-      }
-
-      g_list_free_full(start_list,
-		       g_object_unref);
-
-      g_object_set(note,
-		   "rt-offset", 0,
-		   NULL);
-    }
-
-    /* iterate */
-    next_recycling = ags_recycling_next(recycling);
-
-    g_object_unref(recycling);
-
-    recycling = next_recycling;
-  }
-
-  if(first_recycling != NULL){
-    g_object_unref(first_recycling);
-    g_object_unref(last_recycling);
-  }
-
-  if(end_recycling != NULL){
-    g_object_unref(end_recycling);
-  }
-
-  if(next_recycling != NULL){
-    g_object_unref(next_recycling);
-  }
 }

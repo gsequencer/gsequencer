@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,15 +43,15 @@ typedef struct _AgsNotationMeta AgsNotationMeta;
 typedef struct _AgsNotationMetaClass AgsNotationMetaClass;
 
 typedef enum{
-  AGS_NOTATION_META_CONNECTED   = 1,
-  AGS_NOTATION_META_ENABLED     = 1 <<  1,
+  AGS_NOTATION_META_ENABLED     = 1,
 }AgsNotationMetaFlags;
 
 struct _AgsNotationMeta
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
+  guint connectable_flags;
 
   GtkLabel *machine_type;
   GtkLabel *machine_name;
@@ -72,7 +72,7 @@ struct _AgsNotationMeta
 
 struct _AgsNotationMetaClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_notation_meta_get_type(void);

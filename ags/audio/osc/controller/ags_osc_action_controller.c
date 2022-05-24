@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,7 +51,7 @@ void ags_osc_action_controller_finalize(GObject *gobject);
 
 gpointer ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_controller,
 						   AgsOscConnection *osc_connection,
-						   unsigned char *message, guint message_size);
+						   guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_action_controller
@@ -232,7 +232,7 @@ ags_osc_action_controller_finalize(GObject *gobject)
 gpointer
 ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_controller,
 					  AgsOscConnection *osc_connection,
-					  unsigned char *message, guint message_size)
+					  guchar *message, guint message_size)
 {
   AgsOscResponse *osc_response;
 
@@ -589,7 +589,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 gpointer
 ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controller,
 				     AgsOscConnection *osc_connection,
-				     unsigned char *message, guint message_size)
+				     guchar *message, guint message_size)
 {
   gpointer osc_response;
   

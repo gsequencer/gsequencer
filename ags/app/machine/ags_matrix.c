@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,8 +21,8 @@
 #include <ags/app/machine/ags_matrix_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_menu_bar.h>
 #include <ags/app/ags_navigation.h>
 
 #include <math.h>
@@ -137,27 +137,65 @@ ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_matrix_init(AgsMatrix *matrix)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkFrame *frame;
   GtkGrid *grid;
   GtkToggleButton *button;
   GtkBox *vbox;
   GtkBox *hbox;
   GtkBox *volume_hbox;
-
+  GtkLabel *label;
+  
   AgsAudio *audio;
 
   AgsApplicationContext *application_context;   
 
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+  
+  gchar *machine_name;
+
+  gint position;
   gdouble gui_scale_factor;
   int i, j;
 
   application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_MATRIX);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(matrix,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    matrix);
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  g_signal_connect_after((GObject *) matrix, "parent_set",
-			 G_CALLBACK(ags_matrix_parent_set_callback), (gpointer) matrix);
 
   audio = AGS_MACHINE(matrix)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -187,9 +225,6 @@ ags_matrix_init(AgsMatrix *matrix)
   audio->bank_dim[2] = 32;
 
   AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_REVERSE_NOTATION);
-
-  ags_machine_popup_add_connection_options((AgsMachine *) matrix,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;
@@ -232,17 +267,27 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->buffer_play_container = ags_recall_container_new();
   matrix->buffer_recall_container = ags_recall_container_new();
-
-  ags_machine_popup_add_edit_options((AgsMachine *) matrix,
-				     (AGS_MACHINE_POPUP_COPY_PATTERN |
-				      AGS_MACHINE_POPUP_ENVELOPE));
   
   /* create widgets */
-  frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));
-
   matrix->grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) matrix->grid);
+
+  gtk_widget_set_vexpand(matrix->grid,
+			 FALSE);
+  gtk_widget_set_hexpand(matrix->grid,
+			 FALSE);
+
+  gtk_widget_set_halign(matrix->grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(matrix->grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(matrix->grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(matrix->grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_frame_set_child(AGS_MACHINE(matrix)->frame,
+		      (GtkWidget *) matrix->grid);
 
   AGS_MACHINE(matrix)->play = 
     matrix->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run");
@@ -264,10 +309,15 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_widget_set_halign((GtkWidget *) grid,
 			GTK_ALIGN_FILL);
 
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_grid_attach(matrix->grid,
 		  (GtkWidget *) grid,
 		  1, 0,
-		  1, 2);
+		  1, 1);
   matrix->selected = NULL;
 
   for(i = 0; i < 3; i++){
@@ -296,7 +346,7 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->cell_pattern = ags_cell_pattern_new();
 
   gtk_widget_set_valign((GtkWidget *) matrix->cell_pattern,
-			    GTK_ALIGN_FILL);
+			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) matrix->cell_pattern,
 			GTK_ALIGN_FILL);
   
@@ -310,9 +360,12 @@ ags_matrix_init(AgsMatrix *matrix)
 				0);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
-			    GTK_ALIGN_FILL);
+			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) vbox,
 			GTK_ALIGN_FILL);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_grid_attach(matrix->grid,
 		  (GtkWidget *) vbox,
@@ -321,36 +374,37 @@ ags_matrix_init(AgsMatrix *matrix)
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
 
-  gtk_box_pack_start(hbox,
-		     gtk_label_new("length"),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
+
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   matrix->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 32.0, 1.0);
   gtk_spin_button_set_value(matrix->length_spin, 16.0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) matrix->length_spin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) matrix->length_spin);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop");
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) matrix->loop_button,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) matrix->loop_button);
 
   /* volume */
   frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
 
   gtk_widget_set_valign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) frame,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(matrix->grid,
 		  (GtkWidget *) frame,
@@ -359,8 +413,8 @@ ags_matrix_init(AgsMatrix *matrix)
 
   volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) volume_hbox);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) volume_hbox);
   
   matrix->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
 							 0.0,
@@ -368,12 +422,10 @@ ags_matrix_init(AgsMatrix *matrix)
 							 0.025);
 
   gtk_widget_set_size_request(matrix->volume,
-			      gui_scale_factor * 16, gui_scale_factor * 100);
+			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
-  gtk_box_pack_start(volume_hbox,
-		     (GtkWidget *) matrix->volume,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(volume_hbox,
+		 (GtkWidget *) matrix->volume);
 
   gtk_scale_set_digits(matrix->volume,
 		       3);
@@ -400,7 +452,7 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -411,7 +463,7 @@ ags_matrix_connect(AgsConnectable *connectable)
   matrix = AGS_MATRIX(connectable);
 
   for(i  = 0; i < 9; i++){
-    g_signal_connect(G_OBJECT (matrix->index[i]), "clicked",
+    g_signal_connect(G_OBJECT (matrix->index[i]), "toggled",
 		     G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
 
@@ -420,7 +472,7 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
 
-  g_signal_connect((GObject *) matrix->loop_button, "clicked",
+  g_signal_connect((GObject *) matrix->loop_button, "toggled",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
   g_signal_connect_after(G_OBJECT(matrix), "stop",
@@ -437,7 +489,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -446,7 +498,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 
   for(i  = 0; i < 9; i++){
     g_object_disconnect(G_OBJECT (matrix->index[i]),
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK (ags_matrix_index_callback),
 			(gpointer) matrix,
 			NULL);
@@ -461,7 +513,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) matrix->loop_button,
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_matrix_loop_button_callback),
 		      (gpointer) matrix,
 		      NULL);
@@ -503,7 +555,7 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
-    gtk_adjustment_set_upper(gtk_range_get_adjustment(GTK_RANGE(matrix->cell_pattern->vscrollbar)),
+    gtk_adjustment_set_upper(gtk_scrollbar_get_adjustment(matrix->cell_pattern->vscrollbar),
 			     (double) pads);
 
     

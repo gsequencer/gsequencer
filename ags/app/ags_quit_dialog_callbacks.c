@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,7 +130,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 #endif
 
       list = 
-	start_list = gtk_container_get_children((GtkContainer *) window->machines);
+	start_list = ags_window_get_machine(window);
       
       while(list != NULL){
 	if(AGS_IS_AUDIOREC(list->data)){
@@ -191,7 +191,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(machine)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
 	}
 
 	machine_name = NULL;
@@ -225,7 +225,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(quit_dialog->wave_export_machine->data)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename));
 	}
 
 	str = g_strdup_printf("%s\n\nmachine: %s:%s\nfilename: %s",
@@ -261,7 +261,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
       GList *start_list, *list;
 
       list = 
-	start_list = gtk_container_get_children((GtkContainer *) window->machines);
+	start_list = ags_window_get_machine(window);
 
       while(list != NULL){
 	if(AGS_IS_AUDIOREC(list->data)){
@@ -293,7 +293,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(machine)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(machine)->filename));
 	}
 
 	machine_name = NULL;
@@ -327,7 +327,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 	filename = NULL;
 
 	if(AGS_IS_AUDIOREC(quit_dialog->wave_export_machine->data)){
-	  filename = gtk_entry_get_text(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename);
+	  filename = gtk_editable_get_text(GTK_EDITABLE(AGS_AUDIOREC(quit_dialog->wave_export_machine->data)->filename));
 	}
 	
 	str = g_strdup_printf("%s\n\n%s:%s\nfilename: %s",
@@ -350,7 +350,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
   break;
   case GTK_RESPONSE_CANCEL:
   {
-    gtk_widget_destroy(GTK_WIDGET(dialog));
+    gtk_window_destroy((GtkWindow *) dialog);
   }
   }
 }

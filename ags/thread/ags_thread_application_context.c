@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -342,7 +342,7 @@ ags_thread_application_context_connect(AgsConnectable *connectable)
 
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(thread_application_context)->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -359,7 +359,7 @@ ags_thread_application_context_disconnect(AgsConnectable *connectable)
 
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(thread_application_context)->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,33 +62,33 @@ void ags_osc_renew_controller_finalize(GObject *gobject);
 gpointer ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_controller,
 						     AgsOscConnection *osc_connection,
 						     GObject *soundcard,
-						     unsigned char *message, guint message_size,
+						     guchar *message, guint message_size,
 						     gchar *type_tag,
 						     gchar *path, guint path_offset);
 gpointer ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_controller,
 						     AgsOscConnection *osc_connection,
 						     GObject *sequencer,
-						     unsigned char *message, guint message_size,
+						     guchar *message, guint message_size,
 						     gchar *type_tag,
 						     gchar *path, guint path_offset);
 
 gpointer ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_controller,
 						 AgsOscConnection *osc_connection,
 						 AgsAudio *audio,
-						 unsigned char *message, guint message_size,
+						 guchar *message, guint message_size,
 						 gchar *type_tag,
 						 gchar *path, guint path_offset);
 gpointer ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_controller,
 						   AgsOscConnection *osc_connection,
 						   AgsChannel *channel,
-						   unsigned char *message, guint message_size,
+						   guchar *message, guint message_size,
 						   gchar *type_tag,
 						   gchar *path, guint path_offset);
 
 gpointer ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_controller,
 						  AgsOscConnection *osc_connection,
 						  AgsRecall *recall,
-						  unsigned char *message, guint message_size,
+						  guchar *message, guint message_size,
 						  gchar *type_tag,
 						  gchar *path, guint path_offset);
 
@@ -96,13 +96,13 @@ gpointer ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew
 						AgsOscConnection *osc_connection,
 						AgsRecall *parent,
 						AgsPort *port,
-						unsigned char *message, guint message_size,
+						guchar *message, guint message_size,
 						gchar *type_tag,
 						gchar *path, guint path_offset);
 
 gpointer ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controller,
 						AgsOscConnection *osc_connection,
-						unsigned char *message, guint message_size);
+						guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_renew_controller
@@ -286,7 +286,7 @@ gpointer
 ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_controller,
 					    AgsOscConnection *osc_connection,
 					    GObject *soundcard,
-					    unsigned char *message, guint message_size,
+					    guchar *message, guint message_size,
 					    gchar *type_tag,
 					    gchar *path, guint path_offset)
 {
@@ -298,7 +298,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
   
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint type_tag_length;
   guint path_length;
@@ -325,8 +325,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
         
     g_object_set(osc_response,
 		 "packet", packet,
@@ -547,7 +547,7 @@ gpointer
 ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_controller,
 					    AgsOscConnection *osc_connection,
 					    GObject *sequencer,
-					    unsigned char *message, guint message_size,
+					    guchar *message, guint message_size,
 					    gchar *type_tag,
 					    gchar *path, guint path_offset)
 {
@@ -559,7 +559,7 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
   
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint type_tag_length;
   guint path_length;
@@ -586,8 +586,8 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
         
     g_object_set(osc_response,
 		 "packet", packet,
@@ -680,7 +680,7 @@ gpointer
 ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_controller,
 					AgsOscConnection *osc_connection,
 					AgsAudio *audio,
-					unsigned char *message, guint message_size,
+					guchar *message, guint message_size,
 					gchar *type_tag,
 					gchar *path, guint path_offset)
 {
@@ -692,7 +692,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
   
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint type_tag_length;
   guint path_length;
@@ -721,8 +721,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -1757,7 +1757,7 @@ gpointer
 ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_controller,
 					  AgsOscConnection *osc_connection,
 					  AgsChannel *channel,
-					  unsigned char *message, guint message_size,
+					  guchar *message, guint message_size,
 					  gchar *type_tag,
 					  gchar *path, guint path_offset)
 {
@@ -1769,7 +1769,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 
   GList *start_response;
   
-  unsigned char *packet;
+  guchar *packet;
 
   guint type_tag_length;
   guint path_length;
@@ -1798,8 +1798,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -2411,7 +2411,7 @@ gpointer
 ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_controller,
 					 AgsOscConnection *osc_connection,
 					 AgsRecall *recall,
-					 unsigned char *message, guint message_size,
+					 guchar *message, guint message_size,
 					 gchar *type_tag,
 					 gchar *path, guint path_offset)
 {
@@ -2423,7 +2423,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 
   GList *start_response;
   
-  unsigned char *packet;
+  guchar *packet;
 
   guint path_length;
   guint real_packet_size;
@@ -2451,8 +2451,8 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -2788,7 +2788,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 				       AgsOscConnection *osc_connection,
 				       AgsRecall *parent,
 				       AgsPort *port,
-				       unsigned char *message, guint message_size,
+				       guchar *message, guint message_size,
 				       gchar *type_tag,
 				       gchar *path, guint path_offset)
 {
@@ -2800,7 +2800,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
   
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint path_length;
   guint type_tag_offset;
@@ -2827,8 +2827,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -3294,7 +3294,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 gpointer
 ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controller,
 				       AgsOscConnection *osc_connection,
-				       unsigned char *message, guint message_size)
+				       guchar *message, guint message_size)
 {
   AgsOscResponse *osc_response;
 
@@ -4173,7 +4173,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 gpointer
 ags_osc_renew_controller_set_data(AgsOscRenewController *osc_renew_controller,
 				  AgsOscConnection *osc_connection,
-				  unsigned char *message, guint message_size)
+				  guchar *message, guint message_size)
 {
   gpointer osc_response;
   

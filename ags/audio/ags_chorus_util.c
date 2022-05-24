@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,8 +75,9 @@ ags_chorus_util_alloc()
   ptr->destination = NULL;
   ptr->destination_stride = 1;
 
-  ptr->pitch_mix_buffer = NULL;    
-  ptr->pitch_mix_max_buffer_length = 0;
+  ptr->pitch_mix_buffer = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE,
+					   AGS_SOUNDCARD_DEFAULT_FORMAT);
+  ptr->pitch_mix_max_buffer_length = AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE;
 
   ptr->pitch_mix_buffer_history = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH,
 						   AGS_SOUNDCARD_DEFAULT_FORMAT);
@@ -100,7 +101,8 @@ ags_chorus_util_alloc()
   ptr->mix = AGS_CHORUS_UTIL_DEFAULT_MIX;
   ptr->delay = AGS_CHORUS_UTIL_DEFAULT_DELAY;
 
-  ptr->hq_pitch_util = ags_hq_pitch_util_alloc();
+  ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+  ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
   return(ptr);
 }
@@ -129,13 +131,13 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
 
-  new_ptr->pitch_mix_buffer = NULL;
-  new_ptr->pitch_mix_max_buffer_length = ptr->pitch_mix_max_buffer_length;
+  new_ptr->pitch_mix_buffer = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE,
+					       ptr->format);
+  new_ptr->pitch_mix_max_buffer_length = AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE;
 
-  if(ptr->pitch_mix_max_buffer_length > 0){
-    new_ptr->pitch_mix_buffer = ags_stream_alloc(ptr->pitch_mix_max_buffer_length,
-						 ptr->format);    
-  }
+  ptr->pitch_mix_buffer_history = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH,
+						   ptr->format);
+  ptr->history_buffer_length = AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH;
   
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
@@ -152,6 +154,22 @@ ags_chorus_util_copy(AgsChorusUtil *ptr)
   new_ptr->depth = ptr->depth;
   new_ptr->mix = ptr->mix;
   new_ptr->delay = ptr->delay;
+
+  new_ptr->pitch_type = ptr->pitch_type;
+
+  if(new_ptr->pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    new_ptr->pitch_util = ags_fast_pitch_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    new_ptr->pitch_util = ags_hq_pitch_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    new_ptr->pitch_util = ags_fluid_interpolate_none_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    new_ptr->pitch_util = ags_fluid_interpolate_linear_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    new_ptr->pitch_util = ags_fluid_interpolate_4th_order_util_copy(ptr->pitch_util);
+  }else if(new_ptr->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    new_ptr->pitch_util = ags_fluid_interpolate_7th_order_util_copy(ptr->pitch_util);
+  }
   
   return(new_ptr);
 }
@@ -174,6 +192,8 @@ ags_chorus_util_free(AgsChorusUtil *ptr)
   }
 
   ags_stream_free(ptr->pitch_mix_buffer);
+
+  ags_stream_free(ptr->pitch_mix_buffer_history);
   
   g_free(ptr);
 }
@@ -377,8 +397,9 @@ ags_chorus_util_set_buffer_length(AgsChorusUtil *chorus_util,
 
   chorus_util->buffer_length = buffer_length;
 
-  ags_hq_pitch_util_set_buffer_length(chorus_util->hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(chorus_util->pitch_util,
+					  chorus_util->pitch_type,
+					  buffer_length);
 }
 
 /**
@@ -414,14 +435,29 @@ void
 ags_chorus_util_set_format(AgsChorusUtil *chorus_util,
 			   guint format)
 {
-  if(chorus_util == NULL){
+  if(chorus_util == NULL ||
+     chorus_util->format == format){
     return;
   }
 
+  /* pitch mix buffer */
+  ags_stream_free(chorus_util->pitch_mix_buffer);
+  
+  chorus_util->pitch_mix_buffer = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE,
+						   format);
+
+  /* pitch mix buffer history */
+  ags_stream_free(chorus_util->pitch_mix_buffer_history);
+
+  chorus_util->pitch_mix_buffer_history = ags_stream_alloc(AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH,
+							   format);
+
   chorus_util->format = format;
 
-  ags_hq_pitch_util_set_format(chorus_util->hq_pitch_util,
-			       format);
+  /* pitch util */
+  ags_common_pitch_util_set_format(chorus_util->pitch_util,
+				   chorus_util->pitch_type,
+				   format);
 }
 
 /**
@@ -463,8 +499,49 @@ ags_chorus_util_set_samplerate(AgsChorusUtil *chorus_util,
 
   chorus_util->samplerate = samplerate;
 
-  ags_hq_pitch_util_set_samplerate(chorus_util->hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(chorus_util->pitch_util,
+				       chorus_util->pitch_type,
+				       samplerate);
+}
+
+/**
+ * ags_chorus_util_get_offset:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Get offset of @chorus_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 4.0.0
+ */
+guint64
+ags_chorus_util_get_offset(AgsChorusUtil *chorus_util)
+{
+  if(chorus_util == NULL){
+    return(0);
+  }
+
+  return(chorus_util->offset);
+}
+
+/**
+ * ags_chorus_util_set_offset:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @chorus_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_chorus_util_set_offset(AgsChorusUtil *chorus_util,
+			   guint64 offset)
+{
+  if(chorus_util == NULL){
+    return;
+  }
+
+  chorus_util->offset = offset;
 }
 
 /**
@@ -505,6 +582,10 @@ ags_chorus_util_set_base_key(AgsChorusUtil *chorus_util,
   }
 
   chorus_util->base_key = base_key;
+
+  ags_common_pitch_util_set_base_key(chorus_util->pitch_util,
+				     chorus_util->pitch_type,
+				     base_key);
 }
 
 /**
@@ -789,6 +870,86 @@ ags_chorus_util_set_delay(AgsChorusUtil *chorus_util,
 }
 
 /**
+ * ags_chorus_util_get_pitch_type:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Get pitch type of @chorus_util.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 4.0.0
+ */
+GType
+ags_chorus_util_get_pitch_type(AgsChorusUtil *chorus_util)
+{
+  if(chorus_util == NULL){
+    return(G_TYPE_NONE);
+  }
+
+  return(chorus_util->pitch_type);
+}
+
+/**
+ * ags_chorus_util_set_pitch_type:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * @pitch_type: the pitch type
+ *
+ * Set @pitch_type of @chorus_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_chorus_util_set_pitch_type(AgsChorusUtil *chorus_util,
+			       GType pitch_type)
+{
+  if(chorus_util == NULL){
+    return;
+  }
+
+  chorus_util->pitch_type = pitch_type;
+}
+
+/**
+ * ags_chorus_util_get_pitch_util:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Get pitch util of @chorus_util.
+ * 
+ * Returns: (transfer none): the pitch util
+ * 
+ * Since: 4.0.0
+ */
+gpointer
+ags_chorus_util_get_pitch_util(AgsChorusUtil *chorus_util)
+{
+  if(chorus_util == NULL){
+    return(NULL);
+  }
+
+  return(chorus_util->pitch_util);
+}
+
+/**
+ * ags_chorus_util_set_pitch_util:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * @pitch_util: (transfer full): the pitch util
+ *
+ * Set @pitch_util of @chorus_util.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_chorus_util_set_pitch_util(AgsChorusUtil *chorus_util,
+			       gpointer pitch_util)
+{
+  if(chorus_util == NULL){
+    return;
+  }
+
+  chorus_util->pitch_util = pitch_util;
+}
+
+/**
  * ags_chorus_util_compute_s8:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
@@ -799,8 +960,10 @@ ags_chorus_util_set_delay(AgsChorusUtil *chorus_util,
 void
 ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gint8 *destination, *source;
   gint8 *pitch_mix_buffer;
 
@@ -821,14 +984,15 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -882,28 +1046,37 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   
   pitch_mix_buffer = (gint8 *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_SIGNED_8_BIT);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;
@@ -933,30 +1106,30 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
     
     switch(lfo_oscillator){
     case AGS_SYNTH_OSCILLATOR_SIN:
-    {
-      position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-    {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-    {
-      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     }
       
     if(position >= 0 && position < pitch_mix_buffer_length){
@@ -984,8 +1157,10 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gint16 *destination, *source;
   gint16 *pitch_mix_buffer;
 
@@ -1006,14 +1181,15 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -1053,7 +1229,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
     
     return;
   }
-
+  
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
   
@@ -1064,32 +1240,41 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (gint16 *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_SIGNED_16_BIT);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
-  
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
+
   /* mix pitch buffer */
   mix_a = mix;
   mix_b = mix;
@@ -1099,51 +1284,51 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   }else{
     mix_a = -1.0 * (mix_a - 1.0);
   }
-  
-  word_size = sizeof(gint16);
 
+  word_size = sizeof(gint16);
+  
   if(pitch_mix_buffer_length < chorus_util->history_buffer_length){
     memmove(chorus_util->pitch_mix_buffer_history, ((char *) chorus_util->pitch_mix_buffer_history) + ((chorus_util->history_buffer_length - pitch_mix_buffer_length) * word_size), (chorus_util->history_buffer_length - pitch_mix_buffer_length) * word_size);
     memcpy(((char *) chorus_util->pitch_mix_buffer_history) + ((chorus_util->history_buffer_length - pitch_mix_buffer_length) * word_size), (char *) chorus_util->pitch_mix_buffer, pitch_mix_buffer_length * word_size);
   }else{
     memcpy((char *) chorus_util->pitch_mix_buffer_history, (char *) chorus_util->pitch_mix_buffer + ((pitch_mix_buffer_length - chorus_util->history_buffer_length) * word_size), chorus_util->history_buffer_length * word_size);
   }
-  
+
   for(i = 0; i < buffer_length; i++){
     gint16 new_z;
     gint position;
-
+    
     new_z = 0;
     position = i;
-
+    
     switch(lfo_oscillator){
     case AGS_SYNTH_OSCILLATOR_SIN:
-    {
-      position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-    {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-    {
-      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     }
-    break;
-    }
-    
+      
     if(position >= 0 && position < pitch_mix_buffer_length){
       new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[position]));
     }else if(position < 0 && -1 * position < chorus_util->history_buffer_length){
@@ -1169,8 +1354,10 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gint32 *destination, *source;
   gint32 *pitch_mix_buffer;
 
@@ -1191,14 +1378,15 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -1249,31 +1437,40 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_SIGNED_24_BIT);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_SIGNED_24_BIT);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;
@@ -1293,40 +1490,40 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   }else{
     memcpy((char *) chorus_util->pitch_mix_buffer_history, (char *) chorus_util->pitch_mix_buffer + ((pitch_mix_buffer_length - chorus_util->history_buffer_length) * word_size), chorus_util->history_buffer_length * word_size);
   }
-  
+
   for(i = 0; i < buffer_length; i++){
     gint32 new_z;
     gint position;
-
+    
     new_z = 0;
     position = i;
     
     switch(lfo_oscillator){
     case AGS_SYNTH_OSCILLATOR_SIN:
-    {
-      position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-    {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-    {
-      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     }
       
     if(position >= 0 && position < pitch_mix_buffer_length){
@@ -1354,8 +1551,10 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gint32 *destination, *source;
   gint32 *pitch_mix_buffer;
 
@@ -1376,14 +1575,15 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -1434,31 +1634,40 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (gint32 *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_SIGNED_32_BIT);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_SIGNED_32_BIT);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;
@@ -1478,40 +1687,40 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   }else{
     memcpy((char *) chorus_util->pitch_mix_buffer_history, (char *) chorus_util->pitch_mix_buffer + ((pitch_mix_buffer_length - chorus_util->history_buffer_length) * word_size), chorus_util->history_buffer_length * word_size);
   }
-  
+
   for(i = 0; i < buffer_length; i++){
     gint32 new_z;
     gint position;
-
+    
     new_z = 0;
     position = i;
     
     switch(lfo_oscillator){
     case AGS_SYNTH_OSCILLATOR_SIN:
-    {
-      position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-    {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-    {
-      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     }
       
     if(position >= 0 && position < pitch_mix_buffer_length){
@@ -1539,8 +1748,10 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gint64 *destination, *source;
   gint64 *pitch_mix_buffer;
 
@@ -1561,14 +1772,15 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -1619,31 +1831,40 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (gint64 *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_SIGNED_64_BIT);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_SIGNED_64_BIT);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;
@@ -1663,40 +1884,40 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   }else{
     memcpy((char *) chorus_util->pitch_mix_buffer_history, (char *) chorus_util->pitch_mix_buffer + ((pitch_mix_buffer_length - chorus_util->history_buffer_length) * word_size), chorus_util->history_buffer_length * word_size);
   }
-  
+
   for(i = 0; i < buffer_length; i++){
     gint64 new_z;
     gint position;
-
+    
     new_z = 0;
     position = i;
     
     switch(lfo_oscillator){
     case AGS_SYNTH_OSCILLATOR_SIN:
-    {
-      position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-    {
-      position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), samplerate / lfo_frequency) * 2.0 * lfo_frequency / samplerate) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-    {
-      position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * (((((offset + i)) * lfo_frequency / samplerate * 2.0) - (((double) ((((offset + i)) * lfo_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
-    {
-      position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
-    }
-    break;
+      {
+	position = i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)) * (0.015 * samplerate));
+      }
+      break;
     }
       
     if(position >= 0 && position < pitch_mix_buffer_length){
@@ -1724,8 +1945,10 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gfloat *destination, *source;
   gfloat *pitch_mix_buffer;
 
@@ -1746,14 +1969,15 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -1804,31 +2028,40 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (gfloat *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_FLOAT);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_FLOAT);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;
@@ -1909,8 +2142,10 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   gdouble *destination, *source;
   gdouble *pitch_mix_buffer;
 
@@ -1931,14 +2166,15 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -1989,31 +2225,40 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (gdouble *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_DOUBLE);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_DOUBLE);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;
@@ -2094,8 +2339,10 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
 void
 ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
 {
-  AgsHQPitchUtil *hq_pitch_util;
+  gpointer pitch_util;
 
+  GType pitch_type;
+  
   AgsComplex *destination, *source;
   AgsComplex *pitch_mix_buffer;
 
@@ -2116,14 +2363,15 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   guint64 offset;
   guint word_size;    
   guint i;
-
+  
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  hq_pitch_util = chorus_util->hq_pitch_util;
+  pitch_util = chorus_util->pitch_util;
+  pitch_type = chorus_util->pitch_type;
 
   destination = chorus_util->destination;
   destination_stride = chorus_util->destination_stride;
@@ -2174,31 +2422,40 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   if(pitch_mix_buffer_length > chorus_util->pitch_mix_max_buffer_length){
     pitch_mix_buffer_length = chorus_util->pitch_mix_max_buffer_length;
   }
-
+  
   pitch_mix_buffer = (AgsComplex *) chorus_util->pitch_mix_buffer;
 
-  ags_hq_pitch_util_set_destination(hq_pitch_util,
-				    pitch_mix_buffer);
+  /* pitch */
+  ags_common_pitch_util_set_destination(pitch_util,
+					pitch_type,
+					pitch_mix_buffer);
   
-  ags_hq_pitch_util_set_source(hq_pitch_util,
-			       source);
+  ags_common_pitch_util_set_source(pitch_util,
+				   pitch_type,
+				   source);
 
-  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
-				      buffer_length);
+  ags_common_pitch_util_set_buffer_length(pitch_util,
+					  pitch_type,
+					  buffer_length);
 
-  ags_hq_pitch_util_set_format(hq_pitch_util,
-			       AGS_SOUNDCARD_COMPLEX);
+  ags_common_pitch_util_set_format(pitch_util,
+				   pitch_type,
+				   AGS_SOUNDCARD_DOUBLE);
 
-  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
-				   samplerate);
+  ags_common_pitch_util_set_samplerate(pitch_util,
+				       pitch_type,
+				       samplerate);
 
-  ags_hq_pitch_util_set_base_key(hq_pitch_util,
-				 chorus_util->base_key);
+  ags_common_pitch_util_set_base_key(pitch_util,
+				     pitch_type,
+				     chorus_util->base_key);
 
-  ags_hq_pitch_util_set_tuning(hq_pitch_util,
-			       tuning);
+  ags_common_pitch_util_set_tuning(pitch_util,
+				   pitch_type,
+				   tuning);
 
-  ags_hq_pitch_util_pitch(hq_pitch_util);
+  ags_common_pitch_util_pitch(pitch_util,
+			      pitch_type);
 
   /* mix pitch buffer */
   mix_a = mix;

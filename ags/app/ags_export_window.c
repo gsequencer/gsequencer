@@ -20,9 +20,9 @@
 #include <ags/app/ags_export_window.h>
 #include <ags/app/ags_export_window_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_navigation.h>
-#include <ags/app/ags_export_soundcard.h>
 
 #include <stdlib.h>
 #include <ags/i18n.h>
@@ -34,9 +34,6 @@ void ags_export_window_finalize(GObject *gobject);
 
 void ags_export_window_connect(AgsConnectable *connectable);
 void ags_export_window_disconnect(AgsConnectable *connectable);
-
-void ags_export_window_show(GtkWidget *widget);
-gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_export_window
@@ -95,9 +92,6 @@ void
 ags_export_window_class_init(AgsExportWindowClass *export_window)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
-  GParamSpec *param_spec;
 
   ags_export_window_parent_class = g_type_class_peek_parent(export_window);
 
@@ -105,12 +99,6 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
   gobject = (GObjectClass *) export_window;
 
   gobject->finalize = ags_export_window_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) export_window;
-
-  widget->show = ags_export_window_show;
-  widget->delete_event = ags_export_window_delete_event;
 }
 
 void
@@ -150,13 +138,28 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   g_object_set(export_window,
 	       "title", i18n("Export to audio data"),
+	       "hide-on-close", TRUE,
 	       NULL);
 
   /* pack */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add(GTK_CONTAINER(export_window),
-		    GTK_WIDGET(vbox));
+
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_FILL);
+  
+  gtk_widget_set_vexpand(vbox,
+			 FALSE);
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_window_set_child((AgsWindow *) export_window,
+		       (GtkWidget *) vbox);
 
   /* live export */
   str = ags_config_get_value(ags_config_get_instance(),
@@ -170,39 +173,46 @@ ags_export_window_init(AgsExportWindow *export_window)
     export_window->live_export = NULL;
   }else{
     export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("live export"));
-    gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
-				 TRUE);
-    gtk_box_pack_start(GTK_BOX(vbox),
-		       GTK_WIDGET(export_window->live_export),
-		       FALSE, FALSE,
-		       0);
+    gtk_check_button_set_active(export_window->live_export,
+				TRUE);
+    gtk_box_append(vbox,
+		   (GtkWidget *) export_window->live_export);
   }
 
   g_free(str);
   
   /* exclude sequencer */
   export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
-  gtk_toggle_button_set_active((GtkToggleButton *) export_window->exclude_sequencer,
-			       TRUE);
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(export_window->exclude_sequencer),
-		     FALSE, FALSE,
-		     0);
-
+  gtk_check_button_set_active(export_window->exclude_sequencer,
+			      TRUE);
+  gtk_box_append(vbox,
+		 (GtkWidget *) export_window->exclude_sequencer);
+  
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
+  gtk_box_append(vbox,
+		 (GtkWidget *) grid);
 
   /* mode */
   label = (GtkLabel *) gtk_label_new(i18n("mode"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
 
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_hexpand((GtkWidget *) label,
@@ -236,12 +246,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* tact */
   label = (GtkLabel *) gtk_label_new(i18n("tact"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
 
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_hexpand((GtkWidget *) label,
@@ -270,12 +277,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* time */
   label = (GtkLabel *) gtk_label_new(i18n("time"));
-  g_object_set(G_OBJECT(label),
-	       "xalign", 0.0,
-	       NULL);
 
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_hexpand((GtkWidget *) label,
@@ -291,6 +295,9 @@ ags_export_window_init(AgsExportWindow *export_window)
   /* duration */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_FILL);
@@ -309,40 +316,55 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->duration = (GtkLabel *) gtk_label_new(ags_navigation_tact_to_time_string(0.0,
 											  AGS_SOUNDCARD_DEFAULT_BPM,
 											  1.0));
-  gtk_box_pack_start(hbox,
-		     GTK_WIDGET(export_window->duration),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) export_window->duration);
 
   /* export soundcard */
-  export_window->export_soundcard = (GtkBox *) gtk_vbox_new(GTK_ORIENTATION_VERTICAL,
-							    0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) export_window->export_soundcard,
-		     FALSE, FALSE,
-		     0);
+  export_window->export_soundcard = NULL;
+  
+  export_window->export_soundcard_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							       0);
+
+  gtk_box_set_spacing(export_window->export_soundcard_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) export_window->export_soundcard_box);
 
   /* add */
-  export_window->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-								   GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) export_window->add,
-		     FALSE, FALSE,
-		     0);
+  export_window->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+  
+  gtk_widget_set_halign((GtkWidget *) export_window->add,
+			GTK_ALIGN_END);
+  gtk_widget_set_valign((GtkWidget *) export_window->add,
+			GTK_ALIGN_START);
+  gtk_widget_set_hexpand((GtkWidget *) export_window->add,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) export_window->add,
+			 TRUE);
+  
+  gtk_box_append(vbox,
+		 (GtkWidget *) export_window->add);
+
+  /* remove files */
+  export_window->remove_filename = NULL;
   
   /* export */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_box_set_spacing(vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("export"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) export_window->export,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) export_window->export);
+
+  gtk_window_set_default_size(export_window,
+			      800, 600);
 }
 
 void
@@ -350,7 +372,7 @@ ags_export_window_connect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
@@ -370,23 +392,17 @@ ags_export_window_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_export_window_export_callback), export_window);
 
   /* export soundcard */
-  list_start =
-    list = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+  list =
+    start_list = ags_export_window_get_export_soundcard(export_window);
 
   while(list != NULL){
-    GList *child;
-
-    child = gtk_container_get_children(GTK_CONTAINER(list->data));
-    
-    ags_connectable_connect(AGS_CONNECTABLE(child->data));
-
-    g_list_free(child);
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
 
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -394,7 +410,7 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
@@ -423,8 +439,8 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   /* export soundcard */
-  list_start =
-    list = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+  list =
+    start_list = ags_export_window_get_export_soundcard(export_window);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -432,7 +448,7 @@ ags_export_window_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -445,73 +461,68 @@ ags_export_window_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_export_window_parent_class)->finalize(gobject);
 }
 
-void
-ags_export_window_show(GtkWidget *widget)
+/**
+ * ags_export_window_get_export_soundcard:
+ * @export_window: the #AgsExportWindow
+ * 
+ * Get soundcard editor.
+ * 
+ * Returns: the #GList-struct containing #AgsExportSoundcard
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_export_window_get_export_soundcard(AgsExportWindow *export_window)
 {
-  GTK_WIDGET_CLASS(ags_export_window_parent_class)->show(widget);
-}
+  g_return_val_if_fail(AGS_IS_EXPORT_WINDOW(export_window),
+		       NULL);
 
-gboolean
-ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_export_window_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
+  return(g_list_reverse(g_list_copy(export_window->export_soundcard)));
 }
 
 /**
  * ags_export_window_add_export_soundcard:
  * @export_window: the #AgsExportWindow
+ * @export_soundcard: the #AgsExportSoundcard
  * 
  * Add soundcard editor.
  * 
  * Since: 3.18.0
  */
 void
-ags_export_window_add_export_soundcard(AgsExportWindow *export_window)
+ags_export_window_add_export_soundcard(AgsExportWindow *export_window,
+				       AgsExportSoundcard *export_soundcard)
 {
-  AgsExportSoundcard *export_soundcard;
-  GtkBox *hbox;
-  GtkButton *remove_button;
-  
-  /* create GtkHBox */
-  hbox = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				 0);
-  gtk_box_pack_start(export_window->export_soundcard,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
-    
-  /* instantiate export soundcard */
-  export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
-							 NULL);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) export_soundcard,
-		     FALSE, FALSE,
-		     0);
-  ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
-    
-  /* remove button */    
-  remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-							      GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) remove_button,
-		     FALSE, FALSE,
-		     0);
-    
-  g_signal_connect(G_OBJECT(remove_button), "clicked",
-		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
+  g_return_if_fail(AGS_IS_EXPORT_WINDOW(export_window));
+  g_return_if_fail(AGS_IS_EXPORT_SOUNDCARD(export_soundcard));
 
-  /* show all */
-  gtk_widget_show_all(GTK_WIDGET(hbox));
+  if(g_list_find(export_window->export_soundcard, export_soundcard) == NULL){
+    GtkButton *remove_button;
+
+    /* instantiate export soundcard */
+    export_window->export_soundcard = g_list_prepend(export_window->export_soundcard,
+						     export_soundcard);
+  
+    gtk_box_append(export_window->export_soundcard_box,
+		   (GtkWidget *) export_soundcard);
+  
+    ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
+    
+    /* remove button */
+    remove_button = export_soundcard->remove_button;
+    
+    g_signal_connect(G_OBJECT(remove_button), "clicked",
+		     G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
+
+    /* show all */
+    gtk_widget_show((GtkWidget *) export_soundcard);
+  }
 }
 
 /**
  * ags_export_window_remove_export_soundcard:
  * @export_window: the #AgsExportWindow
- * @nth: the nth index to remove
+ * @export_soundcard: the #AgsExportSoundcard
  * 
  * Remove soundcard editor.
  * 
@@ -519,20 +530,21 @@ ags_export_window_add_export_soundcard(AgsExportWindow *export_window)
  */
 void
 ags_export_window_remove_export_soundcard(AgsExportWindow *export_window,
-					  gint nth)
+					  AgsExportSoundcard *export_soundcard)
 {
-  GList *start_list, *list;
+  g_return_if_fail(AGS_IS_EXPORT_WINDOW(export_window));
+  g_return_if_fail(AGS_IS_EXPORT_SOUNDCARD(export_soundcard));
 
-  start_list = gtk_container_get_children((GtkContainer *) export_window->export_soundcard);
+  if(g_list_find(export_window->export_soundcard, export_soundcard) != NULL){
+    export_window->export_soundcard = g_list_remove(export_window->export_soundcard,
+						    export_soundcard);
 
-  list = g_list_nth(start_list,
-		    nth);
-
-  if(list != NULL){
-    gtk_widget_destroy(GTK_WIDGET(list->data));
+    gtk_box_remove(export_window->export_soundcard_box,
+		   (GtkWidget *) export_soundcard);
+    
+    g_object_run_dispose(export_soundcard);
+    g_object_unref(export_soundcard);
   }
-
-  g_list_free(start_list);
 }
 
 /**
@@ -547,7 +559,6 @@ void
 ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 {
   AgsExportSoundcard *export_soundcard;
-  GtkBox *hbox;
   GtkButton *remove_button;
   
   AgsApplicationContext *application_context;
@@ -558,6 +569,8 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   gchar *str;
   
   guint i;
+
+  g_return_if_fail(AGS_IS_EXPORT_WINDOW(export_window));
   
   /* retrieve main window and application context */
   application_context = ags_application_context_get_instance();
@@ -572,36 +585,15 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
     
     if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
-      /* create GtkHBox */
-      hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				    0);
-      gtk_box_pack_start(export_window->export_soundcard,
-			 (GtkWidget *) hbox,
-			 FALSE, FALSE,
-			 0);
-    
       /* instantiate export soundcard */
       export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
 							     "soundcard", list->data,
 							     NULL);
-      gtk_box_pack_start(hbox,
-			 (GtkWidget *) export_soundcard,
-			 FALSE, FALSE,
-			 0);
+      ags_export_window_add_export_soundcard(export_window,
+					     export_soundcard);
+
       ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
-    
-      /* remove button */
-    
-      remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-								  GTK_ICON_SIZE_BUTTON);
-      gtk_box_pack_start((GtkBox *) hbox,
-			 (GtkWidget *) remove_button,
-			 FALSE, FALSE,
-			 0);
-    
-      g_signal_connect(G_OBJECT(remove_button), "clicked",
-		       G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
-    
+      
       /* set backend */
       backend = NULL;
 
@@ -643,7 +635,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 				      AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
 
       /* show all */
-      gtk_widget_show_all((GtkWidget *) hbox);
+      gtk_widget_show((GtkWidget *) export_soundcard);
     }
     
     /* iterate */
@@ -655,7 +647,242 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 }
 
 /**
+ * ags_export_window_start_export:
+ * @export_window: the #AgsExportWindow
+ * 
+ * Start export.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_export_window_start_export(AgsExportWindow *export_window)
+{
+  AgsWindow *window;
+
+  AgsExportOutput *export_output;
+
+  AgsExportThread *export_thread, *current_export_thread;
+  
+  AgsThread *main_loop;
+  
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+
+  GList *start_machine, *machine;
+  GList *start_export_soundcard, *export_soundcard;
+  GList *task;
+    
+  gboolean live_performance;
+  gboolean success;
+  
+  g_return_if_fail(AGS_IS_EXPORT_WINDOW(export_window));
+
+  application_context = ags_application_context_get_instance();
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+    
+  /* collect */  
+  export_thread = (AgsExportThread *) ags_thread_find_type(main_loop,
+							   AGS_TYPE_EXPORT_THREAD);
+
+  export_soundcard =
+    start_export_soundcard = ags_export_window_get_export_soundcard(export_window);
+
+  /* get some preferences */
+  if(export_window->live_export != NULL){
+    live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
+  }else{
+    live_performance = TRUE;
+  }
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  machine =
+    start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
+
+  success = FALSE;
+  
+  /* start machine */
+  while(machine != NULL){
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machine->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
+      g_message("found machine to play!");
+
+      ags_machine_set_run_extended(current_machine,
+				   TRUE,
+				   !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
+      success = TRUE;
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
+      g_message("found machine to play!");
+
+      ags_machine_set_run_extended(current_machine,
+				   TRUE,
+				   FALSE, TRUE, FALSE, FALSE);
+      success = TRUE;
+    }
+
+    machine = machine->next;
+  }
+
+  /* start export thread */
+  if(success){
+    gchar *str;
+      
+    guint tic;
+    guint format;
+      
+    gdouble delay;
+      
+    /* create task */
+    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
+
+    /*  */
+    tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
+      
+    export_soundcard = start_export_soundcard;
+    task = NULL;
+      
+    while(export_soundcard != NULL){
+      GtkEntryBuffer *entry_buffer;
+      
+      gchar *filename;
+      
+      current_export_thread = ags_export_thread_find_soundcard(export_thread,
+							       AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard);
+
+      entry_buffer = gtk_entry_get_buffer(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
+      
+      filename = gtk_entry_buffer_get_text(entry_buffer);
+
+      export_output = ags_export_output_new(current_export_thread,
+					    AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard,
+					    filename,
+					    tic,
+					    live_performance);
+
+      str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->output_format);
+      format = 0;
+
+      if(!g_ascii_strncasecmp(str,
+			      "wav",
+			      4)){
+	format = AGS_EXPORT_OUTPUT_FORMAT_WAV;
+      }else if(!g_ascii_strncasecmp(str,
+				    "flac",
+				    5)){
+	format = AGS_EXPORT_OUTPUT_FORMAT_FLAC;
+      }else if(!g_ascii_strncasecmp(str,
+				    "ogg",
+				    4)){
+	format = AGS_EXPORT_OUTPUT_FORMAT_OGG;
+      }
+
+      g_object_set(G_OBJECT(export_output),
+		   "format", format,
+		   NULL);
+	
+      task = g_list_prepend(task,
+			    export_output);
+	
+      if(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard == default_soundcard){
+	g_signal_connect(current_export_thread, "stop",
+			 G_CALLBACK(ags_export_window_stop_callback), export_window);
+      }
+
+      g_free(filename);
+      
+      export_soundcard = export_soundcard->next;
+    }
+      
+    /* append AgsStartSoundcard */
+    task = g_list_reverse(task);
+      
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      task);
+      
+    ags_navigation_set_seeking_sensitive(window->navigation,
+					 FALSE);
+  }
+
+  g_list_free(start_export_soundcard);
+
+  g_object_unref(main_loop);
+}
+
+/**
+ * ags_export_window_stop_export:
+ * @export_window: the #AgsExportWindow
+ * 
+ * Stop export.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_export_window_stop_export(AgsExportWindow *export_window)
+{  
+  AgsWindow *window;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_machine, *machine;
+
+  gboolean success;
+
+  g_return_if_fail(AGS_IS_EXPORT_WINDOW(export_window));
+
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  machine =
+    start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
+
+  success = FALSE;
+  
+  /* stop machine */
+  while(machine != NULL){
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machine->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) !=0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
+      g_message("found machine to stop!");
+    
+      ags_machine_set_run_extended(current_machine,
+				   FALSE,
+				   TRUE, TRUE, FALSE, FALSE);
+	
+      success = TRUE;
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
+      g_message("found machine to stop!");
+	
+      ags_machine_set_run_extended(current_machine,
+				   FALSE,
+				   FALSE, TRUE, FALSE, FALSE);
+      success = TRUE;
+    }
+
+    machine = machine->next;
+  }
+
+  /* disable auto-seeking */
+  if(success){
+    ags_navigation_set_seeking_sensitive(window->navigation,
+					 TRUE);
+  }
+}
+
+/**
  * ags_export_window_new:
+ * @transient_for: the transient for #GtkWindow
  * 
  * Create a new instance of #AgsExportWindow
  * 
@@ -664,11 +891,12 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
  * Since: 3.0.0
  */
 AgsExportWindow*
-ags_export_window_new()
+ags_export_window_new(GtkWindow *transient_for)
 {
   AgsExportWindow *export_window;
 
   export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
+						   "transient-for", transient_for,
 						   NULL);
 
   return(export_window);

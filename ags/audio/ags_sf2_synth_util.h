@@ -25,9 +25,14 @@
 
 #include <ags/libags.h>
 
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_LIBINSTPATCH)
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/audio/ags_resample_util.h>
-#include <ags/audio/ags_generic_pitch_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
@@ -40,7 +45,8 @@ G_BEGIN_DECLS
 #define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
 
 typedef enum{
-  AGS_SF2_SYNTH_UTIL_FX_ENGINE   = 1,
+  AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT    = 1,
+  AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE   = 1 <<  1,
 }AgsSF2SynthUtilFlags;
 
 /**
@@ -80,8 +86,6 @@ struct _AgsSF2SynthUtil
   
   guint sf2_resampled_buffer_length[128];
   gpointer *sf2_resampled_buffer;  
-
-  AgsIpatchSample *ipatch_sample;
   
   gpointer source;
   guint source_stride;
@@ -115,8 +119,10 @@ struct _AgsSF2SynthUtil
   gint loop_end;
 
   AgsResampleUtil *resample_util;
-  AgsGenericPitchUtil *generic_pitch_util;
-  AgsHQPitchUtil *hq_pitch_util;
+
+  GType pitch_type;  
+  gpointer pitch_util;
+
   AgsVolumeUtil *volume_util;
 };
 
@@ -132,10 +138,6 @@ void ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr);
 AgsAudioContainer* ags_sf2_synth_util_get_sf2_file(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_sf2_file(AgsSF2SynthUtil *sf2_synth_util,
 				     AgsAudioContainer *sf2_file);
-
-AgsIpatchSample* ags_sf2_synth_util_get_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
-void ags_sf2_synth_util_set_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util,
-					  AgsIpatchSample *ipatch_sample);
 
 gpointer ags_sf2_synth_util_get_source(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_source(AgsSF2SynthUtil *sf2_synth_util,
@@ -183,7 +185,7 @@ void ags_sf2_synth_util_set_midi_key(AgsSF2SynthUtil *sf2_synth_util,
 
 gdouble ags_sf2_synth_util_get_note(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_note(AgsSF2SynthUtil *sf2_synth_util,
-				    gdouble note);
+				 gdouble note);
 
 gdouble ags_sf2_synth_util_get_volume(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_volume(AgsSF2SynthUtil *sf2_synth_util,
@@ -191,15 +193,15 @@ void ags_sf2_synth_util_set_volume(AgsSF2SynthUtil *sf2_synth_util,
 
 guint ags_sf2_synth_util_get_frame_count(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_frame_count(AgsSF2SynthUtil *sf2_synth_util,
-				       guint frame_count);
+					guint frame_count);
 
 guint ags_sf2_synth_util_get_offset(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_offset(AgsSF2SynthUtil *sf2_synth_util,
-				       guint offset);
+				   guint offset);
 
 guint ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_loop_mode(AgsSF2SynthUtil *sf2_synth_util,
-				       guint loop_mode);
+				      guint loop_mode);
 
 guint ags_sf2_synth_util_get_loop_start(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_loop_start(AgsSF2SynthUtil *sf2_synth_util,
@@ -213,12 +215,17 @@ AgsResampleUtil* ags_sf2_synth_util_get_resample_util(AgsSF2SynthUtil *sf2_synth
 void ags_sf2_synth_util_set_resample_util(AgsSF2SynthUtil *sf2_synth_util,
 					  AgsResampleUtil *resample_util);
 
-AgsGenericPitchUtil* ags_sf2_synth_util_get_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
-void ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
-					       AgsGenericPitchUtil *generic_pitch_util);
+GType ags_sf2_synth_util_get_pitch_type(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
+				       GType pitch_type);
 
-void ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util);
+gpointer ags_sf2_synth_util_get_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
+				       gpointer pitch_util);
 
+void ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
+					gchar *preset,
+					gchar *instrument);
 void ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 					 gint bank,
 					 gint program);
@@ -240,98 +247,6 @@ AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpa
 									  gchar **preset,
 									  gchar **instrument,
 									  gchar **sample);
-
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s8)
-void ags_sf2_synth_util_copy_s8(gint8 *buffer,
-				guint buffer_size,
-				AgsIpatchSample *ipatch_sample,
-				gdouble note,
-				gdouble volume,
-				guint samplerate,
-				guint offset, guint n_frames,
-				guint loop_mode,
-				gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s16)
-void ags_sf2_synth_util_copy_s16(gint16 *buffer,
-				 guint buffer_size,
-				 AgsIpatchSample *ipatch_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s24)
-void ags_sf2_synth_util_copy_s24(gint32 *buffer,
-				 guint buffer_size,
-				 AgsIpatchSample *ipatch_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s32)
-void ags_sf2_synth_util_copy_s32(gint32 *buffer,
-				 guint buffer_size,
-				 AgsIpatchSample *ipatch_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s64)
-void ags_sf2_synth_util_copy_s64(gint64 *buffer,
-				 guint buffer_size,
-				 AgsIpatchSample *ipatch_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_float)
-void ags_sf2_synth_util_copy_float(gfloat *buffer,
-				   guint buffer_size,
-				   AgsIpatchSample *ipatch_sample,
-				   gdouble note,
-				   gdouble volume,
-				   guint samplerate,
-				   guint offset, guint n_frames,
-				   guint loop_mode,
-				   gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_double)
-void ags_sf2_synth_util_copy_double(gdouble *buffer,
-				    guint buffer_size,
-				    AgsIpatchSample *ipatch_sample,
-				    gdouble note,
-				    gdouble volume,
-				    guint samplerate,
-				    guint offset, guint n_frames,
-				    guint loop_mode,
-				    gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute_complex)
-void ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
-				     guint buffer_size,
-				     AgsIpatchSample *ipatch_sample,
-				     gdouble note,
-				     gdouble volume,
-				     guint samplerate,
-				     guint offset, guint n_frames,
-				     guint loop_mode,
-				     gint loop_start, gint loop_end);
-
-G_DEPRECATED_FOR(ags_sf2_synth_util_compute)
-void ags_sf2_synth_util_copy(void *buffer,
-			     guint buffer_size,
-			     AgsIpatchSample *ipatch_sample,
-			     gdouble note,
-			     gdouble volume,
-			     guint samplerate, guint audio_buffer_util_format,
-			     guint offset, guint n_frames,
-			     guint loop_mode,
-			     gint loop_start, gint loop_end);
 
 G_END_DECLS
 

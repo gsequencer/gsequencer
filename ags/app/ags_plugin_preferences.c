@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,11 +137,11 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
   ladspa_plugin_preferences->ladspa_path = (GtkEntry *) gtk_entry_new();
   
   if(ladspa_path == NULL){
-    gtk_entry_set_text(ladspa_plugin_preferences->ladspa_path,
-		       default_ladspa_path);
+    gtk_editable_set_text(GTK_EDITABLE(ladspa_plugin_preferences->ladspa_path),
+			  default_ladspa_path);
   }else{
-    gtk_entry_set_text(ladspa_plugin_preferences->ladspa_path,
-		       ladspa_path);
+    gtk_editable_set_text(GTK_EDITABLE(ladspa_plugin_preferences->ladspa_path),
+			  ladspa_path);
   }
 
   ladspa_plugin_preferences->plugin_file = (GtkCellView *) gtk_cell_view_new();

@@ -29,7 +29,7 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_sf2_synth_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_chorus_util.h>
 
@@ -65,6 +65,8 @@ struct _AgsFxSF2SynthAudio
   
   AgsPort *chorus_enabled;
   
+  AgsPort *chorus_pitch_type;
+
   AgsPort *chorus_input_volume;
   AgsPort *chorus_output_volume;
   
@@ -100,15 +102,9 @@ struct _AgsFxSF2SynthAudioChannelData
   
   gpointer parent;
 
-  AgsSF2SynthUtil synth;
-  AgsResampleUtil synth_resample_util;
-  AgsHQPitchUtil synth_hq_pitch_util;
-  AgsLinearInterpolateUtil synth_hq_pitch_linear_interpolate_util;
-  AgsVolumeUtil synth_volume_util;
+  AgsSF2SynthUtil *synth;
     
-  AgsChorusUtil chorus_util;
-  AgsHQPitchUtil chorus_hq_pitch_util;
-  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
+  AgsChorusUtil *chorus_util;
   
   AgsFxSF2SynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };

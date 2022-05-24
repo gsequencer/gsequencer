@@ -9,7 +9,7 @@ project('gsequencer', 'c', 'cpp',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
         meson_version: '>=0.53.0',
-        version: '3.18.2')
+        version: '4.0.0')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -28,13 +28,13 @@ gnome = import('gnome')
 compiler = meson.get_compiler('c')
 # REMINDER: all dependencies have to be defined here globally
 # Just to prevent double check
-gtk_dependency = dependency('gtk+-3.0')
+gtk_dependency = dependency('gtk4')
 glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
 gthread_dependency = dependency('gthread-2.0', version: '>= 2.56.0')
 gio_dependency = dependency('gio-2.0', version: '>= 2.56.0')
 xml2_dependency = dependency('libxml-2.0')
-soup_dependency = dependency('libsoup-2.4')
+soup_dependency = dependency('libsoup-3.0')
 instpatch_dependency = dependency('libinstpatch-1.0')
 samplerate_dependency = dependency('samplerate')
 fftw3_dependency = dependency('fftw3')
@@ -50,9 +50,6 @@ if get_option('pulse')
 endif
 if get_option('poppler')
   poppler_dependency = dependency('poppler-glib')
-endif
-if get_option('webkit')
-  webkit_dependency = dependency('webkit2gtk-4.0')
 endif
 if get_option('gstreamer')
   gstreamer_dependency = dependency('gstreamer-1.0')

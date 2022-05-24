@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,9 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_effect_pad.h>
+#include <ags/app/ags_effect_bulk.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_EFFECT_BRIDGE                (ags_effect_bridge_get_type())
@@ -50,19 +53,21 @@ typedef struct _AgsEffectBridgeClass AgsEffectBridgeClass;
 typedef enum{
   AGS_EFFECT_BRIDGE_MAPPED_RECALL     = 1,
   AGS_EFFECT_BRIDGE_PREMAPPED_RECALL  = 1 <<  1,
-  AGS_EFFECT_BRIDGE_CONNECTED         = 1 <<  2, 
-  AGS_EFFECT_BRIDGE_DISPLAY_INPUT     = 1 <<  3,
-  AGS_EFFECT_BRIDGE_BULK_OUTPUT       = 1 <<  4,
-  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT    = 1 <<  5,
-  AGS_EFFECT_BRIDGE_BULK_INPUT        = 1 <<  6,
+  AGS_EFFECT_BRIDGE_DISPLAY_INPUT     = 1 <<  2,
+  AGS_EFFECT_BRIDGE_BULK_OUTPUT       = 1 <<  3,
+  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT    = 1 <<  4,
+  AGS_EFFECT_BRIDGE_BULK_INPUT        = 1 <<  5,
 }AgsEffectBridgeFlags;
 
 struct _AgsEffectBridge
 {
-  GtkBox box;
+  GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
 
+  GtkWidget *parent_machine;
+  
   gchar *name;
 
   gchar *version;
@@ -84,19 +89,25 @@ struct _AgsEffectBridge
   
   GType output_pad_type;
   GType output_line_type;
-  GtkHBox *output;
+
+  GList *output_effect_pad;
+  
+  GtkBox *output;
   
   GType bulk_input_type;
   GtkWidget *bulk_input;
 
   GType input_pad_type;
   GType input_line_type;
-  GtkHBox *input;
+
+  GList *input_effect_pad;
+  
+  GtkBox *input;
 };
 
 struct _AgsEffectBridgeClass
 {
-  GtkBoxClass box;
+  GtkGridClass grid;
 
   void (*samplerate_changed)(AgsEffectBridge *effect_bridge,
 			     guint samplerate, guint old_samplerate);
@@ -123,6 +134,18 @@ void ags_effect_bridge_buffer_size_changed(AgsEffectBridge *effect_bridge,
 					   guint buffer_size, guint old_buffer_size);
 void ags_effect_bridge_format_changed(AgsEffectBridge *effect_bridge,
 				      guint format, guint old_format);
+
+GList* ags_effect_bridge_get_output_effect_pad(AgsEffectBridge *effect_bridge);
+void ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
+					     AgsEffectPad *effect_pad);
+void ags_effect_bridge_remove_output_effect_pad(AgsEffectBridge *effect_bridge,
+						AgsEffectPad *effect_pad);
+
+GList* ags_effect_bridge_get_input_effect_pad(AgsEffectBridge *effect_bridge);
+void ags_effect_bridge_add_input_effect_pad(AgsEffectBridge *effect_bridge,
+					    AgsEffectPad *effect_pad);
+void ags_effect_bridge_remove_input_effect_pad(AgsEffectBridge *effect_bridge,
+					       AgsEffectPad *effect_pad);
 
 void ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint new_size, guint old_size);

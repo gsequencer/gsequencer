@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,6 +115,27 @@ ags_osc_connection_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_osc_connection_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSC_CONNECTION_ACTIVE, "AGS_OSC_CONNECTION_ACTIVE", "osc-connection-active" },
+      { AGS_OSC_CONNECTION_INET4, "AGS_OSC_CONNECTION_INET4", "osc-connection-inet4" },
+      { AGS_OSC_CONNECTION_INET6, "AGS_OSC_CONNECTION_INET6", "osc-connection-inet6" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscConnectionFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -260,6 +281,7 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
 #endif
 
   osc_connection->flags = AGS_OSC_CONNECTION_INET4;
+  osc_connection->connectable_flags = 0;
   
   /* osc connection mutex */
   g_rec_mutex_init(&(osc_connection->obj_mutex));

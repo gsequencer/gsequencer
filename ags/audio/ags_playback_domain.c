@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -172,6 +172,7 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   guint i;
 
   playback_domain->flags = 0;
+  playback_domain->connectable_flags = 0;
   
   /* playback domain mutex */
   g_rec_mutex_init(&(playback_domain->obj_mutex));

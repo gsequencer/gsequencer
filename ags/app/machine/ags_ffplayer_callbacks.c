@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+#include <ags/i18n.h>
+
 #include <math.h>
 
 #include <ags/config.h>
@@ -35,78 +37,67 @@ void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response
 						AgsMachine *machine);
 
 void
-ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFFPlayer *ffplayer)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-  
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
-
-  g_object_set(AGS_MACHINE(ffplayer),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_FFPLAYER);
-
-  g_free(str);
-}
-
-void
 ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   if(ffplayer->open_dialog != NULL){
-    gtk_widget_destroy(ffplayer->open_dialog);
+    gtk_window_destroy(ffplayer->open_dialog);
   }
 }
 
-gboolean
-ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
+void
+ags_ffplayer_draw_callback(GtkWidget *drawing_area,
+			   cairo_t *cr,
+			   int width, int height,
 			   AgsFFPlayer *ffplayer)
 {
-  GtkStyleContext *ffplayer_style_context;
+  GtkStyleContext *style_context;
+  GtkSettings *settings;
 
   GtkAllocation allocation;
   
-  GdkRGBA *fg_color;
-  GdkRGBA *bg_color;
+  GdkRGBA fg_color;
+  GdkRGBA bg_color;
 
   double semi_key_height;
   guint bitmap;
   guint x[2];
   guint i, i_stop, j, j0;
+  gboolean dark_theme;
+  gboolean fg_success;
+  gboolean bg_success;
   
   GValue value = {0,};
   
   gtk_widget_get_allocation((GtkWidget *) ffplayer->drawing_area,
 			    &allocation);
 
-  /* style context */
-  ffplayer_style_context = gtk_widget_get_style_context(GTK_WIDGET(ffplayer->drawing_area));
+  style_context = gtk_widget_get_style_context((GtkWidget *) ffplayer);
 
-  gtk_style_context_get_property(ffplayer_style_context,
-				 "color",
-				 GTK_STATE_FLAG_NORMAL,
-				 &value);
+  settings = gtk_settings_get_default();
 
-  fg_color = g_value_dup_boxed(&value);
-  g_value_unset(&value);
+  dark_theme = TRUE;
+  
+  g_object_get(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
 
-  gtk_style_context_get_property(ffplayer_style_context,
-				 "background-color",
-				 GTK_STATE_FLAG_NORMAL,
-				 &value);
+  /* colors */
+  fg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_fg_color",
+					      &fg_color);
+    
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
 
-  bg_color = g_value_dup_boxed(&value);
-  g_value_unset(&value);
+  if(!fg_success ||
+     !bg_success){
+    gdk_rgba_parse(&fg_color,
+		   "#101010");
+
+    gdk_rgba_parse(&bg_color,
+		   "#cbd5d9");
+  }
   
   semi_key_height = 2.0 / 3.0 * (double) ffplayer->control_height;
   bitmap = 0x52a52a; // description of the keyboard
@@ -125,10 +116,10 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
 
   /* clear with background color */
   cairo_set_source_rgba(cr,
-			bg_color->red,
-			bg_color->green,
-			bg_color->blue,
-			bg_color->alpha);
+			bg_color.red,
+			bg_color.green,
+			bg_color.blue,
+			bg_color.alpha);
   cairo_rectangle(cr, 0.0, 0.0, (double) allocation.width, (double) allocation.height);
   cairo_fill(cr);
 
@@ -136,10 +127,10 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
   cairo_set_line_width(cr, 1.0);
 
   cairo_set_source_rgba(cr,
-			fg_color->red,
-			fg_color->green,
-			fg_color->blue,
-			fg_color->alpha);
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
 
   if(x[0] != 0){
     j0 = (j != 0) ? j -1: 11;
@@ -225,11 +216,7 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
     }
   }
 
-  g_boxed_free(GDK_TYPE_RGBA, fg_color);
-  g_boxed_free(GDK_TYPE_RGBA, bg_color);
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
-
-  return(FALSE);
 }
 
 void
@@ -237,18 +224,29 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   GtkFileChooserDialog *file_chooser;
 
-  file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
-  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
-					   "file:///usr/share/sounds/sf2",
-					   NULL);
-  ffplayer->open_dialog = (GtkWidget *) file_chooser;
+  GFile *file;
+
+  file_chooser = gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
+					     gtk_widget_get_ancestor(ffplayer,
+								     AGS_TYPE_WINDOW),
+					     GTK_FILE_CHOOSER_ACTION_OPEN,
+					     i18n("_OK"), GTK_RESPONSE_ACCEPT,
+					     i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+					     NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
+
+  file = g_file_new_for_path("/usr/share/sounds/sf2");
+  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(file_chooser),
+				       file,
+				       NULL);
+  
+  ffplayer->open_dialog = (GtkWidget *) file_chooser;
 
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_ffplayer_open_dialog_response_callback), AGS_MACHINE(ffplayer));
 
-  gtk_widget_show_all((GtkWidget *) file_chooser);
+  gtk_widget_show((GtkWidget *) file_chooser);
 }
 
 void
@@ -260,15 +258,19 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
   ffplayer = AGS_FFPLAYER(machine);
 
   if(response == GTK_RESPONSE_ACCEPT){
+    GFile *file;
+    
     gchar *filename;
 
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
+
+    filename = g_file_get_path(file);
     ags_ffplayer_open_filename(ffplayer,
 			       filename);
   }
 
   ffplayer->open_dialog = NULL;
-  gtk_widget_destroy(widget);
+  gtk_window_destroy(widget);
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset), 0);
 }
@@ -350,13 +352,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* update */
   ags_ffplayer_update(ffplayer);
-}
-
-gboolean
-ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
-{
-
-  return(FALSE);
 }
 
 void

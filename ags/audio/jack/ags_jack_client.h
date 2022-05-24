@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,17 +47,13 @@ typedef struct _AgsJackClientClass AgsJackClientClass;
 
 /**
  * AgsJackClientFlags:
- * @AGS_JACK_CLIENT_ADDED_TO_REGISTRY: the JACK client was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_JACK_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_CLIENT_ACTIVATED: the client was activated
  * 
  * Enum values to control the behavior or indicate internal state of #AgsJackClient by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_JACK_CLIENT_ADDED_TO_REGISTRY  = 1,
-  AGS_JACK_CLIENT_CONNECTED          = 1 <<  1,
-  AGS_JACK_CLIENT_ACTIVATED          = 1 <<  2,
+  AGS_JACK_CLIENT_ACTIVATED          = 1,
 }AgsJackClientFlags;
 
 struct _AgsJackClient
@@ -65,6 +61,7 @@ struct _AgsJackClient
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -93,6 +90,7 @@ struct _AgsJackClientClass
 };
 
 GType ags_jack_client_get_type();
+GType ags_jack_client_flags_get_type();
 
 gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
 void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);

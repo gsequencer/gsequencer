@@ -77,16 +77,18 @@ struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *templa
   "lock-global=ags-thread\n"				\
   "lock-parent=ags-recycling-thread\n"			\
   "thread-pool-max-unused-threads=8\n"			\
-  "max-precision=125\n"					\
+  "max-precision=250\n"					\
   "\n"							\
   "[soundcard-0]\n"					\
-  "backend=alsa\n"					\
-  "device=default\n"					\
+  "backend=pulse\n"					\
+  "device=ags-pulse-devout-0\n"				\
   "samplerate=44100\n"					\
   "buffer-size=1024\n"					\
   "pcm-channels=2\n"					\
   "dsp-channels=2\n"					\
   "format=16\n"						\
+  "use-cache=true\n"					\
+  "cache-buffer-size=4096\n"				\
   "\n"							\
   "[recall]\n"						\
   "auto-sense=true\n"					\
@@ -98,6 +100,8 @@ AgsAudioApplicationContext *audio_application_context;
 
 AgsAudio *output_panel;
 AgsAudio *wave_player;
+AgsSynthUtil *synth_util;
+AgsHQPitchUtil *hq_pitch_util;
 
 GObject *output_soundcard;
 
@@ -152,9 +156,13 @@ ags_functional_pitch_test_add_thread(gpointer data)
 int
 ags_functional_pitch_test_init_suite()
 {
-  AgsChannel *channel, *link;
   AgsPlaybackDomain *playback_domain;
-  
+  AgsChannel *channel, *link;
+  AgsRecallContainer *playback_play_container, *playback_recall_container;
+  AgsRecallContainer *buffer_play_container, *buffer_recall_container;  
+  AgsAudioLoop *audio_loop;
+  AgsAudioThread *audio_thread;
+
   AgsConfig *config;
 
   GList *start_list;
@@ -164,10 +172,6 @@ ags_functional_pitch_test_init_suite()
   guint i;
   
   GError *error;
-
-  static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
-  };
 
   ags_priority_load_defaults(ags_priority_get_instance());  
   
@@ -196,6 +200,9 @@ ags_functional_pitch_test_init_suite()
   ags_application_context_prepare(audio_application_context);
   ags_application_context_setup(audio_application_context);
 
+  /* audio loop */
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+
   /* output soundcard */
   output_soundcard = audio_application_context->soundcard->data;
 
@@ -203,13 +210,32 @@ ags_functional_pitch_test_init_suite()
   
   /* output panel */
   output_panel = ags_audio_new(output_soundcard);
-
   g_object_ref(output_panel);
+
+  output_panel->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
+  
   start_list = g_list_prepend(start_list,
 			      output_panel);
+  g_object_ref(output_panel);
   
   ags_audio_set_flags(output_panel, (AGS_AUDIO_SYNC));
 
+  /* ags-fx-playback */
+  playback_play_container = ags_recall_container_new();
+  playback_recall_container = ags_recall_container_new();
+  
+  ags_fx_factory_create(output_panel,
+			playback_play_container, playback_recall_container,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
+  /* set channels */
   ags_audio_set_audio_channels(output_panel,
 			       AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS, 0);
   
@@ -221,31 +247,65 @@ ags_functional_pitch_test_init_suite()
 		     1, 0);
 
   /* ags-fx-playback */
-  ags_fx_factory_create(output_panel,
-			ags_recall_container_new(), ags_recall_container_new(),
-			"ags-fx-playback",
-			NULL,
-			NULL,
-			0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
-			0, 1,
-			0,
-			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
-			0);
+  for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
+    ags_fx_factory_create(output_panel,
+			  playback_play_container, playback_recall_container,
+			  "ags-fx-playback",
+			  NULL,
+			  NULL,
+			  i, i + 1,
+			  0, 1,
+			  0,
+			  (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+			  0);
+  }
 
   ags_connectable_connect(AGS_CONNECTABLE(output_panel));
 
   /* wave player */
   wave_player = ags_audio_new(output_soundcard);
-
   g_object_ref(wave_player);
+  
+  wave_player->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
+
   start_list = g_list_prepend(start_list,
 			      wave_player);
+  g_object_ref(wave_player);
     
   ags_audio_set_flags(wave_player, (AGS_AUDIO_SYNC |
 				    AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				    AGS_AUDIO_INPUT_HAS_RECYCLING));
   ags_audio_set_ability_flags(wave_player, (AGS_SOUND_ABILITY_NOTATION));
   
+  /* ags-fx */
+  playback_play_container = ags_recall_container_new();
+  playback_recall_container = ags_recall_container_new();
+
+  ags_fx_factory_create(wave_player,
+			playback_play_container, playback_recall_container,
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
+  buffer_play_container = ags_recall_container_new();
+  buffer_recall_container = ags_recall_container_new();
+
+  ags_fx_factory_create(wave_player,
+			buffer_play_container, buffer_recall_container,
+			"ags-fx-buffer",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			0,
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+			0);
+
   ags_audio_set_audio_channels(wave_player,
 			       AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS, 0);
   
@@ -256,61 +316,65 @@ ags_functional_pitch_test_init_suite()
 		     AGS_TYPE_INPUT,
 		     1, 0);
 
-  channel = wave_player->output;
-
-  for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
-    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
-
-    channel = channel->next;
-  }
+  playback_domain = NULL;
   
   g_object_get(wave_player,
 	       "playback-domain", &playback_domain,
 	       NULL);
+  
+  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+						      AGS_SOUND_SCOPE_NOTATION);
+	
+  ags_thread_add_start_queue(audio_loop,
+			     audio_thread);
 
-  if(playback_domain != NULL){
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsThread *audio_thread;
-      
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  i);
-      
-      if(audio_thread != NULL){
-	ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread, TRUE);
-	ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
-					     staging_program,
-					     1);
+  channel = wave_player->output;
+  
+  for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
+    AgsPlayback *playback;
+	
+    AgsChannelThread *channel_thread;
 
-	g_object_unref(audio_thread);
-      }
-    }
-    
-    g_object_unref(playback_domain);
+    playback = NULL;
+
+    g_object_get(channel,
+		 "playback", &playback,
+		 NULL);
+
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_NOTATION);
+	
+    ags_thread_add_start_queue(audio_loop,
+			       channel_thread);
+
+    channel = channel->next;
   }
+  
+  /* ags-fx */
+  for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
+    ags_fx_factory_create(wave_player,
+			  playback_play_container, playback_recall_container,
+			  "ags-fx-playback",
+			  NULL,
+			  NULL,
+			  i, i + 1,
+			  0, 1,
+			  0,
+			  (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+			  0);
 
-  /* ags-play-wave */
-  ags_fx_factory_create(wave_player,
-			ags_recall_container_new(), ags_recall_container_new(),
-			"ags-fx-playback",
-			NULL,
-			NULL,
-			0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
-			0, 1,
-			0,
-			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
-			0);
-
-  ags_fx_factory_create(wave_player,
-			ags_recall_container_new(), ags_recall_container_new(),
-			"ags-fx-buffer",
-			NULL,
-			NULL,
-			0, AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS,
-			0, 1,
-			0,
-			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
-			0);
-
+    ags_fx_factory_create(wave_player,
+			  buffer_play_container, buffer_recall_container,
+			  "ags-fx-buffer",
+			  NULL,
+			  NULL,
+			  i, i + 1,
+			  0, 1,
+			  0,
+			  (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
+			  0);
+  }
+  
   ags_connectable_connect(AGS_CONNECTABLE(wave_player));
 
   /*  */
@@ -318,6 +382,11 @@ ags_functional_pitch_test_init_suite()
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(audio_application_context),
 			       start_list);
 
+  /* hq pitch util */
+  synth_util = ags_synth_util_alloc();
+
+  hq_pitch_util = ags_hq_pitch_util_alloc();
+  
   /* link */
   channel = output_panel->input;
   link = wave_player->output;
@@ -331,7 +400,7 @@ ags_functional_pitch_test_init_suite()
     channel = channel->next;
     link = link->next;
   }
-  
+
   return(0);
 }
 
@@ -377,7 +446,7 @@ ags_functional_pitch_test_alloc(GList *template_wave)
 			current_wave->line);
 
     ags_timestamp_set_ags_offset(wave,
-				 ags_timestamp_get_ags_offset(current_wave));
+				 ags_timestamp_get_ags_offset(current_wave->timestamp));
     
     g_object_set(wave,
 		 "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
@@ -426,6 +495,22 @@ ags_functional_pitch_test_pitch_up()
   gint i, j, k;
   gboolean success;
   
+  ags_synth_util_set_buffer_length(synth_util,
+				   AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+  ags_synth_util_set_format(synth_util,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_synth_util_set_samplerate(synth_util,
+				AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE);
+
+  ags_synth_util_set_synth_oscillator_mode(synth_util,
+					   AGS_SYNTH_OSCILLATOR_SIN);
+
+  ags_synth_util_set_frequency(synth_util,
+			       AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ);
+
+  ags_synth_util_set_volume(synth_util,
+			    AGS_FUNCTIONAL_PITCH_TEST_VOLUME);
+  
   start_wave = NULL;
   
   for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
@@ -439,6 +524,9 @@ ags_functional_pitch_test_pitch_up()
 		 "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
 		 "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
 		 NULL);
+
+    ags_audio_add_wave(wave_player,
+    		       current_wave);
 
     start_wave = ags_wave_add(start_wave,
 			      current_wave);
@@ -458,17 +546,31 @@ ags_functional_pitch_test_pitch_up()
       ags_wave_add_buffer(current_wave,
 			  buffer,
 			  FALSE);
-
+      
       phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE / AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ);
-      ags_synth_util_sin(buffer->data,
-			 AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ, phase, AGS_FUNCTIONAL_PITCH_TEST_VOLUME,
-			 AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_PITCH_TEST_FORMAT),
-			 0, AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+
+      ags_synth_util_set_source(synth_util,
+				buffer->data);
+
+      ags_synth_util_set_phase(synth_util,
+			       phase);
+      
+      ags_synth_util_compute_sin(synth_util);
     }
   }
-  
+    
+  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
+				      AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+  ags_hq_pitch_util_set_format(hq_pitch_util,
+			       AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE);
+
+  ags_hq_pitch_util_set_base_key(hq_pitch_util,
+				 AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY);
+
   start_list = NULL;
-  
+
   for(i = (gint) AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY; i <= (gint) AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_END_KEY; i++){
     struct AgsFunctionalPitchTestWave *test_wave;
 
@@ -484,19 +586,18 @@ ags_functional_pitch_test_pitch_up()
       GList *pitch_buffer;
 
       pitch_buffer = AGS_WAVE(pitch_wave->data)->buffer;
+
+      ags_hq_pitch_util_set_tuning(hq_pitch_util,
+				   i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
       
-      for(k = 0; pitch_buffer != NULL; k++){	
-	switch(AGS_FUNCTIONAL_PITCH_TEST_FORMAT){
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ags_hq_pitch_util_compute_s16(AGS_BUFFER(pitch_buffer->data)->data,
-					AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
-					AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
-					AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
-					(gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
-	}
-	break;
-	}
+      for(k = 0; pitch_buffer != NULL; k++){
+	ags_hq_pitch_util_set_source(hq_pitch_util,
+				     AGS_BUFFER(g_list_nth_data(AGS_WAVE(start_wave->data)->buffer, k))->data);
+
+	ags_hq_pitch_util_set_destination(hq_pitch_util,
+					  AGS_BUFFER(pitch_buffer->data)->data);
+	  
+	ags_hq_pitch_util_pitch(hq_pitch_util);
 	
 	pitch_buffer = pitch_buffer->next;
       }
@@ -540,7 +641,7 @@ ags_functional_pitch_test_pitch_up()
     
     ags_task_launcher_add_task_all(task_launcher,
 				   task);
-
+    
     /* delay */
     usleep(AGS_FUNCTIONAL_PITCH_TEST_DELAY);
     
@@ -571,6 +672,22 @@ ags_functional_pitch_test_pitch_down()
 
   gint i, j, k;
   gboolean success;
+
+  ags_synth_util_set_buffer_length(synth_util,
+				   AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+  ags_synth_util_set_format(synth_util,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_synth_util_set_samplerate(synth_util,
+				AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE);
+
+  ags_synth_util_set_synth_oscillator_mode(synth_util,
+					   AGS_SYNTH_OSCILLATOR_SIN);
+
+  ags_synth_util_set_frequency(synth_util,
+			       AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ);
+
+  ags_synth_util_set_volume(synth_util,
+			    AGS_FUNCTIONAL_PITCH_TEST_VOLUME);
 
   start_wave = NULL;
   
@@ -606,12 +723,26 @@ ags_functional_pitch_test_pitch_down()
 			  FALSE);
 
       phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE / AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ);
-      ags_synth_util_sin(buffer->data,
-			 AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ, phase, AGS_FUNCTIONAL_PITCH_TEST_VOLUME,
-			 AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_PITCH_TEST_FORMAT),
-			 0, AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+
+      ags_synth_util_set_source(synth_util,
+				buffer->data);
+
+      ags_synth_util_set_phase(synth_util,
+			       phase);
+      
+      ags_synth_util_compute_sin(synth_util);
     }
   }
+
+  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
+				      AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+  ags_hq_pitch_util_set_format(hq_pitch_util,
+			       AGS_SOUNDCARD_SIGNED_16_BIT);
+  ags_hq_pitch_util_set_samplerate(hq_pitch_util,
+				   AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE);
+
+  ags_hq_pitch_util_set_base_key(hq_pitch_util,
+				 AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY);
   
   start_list = NULL;
   
@@ -630,19 +761,18 @@ ags_functional_pitch_test_pitch_down()
       GList *pitch_buffer;
 
       pitch_buffer = AGS_WAVE(pitch_wave->data)->buffer;
+
+      ags_hq_pitch_util_set_tuning(hq_pitch_util,
+				   i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);	  
       
       for(k = 0; k < floor(AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_FRAME_COUNT / AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE); k++){
-	switch(AGS_FUNCTIONAL_PITCH_TEST_FORMAT){
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ags_hq_pitch_util_compute_s16(AGS_BUFFER(pitch_buffer->data)->data,
-					AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
-					AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
-					AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
-					(gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
-	}
-	break;
-	}
+	ags_hq_pitch_util_set_source(hq_pitch_util,
+				     AGS_BUFFER(g_list_nth_data(AGS_WAVE(start_wave->data)->buffer, k))->data);
+
+	ags_hq_pitch_util_set_destination(hq_pitch_util,
+					  AGS_BUFFER(pitch_buffer->data)->data);
+	  
+	ags_hq_pitch_util_pitch(hq_pitch_util);
 	
 	pitch_buffer = pitch_buffer->next;
       }
@@ -721,4 +851,3 @@ main(int argc, char **argv)
   
   return(-1);
 }
-

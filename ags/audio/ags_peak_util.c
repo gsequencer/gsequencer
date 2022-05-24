@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,9 +76,6 @@ ags_peak_util_alloc()
 
   ptr->buffer_length = 0;
   ptr->format = AGS_PEAK_UTIL_DEFAULT_FORMAT;
-  
-  ptr->audio_buffer_util_format = AGS_PEAK_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
-
   ptr->samplerate = AGS_PEAK_UTIL_DEFAULT_SAMPLERATE;
 
   ptr->harmonic_rate = AGS_PEAK_UTIL_DEFAULT_HARMONIC_RATE;
@@ -112,9 +109,6 @@ ags_peak_util_copy(AgsPeakUtil *ptr)
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
-
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
-
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->harmonic_rate = ptr->harmonic_rate;
@@ -299,48 +293,6 @@ ags_peak_util_set_format(AgsPeakUtil *peak_util,
   }
 
   peak_util->format = format;
-
-  peak_util->audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-}
-
-/**
- * ags_peak_util_get_audio_buffer_util_format:
- * @peak_util: the #AgsPeakUtil-struct
- * 
- * Get audio buffer util format of @peak_util.
- * 
- * Returns: the audio buffer util format
- * 
- * Since: 3.9.2
- */
-guint
-ags_peak_util_get_audio_buffer_util_format(AgsPeakUtil *peak_util)
-{
-  if(peak_util == NULL){
-    return(0);
-  }
-
-  return(peak_util->audio_buffer_util_format);
-}
-
-/**
- * ags_peak_util_set_audio_buffer_util_format:
- * @peak_util: the #AgsPeakUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
- *
- * Set @audio_buffer_util_format of @peak_util.
- *
- * Since: 3.9.2
- */
-void
-ags_peak_util_set_audio_buffer_util_format(AgsPeakUtil *peak_util,
-					     guint audio_buffer_util_format)
-{
-  if(peak_util == NULL){
-    return;
-  }
-
-  peak_util->audio_buffer_util_format = audio_buffer_util_format;
 }
 
 /**
@@ -2758,43 +2710,43 @@ ags_peak_util_compute(AgsPeakUtil *peak_util)
     return;
   }
 
-  switch(peak_util->audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
+  switch(peak_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
     ags_peak_util_compute_s8(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
     ags_peak_util_compute_s16(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
     ags_peak_util_compute_s24(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
     ags_peak_util_compute_s32(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
     ags_peak_util_compute_s64(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  case AGS_SOUNDCARD_FLOAT:
   {
     ags_peak_util_compute_float(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  case AGS_SOUNDCARD_DOUBLE:
   {
     ags_peak_util_compute_double(peak_util);
   }
   break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  case AGS_SOUNDCARD_COMPLEX:
   {
     ags_peak_util_compute_complex(peak_util);
   }

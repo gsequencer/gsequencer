@@ -64,8 +64,9 @@
 #endif
 
 #include <ags/app/ags_gsequencer_application.h>
-#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_gsequencer_resource.h>
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
 #include "gsequencer_main.h"
@@ -256,7 +257,7 @@ main(int argc, char **argv)
   
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
-  gtk_init(&argc, &argv);
+  gtk_init();
 
   settings = gtk_settings_get_default();
 
@@ -474,11 +475,10 @@ main(int argc, char **argv)
   
   css_provider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(css_provider,
-				  css_filename,
-				  NULL);
-  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-					    GTK_STYLE_PROVIDER(css_provider),
-					    GTK_STYLE_PROVIDER_PRIORITY_USER);    
+				  css_filename);
+  gtk_style_context_add_provider_for_display(gdk_display_get_default(),
+					     GTK_STYLE_PROVIDER(css_provider),
+					     GTK_STYLE_PROVIDER_PRIORITY_USER);    
     
   g_free(css_filename);
 
@@ -602,6 +602,8 @@ main(int argc, char **argv)
     g_object_set(G_OBJECT(window),
 		 "application", gsequencer_app,
 		 NULL);
+
+    ags_connectable_connect(AGS_CONNECTABLE(application_context));
   }
   
   if(handles_command_line && filename != NULL){      

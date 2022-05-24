@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/export/ags_machine_mapper.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_COLLECTION                (ags_machine_collection_get_type())
@@ -52,14 +54,16 @@ struct _AgsMachineCollection
 
   guint flags;
   
-  GType child_type;
+  GType machine_mapper_type;
 
-  guint child_n_properties;
+  guint machine_mapper_n_properties;
 
-  gchar **child_strv;
-  GValue *child_value;
+  gchar **machine_mapper_strv;
+  GValue *machine_mapper_value;
 
-  GtkBox *child;
+  GList *machine_mapper;
+
+  GtkBox *machine_mapper_box;
 };
 
 struct _AgsMachineCollectionClass
@@ -69,14 +73,20 @@ struct _AgsMachineCollectionClass
 
 GType ags_machine_collection_get_type();
 
+GList* ags_machine_collection_get_machine_mapper(AgsMachineCollection *machine_collection);
+void ags_machine_collection_add_machine_mapper(AgsMachineCollection *machine_collection,
+					       AgsMachineMapper *machine_mapper);
+void ags_machine_collection_remove_machine_mapper(AgsMachineCollection *machine_collection,
+						  AgsMachineMapper *machine_mapper);
+
 void ags_machine_collection_reload(AgsMachineCollection *machine_collection);
 void ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 				      GtkWidget *machine);
 
-AgsMachineCollection* ags_machine_collection_new(GType child_type,
-						 guint child_n_properties,
-						 gchar **child_strv,
-						 GValue *child_value);
+AgsMachineCollection* ags_machine_collection_new(GType machine_mapper_type,
+						 guint machine_mapper_n_properties,
+						 gchar **machine_mapper_strv,
+						 GValue *machine_mapper_value);
 
 G_END_DECLS
 

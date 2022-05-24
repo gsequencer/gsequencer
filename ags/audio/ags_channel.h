@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,17 +71,13 @@ typedef struct _AgsChannelClass AgsChannelClass;
 
 /**
  * AgsChannelFlags:
- * @AGS_CHANNEL_ADDED_TO_REGISTRY: the channel was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_CHANNEL_CONNECTED: indicates the channel was connected by calling #AgsConnectable::connect()
  * @AGS_CHANNEL_BYPASS: don't apply any data
  *
  * Enum values to control the behavior or indicate internal state of #AgsChannel by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CHANNEL_ADDED_TO_REGISTRY  = 1,
-  AGS_CHANNEL_CONNECTED          = 1 <<  1,
-  AGS_CHANNEL_BYPASS             = 1 <<  2,
+  AGS_CHANNEL_BYPASS             = 1,
 }AgsChannelFlags;
 
 #define AGS_CHANNEL_ERROR (ags_channel_error_quark())
@@ -95,6 +91,7 @@ struct _AgsChannel
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   guint ability_flags;
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
@@ -170,12 +167,6 @@ struct _AgsChannelClass
 			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
-
-  GList* (*add_effect)(AgsChannel *channel,
-		       gchar *filename,
-		       gchar *effect);
-  void (*remove_effect)(AgsChannel *channel,
-			guint nth);
 
   void (*duplicate_recall)(AgsChannel *channel,
 			   AgsRecallID *recall_id);
@@ -279,8 +270,14 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 GObject* ags_channel_get_output_soundcard(AgsChannel *channel);
 void ags_channel_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard);
 
+gint ags_channel_get_output_soundcard_channel(AgsChannel *channel);
+void ags_channel_set_output_soundcard_channel(AgsChannel *channel, gint output_soundcard_channel);
+
 GObject* ags_channel_get_input_soundcard(AgsChannel *channel);
 void ags_channel_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard);
+
+gint ags_channel_get_input_soundcard_channel(AgsChannel *channel);
+void ags_channel_set_input_soundcard_channel(AgsChannel *channel, gint input_soundcard_channel);
 
 /* presets */
 guint ags_channel_get_samplerate(AgsChannel *channel);
@@ -348,13 +345,6 @@ void ags_channel_insert_recall(AgsChannel *channel, GObject *recall,
 			       gint position);
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall,
 			       gboolean play_context);
-
-/* add/remove effect */
-GList* ags_channel_add_effect(AgsChannel *channel,
-			      char *filename,
-			      gchar *effect);
-void ags_channel_remove_effect(AgsChannel *channel,
-			       guint nth);
 
 /* stages */
 void ags_channel_duplicate_recall(AgsChannel *channel,

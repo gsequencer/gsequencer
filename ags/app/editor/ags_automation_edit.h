@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,14 +74,13 @@ typedef struct _AgsAutomationEdit AgsAutomationEdit;
 typedef struct _AgsAutomationEditClass AgsAutomationEditClass;
 
 typedef enum{
-  AGS_AUTOMATION_EDIT_CONNECTED                   = 1,
-  AGS_AUTOMATION_EDIT_AUTO_SCROLL                 = 1 <<  1,
-  AGS_AUTOMATION_EDIT_SHOW_RULER                  = 1 <<  2,
-  AGS_AUTOMATION_EDIT_SHOW_VSCROLLBAR             = 1 <<  3,
-  AGS_AUTOMATION_EDIT_SHOW_HSCROLLBAR             = 1 <<  4,
-  AGS_AUTOMATION_EDIT_LOGARITHMIC                 = 1 <<  5,
-  AGS_AUTOMATION_EDIT_INTEGER                     = 1 <<  6,
-  AGS_AUTOMATION_EDIT_TOGGLED                     = 1 <<  7,
+  AGS_AUTOMATION_EDIT_AUTO_SCROLL                 = 1,
+  AGS_AUTOMATION_EDIT_SHOW_RULER                  = 1 <<  1,
+  AGS_AUTOMATION_EDIT_SHOW_VSCROLLBAR             = 1 <<  2,
+  AGS_AUTOMATION_EDIT_SHOW_HSCROLLBAR             = 1 <<  3,
+  AGS_AUTOMATION_EDIT_LOGARITHMIC                 = 1 <<  4,
+  AGS_AUTOMATION_EDIT_INTEGER                     = 1 <<  5,
+  AGS_AUTOMATION_EDIT_TOGGLED                     = 1 <<  6,
 }AgsAutomationEditFlags;
 
 typedef enum{
@@ -105,9 +104,10 @@ typedef enum{
 
 struct _AgsAutomationEdit
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;
@@ -154,13 +154,13 @@ struct _AgsAutomationEdit
   
   GtkDrawingArea *drawing_area;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsAutomationEditClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_automation_edit_get_type(void);

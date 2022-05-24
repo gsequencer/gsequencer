@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,6 +46,9 @@ typedef struct _AgsOscMessageClass AgsOscMessageClass;
 struct _AgsOscMessage
 {
   GObject gobject;
+
+  guint flags;
+  guint connectable_flags;
   
   GRecMutex obj_mutex;
 

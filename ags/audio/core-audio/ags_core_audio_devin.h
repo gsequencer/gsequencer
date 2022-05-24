@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,53 +36,59 @@ G_BEGIN_DECLS
 
 #define AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioDevin *) obj)->obj_mutex))
 
+#define AGS_CORE_AUDIO_DEVIN_DEFAULT_APP_BUFFER_SIZE (8)
+
 typedef struct _AgsCoreAudioDevin AgsCoreAudioDevin;
 typedef struct _AgsCoreAudioDevinClass AgsCoreAudioDevinClass;
 
 /**
  * AgsCoreAudioDevinFlags:
- * @AGS_CORE_AUDIO_DEVIN_ADDED_TO_REGISTRY: the core-audio devin was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_CORE_AUDIO_DEVIN_CONNECTED: indicates the core-audio devin was connected by calling #AgsConnectable::connect()
- * @AGS_CORE_AUDIO_DEVIN_BUFFER0: ring-buffer 0
- * @AGS_CORE_AUDIO_DEVIN_BUFFER1: ring-buffer 1
- * @AGS_CORE_AUDIO_DEVIN_BUFFER2: ring-buffer 2
- * @AGS_CORE_AUDIO_DEVIN_BUFFER3: ring-buffer 3
- * @AGS_CORE_AUDIO_DEVIN_BUFFER4: ring-buffer 4
- * @AGS_CORE_AUDIO_DEVIN_BUFFER5: ring-buffer 5
- * @AGS_CORE_AUDIO_DEVIN_BUFFER6: ring-buffer 6
- * @AGS_CORE_AUDIO_DEVIN_BUFFER7: ring-buffer 7
- * @AGS_CORE_AUDIO_DEVIN_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_CORE_AUDIO_DEVIN_INITIALIZED: the soundcard was initialized
+ * @AGS_CORE_AUDIO_DEVIN_START_RECORD: capture starting
  * @AGS_CORE_AUDIO_DEVIN_RECORD: do capture
  * @AGS_CORE_AUDIO_DEVIN_SHUTDOWN: stop capture
- * @AGS_CORE_AUDIO_DEVIN_START_RECORD: capture starting
  * @AGS_CORE_AUDIO_DEVIN_NONBLOCKING: do non-blocking calls
- * @AGS_CORE_AUDIO_DEVIN_INITIALIZED: the soundcard was initialized
+ * @AGS_CORE_AUDIO_DEVIN_ATTACK_FIRST: use first attack, instead of second one
  *
  * Enum values to control the behavior or indicate internal state of #AgsCoreAudioDevin by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CORE_AUDIO_DEVIN_ADDED_TO_REGISTRY              = 1,
-  AGS_CORE_AUDIO_DEVIN_CONNECTED                      = 1 <<  1,
+  AGS_CORE_AUDIO_DEVIN_INITIALIZED                    = 1,
 
-  AGS_CORE_AUDIO_DEVIN_BUFFER0                        = 1 <<  2,
-  AGS_CORE_AUDIO_DEVIN_BUFFER1                        = 1 <<  3,
-  AGS_CORE_AUDIO_DEVIN_BUFFER2                        = 1 <<  4,
-  AGS_CORE_AUDIO_DEVIN_BUFFER3                        = 1 <<  5,
-  AGS_CORE_AUDIO_DEVIN_BUFFER4                        = 1 <<  6,
-  AGS_CORE_AUDIO_DEVIN_BUFFER5                        = 1 <<  7,
-  AGS_CORE_AUDIO_DEVIN_BUFFER6                        = 1 <<  8,
-  AGS_CORE_AUDIO_DEVIN_BUFFER7                        = 1 <<  9,
+  AGS_CORE_AUDIO_DEVIN_START_RECORD                   = 1 <<  1,
+  AGS_CORE_AUDIO_DEVIN_RECORD                         = 1 <<  2,
+  AGS_CORE_AUDIO_DEVIN_SHUTDOWN                       = 1 <<  3,
 
-  AGS_CORE_AUDIO_DEVIN_ATTACK_FIRST                   = 1 << 10,
+  AGS_CORE_AUDIO_DEVIN_NONBLOCKING                    = 1 <<  4,
 
-  AGS_CORE_AUDIO_DEVIN_RECORD                         = 1 << 11,
-  AGS_CORE_AUDIO_DEVIN_SHUTDOWN                       = 1 << 12,
-  AGS_CORE_AUDIO_DEVIN_START_RECORD                   = 1 << 13,
-
-  AGS_CORE_AUDIO_DEVIN_NONBLOCKING                    = 1 << 14,
-  AGS_CORE_AUDIO_DEVIN_INITIALIZED                    = 1 << 15,
+  AGS_CORE_AUDIO_DEVIN_ATTACK_FIRST                   = 1 <<  5,
 }AgsCoreAudioDevinFlags;
+
+/**
+ * AgsCoreAudioDevinAppBufferMode:
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_0: ring-buffer 0
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_1: ring-buffer 1
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_2: ring-buffer 2
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_3: ring-buffer 3
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_4: ring-buffer 4
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_5: ring-buffer 5
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_6: ring-buffer 6
+ * @AGS_CORE_AUDIO_DEVIN_APP_BUFFER_7: ring-buffer 7
+ * 
+ * Enum values to indicate internal state of #AgsCoreAudioDevin application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_0,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_1,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_2,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_3,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_4,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_5,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_6,
+  AGS_CORE_AUDIO_DEVIN_APP_BUFFER_7,
+}AgsCore_AudioDevinAppBufferMode;
 
 /**
  * AgsCoreAudioDevinSyncFlags:
@@ -115,6 +121,7 @@ struct _AgsCoreAudioDevin
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   volatile guint sync_flags;
   
   GRecMutex obj_mutex;
@@ -127,8 +134,14 @@ struct _AgsCoreAudioDevin
   guint buffer_size;
   guint samplerate;
 
-  GRecMutex **buffer_mutex;
-  void** buffer;
+  guint app_buffer_mode;
+
+  GRecMutex **app_buffer_mutex;
+
+  guint sub_block_count;
+  GRecMutex **sub_block_mutex;
+
+  void **app_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;
@@ -169,6 +182,7 @@ struct _AgsCoreAudioDevinClass
 };
 
 GType ags_core_audio_devin_get_type();
+GType ags_core_audio_devin_flags_get_type();
 
 GQuark ags_core_audio_devin_error_quark();
 

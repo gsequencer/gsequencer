@@ -45,7 +45,7 @@ void ags_audio_signal_test_scale();
 #define AGS_AUDIO_SIGNAL_TEST_GET_TEMPLATE_N_AUDIO_SIGNAL (3)
 #define AGS_AUDIO_SIGNAL_TEST_GET_STREAM_CURRENT_N_AUDIO_SIGNAL (6)
 
-AgsDevout *devout;
+AgsAlsaDevout *devout;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -54,7 +54,7 @@ AgsDevout *devout;
 int
 ags_audio_signal_test_init_suite()
 { 
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new();
   g_object_ref(devout);
   
   return(0);

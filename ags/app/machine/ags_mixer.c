@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 #include <ags/app/machine/ags_mixer_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line.h>
 
@@ -121,8 +122,51 @@ ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_mixer_init(AgsMixer *mixer)
 {
-  g_signal_connect_after((GObject *) mixer, "parent_set",
-			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *machine_name;
+
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_MIXER);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(mixer,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    mixer);
 
   ags_audio_set_flags(AGS_MACHINE(mixer)->audio, (AGS_AUDIO_ASYNC));
   g_object_set(AGS_MACHINE(mixer)->audio,
@@ -148,11 +192,23 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->peak_recall_container = ags_recall_container_new();
   
   /* input */
-  mixer->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					    0);
-  AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) mixer),
-		    (GtkWidget *) mixer->input_pad);
+  AGS_MACHINE(mixer)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign(AGS_MACHINE(mixer)->input_pad_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(AGS_MACHINE(mixer)->input_pad_grid,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_hexpand(AGS_MACHINE(mixer)->input_pad_grid,
+			 FALSE);
+
+  gtk_grid_set_column_spacing(AGS_MACHINE(mixer)->input_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(mixer)->input_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_PADDING);
+
+  gtk_frame_set_child(AGS_MACHINE(mixer)->frame,
+		      (GtkWidget *) AGS_MACHINE(mixer)->input_pad_grid);
 }
 
 void
@@ -165,7 +221,7 @@ ags_mixer_finalize(GObject *gobject)
 void
 ags_mixer_connect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -175,7 +231,7 @@ ags_mixer_connect(AgsConnectable *connectable)
 void
 ags_mixer_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

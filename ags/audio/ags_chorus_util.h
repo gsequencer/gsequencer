@@ -28,13 +28,15 @@
 #include <math.h>
 #include <complex.h>
 
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_synth_enums.h>
 
 G_BEGIN_DECLS
 
 #define AGS_TYPE_CHORUS_UTIL         (ags_chorus_util_get_type())
 #define AGS_CHORUS_UTIL(ptr) ((AgsChorusUtil *)(ptr))
+
+#define AGS_CHORUS_UTIL_DEFAULT_PITCH_MIX_BUFFER_SIZE (65536)
 
 #define AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH (256)
 
@@ -79,7 +81,8 @@ struct _AgsChorusUtil
   gdouble mix;
   gdouble delay;
 
-  AgsHQPitchUtil *hq_pitch_util;
+  GType pitch_type;  
+  gpointer pitch_util;
 };
 
 GType ags_chorus_util_get_type(void);
@@ -117,6 +120,10 @@ guint ags_chorus_util_get_samplerate(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_samplerate(AgsChorusUtil *chorus_util,
 				    guint samplerate);
 
+guint64 ags_chorus_util_get_offset(AgsChorusUtil *chorus_util);
+void ags_chorus_util_set_offset(AgsChorusUtil *chorus_util,
+				guint64 offset);
+
 gdouble ags_chorus_util_get_base_key(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_base_key(AgsChorusUtil *chorus_util,
 				  gdouble base_key);
@@ -148,6 +155,14 @@ void ags_chorus_util_set_mix(AgsChorusUtil *chorus_util,
 gdouble ags_chorus_util_get_delay(AgsChorusUtil *chorus_util);
 void ags_chorus_util_set_delay(AgsChorusUtil *chorus_util,
 			       gdouble delay);
+
+GType ags_chorus_util_get_pitch_type(AgsChorusUtil *chorus_util);
+void ags_chorus_util_set_pitch_type(AgsChorusUtil *chorus_util,
+				    GType pitch_type);
+
+gpointer ags_chorus_util_get_pitch_util(AgsChorusUtil *chorus_util);
+void ags_chorus_util_set_pitch_util(AgsChorusUtil *chorus_util,
+				    gpointer pitch_util);
 
 void ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util);
 void ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util);

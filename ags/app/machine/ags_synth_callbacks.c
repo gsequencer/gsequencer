@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,35 +25,9 @@
 #include <math.h>
 
 void
-ags_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSynth *synth)
+ags_synth_auto_update_callback(GtkCheckButton *check_button, AgsSynth *synth)
 {
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_SYNTH)->counter);
-
-  g_object_set(AGS_MACHINE(synth),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_SYNTH);
-
-  g_free(str);
-}
-
-void
-ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
-{
-  if(gtk_toggle_button_get_active(toggle)){
+  if(gtk_check_button_get_active(check_button)){
     ags_synth_set_flags(synth, AGS_SYNTH_AUTO_UPDATE);
   }else{
     ags_synth_unset_flags(synth, AGS_SYNTH_AUTO_UPDATE);

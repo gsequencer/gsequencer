@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -229,6 +229,30 @@ ags_audio_unit_devin_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_audio_unit_devin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_AUDIO_UNIT_DEVIN_INITIALIZED, "AGS_AUDIO_UNIT_DEVIN_INITIALIZED", "audio_unit-devin-initialized" },
+      { AGS_AUDIO_UNIT_DEVIN_START_RECORD, "AGS_AUDIO_UNIT_DEVIN_START_RECORD", "audio_unit-devin-start-record" },
+      { AGS_AUDIO_UNIT_DEVIN_RECORD, "AGS_AUDIO_UNIT_DEVIN_RECORD", "audio_unit-devin-record" },
+      { AGS_AUDIO_UNIT_DEVIN_SHUTDOWN, "AGS_AUDIO_UNIT_DEVIN_SHUTDOWN", "audio_unit-devin-shutdown" },
+      { AGS_AUDIO_UNIT_DEVIN_NONBLOCKING, "AGS_AUDIO_UNIT_DEVIN_NONBLOCKING", "audio_unit-devin-nonblocking" },
+      { AGS_AUDIO_UNIT_DEVIN_ATTACK_FIRST, "AGS_AUDIO_UNIT_DEVIN_ATTACK_FIRST", "audio_unit-devin-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioUnitDevinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -463,7 +487,23 @@ ags_audio_unit_devin_error_quark()
 void
 ags_audio_unit_devin_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  //TODO:JK: implement me
+  connectable->get_uuid = ags_audio_unit_devin_get_uuid;
+  connectable->has_resource = ags_audio_unit_devin_has_resource;
+
+  connectable->is_ready = ags_audio_unit_devin_is_ready;
+  connectable->add_to_registry = ags_audio_unit_devin_add_to_registry;
+  connectable->remove_from_registry = ags_audio_unit_devin_remove_from_registry;
+
+  connectable->list_resource = ags_audio_unit_devin_list_resource;
+  connectable->xml_compose = ags_audio_unit_devin_xml_compose;
+  connectable->xml_parse = ags_audio_unit_devin_xml_parse;
+
+  connectable->is_connected = ags_audio_unit_devin_is_connected;  
+  connectable->connect = ags_audio_unit_devin_connect;
+  connectable->disconnect = ags_audio_unit_devin_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -546,6 +586,7 @@ ags_audio_unit_devin_init(AgsAudioUnitDevin *audio_unit_devin)
 
   /* flags */
   audio_unit_devin->flags = 0;
+  audio_unit_devin->connectable_flags = 0;
   g_atomic_int_set(&(audio_unit_devin->sync_flags),
 		   AGS_AUDIO_UNIT_DEVIN_PASS_THROUGH);
 
@@ -574,24 +615,35 @@ ags_audio_unit_devin_init(AgsAudioUnitDevin *audio_unit_devin)
   audio_unit_devin->audio_unit_port = NULL;
 
   /* buffer */
-  audio_unit_devin->buffer_mutex = (GRecMutex **) malloc(8 * sizeof(GRecMutex *));
+  audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0;
+
+  audio_unit_devin->app_buffer_mutex = (GRecMutex **) g_malloc(8 * sizeof(GRecMutex *));
 
   for(i = 0; i < 8; i++){
-    audio_unit_devin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    audio_unit_devin->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
-    g_rec_mutex_init(audio_unit_devin->buffer_mutex[i]);
+    g_rec_mutex_init(audio_unit_devin->app_buffer_mutex[i]);
   }
 
-  audio_unit_devin->buffer = (void **) malloc(8 * sizeof(void*));
+  audio_unit_devin->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
+  audio_unit_devin->sub_block_mutex = (GRecMutex **) g_malloc(8 * audio_unit_devin->sub_block_count * audio_unit_devin->pcm_channels * sizeof(GRecMutex *));
 
-  audio_unit_devin->buffer[0] = NULL;
-  audio_unit_devin->buffer[1] = NULL;
-  audio_unit_devin->buffer[2] = NULL;
-  audio_unit_devin->buffer[3] = NULL;
-  audio_unit_devin->buffer[4] = NULL;
-  audio_unit_devin->buffer[5] = NULL;
-  audio_unit_devin->buffer[6] = NULL;
-  audio_unit_devin->buffer[7] = NULL;
+  for(i = 0; i < 8 * audio_unit_devin->sub_block_count * audio_unit_devin->pcm_channels; i++){
+    audio_unit_devin->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(audio_unit_devin->sub_block_mutex[i]);
+  }
+
+  audio_unit_devin->app_buffer = (void **) g_malloc(8 * sizeof(void*));
+
+  audio_unit_devin->app_buffer[0] = NULL;
+  audio_unit_devin->app_buffer[1] = NULL;
+  audio_unit_devin->app_buffer[2] = NULL;
+  audio_unit_devin->app_buffer[3] = NULL;
+  audio_unit_devin->app_buffer[4] = NULL;
+  audio_unit_devin->app_buffer[5] = NULL;
+  audio_unit_devin->app_buffer[6] = NULL;
+  audio_unit_devin->app_buffer[7] = NULL;
   
   ags_audio_unit_devin_realloc_buffer(audio_unit_devin);
   
@@ -617,11 +669,11 @@ ags_audio_unit_devin_init(AgsAudioUnitDevin *audio_unit_devin)
   }
 
   /* delay and attack */
-  audio_unit_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-						sizeof(gdouble));
+  audio_unit_devin->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+						 sizeof(gdouble));
   
-  audio_unit_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					       sizeof(guint));
+  audio_unit_devin->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+						sizeof(guint));
 
   ags_audio_unit_devin_adjust_delay_and_attack(audio_unit_devin);
   
@@ -950,7 +1002,7 @@ ags_audio_unit_devin_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(audio_unit_devin_mutex);
 
-      g_value_set_pointer(value, audio_unit_devin->buffer);
+      g_value_set_pointer(value, audio_unit_devin->app_buffer);
 
       g_rec_mutex_unlock(audio_unit_devin_mutex);
     }
@@ -1029,12 +1081,240 @@ ags_audio_unit_devin_finalize(GObject *gobject)
 {
   AgsAudioUnitDevin *audio_unit_devin;
 
+  guint i;
+  
   audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(gobject);
 
-  //TODO:JK: implement me
+  ags_uuid_free(audio_unit_devin->uuid);
+
+  for(i = 0; i < AGS_AUDIO_UNIT_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(audio_unit_devin->app_buffer[i]);
+  }
+
+  g_free(audio_unit_devin->app_buffer);
+
+  for(i = 0; i < AGS_AUDIO_UNIT_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(audio_unit_devin->app_buffer_mutex[i]);
+    
+    g_free(audio_unit_devin->app_buffer_mutex[i]);
+  }
+
+  g_free(audio_unit_devin->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_AUDIO_UNIT_DEVIN_DEFAULT_APP_BUFFER_SIZE * audio_unit_devin->sub_block_count * audio_unit_devin->pcm_channels; i++){
+    g_rec_mutex_clear(audio_unit_devin->sub_block_mutex[i]);
+    
+    g_free(audio_unit_devin->sub_block_mutex[i]);
+  }
+
+  g_free(audio_unit_devin->sub_block_mutex);
+  
+  g_free(audio_unit_devin->delay);
+  g_free(audio_unit_devin->attack);
   
   /* call parent */
   G_OBJECT_CLASS(ags_audio_unit_devin_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_audio_unit_devin_get_uuid(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+  
+  AgsUUID *ptr;
+
+  GRecMutex *audio_unit_devin_mutex;
+
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin signal mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  /* get UUID */
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  ptr = audio_unit_devin->uuid;
+
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_audio_unit_devin_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_audio_unit_devin_is_ready(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+  
+  gboolean is_ready;
+
+  GRecMutex *audio_unit_devin_mutex;
+
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  /* check is ready */
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_unit_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_audio_unit_devin_add_to_registry(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+
+  GRecMutex *audio_unit_devin_mutex;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  audio_unit_devin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
+}
+
+void
+ags_audio_unit_devin_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+
+  GRecMutex *audio_unit_devin_mutex;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  audio_unit_devin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
+}
+
+xmlNode*
+ags_audio_unit_devin_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_audio_unit_devin_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_audio_unit_devin_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_audio_unit_devin_is_connected(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+  
+  gboolean is_connected;
+
+  GRecMutex *audio_unit_devin_mutex;
+
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  /* check is connected */
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_unit_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_audio_unit_devin_connect(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+
+  GRecMutex *audio_unit_devin_mutex;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  audio_unit_devin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
+}
+
+void
+ags_audio_unit_devin_disconnect(AgsConnectable *connectable)
+{
+  AgsAudioUnitDevin *audio_unit_devin;
+
+  GRecMutex *audio_unit_devin_mutex;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(connectable);
+
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  audio_unit_devin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
 }
 
 /**
@@ -1577,19 +1857,19 @@ ags_audio_unit_devin_port_init(AgsSoundcard *soundcard,
   }
   
   /* prepare for playback */
-  audio_unit_devin->flags |= (AGS_AUDIO_UNIT_DEVIN_BUFFER7 |
-			       AGS_AUDIO_UNIT_DEVIN_START_RECORD |
-			       AGS_AUDIO_UNIT_DEVIN_RECORD |
-			       AGS_AUDIO_UNIT_DEVIN_NONBLOCKING);
+  audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7;
+  audio_unit_devin->flags |= (AGS_AUDIO_UNIT_DEVIN_START_RECORD |
+			      AGS_AUDIO_UNIT_DEVIN_RECORD |
+			      AGS_AUDIO_UNIT_DEVIN_NONBLOCKING);
 
-  memset(audio_unit_devin->buffer[0], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[1], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[2], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[3], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[4], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[5], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[6], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[7], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[0], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[1], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[2], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[3], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[4], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[5], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[6], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[7], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
 
   /*  */
   audio_unit_devin->tact_counter = 0.0;
@@ -1597,8 +1877,8 @@ ags_audio_unit_devin_port_init(AgsSoundcard *soundcard,
   audio_unit_devin->tic_counter = 0;
 
   audio_unit_devin->flags |= (AGS_AUDIO_UNIT_DEVIN_INITIALIZED |
-			       AGS_AUDIO_UNIT_DEVIN_START_RECORD |
-			       AGS_AUDIO_UNIT_DEVIN_RECORD);
+			      AGS_AUDIO_UNIT_DEVIN_START_RECORD |
+			      AGS_AUDIO_UNIT_DEVIN_RECORD);
   
   g_atomic_int_or(&(audio_unit_devin->sync_flags),
 		  AGS_AUDIO_UNIT_DEVIN_INITIAL_CALLBACK);
@@ -1687,7 +1967,7 @@ ags_audio_unit_devin_port_record(AgsSoundcard *soundcard,
 
   if(audio_unit_client_activated){
     while((AGS_AUDIO_UNIT_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(audio_unit_devin->sync_flags)))) != 0){
-	usleep(4);
+      usleep(4);
     }
     
     /* signal */
@@ -1704,7 +1984,7 @@ ags_audio_unit_devin_port_record(AgsSoundcard *soundcard,
       g_mutex_unlock(callback_mutex);
       //    }
     
-    /* wait callback */	
+      /* wait callback */	
       g_mutex_lock(callback_finish_mutex);
     
       if((AGS_AUDIO_UNIT_DEVIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(audio_unit_devin->sync_flags)))) == 0){
@@ -1789,15 +2069,8 @@ ags_audio_unit_devin_port_free(AgsSoundcard *soundcard)
   //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
   
-  audio_unit_devin->flags &= (~(AGS_AUDIO_UNIT_DEVIN_BUFFER0 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER1 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER2 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER3 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER4 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER5 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER6 |
-				 AGS_AUDIO_UNIT_DEVIN_BUFFER7 |
-				 AGS_AUDIO_UNIT_DEVIN_RECORD));
+  audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0;
+  audio_unit_devin->flags &= (~(AGS_AUDIO_UNIT_DEVIN_RECORD));
 
   g_atomic_int_or(&(audio_unit_devin->sync_flags),
 		  AGS_AUDIO_UNIT_DEVIN_PASS_THROUGH);
@@ -1874,14 +2147,14 @@ ags_audio_unit_devin_port_free(AgsSoundcard *soundcard)
 
   g_rec_mutex_lock(audio_unit_devin_mutex);
   
-  memset(audio_unit_devin->buffer[0], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[1], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[2], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[3], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[4], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[5], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[6], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
-  memset(audio_unit_devin->buffer[7], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[0], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[1], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[2], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[3], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[4], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[5], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[6], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
+  memset(audio_unit_devin->app_buffer[7], 0, (size_t) audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
 
   g_rec_mutex_unlock(audio_unit_devin_mutex);
 }
@@ -2158,28 +2431,37 @@ ags_audio_unit_devin_get_buffer(AgsSoundcard *soundcard)
   AgsAudioUnitDevin *audio_unit_devin;
 
   void *buffer;
+
+  GRecMutex *audio_unit_devin_mutex;  
   
   audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(soundcard);
+  
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
 
-  if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER0)){
-    buffer = audio_unit_devin->buffer[0];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER1)){
-    buffer = audio_unit_devin->buffer[1];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER2)){
-    buffer = audio_unit_devin->buffer[2];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER3)){
-    buffer = audio_unit_devin->buffer[3];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER4)){
-    buffer = audio_unit_devin->buffer[4];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER5)){
-    buffer = audio_unit_devin->buffer[5];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER6)){
-    buffer = audio_unit_devin->buffer[6];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER7)){
-    buffer = audio_unit_devin->buffer[7];
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0){
+    buffer = audio_unit_devin->app_buffer[0];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_1){
+    buffer = audio_unit_devin->app_buffer[1];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_2){
+    buffer = audio_unit_devin->app_buffer[2];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_3){
+    buffer = audio_unit_devin->app_buffer[3];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_4){
+    buffer = audio_unit_devin->app_buffer[4];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_5){
+    buffer = audio_unit_devin->app_buffer[5];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_6){
+    buffer = audio_unit_devin->app_buffer[6];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7){
+    buffer = audio_unit_devin->app_buffer[7];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
 
   return(buffer);
 }
@@ -2190,33 +2472,37 @@ ags_audio_unit_devin_get_next_buffer(AgsSoundcard *soundcard)
   AgsAudioUnitDevin *audio_unit_devin;
 
   void *buffer;
+
+  GRecMutex *audio_unit_devin_mutex;  
   
   audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(soundcard);
+  
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
 
-  //  g_message("next - 0x%0x", ((AGS_AUDIO_UNIT_DEVIN_BUFFER0 |
-  //				AGS_AUDIO_UNIT_DEVIN_BUFFER1 |
-  //				AGS_AUDIO_UNIT_DEVIN_BUFFER2 |
-  //				AGS_AUDIO_UNIT_DEVIN_BUFFER3) & (audio_unit_devin->flags)));
+  g_rec_mutex_lock(audio_unit_devin_mutex);
 
-  if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER0)){
-    buffer = audio_unit_devin->buffer[1];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER1)){
-    buffer = audio_unit_devin->buffer[2];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER2)){
-    buffer = audio_unit_devin->buffer[3];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER3)){
-    buffer = audio_unit_devin->buffer[4];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER4)){
-    buffer = audio_unit_devin->buffer[5];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER5)){
-    buffer = audio_unit_devin->buffer[6];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER6)){
-    buffer = audio_unit_devin->buffer[7];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER7)){
-    buffer = audio_unit_devin->buffer[0];
+  if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0){
+    buffer = audio_unit_devin->app_buffer[1];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_1){
+    buffer = audio_unit_devin->app_buffer[2];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_2){
+    buffer = audio_unit_devin->app_buffer[3];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_3){
+    buffer = audio_unit_devin->app_buffer[4];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_4){
+    buffer = audio_unit_devin->app_buffer[5];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_5){
+    buffer = audio_unit_devin->app_buffer[6];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_6){
+    buffer = audio_unit_devin->app_buffer[7];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7){
+    buffer = audio_unit_devin->app_buffer[0];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
 
   return(buffer);
 }
@@ -2227,35 +2513,44 @@ ags_audio_unit_devin_get_prev_buffer(AgsSoundcard *soundcard)
   AgsAudioUnitDevin *audio_unit_devin;
 
   void *buffer;
+
+  GRecMutex *audio_unit_devin_mutex;  
   
   audio_unit_devin = AGS_AUDIO_UNIT_DEVIN(soundcard);
 
-  if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER0)){
-    buffer = audio_unit_devin->buffer[7];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER1)){
-    buffer = audio_unit_devin->buffer[0];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER2)){
-    buffer = audio_unit_devin->buffer[1];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER3)){
-    buffer = audio_unit_devin->buffer[2];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER4)){
-    buffer = audio_unit_devin->buffer[3];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER5)){
-    buffer = audio_unit_devin->buffer[4];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER6)){
-    buffer = audio_unit_devin->buffer[5];
-  }else if(ags_audio_unit_devin_test_flags(audio_unit_devin, AGS_AUDIO_UNIT_DEVIN_BUFFER7)){
-    buffer = audio_unit_devin->buffer[6];
+  /* get audio_unit devin mutex */
+  audio_unit_devin_mutex = AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(audio_unit_devin);
+
+  g_rec_mutex_lock(audio_unit_devin_mutex);
+
+  if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0){
+    buffer = audio_unit_devin->app_buffer[7];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_1){
+    buffer = audio_unit_devin->app_buffer[0];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_2){
+    buffer = audio_unit_devin->app_buffer[1];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_3){
+    buffer = audio_unit_devin->app_buffer[2];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_4){
+    buffer = audio_unit_devin->app_buffer[3];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_5){
+    buffer = audio_unit_devin->app_buffer[4];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_6){
+    buffer = audio_unit_devin->app_buffer[5];
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7){
+    buffer = audio_unit_devin->app_buffer[6];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(audio_unit_devin_mutex);
 
   return(buffer);
 }
 
 void
 ags_audio_unit_devin_lock_buffer(AgsSoundcard *soundcard,
-				  void *buffer)
+				 void *buffer)
 {
   AgsAudioUnitDevin *audio_unit_devin;
 
@@ -2265,23 +2560,23 @@ ags_audio_unit_devin_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(audio_unit_devin->buffer != NULL){
-    if(buffer == audio_unit_devin->buffer[0]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[0];
-    }else if(buffer == audio_unit_devin->buffer[1]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[1];
-    }else if(buffer == audio_unit_devin->buffer[2]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[2];
-    }else if(buffer == audio_unit_devin->buffer[3]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[3];
-    }else if(buffer == audio_unit_devin->buffer[4]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[4];
-    }else if(buffer == audio_unit_devin->buffer[5]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[5];
-    }else if(buffer == audio_unit_devin->buffer[6]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[6];
-    }else if(buffer == audio_unit_devin->buffer[7]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[7];
+  if(audio_unit_devin->app_buffer != NULL){
+    if(buffer == audio_unit_devin->app_buffer[0]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[0];
+    }else if(buffer == audio_unit_devin->app_buffer[1]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[1];
+    }else if(buffer == audio_unit_devin->app_buffer[2]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[2];
+    }else if(buffer == audio_unit_devin->app_buffer[3]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[3];
+    }else if(buffer == audio_unit_devin->app_buffer[4]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[4];
+    }else if(buffer == audio_unit_devin->app_buffer[5]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[5];
+    }else if(buffer == audio_unit_devin->app_buffer[6]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[6];
+    }else if(buffer == audio_unit_devin->app_buffer[7]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[7];
     }
   }
   
@@ -2292,7 +2587,7 @@ ags_audio_unit_devin_lock_buffer(AgsSoundcard *soundcard,
 
 void
 ags_audio_unit_devin_unlock_buffer(AgsSoundcard *soundcard,
-				    void *buffer)
+				   void *buffer)
 {
   AgsAudioUnitDevin *audio_unit_devin;
 
@@ -2302,23 +2597,23 @@ ags_audio_unit_devin_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(audio_unit_devin->buffer != NULL){
-    if(buffer == audio_unit_devin->buffer[0]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[0];
-    }else if(buffer == audio_unit_devin->buffer[1]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[1];
-    }else if(buffer == audio_unit_devin->buffer[2]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[2];
-    }else if(buffer == audio_unit_devin->buffer[3]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[3];
-    }else if(buffer == audio_unit_devin->buffer[4]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[4];
-    }else if(buffer == audio_unit_devin->buffer[5]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[5];
-    }else if(buffer == audio_unit_devin->buffer[6]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[6];
-    }else if(buffer == audio_unit_devin->buffer[7]){
-      buffer_mutex = audio_unit_devin->buffer_mutex[7];
+  if(audio_unit_devin->app_buffer != NULL){
+    if(buffer == audio_unit_devin->app_buffer[0]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[0];
+    }else if(buffer == audio_unit_devin->app_buffer[1]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[1];
+    }else if(buffer == audio_unit_devin->app_buffer[2]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[2];
+    }else if(buffer == audio_unit_devin->app_buffer[3]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[3];
+    }else if(buffer == audio_unit_devin->app_buffer[4]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[4];
+    }else if(buffer == audio_unit_devin->app_buffer[5]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[5];
+    }else if(buffer == audio_unit_devin->app_buffer[6]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[6];
+    }else if(buffer == audio_unit_devin->app_buffer[7]){
+      buffer_mutex = audio_unit_devin->app_buffer_mutex[7];
     }
   }
 
@@ -2594,30 +2889,22 @@ ags_audio_unit_devin_switch_buffer_flag(AgsAudioUnitDevin *audio_unit_devin)
   /* switch buffer flag */
   g_rec_mutex_lock(audio_unit_devin_mutex);
 
-  if((AGS_AUDIO_UNIT_DEVIN_BUFFER0 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER0);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER1;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER1 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER1);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER2;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER2 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER2);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER3;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER3 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER3);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER4;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER4 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER4);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER5;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER5 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER5);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER6;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER6 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER6);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER7;
-  }else if((AGS_AUDIO_UNIT_DEVIN_BUFFER7 & (audio_unit_devin->flags)) != 0){
-    audio_unit_devin->flags &= (~AGS_AUDIO_UNIT_DEVIN_BUFFER7);
-    audio_unit_devin->flags |= AGS_AUDIO_UNIT_DEVIN_BUFFER0;
+  if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_1;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_1){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_2;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_2){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_3;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_3){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_4;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_4){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_5;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_5){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_6;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_6){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7;
+  }else if(audio_unit_devin->app_buffer_mode == AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7){
+    audio_unit_devin->app_buffer_mode = AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(audio_unit_devin_mutex);
@@ -2806,61 +3093,61 @@ ags_audio_unit_devin_realloc_buffer(AgsAudioUnitDevin *audio_unit_devin)
     return;
   }
   
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_0 */
-  if(audio_unit_devin->buffer[0] != NULL){
-    free(audio_unit_devin->buffer[0]);
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_0 */
+  if(audio_unit_devin->app_buffer[0] != NULL){
+    g_free(audio_unit_devin->app_buffer[0]);
   }
   
-  audio_unit_devin->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  audio_unit_devin->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_1 */
-  if(audio_unit_devin->buffer[1] != NULL){
-    free(audio_unit_devin->buffer[1]);
-  }
-
-  audio_unit_devin->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
-  
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_2 */
-  if(audio_unit_devin->buffer[2] != NULL){
-    free(audio_unit_devin->buffer[2]);
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_1 */
+  if(audio_unit_devin->app_buffer[1] != NULL){
+    g_free(audio_unit_devin->app_buffer[1]);
   }
 
-  audio_unit_devin->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  audio_unit_devin->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_3 */
-  if(audio_unit_devin->buffer[3] != NULL){
-    free(audio_unit_devin->buffer[3]);
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_2 */
+  if(audio_unit_devin->app_buffer[2] != NULL){
+    g_free(audio_unit_devin->app_buffer[2]);
   }
-  
-  audio_unit_devin->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_4 */
-  if(audio_unit_devin->buffer[4] != NULL){
-    free(audio_unit_devin->buffer[4]);
+  audio_unit_devin->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+  
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_3 */
+  if(audio_unit_devin->app_buffer[3] != NULL){
+    g_free(audio_unit_devin->app_buffer[3]);
   }
   
-  audio_unit_devin->buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  audio_unit_devin->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_5 */
-  if(audio_unit_devin->buffer[5] != NULL){
-    free(audio_unit_devin->buffer[5]);
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_4 */
+  if(audio_unit_devin->app_buffer[4] != NULL){
+    g_free(audio_unit_devin->app_buffer[4]);
   }
   
-  audio_unit_devin->buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  audio_unit_devin->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_6 */
-  if(audio_unit_devin->buffer[6] != NULL){
-    free(audio_unit_devin->buffer[6]);
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_5 */
+  if(audio_unit_devin->app_buffer[5] != NULL){
+    g_free(audio_unit_devin->app_buffer[5]);
   }
   
-  audio_unit_devin->buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  audio_unit_devin->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_AUDIO_UNIT_DEVIN_BUFFER_7 */
-  if(audio_unit_devin->buffer[7] != NULL){
-    free(audio_unit_devin->buffer[7]);
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_6 */
+  if(audio_unit_devin->app_buffer[6] != NULL){
+    g_free(audio_unit_devin->app_buffer[6]);
   }
   
-  audio_unit_devin->buffer[7] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  audio_unit_devin->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  /* AGS_AUDIO_UNIT_DEVIN_APP_BUFFER_7 */
+  if(audio_unit_devin->app_buffer[7] != NULL){
+    g_free(audio_unit_devin->app_buffer[7]);
+  }
+  
+  audio_unit_devin->app_buffer[7] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**

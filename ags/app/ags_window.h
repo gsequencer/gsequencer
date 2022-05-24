@@ -29,15 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_context_menu.h>
-#include <ags/app/ags_menu_bar.h>
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_navigation.h>
-#include <ags/app/ags_export_window.h>
-#include <ags/app/ags_automation_window.h>
-#include <ags/app/ags_wave_window.h>
-#include <ags/app/ags_preferences.h>
 #include <ags/app/ags_composite_editor.h>
 
 G_BEGIN_DECLS
@@ -49,18 +42,13 @@ G_BEGIN_DECLS
 #define AGS_IS_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_WINDOW))
 #define AGS_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_WINDOW, AgsWindowClass))
 
-#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
-
 typedef struct _AgsWindow AgsWindow;
 typedef struct _AgsWindowClass AgsWindowClass;
-typedef struct _AgsMachineCounter AgsMachineCounter;
 
 typedef enum{
-  AGS_WINDOW_CONNECTED        = 1,
-  AGS_WINDOW_READY            = 1 << 1,
-  AGS_WINDOW_LOADING          = 1 << 2,
-  AGS_WINDOW_SAVING           = 1 << 3,
-  AGS_WINDOW_TERMINATING      = 1 << 4,
+  AGS_WINDOW_LOADING          = 1,
+  AGS_WINDOW_SAVING           = 1 <<  1,
+  AGS_WINDOW_TERMINATING      = 1 <<  2,
 }AgsWindowFlags;
 
 struct _AgsWindow
@@ -68,7 +56,8 @@ struct _AgsWindow
   GtkApplicationWindow application_window;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gboolean no_config;
   gboolean shows_menu_bar;
   
@@ -76,37 +65,26 @@ struct _AgsWindow
   
   char *name;
 
+  GtkPopoverMenuBar *menu_bar;
+  
   GtkHeaderBar *header_bar;
   GtkMenuButton *app_button;
   GtkMenuButton *add_button;
   GtkMenuButton *edit_button;
   
-  AgsMenuBar *menu_bar;
-  AgsContextMenu *context_menu;
-  
   GtkPaned *paned;
 
-  GtkBox *machines;
+  GList *machine;
+  
+  GtkBox *machine_box;
+
   GList *machine_counter;
+
   AgsMachine *selected;
 
-  AgsNotationEditor *notation_editor;
-  AgsNavigation *navigation;
-
-  GList *dialog;
-  
-  AgsAutomationWindow *automation_window;
-  AgsWaveWindow *wave_window;
-
-  AgsExportWindow *export_window;
-
-  GtkWidget *midi_import_wizard;
-  GtkWidget *midi_export_wizard;
-  GtkWidget *midi_file_chooser;
-  
-  AgsPreferences *preferences;
-
   AgsCompositeEditor *composite_editor;
+
+  AgsNavigation *navigation;
 };
 
 struct _AgsWindowClass
@@ -114,31 +92,13 @@ struct _AgsWindowClass
   GtkApplicationWindowClass application_window;
 };
 
-struct _AgsMachineCounter
-{
-  gchar *version;
-  gchar *build_id;
-
-  GType machine_type;
-  gchar *filename;
-  gchar *effect;
-  
-  guint counter;
-};
-
 GType ags_window_get_type(void);
 
-GList* ags_window_standard_machine_counter_alloc();
-AgsMachineCounter* ags_window_find_machine_counter(AgsWindow *window,
-						   GType machine_type);
-
-void ags_window_increment_machine_counter(AgsWindow *window,
-					  GType machine_type);
-void ags_window_decrement_machine_counter(AgsWindow *window,
-					  GType machine_type);
-
-AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
-					     GType machine_type, guint initial_value);
+GList* ags_window_get_machine(AgsWindow *window);
+void ags_window_add_machine(AgsWindow *window,
+			    AgsMachine *machine);
+void ags_window_remove_machine(AgsWindow *window,
+			       AgsMachine *machine);
 
 void ags_window_load_add_menu_ladspa(AgsWindow *window,
 				     GMenu *menu);

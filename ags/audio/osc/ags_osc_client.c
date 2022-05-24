@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,8 +48,8 @@ void ags_osc_client_finalize(GObject *gobject);
 void ags_osc_client_real_resolve(AgsOscClient *osc_client);
 void ags_osc_client_real_connect(AgsOscClient *osc_client);
 
-unsigned char* ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
-					      guint *data_length);
+guchar* ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
+				       guint *data_length);
 gboolean ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
 					 guchar *data, guint data_length);
 
@@ -110,6 +110,28 @@ ags_osc_client_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_osc_client_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSC_CLIENT_INET4, "AGS_OSC_CLIENT_INET4", "osc-client-inet4" },
+      { AGS_OSC_CLIENT_INET6, "AGS_OSC_CLIENT_INET6", "osc-client-inet6" },
+      { AGS_OSC_CLIENT_UDP, "AGS_OSC_CLIENT_UDP", "osc-client-udp" },
+      { AGS_OSC_CLIENT_TCP, "AGS_OSC_CLIENT_TCP", "osc-client-tcp" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscClientFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -287,6 +309,7 @@ void
 ags_osc_client_init(AgsOscClient *osc_client)
 {
   osc_client->flags = AGS_OSC_CLIENT_INET4;
+  osc_client->connectable_flags = 0;
   
   /* osc client mutex */
   g_rec_mutex_init(&(osc_client->obj_mutex));
@@ -318,10 +341,10 @@ ags_osc_client_init(AgsOscClient *osc_client)
   osc_client->start_time->tv_sec = 0;
   osc_client->start_time->tv_nsec = 0;
 
-  osc_client->cache_data = (unsigned char *) malloc(AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH * sizeof(unsigned char));
+  osc_client->cache_data = (guchar *) malloc(AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH * sizeof(guchar));
   osc_client->cache_data_length = 0;
   
-  osc_client->buffer = (unsigned char *) malloc(AGS_OSC_CLIENT_CHUNK_SIZE * sizeof(unsigned char));
+  osc_client->buffer = (guchar *) malloc(AGS_OSC_CLIENT_CHUNK_SIZE * sizeof(guchar));
   osc_client->allocated_buffer_size = AGS_OSC_CLIENT_CHUNK_SIZE;
 
   osc_client->read_count = 0;
@@ -898,9 +921,9 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     flags = fcntl(osc_client->ip4_fd, F_GETFL, 0);
     fcntl(osc_client->ip4_fd, F_SETFL, flags | O_NONBLOCK);
 #else
-//    g_object_set(osc_client->ip4_socket,
-//		 "blocking", FALSE,
-//		 NULL);
+    //    g_object_set(osc_client->ip4_socket,
+    //		 "blocking", FALSE,
+    //		 NULL);
 #endif
   }
 
@@ -912,9 +935,9 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     flags = fcntl(osc_client->ip6_fd, F_GETFL, 0);
     fcntl(osc_client->ip6_fd, F_SETFL, flags | O_NONBLOCK);
 #else
-//    g_object_set(osc_client->ip6_socket,
-//		 "blocking", FALSE,
-//		 NULL);
+    //    g_object_set(osc_client->ip6_socket,
+    //		 "blocking", FALSE,
+    //		 NULL);
 #endif
   }
   
@@ -1008,14 +1031,14 @@ ags_osc_client_connect(AgsOscClient *osc_client)
   g_object_unref((GObject *) osc_client);
 }
 
-unsigned char*
+guchar*
 ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 			       guint *data_length)
 {
   GSocket *socket;
   
-  unsigned char *buffer;
-  unsigned char data[AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH];
+  guchar *buffer;
+  guchar data[AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH];
   
   guint allocated_buffer_size;
   guint read_count;
@@ -1109,7 +1132,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
     if(osc_client->cache_data_length > 0){
       memcpy(data,
 	     osc_client->cache_data,
-	     osc_client->cache_data_length * sizeof(unsigned char));
+	     osc_client->cache_data_length * sizeof(guchar));
 
       available_data_length += osc_client->cache_data_length;
     }
@@ -1241,7 +1264,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	
 	g_rec_mutex_lock(osc_client_mutex);
 
-	memcpy(osc_client->buffer, data + start_data, (end_data - start_data + 1) * sizeof(unsigned char));
+	memcpy(osc_client->buffer, data + start_data, (end_data - start_data + 1) * sizeof(guchar));
 	  
 	g_rec_mutex_unlock(osc_client_mutex);
 
@@ -1254,7 +1277,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	   end_data < available_data_length){
 	  memcpy(osc_client->cache_data,
 		 data + end_data,
-		 (available_data_length - end_data) * sizeof(unsigned char));
+		 (available_data_length - end_data) * sizeof(guchar));
 
 	  osc_client->cache_data_length = available_data_length - end_data;
 	}
@@ -1268,7 +1291,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	  
 	g_rec_mutex_lock(osc_client_mutex);
 
-	memcpy(osc_client->buffer, data + start_data, (available_data_length - start_data) * sizeof(unsigned char));
+	memcpy(osc_client->buffer, data + start_data, (available_data_length - start_data) * sizeof(guchar));
 	  
 	g_rec_mutex_unlock(osc_client_mutex);
 
@@ -1302,7 +1325,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	  
 	  g_rec_mutex_lock(osc_client_mutex);
 
-	  memcpy(osc_client->buffer + read_count, data, (i + 1) * sizeof(unsigned char));
+	  memcpy(osc_client->buffer + read_count, data, (i + 1) * sizeof(guchar));
 	
 	  g_rec_mutex_unlock(osc_client_mutex);
 
@@ -1316,7 +1339,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	  if(i < available_data_length){
 	    memcpy(osc_client->cache_data,
 		   data + i,
-		   (available_data_length - i) * sizeof(unsigned char));
+		   (available_data_length - i) * sizeof(guchar));
 
 	    osc_client->cache_data_length = available_data_length - i;
 	  }
@@ -1339,7 +1362,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	  
 	  g_rec_mutex_lock(osc_client_mutex);
 	
-	  memcpy(osc_client->buffer + read_count, data, (available_data_length) * sizeof(unsigned char));
+	  memcpy(osc_client->buffer + read_count, data, (available_data_length) * sizeof(guchar));
 
 	  g_rec_mutex_unlock(osc_client_mutex);
 
@@ -1372,11 +1395,11 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
  * 
  * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_osc_client_read_bytes(AgsOscClient *osc_client,
 			  guint *data_length)
 {
-  unsigned char *buffer;
+  guchar *buffer;
   
   g_return_val_if_fail(AGS_IS_OSC_CLIENT(osc_client), NULL);
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -337,6 +337,9 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
      source->stream_current != NULL &&
      sound_scope >= 0 &&
      sound_scope < AGS_SOUND_SCOPE_LAST){
+    AgsPhaseShiftUtil phase_shift_util;
+    AgsFrequencyAliaseUtil frequency_aliase_util;
+
     fx_two_pass_aliase_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_two_pass_aliase_channel);
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
@@ -352,37 +355,88 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 						buffer_size, copy_mode_in);
     
     g_rec_mutex_unlock(stream_mutex);
+
+    /* phase shift - a buffer */
+    phase_shift_util.buffer_length = buffer_size;
+    phase_shift_util.format = AGS_SOUNDCARD_DOUBLE;
+    phase_shift_util.samplerate = samplerate;
     
-    ags_phase_shift_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer,
-					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
-					buffer_size,
-					samplerate,
-					base_freq,
-					a_amount,
-					a_phase);
+    phase_shift_util.destination = fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer;
+    phase_shift_util.destination_stride = 1;
 
-    ags_phase_shift_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer,
-					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
-					buffer_size,
-					samplerate,
-					base_freq,
-					b_amount,
-					b_phase);
+    phase_shift_util.source = fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer;
+    phase_shift_util.source_stride = 1;
 
-    ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix,
-					     fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
-					     fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer,
-					     buffer_size);
-
-    ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix,
-					     fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
-					     fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer,
-					     buffer_size);
+    phase_shift_util.frequency = base_freq;
+    phase_shift_util.amount = a_amount;
+    phase_shift_util.phase = a_phase;
     
-    ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->final_mix,
-					     fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix,
-					     fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix,
-					     buffer_size);
+    ags_phase_shift_util_process_double(&phase_shift_util);
+
+    /* phase shift - b buffer */
+    phase_shift_util.buffer_length = buffer_size;
+    phase_shift_util.format = AGS_SOUNDCARD_DOUBLE;
+    phase_shift_util.samplerate = samplerate;
+    
+    phase_shift_util.destination = fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer;
+    phase_shift_util.destination_stride = 1;
+
+    phase_shift_util.source = fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer;
+    phase_shift_util.source_stride = 1;
+
+    phase_shift_util.frequency = base_freq;
+    phase_shift_util.amount = b_amount;
+    phase_shift_util.phase = b_phase;
+    
+    ags_phase_shift_util_process_double(&phase_shift_util);
+
+    /* frequency aliase - a mix */
+    frequency_aliase_util.buffer_length = buffer_size;
+    frequency_aliase_util.format = AGS_SOUNDCARD_DOUBLE;
+    frequency_aliase_util.samplerate = samplerate;
+    
+    frequency_aliase_util.destination = fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix;
+    frequency_aliase_util.destination_stride = 1;
+
+    frequency_aliase_util.source = fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer;
+    frequency_aliase_util.source_stride = 1;
+
+    frequency_aliase_util.phase_shifted_source = fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer;
+    frequency_aliase_util.phase_shifted_source_stride = 1;
+
+    ags_frequency_aliase_util_process_double(&frequency_aliase_util);
+
+    /* frequency aliase - b mix */
+    frequency_aliase_util.buffer_length = buffer_size;
+    frequency_aliase_util.format = AGS_SOUNDCARD_DOUBLE;
+    frequency_aliase_util.samplerate = samplerate;
+    
+    frequency_aliase_util.destination = fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix;
+    frequency_aliase_util.destination_stride = 1;
+
+    frequency_aliase_util.source = fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer;
+    frequency_aliase_util.source_stride = 1;
+
+    frequency_aliase_util.phase_shifted_source = fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer;
+    frequency_aliase_util.phase_shifted_source_stride = 1;
+
+    ags_frequency_aliase_util_process_double(&frequency_aliase_util);
+    
+    /* frequency aliase - final mix */
+    frequency_aliase_util.buffer_length = buffer_size;
+    frequency_aliase_util.format = AGS_SOUNDCARD_DOUBLE;
+    frequency_aliase_util.samplerate = samplerate;
+    
+    frequency_aliase_util.destination = fx_two_pass_aliase_channel->input_data[sound_scope]->final_mix;
+    frequency_aliase_util.destination_stride = 1;
+
+    frequency_aliase_util.source = fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix;
+    frequency_aliase_util.source_stride = 1;
+
+    frequency_aliase_util.phase_shifted_source = fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix;
+    frequency_aliase_util.phase_shifted_source_stride = 1;
+
+    ags_frequency_aliase_util_process_double(&frequency_aliase_util);
     
     g_rec_mutex_lock(stream_mutex);
 

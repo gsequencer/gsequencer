@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,6 +121,26 @@ ags_pulse_client_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_pulse_client_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PULSE_CLIENT_ACTIVATED, "AGS_PULSE_CLIENT_ACTIVATED", "pulse-client-activated" },
+      { AGS_PULSE_CLIENT_READY, "AGS_PULSE_CLIENT_READY", "pulse-client-ready" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPulseClientFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 {
@@ -228,9 +248,9 @@ ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_pulse_client_init(AgsPulseClient *pulse_client)
 {
-
   /* flags */
   pulse_client->flags = 0;
+  pulse_client->connectable_flags = 0;
 
   /* client mutex */
   g_rec_mutex_init(&(pulse_client->obj_mutex));
@@ -548,10 +568,19 @@ ags_pulse_client_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *pulse_client_mutex;
+
   pulse_client = AGS_PULSE_CLIENT(connectable);
 
-  /* check is added */
-  is_ready = ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_ADDED_TO_REGISTRY);
+  /* get pulse client mutex */
+  pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
+
+  /* test */
+  g_rec_mutex_lock(pulse_client_mutex);
+
+  is_ready = (AGS_CONNECTABLE_ADDED_TO_REGISTRY & (pulse_client->connectable_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(pulse_client_mutex);
   
   return(is_ready);
 }
@@ -561,13 +590,23 @@ ags_pulse_client_add_to_registry(AgsConnectable *connectable)
 {
   AgsPulseClient *pulse_client;
 
+  GRecMutex *pulse_client_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   pulse_client = AGS_PULSE_CLIENT(connectable);
 
-  ags_pulse_client_set_flags(pulse_client, AGS_PULSE_CLIENT_ADDED_TO_REGISTRY);
+  /* get pulse client mutex */
+  pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
+
+  /* set added to registry */
+  g_rec_mutex_lock(pulse_client_mutex);
+
+  pulse_client->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(pulse_client_mutex);
 }
 
 void
@@ -575,13 +614,23 @@ ags_pulse_client_remove_from_registry(AgsConnectable *connectable)
 {
   AgsPulseClient *pulse_client;
 
+  GRecMutex *pulse_client_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   pulse_client = AGS_PULSE_CLIENT(connectable);
 
-  ags_pulse_client_unset_flags(pulse_client, AGS_PULSE_CLIENT_ADDED_TO_REGISTRY);
+  /* get pulse client mutex */
+  pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
+
+  /* set added to registry */
+  g_rec_mutex_lock(pulse_client_mutex);
+
+  pulse_client->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(pulse_client_mutex);
 }
 
 xmlNode*
@@ -622,10 +671,19 @@ ags_pulse_client_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *pulse_client_mutex;
+
   pulse_client = AGS_PULSE_CLIENT(connectable);
 
-  /* check is connected */
-  is_connected = ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_CONNECTED);
+  /* get pulse client mutex */
+  pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
+
+  /* test */
+  g_rec_mutex_lock(pulse_client_mutex);
+
+  is_connected = (AGS_CONNECTABLE_CONNECTED & (pulse_client->connectable_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(pulse_client_mutex);
   
   return(is_connected);
 }
@@ -645,10 +703,15 @@ ags_pulse_client_connect(AgsConnectable *connectable)
 
   pulse_client = AGS_PULSE_CLIENT(connectable);
 
-  ags_pulse_client_set_flags(pulse_client, AGS_PULSE_CLIENT_CONNECTED);
-
   /* get pulse client mutex */
   pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
+
+  /* set connected */
+  g_rec_mutex_lock(pulse_client_mutex);
+
+  pulse_client->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(pulse_client_mutex);
 
   /* port */
   g_rec_mutex_lock(pulse_client_mutex);
@@ -683,10 +746,15 @@ ags_pulse_client_disconnect(AgsConnectable *connectable)
 
   pulse_client = AGS_PULSE_CLIENT(connectable);
   
-  ags_pulse_client_unset_flags(pulse_client, AGS_PULSE_CLIENT_CONNECTED);
-
   /* get pulse client mutex */
   pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
+
+  /* unset connected */
+  g_rec_mutex_lock(pulse_client_mutex);
+
+  pulse_client->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(pulse_client_mutex);
 
   /* port */
   g_rec_mutex_lock(pulse_client_mutex);

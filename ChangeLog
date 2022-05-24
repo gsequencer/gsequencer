@@ -1,3 +1,43 @@
+ags (4.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* major API improvements
+	* modified GType from gulong to gpointer in marshallers
+	* migrated libgsequencer.so to Gtk-4
+	* migrated libags_gui.so to Gtk-4
+	* migrated libags_server.so to libsoup-3.0
+	* migrated libags_audio.so to libsoup-3.0
+	* implemented AgsCartesian properties
+	* implemented ags_common_pitch_util.[ch]
+	* implemented AgsMachineEditorDialog made it more modular
+	* implemented AgsConnectionEditorDialog made it more modular
+	* refactored libgsequencer.so to use AgsConnectableFlags
+	* refactored libags_audio.so to use AgsConnectableFlags
+	* refactored AgsMachineSelector
+	* improved ags_fast_pitch_util.[ch]
+	* improved ags_hq_pitch_util.[ch]
+	* improved ags_sf2_synth_util.[ch]
+	* improved ags_sfz_synth_util.[ch]
+	* improved ags_chorus_util.[ch]
+	* improved ags_lfo_synth_util.[ch]
+	* removed AgsDevout, AgsDevin and AgsMidiin
+	* removed ags/audio/recall
+	* removed ags_recall_{ladspa,dssi,lv2}{,_run}.[ch]
+	* removed ags_recall_factory.[ch]
+	* removed deprecated ags_audio_buffer_util.[ch] functions
+	* removed deprecated ags_synth_util.[ch] functions
+	* removed deprecated ags_fm_synth_util.[ch] functions
+	* removed deprecated ags_lfo_synth_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_none_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_linear_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_4th_order_util.[ch] functions
+	* removed deprecated ags_fluid_interpolate_7th_order_util.[ch] functions
+	* removed ags_generic_pitch_util.[ch]
+	* extended AgsFile by adding libxml2 wrapper functions
+	* refactored AgsConnectableFlags
+	* fixed typo in ags_function.h
+	* fixed AgsWave clipboard
+
 ags (3.18.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

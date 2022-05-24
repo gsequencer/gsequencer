@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -275,8 +275,6 @@ ags_oss_devout_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_OSS_DEVOUT_ADDED_TO_REGISTRY, "AGS_OSS_DEVOUT_ADDED_TO_REGISTRY", "oss-devout-added-to-registry" },
-      { AGS_OSS_DEVOUT_CONNECTED, "AGS_OSS_DEVOUT_CONNECTED", "oss-devout-connected" },
       { AGS_OSS_DEVOUT_INITIALIZED, "AGS_OSS_DEVOUT_INITIALIZED", "oss-devout-initialized" },
       { AGS_OSS_DEVOUT_START_PLAY, "AGS_OSS_DEVOUT_START_PLAY", "oss-devout-start-play" },
       { AGS_OSS_DEVOUT_PLAY, "AGS_OSS_DEVOUT_PLAY", "oss-devout-play" },
@@ -600,6 +598,7 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   guint denominator, numerator;
   
   oss_devout->flags = 0;
+  oss_devout->connectable_flags = 0;
   
   /* insert oss_devout mutex */
   g_rec_mutex_init(&(oss_devout->obj_mutex));
@@ -1130,10 +1129,19 @@ ags_oss_devout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *oss_devout_mutex;
+
   oss_devout = AGS_OSS_DEVOUT(connectable);
 
-  /* check is added */
-  is_ready = ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_ADDED_TO_REGISTRY);
+  /* get oss devout mutex */
+  oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
+
+  /* check is ready */
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (oss_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(oss_devout_mutex);
   
   return(is_ready);
 }
@@ -1143,13 +1151,22 @@ ags_oss_devout_add_to_registry(AgsConnectable *connectable)
 {
   AgsOssDevout *oss_devout;
 
+  GRecMutex *oss_devout_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   oss_devout = AGS_OSS_DEVOUT(connectable);
 
-  ags_oss_devout_set_flags(oss_devout, AGS_OSS_DEVOUT_ADDED_TO_REGISTRY);
+  /* get oss devout mutex */
+  oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
+
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  oss_devout->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(oss_devout_mutex);
 }
 
 void
@@ -1157,13 +1174,22 @@ ags_oss_devout_remove_from_registry(AgsConnectable *connectable)
 {
   AgsOssDevout *oss_devout;
 
+  GRecMutex *oss_devout_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   oss_devout = AGS_OSS_DEVOUT(connectable);
 
-  ags_oss_devout_unset_flags(oss_devout, AGS_OSS_DEVOUT_ADDED_TO_REGISTRY);
+  /* get oss devout mutex */
+  oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
+
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  oss_devout->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(oss_devout_mutex);
 }
 
 xmlNode*
@@ -1204,10 +1230,19 @@ ags_oss_devout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *oss_devout_mutex;
+
   oss_devout = AGS_OSS_DEVOUT(connectable);
 
+  /* get oss devout mutex */
+  oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
+
   /* check is connected */
-  is_connected = ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_CONNECTED);
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (oss_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(oss_devout_mutex);
   
   return(is_connected);
 }
@@ -1215,15 +1250,24 @@ ags_oss_devout_is_connected(AgsConnectable *connectable)
 void
 ags_oss_devout_connect(AgsConnectable *connectable)
 {
-  AgsOssDevout *oss_devout;
-  
+  AgsOssDevout *oss_devout;  
+
+  GRecMutex *oss_devout_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   oss_devout = AGS_OSS_DEVOUT(connectable);
 
-  ags_oss_devout_set_flags(oss_devout, AGS_OSS_DEVOUT_CONNECTED);
+  /* get oss devout mutex */
+  oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
+
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  oss_devout->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(oss_devout_mutex);
 }
 
 void
@@ -1232,13 +1276,22 @@ ags_oss_devout_disconnect(AgsConnectable *connectable)
 
   AgsOssDevout *oss_devout;
 
+  GRecMutex *oss_devout_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   oss_devout = AGS_OSS_DEVOUT(connectable);
+
+  /* get oss devout mutex */
+  oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
+
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  oss_devout->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_oss_devout_unset_flags(oss_devout, AGS_OSS_DEVOUT_CONNECTED);
+  g_rec_mutex_unlock(oss_devout_mutex);
 }
 
 /**

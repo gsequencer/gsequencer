@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,15 +31,24 @@ void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
 {
-  gtk_widget_show_all((GtkWidget *) effect_bulk->plugin_browser);
+  if(effect_bulk->plugin_browser == NULL){
+    effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new(gtk_widget_get_ancestor(effect_bulk,
+											       AGS_TYPE_WINDOW));
+
+    ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+
+    g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response",
+		     G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
+  }
+  
+  gtk_widget_show((GtkWidget *) effect_bulk->plugin_browser);
 }
 
 void
 ags_effect_bulk_remove_callback(GtkWidget *button,
 				AgsEffectBulk *effect_bulk)
 {
-  GList *start_bulk_member, *bulk_member;
-  GList *children;
+  GList *start_effect_bulk_entry, *effect_bulk_entry;
 
   guint nth;
     
@@ -48,64 +57,53 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
     return;
   }
 
-  bulk_member =
-    start_bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
+  effect_bulk_entry =
+    start_effect_bulk_entry = ags_effect_bulk_get_bulk_member_entry(effect_bulk);
   
   /* iterate bulk member */
-  for(nth = 0; bulk_member != NULL; nth++){
-    children = gtk_container_get_children(GTK_CONTAINER(bulk_member->data));
+  for(nth = 0; effect_bulk_entry != NULL; nth++){
+    if(gtk_check_button_get_active(AGS_EFFECT_BULK_ENTRY(effect_bulk_entry->data)->check_button)){
+      ags_effect_bulk_remove_bulk_member_entry(effect_bulk,
+					       effect_bulk_entry->data);
 
-    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-      gtk_widget_destroy(GTK_WIDGET(bulk_member->data));
-	
+      g_object_run_dispose(effect_bulk_entry->data);
+      g_object_unref(effect_bulk_entry->data);
+      
       /* remove effect */
       ags_effect_bulk_remove_plugin(effect_bulk,
 				    nth);
     }
-
-    g_list_free(children);
     
-    bulk_member = bulk_member->next;
+    effect_bulk_entry = effect_bulk_entry->next;
   }
 
-  g_list_free(start_bulk_member);
+  g_list_free(start_effect_bulk_entry);
 }
 
 void
 ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
-						     gchar *filename, gchar *effect){
-  GtkBox *hbox;
-  GtkCheckButton *check_button;
-  GtkLabel *label;
-
+						     gchar *filename, gchar *effect)
+{
+  AgsEffectBulkEntry *effect_bulk_entry;
+  
   gchar *str;
     
   /* create entry */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start(effect_bulk->bulk_member,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
-      
-  check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) check_button,
-		     FALSE, FALSE,
-		     0);
+  effect_bulk_entry = ags_effect_bulk_entry_new();
 
+  ags_effect_bulk_add_bulk_member_entry(effect_bulk,
+					effect_bulk_entry);
+  
   str = g_strdup_printf("%s - %s",
 			filename,
 			effect);
-  label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
 
+  gtk_label_set_text(effect_bulk_entry->label,
+		     str);
+  
   g_free(str);
     
-  gtk_widget_show_all((GtkWidget *) hbox);
+  gtk_widget_show((GtkWidget *) effect_bulk_entry);
 }
 
 void

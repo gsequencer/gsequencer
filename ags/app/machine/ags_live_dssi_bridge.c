@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_navigation.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
@@ -222,15 +223,56 @@ ags_live_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
-  GtkGrid *grid;
 
   AgsAudio *audio;
 
-  g_signal_connect_after((GObject *) live_dssi_bridge, "parent-set",
-			 G_CALLBACK(ags_live_dssi_bridge_parent_set_callback), (gpointer) live_dssi_bridge);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *machine_name;
+
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_LIVE_DSSI_BRIDGE);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(live_dssi_bridge,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+  
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    live_dssi_bridge);
 
   audio = AGS_MACHINE(live_dssi_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -256,9 +298,6 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   
   AGS_MACHINE(live_dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					   AGS_MACHINE_REVERSE_NOTATION);
-
-  ags_machine_popup_add_connection_options((AgsMachine *) live_dssi_bridge,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   g_signal_connect_after(G_OBJECT(live_dssi_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels), NULL);
@@ -295,55 +334,52 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   live_dssi_bridge->dssi_descriptor = NULL;
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_dssi_bridge),
-		    (GtkWidget *) vbox);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+  
+  gtk_frame_set_child(AGS_MACHINE(live_dssi_bridge)->frame,
+		      (GtkWidget *) vbox);
 
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
   label = (GtkLabel *) gtk_label_new(i18n("program"));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   live_dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) live_dssi_bridge->program,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) live_dssi_bridge->program);
 
   /* effect bridge */
-  AGS_MACHINE(live_dssi_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge,
-		     FALSE, FALSE,
-		     0);
-  
-  grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  AGS_MACHINE(live_dssi_bridge)->bridge = ags_effect_bridge_new(audio);
 
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->parent_machine = live_dssi_bridge;
+
+  gtk_widget_set_hexpand(AGS_MACHINE(live_dssi_bridge)->bridge,
+			 FALSE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge);
+  
   AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 													   AGS_TYPE_INPUT);
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
-												   AGS_EFFECT_BULK_HIDE_ENTRIES |
-												   AGS_EFFECT_BULK_SHOW_LABELS);
+  ags_effect_bulk_set_flags(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input),
+			    (AGS_EFFECT_BULK_HIDE_BUTTONS |
+			     AGS_EFFECT_BULK_HIDE_ENTRIES |
+			     AGS_EFFECT_BULK_SHOW_LABELS));
 
   gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach(AGS_MACHINE(live_dssi_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 		  0, 0,
 		  1, 1);
@@ -380,7 +416,8 @@ ags_live_dssi_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) live_dssi_bridge);
+	  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) live_dssi_bridge,
+							 AGS_TYPE_WINDOW);
 
 	  str = g_strdup_printf("%s %s",
 				i18n("Plugin file not present"),
@@ -491,7 +528,7 @@ ags_live_dssi_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -508,7 +545,7 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

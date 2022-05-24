@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,32 +24,6 @@
 #include <ags/app/ags_navigation.h>
 
 #include <math.h>
-
-void
-ags_matrix_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMatrix *matrix)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
-
-  g_object_set(AGS_MACHINE(matrix),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_MATRIX);
-
-  g_free(str);
-}
 
 void
 ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
@@ -208,7 +182,7 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 
   gboolean loop;
 
-  loop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+  loop = gtk_check_button_get_active(GTK_CHECK_BUTTON(button));
 
   /* play - ags-fx-pattern */
   g_object_get(AGS_MACHINE(matrix)->audio,

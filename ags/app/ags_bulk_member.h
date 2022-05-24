@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,8 +41,11 @@ G_BEGIN_DECLS
 
 #define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
 
-#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.21"
-#define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
+#define AGS_BULK_MEMBER_DEFAULT_VERSION "4.0.0"
+#define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "Mi 04 Mai 2022 08:59:16 UTC"
+
+#define AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH (16)
+#define AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT (7)
 
 typedef struct _AgsBulkMember AgsBulkMember;
 typedef struct _AgsBulkMemberClass AgsBulkMemberClass;
@@ -131,7 +134,10 @@ void ags_bulk_port_free(AgsBulkPort *bulk_port);
 
 GList* ags_bulk_port_find(GList *list, AgsPort *port);
 
+void ags_bulk_member_set_widget(AgsBulkMember *bulk_member,
+				GtkWidget *widget);
 GtkWidget* ags_bulk_member_get_widget(AgsBulkMember *bulk_member);
+
 void ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 			       gchar *label);
 

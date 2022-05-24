@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -260,8 +260,6 @@ ags_oss_devin_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_OSS_DEVIN_ADDED_TO_REGISTRY, "AGS_OSS_DEVIN_ADDED_TO_REGISTRY", "oss-devin-added-to-registry" },
-      { AGS_OSS_DEVIN_CONNECTED, "AGS_OSS_DEVIN_CONNECTED", "oss-devin-connected" },
       { AGS_OSS_DEVIN_INITIALIZED, "AGS_OSS_DEVIN_INITIALIZED", "oss-devin-initialized" },
       { AGS_OSS_DEVIN_START_RECORD, "AGS_OSS_DEVIN_START_RECORD", "oss-devin-start-record" },
       { AGS_OSS_DEVIN_RECORD, "AGS_OSS_DEVIN_RECORD", "oss-devin-record" },
@@ -580,6 +578,7 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
   guint i;
   
   oss_devin->flags = 0;
+  oss_devin->connectable_flags = 0;
 
   /* insert oss_devin mutex */
   g_rec_mutex_init(&(oss_devin->obj_mutex));
@@ -1087,10 +1086,19 @@ ags_oss_devin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *oss_devin_mutex;
+
   oss_devin = AGS_OSS_DEVIN(connectable);
 
-  /* check is added */
-  is_ready = ags_oss_devin_test_flags(oss_devin, AGS_OSS_DEVIN_ADDED_TO_REGISTRY);
+  /* get oss devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  /* check is ready */
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (oss_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(oss_devin_mutex);
   
   return(is_ready);
 }
@@ -1100,13 +1108,22 @@ ags_oss_devin_add_to_registry(AgsConnectable *connectable)
 {
   AgsOssDevin *oss_devin;
 
+  GRecMutex *oss_devin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   oss_devin = AGS_OSS_DEVIN(connectable);
 
-  ags_oss_devin_set_flags(oss_devin, AGS_OSS_DEVIN_ADDED_TO_REGISTRY);
+  /* get oss devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  oss_devin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(oss_devin_mutex);
 }
 
 void
@@ -1114,13 +1131,22 @@ ags_oss_devin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsOssDevin *oss_devin;
 
+  GRecMutex *oss_devin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   oss_devin = AGS_OSS_DEVIN(connectable);
 
-  ags_oss_devin_unset_flags(oss_devin, AGS_OSS_DEVIN_ADDED_TO_REGISTRY);
+  /* get oss devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  oss_devin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(oss_devin_mutex);
 }
 
 xmlNode*
@@ -1161,10 +1187,19 @@ ags_oss_devin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *oss_devin_mutex;
+
   oss_devin = AGS_OSS_DEVIN(connectable);
 
+  /* get oss devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
   /* check is connected */
-  is_connected = ags_oss_devin_test_flags(oss_devin, AGS_OSS_DEVIN_CONNECTED);
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (oss_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(oss_devin_mutex);
   
   return(is_connected);
 }
@@ -1173,6 +1208,8 @@ void
 ags_oss_devin_connect(AgsConnectable *connectable)
 {
   AgsOssDevin *oss_devin;
+
+  GRecMutex *oss_devin_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1180,22 +1217,37 @@ ags_oss_devin_connect(AgsConnectable *connectable)
 
   oss_devin = AGS_OSS_DEVIN(connectable);
 
-  ags_oss_devin_set_flags(oss_devin, AGS_OSS_DEVIN_CONNECTED);
+  /* get oss devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  oss_devin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(oss_devin_mutex);
 }
 
 void
 ags_oss_devin_disconnect(AgsConnectable *connectable)
 {
-
   AgsOssDevin *oss_devin;
+
+  GRecMutex *oss_devin_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   oss_devin = AGS_OSS_DEVIN(connectable);
+
+  /* get oss devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  oss_devin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_oss_devin_unset_flags(oss_devin, AGS_OSS_DEVIN_CONNECTED);
+  g_rec_mutex_unlock(oss_devin_mutex);
 }
 
 /**

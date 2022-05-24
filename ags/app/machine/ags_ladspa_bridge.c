@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_bulk_member.h>
@@ -204,12 +205,53 @@ ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 {
-  GtkGrid *grid;
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
 
   AgsAudio *audio;
 
-  g_signal_connect_after((GObject *) ladspa_bridge, "parent-set",
-			 G_CALLBACK(ags_ladspa_bridge_parent_set_callback), (gpointer) ladspa_bridge);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *machine_name;
+
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_LADSPA_BRIDGE);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(ladspa_bridge,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    ladspa_bridge);
 
   audio = AGS_MACHINE(ladspa_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
@@ -244,28 +286,31 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->effect = NULL;
   ladspa_bridge->effect_index = 0;
 
-  AGS_MACHINE(ladspa_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) ladspa_bridge),
-		    (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
+  AGS_MACHINE(ladspa_bridge)->bridge = ags_effect_bridge_new(audio);
 
-  grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge),
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->parent_machine = ladspa_bridge;
+
+  gtk_frame_set_child(AGS_MACHINE(ladspa_bridge)->frame,
+		      (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
 													AGS_TYPE_INPUT);
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
-												AGS_EFFECT_BULK_HIDE_ENTRIES |
-												AGS_EFFECT_BULK_SHOW_LABELS);
+  ags_effect_bulk_set_flags(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input),
+			    (AGS_EFFECT_BULK_HIDE_BUTTONS |
+			     AGS_EFFECT_BULK_HIDE_ENTRIES |
+			     AGS_EFFECT_BULK_SHOW_LABELS));
 
   gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+			 FALSE);
   
-  gtk_grid_attach(grid,
+  gtk_grid_attach((GtkGrid *) AGS_MACHINE(ladspa_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 		  0, 0,
 		  1, 1);
@@ -301,7 +346,8 @@ ags_ladspa_bridge_set_property(GObject *gobject,
 		      G_FILE_TEST_EXISTS)){
 	AgsWindow *window;
 
-	window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ladspa_bridge);
+	window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) ladspa_bridge,
+						       AGS_TYPE_WINDOW);
 
 	ags_window_show_error(window,
 			      g_strdup_printf("Plugin file not present %s",
@@ -387,15 +433,6 @@ ags_ladspa_bridge_finalize(GObject *gobject)
 
   ladspa_bridge = (AgsLadspaBridge *) gobject;
   
-  g_object_disconnect(G_OBJECT(ladspa_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_ladspa_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_ladspa_bridge_resize_pads),
-		      NULL,
-		      NULL);
-  
   g_free(ladspa_bridge->filename);
   g_free(ladspa_bridge->effect);
 
@@ -406,7 +443,7 @@ ags_ladspa_bridge_finalize(GObject *gobject)
 void
 ags_ladspa_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -416,7 +453,7 @@ ags_ladspa_bridge_connect(AgsConnectable *connectable)
 void
 ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

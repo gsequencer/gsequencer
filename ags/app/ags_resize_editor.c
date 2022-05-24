@@ -82,7 +82,7 @@ ags_resize_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_resize_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
+    ags_type_resize_editor = g_type_register_static(GTK_TYPE_GRID,
 						    "AgsResizeEditor",
 						    &ags_resize_editor_info,
 						    0);
@@ -132,11 +132,28 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   GtkGrid *grid;
   GtkLabel *label;
 
+  resize_editor->enabled = gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_grid_attach((GtkGrid *) resize_editor,
+		  (GtkWidget *) resize_editor->enabled,
+		  0, 0,
+		  1, 1);
+  
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(GTK_BOX(resize_editor),
-		     GTK_WIDGET(grid),
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_valign((GtkWidget *) grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_grid_attach((GtkGrid *) resize_editor,
+		  (GtkWidget *) grid,
+		  0, 1,
+		  1, 1);
 
   /* audio channels */
   label = (GtkLabel *) gtk_label_new(i18n("audio channels count"));
@@ -226,13 +243,29 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 void
 ags_resize_editor_connect(AgsConnectable *connectable)
 {
-  ags_resize_editor_parent_connectable_interface->connect(connectable);
+  AgsResizeEditor *resize_editor;
+
+  resize_editor = AGS_RESIZE_EDITOR(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (resize_editor->connectable_flags)) != 0){
+    return;
+  }
+
+  resize_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 }
 
 void
 ags_resize_editor_disconnect(AgsConnectable *connectable)
 {
-  ags_resize_editor_parent_connectable_interface->disconnect(connectable);
+  AgsResizeEditor *resize_editor;
+
+  resize_editor = AGS_RESIZE_EDITOR(connectable);
+
+  if((AGS_CONNECTABLE_CONNECTED & (resize_editor->connectable_flags)) == 0){
+    return;
+  }
+  
+  resize_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 }
 
 void
@@ -257,7 +290,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
-  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0){
+  if(!gtk_check_button_get_active(resize_editor->enabled)){
     return;
   }
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,11 +70,11 @@ void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
 
 void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
 				  AgsOscBuilderBundle *bundle,
-				  unsigned char *data,
+				  guchar *data,
 				  gsize *offset);
 void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
 				   AgsOscBuilderMessage *message,
-				   unsigned char *data,
+				   guchar *data,
 				   gsize *offset);
 
 /**
@@ -422,16 +422,16 @@ ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
     new_data_allocated_length = message->data_allocated_length + AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE;
 
     if(message->data == NULL){
-      message->data = (unsigned char *) malloc(AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+      message->data = (guchar *) malloc(AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
       memset(message->data,
 	     0,
-	     AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+	     AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     }else{
-      message->data = (unsigned char *) realloc(message->data,
-						new_data_allocated_length * sizeof(unsigned char));
+      message->data = (guchar *) realloc(message->data,
+						new_data_allocated_length * sizeof(guchar));
       memset(message->data + (new_data_allocated_length - AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE),
 	     0,
-	     AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+	     AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     }
 
     message->data_allocated_length = new_data_allocated_length;
@@ -921,7 +921,7 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
     break;
   case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
     {
-      unsigned char *data;
+      guchar *data;
       
       gint32 data_size;
 
@@ -1146,7 +1146,7 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
 			     AgsOscBuilderBundle *current_bundle,
-			     unsigned char *data,
+			     guchar *data,
 			     gsize *offset)
 {
   GList *message_start, *message;
@@ -1206,7 +1206,7 @@ ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
 			      AgsOscBuilderMessage *message,
-			      unsigned char *data,
+			      guchar *data,
 			      gsize *offset)
 {
   guint64 address_pattern_length;
@@ -1233,7 +1233,7 @@ ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
   /* data */
   memcpy(data + offset[0],
 	 message->data,
-	 message->data_length * sizeof(unsigned char));
+	 message->data_length * sizeof(guchar));
 
   offset[0] += message->data_length;
 }
@@ -1251,7 +1251,7 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
 {
   GList *packet_start, *packet;
 
-  unsigned char *data;
+  guchar *data;
 
   gsize data_length;
   gsize offset;
@@ -1276,12 +1276,12 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
     
     /* re-allocate data */
     if(data == NULL){
-      data = (unsigned char *) malloc((4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size) * sizeof(unsigned char));
+      data = (guchar *) malloc((4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size) * sizeof(guchar));
       
       data_length = 4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size;
     }else{
-      data = (unsigned char *) realloc(data,
-				       (data_length + 4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size) * sizeof(unsigned char));
+      data = (guchar *) realloc(data,
+				       (data_length + 4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size) * sizeof(guchar));
 
       data_length += (4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size);
     }

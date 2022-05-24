@@ -110,7 +110,7 @@ struct _AgsLiveVst3Bridge
   gpointer ns_window;
   gpointer ns_view;
   
-  GtkMenu *vst3_menu;
+  GMenu *vst3_menu;
 
   GHashTable *block_control;
 };

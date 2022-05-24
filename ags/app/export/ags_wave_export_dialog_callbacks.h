@@ -44,9 +44,6 @@ int ags_wave_export_dialog_apply_callback(GtkWidget *widget, AgsWaveExportDialog
 int ags_wave_export_dialog_ok_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
 int ags_wave_export_dialog_cancel_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
 
-gboolean ags_wave_export_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
-					     AgsWaveExportDialog *wave_export_dialog);
-
 G_END_DECLS
 
 #endif /*__AGS_WAVE_EXPORT_DIALOG_CALLBACKS_H__*/

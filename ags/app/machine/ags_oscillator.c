@@ -20,6 +20,8 @@
 #include <ags/app/machine/ags_oscillator.h>
 #include <ags/app/machine/ags_oscillator_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
@@ -133,7 +135,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   GtkGrid *grid;
   GtkBox *hbox;
   GtkBox *sync_box;
-
+  GtkLabel *label;
+  
   GtkCellRenderer *cell_renderer;
 
   GtkListStore *model;
@@ -146,24 +149,43 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   config = ags_config_get_instance();
   
-  oscillator->flags = 0;
+  oscillator->flags = 0;  
+  oscillator->connectable_flags = 0;
 
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) oscillator,
-		    (GtkWidget *) grid);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_frame_set_child((GtkFrame *) oscillator,
+		      (GtkWidget *) grid);
 
   samplerate = ags_soundcard_helper_config_get_samplerate(config);
-  
-  /* wave */
+
+  oscillator->selector = (GtkCheckButton *) gtk_check_button_new();
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("wave")),
+		  (GtkWidget *) oscillator->selector,
 		  0, 0,
+		  1, 1);
+    
+  /* wave */
+  label = (GtkLabel *) gtk_label_new(i18n("wave"));
+  
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  1, 0,
 		  1, 1);
 
   oscillator->wave = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->wave,
-		  1, 0,
+		  2, 0,
 		  1, 1);
 
   cell_renderer = gtk_cell_renderer_text_new();
@@ -182,7 +204,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		     0, "sin",
 		     -1);
 
-  /*  gtk_list_store_append(model, &iter);
+  /* gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
 		     0, "cos",
 		     -1);  */
@@ -211,48 +233,69 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_combo_box_set_active(oscillator->wave, 0);
 
   /* attack */
+  label = (GtkLabel *) gtk_label_new(i18n("attack"));
+  
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("attack")),
-		  2, 0,
+		  (GtkWidget *) label,
+		  3, 0,
 		  1, 1);
 
   oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   gtk_spin_button_set_value(oscillator->attack, 0.0);
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->attack,
-		  3, 0,
+		  4, 0,
 		  1, 1);
 
   /* length */
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("length")),
-		  4, 0,
+		  (GtkWidget *) label,
+		  5, 0,
 		  1, 1);
   
   oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   gtk_spin_button_set_value(oscillator->frame_count,
 			    AGS_OSCILLATOR_DEFAULT_FRAME_COUNT * ((gdouble) samplerate / AGS_OSCILLATOR_DEFAULT_SAMPLERATE));
   gtk_grid_attach(grid,
-		  (GtkWidget *) oscillator->frame_count, 5, 0,
+		  (GtkWidget *) oscillator->frame_count,
+		  6, 0,
 		  1, 1);
 
   /* phase */
+  label = (GtkLabel *) gtk_label_new(i18n("phase"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("phase")),
-		  0, 1,
+		  (GtkWidget *) label,
+		  1, 1,
 		  1, 1);
   
   oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   gtk_spin_button_set_value(oscillator->phase, 0.0);
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->phase,
-		  1, 1,
+		  2, 1,
 		  1, 1);
 
   /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("frequency"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("frequency")),
-		  2, 1,
+		  (GtkWidget *) label,
+		  3, 1,
 		  1, 1);
   
   oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 100000.0, 1.0);
@@ -261,13 +304,18 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_spin_button_set_value(oscillator->frequency, 27.5);
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->frequency,
-		  3, 1,
+		  4, 1,
 		  1, 1);
 
   /* volume */
+  label = (GtkLabel *) gtk_label_new(i18n("volume"));
+  
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_START);
+
   gtk_grid_attach(grid,
-		  (GtkWidget *) gtk_label_new(i18n("volume")),
-		  4, 1,
+		  (GtkWidget *) label,
+		  5, 1,
 		  1, 1);
   
   oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
@@ -276,21 +324,25 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_spin_button_set_value(oscillator->volume, 0.2);
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->volume,
-		  5, 1,
+		  6, 1,
 		  1, 1);
 
   /* do sync */
   oscillator->do_sync = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("sync"));
   gtk_grid_attach(grid,
 		  (GtkWidget *) oscillator->do_sync,
-		  6, 0,
+		  7, 0,
 		  1, 1);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
+
+  gtk_box_set_spacing(hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_grid_attach(grid,
 		  (GtkWidget *) hbox,
-		  6, 1,
+		  7, 1,
 		  1, 1);
 
   oscillator->sync_point_count = AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT; 
@@ -299,22 +351,20 @@ ags_oscillator_init(AgsOscillator *oscillator)
   for(i = 0; i < oscillator->sync_point_count; i++){
     sync_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				      0);
-    gtk_box_pack_start(hbox,
-		       (GtkWidget *) sync_box,
-		       FALSE, FALSE,
-		       0);
+
+    gtk_box_set_spacing(sync_box,
+			AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+    gtk_box_append(hbox,
+		   (GtkWidget *) sync_box);
     
     oscillator->sync_point[2 * i] = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-    gtk_box_pack_start(sync_box,
-		       (GtkWidget *) oscillator->sync_point[2 * i],
-		       FALSE, FALSE,
-		       0);
+    gtk_box_append(sync_box,
+		   (GtkWidget *) oscillator->sync_point[2 * i]);
 
     oscillator->sync_point[2 * i + 1] = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-    gtk_box_pack_start(sync_box,
-		       (GtkWidget *) oscillator->sync_point[2 * i + 1],
-		       FALSE, FALSE,
-		       0);
+    gtk_box_append(sync_box,
+		   (GtkWidget *) oscillator->sync_point[2 * i + 1]);
   }
 }
 
@@ -327,11 +377,11 @@ ags_oscillator_connect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
-  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (oscillator->connectable_flags)) != 0){
     return;
   }
 
-  oscillator->flags |= AGS_OSCILLATOR_CONNECTED;
+  oscillator->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(G_OBJECT(oscillator->wave), "changed",
 		   G_CALLBACK(ags_oscillator_wave_callback), oscillator);
@@ -369,11 +419,11 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
-  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (oscillator->connectable_flags)) == 0){
     return;
   }
 
-  oscillator->flags &= (~AGS_OSCILLATOR_CONNECTED);
+  oscillator->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect((GObject *) oscillator->wave,
 		      "any_signal::changed",

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_generic_pitch_util.h>
 #include <ags/audio/ags_sfz_synth_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
@@ -201,13 +200,11 @@ ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generato
    * 
    * Since: 3.9.0
    */
-  param_spec = g_param_spec_uint("pitch-type",
-				 i18n_pspec("using pitch type"),
-				 i18n_pspec("The pitch type to be used"),
-				 0,
-				 G_MAXUINT32,
-				 AGS_FLUID_4TH_ORDER_INTERPOLATE,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_string("pitch-type",
+				   i18n_pspec("using pitch type"),
+				   i18n_pspec("The pitch type to be used"),
+				   AGS_SFZ_SYNTH_GENERATOR_DEFAULT_PITCH_TYPE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PITCH_TYPE,
 				  param_spec);
@@ -340,15 +337,15 @@ ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generato
 				  param_spec);
 
   /**
-   * AgsSFZSynthGenerator:base_key:
+   * AgsSFZSynthGenerator:base-key:
    *
-   * The base_key to be used.
+   * The base key to be used.
    * 
    * Since: 3.4.0
    */
-  param_spec = g_param_spec_double("base_key",
-				   i18n_pspec("using base_key"),
-				   i18n_pspec("The base_key to be used"),
+  param_spec = g_param_spec_double("base-key",
+				   i18n_pspec("using base key"),
+				   i18n_pspec("The base key to be used"),
 				   -65535.0,
 				   65535.0,
 				   AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BASE_KEY,
@@ -378,7 +375,7 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
   sfz_synth_generator->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   sfz_synth_generator->format = ags_soundcard_helper_config_get_format(config);
 
-  sfz_synth_generator->pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+  sfz_synth_generator->pitch_type = g_strdup(AGS_SFZ_SYNTH_GENERATOR_DEFAULT_PITCH_TYPE);
   
   /* more base init */
   sfz_synth_generator->frame_count = 0;
@@ -393,11 +390,7 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
   sfz_synth_generator->base_key = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sfz_synth_generator->tuning = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_TUNING;
 
-  sfz_synth_generator->sfz = (AgsSFZ *) g_new0(AgsSFZ,
-					       1);
-
-  sfz_synth_generator->sfz->generic_pitch = (gpointer) g_new0(AgsGenericPitch,
-							      1);
+  sfz_synth_generator->sfz_synth_util = ags_sfz_synth_util_alloc();
 
   /* timestamp */
   sfz_synth_generator->timestamp = NULL;
@@ -475,9 +468,9 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
   break;
   case PROP_PITCH_TYPE:
   {
-    guint pitch_type;
+    gchar *pitch_type;
       
-    pitch_type = g_value_get_uint(value);
+    pitch_type = g_value_get_string(value);
 
     ags_sfz_synth_generator_set_pitch_type(sfz_synth_generator,
 					   pitch_type);
@@ -644,7 +637,7 @@ ags_sfz_synth_generator_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(sfz_synth_generator_mutex);    
 
-    g_value_set_uint(value, sfz_synth_generator->pitch_type);
+    g_value_set_string(value, sfz_synth_generator->pitch_type);
 
     g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
@@ -1006,13 +999,13 @@ ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, gu
  * 
  * Since: 3.9.0
  */
-guint
+gchar*
 ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator)
 {
-  guint pitch_type;
+  gchar *pitch_type;
   
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
-    return(0);
+    return(NULL);
   }
 
   g_object_get(sfz_synth_generator,
@@ -1032,7 +1025,7 @@ ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator
  * Since: 3.9.0
  */
 void
-ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, guint pitch_type)
+ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, gchar *pitch_type)
 {
   GRecMutex *sfz_synth_generator_mutex;
 
@@ -1045,7 +1038,7 @@ ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator
 
   g_rec_mutex_lock(sfz_synth_generator_mutex);
 
-  sfz_synth_generator->pitch_type = pitch_type;
+  sfz_synth_generator->pitch_type = g_strdup(pitch_type);
 
   g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
@@ -1646,43 +1639,46 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   }
 #endif
 
-#if 0
-  ags_sfz_synth_util_copy(buffer,
-			  frame_count,
-			  sfz_sample,
-			  (gdouble) note,
-			  volume,
-			  samplerate, audio_buffer_util_format,
-			  0, frame_count,
-			  AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
-			  0, 0);
-#else
   g_rec_mutex_lock(sfz_synth_generator_mutex);
   
-  sfz_synth_generator->sfz->note = note;
-  
-  sfz_synth_generator->sfz->volume = volume;
+  ags_sfz_synth_util_set_sfz_file(sfz_synth_generator->sfz_synth_util,
+				  audio_container);
 
-  sfz_synth_generator->sfz->samplerate = samplerate;
+  ags_sfz_synth_util_set_source(sfz_synth_generator->sfz_synth_util,
+				buffer);
+  ags_sfz_synth_util_set_source_stride(sfz_synth_generator->sfz_synth_util,
+				       1);
 
-  sfz_synth_generator->sfz->offset = 0;
-  sfz_synth_generator->sfz->n_frames = frame_count;
+  ags_sfz_synth_util_set_buffer_length(sfz_synth_generator->sfz_synth_util,
+				       frame_count);
 
-  sfz_synth_generator->sfz->loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE;
-  
-  sfz_synth_generator->sfz->loop_start = 0;
-  sfz_synth_generator->sfz->loop_end = 0;
+  ags_sfz_synth_util_set_format(sfz_synth_generator->sfz_synth_util,
+				format);
 
-  AGS_GENERIC_PITCH(sfz_synth_generator->sfz->generic_pitch)->pitch_type = sfz_synth_generator->pitch_type;
+  ags_sfz_synth_util_set_samplerate(sfz_synth_generator->sfz_synth_util,
+				    samplerate);
   
-  ags_sfz_util_copy(sfz_synth_generator->sfz,
-		    buffer,
-		    frame_count,
-		    sfz_sample,
-		    audio_buffer_util_format);
+  ags_sfz_synth_util_set_note(sfz_synth_generator->sfz_synth_util,
+			      note);
+
+  ags_sfz_synth_util_set_volume(sfz_synth_generator->sfz_synth_util,
+				volume);
+
+  ags_sfz_synth_util_set_frame_count(sfz_synth_generator->sfz_synth_util,
+				     frame_count);
+
+  ags_sfz_synth_util_set_offset(sfz_synth_generator->sfz_synth_util,
+				0);
   
+  ags_sfz_synth_util_set_loop_start(sfz_synth_generator->sfz_synth_util,
+				    0);
+
+  ags_sfz_synth_util_set_loop_end(sfz_synth_generator->sfz_synth_util,
+				  0);
+
+  ags_sfz_synth_util_compute(sfz_synth_generator->sfz_synth_util);
+
   g_rec_mutex_unlock(sfz_synth_generator_mutex);    
-#endif
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);

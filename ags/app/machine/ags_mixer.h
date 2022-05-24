@@ -55,8 +55,6 @@ struct _AgsMixer
 
   AgsRecallContainer *peak_play_container;
   AgsRecallContainer *peak_recall_container;
-
-  GtkBox *input_pad;
 };
 
 struct _AgsMixerClass

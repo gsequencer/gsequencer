@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_notation_editor.h>
 
 #include <ags/i18n.h>
 
@@ -68,6 +67,8 @@ enum{
 
 static gpointer ags_navigation_parent_class = NULL;
 static guint navigation_signals[LAST_SIGNAL];
+
+GHashTable *ags_navigation_duration_queue_draw = NULL;
 
 GType
 ags_navigation_get_type(void)
@@ -193,186 +194,173 @@ ags_navigation_init(AgsNavigation *navigation)
   
   /* GtkWidget */  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start((GtkBox *) navigation,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) navigation,
+		 (GtkWidget *) hbox);
 
-  navigation->expander_image = gtk_image_new_from_icon_name("pan-down",
-							    GTK_ICON_SIZE_LARGE_TOOLBAR);
-  
   navigation->expander = (GtkToggleButton *) gtk_toggle_button_new();
+
+  gtk_button_set_icon_name((GtkButton *) navigation->expander,
+			   "pan-down");  
   gtk_widget_set_name((GtkWidget *) navigation->expander,
 		      "ags-navigation-expander");
-  gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->expander,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
-  gtk_container_add((GtkContainer *) navigation->expander,
-		    (GtkWidget *) navigation->expander_image);
+  
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->expander);
   
   label = (GtkLabel *) gtk_label_new(i18n("bpm"));
-  gtk_box_pack_start((GtkBox*) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
-  navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 1000.0, 1.0);
-  gtk_spin_button_set_value(navigation->bpm, 120.0);
-  gtk_box_pack_start((GtkBox*) hbox,
-		     (GtkWidget *) navigation->bpm,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0,
+								     1000.0,
+								     1.0);
+
+  gtk_spin_button_set_value(navigation->bpm,
+			    AGS_NAVIGATION_DEFAULT_BPM);
+
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->bpm);
 
   navigation->current_bpm = 120.0;
 
   navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
-							"image", (GtkWidget *) gtk_image_new_from_icon_name("media-skip-backward",
-													    GTK_ICON_SIZE_LARGE_TOOLBAR),
+							"icon-name", "media-skip-backward",
+							"has-tooltip", TRUE,
+							"tooltip-text", i18n("skip backward"),
 							NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->rewind,
-		     FALSE, FALSE,
-		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->rewind);
 
   navigation->previous = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						    "image", (GtkWidget *) gtk_image_new_from_icon_name("media-seek-backward",
-													GTK_ICON_SIZE_LARGE_TOOLBAR),
+						    "icon-name", "media-seek-backward",
+						    "has-tooltip", TRUE,
+						    "tooltip-text", i18n("seek backward"),
 						    NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->previous,
-		     FALSE, FALSE,
-		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->previous);
 
   navigation->play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-						      "image", (GtkWidget *) gtk_image_new_from_icon_name("media-playback-start",
-													  GTK_ICON_SIZE_LARGE_TOOLBAR),
+						      "icon-name", "media-playback-start",
+						      "has-tooltip", TRUE,
+						      "tooltip-text", i18n("playback"),
 						      NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->play,
-		     FALSE, FALSE,
-		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->play);
 
   navigation->stop = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						"image", (GtkWidget *) gtk_image_new_from_icon_name("media-playback-stop",
-												    GTK_ICON_SIZE_LARGE_TOOLBAR),
+						"icon-name", "media-playback-stop",
+						"has-tooltip", TRUE,
+						"tooltip-text", i18n("stop"),
 						NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->stop,
-		     FALSE, FALSE,
-		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->stop);
 
   navigation->next = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						"image", (GtkWidget *) gtk_image_new_from_icon_name("media-seek-forward",
-												    GTK_ICON_SIZE_LARGE_TOOLBAR),
+						"icon-name", "media-seek-forward",
+						"has-tooltip", TRUE,
+						"tooltip-text", i18n("seek forward"),
 						NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->next,
-		     FALSE, FALSE,
-		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->next);
 
   navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
-							 "image", (GtkWidget *) gtk_image_new_from_icon_name("media-skip-forward",
-													     GTK_ICON_SIZE_LARGE_TOOLBAR),
+							 "icon-name", "media-skip-forward",
+							 "has-tooltip", TRUE,
+							 "tooltip-text", i18n("skip forward"),
 							 NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->forward,
-		     FALSE, FALSE,
-		     AGS_NAVIGATION_MEDIA_CONTROL_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->forward);
 
   navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("loop"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->loop,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->loop);
 
   label = (GtkLabel *) gtk_label_new("position");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
-  navigation->position_time = (GtkLabel *) gtk_label_new("00:00.000");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->position_time,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  navigation->position_time = (GtkLabel *) gtk_label_new(AGS_NAVIGATION_DURATION_ZERO);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->position_time);
 
-  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->position_tact,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									       (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT,
+									       1.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->position_tact);
 
 
   label = (GtkLabel *) gtk_label_new("duration");
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
   navigation->duration_time = (GtkLabel *) gtk_label_new(NULL);
   g_object_set(navigation->duration_time,
-	       "label", "0000:00.000",
+	       "label", AGS_NAVIGATION_DURATION_ZERO,
 	       NULL);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
-  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->duration_time);
+
+  if(ags_navigation_duration_queue_draw == NULL){
+    ags_navigation_duration_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							       NULL,
+							       NULL);
+  }
+
+  g_hash_table_insert(ags_navigation_duration_queue_draw,
+		      navigation, ags_navigation_duration_time_queue_draw_timeout);
+  
+  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0),
+		(GSourceFunc) ags_navigation_duration_time_queue_draw_timeout,
+		(gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
-  //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
+  //  gtk_box_append(hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
 
   /* expansion */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  //  GTK_WIDGET_SET_FLAGS((GtkWidget *) hbox, GTK_NO_SHOW_ALL);
-  gtk_box_pack_start((GtkBox *) navigation,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  navigation->expansion_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					  AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(navigation,
+		 (GtkWidget *) navigation->expansion_box);
 
   label = (GtkLabel *) gtk_label_new(i18n("loop L"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) label);
 
-  navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->loop_left_tact,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										65000.0,
+										1.0);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) navigation->loop_left_tact);
 
   label = (GtkLabel *) gtk_label_new(i18n("loop R"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) label);
 
-  navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
+  navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										 65000.0,
+										 1.0);
   gtk_spin_button_set_value(navigation->loop_right_tact,
 			    4.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->loop_right_tact,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) navigation->loop_right_tact);
 
   navigation->scroll = NULL;
   /*
-  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-scroll"));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
-			       FALSE);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
+    navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-scroll"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
+    FALSE);
+    gtk_box_append(navigation->expansion_box, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
   */
   
   navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) navigation->exclude_sequencer,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_check_button_set_active(navigation->exclude_sequencer,
+			      TRUE);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) navigation->exclude_sequencer);
 }
 
 void
@@ -440,6 +428,13 @@ ags_navigation_get_property(GObject *gobject,
 void
 ags_navigation_finalize(GObject *gobject)
 {
+  AgsNavigation *navigation;
+  
+  navigation = AGS_NAVIGATION(gobject);
+
+  g_hash_table_remove(ags_navigation_duration_queue_draw,
+		      navigation);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_navigation_parent_class)->finalize(gobject);
 }
@@ -457,7 +452,7 @@ ags_navigation_connect(AgsConnectable *connectable)
 
   navigation->flags |= AGS_NAVIGATION_CONNECTED;
   
-  g_signal_connect((GObject *) navigation->expander, "clicked",
+  g_signal_connect((GObject *) navigation->expander, "toggled",
 		   G_CALLBACK(ags_navigation_expander_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->bpm, "value-changed",
@@ -469,7 +464,7 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->previous, "clicked",
 		   G_CALLBACK(ags_navigation_prev_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->play, "clicked",
+  g_signal_connect((GObject *) navigation->play, "toggled",
 		   G_CALLBACK(ags_navigation_play_callback), (gpointer) navigation);
 
   g_signal_connect((GObject *) navigation->stop, "clicked",
@@ -481,7 +476,7 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->forward, "clicked",
 		   G_CALLBACK(ags_navigation_forward_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->loop, "clicked",
+  g_signal_connect((GObject *) navigation->loop, "toggled",
 		   G_CALLBACK(ags_navigation_loop_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->position_tact, "value-changed",
@@ -521,68 +516,68 @@ ags_navigation_disconnect(AgsConnectable *connectable)
   navigation->flags &= (~AGS_NAVIGATION_CONNECTED);
   
   g_object_disconnect((GObject *) navigation->expander,
-		      "clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_navigation_expander_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->bpm,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_bpm_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->rewind,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_rewind_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->previous,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_prev_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->play,
-		      "clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_navigation_play_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->stop,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_stop_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->next,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_next_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->forward,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_navigation_forward_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->loop,
-		      "clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_navigation_loop_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->position_tact,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_position_tact_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   if(navigation->soundcard != NULL){
     g_object_disconnect(navigation->soundcard,
-			"stop",
+			"any_signal::stop",
 			G_CALLBACK(ags_navigation_soundcard_stop_callback),
 			(gpointer) navigation,
 			NULL);
@@ -590,13 +585,13 @@ ags_navigation_disconnect(AgsConnectable *connectable)
   
   /* expansion */
   g_object_disconnect((GObject *) navigation->loop_left_tact,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_loop_left_tact_callback),
 		      (gpointer) navigation,
 		      NULL);
 
   g_object_disconnect((GObject *) navigation->loop_right_tact,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_loop_right_tact_callback),
 		      (gpointer) navigation,
 		      NULL);
@@ -889,34 +884,39 @@ ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 }
 
 gboolean
-ags_navigation_duration_time_queue_draw(GtkWidget *widget)
+ags_navigation_duration_time_queue_draw_timeout(GtkWidget *widget)
 {
-  AgsNavigation *navigation;
+  if(g_hash_table_lookup(ags_navigation_duration_queue_draw,
+			 widget) != NULL){      
+    AgsNavigation *navigation;
 
-  AgsApplicationContext *application_context;
+    AgsApplicationContext *application_context;
 
-  GObject *default_soundcard;
+    GObject *default_soundcard;
 
-  gchar *str;
+    gchar *str;
 
-  navigation = AGS_NAVIGATION(widget);
+    navigation = AGS_NAVIGATION(widget);
 
-  application_context = ags_application_context_get_instance();
+    application_context = ags_application_context_get_instance();
 
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+    default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  if(default_soundcard != NULL){
-    str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
+    if(default_soundcard != NULL){
+      str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
     
-    g_object_set(navigation->duration_time,
-		 "label", str,
-		 NULL);
-    g_free(str);
+      g_object_set(navigation->duration_time,
+		   "label", str,
+		   NULL);
+      g_free(str);
   
-    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+      gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+    }
+  
+    return(TRUE);
   }
   
-  return(TRUE);
+  return(FALSE);
 }
 
 /**

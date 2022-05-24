@@ -22,8 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_automation_window.h>
-#include <ags/app/ags_automation_editor.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/app/editor/ags_automation_edit.h>
@@ -35,12 +33,13 @@ void ags_ramp_acceleration_dialog_connectable_interface_init(AgsConnectableInter
 void ags_ramp_acceleration_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_dialog);
 void ags_ramp_acceleration_dialog_finalize(GObject *gobject);
+
 void ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable);
 void ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_ramp_acceleration_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable);
 void ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable);
-gboolean ags_ramp_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_ramp_acceleration_dialog
@@ -108,7 +107,6 @@ void
 ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acceleration_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_ramp_acceleration_dialog_parent_class = g_type_class_peek_parent(ramp_acceleration_dialog);
 
@@ -116,11 +114,6 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
   gobject = (GObjectClass *) ramp_acceleration_dialog;
 
   gobject->finalize = ags_ramp_acceleration_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) ramp_acceleration_dialog;
-
-  widget->delete_event = ags_ramp_acceleration_dialog_delete_event;
 }
 
 void
@@ -143,43 +136,39 @@ ags_ramp_acceleration_dialog_applicable_interface_init(AgsApplicableInterface *a
 void
 ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  ramp_acceleration_dialog->flags = 0;
+  ramp_acceleration_dialog->connectable_flags = 0;
 
   g_object_set(ramp_acceleration_dialog,
 	       "title", i18n("ramp accelerations"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(ramp_acceleration_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(ramp_acceleration_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(ramp_acceleration_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* automation */
   ramp_acceleration_dialog->port = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->port),
-		     FALSE, FALSE,
-		     0);  
+  gtk_box_append(vbox,
+		 GTK_WIDGET(ramp_acceleration_dialog->port));  
   
   /* ramp x0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* ramp x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("ramp x0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* ramp x0 - spin button */
   ramp_acceleration_dialog->ramp_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -189,24 +178,19 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 			     2);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_x0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->ramp_x0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_acceleration_dialog->ramp_x0));
 
   /* ramp y0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* ramp y0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("ramp y0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* ramp y0 - spin button */
   ramp_acceleration_dialog->ramp_y0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -214,24 +198,19 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 										       0.001);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_y0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->ramp_y0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_acceleration_dialog->ramp_y0));
   
   /* ramp x1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* ramp x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("ramp x1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* ramp x1 - spin button */
   ramp_acceleration_dialog->ramp_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -241,24 +220,19 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 			     2);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_x1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->ramp_x1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_acceleration_dialog->ramp_x1));
 
   /* ramp y1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* ramp y1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("ramp y1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* ramp y1 - spin button */
   ramp_acceleration_dialog->ramp_y1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -266,24 +240,19 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 										       0.001);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_y1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->ramp_y1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_acceleration_dialog->ramp_y1));
 
   /* ramp step count - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* ramp step count - label */
   label = (GtkLabel *) gtk_label_new(i18n("ramp step count"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* ramp step count - spin button */
   ramp_acceleration_dialog->ramp_step_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -291,10 +260,8 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 											       1.0);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_step_count,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->ramp_step_count),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_acceleration_dialog->ramp_step_count));
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) ramp_acceleration_dialog,
@@ -308,25 +275,22 @@ void
 ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;  
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   AgsApplicationContext *application_context;
   
-  gboolean use_composite_editor;
-  
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_RAMP_ACCELERATION_DIALOG_CONNECTED & (ramp_acceleration_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (ramp_acceleration_dialog->connectable_flags)) != 0){
     return;
   }
 
-  ramp_acceleration_dialog->flags |= AGS_RAMP_ACCELERATION_DIALOG_CONNECTED;
+  ramp_acceleration_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-  
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   g_signal_connect(ramp_acceleration_dialog, "response",
@@ -336,45 +300,31 @@ ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_ramp_acceleration_dialog_port_callback), ramp_acceleration_dialog);
 
   /* machine changed */
-  if(use_composite_editor){
-     AgsCompositeEditor *composite_editor;
-    
-    composite_editor = window->composite_editor;
-    
-    g_signal_connect_after(composite_editor, "machine-changed",
-			   G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback), ramp_acceleration_dialog);
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-    
-    g_signal_connect_after(automation_editor, "machine-changed",
-			   G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback), ramp_acceleration_dialog);
-  }
+  composite_editor = window->composite_editor;
+  
+  g_signal_connect_after(composite_editor, "machine-changed",
+			 G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback), ramp_acceleration_dialog);
 }
 
 void
 ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
 {
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   AgsApplicationContext *application_context;
-  
-  gboolean use_composite_editor;
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_RAMP_ACCELERATION_DIALOG_CONNECTED & (ramp_acceleration_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (ramp_acceleration_dialog->connectable_flags)) == 0){
     return;
   }
 
-  ramp_acceleration_dialog->flags &= (~AGS_RAMP_ACCELERATION_DIALOG_CONNECTED);
+  ramp_acceleration_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* application context */
   application_context = ags_application_context_get_instance();
-
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
@@ -390,28 +340,14 @@ ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
 		      ramp_acceleration_dialog,
 		      NULL);
 
-  /* machine changed */
-  if(use_composite_editor){
-     AgsCompositeEditor *composite_editor;
+  /* machine changed */    
+  composite_editor = window->composite_editor;
     
-    composite_editor = window->composite_editor;
-    
-    g_object_disconnect(G_OBJECT(composite_editor),
-			"any_signal::machine-changed",
-			G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback),
-			ramp_acceleration_dialog,
-			NULL);
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-    
-    g_object_disconnect(G_OBJECT(automation_editor),
-			"any_signal::machine-changed",
-			G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback),
-			ramp_acceleration_dialog,
-			NULL);
-  }
+  g_object_disconnect(G_OBJECT(composite_editor),
+		      "any_signal::machine-changed",
+		      G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback),
+		      ramp_acceleration_dialog,
+		      NULL);
 }
 
 void
@@ -435,6 +371,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 {
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
   AgsAutomationEdit *focused_automation_edit;
@@ -454,7 +391,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   
   GType channel_type;
 
-  gboolean use_composite_editor;
   gdouble gui_y;
   gdouble tact;
   
@@ -478,56 +414,21 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
-
-  notebook = NULL;
-
-  channel_type = G_TYPE_NONE;
-  
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));  
     
-    composite_editor = window->composite_editor;
+  composite_editor = window->composite_editor;
 
-    machine = composite_editor->selected_machine;
+  machine = composite_editor->selected_machine;
 
-    focused_automation_edit = composite_editor->automation_edit->focused_edit;
+  focused_automation_edit = composite_editor->automation_edit->focused_edit;
 
-    if(focused_automation_edit == NULL){
-      return;
-    }
-    
-    notebook = composite_editor->automation_edit->channel_selector;
-
-    channel_type = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type;
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-
-    machine = automation_editor->selected_machine;
-
-    focused_automation_edit = automation_editor->focused_automation_edit;
-
-    if(focused_automation_edit == NULL){
-      return;
-    }
-    
-    if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
-      notebook = NULL;
-      channel_type = G_TYPE_NONE;
-    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-      notebook = automation_editor->output_notebook;
-      channel_type = AGS_TYPE_OUTPUT;
-    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-      notebook = automation_editor->input_notebook;
-      channel_type = AGS_TYPE_INPUT;
-    }
+  if(focused_automation_edit == NULL){
+    return;
   }
+    
+  notebook = composite_editor->automation_edit->channel_selector;
+
+  channel_type = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type;
   
   if(machine == NULL){
     return;
@@ -979,6 +880,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 {
   AgsWindow *window;
   AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   AgsAudio *audio;
@@ -991,33 +893,18 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 
   gchar **collected_specifier;
 
-  gboolean use_composite_editor;
   guint length;
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
 
   /* application context */
   application_context = ags_application_context_get_instance();
-
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
-
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
     
-    composite_editor = window->composite_editor;
+  composite_editor = window->composite_editor;
 
-    machine = composite_editor->selected_machine;
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-
-    machine = automation_editor->selected_machine;
-  }
+  machine = composite_editor->selected_machine;
   
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ramp_acceleration_dialog->port))));
   
@@ -1238,16 +1125,6 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   }
   
   g_strfreev(collected_specifier);
-}
-
-gboolean
-ags_ramp_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_ramp_acceleration_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

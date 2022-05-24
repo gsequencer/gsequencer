@@ -22,10 +22,8 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_notation_editor.h>
 #include <ags/app/ags_machine.h>
 
-#include <ags/app/editor/ags_notation_toolbar.h>
 #include <ags/app/editor/ags_notation_edit.h>
 
 #include <ags/i18n.h>
@@ -35,12 +33,13 @@ void ags_position_notation_cursor_dialog_connectable_interface_init(AgsConnectab
 void ags_position_notation_cursor_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *position_notation_cursor_dialog);
 void ags_position_notation_cursor_dialog_finalize(GObject *gobject);
+
 void ags_position_notation_cursor_dialog_connect(AgsConnectable *connectable);
 void ags_position_notation_cursor_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_position_notation_cursor_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable);
 void ags_position_notation_cursor_dialog_reset(AgsApplicable *applicable);
-gboolean ags_position_notation_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_position_notation_cursor_dialog
@@ -108,7 +107,6 @@ void
 ags_position_notation_cursor_dialog_class_init(AgsPositionNotationCursorDialogClass *position_notation_cursor_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_position_notation_cursor_dialog_parent_class = g_type_class_peek_parent(position_notation_cursor_dialog);
 
@@ -116,11 +114,6 @@ ags_position_notation_cursor_dialog_class_init(AgsPositionNotationCursorDialogCl
   gobject = (GObjectClass *) position_notation_cursor_dialog;
 
   gobject->finalize = ags_position_notation_cursor_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) position_notation_cursor_dialog;
-
-  widget->delete_event = ags_position_notation_cursor_dialog_delete_event;
 }
 
 void
@@ -143,44 +136,41 @@ ags_position_notation_cursor_dialog_applicable_interface_init(AgsApplicableInter
 void
 ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *position_notation_cursor_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  position_notation_cursor_dialog->flags = 0;
+  position_notation_cursor_dialog->connectable_flags = 0;
 
+  gtk_window_set_hide_on_close(position_notation_cursor_dialog,
+			       TRUE);
+  
   g_object_set(position_notation_cursor_dialog,
 	       "title", i18n("position notation cursor"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(position_notation_cursor_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_notation_cursor_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* set focus */
   position_notation_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_toggle_button_set_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(position_notation_cursor_dialog->set_focus),
-		     FALSE, FALSE,
-		     0);  
+  gtk_check_button_set_active(position_notation_cursor_dialog->set_focus,
+			      TRUE);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(position_notation_cursor_dialog->set_focus));  
 
   /* position x - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* position x - label */
   label = (GtkLabel *) gtk_label_new(i18n("position x"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* position x - spin button */
   position_notation_cursor_dialog->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -188,24 +178,19 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 												 1.0);
   gtk_spin_button_set_value(position_notation_cursor_dialog->position_x,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(position_notation_cursor_dialog->position_x),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(position_notation_cursor_dialog->position_x));
   
   /* position y - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* position y - label */
   label = (GtkLabel *) gtk_label_new(i18n("position y"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* position y - spin button */
   position_notation_cursor_dialog->position_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -213,10 +198,8 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 												 1.0);
   gtk_spin_button_set_value(position_notation_cursor_dialog->position_y,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(position_notation_cursor_dialog->position_y),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(position_notation_cursor_dialog->position_y));
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) position_notation_cursor_dialog,
@@ -233,11 +216,11 @@ ags_position_notation_cursor_dialog_connect(AgsConnectable *connectable)
 
   position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(connectable);
 
-  if((AGS_POSITION_NOTATION_CURSOR_DIALOG_CONNECTED & (position_notation_cursor_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (position_notation_cursor_dialog->connectable_flags)) != 0){
     return;
   }
 
-  position_notation_cursor_dialog->flags |= AGS_POSITION_NOTATION_CURSOR_DIALOG_CONNECTED;
+  position_notation_cursor_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(position_notation_cursor_dialog, "response",
 		   G_CALLBACK(ags_position_notation_cursor_dialog_response_callback), position_notation_cursor_dialog);
@@ -250,11 +233,11 @@ ags_position_notation_cursor_dialog_disconnect(AgsConnectable *connectable)
 
   position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(connectable);
 
-  if((AGS_POSITION_NOTATION_CURSOR_DIALOG_CONNECTED & (position_notation_cursor_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (position_notation_cursor_dialog->connectable_flags)) == 0){
     return;
   }
 
-  position_notation_cursor_dialog->flags &= (~AGS_POSITION_NOTATION_CURSOR_DIALOG_CONNECTED);
+  position_notation_cursor_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(position_notation_cursor_dialog),
 		      "any_signal::response",
@@ -283,9 +266,10 @@ void
 ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
 {
   AgsPositionNotationCursorDialog *position_notation_cursor_dialog;
-
   AgsWindow *window;
   AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   GtkWidget *editor;
   AgsNotationEdit *notation_edit;
   GtkWidget *widget;
@@ -294,7 +278,6 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   
   AgsApplicationContext *application_context;
 
-  gboolean use_composite_editor;
   gdouble zoom;
   guint map_height, height;
   guint history;
@@ -305,35 +288,15 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
-
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
-    AgsCompositeToolbar *composite_toolbar;
     
-    composite_editor = window->composite_editor;
+  composite_editor = window->composite_editor;
 
-    composite_toolbar = composite_editor->toolbar;
+  composite_toolbar = composite_editor->toolbar;
     
-    machine = composite_editor->selected_machine;
+  machine = composite_editor->selected_machine;
 
-    history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
-  }else{
-    AgsNotationEditor *notation_editor;
-    AgsNotationToolbar *notation_toolbar;
-    
-    notation_editor = window->notation_editor;
-
-    notation_toolbar = notation_editor->notation_toolbar;
-    
-    machine = notation_editor->selected_machine;
-
-    history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
-  }
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
   
   if(machine == NULL){
     return;
@@ -343,11 +306,7 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   
   x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
 
-  if(use_composite_editor){
-    notation_edit = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit;
-  }else{
-    notation_edit = AGS_NOTATION_EDITOR(editor)->notation_edit;
-  }
+  notation_edit = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit;
 
   if(notation_edit != NULL){
     notation_edit->cursor_position_x = 16 * x;
@@ -361,7 +320,7 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_EDITOR_MAX_CONTROLS / zoom))));
+			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
   }
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus)){
@@ -374,16 +333,6 @@ void
 ags_position_notation_cursor_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_position_notation_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_position_notation_cursor_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

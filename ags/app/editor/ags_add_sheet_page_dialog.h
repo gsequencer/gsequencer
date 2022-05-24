@@ -43,15 +43,11 @@ G_BEGIN_DECLS
 typedef struct _AgsAddSheetPageDialog AgsAddSheetPageDialog;
 typedef struct _AgsAddSheetPageDialogClass AgsAddSheetPageDialogClass;
 
-typedef enum{
-  AGS_ADD_SHEET_PAGE_DIALOG_CONNECTED   = 1,
-}AgsAddSheetPageDialogFlags;
-
 struct _AgsAddSheetPageDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
   GtkEntry *sheet_title;
   

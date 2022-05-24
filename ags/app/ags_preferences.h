@@ -52,7 +52,6 @@ typedef struct _AgsPreferences AgsPreferences;
 typedef struct _AgsPreferencesClass AgsPreferencesClass;
 
 typedef enum{
-  AGS_PREFERENCES_CONNECTED              = 1,
   AGS_PREFERENCES_SHUTDOWN               = 1 << 1,
 }AgsPreferencesFlags;
 
@@ -61,7 +60,8 @@ struct _AgsPreferences
   GtkDialog dialog;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GtkNotebook *notebook;
 
   AgsGenericPreferences *generic_preferences;

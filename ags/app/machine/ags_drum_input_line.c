@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,7 +53,7 @@ void ags_drum_input_line_map_recall(AgsLine *line,
 static gpointer ags_drum_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_line_parent_connectable_interface;
 
-extern GHashTable *ags_line_indicator_queue_draw;
+extern GHashTable *ags_line_indicator_refresh;
 
 GType
 ags_drum_input_line_get_type()
@@ -130,7 +130,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   /* volume indicator */
   line_member =
     drum_input_line->volume_indicator = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-								       "widget-type", AGS_TYPE_VINDICATOR,
+								       "widget-orientation", GTK_ORIENTATION_VERTICAL,
+								       "widget-type", AGS_TYPE_INDICATOR,
 								       "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
 								       "plugin-name", "ags-fx-peak",
 								       "specifier", "./peak[0]",
@@ -138,15 +139,18 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 								       NULL);
   line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
 			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
-  ags_expander_add(AGS_LINE(drum_input_line)->expander,
-		   GTK_WIDGET(line_member),
-		   0, 0,
-		   1, 1);
-  widget = gtk_bin_get_child(GTK_BIN(line_member));
+  ags_line_add_line_member(AGS_LINE(drum_input_line),
+			   line_member,
+			   0, 0,
+			   1, 1);
+  
+  widget = ags_line_member_get_widget(line_member);
+
   AGS_LINE(drum_input_line)->indicator = widget;
-  g_hash_table_insert(ags_line_indicator_queue_draw,
-		      widget, ags_line_indicator_queue_draw_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
+
+  g_hash_table_insert(ags_line_indicator_refresh,
+		      widget, ags_line_indicator_refresh_timeout);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_refresh_timeout, (gpointer) widget);
 
   //TODO:JK: fix me
   //  g_object_set(G_OBJECT(line_member),
@@ -163,12 +167,12 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 								     "specifier", "./volume[0]",
 								     "control-port", "2/2",
 								     NULL);
-  ags_expander_add(AGS_LINE(drum_input_line)->expander,
-		   GTK_WIDGET(line_member),
-		   1, 0,
-		   1, 1);
+  ags_line_add_line_member(AGS_LINE(drum_input_line),
+			   GTK_WIDGET(line_member),
+			   1, 0,
+			   1, 1);
 
-  widget = gtk_bin_get_child(GTK_BIN(line_member));
+  widget = ags_line_member_get_widget(line_member);
 
   gtk_scale_set_digits(GTK_SCALE(widget),
 		       3);
@@ -194,7 +198,7 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_input_line)->connectable_flags)) != 0){
     return;
   }
   
@@ -210,7 +214,7 @@ ags_drum_input_line_disconnect(AgsConnectable *connectable)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
-  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_input_line)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_LINE(drum_input_line)->connectable_flags)) != 0){
     return;
   }
   
@@ -246,6 +250,10 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_PLAYBACK));
     
     /* get some fields */
+    output_soundcard = NULL;
+
+    first_recycling = NULL;
+    
     g_object_get(channel,
 		 "output-soundcard", &output_soundcard,
 		 "first-recycling", &first_recycling,
@@ -262,6 +270,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 #endif
 
     /* get some fields */
+    start_list = NULL;
+    
     g_object_get(first_recycling,
 		 "audio-signal", &start_list,
 		 NULL);
@@ -288,20 +298,20 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
        nth_line == 0){
       AgsDrum *drum;
 
-      GList *list;
+      GList *start_list;
 
       drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
 						 AGS_TYPE_DRUM);
 
       if(drum != NULL){
-	list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+	start_list = ags_machine_get_input_pad((AgsMachine *) drum);
 
-	drum->selected_pad = AGS_DRUM_INPUT_PAD(list->data);
+	drum->selected_pad = AGS_DRUM_INPUT_PAD(start_list->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button,
 				     TRUE);
 	
-	g_list_free(list);
+	g_list_free(start_list);
       }
     }
 

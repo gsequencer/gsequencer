@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,14 +28,9 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include <atk/atk.h>
-
 #include <ags/i18n.h>
 
-static GType ags_accessible_pattern_box_get_type(void);
 void ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box);
-void ags_accessible_pattern_box_class_init(AtkObject *object);
-void ags_accessible_pattern_box_action_interface_init(AtkActionIface *action);
 void ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_box_init(AgsPatternBox *pattern_box);
 void ags_pattern_box_finalize(GObject *gobject);
@@ -43,24 +38,8 @@ void ags_pattern_box_finalize(GObject *gobject);
 void ags_pattern_box_connect(AgsConnectable *connectable);
 void ags_pattern_box_disconnect(AgsConnectable *connectable);
 
-AtkObject* ags_pattern_box_get_accessible(GtkWidget *widget);
 void ags_pattern_box_realize(GtkWidget *widget);
 void ags_pattern_box_show(GtkWidget *widget);
-void ags_pattern_box_show_all(GtkWidget *widget);
-
-gboolean ags_accessible_pattern_box_do_action(AtkAction *action,
-					      gint i);
-gint ags_accessible_pattern_box_get_n_actions(AtkAction *action);
-const gchar* ags_accessible_pattern_box_get_description(AtkAction *action,
-							gint i);
-const gchar* ags_accessible_pattern_box_get_name(AtkAction *action,
-						 gint i);
-const gchar* ags_accessible_pattern_box_get_keybinding(AtkAction *action,
-						       gint i);
-gboolean ags_accessible_pattern_box_set_description(AtkAction *action,
-						    gint i);
-gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
-						     gint i);
 
 /**
  * SECTION:ags_pattern_box
@@ -73,9 +52,7 @@ gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
  */
 
 static gpointer ags_pattern_box_parent_class = NULL;
-static GQuark quark_accessible_object = 0;
 
-GtkStyle *pattern_box_style = NULL;
 GHashTable *ags_pattern_box_led_queue_draw = NULL;
 
 GType
@@ -118,42 +95,6 @@ ags_pattern_box_get_type(void)
   return g_define_type_id__volatile;
 }
 
-static GType
-ags_accessible_pattern_box_get_type(void)
-{
-  static GType ags_type_accessible_pattern_box = 0;
-
-  if(!ags_type_accessible_pattern_box){
-    const GTypeInfo ags_accesssible_pattern_box_info = {
-      sizeof(GtkAccessibleClass),
-      NULL,           /* base_init */
-      NULL,           /* base_finalize */
-      (GClassInitFunc) ags_accessible_pattern_box_class_init,
-      NULL,           /* class_finalize */
-      NULL,           /* class_data */
-      sizeof(GtkAccessible),
-      0,             /* n_preallocs */
-      NULL, NULL
-    };
-
-    static const GInterfaceInfo atk_action_interface_info = {
-      (GInterfaceInitFunc) ags_accessible_pattern_box_action_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-    
-    ags_type_accessible_pattern_box = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-							     "AgsAccessiblePatternBox", &ags_accesssible_pattern_box_info,
-							     0);
-
-    g_type_add_interface_static(ags_type_accessible_pattern_box,
-				ATK_TYPE_ACTION,
-				&atk_action_interface_info);
-  }
-  
-  return(ags_type_accessible_pattern_box);
-}
-
 void
 ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
 {
@@ -161,8 +102,6 @@ ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
   GtkWidgetClass *widget;
 
   ags_pattern_box_parent_class = g_type_class_peek_parent(pattern_box);
-
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 
   /* GObjectClass */
   gobject = (GObjectClass *) pattern_box;
@@ -172,27 +111,7 @@ ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
   /* GtkWidget */
   widget = (GtkWidgetClass *) pattern_box;
 
-  widget->realize = ags_pattern_box_realize;
   widget->show = ags_pattern_box_show;
-  widget->show_all = ags_pattern_box_show_all;
-}
-
-void
-ags_accessible_pattern_box_class_init(AtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_accessible_pattern_box_action_interface_init(AtkActionIface *action)
-{
-  action->do_action = ags_accessible_pattern_box_do_action;
-  action->get_n_actions = ags_accessible_pattern_box_get_n_actions;
-  action->get_description = ags_accessible_pattern_box_get_description;
-  action->get_name = ags_accessible_pattern_box_get_name;
-  action->get_keybinding = ags_accessible_pattern_box_get_keybinding;
-  action->set_description = ags_accessible_pattern_box_set_description;
-  action->get_localized_name = ags_accessible_pattern_box_get_localized_name;
 }
 
 void
@@ -205,8 +124,7 @@ ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pattern_box_init(AgsPatternBox *pattern_box)
 {
-  GtkToggleButton *toggle_button;
-  GtkRadioButton *radio_button;
+  GtkBox *offset;
 
   AgsApplicationContext *application_context;
 
@@ -221,12 +139,13 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 	       "can-focus", TRUE,
 	       NULL);
 
-  gtk_widget_set_events((GtkWidget *) pattern_box,
-			(GDK_CONTROL_MASK
-			 | GDK_KEY_PRESS_MASK
-			 | GDK_KEY_RELEASE_MASK));
+  gtk_grid_set_column_spacing((GtkGrid *) pattern_box,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing((GtkGrid *) pattern_box,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 			
   pattern_box->flags = 0;
+  pattern_box->connectable_flags = 0;
 
   pattern_box->key_mask = 0;
 
@@ -237,12 +156,10 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
     
   pattern_box->active_led = 0;
-  pattern_box->hled_array = (AgsHLedArray *) ags_hled_array_new();
-  g_object_set(pattern_box->hled_array,
-	       "led-count", pattern_box->n_controls,
-	       "led-width", (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_WIDTH),
-	       "led-height", (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT),
-	       NULL);
+  pattern_box->hled_array = ags_led_array_new(GTK_ORIENTATION_HORIZONTAL,
+					      (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_WIDTH),
+					      (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT),
+					      pattern_box->n_controls);
   gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
 			      (guint) (gui_scale_factor * pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH), (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT));
 
@@ -255,7 +172,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		  (GtkWidget *) pattern_box->hled_array,
 		  0, 0,
 		  1, 1);
-  gtk_widget_show_all((GtkWidget *) pattern_box->hled_array);
+  gtk_widget_show((GtkWidget *) pattern_box->hled_array);
   
   if(ags_pattern_box_led_queue_draw == NULL){
     ags_pattern_box_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -268,62 +185,85 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
   
   /* pattern */
-  pattern_box->pattern = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+  pattern_box->pad_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						0);
 
-  gtk_widget_set_valign((GtkWidget *) pattern_box->pattern,
+  gtk_box_set_spacing(pattern_box->pad_box,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) pattern_box->pad_box,
 			GTK_ALIGN_CENTER);
-  gtk_widget_set_vexpand((GtkWidget *) pattern_box->pattern,
+  gtk_widget_set_vexpand((GtkWidget *) pattern_box->pad_box,
 			 TRUE);
 
   gtk_grid_attach((GtkGrid *) pattern_box,
-		   (GtkWidget *) pattern_box->pattern,
+		   (GtkWidget *) pattern_box->pad_box,
 		   0, 1,
 		   1, 1);
 
   for(i = 0; i < pattern_box->n_controls; i++){
+    GtkToggleButton *toggle_button;
+    
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
+
     gtk_widget_set_size_request((GtkWidget *) toggle_button,
 				gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
-    gtk_box_pack_start(pattern_box->pattern,
-		       (GtkWidget *) toggle_button,
-		       FALSE, FALSE,
-		       0);
+
+    ags_pattern_box_add_pad(pattern_box,
+			    toggle_button);
   }
 
   /* page / offset */
-  pattern_box->offset = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					       0);
+  offset = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				  0);
+
+  gtk_box_set_spacing(offset,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   gtk_grid_attach((GtkGrid *) pattern_box,
-		  (GtkWidget *) pattern_box->offset,
+		  (GtkWidget *) offset,
 		  1, 0,
 		  1, 2);
-  radio_button = NULL;
 
-  for(i = 0; i < pattern_box->n_indices; i++){
-    if(radio_button == NULL){
-      str = g_strdup_printf("%d-%d",
-			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
-      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
-									str);
-      gtk_box_pack_start(pattern_box->offset,
-			 (GtkWidget *) radio_button,
-			 FALSE, FALSE,
-			 0);
+  pattern_box->page_0_15 = gtk_check_button_new_with_label("0 - 15");
+  gtk_check_button_set_active(pattern_box->page_0_15,
+			      TRUE);
 
-      g_free(str);
-    }else{
-      str = g_strdup_printf("%d-%d",
-			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
-      gtk_box_pack_start(pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(radio_button),
-								       str),
-			 FALSE, FALSE,
-			 0);
+  gtk_widget_set_halign(pattern_box->page_0_15,
+			GTK_ALIGN_START);
+  
+  gtk_box_append(offset,
+		 (GtkWidget *) pattern_box->page_0_15);
 
-      g_free(str);
-    }
-  }
+  pattern_box->page_16_31 = gtk_check_button_new_with_label("16 - 31");
+  gtk_check_button_set_group(pattern_box->page_16_31,
+			     pattern_box->page_0_15);
+
+  gtk_widget_set_halign(pattern_box->page_16_31,
+			GTK_ALIGN_START);
+
+  gtk_box_append(offset,
+		 (GtkWidget *) pattern_box->page_16_31);
+
+  pattern_box->page_32_47 = gtk_check_button_new_with_label("32 - 47");
+  gtk_check_button_set_group(pattern_box->page_32_47,
+			     pattern_box->page_0_15);
+
+  gtk_widget_set_halign(pattern_box->page_32_47,
+			GTK_ALIGN_START);
+
+  gtk_box_append(offset,
+		 (GtkWidget *) pattern_box->page_32_47);
+
+  pattern_box->page_48_63 = gtk_check_button_new_with_label("48 - 63");
+  gtk_check_button_set_group(pattern_box->page_48_63,
+			     pattern_box->page_0_15);
+
+  gtk_widget_set_halign(pattern_box->page_48_63,
+			GTK_ALIGN_START);
+
+  gtk_box_append(offset,
+		 (GtkWidget *) pattern_box->page_48_63);
 }
 
 void
@@ -340,54 +280,42 @@ ags_pattern_box_connect(AgsConnectable *connectable)
 {
   AgsPatternBox *pattern_box;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
-  if((AGS_PATTERN_BOX_CONNECTED & (AGS_PATTERN_BOX(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PATTERN_BOX(connectable)->connectable_flags)) != 0){
     return;
   }
 
   /* AgsPatternBox */
   pattern_box = AGS_PATTERN_BOX(connectable);
 
-  pattern_box->flags |= AGS_PATTERN_BOX_CONNECTED;
-
-  g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event",
-			 G_CALLBACK(ags_pattern_box_focus_in_callback), (gpointer) pattern_box);
-
-  g_signal_connect_after(G_OBJECT(pattern_box), "focus_out_event",
-			 G_CALLBACK(ags_pattern_box_focus_out_callback), (gpointer) pattern_box);
-  
-  g_signal_connect(G_OBJECT(pattern_box), "key_press_event",
-		   G_CALLBACK(ags_pattern_box_key_press_event), (gpointer) pattern_box);
-
-  g_signal_connect(G_OBJECT(pattern_box), "key_release_event",
-		   G_CALLBACK(ags_pattern_box_key_release_event), (gpointer) pattern_box);
+  pattern_box->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* connect pattern */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  list =
+    start_list = ags_pattern_box_get_pad(pattern_box);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked",
+    g_signal_connect(G_OBJECT(list->data), "toggled",
 		     G_CALLBACK(ags_pattern_box_pad_callback), (gpointer) pattern_box);
 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* connect pattern offset range */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
+  g_signal_connect_after(G_OBJECT(pattern_box->page_0_15), "toggled",
+			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 
-  while(list != NULL){
-    g_signal_connect_after(G_OBJECT(list->data), "clicked",
-			   G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
-		   
-    list = list->next;
-  }
+  g_signal_connect_after(G_OBJECT(pattern_box->page_16_31), "toggled",
+			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 
-  g_list_free(list_start);
+  g_signal_connect_after(G_OBJECT(pattern_box->page_32_47), "toggled",
+			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
+
+  g_signal_connect_after(G_OBJECT(pattern_box->page_48_63), "toggled",
+			 G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 }
 
 void
@@ -395,39 +323,24 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 {
   AgsPatternBox *pattern_box;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
-  if((AGS_PATTERN_BOX_CONNECTED & (AGS_PATTERN_BOX(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PATTERN_BOX(connectable)->connectable_flags)) == 0){
     return;
   }
 
   /* AgsPatternBox */
   pattern_box = AGS_PATTERN_BOX(connectable);
 
-  pattern_box->flags &= (~AGS_PATTERN_BOX_CONNECTED);
-
-  g_object_disconnect(G_OBJECT(pattern_box),
-		      "any_signal::focus_in_event",
-		      G_CALLBACK(ags_pattern_box_focus_in_callback),
-		      (gpointer) pattern_box,
-		      "any_signal::focus_out_event",
-		      G_CALLBACK(ags_pattern_box_focus_out_callback),
-		      (gpointer) pattern_box,
-		      "any_signal::key_press_event",
-		      G_CALLBACK(ags_pattern_box_key_press_event),
-		      (gpointer) pattern_box,
-		      "any_signal::key_release_event",
-		      G_CALLBACK(ags_pattern_box_key_release_event),
-		      (gpointer) pattern_box,
-		      NULL);
+  pattern_box->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* connect pattern */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  list =
+    start_list = ags_pattern_box_get_pad(pattern_box);
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"any_signal::clicked",
+			"any_signal::toggled",
 			G_CALLBACK(ags_pattern_box_pad_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -435,45 +348,32 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
-  /* connect pattern offset range */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
+  /* disconnect pattern offset range */
+  g_object_disconnect(G_OBJECT(pattern_box->page_0_15),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_pattern_box_offset_callback),
+		      (gpointer) pattern_box,
+		      NULL);
 
-  while(list != NULL){
-    g_object_disconnect(G_OBJECT(list->data),
-			"any_signal::clicked",
-			G_CALLBACK(ags_pattern_box_offset_callback),
-			(gpointer) pattern_box,
-			NULL);
-		   
-    list = list->next;
-  }
+  g_object_disconnect(G_OBJECT(pattern_box->page_16_31),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_pattern_box_offset_callback),
+		      (gpointer) pattern_box,
+		      NULL);
 
-  g_list_free(list_start);
-}
-
-AtkObject*
-ags_pattern_box_get_accessible(GtkWidget *widget)
-{
-  AtkObject* accessible;
-
-  accessible = g_object_get_qdata(G_OBJECT(widget),
-				  quark_accessible_object);
+  g_object_disconnect(G_OBJECT(pattern_box->page_32_47),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_pattern_box_offset_callback),
+		      (gpointer) pattern_box,
+		      NULL);
   
-  if(!accessible){
-    accessible = g_object_new(ags_accessible_pattern_box_get_type(),
-			      NULL);
-    
-    g_object_set_qdata(G_OBJECT(widget),
-		       quark_accessible_object,
-		       accessible);
-    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
-			      widget);
-  }
-  
-  return(accessible);
+  g_object_disconnect(G_OBJECT(pattern_box->page_48_63),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_pattern_box_offset_callback),
+		      (gpointer) pattern_box,
+		      NULL);
 }
 
 void
@@ -491,203 +391,72 @@ ags_pattern_box_show(GtkWidget *widget)
   //  ags_pattern_box_draw_matrix(AGS_PATTERN_BOX(widget));
 }
 
+/**
+ * ags_pattern_box_get_pad:
+ * @pattern_box: the #AgsPatternBox
+ * 
+ * Get pad of @pattern_box.
+ * 
+ * Returns: the #GList-struct containing #GtkToggleButton
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_pattern_box_get_pad(AgsPatternBox *pattern_box)
+{
+  g_return_val_if_fail(AGS_IS_PATTERN_BOX(pattern_box), NULL);
+
+  return(g_list_reverse(g_list_copy(pattern_box->pad)));
+}
+
+/**
+ * ags_pattern_box_add_pad:
+ * @pattern_box: the #AgsPattern_Box
+ * @pad: the #GtkToggleButton
+ * 
+ * Add @pad to @pattern_box.
+ * 
+ * Since: 4.0.0
+ */
 void
-ags_pattern_box_show_all(GtkWidget *widget)
+ags_pattern_box_add_pad(AgsPatternBox *pattern_box,
+			GtkToggleButton *pad)
 {
-  GTK_WIDGET_CLASS(ags_pattern_box_parent_class)->show_all(widget);
+  g_return_if_fail(AGS_IS_PATTERN_BOX(pattern_box));
+  g_return_if_fail(GTK_IS_TOGGLE_BUTTON(pad));
 
-  //  ags_pattern_box_draw_matrix(AGS_PATTERN_BOX(widget));
-}
-
-gboolean
-ags_accessible_pattern_box_do_action(AtkAction *action,
-				     gint i)
-{
-  AgsPatternBox *pattern_box;
-  
-  GdkEventKey *key_press, *key_release;
-  GdkEventKey *modifier_press, *modifier_release;
-  
-  if(!(i >= 0 && i < 6)){
-    return(FALSE);
-  }
-
-  pattern_box = (AgsPatternBox *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
-  
-  key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
-  key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
-
-  switch(i){
-  case AGS_PATTERN_BOX_MOVE_LEFT:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Left;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PATTERN_BOX_MOVE_RIGHT:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Right;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PATTERN_BOX_INDEX_DECREMENT:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Up;
+  if(g_list_find(pattern_box->pad, pad) == NULL){
+    pattern_box->pad = g_list_prepend(pattern_box->pad,
+				      pad);
     
-      /* send event */
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PATTERN_BOX_INDEX_INCREMENT:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Down;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PATTERN_BOX_TOGGLE_PAD:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_space;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case AGS_PATTERN_BOX_COPY_PATTERN:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_c;
-
-      /* create modifier */
-      modifier_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
-      modifier_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
-
-      modifier_press->keyval =
-	modifier_release->keyval = GDK_KEY_Control_R;
-
-      /* send event */
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) modifier_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) key_release);
-      gtk_widget_event((GtkWidget *) pattern_box,
-		       (GdkEvent *) modifier_release);      
-    }    
-    break;
-  }
-
-  return(TRUE);
-}
-
-gint
-ags_accessible_pattern_box_get_n_actions(AtkAction *action)
-{
-  return(6);
-}
-
-const gchar*
-ags_accessible_pattern_box_get_description(AtkAction *action,
-					   gint i)
-{
-  static const gchar *actions[] = {
-    "move cursor left",
-    "move cursor right",
-    "decrement pattern index",
-    "increment pattern index",
-    "toggle audio pattern"
-    "copy pattern to clipboard",
-  };
-
-  if(i >= 0 && i < 6){
-    return(actions[i]);
-  }else{
-    return(NULL);
+    gtk_box_append(pattern_box->pad_box,
+		   pad);
   }
 }
 
-const gchar*
-ags_accessible_pattern_box_get_name(AtkAction *action,
-				    gint i)
+/**
+ * ags_pattern_box_remove_pad:
+ * @pattern_box: the #AgsPattern_Box
+ * @pad: the #AgsPad
+ * 
+ * Remove @pad from @pattern_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_pattern_box_remove_pad(AgsPatternBox *pattern_box,
+			   GtkToggleButton *pad)
 {
-  static const gchar *actions[] = {
-    "left",
-    "right",
-    "up",
-    "down",
-    "toggle",
-    "copy",
-  };
-  
-  if(i >= 0 && i < 6){
-    return(actions[i]);
-  }else{
-    return(NULL);
+  g_return_if_fail(AGS_IS_PATTERN_BOX(pattern_box));
+  g_return_if_fail(GTK_IS_TOGGLE_BUTTON(pad));
+
+  if(g_list_find(pattern_box->pad, pad) != NULL){
+    pattern_box->pad = g_list_remove(pattern_box->pad,
+				     pad);
+    
+    gtk_box_remove(pattern_box->pad_box,
+		   pad);
   }
-}
-
-const gchar*
-ags_accessible_pattern_box_get_keybinding(AtkAction *action,
-					  gint i)
-{
-  static const gchar *actions[] = {
-    "left",
-    "right",
-    "up",
-    "down",
-    "space",
-    "Ctrl+c",
-  };
-  
-  if(i >= 0 && i < 6){
-    return(actions[i]);
-  }else{
-    return(NULL);
-  }
-}
-
-gboolean
-ags_accessible_pattern_box_set_description(AtkAction *action,
-					   gint i)
-{
-  //TODO:JK: implement me
-
-  return(FALSE);
-}
-
-gchar*
-ags_accessible_pattern_box_get_localized_name(AtkAction *action,
-					      gint i)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
 }
 
 /**
@@ -704,8 +473,8 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   AgsMachine *machine;
   AgsLine *selected_line;
 
-  GList *list, *list_start;
-  GList *line, *line_start;
+  GList *start_list, *list;
+  GList *start_line, *line;
 
   guint index0, index1, offset;
   gboolean is_active;
@@ -722,18 +491,22 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   index0 = machine->bank_0;
   index1 = machine->bank_1;
 
-  /* read boundaries */
-  list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
-
-  for(i = 0; i < pattern_box->n_indices && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data)); i++){
-    list = list->next;
+  /* calculate offset / page */
+  if(gtk_check_button_get_active(pattern_box->page_0_15)){
+    i = 0;
+  }else if(gtk_check_button_get_active(pattern_box->page_16_31)){
+    i = 1;
+  }else if(gtk_check_button_get_active(pattern_box->page_32_47)){
+    i = 2;
+  }else if(gtk_check_button_get_active(pattern_box->page_48_63)){
+    i = 3;
   }
 
-  offset = i * pattern_box->n_controls;
+  offset = (i * pattern_box->n_controls);
 
   /* get pads */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  list =
+    start_list = ags_pattern_box_get_pad(pattern_box);
 
   /* reset */
   pattern_box->flags |= AGS_PATTERN_BOX_BLOCK_PATTERN;
@@ -741,8 +514,8 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   for(i = 0; i < pattern_box->n_controls; i++){
     set_active = TRUE;
 
-    line_start = 
-      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
+    line =
+      start_line = ags_pad_get_line(AGS_PAD(machine->selected_input_pad));
 
     while((line = ags_line_find_next_grouped(line)) != NULL){
       GList *start_pattern, *pattern;
@@ -771,7 +544,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
       line = line->next;
     }
 
-    g_list_free(line_start);
+    g_list_free(start_line);
     
     gtk_toggle_button_set_active((GtkToggleButton *) list->data, set_active);
     
@@ -780,7 +553,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
 
   pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 /**

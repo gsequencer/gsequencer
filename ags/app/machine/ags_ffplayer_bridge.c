@@ -115,22 +115,24 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
 
   frame = (GtkFrame *) gtk_frame_new("input bridge");
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(ffplayer_bridge),
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_grid_attach((GtkGrid *) AGS_EFFECT_BRIDGE(ffplayer_bridge),
+		  (GtkWidget *) frame,
+		  0, 0,
+		  1, 1);
 
   expander = (GtkExpander *) gtk_expander_new("show/hide");
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) expander);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) expander);
 
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *) grid);
+  gtk_expander_set_child(expander,
+			 (GtkWidget *) grid);
 
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
 									      NULL);
-
+  
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input)->parent_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
+  
   gtk_widget_set_valign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
@@ -163,7 +165,7 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 void
 ags_ffplayer_bridge_connect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -175,7 +177,7 @@ ags_ffplayer_bridge_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->connectable_flags)) == 0){
     return;
   }
 

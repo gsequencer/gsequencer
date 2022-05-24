@@ -37,7 +37,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   application_context = ags_application_context_get_instance();
   
   switch(response){
-  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_CANCEL:
     {
       if(ags_midi_import_wizard_test_flags(midi_import_wizard, AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION)){
 	/* show/hide */
@@ -49,13 +49,16 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
       }
     }
     break;
-  case GTK_RESPONSE_ACCEPT:
+  case GTK_RESPONSE_OK:
     {      
       if(ags_midi_import_wizard_test_flags(midi_import_wizard, AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER)){
 	AgsMidiParser *midi_parser;
 
+	GFile *file;
+	
 	xmlDoc *midi_doc;
-	FILE *file;
+
+	gchar *filename;
 
 	/* show/hide */
 	ags_midi_import_wizard_unset_flags(midi_import_wizard,
@@ -65,32 +68,35 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 					 AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
 
 	/* parse */
-	file = fopen(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser)),
-		     "r");
-	
-	midi_parser = ags_midi_parser_new(file);
+	file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser));
+
+	filename = g_file_get_path(file);
+
+	midi_parser = ags_midi_parser_new_from_filename(filename);
 	midi_doc = ags_midi_parser_parse_full(midi_parser);
-//	xmlSaveFormatFileEnc("-", midi_doc, "UTF-8", 1);
+	//	xmlSaveFormatFileEnc("-", midi_doc, "UTF-8", 1);
 	
 	g_object_set(midi_import_wizard->track_collection,
 		     "midi-document", midi_doc,
 		      NULL);
 	ags_track_collection_parse((AgsTrackCollection *) midi_import_wizard->track_collection);
+
+	g_object_unref(file);
       }
     }
     break;
-  case GTK_RESPONSE_OK:
+  case GTK_RESPONSE_ACCEPT:
     {
       ags_applicable_apply(AGS_APPLICABLE(wizard));
     }
   case GTK_RESPONSE_DELETE_EVENT:
   case GTK_RESPONSE_CLOSE:
-  case GTK_RESPONSE_CANCEL:
+  case GTK_RESPONSE_REJECT:
     {
       ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
 					     NULL);
       
-      gtk_widget_destroy(wizard);
+      gtk_window_destroy(wizard);
     }
     break;
   default:

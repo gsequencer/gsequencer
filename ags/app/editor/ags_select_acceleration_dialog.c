@@ -25,9 +25,9 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_automation_window.h>
-#include <ags/app/ags_automation_editor.h>
 #include <ags/app/ags_machine.h>
+
+#include <ags/app/editor/ags_automation_edit.h>
 
 #include <ags/i18n.h>
 
@@ -36,12 +36,13 @@ void ags_select_acceleration_dialog_connectable_interface_init(AgsConnectableInt
 void ags_select_acceleration_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_acceleration_dialog);
 void ags_select_acceleration_dialog_finalize(GObject *gobject);
+
 void ags_select_acceleration_dialog_connect(AgsConnectable *connectable);
 void ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_select_acceleration_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_select_acceleration_dialog_apply(AgsApplicable *applicable);
 void ags_select_acceleration_dialog_reset(AgsApplicable *applicable);
-gboolean ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_select_acceleration_dialog
@@ -109,7 +110,6 @@ void
 ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass *select_acceleration_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_select_acceleration_dialog_parent_class = g_type_class_peek_parent(select_acceleration_dialog);
 
@@ -117,11 +117,6 @@ ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass *sele
   gobject = (GObjectClass *) select_acceleration_dialog;
 
   gobject->finalize = ags_select_acceleration_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) select_acceleration_dialog;
-
-  widget->delete_event = ags_select_acceleration_dialog_delete_event;
 }
 
 void
@@ -144,60 +139,74 @@ ags_select_acceleration_dialog_applicable_interface_init(AgsApplicableInterface 
 void
 ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_acceleration_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
+  GtkCellRenderer *scope_cell_renderer_text;
+  GtkCellRenderer *port_cell_renderer_text;
 
-  select_acceleration_dialog->flags = 0;
+  GtkListStore *list_store;
+
+  select_acceleration_dialog->connectable_flags = 0;
 
   g_object_set(select_acceleration_dialog,
 	       "title", i18n("select accelerations"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(select_acceleration_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(select_acceleration_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_acceleration_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* copy selection */
   select_acceleration_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active((GtkToggleButton *) select_acceleration_dialog->copy_selection,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_acceleration_dialog->copy_selection),
-		     FALSE, FALSE,
-		     0);  
+  gtk_check_button_set_active(select_acceleration_dialog->copy_selection,
+			      TRUE);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_acceleration_dialog->copy_selection));  
 
-  /* automation */
-  select_acceleration_dialog->port = (GtkVBox *) gtk_vbox_new(FALSE,
-							      0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_acceleration_dialog->port),
-		     FALSE, FALSE,
-		     0);  
+  /* automation combo box */
+  select_acceleration_dialog->port = (GtkComboBox *) gtk_combo_box_new();
+
+  list_store = gtk_list_store_new(2,
+				  G_TYPE_STRING,
+				  G_TYPE_STRING);
   
-  /* add */
-  select_acceleration_dialog->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_acceleration_dialog->add),
-		     FALSE, FALSE,
-		     0);  
-  
+  gtk_combo_box_set_model(select_acceleration_dialog->port,
+			  GTK_TREE_MODEL(list_store));
+
+  scope_cell_renderer_text = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(select_acceleration_dialog->port),
+			     scope_cell_renderer_text,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(select_acceleration_dialog->port), scope_cell_renderer_text,
+				 "text", 0,
+				 NULL);
+
+  port_cell_renderer_text = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(select_acceleration_dialog->port),
+			     port_cell_renderer_text,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(select_acceleration_dialog->port), port_cell_renderer_text,
+				 "text", 1,
+				 NULL);
+
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_acceleration_dialog->port));  
+      
   /* select x0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x0 - spin button */
   select_acceleration_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -207,24 +216,19 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 			     2);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_acceleration_dialog->select_x0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_acceleration_dialog->select_x0));
   
   /* select x1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x1 - spin button */
   select_acceleration_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -234,10 +238,8 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 			     2);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_acceleration_dialog->select_x1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_acceleration_dialog->select_x1));
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_acceleration_dialog,
@@ -255,102 +257,58 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
   
-  gboolean use_composite_editor;
-
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_SELECT_ACCELERATION_DIALOG_CONNECTED & (select_acceleration_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (select_acceleration_dialog->connectable_flags)) != 0){
     return;
   }
 
-  select_acceleration_dialog->flags |= AGS_SELECT_ACCELERATION_DIALOG_CONNECTED;
+  select_acceleration_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
    /* application context */
   application_context = ags_application_context_get_instance();
-
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   g_signal_connect(select_acceleration_dialog, "response",
 		   G_CALLBACK(ags_select_acceleration_dialog_response_callback), select_acceleration_dialog);
 
-  /* add automation */
-  g_signal_connect(select_acceleration_dialog->add, "clicked",
-		   G_CALLBACK(ags_select_acceleration_dialog_add_callback), select_acceleration_dialog);
-
   /* machine changed */
-  if(use_composite_editor){
-     AgsCompositeEditor *composite_editor;
-    
-    composite_editor = window->composite_editor;
-    
-    g_signal_connect_after(composite_editor, "machine-changed",
-			   G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-    
-    g_signal_connect_after(automation_editor, "machine-changed",
-			   G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);
-  }
+  g_signal_connect_after(window->composite_editor, "machine-changed",
+			 G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);
 }
 
 void
 ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 {
+  AgsWindow *window;
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
   AgsApplicationContext *application_context;
 
-  gboolean use_composite_editor;
-
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
 
-  if((AGS_SELECT_ACCELERATION_DIALOG_CONNECTED & (select_acceleration_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (select_acceleration_dialog->connectable_flags)) == 0){
     return;
   }
 
-  select_acceleration_dialog->flags &= (~AGS_SELECT_ACCELERATION_DIALOG_CONNECTED);
+  select_acceleration_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   application_context = ags_application_context_get_instance();
-
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    
   g_object_disconnect(G_OBJECT(select_acceleration_dialog),
 		      "any_signal::response",
 		      G_CALLBACK(ags_select_acceleration_dialog_response_callback),
 		      select_acceleration_dialog,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(select_acceleration_dialog->add),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_select_acceleration_dialog_add_callback),
+  g_object_disconnect(G_OBJECT(window->composite_editor),
+		      "any_signal::machine-changed",
+		      G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
 		      select_acceleration_dialog,
 		      NULL);
-
-  if(use_composite_editor){
-    AgsWindow *window;
-
-    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-    g_object_disconnect(G_OBJECT(window->composite_editor),
-			"any_signal::machine-changed",
-			G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
-			select_acceleration_dialog,
-			NULL);
-  }else{
-    AgsAutomationWindow *automation_window;
-
-    automation_window = ags_ui_provider_get_automation_window(AGS_UI_PROVIDER(application_context));
-    
-    g_object_disconnect(G_OBJECT(automation_window->automation_editor),
-			"any_signal::machine-changed",
-			G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
-			select_acceleration_dialog,
-			NULL);
-  }
 }
 
 void
@@ -374,6 +332,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 {
   AgsSelectAccelerationDialog *select_acceleration_dialog;
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
   AgsAutomationEdit *focused_automation_edit;
@@ -389,17 +348,13 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   GtkTreeIter iter;
 
   GList *start_list_automation, *list_automation;
-  GList *port, *port_start;
-  GList *list;
   
-  gchar **specifier;
   xmlChar *buffer;
-  gchar *str;
   gchar *scope;
+  gchar *specifier;
   
   GType channel_type;
 
-  gboolean use_composite_editor;
   gdouble gui_y;
   
   gdouble c_y0, c_y1;
@@ -420,44 +375,15 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  machine = NULL;
+  composite_editor = window->composite_editor;
 
-  channel_type = G_TYPE_NONE;
-  
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
+  machine = composite_editor->selected_machine;
+
+  focused_automation_edit = composite_editor->automation_edit->focused_edit;
     
-    composite_editor = window->composite_editor;
-
-    machine = composite_editor->selected_machine;
-
-    focused_automation_edit = composite_editor->automation_edit->focused_edit;
-    
-    notebook = composite_editor->automation_edit->channel_selector;
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-
-    machine = automation_editor->selected_machine;
-
-    focused_automation_edit = automation_editor->focused_automation_edit;
-    
-    if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
-      notebook = NULL;
-      channel_type = G_TYPE_NONE;
-    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-      notebook = automation_editor->output_notebook;
-      channel_type = AGS_TYPE_OUTPUT;
-    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-      notebook = automation_editor->input_notebook;
-      channel_type = AGS_TYPE_INPUT;
-    }
-  }
+  notebook = composite_editor->automation_edit->channel_selector;
   
   if(machine == NULL){
     return;
@@ -477,11 +403,6 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   x1 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x1);
   
   /* select acceleration */
-  port =
-    port_start = gtk_container_get_children((GtkContainer *) select_acceleration_dialog->port);
-  
-  specifier = NULL;
-
   clipboard = NULL;
   audio_node = NULL;
   
@@ -494,179 +415,155 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     xmlDocSetRootElement(clipboard, audio_node);
   }
 
-  for(i = 0; port != NULL;){
-    list = gtk_container_get_children((GtkContainer *) port->data);
+  model = gtk_combo_box_get_model(select_acceleration_dialog->port);
 
-    model = gtk_combo_box_get_model(list->data);
-    gtk_tree_model_get(model,
-		       &iter,
-		       0, &scope,
-		       1, &str,
-		       -1);
+  scope = NULL;
+  specifier = NULL;
 
-    g_list_free(list);
+  gtk_tree_model_get(model,
+		     &iter,
+		     0, &scope,
+		     1, &specifier,
+		     -1);
+
+  line = 0;
+
+  channel_type = G_TYPE_NONE;
+
+  if(!g_strcmp0(scope, "output")){
+    channel_type = AGS_TYPE_OUTPUT;
+  }else if(!g_strcmp0(scope, "input")){
+    channel_type = AGS_TYPE_INPUT;
+  }
     
-    if(specifier != NULL &&
-       g_strv_contains(specifier,
-		       str)){
-      port = port->next;
+  while((line = ags_notebook_next_active_tab(notebook,
+					     line)) != -1){
+    list_automation = start_list_automation;
 
-      continue;
-    }
+    while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
+									      specifier,
+									      channel_type,
+									      line)) != NULL){
+      AgsAutomation *current_automation;
+      AgsPort *current_port;
 
-    if(specifier == NULL){
-      specifier = (gchar **) malloc(2 * sizeof(gchar *));
-    }else{
-      specifier = (gchar **) realloc(specifier,
-				     (i + 2) * sizeof(gchar *));
-    }
-    
-    specifier[i] = str;
-    specifier[i + 1] = NULL;
-    
-    line = 0;
-
-    channel_type = G_TYPE_NONE;
-
-    if(!g_strcmp0(scope, "output")){
-      channel_type = AGS_TYPE_OUTPUT;
-    }else if(!g_strcmp0(scope, "input")){
-      channel_type = AGS_TYPE_INPUT;
-    }
-    
-    while((line = ags_notebook_next_active_tab(notebook,
-					       line)) != -1){
-      list_automation = start_list_automation;
-
-      while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
-										specifier[i],
-										channel_type,
-										line)) != NULL){
-	AgsAutomation *current_automation;
-	AgsPort *current_port;
-
-	AgsConversion *conversion;
+      AgsConversion *conversion;
 	
-	AgsTimestamp *timestamp;
+      AgsTimestamp *timestamp;
 	
-	current_automation = list_automation->data;
+      current_automation = list_automation->data;
 
-	g_object_get(current_automation,
-		     "timestamp", &timestamp,
-		     NULL);
+      g_object_get(current_automation,
+		   "timestamp", &timestamp,
+		   NULL);
 
-	g_object_unref(timestamp);
+      g_object_unref(timestamp);
 	
-	if(ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
-	  list_automation = list_automation->next;
-	  
-	  continue;
-	}
-
-	if(ags_timestamp_get_ags_offset(timestamp) > x1){
-	  break;
-	}
-
-	g_object_get(current_automation,
-		     "port", &current_port,
-		     "upper", &upper,
-		     "lower", &lower,
-		     NULL);
-
-	g_object_get(current_port,
-		     "conversion", &conversion,
-		     NULL);
-	
-	range = upper - lower;
-
-	if(conversion != NULL){
-	  c_upper = ags_conversion_convert(conversion,
-					   upper,
-					   FALSE);
-	  c_lower = ags_conversion_convert(conversion,
-					   lower,
-					   FALSE);
-	  c_range = c_upper - c_lower;
-
-	  g_object_unref(conversion);
-	}else{
-	  c_upper = upper;
-	  c_lower = lower;
-	  
-	  c_range = range;
-	}
-
-	g_object_unref(current_port);
-	
-	if(range == 0.0){
-	  list_automation = list_automation->next;
-	  g_warning("ags_select_acceleration_dialog.c - range = 0.0");
-	  
-	  continue;
-	}
-	
-	/* check steps */
-	g_object_get(current_automation,
-		     "steps", &gui_y,
-		     NULL);
-
-	val = c_lower + (gui_y * (c_range / gui_y));
-	c_y0 = val;
-
-	/* conversion */
-	if(conversion != NULL){
-	  c_y0 = ags_conversion_convert(conversion,
-					c_y0,
-					TRUE);
-	}
-
-	/* check steps */
-	gui_y = 0;
-
-	val = c_lower + (gui_y * (c_range / gui_y));
-	c_y1 = val;
-
-	/* conversion */
-	if(conversion != NULL){
-	  c_y1 = ags_conversion_convert(conversion,
-					c_y1,
-					TRUE);
-	}
-	    
-	/* select */
-	ags_automation_add_region_to_selection(current_automation,
-					       x0 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y0,
-					       x1 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y1,
-					       TRUE);
-
-
-	if(copy_selection){
-	  automation_node = ags_automation_copy_selection(list_automation->data);
-	  xmlAddChild(audio_node, automation_node);      
-	}
-
+      if(ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	list_automation = list_automation->next;
+	  
+	continue;
       }
 
-      line++;
+      if(ags_timestamp_get_ags_offset(timestamp) > x1){
+	break;
+      }
+
+      g_object_get(current_automation,
+		   "port", &current_port,
+		   "upper", &upper,
+		   "lower", &lower,
+		   NULL);
+
+      g_object_get(current_port,
+		   "conversion", &conversion,
+		   NULL);
+	
+      range = upper - lower;
+
+      if(conversion != NULL){
+	c_upper = ags_conversion_convert(conversion,
+					 upper,
+					 FALSE);
+	c_lower = ags_conversion_convert(conversion,
+					 lower,
+					 FALSE);
+	c_range = c_upper - c_lower;
+
+	g_object_unref(conversion);
+      }else{
+	c_upper = upper;
+	c_lower = lower;
+	  
+	c_range = range;
+      }
+
+      g_object_unref(current_port);
+	
+      if(range == 0.0){
+	list_automation = list_automation->next;
+	g_warning("ags_select_acceleration_dialog.c - range = 0.0");
+	  
+	continue;
+      }
+	
+      /* check steps */
+      g_object_get(current_automation,
+		   "steps", &gui_y,
+		   NULL);
+
+      val = c_lower + (gui_y * (c_range / gui_y));
+      c_y0 = val;
+
+      /* conversion */
+      if(conversion != NULL){
+	c_y0 = ags_conversion_convert(conversion,
+				      c_y0,
+				      TRUE);
+      }
+
+      /* check steps */
+      gui_y = 0;
+
+      val = c_lower + (gui_y * (c_range / gui_y));
+      c_y1 = val;
+
+      /* conversion */
+      if(conversion != NULL){
+	c_y1 = ags_conversion_convert(conversion,
+				      c_y1,
+				      TRUE);
+      }
+	    
+      /* select */
+      ags_automation_add_region_to_selection(current_automation,
+					     x0 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y0,
+					     x1 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y1,
+					     TRUE);
+
+
+      if(copy_selection){
+	automation_node = ags_automation_copy_selection(list_automation->data);
+	xmlAddChild(audio_node, automation_node);      
+      }
+
+      list_automation = list_automation->next;
     }
 
-    port = port->next;
-    i++;
+    line++;
   }
 
-  g_strfreev(specifier);
+  g_free(specifier);
   
   g_list_free_full(start_list_automation,
-		   g_object_unref);
-  g_list_free(port_start);
+		   (GDestroyNotify) g_object_unref);
 
   /* write to clipboard */
   if(copy_selection){
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
-    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
-    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
+			   buffer);
     
     xmlFreeDoc(clipboard);
   }  
@@ -675,32 +572,305 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 void
 ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 {
-  AgsSelectAccelerationDialog *select_acceleration_dialog;
+  AgsSelectAccelerationDialog *select_acceleration_dialog;  
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+  AgsMachine *machine;
 
-  GList *list_start, *list;
+  GtkListStore *list_store;
+
+  AgsAudio *audio;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
+
+  AgsApplicationContext *application_context;
+
+  GtkTreeIter iter;
   
+  GList *start_port, *port;
+
+  gchar **collected_audio_specifier, **collected_input_specifier, **collected_output_specifier;
+
+  guint length;
+
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) select_acceleration_dialog->port);
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  while(list != NULL){
-    gtk_widget_destroy(list->data);
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    
+  composite_editor = window->composite_editor;
+  
+  machine = composite_editor->selected_machine;
+  
+  if(machine == NULL){
+    return;
+  }
+  
+  audio = machine->audio;
 
-    list = list->next;
+  list_store = GTK_LIST_STORE(gtk_combo_box_get_model(select_acceleration_dialog->port));
+  
+  /*  */  
+  collected_audio_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_audio_specifier[0] = NULL;
+  length = 1;
+  
+  /* audio */
+  port =
+    start_port = ags_audio_collect_all_audio_ports(audio);
+
+  while(port != NULL){
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
+    gboolean is_enabled;
+    gboolean contains_control_name;
+
+    plugin_port = NULL;
+    
+    specifier = NULL;
+    
+    g_object_get(port->data,
+		 "specifier", &specifier,
+		 "plugin-port", &plugin_port,
+		 NULL);
+
+    if(specifier == NULL){
+      /* iterate */
+      port = port->next;
+
+      continue;
+    }
+    
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(collected_audio_specifier,
+					    specifier);
+#else
+    contains_control_name = ags_strv_contains(collected_audio_specifier,
+					      specifier);
+#endif
+
+    if(plugin_port != NULL &&
+       !contains_control_name){
+      gtk_list_store_append(list_store, &iter);
+      gtk_list_store_set(list_store, &iter,
+			 0, g_strdup("audio"),
+			 1, g_strdup(specifier),
+			 -1);      
+
+      /* add to collected specifier */
+      collected_audio_specifier = (gchar **) realloc(collected_audio_specifier,
+						     (length + 1) * sizeof(gchar *));
+      collected_audio_specifier[length - 1] = g_strdup(specifier);
+      collected_audio_specifier[length] = NULL;
+
+      length++;
+    }
+
+    if(plugin_port != NULL){
+      g_object_unref(plugin_port);
+    }
+
+    g_free(specifier);
+    
+    /* iterate */
+    port = port->next;
   }
 
-  g_list_free(list_start);
-}
+  g_list_free_full(start_port,
+		   g_object_unref);
+    
+  /* output */
+  g_object_get(audio,
+	       "output", &start_channel,
+	       NULL);
 
-gboolean
-ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
+  channel = start_channel;
+  g_object_ref(channel);
 
-  //  GTK_WIDGET_CLASS(ags_select_acceleration_dialog_parent_class)->delete_event(widget, event);
+  next_channel = NULL;
 
-  return(TRUE);
+  collected_output_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_output_specifier[0] = NULL;
+  length = 1;
+
+  while(channel != NULL){
+    /* output */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
+
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+
+      plugin_port = NULL;
+    
+      specifier = NULL;
+    
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_output_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_output_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, g_strdup("output"),
+			   1, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_output_specifier = (gchar **) realloc(collected_output_specifier,
+							(length + 1) * sizeof(gchar *));
+	collected_output_specifier[length - 1] = g_strdup(specifier);
+	collected_output_specifier[length] = NULL;
+
+	length++;
+      }
+
+      if(plugin_port != NULL){
+	g_object_unref(plugin_port);
+      }
+
+      g_free(specifier);
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+    
+    /* iterate */
+    next_channel = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
+  }
+  
+  /* input */
+  g_object_get(audio,
+	       "input", &start_channel,
+	       NULL);
+
+  channel = start_channel;
+  g_object_ref(channel);
+
+  next_channel = NULL;
+
+  collected_input_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_input_specifier[0] = NULL;
+  length = 1;
+
+  while(channel != NULL){
+    /* input */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
+
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+
+      plugin_port = NULL;
+    
+      specifier = NULL;
+    
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_input_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_input_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, g_strdup("input"),
+			   1, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_input_specifier = (gchar **) realloc(collected_input_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_input_specifier[length - 1] = g_strdup(specifier);
+	collected_input_specifier[length] = NULL;
+
+	length++;
+      }
+
+      if(plugin_port != NULL){
+	g_object_unref(plugin_port);
+      }
+
+      g_free(specifier);
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+    
+    /* iterate */
+    next_channel = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
+  }
+  
+  g_strfreev(collected_audio_specifier);
+  g_strfreev(collected_output_specifier);
+  g_strfreev(collected_input_specifier);
 }
 
 /**

@@ -20,6 +20,7 @@
 #include <ags/app/editor/ags_envelope_editor_callbacks.h>
 
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_input_dialog.h>
 #include <ags/app/ags_machine.h>
 
 #include <ags/app/editor/ags_envelope_dialog.h>
@@ -45,22 +46,13 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
   }
   
   envelope_editor->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("preset name"),
-						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(envelope_editor)),
-						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       i18n("_OK"),
-						       GTK_RESPONSE_ACCEPT,
-						       i18n("_Cancel"),
-						       GTK_RESPONSE_REJECT,
-						       NULL);
-
-  entry = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
-		     (GtkWidget *) entry,
-		     FALSE, FALSE,
-		     0);
-
-  gtk_widget_show_all((GtkWidget *) dialog);
+    dialog = (GtkDialog *) ags_input_dialog_new(i18n("preset name"),
+						(GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(envelope_editor),
+										      AGS_TYPE_ENVELOPE_DIALOG));
+  ags_input_dialog_set_flags(dialog,
+			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
+  
+  gtk_widget_show((GtkWidget *) dialog);
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_envelope_editor_preset_rename_response_callback), (gpointer) envelope_editor);
@@ -90,19 +82,15 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
   if(response == GTK_RESPONSE_ACCEPT){
     AgsEnvelopeDialog *envelope_dialog;
 
-    GList *start_list;
-    
     gchar *text;
 
     envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */
-    start_list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
-    text = gtk_editable_get_chars(GTK_EDITABLE(start_list->data),
-				  0, -1);
-
-    g_list_free(start_list);
+    text = gtk_editable_get_chars(GTK_EDITABLE(AGS_INPUT_DIALOG(widget)->string_input),
+				  0,
+				  -1);
     
     /* add preset */
     ags_envelope_editor_add_preset(envelope_editor,
@@ -113,9 +101,8 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
   }
   
   envelope_editor->rename = NULL;
-  gtk_widget_destroy(widget);
 
-  return;
+  gtk_window_destroy(widget);
 }
 
 void

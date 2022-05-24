@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,19 +33,18 @@
 
 G_BEGIN_DECLS
 
-void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFFPlayer *ffplayer);
 void ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
-gboolean ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
-				    AgsFFPlayer *ffplayer);
+void ags_ffplayer_draw_callback(GtkWidget *drawing_area,
+				cairo_t *cr,
+				int width, int height,
+				AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 						AgsMachine *machine);
 void ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer);
 void ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer);
-
-gboolean ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer);
 

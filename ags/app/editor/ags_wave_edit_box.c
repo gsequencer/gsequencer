@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,19 +21,19 @@
 
 #include <ags/app/editor/ags_wave_edit.h>
 
+#include <ags/i18n.h>
+
 void ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box);
 void ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box);
-void ags_wave_edit_box_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_wave_edit_box_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
+void ags_wave_edit_box_dispose(GObject *gobject);
 void ags_wave_edit_box_finalize(GObject *gobject);
 
-GType ags_wave_edit_box_child_type(GtkContainer *container);
+void ags_wave_edit_box_notify_width_request_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     AgsWaveEditBox *wave_edit_box);
+void ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      AgsWaveEditBox *wave_edit_box);
 
 /**
  * SECTION:ags_wave_edit_box
@@ -46,12 +46,13 @@ GType ags_wave_edit_box_child_type(GtkContainer *container);
  */
 
 enum{
-  PROP_0,
-  PROP_FIXED_EDIT_WIDTH,
-  PROP_FIXED_EDIT_HEIGHT,
+  CHILD_WIDTH_REQUEST,
+  CHILD_HEIGHT_REQUEST,
+  LAST_SIGNAL,
 };
 
 static gpointer ags_wave_edit_box_parent_class = NULL;
+static guint wave_edit_box_signals[LAST_SIGNAL];
 
 GType
 ags_wave_edit_box_get_type(void)
@@ -87,43 +88,54 @@ void
 ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box)
 {
   GObjectClass *gobject;
-  GtkContainerClass *container;
-
-  GParamSpec *param_spec;
 
   ags_wave_edit_box_parent_class = g_type_class_peek_parent(wave_edit_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) wave_edit_box;
 
-  gobject->set_property = ags_wave_edit_box_set_property;
-  gobject->get_property = ags_wave_edit_box_get_property;
-
+  gobject->dispose = ags_wave_edit_box_dispose;
   gobject->finalize = ags_wave_edit_box_finalize;
 
-  /* properties */
-  /**
-   * AgsWaveEditBox:fixed-edit-height:
-   *
-   * The fixed height of a edit.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_uint("fixed-edit-height",
-				 "fixed edit height",
-				 "The fixed height of a edit",
-				 0,
-				 G_MAXUINT,
-				 AGS_WAVE_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FIXED_EDIT_HEIGHT,
-				  param_spec);
+  /* AgsWaveEditBox */
+  wave_edit_box->child_width_request = NULL;
+  wave_edit_box->child_height_request = NULL;
   
-  /* GtkContainerClass */
-  container = (GtkContainerClass *) wave_edit_box;
+  /**
+   * AgsWaveEditBox::child-width-request:
+   * @wave_edit_box: the #AgsWaveEditBox.
+   *
+   * The ::child-width-request
+   *
+   * Since: 4.0.0
+   */
+  wave_edit_box_signals[CHILD_WIDTH_REQUEST] = 
+    g_signal_new("child-width-request",
+		 G_TYPE_FROM_CLASS(wave_edit_box),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsWaveEditBoxClass, child_width_request),
+		 NULL, NULL,
+		 ags_widget_cclosure_marshal_VOID__OBJECT_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_INT);
 
-  container->child_type = ags_wave_edit_box_child_type;
+  /**
+   * AgsWaveEditBox::child-height-request:
+   * @wave_edit_box: the #AgsWaveEditBox.
+   *
+   * The ::child-height-request
+   *
+   * Since: 4.0.0
+   */
+  wave_edit_box_signals[CHILD_HEIGHT_REQUEST] = 
+    g_signal_new("child-height-request",
+		 G_TYPE_FROM_CLASS(wave_edit_box),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsWaveEditBoxClass, child_height_request),
+		 NULL, NULL,
+		 ags_widget_cclosure_marshal_VOID__OBJECT_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_INT);
 }
 
 void
@@ -131,73 +143,210 @@ ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box)
 {
   g_object_set(wave_edit_box,
 	       "homogeneous", FALSE,
-	       "spacing", 0,
+	       "spacing", AGS_WAVE_EDIT_BOX_DEFAULT_SPACING,
 	       NULL);
   
-  wave_edit_box->flags = 0;
-
-  wave_edit_box->fixed_edit_height = AGS_WAVE_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT;
+  wave_edit_box->wave_edit = NULL;
 }
 
 void
-ags_wave_edit_box_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec)
+ags_wave_edit_box_dispose(GObject *gobject)
 {
   AgsWaveEditBox *wave_edit_box;
 
   wave_edit_box = AGS_WAVE_EDIT_BOX(gobject);
+  
+  g_list_free(wave_edit_box->wave_edit);
 
-  switch(prop_id){
-  case PROP_FIXED_EDIT_HEIGHT:
-    {
-      wave_edit_box->fixed_edit_height = g_value_get_uint(value);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
+  wave_edit_box->wave_edit = NULL;
 
-void
-ags_wave_edit_box_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsWaveEditBox *wave_edit_box;
-
-  wave_edit_box = AGS_WAVE_EDIT_BOX(gobject);
-
-  switch(prop_id){
-  case PROP_FIXED_EDIT_HEIGHT:
-    {
-      g_value_set_uint(value,
-		       wave_edit_box->fixed_edit_height);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  /* call parent */
+  G_OBJECT_CLASS(ags_wave_edit_box_parent_class)->dispose(gobject);
 }
 
 void
 ags_wave_edit_box_finalize(GObject *gobject)
 {
+  AgsWaveEditBox *wave_edit_box;
+
+  wave_edit_box = AGS_WAVE_EDIT_BOX(gobject);
+  
+  g_list_free(wave_edit_box->wave_edit);
+
   /* call parent */
   G_OBJECT_CLASS(ags_wave_edit_box_parent_class)->finalize(gobject);
 }
 
-GType ags_wave_edit_box_child_type(GtkContainer *container)
+void
+ags_wave_edit_box_notify_width_request_callback(GObject *gobject,
+						GParamSpec *pspec,
+						AgsWaveEditBox *wave_edit_box)
 {
-  return(AGS_TYPE_WAVE_EDIT);
+  gint width_request;
+
+  width_request = -1;
+  
+  g_object_get(gobject,
+	       "width-request", &width_request,
+	       NULL);
+  
+  ags_wave_edit_box_child_width_request(wave_edit_box,
+					AGS_WAVE_EDIT(gobject),
+					width_request);
+}
+
+void
+ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 AgsWaveEditBox *wave_edit_box)
+{
+  gint height_request;
+
+  height_request = -1;
+  
+  g_object_get(gobject,
+	       "height-request", &height_request,
+	       NULL);
+  
+  ags_wave_edit_box_child_height_request(wave_edit_box,
+					 AGS_WAVE_EDIT(gobject),
+					 height_request);
+}
+
+/**
+ * ags_wave_edit_box_get_wave_edit:
+ * @wave_edit_box: the #AgsWaveEditBox
+ * 
+ * Get wave_edit.
+ * 
+ * Returns: the #GList-struct containing #AgsWaveEdit
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box)
+{
+  g_return_val_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box), NULL);
+
+  return(g_list_reverse(g_list_copy(wave_edit_box->wave_edit)));
+}
+
+/**
+ * ags_wave_edit_box_add_wave_edit:
+ * @wave_edit_box: the #AgsWaveEditBox
+ * @wave_edit: the #AgsWaveEdit
+ * 
+ * Add @wave_edit to @wave_edit_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_wave_edit_box_add_wave_edit(AgsWaveEditBox *wave_edit_box,
+				AgsWaveEdit *wave_edit)
+{
+  g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
+  g_return_if_fail(AGS_IS_WAVE_EDIT(wave_edit));
+
+  if(g_list_find(wave_edit_box->wave_edit, wave_edit) == NULL){
+    wave_edit_box->wave_edit = g_list_prepend(wave_edit_box->wave_edit,
+					      wave_edit);
+    
+    g_signal_connect(wave_edit, "notify::width-request",
+		     G_CALLBACK(ags_wave_edit_box_notify_width_request_callback), wave_edit_box);
+    
+    g_signal_connect(wave_edit, "notify::height-request",
+		     G_CALLBACK(ags_wave_edit_box_notify_height_request_callback), wave_edit_box);
+    
+    gtk_box_append(wave_edit_box,
+		   wave_edit);
+  }
+}
+
+/**
+ * ags_wave_edit_box_remove_wave_edit:
+ * @wave_edit_box: the #AgsWaveEditBox
+ * @wave_edit: the #AgsWaveEdit
+ * 
+ * Remove wave_edit at @position of @wave_edit_box.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_wave_edit_box_remove_wave_edit(AgsWaveEditBox *wave_edit_box,
+				   AgsWaveEdit *wave_edit)
+{
+  g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
+  g_return_if_fail(AGS_IS_WAVE_EDIT(wave_edit));
+
+  if(g_list_find(wave_edit_box->wave_edit, wave_edit) != NULL){
+    g_object_disconnect(wave_edit,
+			"any_signal::notify::width-request",
+			G_CALLBACK(ags_wave_edit_box_notify_width_request_callback),
+			wave_edit_box,
+			"any_signal::notify::height-request",
+			G_CALLBACK(ags_wave_edit_box_notify_height_request_callback),
+			wave_edit_box,
+			NULL);
+    
+    wave_edit_box->wave_edit = g_list_remove(wave_edit_box->wave_edit,
+					     wave_edit);
+
+    gtk_box_remove(wave_edit_box,
+		   wave_edit);
+  }
+}
+
+/**
+ * ags_wave_edit_box_child_width_request:
+ * @wave_edit_box: the #AgsWaveEditBox
+ * @wave_edit: the #AgsWaveEdit
+ * @width_request: the wave_edit's width-request
+ * 
+ * Notify about child wave_edit width request.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_wave_edit_box_child_width_request(AgsWaveEditBox *wave_edit_box,
+				      GtkWidget *wave_edit,
+				      gint width_request)
+{
+  g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
+
+  g_object_ref((GObject *) wave_edit_box);
+  g_signal_emit(G_OBJECT(wave_edit_box),
+		wave_edit_box_signals[CHILD_WIDTH_REQUEST], 0,
+		wave_edit, width_request);
+  g_object_unref((GObject *) wave_edit_box);
+}
+
+/**
+ * ags_wave_edit_box_child_height_request:
+ * @wave_edit_box: the #AgsWaveEditBox
+ * @wave_edit: the #AgsWaveEdit
+ * @height_request: the wave_edit's height-request
+ * 
+ * Notify about child wave_edit height request.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_wave_edit_box_child_height_request(AgsWaveEditBox *wave_edit_box,
+				       GtkWidget *wave_edit,
+				       gint height_request)
+{
+  g_return_if_fail(AGS_IS_WAVE_EDIT_BOX(wave_edit_box));
+
+  g_object_ref((GObject *) wave_edit_box);
+  g_signal_emit(G_OBJECT(wave_edit_box),
+		wave_edit_box_signals[CHILD_HEIGHT_REQUEST], 0,
+		wave_edit, height_request);
+  g_object_unref((GObject *) wave_edit_box);
 }
 
 /**
  * ags_wave_edit_box_new:
+ * @orientation: the #GtkOrientation
  * 
  * Create a new instance of #AgsWaveEditBox.
  * 
@@ -206,11 +355,12 @@ GType ags_wave_edit_box_child_type(GtkContainer *container)
  * Since: 3.0.0
  */
 AgsWaveEditBox*
-ags_wave_edit_box_new()
+ags_wave_edit_box_new(GtkOrientation orientation)
 {
   AgsWaveEditBox *wave_edit_box;
 
   wave_edit_box = (AgsWaveEditBox *) g_object_new(AGS_TYPE_WAVE_EDIT_BOX,
+						  "orientation", orientation,
 						  NULL);
   
   return(wave_edit_box);

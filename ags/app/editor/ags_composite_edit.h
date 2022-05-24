@@ -46,11 +46,6 @@ typedef struct _AgsCompositeEdit AgsCompositeEdit;
 typedef struct _AgsCompositeEditClass AgsCompositeEditClass;
 
 typedef enum{
-  AGS_COMPOSITE_EDIT_ADDED_TO_REGISTRY     = 1,
-  AGS_COMPOSITE_EDIT_CONNECTED             = 1 << 1,
-}AgsCompositeEditFlags;
-
-typedef enum{
   AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL     = 1,
   AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL       = 1 <<  1,
 }AgsCompositeEditScrollbar;
@@ -77,6 +72,7 @@ struct _AgsCompositeEdit
   GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   guint scrollbar;
 
   gchar *version;

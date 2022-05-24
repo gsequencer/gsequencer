@@ -39,6 +39,18 @@ G_BEGIN_DECLS
 typedef struct _AgsConnectable AgsConnectable;
 typedef struct _AgsConnectableInterface AgsConnectableInterface;
 
+/**
+ * AgsConnectableFlags: 
+ * @AGS_CONNECTABLE_ADDED_TO_REGISTRY: added to registry
+ * @AGS_CONNECTABLE_CONNECTED: connected
+ * 
+ * Enum values to specify particular state.
+ */
+typedef enum{
+  AGS_CONNECTABLE_ADDED_TO_REGISTRY   = 1,
+  AGS_CONNECTABLE_CONNECTED           = 1 << 1,
+}AgsConnectableFlags;
+
 struct _AgsConnectableInterface
 {
   GTypeInterface ginterface;

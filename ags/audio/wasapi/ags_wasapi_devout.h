@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,6 +50,8 @@ G_BEGIN_DECLS
 
 #define AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsWasapiDevout *) obj)->obj_mutex))
 
+#define AGS_WASAPI_DEVOUT_DEFAULT_APP_BUFFER_SIZE (8)
+
 #define AGS_WASAPI_DEVOUT_DEFAULT_WASAPI_BUFFER_SIZE (8192)
 
 typedef struct _AgsWasapiDevout AgsWasapiDevout;
@@ -57,51 +59,55 @@ typedef struct _AgsWasapiDevoutClass AgsWasapiDevoutClass;
 
 /**
  * AgsWasapiDevoutFlags:
- * @AGS_WASAPI_DEVOUT_ADDED_TO_REGISTRY: the core-audio devout was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_WASAPI_DEVOUT_CONNECTED: indicates the core-audio devout was connected by calling #AgsConnectable::connect()
- * @AGS_WASAPI_DEVOUT_BUFFER0: ring-buffer 0
- * @AGS_WASAPI_DEVOUT_BUFFER1: ring-buffer 1
- * @AGS_WASAPI_DEVOUT_BUFFER2: ring-buffer 2
- * @AGS_WASAPI_DEVOUT_BUFFER3: ring-buffer 3
- * @AGS_WASAPI_DEVOUT_BUFFER4: ring-buffer 4
- * @AGS_WASAPI_DEVOUT_BUFFER5: ring-buffer 5
- * @AGS_WASAPI_DEVOUT_BUFFER6: ring-buffer 6
- * @AGS_WASAPI_DEVOUT_BUFFER7: ring-buffer 7
- * @AGS_WASAPI_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_WASAPI_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_WASAPI_DEVOUT_START_PLAY: playback starting
  * @AGS_WASAPI_DEVOUT_PLAY: do playback
  * @AGS_WASAPI_DEVOUT_SHUTDOWN: stop playback
- * @AGS_WASAPI_DEVOUT_START_PLAY: playback starting
  * @AGS_WASAPI_DEVOUT_NONBLOCKING: do non-blocking calls
- * @AGS_WASAPI_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_WASAPI_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
  * @AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE: share mode exclusive
  *
  * Enum values to control the behavior or indicate internal state of #AgsWasapiDevout by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_WASAPI_DEVOUT_ADDED_TO_REGISTRY              = 1,
-  AGS_WASAPI_DEVOUT_CONNECTED                      = 1 <<  1,
+  AGS_WASAPI_DEVOUT_INITIALIZED                    = 1,
 
-  AGS_WASAPI_DEVOUT_BUFFER0                        = 1 <<  2,
-  AGS_WASAPI_DEVOUT_BUFFER1                        = 1 <<  3,
-  AGS_WASAPI_DEVOUT_BUFFER2                        = 1 <<  4,
-  AGS_WASAPI_DEVOUT_BUFFER3                        = 1 <<  5,
-  AGS_WASAPI_DEVOUT_BUFFER4                        = 1 <<  6,
-  AGS_WASAPI_DEVOUT_BUFFER5                        = 1 <<  7,
-  AGS_WASAPI_DEVOUT_BUFFER6                        = 1 <<  8,
-  AGS_WASAPI_DEVOUT_BUFFER7                        = 1 <<  9,
+  AGS_WASAPI_DEVOUT_START_PLAY                     = 1 <<  1,
+  AGS_WASAPI_DEVOUT_PLAY                           = 1 <<  2,
+  AGS_WASAPI_DEVOUT_SHUTDOWN                       = 1 <<  3,
 
-  AGS_WASAPI_DEVOUT_ATTACK_FIRST                   = 1 << 10,
+  AGS_WASAPI_DEVOUT_NONBLOCKING                    = 1 <<  4,
 
-  AGS_WASAPI_DEVOUT_PLAY                           = 1 << 11,
-  AGS_WASAPI_DEVOUT_SHUTDOWN                       = 1 << 12,
-  AGS_WASAPI_DEVOUT_START_PLAY                     = 1 << 13,
+  AGS_WASAPI_DEVOUT_ATTACK_FIRST                   = 1 <<  5,
 
-  AGS_WASAPI_DEVOUT_NONBLOCKING                    = 1 << 14,
-  AGS_WASAPI_DEVOUT_INITIALIZED                    = 1 << 15,
-
-  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE           = 1 << 16,
+  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE           = 1 <<  6,
 }AgsWasapiDevoutFlags;
+
+/**
+ * AgsWasapiDevoutAppBufferMode:
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_0: ring-buffer 0
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_1: ring-buffer 1
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_2: ring-buffer 2
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_3: ring-buffer 3
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_4: ring-buffer 4
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_5: ring-buffer 5
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_6: ring-buffer 6
+ * @AGS_WASAPI_DEVOUT_APP_BUFFER_7: ring-buffer 7
+ * 
+ * Enum values to indicate internal state of #AgsWasapiDevout application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_WASAPI_DEVOUT_APP_BUFFER_0,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_1,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_2,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_3,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_4,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_5,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_6,
+  AGS_WASAPI_DEVOUT_APP_BUFFER_7,
+}AgsWasapiDevoutAppBufferMode;
 
 #define AGS_WASAPI_DEVOUT_ERROR (ags_wasapi_devout_error_quark())
 
@@ -115,7 +121,8 @@ struct _AgsWasapiDevout
   GObject gobject;
 
   guint flags;
-  
+  guint connectable_flags;
+
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -126,12 +133,16 @@ struct _AgsWasapiDevout
   guint buffer_size;
   guint samplerate;
 
-  GRecMutex **buffer_mutex;
+  guint wasapi_buffer_size;
+
+  guint app_buffer_mode;
+
+  GRecMutex **app_buffer_mutex;
 
   guint sub_block_count;
   GRecMutex **sub_block_mutex;
 
-  void** buffer;
+  void **app_buffer;
 
   gboolean use_cache;
   guint cache_buffer_size;
@@ -140,8 +151,6 @@ struct _AgsWasapiDevout
   guint completed_cache;
   guint cache_offset;
   void **cache;
-
-  guint wasapi_buffer_size;
   
   double bpm; // beats per minute
   gdouble delay_factor;
@@ -186,6 +195,7 @@ struct _AgsWasapiDevoutClass
 };
 
 GType ags_wasapi_devout_get_type();
+GType ags_wasapi_devout_flags_get_type();
 
 GQuark ags_wasapi_devout_error_quark();
 

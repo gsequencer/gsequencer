@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,9 +20,8 @@
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bridge_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_effect_pad.h>
-#include <ags/app/ags_effect_bulk.h>
 
 #include <ags/i18n.h>
 
@@ -107,7 +106,7 @@ ags_effect_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_effect_bridge = g_type_register_static(GTK_TYPE_BOX,
+    ags_type_effect_bridge = g_type_register_static(GTK_TYPE_GRID,
 						    "AgsEffectBridge", &ags_effect_bridge_info,
 						    0);
 
@@ -323,9 +322,9 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_pads),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
@@ -377,10 +376,15 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
-  gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_bridge),
-				 GTK_ORIENTATION_VERTICAL);
+  gtk_grid_set_column_spacing(effect_bridge,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(effect_bridge,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   effect_bridge->flags = 0;
+  effect_bridge->connectable_flags = 0;
+
+  effect_bridge->parent_machine = NULL;
 
   effect_bridge->name = NULL;
 
@@ -399,22 +403,26 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   effect_bridge->audio = NULL;
 
   /* output */
-  effect_bridge->output_pad_type = G_TYPE_NONE;
-  effect_bridge->output_line_type = G_TYPE_NONE;
-  
   effect_bridge->bulk_output_type = G_TYPE_NONE;
 
   effect_bridge->bulk_output = NULL;
 
+  effect_bridge->output_pad_type = G_TYPE_NONE;
+  effect_bridge->output_line_type = G_TYPE_NONE;
+  
+  effect_bridge->output_effect_pad = NULL;
+
   effect_bridge->output = NULL;
   
   /* input */
+  effect_bridge->bulk_input_type = G_TYPE_NONE;
+
   effect_bridge->input_pad_type = G_TYPE_NONE;
   effect_bridge->input_line_type = G_TYPE_NONE;  
 
-  effect_bridge->bulk_input_type = G_TYPE_NONE;
-
   effect_bridge->bulk_input = NULL;
+
+  effect_bridge->input_effect_pad = NULL;
 
   effect_bridge->input = NULL;
 }
@@ -450,7 +458,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->output != NULL){
 	list =
-	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->output)); 
+	  start_list = ags_effect_bridge_get_output_effect_pad(effect_bridge); 
 
 	while(list != NULL){
 	  if(AGS_IS_EFFECT_PAD(list->data)){
@@ -467,7 +475,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->input != NULL){
 	list =
-	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input)); 
+	  start_list = ags_effect_bridge_get_input_effect_pad(effect_bridge); 
 
 	while(list != NULL){
 	  if(AGS_IS_EFFECT_PAD(list->data)){
@@ -503,7 +511,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->output != NULL){
 	list =
-	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->output)); 
+	  start_list = ags_effect_bridge_get_output_effect_pad(effect_bridge); 
 
 	while(list != NULL){
 	  if(AGS_IS_EFFECT_PAD(list->data)){
@@ -520,7 +528,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->input != NULL){
 	list =
-	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input)); 
+	  start_list = ags_effect_bridge_get_input_effect_pad(effect_bridge); 
 
 	while(list != NULL){
 	  if(AGS_IS_EFFECT_PAD(list->data)){
@@ -556,7 +564,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->output != NULL){
 	list =
-	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->output)); 
+	  start_list = ags_effect_bridge_get_output_effect_pad(effect_bridge); 
 
 	while(list != NULL){
 	  if(AGS_IS_EFFECT_PAD(list->data)){
@@ -573,7 +581,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->input != NULL){
 	list =
-	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input)); 
+	  start_list = ags_effect_bridge_get_input_effect_pad(effect_bridge); 
 
 	while(list != NULL){
 	  if(AGS_IS_EFFECT_PAD(list->data)){
@@ -600,27 +608,35 @@ ags_effect_bridge_set_property(GObject *gobject,
       }
 
       if(effect_bridge->audio != NULL){
-	GList *effect_pad;
+	GList *start_effect_pad, *effect_pad;
 
 	g_object_unref(effect_bridge->audio);
 	
 	if(audio == NULL){
 	  /* destroy pad */
-	  effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	  effect_pad =
+	    start_effect_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
 	  
 	  while(effect_pad != NULL){
-	    gtk_widget_destroy(effect_pad->data);
+	    ags_effect_bridge_remove_output_effect_pad(effect_bridge,
+						       effect_pad->data);
 
 	    effect_pad = effect_pad->next;
 	  }
 
-	  effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	  g_list_free(start_effect_pad);
+	  
+	  effect_pad =
+	    start_effect_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 	  
 	  while(effect_pad != NULL){
-	    gtk_widget_destroy(GTK_WIDGET(effect_pad->data));
+	    ags_effect_bridge_remove_input_effect_pad(effect_bridge,
+						      effect_pad->data);
 	    
 	    effect_pad = effect_pad->next;
 	  }
+
+	  g_list_free(start_effect_pad);
 	}
       }
 
@@ -658,14 +674,14 @@ ags_effect_bridge_set_property(GObject *gobject,
 	/* set channel and resize for AgsOutput */
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
 	  effect_pad =
-	    start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	    start_effect_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
 
 	  /* reset */
 	  i = 0;
 
 	  while(effect_pad != NULL && output != NULL){
 	    effect_line =
-	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->grid);
+	      start_effect_line = ags_effect_pad_get_effect_line(AGS_EFFECT_PAD(effect_pad->data));
 
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", output,
@@ -697,9 +713,9 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      effect_pad = g_object_new(effect_bridge->output_pad_type,
 					"channel", output,
 					NULL);
-	      
-	      gtk_container_add((GtkContainer *) effect_bridge->output,
-				GTK_WIDGET(effect_pad));
+
+	      ags_effect_bridge_add_output_effect_pad(effect_bridge,
+						      effect_pad);
 
 	      ags_effect_pad_resize_lines(effect_pad, effect_bridge->output_line_type,
 					  audio_channels, 0);
@@ -718,12 +734,14 @@ ags_effect_bridge_set_property(GObject *gobject,
 	  }else{
 	    /* destroy effect pad */
 	    effect_pad =
-	      start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	      start_effect_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
+
 	    effect_pad = g_list_nth(effect_pad,
 				    output_pads);
 
 	    while(effect_pad != NULL){
-	      gtk_widget_destroy(effect_pad->data);
+	      ags_effect_bridge_remove_output_effect_pad(effect_bridge,
+							 effect_pad->data);
 
 	      effect_pad = effect_pad->next;
 	    }	      
@@ -735,13 +753,13 @@ ags_effect_bridge_set_property(GObject *gobject,
 	/* set channel and resize for AgsInput */
 	if(effect_bridge->input_pad_type != G_TYPE_NONE){
 	  effect_pad =
-	    start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	    start_effect_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 
 	  i = 0;
 
 	  while(effect_pad != NULL && input != NULL){
 	    effect_line =
-	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->grid);
+	      start_effect_line = ags_effect_bridge_get_input_effect_pad(AGS_EFFECT_PAD(effect_pad->data));
 
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", input,
@@ -773,8 +791,9 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      effect_pad = g_object_new(effect_bridge->input_pad_type,
 					"channel", input,
 					NULL);
-	      gtk_container_add((GtkContainer *) effect_bridge->input,
-				GTK_WIDGET(effect_pad));
+
+	      ags_effect_bridge_add_input_effect_pad(effect_bridge,
+						     effect_pad);
 
 	      ags_effect_pad_resize_lines(effect_pad, effect_bridge->input_line_type,
 					  audio_channels, 0);
@@ -793,12 +812,14 @@ ags_effect_bridge_set_property(GObject *gobject,
 	  }else{
 	    /* destroy effect pad */
 	    effect_pad =
-	      start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	      start_effect_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
+	    
 	    effect_pad = g_list_nth(effect_pad,
 				    input_pads);
 	    
 	    while(effect_pad != NULL){
-	      gtk_widget_destroy(effect_pad->data);
+	      ags_effect_bridge_remove_input_effect_pad(effect_bridge,
+							effect_pad->data);
 
 	      effect_pad = effect_pad->next;
 	    }	      
@@ -875,15 +896,15 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
   AgsMachine *machine;
   AgsEffectBridge *effect_bridge;
 
-  GList *effect_pad_list, *effect_pad_list_start;
+  GList *start_effect_pad_list, *effect_pad_list;
 
   effect_bridge = AGS_EFFECT_BRIDGE(connectable);
 
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_bridge->connectable_flags)) != 0){
     return;
   }
 
-  effect_bridge->flags |= AGS_EFFECT_BRIDGE_CONNECTED;
+  effect_bridge->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(effect_bridge),
 						   AGS_TYPE_MACHINE);
@@ -906,8 +927,8 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
   
   /* AgsEffectPad - input */
   if(effect_bridge->input != NULL){
-    effect_pad_list_start = 
-      effect_pad_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+    effect_pad_list =
+      start_effect_pad_list = ags_effect_bridge_get_input_effect_pad(effect_bridge);
     
     while(effect_pad_list != NULL){
       ags_connectable_connect(AGS_CONNECTABLE(effect_pad_list->data));
@@ -915,13 +936,13 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
       effect_pad_list = effect_pad_list->next;
     }
 
-    g_list_free(effect_pad_list_start);
+    g_list_free(start_effect_pad_list);
   }
 
   /* AgsEffectPad - output */
   if(effect_bridge->output != NULL){
-    effect_pad_list_start = 
-      effect_pad_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+    effect_pad_list =
+      start_effect_pad_list = ags_effect_bridge_get_output_effect_pad(effect_bridge);
     
     while(effect_pad_list != NULL){
       ags_connectable_connect(AGS_CONNECTABLE(effect_pad_list->data));
@@ -929,7 +950,7 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
       effect_pad_list = effect_pad_list->next;
     }
 
-    g_list_free(effect_pad_list_start);
+    g_list_free(start_effect_pad_list);
   }
 }
 
@@ -939,15 +960,15 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
   AgsMachine *machine;
   AgsEffectBridge *effect_bridge;
 
-  GList *effect_pad_list, *effect_pad_list_start;
+  GList *start_effect_pad_list, *effect_pad_list;
 
   effect_bridge = AGS_EFFECT_BRIDGE(connectable);
 
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_bridge->connectable_flags)) == 0){
     return;
   }
 
-  effect_bridge->flags &= (~AGS_EFFECT_BRIDGE_CONNECTED);
+  effect_bridge->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(effect_bridge),
 						   AGS_TYPE_MACHINE);
@@ -973,8 +994,8 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
   /* AgsEffectPad - input */
   if(effect_bridge->input != NULL){
-    effect_pad_list_start = 
-      effect_pad_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+    effect_pad_list =
+      start_effect_pad_list = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 
     while(effect_pad_list != NULL){
       ags_connectable_disconnect(AGS_CONNECTABLE(effect_pad_list->data));
@@ -982,13 +1003,13 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
       effect_pad_list = effect_pad_list->next;
     }
 
-    g_list_free(effect_pad_list_start);
+    g_list_free(start_effect_pad_list);
   }
 
   /* AgsEffectPad - output */
   if(effect_bridge->output != NULL){
-    effect_pad_list_start = 
-      effect_pad_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+    effect_pad_list =
+      start_effect_pad_list = ags_effect_bridge_get_output_effect_pad(effect_bridge);
     
     while(effect_pad_list != NULL){
       ags_connectable_disconnect(AGS_CONNECTABLE(effect_pad_list->data));
@@ -996,7 +1017,7 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
       effect_pad_list = effect_pad_list->next;
     }
 
-    g_list_free(effect_pad_list_start);
+    g_list_free(start_effect_pad_list);
   }
 }
 
@@ -1072,6 +1093,150 @@ ags_effect_bridge_format_changed(AgsEffectBridge *effect_bridge,
   g_object_unref((GObject *) effect_bridge);
 }
 
+/**
+ * ags_effect_bridge_get_output_effect_pad:
+ * @effect_bridge: the #AgsEffectBridge
+ * 
+ * Get effect pad output.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectPad
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_bridge_get_output_effect_pad(AgsEffectBridge *effect_bridge)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_bridge->output_effect_pad)));
+}
+
+/**
+ * ags_effect_bridge_add_output_effect_pad:
+ * @effect_bridge: the #AgsEffectBridge
+ * @effect_pad: the #AgsEffectPad
+ * 
+ * Add @effect_pad to output.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
+					AgsEffectPad *effect_pad)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  if(g_list_find(effect_bridge->output_effect_pad, effect_pad) == NULL){
+    effect_bridge->output_effect_pad = g_list_prepend(effect_bridge->output_effect_pad,
+						      effect_pad);
+
+    effect_pad->parent_effect_bridge = effect_bridge;
+    
+    gtk_box_append(effect_bridge->output,
+		   effect_pad);
+  }
+}
+
+/**
+ * ags_effect_bridge_remove_output_effect_pad:
+ * @effect_bridge: the #AgsEffectBridge
+ * @effect_pad: the #AgsEffectPad
+ * 
+ * Remove @effect_pad from output.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bridge_remove_output_effect_pad(AgsEffectBridge *effect_bridge,
+					   AgsEffectPad *effect_pad)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  if(g_list_find(effect_bridge->output_effect_pad, effect_pad) != NULL){
+    effect_bridge->output_effect_pad = g_list_remove(effect_bridge->output_effect_pad,
+						     effect_pad);
+
+    effect_pad->parent_effect_bridge = NULL;
+    
+    gtk_box_remove(effect_bridge->output,
+		   effect_pad);
+  }
+}
+
+/**
+ * ags_effect_bridge_get_input_effect_pad:
+ * @effect_bridge: the #AgsEffectBridge
+ * 
+ * Get effect pad input.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectPad
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_bridge_get_input_effect_pad(AgsEffectBridge *effect_bridge)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_bridge->input_effect_pad)));
+}
+
+/**
+ * ags_effect_bridge_add_input_effect_pad:
+ * @effect_bridge: the #AgsEffectBridge
+ * @effect_pad: the #AgsEffectPad
+ * 
+ * Add @effect_pad to input.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bridge_add_input_effect_pad(AgsEffectBridge *effect_bridge,
+				       AgsEffectPad *effect_pad)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  if(g_list_find(effect_bridge->input_effect_pad, effect_pad) == NULL){
+    effect_bridge->input_effect_pad = g_list_prepend(effect_bridge->input_effect_pad,
+						     effect_pad);
+
+    effect_pad->parent_effect_bridge = effect_bridge;
+    
+    gtk_box_append(effect_bridge->input,
+		   effect_pad);
+  }
+}
+
+/**
+ * ags_effect_bridge_remove_input_effect_pad:
+ * @effect_bridge: the #AgsEffectBridge
+ * @effect_pad: the #AgsEffectPad
+ * 
+ * Remove @effect_pad from input.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_bridge_remove_input_effect_pad(AgsEffectBridge *effect_bridge,
+					  AgsEffectPad *effect_pad)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  if(g_list_find(effect_bridge->input_effect_pad, effect_pad) != NULL){
+    effect_bridge->input_effect_pad = g_list_remove(effect_bridge->input_effect_pad,
+						    effect_pad);
+
+    effect_pad->parent_effect_bridge = NULL;
+    
+    gtk_box_remove(effect_bridge->input,
+		   effect_pad);
+  }
+}
+
 void
 ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint new_size,
@@ -1091,7 +1256,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   /* output */
   if(effect_bridge->output != NULL){
     list =
-      start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+      start_list = ags_effect_bridge_get_output_effect_pad(effect_bridge);
 
     while(list != NULL){
       ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->output_line_type,
@@ -1106,7 +1271,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   /* input */
   if(effect_bridge->input != NULL){
     list =
-      start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+      start_list = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 
     while(list != NULL){
       ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->input_line_type,
@@ -1205,8 +1370,8 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 				    NULL);
 	  ags_effect_pad_resize_lines(effect_pad, effect_bridge->output_line_type,
 				      audio_channels, 0);
-	  gtk_container_add((GtkContainer *) effect_bridge->output,
-			    GTK_WIDGET(effect_pad));
+	  ags_effect_bridge_add_output_effect_pad(effect_bridge,
+						  effect_pad);
 	}
       }else{
 	if(audio_audio_channels > 0 &&
@@ -1222,8 +1387,8 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 				    NULL);
 	  ags_effect_pad_resize_lines(effect_pad, effect_bridge->input_line_type,
 				      audio_channels, 0);
-	  gtk_container_add((GtkContainer *) effect_bridge->input,
-			    GTK_WIDGET(effect_pad));
+	  ags_effect_bridge_add_input_effect_pad(effect_bridge,
+						 effect_pad);
 	}
       }
     }
@@ -1237,27 +1402,28 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
     }
     
     /* connect and show */
-    if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
-      GtkContainer *container;
-
+    if((AGS_CONNECTABLE_CONNECTED & (effect_bridge->connectable_flags)) != 0){
       GList *start_list, *list;
 
-      container = (GtkContainer *) ((channel_type == AGS_TYPE_OUTPUT) ? effect_bridge->output: effect_bridge->input);
-
-      if(container != NULL){
-	start_list = gtk_container_get_children(container);
-	list = g_list_nth(start_list,
-			  old_size);
+      start_list = NULL;
       
-	while(list != NULL){
-	  ags_connectable_connect(AGS_CONNECTABLE(list->data));
-	  gtk_widget_show_all(list->data);
-	
-	  list = list->next;
-	}
-
-	g_list_free(start_list);
+      if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+	start_list = ags_effect_bridge_get_output_effect_pad(effect_bridge);
+      }else{
+	start_list = ags_effect_bridge_get_input_effect_pad(effect_bridge);
       }
+
+      list = g_list_nth(start_list,
+			old_size);
+      
+      while(list != NULL){
+	ags_connectable_connect(AGS_CONNECTABLE(list->data));
+	gtk_widget_show(list->data);
+	
+	list = list->next;
+      }
+
+      g_list_free(start_list);
     }
   }else{
     GList *start_list, *list;
@@ -1265,26 +1431,34 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
     list = 
       start_list = NULL;
     
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
       if(effect_bridge->output != NULL){
-	start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	start_list = ags_effect_bridge_get_output_effect_pad(effect_bridge);
 	list = g_list_nth(start_list,
 			  new_size);
+
+	for(i = 0; list != NULL && i < new_size - old_size; i++){
+	  ags_effect_bridge_remove_output_effect_pad(effect_bridge,
+						     list->data);
+	  	  
+	  list = list->next;
+	}
       }
     }else{
       if(effect_bridge->input != NULL){
-	start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	start_list = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 	list = g_list_nth(start_list,
 			  new_size);
+
+	for(i = 0; list != NULL && i < new_size - old_size; i++){
+	  ags_effect_bridge_remove_input_effect_pad(effect_bridge,
+						    list->data);
+
+	  list = list->next;
+	}
       }
     }
-    
-    for(i = 0; list != NULL && i < new_size - old_size; i++){
-      gtk_widget_destroy(list->data);
-
-      list = list->next;
-    }
-    
+        
     g_list_free(start_list);
   }
 
@@ -1365,7 +1539,7 @@ ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge)
 GList*
 ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
 {
-  GList *effect_pad, *effect_pad_start;
+  GList *start_effect_pad, *effect_pad;
   
   GList *port, *tmp_port;
 
@@ -1373,8 +1547,8 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
 
   /* find output ports */
   if(effect_bridge->output != NULL){
-    effect_pad_start = 
-      effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+    effect_pad =
+      start_effect_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
 
     while(effect_pad != NULL){
       tmp_port = ags_effect_pad_find_port(AGS_EFFECT_PAD(effect_pad->data));
@@ -1389,13 +1563,13 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
       effect_pad = effect_pad->next;
     }
 
-    g_list_free(effect_pad_start);
+    g_list_free(start_effect_pad);
   }
 
   /* find input ports */
-  if(effect_bridge->input != NULL){
-    effect_pad_start = 
-      effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+  if(effect_bridge->input != NULL){ 
+    effect_pad =
+      start_effect_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
 
     while(effect_pad != NULL){
       tmp_port = ags_effect_pad_find_port(AGS_EFFECT_PAD(effect_pad->data));
@@ -1410,12 +1584,12 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
       effect_pad = effect_pad->next;
     }
     
-    g_list_free(effect_pad_start);
+    g_list_free(start_effect_pad);
   }
 
   /* find output bulk ports */
   if(effect_bridge->bulk_output != NULL){
-    tmp_port = ags_effect_bulk_find_port((AgsEffectBulk *) effect_bridge->bulk_output);
+    tmp_port = ags_effect_bulk_find_port(AGS_EFFECT_BULK(effect_bridge->bulk_output));
 
     if(port != NULL){
       port = g_list_concat(port,
@@ -1427,7 +1601,7 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
 
   /* find input bulk ports */
   if(effect_bridge->bulk_output != NULL){
-    tmp_port = ags_effect_bulk_find_port((AgsEffectBulk *) effect_bridge->bulk_output);
+    tmp_port = ags_effect_bulk_find_port(AGS_EFFECT_BULK(effect_bridge->bulk_output));
 
     if(port != NULL){
       port = g_list_concat(port,

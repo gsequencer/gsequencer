@@ -132,64 +132,51 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_orientable_set_orientation(GTK_ORIENTABLE(performance_preferences),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing(performance_preferences,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   performance_preferences->flags = 0;
   
   /* auto-sense */
   performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Auto-sense on stream"));
-  gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(performance_preferences->stream_auto_sense),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(performance_preferences),
+		 GTK_WIDGET(performance_preferences->stream_auto_sense));
 
   /* super threaded - audio */
   performance_preferences->super_threaded_audio = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - audio"));
-  gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(performance_preferences->super_threaded_audio),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(performance_preferences),
+		 GTK_WIDGET(performance_preferences->super_threaded_audio));
 
   /* super threaded - channel */
   performance_preferences->super_threaded_channel = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - channel"));
-  gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(performance_preferences->super_threaded_channel),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(performance_preferences),
+		 GTK_WIDGET(performance_preferences->super_threaded_channel));
 
   /* thread-pool - max unused threads */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(GTK_BOX(performance_preferences),
+		 GTK_WIDGET(hbox));
 
   label = (GtkLabel *) gtk_label_new(i18n("thread pool - max unused threads"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(hbox),
+		 GTK_WIDGET(label));
 
   performance_preferences->thread_pool_max_unused_threads = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0,
 													     (gdouble) AGS_THREAD_POOL_DEFAULT_MAX_THREADS,
 													     1.0);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(performance_preferences->thread_pool_max_unused_threads),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(hbox),
+		 GTK_WIDGET(performance_preferences->thread_pool_max_unused_threads));
   
   /* max precision */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(GTK_BOX(performance_preferences),
+		 GTK_WIDGET(hbox));
 
   label = (GtkLabel *) gtk_label_new(i18n("max precision of threads [Hz]"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(hbox),
+		 GTK_WIDGET(label));
 
   performance_preferences->max_precision = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(performance_preferences->max_precision,
@@ -198,10 +185,8 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 				 "250");
   gtk_combo_box_text_append_text(performance_preferences->max_precision,
 				 "1000");
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(performance_preferences->max_precision),
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(GTK_BOX(hbox),
+		 GTK_WIDGET(performance_preferences->max_precision));
 }
 
 void
@@ -217,7 +202,7 @@ ags_performance_preferences_connect(AgsConnectable *connectable)
 
   performance_preferences->flags |= AGS_PERFORMANCE_PREFERENCES_CONNECTED;
   
-  g_signal_connect_after(G_OBJECT(performance_preferences->super_threaded_channel), "clicked",
+  g_signal_connect_after(G_OBJECT(performance_preferences->super_threaded_channel), "toggled",
 			 G_CALLBACK(ags_performance_preferences_super_threaded_channel_callback), performance_preferences);
 }
 
@@ -235,7 +220,7 @@ ags_performance_preferences_disconnect(AgsConnectable *connectable)
   performance_preferences->flags &= (~AGS_PERFORMANCE_PREFERENCES_CONNECTED);
   
   g_object_disconnect(G_OBJECT(performance_preferences->super_threaded_channel),
-		      "any_signal::clicked",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_performance_preferences_super_threaded_channel_callback),
 		      performance_preferences,
 		      NULL);
@@ -263,7 +248,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   config = ags_config_get_instance();
 
   /* auto-sense */
-  str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true": "false"));
+  str = g_strdup(((gtk_check_button_get_active(performance_preferences->stream_auto_sense)) ? "true": "false"));
   ags_config_set_value(config,
 		       AGS_CONFIG_RECALL,
 		       "auto-sense",
@@ -271,19 +256,19 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   g_free(str);
 
   /* restore thread config */
-  if(gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_audio) ||
-     gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_channel)){
+  if(gtk_check_button_get_active(performance_preferences->super_threaded_audio) ||
+     gtk_check_button_get_active(performance_preferences->super_threaded_channel)){
     ags_config_set_value(config,
 			 AGS_CONFIG_THREAD,
 			 "model",
 			 "super-threaded");
 
-    if(gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_channel)){
+    if(gtk_check_button_get_active(performance_preferences->super_threaded_channel)){
       ags_config_set_value(config,
 			   AGS_CONFIG_THREAD,
 			   "super-threaded-scope",
 			   "channel");
-    }else if(gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_audio)){
+    }else if(gtk_check_button_get_active(performance_preferences->super_threaded_audio)){
       ags_config_set_value(config,
 			   AGS_CONFIG_THREAD,
 			   "super-threaded-scope",
@@ -370,10 +355,10 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   str = ags_config_get_value(config,
 			     AGS_CONFIG_RECALL,
 			     "auto-sense");
-  gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->stream_auto_sense,
-			       !g_strcmp0("true",
-					  str));
-
+  gtk_check_button_set_active(performance_preferences->stream_auto_sense,
+			      !g_strcmp0("true",
+					 str));
+  
   /*  */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_THREAD,
@@ -383,13 +368,13 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
     if(!g_ascii_strncasecmp(str,
 			    "audio",
 			    6)){
-      gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->super_threaded_audio,
-				   TRUE);
+      gtk_check_button_set_active(performance_preferences->super_threaded_audio,
+				  TRUE);
     }else if(!g_ascii_strncasecmp(str,
 				  "channel",
 				  8)){
-      gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->super_threaded_channel,
-				   TRUE);
+      gtk_check_button_set_active(performance_preferences->super_threaded_channel,
+				  TRUE);
     }
   }
   

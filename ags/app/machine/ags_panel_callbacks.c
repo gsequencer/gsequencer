@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,29 +20,3 @@
 #include <ags/app/machine/ags_panel_callbacks.h>
 
 #include <ags/app/ags_window.h>
-
-void
-ags_panel_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPanel *panel)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_PANEL)->counter);
-
-  g_object_set(AGS_MACHINE(panel),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_PANEL);
-
-  g_free(str);
-}

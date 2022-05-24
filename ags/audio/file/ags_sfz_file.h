@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,19 +48,6 @@ typedef struct _AgsSFZFile AgsSFZFile;
 typedef struct _AgsSFZFileClass AgsSFZFileClass;
 
 /**
- * AgsSFZFileFlags:
- * @AGS_SFZ_FILE_ADDED_TO_REGISTRY: the sfz_file was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_SFZ_FILE_CONNECTED: indicates the sfz_file was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsSFZFile by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_SFZ_FILE_ADDED_TO_REGISTRY    = 1,
-  AGS_SFZ_FILE_CONNECTED            = 1 <<  1,
-}AgsSFZFileFlags;
-
-/**
  * AgsSFZLevel:
  * @AGS_SFZ_LEVEL_FILENAME: filename
  * @AGS_SFZ_LEVEL_SAMPLE: sample
@@ -77,6 +64,7 @@ struct _AgsSFZFile
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 

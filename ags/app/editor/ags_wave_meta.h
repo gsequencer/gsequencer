@@ -49,7 +49,7 @@ typedef enum{
 
 struct _AgsWaveMeta
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -69,7 +69,7 @@ struct _AgsWaveMeta
 
 struct _AgsWaveMetaClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_wave_meta_get_type(void);

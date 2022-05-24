@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,14 +41,13 @@ G_BEGIN_DECLS
 #define AGS_IS_MIDI_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MIDI_DIALOG))
 #define AGS_MIDI_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MIDI_DIALOG, AgsMidiDialogClass))
 
-#define AGS_MIDI_DIALOG_DEFAULT_VERSION "0.7.0"
-#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "CEST 02-11-2015 19:44"
+#define AGS_MIDI_DIALOG_DEFAULT_VERSION "4.0.0"
+#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "Tue Mar 01 13:15:36 UTC 2022"
 
 typedef struct _AgsMidiDialog AgsMidiDialog;
 typedef struct _AgsMidiDialogClass AgsMidiDialogClass;
 
 typedef enum{
-  AGS_MIDI_DIALOG_CONNECTED      = 1,
   AGS_MIDI_DIALOG_IO_OPTIONS     = 1 <<  1,
   AGS_MIDI_DIALOG_MAPPING        = 1 <<  2,
   AGS_MIDI_DIALOG_DEVICE         = 1 <<  3,
@@ -59,6 +58,7 @@ struct _AgsMidiDialog
   GtkDialog dialog;
 
   guint flags;
+  guint connectable_flags;
   
   gchar *version;
   gchar *build_id;

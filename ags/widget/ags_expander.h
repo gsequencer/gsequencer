@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,18 +46,19 @@ typedef enum{
 
 struct _AgsExpander
 {
-  GtkExpander expander;
-
+  GtkBox box;
+  
   guint flags;
 
-  GtkTable *table;
+  GtkExpander *expander;
+  GtkGrid *grid;
 
   GList *children;
 };
 
 struct _AgsExpanderClass
 {
-  GtkExpanderClass expander;
+  GtkBoxClass box;
 };
 
 struct _AgsExpanderChild
@@ -87,7 +88,7 @@ void ags_expander_add(AgsExpander *expander,
 void ags_expander_remove(AgsExpander *expander,
 			 GtkWidget *widget);
 
-AgsExpander* ags_expander_new(guint width, guint height);
+AgsExpander* ags_expander_new();
 
 G_END_DECLS
 

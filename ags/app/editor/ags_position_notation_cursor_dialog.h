@@ -44,15 +44,11 @@ G_BEGIN_DECLS
 typedef struct _AgsPositionNotationCursorDialog AgsPositionNotationCursorDialog;
 typedef struct _AgsPositionNotationCursorDialogClass AgsPositionNotationCursorDialogClass;
 
-typedef enum{
-  AGS_POSITION_NOTATION_CURSOR_DIALOG_CONNECTED   = 1,
-}AgsPositionNotationCursorDialogFlags;
-
 struct _AgsPositionNotationCursorDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
   GtkCheckButton *set_focus;
 

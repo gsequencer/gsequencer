@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,8 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_property_collection_editor.h>
+#include <ags/app/ags_connection_editor_listing.h>
+#include <ags/app/ags_connection_editor_collection.h>
 
 G_BEGIN_DECLS
 
@@ -41,25 +42,26 @@ G_BEGIN_DECLS
 #define AGS_IS_CONNECTION_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONNECTION_EDITOR))
 #define AGS_CONNECTION_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONNECTION_EDITOR, AgsConnectionEditorClass))
 
-#define AGS_CONNECTION_EDITOR_DEFAULT_VERSION "2.0.0"
-#define AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID "Sun Aug 26 19:06:10 UTC 2018"
+#define AGS_CONNECTION_EDITOR_DEFAULT_VERSION "4.0.0"
+#define AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID "Mon Feb 28 04:39:43 UTC 2022"
 
 typedef struct _AgsConnectionEditor AgsConnectionEditor;
 typedef struct _AgsConnectionEditorClass AgsConnectionEditorClass;
 
 typedef enum{
-  AGS_CONNECTION_EDITOR_CONNECTED                 = 1,
-  AGS_CONNECTION_EDITOR_CLOSING                   = 1 <<  1,
-  AGS_CONNECTION_EDITOR_SHOW_OUTPUT               = 1 <<  2,
-  AGS_CONNECTION_EDITOR_SHOW_INPUT                = 1 <<  3,
+  AGS_CONNECTION_EDITOR_SHOW_OUTPUT             = 1,
+  AGS_CONNECTION_EDITOR_SHOW_INPUT              = 1 <<  1,
+  AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT   = 1 <<  2,
+  AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT    = 1 <<  3,
 }AgsConnectionEditorFlags;
 
 struct _AgsConnectionEditor
 {
-  GtkDialog dialog;
+  GtkGrid grid;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *version;
   gchar *build_id;
 
@@ -67,26 +69,22 @@ struct _AgsConnectionEditor
 
   GtkNotebook *notebook;
 
-  GtkScrolledWindow *output_listing_editor_scrolled_window;
-  AgsPropertyCollectionEditor *output_listing_editor;
+  GtkScrolledWindow *output_listing_scrolled_window;
+  AgsConnectionEditorListing *output_editor_listing;
 
-  GtkScrolledWindow *input_listing_editor_scrolled_window;
-  AgsPropertyCollectionEditor *input_listing_editor;
+  GtkScrolledWindow *output_collection_scrolled_window;
+  AgsConnectionEditorCollection *output_editor_collection;
 
-  GtkScrolledWindow *output_connection_editor_scrolled_window;
-  AgsPropertyCollectionEditor *output_connection_editor;
-
-  GtkScrolledWindow *input_connection_editor_scrolled_window;
-  AgsPropertyCollectionEditor *input_connection_editor;
+  GtkScrolledWindow *input_listing_scrolled_window;  
+  AgsConnectionEditorListing *input_editor_listing;
   
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
+  GtkScrolledWindow *input_collection_scrolled_window;
+  AgsConnectionEditorCollection *input_editor_collection;
 };
 
 struct _AgsConnectionEditorClass
 {
-  GtkDialogClass dialog;
+  GtkGridClass grid;
 
   void (*set_machine)(AgsConnectionEditor *connection_editor,
 		      AgsMachine *machine);

@@ -35,8 +35,6 @@ void ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window);
 void ags_online_help_window_connect(AgsConnectable *connectable);
 void ags_online_help_window_disconnect(AgsConnectable *connectable);
 
-gboolean ags_online_help_window_delete_event(GtkWidget *widget, GdkEventAny *event);
-
 static gpointer ags_online_help_window_parent_class = NULL;
 
 GType
@@ -81,15 +79,8 @@ ags_online_help_window_get_type()
 
 void
 ags_online_help_window_class_init(AgsOnlineHelpWindowClass *online_help_window)
-{
-  GtkWidgetClass *widget;
-  
+{  
   ags_online_help_window_parent_class = g_type_class_peek_parent(online_help_window);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) online_help_window;
-
-  widget->delete_event = ags_online_help_window_delete_event;
 }
 
 void
@@ -118,139 +109,9 @@ ags_online_help_window_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 {
-#if defined(AGS_WITH_WEBKIT)
-  GtkBox *vbox;
-  GtkBox *navigation_hbox;
-  GtkLabel *label;
-  
-  gchar *start_filename;
 
-  g_object_set(online_help_window,
-	       "title", i18n("online help"),
-	       NULL);
-  
-  g_object_set(online_help_window,
-	       "default-width", 800,
-	       "default-height", 600,
-	       NULL);
-
-  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-  gtk_container_add((GtkContainer *) online_help_window,
-		    (GtkWidget *) vbox);
-
-  /* navigation */
-  navigation_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					   0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) navigation_hbox,
-		     FALSE, FALSE,
-		     0);
-
-  online_help_window->home = (GtkButton *) gtk_button_new_from_icon_name("go-home",
-									 GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start((GtkBox *) navigation_hbox,
-		     (GtkWidget *) online_help_window->home,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
-  
-  online_help_window->prev = (GtkButton *) gtk_button_new_from_icon_name("go-previous",
-									 GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start((GtkBox *) navigation_hbox,
-		     (GtkWidget *) online_help_window->prev,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
-  
-  online_help_window->next = (GtkButton *) gtk_button_new_from_icon_name("go-next",
-									 GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start((GtkBox *) navigation_hbox,
-		     (GtkWidget *) online_help_window->next,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
-
-  label = (GtkLabel *) gtk_label_new(i18n("Place"));
-  gtk_box_pack_start((GtkBox *) navigation_hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);  
-  
-  online_help_window->location = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) navigation_hbox,
-		     (GtkWidget *) online_help_window->location,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
-
-  /* webkit */
-  start_filename = NULL;
-
-#if defined(AGS_ONLINE_HELP_START_FILENAME)
-  start_filename = g_strdup(AGS_ONLINE_HELP_START_FILENAME);
-#else
-  if((start_filename = getenv("AGS_ONLINE_HELP_START_FILENAME")) != NULL){
-    start_filename = g_strdup(start_filename);    
-  }else{
-#if defined (AGS_W32API)
-    AgsApplicationContext *application_context;
-    
-    gchar *app_dir;
-    
-    application_context = ags_application_context_get_instance();
-
-    app_dir = NULL;
-
-    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
-    }
-  
-    start_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\html\\index.html",
-				     g_get_current_dir());
-    
-    if(!g_file_test(start_filename,
-		    G_FILE_TEST_IS_REGULAR)){
-      g_free(start_filename);
-
-      if(g_path_is_absolute(app_dir)){
-	start_filename = g_strdup_printf("%s\\%s",
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
-      }else{
-	start_filename = g_strdup_printf("%s\\%s\\%s",
-					 g_get_current_dir(),
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
-      }
-    }
-
-    g_free(app_dir);
-#else
-#if defined(AGS_WITH_SINGLE_DOCDIR)
-    start_filename = g_strdup_printf("file://%s/user-manual/index.html",
-				     AGS_DOC_DIR);
-#else
-    start_filename = g_strdup_printf("file://%s/doc/gsequencer-doc/html/index.html",
-				     AGS_DATA_DIR);
-#endif
-#endif
-  }
-#endif /* defined(AGS_ONLINE_HELP_START_FILENAME) */
-
-  online_help_window->web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(online_help_window->web_view),
-		     TRUE, TRUE,
-		     0);
-
-  g_signal_connect(GTK_WIDGET(online_help_window->web_view), "load-changed",
-		   G_CALLBACK(ags_online_help_window_load_changed), online_help_window);
-  
-  online_help_window->start_filename = start_filename;
-
-  webkit_web_view_load_uri(online_help_window->web_view,
-			   start_filename);
-#else
 #if defined(AGS_WITH_POPPLER)
-  GtkVBox *vbox;
+  GtkBox *vbox;
   GtkGrid *grid;
 
   GtkAdjustment *vadjustment, *hadjustment;
@@ -269,9 +130,12 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   GError *error;
 
   g_object_set(online_help_window,
-	       "title", i18n("online help"),
+	       "title", i18n("Online help"),
 	       NULL);
 
+  gtk_window_set_hide_on_close((GtkWindow *) online_help_window,
+			       TRUE);
+  
   width = 800.0;
   height = 600.0;
   
@@ -280,16 +144,14 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 	       "default-height", (gint) height,
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_container_add((GtkContainer *) online_help_window,
-		    (GtkWidget *) vbox);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_window_set_child(online_help_window,
+		       (GtkWidget *) vbox);
 
   grid = gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) grid,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) vbox,
+		 (GtkWidget *) grid);
   
   online_help_window->pdf_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_vexpand(online_help_window->pdf_drawing_area,
@@ -304,7 +166,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   vadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
 
-  online_help_window->pdf_vscrollbar = gtk_vscrollbar_new(vadjustment);
+  online_help_window->pdf_vscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+							 vadjustment);
   gtk_grid_attach(grid,
 		  (GtkWidget *) online_help_window->pdf_vscrollbar,
 		  1, 0,
@@ -312,7 +175,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   
   hadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
   
-  online_help_window->pdf_hscrollbar = gtk_hscrollbar_new(hadjustment);
+  online_help_window->pdf_hscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+							 hadjustment);
   gtk_grid_attach(grid,
 		  (GtkWidget *) online_help_window->pdf_hscrollbar,
 		  0, 1,
@@ -427,7 +291,6 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 			   15.0,
 			   (double) 100.0);
 #endif
-#endif
 }
 
 void
@@ -437,35 +300,26 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 
   online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
 
-  if((AGS_ONLINE_HELP_WINDOW_CONNECTED & (online_help_window->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) != 0){
     return;
   }
 
-  online_help_window->flags |= AGS_ONLINE_HELP_WINDOW_CONNECTED;
+  online_help_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-#if defined(AGS_WITH_WEBKIT)
-  g_signal_connect(G_OBJECT(online_help_window->home), "clicked",
-		   G_CALLBACK(ags_online_help_window_home_callback), online_help_window);
-
-  g_signal_connect(G_OBJECT(online_help_window->next), "clicked",
-		   G_CALLBACK(ags_online_help_window_next_callback), online_help_window);
-
-  g_signal_connect(G_OBJECT(online_help_window->prev), "clicked",
-		   G_CALLBACK(ags_online_help_window_prev_callback), online_help_window);
-#else
 #if defined(AGS_WITH_POPPLER)
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "draw",
-			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback), online_help_window);
+  gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
+				 ags_online_help_window_pdf_drawing_area_draw_callback,
+				 online_help_window,
+				 NULL);
 
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "configure-event",
-			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_configure_callback), online_help_window);
+  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "resize",
+			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_resize_callback), online_help_window);
 
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_vscrollbar), "value-changed",
+  g_signal_connect_after(G_OBJECT(gtk_scrollbar_get_adjustment(online_help_window->pdf_vscrollbar)), "value-changed",
 			 G_CALLBACK(ags_online_help_window_pdf_vscrollbar_value_changed_callback), online_help_window);
 
-  g_signal_connect_after(G_OBJECT(online_help_window->pdf_hscrollbar), "value-changed",
+  g_signal_connect_after(G_OBJECT(gtk_scrollbar_get_adjustment(online_help_window->pdf_hscrollbar)), "value-changed",
 			 G_CALLBACK(ags_online_help_window_pdf_hscrollbar_value_changed_callback), online_help_window);
-#endif  
 #endif  
 }
 
@@ -476,38 +330,21 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 
   online_help_window = AGS_ONLINE_HELP_WINDOW(connectable);
 
-  if((AGS_ONLINE_HELP_WINDOW_CONNECTED & (online_help_window->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (online_help_window->connectable_flags)) == 0){
     return;
   }
 
-  online_help_window->flags &= (~AGS_ONLINE_HELP_WINDOW_CONNECTED);
+  online_help_window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-#if defined(AGS_WITH_WEBKIT)
-  g_object_disconnect(G_OBJECT(online_help_window->home),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_online_help_window_home_callback),
-		      online_help_window,
-		      NULL);
-
-  g_object_disconnect(G_OBJECT(online_help_window->next),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_online_help_window_next_callback),
-		      online_help_window,
-		      NULL);
-
-  g_object_disconnect(G_OBJECT(online_help_window->prev),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_online_help_window_prev_callback),
-		      online_help_window,
-		      NULL);
-#else
 #if defined(AGS_WITH_POPPLER)
+  gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
+				 NULL,
+				 online_help_window,
+				 NULL);
+
   g_object_disconnect(G_OBJECT(online_help_window->pdf_drawing_area),
-		      "any_signal::draw",
-		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback),
-		      online_help_window,
-		      "any_signal::configure-event",
-		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_configure_callback),
+		      "any_signal::resize",
+		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_resize_callback),
 		      online_help_window,
 		      NULL);
 
@@ -523,19 +360,11 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 		      online_help_window,
 		      NULL);
 #endif  
-#endif  
-}
-
-gboolean
-ags_online_help_window_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  return(TRUE);
 }
 
 /**
  * ags_online_help_window_new:
+ * @transient_for: the #GtkWindow
  *
  * Creates an #AgsOnlineHelpWindow
  *
@@ -544,11 +373,12 @@ ags_online_help_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * Since: 3.5.0
  */
 AgsOnlineHelpWindow*
-ags_online_help_window_new()
+ags_online_help_window_new(GtkWindow *transient_for)
 {
   AgsOnlineHelpWindow *online_help_window;
 
   online_help_window = (AgsOnlineHelpWindow *) g_object_new(AGS_TYPE_ONLINE_HELP_WINDOW,
+							    "transient-for", transient_for,
 							    NULL);
 
   return(online_help_window);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,28 +20,3 @@
 #include <ags/app/machine/ags_spectrometer_callbacks.h>
 
 #include <ags/app/ags_window.h>
-
-void
-ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSpectrometer *spectrometer)
-{
-  AgsWindow *window;
-
-  gchar *str;
-  
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) spectrometer, AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_SPECTROMETER)->counter);
-
-  g_object_set(AGS_MACHINE(spectrometer),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_SPECTROMETER);
-  g_free(str);
-}

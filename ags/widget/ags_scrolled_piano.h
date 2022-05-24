@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,26 +41,21 @@ typedef struct _AgsScrolledPianoClass AgsScrolledPianoClass;
 
 struct _AgsScrolledPiano
 {
-  GtkBin bin;
-
-  guint margin_top;
-  guint margin_bottom;
-  guint margin_left;
-  guint margin_right;
+  GtkGrid grid;
   
-  GtkViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
 
   AgsPiano *piano;
 };
 
 struct _AgsScrolledPianoClass
 {
-  GtkBinClass bin;
+  GtkGridClass grid;
 };
 
 GType ags_scrolled_piano_get_type(void);
 
-GtkViewport* ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano);
+GtkScrolledWindow* ags_scrolled_piano_get_scrolled_window(AgsScrolledPiano *scrolled_piano);
 
 AgsPiano* ags_scrolled_piano_get_piano(AgsScrolledPiano *scrolled_piano);
 

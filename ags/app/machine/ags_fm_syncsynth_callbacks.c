@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,32 +25,6 @@
 #include <math.h>
 
 void
-ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFMSyncsynth *fm_syncsynth)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_FM_SYNCSYNTH)->counter);
-
-  g_object_set(AGS_MACHINE(fm_syncsynth),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_FM_SYNCSYNTH);
-
-  g_free(str);
-}
-
-void
 ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 					     guint samplerate, guint old_samplerate,
 					     gpointer user_data)
@@ -58,42 +32,31 @@ ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
   GList *start_list, *list;
 
   list = 
-    start_list = gtk_container_get_children((GtkContainer *) AGS_FM_SYNCSYNTH(machine)->fm_oscillator);
+    start_list = ags_fm_syncsynth_get_fm_oscillator(AGS_FM_SYNCSYNTH(machine));
 
   while(list != NULL){
     AgsFMOscillator *fm_oscillator;
-
-    GList *start_child, *child;
     
     guint i;
-
-    start_child = gtk_container_get_children((GtkContainer *) list->data);
-
-    child = ags_list_util_find_type(start_child,
-				    AGS_TYPE_FM_OSCILLATOR);
-
-    if(child != NULL){
-      fm_oscillator = child->data;
+    
+    fm_oscillator = list->data;
   
-      gtk_spin_button_set_value(fm_oscillator->attack,
-				samplerate * (gtk_spin_button_get_value(fm_oscillator->attack) / old_samplerate));
+    gtk_spin_button_set_value(fm_oscillator->attack,
+			      samplerate * (gtk_spin_button_get_value(fm_oscillator->attack) / old_samplerate));
 
-      gtk_spin_button_set_value(fm_oscillator->frame_count,
-				samplerate * (gtk_spin_button_get_value(fm_oscillator->frame_count) / old_samplerate));
+    gtk_spin_button_set_value(fm_oscillator->frame_count,
+			      samplerate * (gtk_spin_button_get_value(fm_oscillator->frame_count) / old_samplerate));
   
-      gtk_spin_button_set_value(fm_oscillator->phase,
-				samplerate * (gtk_spin_button_get_value(fm_oscillator->phase) / old_samplerate));
+    gtk_spin_button_set_value(fm_oscillator->phase,
+			      samplerate * (gtk_spin_button_get_value(fm_oscillator->phase) / old_samplerate));
 
-      for(i = 0; i < fm_oscillator->sync_point_count; i++){
-	gtk_spin_button_set_value(fm_oscillator->sync_point[i * 2],
-				  samplerate * (gtk_spin_button_get_value(fm_oscillator->sync_point[i * 2]) / old_samplerate));
+    for(i = 0; i < fm_oscillator->sync_point_count; i++){
+      gtk_spin_button_set_value(fm_oscillator->sync_point[i * 2],
+				samplerate * (gtk_spin_button_get_value(fm_oscillator->sync_point[i * 2]) / old_samplerate));
 			      
-	gtk_spin_button_set_value(fm_oscillator->sync_point[i * 2 + 1],
-				  samplerate * (gtk_spin_button_get_value(fm_oscillator->sync_point[i * 2 + 1]) / old_samplerate));
-      }
+      gtk_spin_button_set_value(fm_oscillator->sync_point[i * 2 + 1],
+				samplerate * (gtk_spin_button_get_value(fm_oscillator->sync_point[i * 2 + 1]) / old_samplerate));
     }
-
-    g_list_free(start_child);
     
     list = list->next;
   }
@@ -137,32 +100,27 @@ ags_fm_syncsynth_add_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth)
 void
 ags_fm_syncsynth_remove_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth)
 {
-  GList *list, *list_start;
-  GList *child_start;
+  GList *start_list, *list;
 
   guint nth;
   
   list =
-    list_start = gtk_container_get_children(GTK_CONTAINER(fm_syncsynth->fm_oscillator));
+    start_list = ags_fm_syncsynth_get_fm_oscillator(fm_syncsynth);
 
   nth = 0;
   
   while(list != NULL){
-    child_start = gtk_container_get_children(GTK_CONTAINER(list->data));
-
-    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(child_start->data))){
+    if(gtk_check_button_get_active(AGS_FM_OSCILLATOR(list->data)->selector)){
       ags_fm_syncsynth_remove_fm_oscillator(fm_syncsynth,
 					    nth);
     }else{
       nth++;
     }
     
-    g_list_free(child_start);
-    
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void

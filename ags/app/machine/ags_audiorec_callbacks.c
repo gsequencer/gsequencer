@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,31 +27,6 @@ void ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
 					 AgsAudiorec *audiorec);
 
 void
-ags_audiorec_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsAudiorec *audiorec)
-{
-  AgsWindow *window;
-
-  gchar *str;
-  
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) audiorec, AGS_TYPE_WINDOW));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_AUDIOREC)->counter);
-
-  g_object_set(AGS_MACHINE(audiorec),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_AUDIOREC);
-  g_free(str);
-}
-
-void
 ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
 {
   GtkFileChooserDialog *dialog;
@@ -62,14 +37,15 @@ ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   audiorec->open_dialog = 
     dialog = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
-								  (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) audiorec),
+								  (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) audiorec,
+													AGS_TYPE_WINDOW),
 								  GTK_FILE_CHOOSER_ACTION_OPEN,
 								  i18n("_OK"), GTK_RESPONSE_ACCEPT,
 								  i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
-  gtk_widget_show_all((GtkWidget *) dialog);
+  gtk_widget_show((GtkWidget *) dialog);
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_audiorec_open_response_callback), audiorec);
@@ -80,17 +56,22 @@ ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
 				    AgsAudiorec *audiorec)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    GFile *file;
+    
     gchar *filename;
 
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
-    gtk_entry_set_text(audiorec->filename,
-		       filename);
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
+    
+    filename = g_file_get_path(file);
+    gtk_editable_set_text(GTK_EDITABLE(audiorec->filename),
+			  filename);
     ags_audiorec_open_filename(audiorec,
 			       filename);
   }
 
   audiorec->open_dialog = NULL;
-  gtk_widget_destroy(widget);
+  
+  gtk_window_destroy((GtkWindow *) widget);
 }
 
 void
@@ -102,7 +83,7 @@ ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GValue capture_mode_value = {0,};
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     g_value_init(&capture_mode_value,
 		 G_TYPE_UINT64);
 
@@ -171,7 +152,7 @@ ags_audiorec_replace_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GValue capture_mode_value = {0,};
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     g_value_init(&capture_mode_value,
 		 G_TYPE_UINT64);
 
@@ -240,7 +221,7 @@ ags_audiorec_mix_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GValue capture_mode_value = {0,};
 
-  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+  if(gtk_check_button_get_active((GtkCheckButton *) button)){
     g_value_init(&capture_mode_value,
 		 G_TYPE_UINT64);
 

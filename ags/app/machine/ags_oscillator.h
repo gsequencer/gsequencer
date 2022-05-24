@@ -48,7 +48,7 @@ typedef struct _AgsOscillator AgsOscillator;
 typedef struct _AgsOscillatorClass AgsOscillatorClass;
 
 typedef enum{
-  AGS_OSCILLATOR_CONNECTED   = 1,
+  AGS_OSCILLATOR_SHOW_SELECTOR   = 1,
 }AgsOscillatorFlags;
 
 struct _AgsOscillator
@@ -56,6 +56,9 @@ struct _AgsOscillator
   GtkFrame frame;
 
   guint flags;
+  guint connectable_flags;
+  
+  GtkCheckButton *selector;
   
   GtkComboBox *wave;
   gulong wave_handler;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -301,6 +301,7 @@ ags_audio_unit_server_init(AgsAudioUnitServer *audio_unit_server)
 {
   /* flags */
   audio_unit_server->flags = 0;
+  audio_unit_server->connectable_flags = 0;
 
   /* server mutex */
   g_rec_mutex_init(&(audio_unit_server->obj_mutex));
@@ -669,10 +670,19 @@ ags_audio_unit_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_unit_server_mutex;
+
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* check is added */
-  is_ready = ags_audio_unit_server_test_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_ADDED_TO_REGISTRY);
+  /* get audio unit server mutex */
+  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+
+  /* check is ready */
+  g_rec_mutex_lock(audio_unit_server_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_unit_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_unit_server_mutex);
   
   return(is_ready);
 }
@@ -682,13 +692,22 @@ ags_audio_unit_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsAudioUnitServer *audio_unit_server;
 
+  GRecMutex *audio_unit_server_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  ags_audio_unit_server_set_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_ADDED_TO_REGISTRY);
+  /* get audio unit server mutex */
+  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+
+  g_rec_mutex_lock(audio_unit_server_mutex);
+
+  audio_unit_server->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 void
@@ -696,13 +715,22 @@ ags_audio_unit_server_remove_from_registry(AgsConnectable *connectable)
 {
   AgsAudioUnitServer *audio_unit_server;
 
+  GRecMutex *audio_unit_server_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  ags_audio_unit_server_unset_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_ADDED_TO_REGISTRY);
+  /* get audio unit server mutex */
+  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+
+  g_rec_mutex_lock(audio_unit_server_mutex);
+
+  audio_unit_server->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 xmlNode*
@@ -743,10 +771,19 @@ ags_audio_unit_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_unit_server_mutex;
+
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
+  /* get audio unit server mutex */
+  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+
   /* check is connected */
-  is_connected = ags_audio_unit_server_test_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_CONNECTED);
+  g_rec_mutex_lock(audio_unit_server_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_unit_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_unit_server_mutex);
   
   return(is_connected);
 }
@@ -758,13 +795,22 @@ ags_audio_unit_server_connect(AgsConnectable *connectable)
 
   GList *start_list, *list;  
 
+  GRecMutex *audio_unit_server_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  ags_audio_unit_server_set_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_CONNECTED);
+  /* get audio unit server mutex */
+  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+
+  g_rec_mutex_lock(audio_unit_server_mutex);
+
+  audio_unit_server->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 
   /* connect client */
   g_object_get(audio_unit_server,
@@ -790,13 +836,22 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
 
   GList *start_list, *list;  
 
+  GRecMutex *audio_unit_server_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
+    
+  /* get audio unit server mutex */
+  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+
+  g_rec_mutex_lock(audio_unit_server_mutex);
+
+  audio_unit_server->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_audio_unit_server_unset_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_CONNECTED);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 
   /* connect client */
   g_object_get(audio_unit_server,

@@ -22,7 +22,6 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_lv2_browser.h>
-#include <ags/app/ags_dssi_browser.h>
 #include <ags/app/ags_ladspa_browser.h>
 
 #if defined(AGS_WITH_VST3)
@@ -35,9 +34,6 @@ void ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser);
 void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
 void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
-
-gboolean ags_plugin_browser_delete_event(GtkWidget *widget, GdkEventAny *event);
-void ags_plugin_browser_show(GtkWidget *widget);
 
 void ags_plugin_browser_connect(AgsConnectable *connectable);
 void ags_plugin_browser_disconnect(AgsConnectable *connectable);
@@ -112,15 +108,7 @@ ags_plugin_browser_get_type(void)
 void
 ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser)
 {
-  GtkWidgetClass *widget;
-  
   ags_plugin_browser_parent_class = g_type_class_peek_parent(plugin_browser);
-  
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) plugin_browser;
-  
-  widget->delete_event = ags_plugin_browser_delete_event;
-  widget->show = ags_plugin_browser_show;
 }
 
 void
@@ -143,40 +131,63 @@ ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 {
+  GtkScrolledWindow *scrolled_window;
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
-  
-  plugin_browser->flags = 0;
 
+  gchar *str;
+  
+  plugin_browser->connectable_flags = 0;
+
+  gtk_window_set_hide_on_close((GtkWindow *) plugin_browser,
+			       TRUE);
+  
   gtk_window_set_title((GtkWindow *) plugin_browser,
 		       i18n("Plugin browser"));
 
+  gtk_window_set_default_size((GtkWindow *) plugin_browser,
+			      1024, 800);
+
+  /* scrolled window */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
+		 (GtkWidget *) scrolled_window);
+
+  /*  */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) vbox);
   
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
 
-  label = (GtkLabel *) gtk_label_new(i18n("Plugin type:"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  str = g_strdup_printf("%s: ",
+			i18n("Plugin type"));
+  
+  label = (GtkLabel *) gtk_label_new(str);
+  gtk_box_append(hbox,
+		 (GtkWidget *) label);
 
+  g_free(str);
+  
   plugin_browser->plugin_type = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) plugin_browser->plugin_type,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(hbox,
+		 (GtkWidget *) plugin_browser->plugin_type);
   
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "lv2");
@@ -188,29 +199,69 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "vst3");
 #endif
-  
+
   plugin_browser->active_browser = NULL;
-  
+
+  /* lv2 browser */
   plugin_browser->lv2_browser = (GtkWidget *) ags_lv2_browser_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) plugin_browser->lv2_browser,
-		     FALSE, FALSE,
-		     0);
 
-  plugin_browser->dssi_browser = NULL;
+  gtk_widget_set_valign(plugin_browser->lv2_browser,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(plugin_browser->lv2_browser,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(plugin_browser->lv2_browser,
+			 TRUE);
+  gtk_widget_set_hexpand(plugin_browser->lv2_browser,
+			 TRUE);
+
+  gtk_widget_set_visible((GtkWidget *) plugin_browser->lv2_browser,
+			 FALSE);
   
-  plugin_browser->ladspa_browser = (GtkWidget *) ags_ladspa_browser_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) plugin_browser->ladspa_browser,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) plugin_browser->lv2_browser);
 
+  /* dssi browser */
+  plugin_browser->dssi_browser = NULL;
+
+  /* ladspa browser */
+  plugin_browser->ladspa_browser = (GtkWidget *) ags_ladspa_browser_new();
+
+  gtk_widget_set_valign(plugin_browser->ladspa_browser,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(plugin_browser->ladspa_browser,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(plugin_browser->ladspa_browser,
+			 TRUE);
+  gtk_widget_set_hexpand(plugin_browser->ladspa_browser,
+			 TRUE);
+
+  gtk_widget_set_visible((GtkWidget *) plugin_browser->ladspa_browser,
+			 FALSE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) plugin_browser->ladspa_browser);
+
+  /* VST3 browser */
 #if defined(AGS_WITH_VST3)
   plugin_browser->vst3_browser = (GtkWidget *) ags_vst3_browser_new();
-  gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) plugin_browser->vst3_browser,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_valign(plugin_browser->vst3_browser,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(plugin_browser->vst3_browser,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(plugin_browser->vst3_browser,
+			 TRUE);
+  gtk_widget_set_hexpand(plugin_browser->vst3_browser,
+			 TRUE);
+
+  gtk_widget_set_visible((GtkWidget *) plugin_browser->vst3_browser,
+			 FALSE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) plugin_browser->vst3_browser);
 #else
   plugin_browser->vst3_browser = NULL;
 #endif
@@ -222,32 +273,6 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 			 NULL);
 }
 
-gboolean
-ags_plugin_browser_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  return(TRUE);
-}
-
-void
-ags_plugin_browser_show(GtkWidget *widget)
-{
-  AgsPluginBrowser *plugin_browser;
-
-  plugin_browser = AGS_PLUGIN_BROWSER(widget);
-  
-  GTK_WIDGET_CLASS(ags_plugin_browser_parent_class)->show(widget);
-
-  gtk_widget_hide(plugin_browser->lv2_browser);
-
-  gtk_widget_hide(plugin_browser->ladspa_browser);
-
-#if defined(AGS_WITH_VST3)
-  gtk_widget_hide(plugin_browser->vst3_browser);
-#endif
-}
-
 void
 ags_plugin_browser_connect(AgsConnectable *connectable)
 {
@@ -255,11 +280,11 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  if((AGS_PLUGIN_BROWSER_CONNECTED & (plugin_browser->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) != 0){
     return;
   }
 
-  plugin_browser->flags |= AGS_PLUGIN_BROWSER_CONNECTED;
+  plugin_browser->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect(plugin_browser->plugin_type, "changed",
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
@@ -284,11 +309,11 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
-  if((AGS_PLUGIN_BROWSER_CONNECTED & (plugin_browser->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (plugin_browser->connectable_flags)) == 0){
     return;
   }
 
-  plugin_browser->flags &= (~AGS_PLUGIN_BROWSER_CONNECTED);
+  plugin_browser->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   g_object_disconnect(plugin_browser->plugin_type,
 		      "any_signal::changed",
@@ -384,7 +409,7 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 
 /**
  * ags_plugin_browser_new:
- * @parent_window: the #AgsWindow
+ * @transient_for: the #AgsWindow
  *
  * Create a new instance of #AgsPluginBrowser
  *
@@ -393,14 +418,13 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
  * Since: 3.0.0
  */
 AgsPluginBrowser*
-ags_plugin_browser_new(GtkWidget *parent_window)
+ags_plugin_browser_new(GtkWidget *transient_for)
 {
   AgsPluginBrowser *plugin_browser;
 
   plugin_browser = (AgsPluginBrowser *) g_object_new(AGS_TYPE_PLUGIN_BROWSER,
+						     "transient-for", transient_for,
 						     NULL);
-
-  plugin_browser->parent_window = parent_window;
 
   return(plugin_browser);
 }

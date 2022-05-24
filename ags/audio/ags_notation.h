@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,7 +46,7 @@ G_BEGIN_DECLS
 #define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
 #define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (16.0)
 
-#define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
+#define AGS_NOTATION_DEFAULT_LENGTH (16 * 16 * 1200 / AGS_NOTATION_TICS_PER_BEAT)
 #define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
 #define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_USEC_PER_SEC)
 #define AGS_NOTATION_DEFAULT_OFFSET (64 * (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
@@ -104,6 +104,7 @@ struct _AgsNotationClass
 };
 
 GType ags_notation_get_type();
+GType ags_notation_flags_get_type();
 
 GRecMutex* ags_notation_get_obj_mutex(AgsNotation *notation);
 

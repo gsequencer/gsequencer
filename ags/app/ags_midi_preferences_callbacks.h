@@ -33,7 +33,9 @@
 
 G_BEGIN_DECLS
 
-void ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_notify_parent_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data);
 
 void ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences);
 void ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *sequencer_editor,

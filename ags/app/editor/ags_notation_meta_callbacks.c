@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,7 @@
 #include <ags/app/editor/ags_notation_meta_callbacks.h>
 
 void
-ags_notation_meta_machine_changed_callback(AgsNotationEditor *notation_editor, AgsMachine *machine,
+ags_notation_meta_machine_changed_callback(AgsCompositeEditor *composite_editor, AgsMachine *machine,
 					   AgsNotationMeta *notation_meta)
 {
   ags_notation_meta_refresh(notation_meta);

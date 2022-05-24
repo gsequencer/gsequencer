@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -374,6 +374,7 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   AgsConfig *config;
 
   audio_file->flags = 0;
+  audio_file->connectable_flags = 0;
 
   /* add audio file mutex */
   g_rec_mutex_init(&(audio_file->obj_mutex)); 
@@ -767,11 +768,20 @@ ags_audio_file_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_file_mutex;
+
   audio_file = AGS_AUDIO_FILE(connectable);
 
-  /* check is ready */
-  is_ready = ags_audio_file_test_flags(audio_file, AGS_AUDIO_FILE_ADDED_TO_REGISTRY);
+  /* get audio file mutex */
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
+  /* check is ready */
+  g_rec_mutex_lock(audio_file_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_file_mutex);
+  
   return(is_ready);
 }
 
@@ -785,13 +795,22 @@ ags_audio_file_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *audio_file_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   audio_file = AGS_AUDIO_FILE(connectable);
 
-  ags_audio_file_set_flags(audio_file, AGS_AUDIO_FILE_ADDED_TO_REGISTRY);
+  /* get audio file mutex */
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
+
+  g_rec_mutex_lock(audio_file_mutex);
+
+  audio_file->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_file_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -809,10 +828,25 @@ ags_audio_file_add_to_registry(AgsConnectable *connectable)
 void
 ags_audio_file_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsAudioFile *audio_file;
+
+  GRecMutex *audio_file_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
+  audio_file = AGS_AUDIO_FILE(connectable);
+
+  /* get audio file mutex */
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
+
+  g_rec_mutex_lock(audio_file_mutex);
+
+  audio_file->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_file_mutex);
+  
   //TODO:JK: implement me
 }
 
@@ -854,11 +888,20 @@ ags_audio_file_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_file_mutex;
+
   audio_file = AGS_AUDIO_FILE(connectable);
 
-  /* check is connected */
-  is_connected = ags_audio_file_test_flags(audio_file, AGS_AUDIO_FILE_CONNECTED);
+  /* get audio file mutex */
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
+  /* check is connected */
+  g_rec_mutex_lock(audio_file_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_file_mutex);
+  
   return(is_connected);
 }
 
@@ -867,13 +910,22 @@ ags_audio_file_connect(AgsConnectable *connectable)
 {
   AgsAudioFile *audio_file;
 
+  GRecMutex *audio_file_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_file = AGS_AUDIO_FILE(connectable);
   
-  ags_audio_file_set_flags(audio_file, AGS_AUDIO_FILE_CONNECTED);
+  /* get audio file mutex */
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
+
+  g_rec_mutex_lock(audio_file_mutex);
+
+  audio_file->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(audio_file_mutex);
 }
 
 void
@@ -881,13 +933,22 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
 {
   AgsAudioFile *audio_file;
 
+  GRecMutex *audio_file_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_file = AGS_AUDIO_FILE(connectable);
 
-  ags_audio_file_unset_flags(audio_file, AGS_AUDIO_FILE_CONNECTED);
+  /* get audio file mutex */
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
+
+  g_rec_mutex_lock(audio_file_mutex);
+
+  audio_file->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_file_mutex);
 }
 
 /**

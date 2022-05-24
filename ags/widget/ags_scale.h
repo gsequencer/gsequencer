@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,10 @@ G_BEGIN_DECLS
 #define AGS_IS_SCALE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCALE))
 #define AGS_SCALE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SCALE, AgsScaleClass))
 
-#define AGS_SCALE_DEFAULT_SCALE_WIDTH (60)
-#define AGS_SCALE_DEFAULT_SCALE_HEIGHT (128)
+#define AGS_SCALE_DEFAULT_WIDTH_REQUEST (60)
+#define AGS_SCALE_DEFAULT_HEIGHT_REQUEST (128)
+
+#define AGS_SCALE_DEFAULT_CONTROL_NAME "no name"
 
 #define AGS_SCALE_DEFAULT_LOWER (0.0)
 #define AGS_SCALE_DEFAULT_UPPER (1.0)
@@ -80,14 +82,12 @@ struct _AgsScale
 
   guint flags;
 
+  GtkOrientation orientation;
+
   guint key_mask;
   guint button_state;
-  guint layout;
 
   guint font_size;
-
-  guint scale_width;
-  guint scale_height;
   
   gchar *control_name;
   
@@ -115,14 +115,6 @@ struct _AgsScaleClass
 GType ags_scale_get_type(void);
 
 /* properties get/set */
-void ags_scale_set_scale_width(AgsScale *scale,
-			       guint scale_width);
-guint ags_scale_get_scale_width(AgsScale *scale);
-
-void ags_scale_set_scale_height(AgsScale *scale,
-				guint scale_height);
-guint ags_scale_get_scale_height(AgsScale *scale);
-
 void ags_scale_set_control_name(AgsScale *scale,
 				gchar *control_name);
 gchar* ags_scale_get_control_name(AgsScale *scale);
@@ -144,7 +136,9 @@ void ags_scale_value_changed(AgsScale *scale,
 			     gdouble default_value);
 
 /* instantiate */
-AgsScale* ags_scale_new();
+AgsScale* ags_scale_new(GtkOrientation orientation,
+			guint width_request,
+			guint height_request);
 
 G_END_DECLS
 

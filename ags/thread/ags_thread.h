@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,8 +66,6 @@ typedef struct _AgsThreadClass AgsThreadClass;
 
 /**
  * AgsThreadFlags:
- * @AGS_THREAD_ADDED_TO_REGISTRY: the thread was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_THREAD_CONNECTED: the thread was connected by #AgsConnectable::connect()
  * @AGS_THREAD_UNREF_ON_EXIT: call g_object_unref() before g_thread_exit()
  * @AGS_THREAD_IMMEDIATE_SYNC: do sync immediately
  * @AGS_THREAD_INTERMEDIATE_PRE_SYNC: intermediate pre sync to parent thread
@@ -80,15 +78,13 @@ typedef struct _AgsThreadClass AgsThreadClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_THREAD_ADDED_TO_REGISTRY       = 1,
-  AGS_THREAD_CONNECTED               = 1 <<  1,
-  AGS_THREAD_UNREF_ON_EXIT           = 1 <<  2,
-  AGS_THREAD_IMMEDIATE_SYNC          = 1 <<  3,
-  AGS_THREAD_INTERMEDIATE_PRE_SYNC   = 1 <<  4,
-  AGS_THREAD_INTERMEDIATE_POST_SYNC  = 1 <<  5,
-  AGS_THREAD_START_SYNCED_FREQ       = 1 <<  6,
-  AGS_THREAD_MARK_SYNCED             = 1 <<  7,
-  AGS_THREAD_TIME_ACCOUNTING         = 1 <<  8,
+  AGS_THREAD_UNREF_ON_EXIT           = 1,
+  AGS_THREAD_IMMEDIATE_SYNC          = 1 <<  1,
+  AGS_THREAD_INTERMEDIATE_PRE_SYNC   = 1 <<  2,
+  AGS_THREAD_INTERMEDIATE_POST_SYNC  = 1 <<  3,
+  AGS_THREAD_START_SYNCED_FREQ       = 1 <<  4,
+  AGS_THREAD_MARK_SYNCED             = 1 <<  5,
+  AGS_THREAD_TIME_ACCOUNTING         = 1 <<  6,
 }AgsThreadFlags;
 
 /**
@@ -176,6 +172,7 @@ struct _AgsThread
   GObject gobject;
 
   guint my_flags;
+  guint connectable_flags;
   volatile guint status_flags;
   volatile guint sync_tic_flags;
   

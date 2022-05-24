@@ -47,8 +47,6 @@ struct _AgsEnvelopeUtil
   
   guint buffer_length;
   guint format;
-
-  guint audio_buffer_util_format;
   
   gdouble volume;
   gdouble amount;
@@ -84,10 +82,6 @@ void ags_envelope_util_set_buffer_length(AgsEnvelopeUtil *envelope_util,
 guint ags_envelope_util_get_format(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_format(AgsEnvelopeUtil *envelope_util,
 				  guint format);
-
-guint ags_envelope_util_get_audio_buffer_util_format(AgsEnvelopeUtil *envelope_util);
-void ags_envelope_util_set_audio_buffer_util_format(AgsEnvelopeUtil *envelope_util,
-						    guint audio_buffer_util_format);
 
 gdouble ags_envelope_util_get_volume(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_volume(AgsEnvelopeUtil *envelope_util,

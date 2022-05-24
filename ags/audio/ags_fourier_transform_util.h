@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,7 +36,15 @@ typedef struct _AgsFourierTransformUtil AgsFourierTransformUtil;
 
 struct _AgsFourierTransformUtil
 {
-  //empty
+  gpointer source;
+  guint source_stride;
+
+  AgsComplex *destination;
+  guint destination_stride;
+  
+  guint buffer_length;
+  guint format;
+  guint samplerate;
 };
 
 GType ags_fourier_transform_util_get_type(void);

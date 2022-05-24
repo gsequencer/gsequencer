@@ -28,6 +28,9 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_animation_window.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_export_window.h>
+#include <ags/app/ags_export_soundcard.h>
+#include <ags/app/ags_preferences.h>
 #include <ags/app/ags_meta_data_window.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
@@ -195,15 +198,6 @@ void ags_gsequencer_application_context_set_animation_window(AgsUiProvider *ui_p
 GtkWidget* ags_gsequencer_application_context_get_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
 						   GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_automation_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_automation_window(AgsUiProvider *ui_provider,
-							      GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_wave_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_wave_window(AgsUiProvider *ui_provider,
-							GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_sheet_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_sheet_window(AgsUiProvider *ui_provider,
-							 GtkWidget *widget);
 GtkWidget* ags_gsequencer_application_context_get_export_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_export_window(AgsUiProvider *ui_provider,
 							  GtkWidget *widget);
@@ -231,7 +225,6 @@ void ags_gsequencer_application_context_set_midi_export_wizard(AgsUiProvider *ui
 GList* ags_gsequencer_application_context_get_machine(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
 						    GList *machine);
-gboolean ags_gsequencer_application_context_use_composite_editor(AgsUiProvider *ui_provider);
 GtkWidget* ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
 							     GtkWidget *widget);
@@ -539,15 +532,6 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
   ui_provider->get_window = ags_gsequencer_application_context_get_window;
   ui_provider->set_window = ags_gsequencer_application_context_set_window;
 
-  ui_provider->get_automation_window = ags_gsequencer_application_context_get_automation_window;
-  ui_provider->set_automation_window = ags_gsequencer_application_context_set_automation_window;
-
-  ui_provider->get_wave_window = ags_gsequencer_application_context_get_wave_window;
-  ui_provider->set_wave_window = ags_gsequencer_application_context_set_wave_window;
-
-  ui_provider->get_sheet_window = ags_gsequencer_application_context_get_sheet_window;
-  ui_provider->set_sheet_window = ags_gsequencer_application_context_set_sheet_window;
-
   ui_provider->get_export_window = ags_gsequencer_application_context_get_export_window;
   ui_provider->set_export_window = ags_gsequencer_application_context_set_export_window;
 
@@ -575,14 +559,12 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
   ui_provider->get_machine = ags_gsequencer_application_context_get_machine;
   ui_provider->set_machine = ags_gsequencer_application_context_set_machine;
 
-  ui_provider->use_composite_editor = ags_gsequencer_application_context_use_composite_editor;
-
   ui_provider->get_composite_editor = ags_gsequencer_application_context_get_composite_editor;
   ui_provider->set_composite_editor = ags_gsequencer_application_context_set_composite_editor;
 
   ui_provider->get_navigation = ags_gsequencer_application_context_get_navigation;
   ui_provider->set_navigation = ags_gsequencer_application_context_set_navigation;
-
+  
   ui_provider->get_app = ags_gsequencer_application_context_get_app;
   ui_provider->set_app = ags_gsequencer_application_context_set_app;
 
@@ -865,7 +847,7 @@ ags_gsequencer_application_context_dispose(GObject *gobject)
   
   /* window */
   if(gsequencer_application_context->window != NULL){
-    gtk_widget_destroy(GTK_WIDGET(gsequencer_application_context->window));
+    gtk_window_destroy(GTK_WIDGET(gsequencer_application_context->window));
 
     gsequencer_application_context->window = NULL;
   }  
@@ -962,7 +944,7 @@ ags_gsequencer_application_context_connect(AgsConnectable *connectable)
 
   gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(connectable);
 
-  if(ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(gsequencer_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -993,6 +975,12 @@ ags_gsequencer_application_context_connect(AgsConnectable *connectable)
 
   g_list_free_full(start_sequencer,
 		   g_object_unref);
+
+  /* window */
+  ags_connectable_connect(AGS_CONNECTABLE(gsequencer_application_context->window));
+
+  /* export window */
+  ags_connectable_connect(AGS_CONNECTABLE(gsequencer_application_context->export_window));
 }
 
 void
@@ -1005,7 +993,7 @@ ags_gsequencer_application_context_disconnect(AgsConnectable *connectable)
 
   gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(connectable);
 
-  if(!ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(gsequencer_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -1039,6 +1027,9 @@ ags_gsequencer_application_context_disconnect(AgsConnectable *connectable)
 
   /* window */
   ags_connectable_disconnect(AGS_CONNECTABLE(gsequencer_application_context->window));
+
+  /* export window */
+  ags_connectable_disconnect(AGS_CONNECTABLE(gsequencer_application_context->export_window));
 }
 
 AgsThread*
@@ -2235,88 +2226,7 @@ ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
 
   /* set window */
   gsequencer_application_context->window = widget;
-}
-  
-GtkWidget*
-ags_gsequencer_application_context_get_automation_window(AgsUiProvider *ui_provider)
-{
-  GtkWidget *automation_window;
-  
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* get automation window */
-  automation_window = gsequencer_application_context->automation_window;
-
-  return(automation_window);
-}
-
-void
-ags_gsequencer_application_context_set_automation_window(AgsUiProvider *ui_provider,
-							 GtkWidget *widget)
-{
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* set automation window */
-  gsequencer_application_context->automation_window = widget;
-}
-
-GtkWidget*
-ags_gsequencer_application_context_get_wave_window(AgsUiProvider *ui_provider)
-{
-  GtkWidget *wave_window;
-  
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* get wave window */
-  wave_window = gsequencer_application_context->wave_window;
-
-  return(wave_window);
-}
-
-void
-ags_gsequencer_application_context_set_wave_window(AgsUiProvider *ui_provider,
-						   GtkWidget *widget)
-{
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* set wave window */
-  gsequencer_application_context->wave_window = widget;
-}
-
-GtkWidget*
-ags_gsequencer_application_context_get_sheet_window(AgsUiProvider *ui_provider)
-{
-  GtkWidget *sheet_window;
-  
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* get sheet window */
-  sheet_window = gsequencer_application_context->sheet_window;
-
-  return(sheet_window);
-}
-
-void
-ags_gsequencer_application_context_set_sheet_window(AgsUiProvider *ui_provider,
-						    GtkWidget *widget)
-{
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* set sheet window */
-  gsequencer_application_context->sheet_window = widget;
-}
+}  
 
 GtkWidget*
 ags_gsequencer_application_context_get_export_window(AgsUiProvider *ui_provider)
@@ -2563,22 +2473,6 @@ ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
   gsequencer_application_context->machine = machine;
 }
 
-gboolean
-ags_gsequencer_application_context_use_composite_editor(AgsUiProvider *ui_provider)
-{
-  gboolean use_composite_editor;
-  
-  AgsGSequencerApplicationContext *gsequencer_application_context;
-
-  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
-
-  /* get use composite editor */
-  use_composite_editor = gsequencer_application_context->use_composite_editor;
-
-  return(use_composite_editor);
-}
-
-
 GtkWidget*
 ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider)
 {
@@ -2596,7 +2490,7 @@ ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provid
 
 void
 ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
-							GtkWidget *widget)
+						  GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2693,6 +2587,8 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *widget;
   AgsWindow *window;
+  AgsExportWindow *export_window;
+  AgsExportSoundcard *export_soundcard;
   GtkApplication *app;
   
 #if defined(AGS_WITH_MAC_INTEGRATION)
@@ -2917,9 +2813,19 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
     window->filename = filename;
   }  
 
+  /* AgsExportWindow */
+  export_window = ags_export_window_new(window);
+  ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
+				    export_window);
+
+  export_soundcard = ags_export_soundcard_new();
+  ags_export_window_add_export_soundcard(export_window,
+					 export_soundcard);
+  
+  /* AgsMetaDataWindow */
   widget = (GtkWidget *) ags_meta_data_window_new();
   ags_ui_provider_set_meta_data_window(AGS_UI_PROVIDER(application_context),
-				       widget);
+  				       widget);
 }
 
 void
@@ -3187,13 +3093,11 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   uid = getuid();
   pw = getpwuid(uid);
 
-#if 0
+#if 1
   blacklist_path = g_strdup_printf("%s%c%s",
 				   pw->pw_dir,
 				   G_DIR_SEPARATOR,
 				   AGS_DEFAULT_DIRECTORY);
-#else
-  blacklist_path = g_strdup_printf("/Users/joelkrahemann/.gsequencer");  
 #endif
 #endif
   
@@ -3933,8 +3837,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     export_thread = NULL;
     
     /* export thread */
-    if(AGS_IS_DEVOUT(list->data) ||
-       AGS_IS_ALSA_DEVOUT(list->data) ||
+    if(AGS_IS_ALSA_DEVOUT(list->data) ||
        AGS_IS_OSS_DEVOUT(list->data) ||
        AGS_IS_WASAPI_DEVOUT(list->data) ||
        AGS_IS_JACK_DEVOUT(list->data) ||
@@ -4221,68 +4124,16 @@ ags_gsequencer_application_context_register_types(AgsApplicationContext *applica
   ags_jack_server_get_type();
 
   //TODO:JK: extend me
-  
-  /* register recalls */
-  ags_generic_recall_channel_run_get_type();
-
-  ags_play_audio_get_type();
-  ags_play_channel_get_type();
-  ags_play_channel_run_get_type();
-  ags_play_channel_run_master_get_type();
-
-  ags_stream_channel_get_type();
-  ags_stream_channel_run_get_type();
-
-  ags_loop_channel_get_type();
-  ags_loop_channel_run_get_type();
-
-  ags_copy_channel_get_type();
-  ags_copy_channel_run_get_type();
-
-  ags_volume_channel_get_type();
-  ags_volume_channel_run_get_type();
-
-  ags_peak_channel_get_type();
-  ags_peak_channel_run_get_type();
-
-  ags_recall_ladspa_get_type();
-  ags_recall_ladspa_run_get_type();
-
-  ags_recall_dssi_get_type();
-  ags_recall_dssi_run_get_type();
-
-  ags_recall_lv2_get_type();
-  ags_recall_lv2_run_get_type();
-
-  ags_delay_audio_get_type();
-  ags_delay_audio_run_get_type();
-
-  ags_count_beats_audio_get_type();
-  ags_count_beats_audio_run_get_type();
-
-  ags_copy_pattern_audio_get_type();
-  ags_copy_pattern_audio_run_get_type();
-  ags_copy_pattern_channel_get_type();
-  ags_copy_pattern_channel_run_get_type();
-
-  ags_buffer_channel_get_type();
-  ags_buffer_channel_run_get_type();
-
-  ags_play_notation_audio_get_type();
-  ags_play_notation_audio_run_get_type();
-
-  ags_route_dssi_audio_get_type();
-  ags_route_dssi_audio_run_get_type();
-
-  ags_route_lv2_audio_get_type();
-  ags_route_lv2_audio_run_get_type();
-  
+    
   /* gui */
   //TODO:JK: move me
+  gtk_scale_get_type();
+  gtk_toggle_button_get_type();
+  gtk_check_button_get_type();
+  gtk_spin_button_get_type();
+  
   ags_led_get_type();
   ags_indicator_get_type();
-  ags_vindicator_get_type();
-  ags_hindicator_get_type();
   ags_dial_get_type();
   ags_notebook_get_type();
   ags_piano_get_type();

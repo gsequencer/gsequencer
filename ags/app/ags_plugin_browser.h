@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,17 +42,11 @@ G_BEGIN_DECLS
 typedef struct _AgsPluginBrowser AgsPluginBrowser;
 typedef struct _AgsPluginBrowserClass AgsPluginBrowserClass;
 
-typedef enum{
-  AGS_PLUGIN_BROWSER_CONNECTED   = 1,
-}AgsPluginBrowserFlags;
-
 struct _AgsPluginBrowser
 {
   GtkDialog dialog;
 
-  guint flags;
-  
-  GtkWidget *parent_window;
+  guint connectable_flags;
 
   GtkComboBoxText *plugin_type;
 
@@ -74,7 +68,7 @@ GType ags_plugin_browser_get_type(void);
 gchar* ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser);
 gchar* ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser);
 
-AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *parent_window);
+AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *transient_for);
 
 G_END_DECLS
 

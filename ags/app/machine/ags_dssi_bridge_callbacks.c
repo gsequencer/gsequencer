@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,32 +29,6 @@
 #include <ags/app/ags_bulk_member.h>
 
 void
-ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDssiBridge *dssi_bridge)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_DSSI_BRIDGE)->counter);
-
-  g_object_set(AGS_MACHINE(dssi_bridge),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_DSSI_BRIDGE);
-
-  g_free(str);
-}
-
-void
 ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge)
 {
   GtkTreeIter iter;
@@ -63,7 +37,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 				   &iter)){
     AgsLadspaConversion *ladspa_conversion;
 
-    GList *bulk_member, *bulk_member_start;
+    GList *start_bulk_member, *bulk_member;
     GList *start_recall, *recall;
   
     gchar *name;
@@ -81,7 +55,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     dssi_bridge->dssi_descriptor->select_program(dssi_bridge->ladspa_handle,
 						 (unsigned long) bank,
 						 (unsigned long) program);
-
 
 #ifdef AGS_DEBUG
     g_message("%d %d", bank, program);
@@ -126,11 +99,11 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		     g_object_unref);
       
     /* update UI */
-    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->grid);
+    start_bulk_member = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input));
   
     for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
       /* find bulk member */
-      bulk_member = bulk_member_start;
+      bulk_member = start_bulk_member;
 
       specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
 
@@ -146,7 +119,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 
 	  AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
 
-	  child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(bulk_member->data));
+	  child_widget = ags_bulk_member_get_widget(AGS_BULK_MEMBER(bulk_member->data));
 	  
 	  ladspa_conversion = (AgsLadspaConversion *) AGS_BULK_MEMBER(bulk_member->data)->conversion;
 	  
@@ -186,6 +159,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
       }
     }
     
-    g_list_free(bulk_member_start);
+    g_list_free(start_bulk_member);
   }
 }

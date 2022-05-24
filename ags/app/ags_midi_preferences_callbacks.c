@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,20 +28,21 @@
 #include <ags/config.h>
 
 void
-ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMidiPreferences *midi_preferences)
+ags_midi_preferences_notify_parent_callback(GObject *gobject,
+					    GParamSpec *pspec,
+					    gpointer user_data)
 {  
-  if(old_parent != NULL){
-    return;
-  }
+  AgsMidiPreferences *midi_preferences;
 
+  midi_preferences = (AgsMidiPreferences *) gobject;
+  
   if(midi_preferences->add == NULL) {
     AgsPreferences *preferences;
     
     preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							     AGS_TYPE_PREFERENCES);
     
-    midi_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-									GTK_ICON_SIZE_BUTTON);
+    midi_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
     gtk_dialog_add_action_widget((GtkDialog *) preferences,
 				 (GtkWidget *) midi_preferences->add,
 				 GTK_RESPONSE_NONE);
@@ -86,17 +87,17 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
     sequencer_editor->sequencer_thread = (GObject *) ags_thread_find_type(main_loop,
 									  AGS_TYPE_SEQUENCER_THREAD);
   }
-  
-  gtk_box_pack_start((GtkBox *) midi_preferences->sequencer_editor,
-		     (GtkWidget *) sequencer_editor,
-		     FALSE, FALSE,
-		     0);
+
+  ags_midi_preferences_add_sequencer_editor(midi_preferences,
+					    sequencer_editor);
   
   ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
   ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
+
   g_signal_connect(sequencer_editor->remove, "clicked",
 		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
-  gtk_widget_show_all((GtkWidget *) sequencer_editor);
+
+  gtk_widget_show((GtkWidget *) sequencer_editor);
 
   g_object_unref(main_loop);
 }
@@ -114,6 +115,10 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
     ags_sequencer_editor_remove_sequencer(sequencer_editor,
 					  sequencer_editor->sequencer);
   }
+
+  ags_midi_preferences_remove_sequencer_editor(midi_preferences,
+					       sequencer_editor);
   
-  gtk_widget_destroy((GtkWidget *) sequencer_editor);  
+  g_object_run_dispose(sequencer_editor);  
+  g_object_unref(sequencer_editor);  
 }

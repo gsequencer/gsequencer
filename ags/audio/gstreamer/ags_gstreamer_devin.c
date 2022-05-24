@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -229,6 +229,30 @@ ags_gstreamer_devin_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_gstreamer_devin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_GSTREAMER_DEVIN_INITIALIZED, "AGS_GSTREAMER_DEVIN_INITIALIZED", "gstreamer-devin-initialized" },
+      { AGS_GSTREAMER_DEVIN_START_RECORD, "AGS_GSTREAMER_DEVIN_START_RECORD", "gstreamer-devin-start-record" },
+      { AGS_GSTREAMER_DEVIN_RECORD, "AGS_GSTREAMER_DEVIN_RECORD", "gstreamer-devin-record" },
+      { AGS_GSTREAMER_DEVIN_SHUTDOWN, "AGS_GSTREAMER_DEVIN_SHUTDOWN", "gstreamer-devin-shutdown" },
+      { AGS_GSTREAMER_DEVIN_NONBLOCKING, "AGS_GSTREAMER_DEVIN_NONBLOCKING", "gstreamer-devin-nonblocking" },
+      { AGS_GSTREAMER_DEVIN_ATTACK_FIRST, "AGS_GSTREAMER_DEVIN_ATTACK_FIRST", "gstreamer-devin-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsGstreamerDevinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -563,6 +587,7 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
   
   /* flags */
   gstreamer_devin->flags = 0;
+  gstreamer_devin->connectable_flags = 0;
   g_atomic_int_set(&(gstreamer_devin->sync_flags),
 		   AGS_GSTREAMER_DEVIN_PASS_THROUGH);
 
@@ -591,33 +616,35 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
   gstreamer_devin->gstreamer_port = NULL;
 
   /* buffer */
-  gstreamer_devin->buffer_mutex = (GRecMutex **) malloc(8 * sizeof(GRecMutex *));
+  gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_0;
+
+  gstreamer_devin->app_buffer_mutex = (GRecMutex **) g_malloc(8 * sizeof(GRecMutex *));
 
   for(i = 0; i < 8; i++){
-    gstreamer_devin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    gstreamer_devin->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
-    g_rec_mutex_init(gstreamer_devin->buffer_mutex[i]);
+    g_rec_mutex_init(gstreamer_devin->app_buffer_mutex[i]);
   }
 
   gstreamer_devin->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  gstreamer_devin->sub_block_mutex = (GRecMutex **) malloc(8 * gstreamer_devin->sub_block_count * gstreamer_devin->pcm_channels * sizeof(GRecMutex *));
+  gstreamer_devin->sub_block_mutex = (GRecMutex **) g_malloc(8 * gstreamer_devin->sub_block_count * gstreamer_devin->pcm_channels * sizeof(GRecMutex *));
 
   for(i = 0; i < 8 * gstreamer_devin->sub_block_count * gstreamer_devin->pcm_channels; i++){
-    gstreamer_devin->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    gstreamer_devin->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(gstreamer_devin->sub_block_mutex[i]);
   }
 
-  gstreamer_devin->buffer = (void **) malloc(8 * sizeof(void*));
+  gstreamer_devin->app_buffer = (void **) g_malloc(8 * sizeof(void*));
 
-  gstreamer_devin->buffer[0] = NULL;
-  gstreamer_devin->buffer[1] = NULL;
-  gstreamer_devin->buffer[2] = NULL;
-  gstreamer_devin->buffer[3] = NULL;
-  gstreamer_devin->buffer[4] = NULL;
-  gstreamer_devin->buffer[5] = NULL;
-  gstreamer_devin->buffer[6] = NULL;
-  gstreamer_devin->buffer[7] = NULL;
+  gstreamer_devin->app_buffer[0] = NULL;
+  gstreamer_devin->app_buffer[1] = NULL;
+  gstreamer_devin->app_buffer[2] = NULL;
+  gstreamer_devin->app_buffer[3] = NULL;
+  gstreamer_devin->app_buffer[4] = NULL;
+  gstreamer_devin->app_buffer[5] = NULL;
+  gstreamer_devin->app_buffer[6] = NULL;
+  gstreamer_devin->app_buffer[7] = NULL;
   
   ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
   
@@ -643,11 +670,11 @@ ags_gstreamer_devin_init(AgsGstreamerDevin *gstreamer_devin)
   }
 
   /* delay and attack */
-  gstreamer_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					      sizeof(gdouble));
+  gstreamer_devin->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+						sizeof(gdouble));
   
-  gstreamer_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					     sizeof(guint));
+  gstreamer_devin->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					       sizeof(guint));
 
   ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
   
@@ -695,207 +722,207 @@ ags_gstreamer_devin_set_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_DEVICE:
-  {
-    char *device;
+    {
+      char *device;
 
-    device = (char *) g_value_get_string(value);
+      device = (char *) g_value_get_string(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    gstreamer_devin->card_uri = g_strdup(device);
+      gstreamer_devin->card_uri = g_strdup(device);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_DSP_CHANNELS:
-  {
-    guint dsp_channels;
+    {
+      guint dsp_channels;
 
-    dsp_channels = g_value_get_uint(value);
+      dsp_channels = g_value_get_uint(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    if(dsp_channels == gstreamer_devin->dsp_channels){
+      if(dsp_channels == gstreamer_devin->dsp_channels){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+	return;
+      }
+
+      gstreamer_devin->dsp_channels = dsp_channels;
+
       g_rec_mutex_unlock(gstreamer_devin_mutex);
-
-      return;
     }
-
-    gstreamer_devin->dsp_channels = dsp_channels;
-
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+    break;
   case PROP_PCM_CHANNELS:
-  {
-    guint pcm_channels;
+    {
+      guint pcm_channels;
 
-    pcm_channels = g_value_get_uint(value);
+      pcm_channels = g_value_get_uint(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    if(pcm_channels == gstreamer_devin->pcm_channels){
+      if(pcm_channels == gstreamer_devin->pcm_channels){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+	return;
+      }
+
+      gstreamer_devin->pcm_channels = pcm_channels;
+
       g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-      return;
+      ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
     }
-
-    gstreamer_devin->pcm_channels = pcm_channels;
-
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-
-    ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
-  }
-  break;
+    break;
   case PROP_FORMAT:
-  {
-    guint format;
+    {
+      guint format;
 
-    format = g_value_get_uint(value);
+      format = g_value_get_uint(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    if(format == gstreamer_devin->format){
+      if(format == gstreamer_devin->format){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+	return;
+      }
+
+      gstreamer_devin->format = format;
+
       g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-      return;
+      ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
     }
-
-    gstreamer_devin->format = format;
-
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-
-    ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
-  }
-  break;
+    break;
   case PROP_BUFFER_SIZE:
-  {
-    guint buffer_size;
+    {
+      guint buffer_size;
 
-    buffer_size = g_value_get_uint(value);
+      buffer_size = g_value_get_uint(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    if(buffer_size == gstreamer_devin->buffer_size){
+      if(buffer_size == gstreamer_devin->buffer_size){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+	return;
+      }
+
+      gstreamer_devin->buffer_size = buffer_size;
+
       g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-      return;
+      ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
+      ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
     }
-
-    gstreamer_devin->buffer_size = buffer_size;
-
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-
-    ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
-    ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
-  }
-  break;
+    break;
   case PROP_SAMPLERATE:
-  {
-    guint samplerate;
+    {
+      guint samplerate;
 
-    samplerate = g_value_get_uint(value);
+      samplerate = g_value_get_uint(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
       
-    if(samplerate == gstreamer_devin->samplerate){
+      if(samplerate == gstreamer_devin->samplerate){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+	return;
+      }
+
+      gstreamer_devin->samplerate = samplerate;
+
       g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-      return;
+      ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
+      ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
     }
-
-    gstreamer_devin->samplerate = samplerate;
-
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-
-    ags_gstreamer_devin_realloc_buffer(gstreamer_devin);
-    ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
-  }
-  break;
+    break;
   case PROP_BUFFER:
-  {
-    //TODO:JK: implement me
-  }
-  break;
+    {
+      //TODO:JK: implement me
+    }
+    break;
   case PROP_BPM:
-  {
-    gdouble bpm;
+    {
+      gdouble bpm;
       
-    bpm = g_value_get_double(value);
+      bpm = g_value_get_double(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    gstreamer_devin->bpm = bpm;
+      gstreamer_devin->bpm = bpm;
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-    ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
-  }
-  break;
+      ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
+    }
+    break;
   case PROP_DELAY_FACTOR:
-  {
-    gdouble delay_factor;
+    {
+      gdouble delay_factor;
       
-    delay_factor = g_value_get_double(value);
+      delay_factor = g_value_get_double(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    gstreamer_devin->delay_factor = delay_factor;
+      gstreamer_devin->delay_factor = delay_factor;
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-    ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
-  }
-  break;
+      ags_gstreamer_devin_adjust_delay_and_attack(gstreamer_devin);
+    }
+    break;
   case PROP_GSTREAMER_CLIENT:
-  {
-    AgsGstreamerClient *gstreamer_client;
+    {
+      AgsGstreamerClient *gstreamer_client;
 
-    gstreamer_client = (AgsGstreamerClient *) g_value_get_object(value);
+      gstreamer_client = (AgsGstreamerClient *) g_value_get_object(value);
 
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    if(gstreamer_devin->gstreamer_client == (GObject *) gstreamer_client){
-      g_rec_mutex_unlock(gstreamer_devin_mutex);
+      if(gstreamer_devin->gstreamer_client == (GObject *) gstreamer_client){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
 
-      return;
-    }
+	return;
+      }
 
-    if(gstreamer_devin->gstreamer_client != NULL){
-      g_object_unref(G_OBJECT(gstreamer_devin->gstreamer_client));
-    }
+      if(gstreamer_devin->gstreamer_client != NULL){
+	g_object_unref(G_OBJECT(gstreamer_devin->gstreamer_client));
+      }
 
-    if(gstreamer_client != NULL){
-      g_object_ref(gstreamer_client);
-    }
+      if(gstreamer_client != NULL){
+	g_object_ref(gstreamer_client);
+      }
       
-    gstreamer_devin->gstreamer_client = (GObject *) gstreamer_client;
+      gstreamer_devin->gstreamer_client = (GObject *) gstreamer_client;
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
-  case PROP_GSTREAMER_PORT:
-  {
-    AgsGstreamerPort *gstreamer_port;
-
-    gstreamer_port = (AgsGstreamerPort *) g_value_get_pointer(value);
-
-    g_rec_mutex_lock(gstreamer_devin_mutex);
-
-    if(!AGS_IS_GSTREAMER_PORT(gstreamer_port) ||
-       g_list_find(gstreamer_devin->gstreamer_port, gstreamer_port) != NULL){
       g_rec_mutex_unlock(gstreamer_devin_mutex);
-
-      return;
     }
+    break;
+  case PROP_GSTREAMER_PORT:
+    {
+      AgsGstreamerPort *gstreamer_port;
 
-    g_object_ref(gstreamer_port);
-    gstreamer_devin->gstreamer_port = g_list_append(gstreamer_devin->gstreamer_port,
-						    gstreamer_port);
+      gstreamer_port = (AgsGstreamerPort *) g_value_get_pointer(value);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_lock(gstreamer_devin_mutex);
+
+      if(!AGS_IS_GSTREAMER_PORT(gstreamer_port) ||
+	 g_list_find(gstreamer_devin->gstreamer_port, gstreamer_port) != NULL){
+	g_rec_mutex_unlock(gstreamer_devin_mutex);
+
+	return;
+      }
+
+      g_object_ref(gstreamer_port);
+      gstreamer_devin->gstreamer_port = g_list_append(gstreamer_devin->gstreamer_port,
+						      gstreamer_port);
+
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -919,116 +946,116 @@ ags_gstreamer_devin_get_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_DEVICE:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_string(value, gstreamer_devin->card_uri);
+      g_value_set_string(value, gstreamer_devin->card_uri);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_DSP_CHANNELS:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_uint(value, gstreamer_devin->dsp_channels);
+      g_value_set_uint(value, gstreamer_devin->dsp_channels);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_PCM_CHANNELS:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_uint(value, gstreamer_devin->pcm_channels);
+      g_value_set_uint(value, gstreamer_devin->pcm_channels);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_FORMAT:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_uint(value, gstreamer_devin->format);
+      g_value_set_uint(value, gstreamer_devin->format);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_BUFFER_SIZE:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_uint(value, gstreamer_devin->buffer_size);
+      g_value_set_uint(value, gstreamer_devin->buffer_size);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_SAMPLERATE:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_uint(value, gstreamer_devin->samplerate);
+      g_value_set_uint(value, gstreamer_devin->samplerate);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_BUFFER:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_pointer(value, gstreamer_devin->buffer);
+      g_value_set_pointer(value, gstreamer_devin->app_buffer);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_BPM:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_double(value, gstreamer_devin->bpm);
+      g_value_set_double(value, gstreamer_devin->bpm);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_DELAY_FACTOR:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_double(value, gstreamer_devin->delay_factor);
+      g_value_set_double(value, gstreamer_devin->delay_factor);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_ATTACK:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_pointer(value, gstreamer_devin->attack);
+      g_value_set_pointer(value, gstreamer_devin->attack);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_GSTREAMER_CLIENT:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_object(value, gstreamer_devin->gstreamer_client);
+      g_value_set_object(value, gstreamer_devin->gstreamer_client);
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   case PROP_GSTREAMER_PORT:
-  {
-    g_rec_mutex_lock(gstreamer_devin_mutex);
+    {
+      g_rec_mutex_lock(gstreamer_devin_mutex);
 
-    g_value_set_pointer(value,
-			g_list_copy_deep(gstreamer_devin->gstreamer_port,
-					 (GCopyFunc) g_object_ref,
-					 NULL));
+      g_value_set_pointer(value,
+			  g_list_copy_deep(gstreamer_devin->gstreamer_port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
-    g_rec_mutex_unlock(gstreamer_devin_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(gstreamer_devin_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1041,6 +1068,8 @@ ags_gstreamer_devin_dispose(GObject *gobject)
   AgsGstreamerDevin *gstreamer_devin;
 
   gstreamer_devin = AGS_GSTREAMER_DEVIN(gobject);
+
+  ags_uuid_free(gstreamer_devin->uuid);
 
   /* gstreamer client */
   if(gstreamer_devin->gstreamer_client != NULL){
@@ -1064,23 +1093,41 @@ ags_gstreamer_devin_finalize(GObject *gobject)
 {
   AgsGstreamerDevin *gstreamer_devin;
 
+  guint i;
+  
   gstreamer_devin = AGS_GSTREAMER_DEVIN(gobject);
 
+  for(i = 0; i < 8; i++){
+    g_rec_mutex_clear(gstreamer_devin->app_buffer_mutex[i]);
+
+    g_free(gstreamer_devin->app_buffer_mutex[i]);
+  }
+
+  g_free(gstreamer_devin->app_buffer_mutex);
+  
+  for(i = 0; i < 8 * gstreamer_devin->sub_block_count * gstreamer_devin->pcm_channels; i++){
+    g_rec_mutex_clear(gstreamer_devin->sub_block_mutex[i]);
+
+    g_free(gstreamer_devin->sub_block_mutex[i]);
+  }
+
+  g_free(gstreamer_devin->sub_block_mutex);
+
   /* free output buffer */
-  free(gstreamer_devin->buffer[0]);
-  free(gstreamer_devin->buffer[1]);
-  free(gstreamer_devin->buffer[2]);
-  free(gstreamer_devin->buffer[3]);
-  free(gstreamer_devin->buffer[4]);
-  free(gstreamer_devin->buffer[5]);
-  free(gstreamer_devin->buffer[6]);
-  free(gstreamer_devin->buffer[7]);
+  g_free(gstreamer_devin->app_buffer[0]);
+  g_free(gstreamer_devin->app_buffer[1]);
+  g_free(gstreamer_devin->app_buffer[2]);
+  g_free(gstreamer_devin->app_buffer[3]);
+  g_free(gstreamer_devin->app_buffer[4]);
+  g_free(gstreamer_devin->app_buffer[5]);
+  g_free(gstreamer_devin->app_buffer[6]);
+  g_free(gstreamer_devin->app_buffer[7]);
 
   /* free buffer array */
-  free(gstreamer_devin->buffer);
+  g_free(gstreamer_devin->app_buffer);
 
-  /* free AgsAttack */
-  free(gstreamer_devin->attack);
+  g_free(gstreamer_devin->delay);
+  g_free(gstreamer_devin->attack);
 
   /* gstreamer client */
   if(gstreamer_devin->gstreamer_client != NULL){
@@ -1132,10 +1179,19 @@ ags_gstreamer_devin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *gstreamer_devin_mutex;
+
   gstreamer_devin = AGS_GSTREAMER_DEVIN(connectable);
 
-  /* check is added */
-  is_ready = ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_ADDED_TO_REGISTRY);
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  /* check is ready */
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (gstreamer_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
   
   return(is_ready);
 }
@@ -1145,13 +1201,22 @@ ags_gstreamer_devin_add_to_registry(AgsConnectable *connectable)
 {
   AgsGstreamerDevin *gstreamer_devin;
 
+  GRecMutex *gstreamer_devin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   gstreamer_devin = AGS_GSTREAMER_DEVIN(connectable);
 
-  ags_gstreamer_devin_set_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_ADDED_TO_REGISTRY);
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  gstreamer_devin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
 
 void
@@ -1159,13 +1224,22 @@ ags_gstreamer_devin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsGstreamerDevin *gstreamer_devin;
 
+  GRecMutex *gstreamer_devin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   gstreamer_devin = AGS_GSTREAMER_DEVIN(connectable);
 
-  ags_gstreamer_devin_unset_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_ADDED_TO_REGISTRY);
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  gstreamer_devin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
 
 xmlNode*
@@ -1206,10 +1280,19 @@ ags_gstreamer_devin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *gstreamer_devin_mutex;
+
   gstreamer_devin = AGS_GSTREAMER_DEVIN(connectable);
 
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
   /* check is connected */
-  is_connected = ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_CONNECTED);
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (gstreamer_devin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
   
   return(is_connected);
 }
@@ -1218,6 +1301,8 @@ void
 ags_gstreamer_devin_connect(AgsConnectable *connectable)
 {
   AgsGstreamerDevin *gstreamer_devin;
+
+  GRecMutex *gstreamer_devin_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1225,22 +1310,37 @@ ags_gstreamer_devin_connect(AgsConnectable *connectable)
 
   gstreamer_devin = AGS_GSTREAMER_DEVIN(connectable);
 
-  ags_gstreamer_devin_set_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_CONNECTED);
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  gstreamer_devin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
 
 void
 ags_gstreamer_devin_disconnect(AgsConnectable *connectable)
 {
-
   AgsGstreamerDevin *gstreamer_devin;
+
+  GRecMutex *gstreamer_devin_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   gstreamer_devin = AGS_GSTREAMER_DEVIN(connectable);
+
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  gstreamer_devin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_gstreamer_devin_unset_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_CONNECTED);
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
 
 /**
@@ -1751,31 +1851,31 @@ ags_gstreamer_devin_port_init(AgsSoundcard *soundcard,
 
   switch(gstreamer_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-  {
-    word_size = sizeof(gint8);
-  }
-  break;
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    word_size = sizeof(gint16);
-  }
-  break;
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {      
-    //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-    word_size = sizeof(gint32);
-  }
-  break;
+    {      
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-  {
-    word_size = sizeof(gint64);
-  }
-  break;
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
   default:
     g_rec_mutex_unlock(gstreamer_devin_mutex);
     
@@ -1785,19 +1885,19 @@ ags_gstreamer_devin_port_init(AgsSoundcard *soundcard,
   }
   
   /* prepare for capture */
-  gstreamer_devin->flags |= (AGS_GSTREAMER_DEVIN_BUFFER3 |
-			     AGS_GSTREAMER_DEVIN_START_RECORD |
+  gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_7;
+  gstreamer_devin->flags |= (AGS_GSTREAMER_DEVIN_START_RECORD |
 			     AGS_GSTREAMER_DEVIN_RECORD |
 			     AGS_GSTREAMER_DEVIN_NONBLOCKING);
 
-  memset(gstreamer_devin->buffer[0], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[1], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[2], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[3], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[4], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[5], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[6], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[7], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[0], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[1], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[2], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[3], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[4], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[5], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[6], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[7], 0, gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
 
   /*  */
   gstreamer_devin->tact_counter = 0.0;
@@ -1871,31 +1971,31 @@ ags_gstreamer_devin_port_record(AgsSoundcard *soundcard,
 
   switch(gstreamer_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-  {
-    word_size = sizeof(gint8);
-  }
-  break;
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    word_size = sizeof(gint16);
-  }
-  break;
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {      
-    //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-    word_size = sizeof(gint32);
-  }
-  break;
+    {      
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-  {
-    word_size = sizeof(gint64);
-  }
-  break;
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
   default:
     g_rec_mutex_unlock(gstreamer_devin_mutex);
     
@@ -2018,11 +2118,8 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
   callback_mutex = &(gstreamer_devin->callback_mutex);
   callback_finish_mutex = &(gstreamer_devin->callback_finish_mutex);
   
-  gstreamer_devin->flags &= (~(AGS_GSTREAMER_DEVIN_BUFFER0 |
-			       AGS_GSTREAMER_DEVIN_BUFFER1 |
-			       AGS_GSTREAMER_DEVIN_BUFFER2 |
-			       AGS_GSTREAMER_DEVIN_BUFFER3 |
-			       AGS_GSTREAMER_DEVIN_RECORD));
+  gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_0;
+  gstreamer_devin->flags &= (~(AGS_GSTREAMER_DEVIN_RECORD));
 
   g_atomic_int_or(&(gstreamer_devin->sync_flags),
 		  AGS_GSTREAMER_DEVIN_PASS_THROUGH);
@@ -2059,44 +2156,44 @@ ags_gstreamer_devin_port_free(AgsSoundcard *soundcard)
 
   switch(gstreamer_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-  {
-    word_size = sizeof(gint8);
-  }
-  break;
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    word_size = sizeof(gint16);
-  }
-  break;
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-  {
-    word_size = sizeof(gint64);
-  }
-  break;
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
   default:
     word_size = 0;
     
     g_critical("ags_gstreamer_devin_free(): unsupported word size");
   }
 
-  memset(gstreamer_devin->buffer[0], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[1], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[2], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[3], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[4], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[5], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[6], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  memset(gstreamer_devin->buffer[7], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[0], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[1], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[2], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[3], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[4], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[5], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[6], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  memset(gstreamer_devin->app_buffer[7], 0, (size_t) gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
 
   g_rec_mutex_unlock(gstreamer_devin_mutex);
 }
@@ -2373,28 +2470,37 @@ ags_gstreamer_devin_get_buffer(AgsSoundcard *soundcard)
   AgsGstreamerDevin *gstreamer_devin;
 
   void *buffer;
+
+  GRecMutex *gstreamer_devin_mutex;  
   
   gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
+  
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
 
-  if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER0)){
-    buffer = gstreamer_devin->buffer[0];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER1)){
-    buffer = gstreamer_devin->buffer[1];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER2)){
-    buffer = gstreamer_devin->buffer[2];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER3)){
-    buffer = gstreamer_devin->buffer[3];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER4)){
-    buffer = gstreamer_devin->buffer[4];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER5)){
-    buffer = gstreamer_devin->buffer[5];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER6)){
-    buffer = gstreamer_devin->buffer[6];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER7)){
-    buffer = gstreamer_devin->buffer[7];
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_0){
+    buffer = gstreamer_devin->app_buffer[0];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_1){
+    buffer = gstreamer_devin->app_buffer[1];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_2){
+    buffer = gstreamer_devin->app_buffer[2];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_3){
+    buffer = gstreamer_devin->app_buffer[3];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_4){
+    buffer = gstreamer_devin->app_buffer[4];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_5){
+    buffer = gstreamer_devin->app_buffer[5];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_6){
+    buffer = gstreamer_devin->app_buffer[6];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_7){
+    buffer = gstreamer_devin->app_buffer[7];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 
   return(buffer);
 }
@@ -2405,33 +2511,37 @@ ags_gstreamer_devin_get_next_buffer(AgsSoundcard *soundcard)
   AgsGstreamerDevin *gstreamer_devin;
 
   void *buffer;
+
+  GRecMutex *gstreamer_devin_mutex;  
   
   gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
+  
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
 
-  //  g_message("next - 0x%0x", ((AGS_GSTREAMER_DEVIN_BUFFER0 |
-  //				AGS_GSTREAMER_DEVIN_BUFFER1 |
-  //				AGS_GSTREAMER_DEVIN_BUFFER2 |
-  //				AGS_GSTREAMER_DEVIN_BUFFER3) & (gstreamer_devin->flags)));
+  g_rec_mutex_lock(gstreamer_devin_mutex);
 
-  if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER0)){
-    buffer = gstreamer_devin->buffer[1];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER1)){
-    buffer = gstreamer_devin->buffer[2];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER2)){
-    buffer = gstreamer_devin->buffer[3];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER3)){
-    buffer = gstreamer_devin->buffer[4];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER4)){
-    buffer = gstreamer_devin->buffer[5];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER5)){
-    buffer = gstreamer_devin->buffer[6];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER6)){
-    buffer = gstreamer_devin->buffer[7];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER7)){
-    buffer = gstreamer_devin->buffer[0];
+  if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_0){
+    buffer = gstreamer_devin->app_buffer[1];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_1){
+    buffer = gstreamer_devin->app_buffer[2];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_2){
+    buffer = gstreamer_devin->app_buffer[3];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_3){
+    buffer = gstreamer_devin->app_buffer[4];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_4){
+    buffer = gstreamer_devin->app_buffer[5];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_5){
+    buffer = gstreamer_devin->app_buffer[6];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_6){
+    buffer = gstreamer_devin->app_buffer[7];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_7){
+    buffer = gstreamer_devin->app_buffer[0];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 
   return(buffer);
 }
@@ -2442,28 +2552,37 @@ ags_gstreamer_devin_get_prev_buffer(AgsSoundcard *soundcard)
   AgsGstreamerDevin *gstreamer_devin;
 
   void *buffer;
+
+  GRecMutex *gstreamer_devin_mutex;  
   
   gstreamer_devin = AGS_GSTREAMER_DEVIN(soundcard);
 
-  if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER0)){
-    buffer = gstreamer_devin->buffer[7];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER1)){
-    buffer = gstreamer_devin->buffer[0];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER2)){
-    buffer = gstreamer_devin->buffer[1];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER3)){
-    buffer = gstreamer_devin->buffer[2];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER4)){
-    buffer = gstreamer_devin->buffer[3];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER5)){
-    buffer = gstreamer_devin->buffer[4];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER6)){
-    buffer = gstreamer_devin->buffer[5];
-  }else if(ags_gstreamer_devin_test_flags(gstreamer_devin, AGS_GSTREAMER_DEVIN_BUFFER7)){
-    buffer = gstreamer_devin->buffer[6];
+  /* get gstreamer devin mutex */
+  gstreamer_devin_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(gstreamer_devin);
+
+  g_rec_mutex_lock(gstreamer_devin_mutex);
+
+  if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_0){
+    buffer = gstreamer_devin->app_buffer[7];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_1){
+    buffer = gstreamer_devin->app_buffer[0];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_2){
+    buffer = gstreamer_devin->app_buffer[1];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_3){
+    buffer = gstreamer_devin->app_buffer[2];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_4){
+    buffer = gstreamer_devin->app_buffer[3];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_5){
+    buffer = gstreamer_devin->app_buffer[4];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_6){
+    buffer = gstreamer_devin->app_buffer[5];
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_7){
+    buffer = gstreamer_devin->app_buffer[6];
   }else{
     buffer = NULL;
   }
+  
+  g_rec_mutex_unlock(gstreamer_devin_mutex);
 
   return(buffer);
 }
@@ -2480,23 +2599,23 @@ ags_gstreamer_devin_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(gstreamer_devin->buffer != NULL){
-    if(buffer == gstreamer_devin->buffer[0]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[0];
-    }else if(buffer == gstreamer_devin->buffer[1]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[1];
-    }else if(buffer == gstreamer_devin->buffer[2]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[2];
-    }else if(buffer == gstreamer_devin->buffer[3]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[3];
-    }else if(buffer == gstreamer_devin->buffer[4]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[4];
-    }else if(buffer == gstreamer_devin->buffer[5]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[5];
-    }else if(buffer == gstreamer_devin->buffer[6]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[6];
-    }else if(buffer == gstreamer_devin->buffer[7]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[7];
+  if(gstreamer_devin->app_buffer != NULL){
+    if(buffer == gstreamer_devin->app_buffer[0]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[0];
+    }else if(buffer == gstreamer_devin->app_buffer[1]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[1];
+    }else if(buffer == gstreamer_devin->app_buffer[2]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[2];
+    }else if(buffer == gstreamer_devin->app_buffer[3]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[3];
+    }else if(buffer == gstreamer_devin->app_buffer[4]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[4];
+    }else if(buffer == gstreamer_devin->app_buffer[5]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[5];
+    }else if(buffer == gstreamer_devin->app_buffer[6]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[6];
+    }else if(buffer == gstreamer_devin->app_buffer[7]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[7];
     }
   }
   
@@ -2504,7 +2623,6 @@ ags_gstreamer_devin_lock_buffer(AgsSoundcard *soundcard,
     g_rec_mutex_lock(buffer_mutex);
   }
 }
-
 
 void
 ags_gstreamer_devin_unlock_buffer(AgsSoundcard *soundcard,
@@ -2518,23 +2636,23 @@ ags_gstreamer_devin_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(gstreamer_devin->buffer != NULL){
-    if(buffer == gstreamer_devin->buffer[0]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[0];
-    }else if(buffer == gstreamer_devin->buffer[1]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[1];
-    }else if(buffer == gstreamer_devin->buffer[2]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[2];
-    }else if(buffer == gstreamer_devin->buffer[3]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[3];
-    }else if(buffer == gstreamer_devin->buffer[4]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[4];
-    }else if(buffer == gstreamer_devin->buffer[5]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[5];
-    }else if(buffer == gstreamer_devin->buffer[6]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[6];
-    }else if(buffer == gstreamer_devin->buffer[7]){
-      buffer_mutex = gstreamer_devin->buffer_mutex[7];
+  if(gstreamer_devin->app_buffer != NULL){
+    if(buffer == gstreamer_devin->app_buffer[0]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[0];
+    }else if(buffer == gstreamer_devin->app_buffer[1]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[1];
+    }else if(buffer == gstreamer_devin->app_buffer[2]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[2];
+    }else if(buffer == gstreamer_devin->app_buffer[3]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[3];
+    }else if(buffer == gstreamer_devin->app_buffer[4]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[4];
+    }else if(buffer == gstreamer_devin->app_buffer[5]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[5];
+    }else if(buffer == gstreamer_devin->app_buffer[6]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[6];
+    }else if(buffer == gstreamer_devin->app_buffer[7]){
+      buffer_mutex = gstreamer_devin->app_buffer_mutex[7];
     }
   }
 
@@ -2809,18 +2927,22 @@ ags_gstreamer_devin_switch_buffer_flag(AgsGstreamerDevin *gstreamer_devin)
   /* switch buffer flag */
   g_rec_mutex_lock(gstreamer_devin_mutex);
 
-  if((AGS_GSTREAMER_DEVIN_BUFFER0 & (gstreamer_devin->flags)) != 0){
-    gstreamer_devin->flags &= (~AGS_GSTREAMER_DEVIN_BUFFER0);
-    gstreamer_devin->flags |= AGS_GSTREAMER_DEVIN_BUFFER1;
-  }else if((AGS_GSTREAMER_DEVIN_BUFFER1 & (gstreamer_devin->flags)) != 0){
-    gstreamer_devin->flags &= (~AGS_GSTREAMER_DEVIN_BUFFER1);
-    gstreamer_devin->flags |= AGS_GSTREAMER_DEVIN_BUFFER2;
-  }else if((AGS_GSTREAMER_DEVIN_BUFFER2 & (gstreamer_devin->flags)) != 0){
-    gstreamer_devin->flags &= (~AGS_GSTREAMER_DEVIN_BUFFER2);
-    gstreamer_devin->flags |= AGS_GSTREAMER_DEVIN_BUFFER3;
-  }else if((AGS_GSTREAMER_DEVIN_BUFFER3 & (gstreamer_devin->flags)) != 0){
-    gstreamer_devin->flags &= (~AGS_GSTREAMER_DEVIN_BUFFER3);
-    gstreamer_devin->flags |= AGS_GSTREAMER_DEVIN_BUFFER0;
+  if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_0){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_1;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_1){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_2;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_2){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_3;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_3){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_4;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_4){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_5;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_5){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_6;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_6){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_7;
+  }else if(gstreamer_devin->app_buffer_mode == AGS_GSTREAMER_DEVIN_APP_BUFFER_7){
+    gstreamer_devin->app_buffer_mode = AGS_GSTREAMER_DEVIN_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(gstreamer_devin_mutex);
@@ -2883,30 +3005,30 @@ ags_gstreamer_devin_realloc_buffer(AgsGstreamerDevin *gstreamer_devin)
 
   switch(gstreamer_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-  {
-    word_size = sizeof(gint8);
-  }
-  break;
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    word_size = sizeof(gint16);
-  }
-  break;
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-  {
-    word_size = sizeof(gint64);
-  }
-  break;
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
   default:
     g_warning("ags_gstreamer_devin_realloc_buffer(): unsupported word size");
     return;
@@ -2953,11 +3075,11 @@ ags_gstreamer_devin_realloc_buffer(AgsGstreamerDevin *gstreamer_devin)
 						       gstreamer_port);
     
       if(gstreamer_devin->port_name == NULL){
-	gstreamer_devin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+	gstreamer_devin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
 	gstreamer_devin->port_name[0] = g_strdup(str);
       }else{
-	gstreamer_devin->port_name = (gchar **) realloc(gstreamer_devin->port_name,
-							(i + 2) * sizeof(gchar *));
+	gstreamer_devin->port_name = (gchar **) g_realloc(gstreamer_devin->port_name,
+							  (i + 2) * sizeof(gchar *));
 	gstreamer_devin->port_name[i] = g_strdup(str);
       }
       
@@ -2996,66 +3118,66 @@ ags_gstreamer_devin_realloc_buffer(AgsGstreamerDevin *gstreamer_devin)
 
     g_rec_mutex_lock(gstreamer_devin_mutex);
     
-    gstreamer_devin->port_name = (gchar **) realloc(gstreamer_devin->port_name,
-						    (gstreamer_devin->pcm_channels + 1) * sizeof(gchar *));
+    gstreamer_devin->port_name = (gchar **) g_realloc(gstreamer_devin->port_name,
+						      (gstreamer_devin->pcm_channels + 1) * sizeof(gchar *));
     gstreamer_devin->port_name[gstreamer_devin->pcm_channels] = NULL;
 
     g_rec_mutex_unlock(gstreamer_devin_mutex);
   }
   
-  /* AGS_GSTREAMER_DEVIN_BUFFER_0 */
-  if(gstreamer_devin->buffer[0] != NULL){
-    free(gstreamer_devin->buffer[0]);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_0 */
+  if(gstreamer_devin->app_buffer[0] != NULL){
+    g_free(gstreamer_devin->app_buffer[0]);
   }
   
-  gstreamer_devin->buffer[0] = (void *) malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  gstreamer_devin->app_buffer[0] = (void *) g_malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
   
-  /* AGS_GSTREAMER_DEVIN_BUFFER_1 */
-  if(gstreamer_devin->buffer[1] != NULL){
-    free(gstreamer_devin->buffer[1]);
-  }
-
-  gstreamer_devin->buffer[1] = (void *) malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
-  
-  /* AGS_GSTREAMER_DEVIN_BUFFER_2 */
-  if(gstreamer_devin->buffer[2] != NULL){
-    free(gstreamer_devin->buffer[2]);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_1 */
+  if(gstreamer_devin->app_buffer[1] != NULL){
+    g_free(gstreamer_devin->app_buffer[1]);
   }
 
-  gstreamer_devin->buffer[2] = (void *) malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  gstreamer_devin->app_buffer[1] = (void *) g_malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
   
-  /* AGS_GSTREAMER_DEVIN_BUFFER_3 */
-  if(gstreamer_devin->buffer[3] != NULL){
-    free(gstreamer_devin->buffer[3]);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_2 */
+  if(gstreamer_devin->app_buffer[2] != NULL){
+    g_free(gstreamer_devin->app_buffer[2]);
   }
 
-  /* AGS_GSTREAMER_DEVIN_BUFFER_4 */
-  if(gstreamer_devin->buffer[4] != NULL){
-    free(gstreamer_devin->buffer[4]);
-  }
+  gstreamer_devin->app_buffer[2] = (void *) g_malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
   
-  gstreamer_devin->buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_3 */
+  if(gstreamer_devin->app_buffer[3] != NULL){
+    g_free(gstreamer_devin->app_buffer[3]);
+  }
 
-  /* AGS_GSTREAMER_DEVIN_BUFFER_5 */
-  if(gstreamer_devin->buffer[5] != NULL){
-    free(gstreamer_devin->buffer[5]);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_4 */
+  if(gstreamer_devin->app_buffer[4] != NULL){
+    g_free(gstreamer_devin->app_buffer[4]);
   }
   
-  gstreamer_devin->buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  gstreamer_devin->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_GSTREAMER_DEVIN_BUFFER_6 */
-  if(gstreamer_devin->buffer[6] != NULL){
-    free(gstreamer_devin->buffer[6]);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_5 */
+  if(gstreamer_devin->app_buffer[5] != NULL){
+    g_free(gstreamer_devin->app_buffer[5]);
   }
   
-  gstreamer_devin->buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  gstreamer_devin->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_GSTREAMER_DEVIN_BUFFER_7 */
-  if(gstreamer_devin->buffer[7] != NULL){
-    free(gstreamer_devin->buffer[7]);
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_6 */
+  if(gstreamer_devin->app_buffer[6] != NULL){
+    g_free(gstreamer_devin->app_buffer[6]);
   }
   
-  gstreamer_devin->buffer[3] = (void *) malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
+  gstreamer_devin->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  /* AGS_GSTREAMER_DEVIN_APP_BUFFER_7 */
+  if(gstreamer_devin->app_buffer[7] != NULL){
+    g_free(gstreamer_devin->app_buffer[7]);
+  }
+  
+  gstreamer_devin->app_buffer[3] = (void *) g_malloc(gstreamer_devin->pcm_channels * gstreamer_devin->buffer_size * word_size);
 }
 
 /**

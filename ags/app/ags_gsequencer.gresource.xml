@@ -10,6 +10,6 @@
     <file>ags/app/ui/ags_edit_menu.ui</file>
   </gresource>
   <gresource prefix="/org/nongnu/gsequencer">
-    <file compressed="true" preprocess="xml-stripblanks">ags/app/ui/ags_meta_data_window.ui</file>
-  </gresource>  
+    <file>ags/app/ui/ags_machine_menu.ui</file>
+  </gresource>
 </gresources>

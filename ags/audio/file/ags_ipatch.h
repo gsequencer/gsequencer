@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,8 +51,6 @@ typedef struct _AgsIpatchClass AgsIpatchClass;
 
 /**
  * AgsIpatchFlags:
- * @AGS_IPATCH_ADDED_TO_REGISTRY: the ipatch was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_IPATCH_CONNECTED: indicates the ipatch was connected by calling #AgsConnectable::connect()
  * @AGS_IPATCH_DLS2: DLS2 format
  * @AGS_IPATCH_SF2: Soundfont2 format
  * @AGS_IPATCH_GIG: Gigasampler format
@@ -61,11 +59,9 @@ typedef struct _AgsIpatchClass AgsIpatchClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_IPATCH_ADDED_TO_REGISTRY    = 1,
-  AGS_IPATCH_CONNECTED            = 1 <<  1,
-  AGS_IPATCH_DLS2                 = 1 <<  2,
-  AGS_IPATCH_SF2                  = 1 <<  3,
-  AGS_IPATCH_GIG                  = 1 <<  4,
+  AGS_IPATCH_DLS2                 = 1,
+  AGS_IPATCH_SF2                  = 1 <<  1,
+  AGS_IPATCH_GIG                  = 1 <<  2,
 }AgsIpatchFlags;
 
 struct _AgsIpatch
@@ -73,7 +69,8 @@ struct _AgsIpatch
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -108,6 +105,7 @@ struct _AgsIpatchClass
 };
 
 GType ags_ipatch_get_type();
+GType ags_ipatch_flags_get_type();
 
 gboolean ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags);
 void ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags);

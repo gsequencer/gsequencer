@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,6 +47,9 @@ struct _AgsFluidInterpolateLinearUtil
   guint format;
   guint samplerate;
 
+  gdouble base_key;
+  gdouble tuning;
+
   gdouble phase_increment;
 };
 
@@ -85,6 +88,14 @@ guint ags_fluid_interpolate_linear_util_get_samplerate(AgsFluidInterpolateLinear
 void ags_fluid_interpolate_linear_util_set_samplerate(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 						      guint samplerate);
 
+gdouble ags_fluid_interpolate_linear_util_get_base_key(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_base_key(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						    gdouble base_key);
+
+gdouble ags_fluid_interpolate_linear_util_get_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						  gdouble tuning);
+
 gdouble ags_fluid_interpolate_linear_util_get_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_set_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 							   gdouble phase_increment);
@@ -98,47 +109,6 @@ void ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil
 void ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_pitch(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
-
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s8)
-void ags_fluid_interpolate_linear_util_fill_s8(gint8 *destination,
-					       gint8 *source,
-					       guint buffer_length,
-					       gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s16)
-void ags_fluid_interpolate_linear_util_fill_s16(gint16 *destination,
-						gint16 *source,
-						guint buffer_length,
-						gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s24)
-void ags_fluid_interpolate_linear_util_fill_s24(gint32 *destination,
-						gint32 *source,
-						guint buffer_length,
-						gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s32)
-void ags_fluid_interpolate_linear_util_fill_s32(gint32 *destination,
-						gint32 *source,
-						guint buffer_length,
-						gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s64)
-void ags_fluid_interpolate_linear_util_fill_s64(gint64 *destination,
-						gint64 *source,
-						guint buffer_length,
-						gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_float)
-void ags_fluid_interpolate_linear_util_fill_float(gfloat *destination,
-						  gfloat *source,
-						  guint buffer_length,
-						  gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_double)
-void ags_fluid_interpolate_linear_util_fill_double(gdouble *destination,
-						   gdouble *source,
-						   guint buffer_length,
-						   gdouble phase_incr);
-G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_complex)
-void ags_fluid_interpolate_linear_util_fill_complex(AgsComplex *destination,
-						    AgsComplex *source,
-						    guint buffer_length,
-						    gdouble phase_incr);
 
 G_END_DECLS
 

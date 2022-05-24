@@ -440,12 +440,23 @@ ags_file_error_quark()
 void
 ags_file_init(AgsFile *file)
 {
+  gchar *app_encoding;
   
   file->flags = 0;
 
   /* add file mutex */
   g_rec_mutex_init(&(file->obj_mutex));
 
+  file->app_encoding = g_strdup(AGS_FILE_DEFAULT_APP_ENCODING);
+
+  app_encoding = g_getenv("LANG");
+
+  if(app_encoding != NULL){
+    g_free(file->app_encoding);
+    
+    file->app_encoding = g_strdup(app_encoding);
+  }    
+  
   file->out = NULL;
   file->buffer = NULL;
 
@@ -456,7 +467,12 @@ ags_file_init(AgsFile *file)
   file->audio_format = AGS_FILE_DEFAULT_AUDIO_FORMAT;
   file->audio_encoding = AGS_FILE_DEFAULT_AUDIO_ENCODING;
 
+  file->read_charset_converter = NULL;
+  file->write_charset_converter = NULL;
+  
   file->doc = NULL;
+  
+  file->root_node = NULL;
 
   file->id_refs = NULL;
   file->lookup = NULL;
@@ -1214,6 +1230,551 @@ ags_file_add_launch(AgsFile *file, GObject *file_launch)
   }
   
   g_rec_mutex_unlock(file_mutex);
+}
+
+/**
+ * ags_file_xml_new_doc:
+ * @file: the #AgsFile
+ * @version: the version
+ *
+ * Create #xmlDoc-struct.
+ *
+ * Returns: (transfer full): the newly created #xmlDoc-struct
+ * 
+ * Since: 4.0.0
+ */
+xmlDoc*
+ags_file_xml_new_doc(AgsFile *file,
+		     gchar *version)
+{
+  xmlDoc *doc;
+
+  gchar *app_encoding, *encoding;
+
+  GError *error;
+  
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }
+
+  encoding = file->encoding;
+  app_encoding = file->app_encoding;
+
+  if(encoding == NULL){
+    encoding = AGS_FILE_DEFAULT_ENCODING;
+  }
+
+  if(app_encoding == NULL){
+    app_encoding = AGS_FILE_DEFAULT_APP_ENCODING;
+  }
+  
+  doc = xmlNewDoc(version);
+
+  error = NULL;
+  file->read_charset_converter = g_charset_converter_new(app_encoding,
+							 encoding,
+							 &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+  
+  error = NULL;
+  file->write_charset_converter = g_charset_converter_new(encoding,
+							  app_encoding,
+							  &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  return(doc);
+}
+
+/**
+ * ags_file_xml_new_node:
+ * @file: the #AgsFile
+ * @xml_namespace: the XML namespace
+ * @node_name: the XML node name
+ *
+ * Create #xmlNode-struct.
+ * 
+ * Returns: (transfer full): the newly created #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_new_node(AgsFile *file,
+		      xmlNs *xml_namespace,
+		      gchar *node_name)
+{
+  xmlNode *node;
+
+  xmlChar localized_node_name[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+
+  GError *error;
+  
+  if(!AGS_IS_FILE(file) ||
+     node_name == NULL){
+    return(NULL);
+  }
+
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      node_name,
+		      strlen(node_name),
+		      localized_node_name,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  node = xmlNewNode(xml_namespace,
+		    localized_node_name);
+  
+  return(node);
+}
+
+/**
+ * ags_file_xml_get_root_element:
+ * @file: the #AgsFile
+ * @doc: the #xmlDoc-struct
+ *
+ * Get root element of @doc.
+ * 
+ * Returns: (transfer none): the root element of #xmlDoc-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_root_element(AgsFile *file,
+			      xmlDoc *doc)
+{
+  xmlNode *root_node;
+    
+  if(!AGS_IS_FILE(file) ||
+     doc == NULL){
+    return(NULL);
+  }
+
+  root_node = xmlDocGetRootElement(doc);
+
+  return(root_node);
+}
+
+/**
+ * ags_file_xml_set_root_element:
+ * @file: the #AgsFile
+ * @doc: the #xmlDoc-struct
+ * @root_node: (transfer full): the #xmlNode-struct as root node
+ * 
+ * Set root element @root_node of @doc.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_set_root_element(AgsFile *file,
+			      xmlDoc *doc,
+			      xmlNode *root_node)
+{
+  const gchar *app_encoding, *encoding;
+
+   gboolean is_env_set;
+  
+  if(!AGS_IS_FILE(file) ||
+     doc == NULL ||
+     root_node == NULL){
+    return;
+  }
+
+  xmlDocSetRootElement(doc,
+		       root_node);
+}
+
+/**
+ * ags_file_xml_add_child:
+ * @file: the #AgsFile
+ * @parent: the parent #xmlNode-struct
+ * @child: (transfer full): the child #xmlNode-struct
+ * 
+ * Set root element @root_node of @doc.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_add_child(AgsFile *file,
+		       xmlNode *parent,
+		       xmlNode *child)
+{  
+  if(!AGS_IS_FILE(file) ||
+     parent == NULL ||
+     child == NULL){
+    return;
+  }
+
+  xmlAddChild(parent,
+	      child);
+}
+
+/**
+ * ags_file_xml_get_node_name:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get node name of @node.
+ * 
+ * Returns: (transfer full): the node name of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_file_xml_get_node_name(AgsFile *file,
+			   xmlNode *node)
+{
+  gchar localized_node_name[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+  gchar *node_name;
+
+  GError *error;
+  
+  if(!AGS_IS_FILE(file) ||
+     node == NULL){
+    return(NULL);
+  }
+
+  error = NULL;
+  g_converter_convert(file->read_charset_converter,
+		      node->name,
+		      strlen(node->name),
+		      localized_node_name,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+  
+  node_name = g_strdup(localized_node_name);
+
+  return(node_name);
+}
+
+/**
+ * ags_file_xml_get_parent:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get parent of @node.
+ * 
+ * Returns: (transfer none): the parent of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_node_parent(AgsFile *file,
+			     xmlNode *node)
+{  
+  if(!AGS_IS_FILE(file) ||
+     node == NULL){
+    return(NULL);
+  }
+  
+  return(node->parent);
+}
+
+/**
+ * ags_file_xml_get_next:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get next of @node.
+ * 
+ * Returns: (transfer none): the next of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_node_next(AgsFile *file,
+			   xmlNode *node)
+{
+  if(!AGS_IS_FILE(file) ||
+     node == NULL){
+    return(NULL);
+  }
+
+  return(node->next);
+}
+
+/**
+ * ags_file_xml_get_children:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get children of @node.
+ * 
+ * Returns: (transfer none): the children of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+xmlNode*
+ags_file_xml_get_node_children(AgsFile *file,
+			       xmlNode *node)
+{
+  if(!AGS_IS_FILE(file) ||
+     node == NULL){
+    return(NULL);
+  }
+  
+  return(node->children);
+}
+
+/**
+ * ags_file_xml_get_prop:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ * @prop_name: property name
+ *
+ * Get property of @node.
+ * 
+ * Returns: (transfer full): the property of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_file_xml_get_prop(AgsFile *file,
+		      xmlNode *node,
+		      gchar *prop_name)
+{
+  xmlChar *str;
+  gchar localized_prop_value[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+  gchar *prop_value;  
+
+  GError *error;
+  
+  if(!AGS_IS_FILE(file) ||
+     node == NULL ||
+     prop_name == NULL){
+    return(NULL);
+  }
+
+  str = xmlGetProp(node,
+		   BAD_CAST prop_name);
+
+  error = NULL;
+  g_converter_convert(file->read_charset_converter,
+		      str,
+		      strlen(str),
+		      localized_prop_value,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  prop_value = g_strdup(localized_prop_value);
+
+  xmlFree(str);
+  
+  return(prop_value);
+}
+
+/**
+ * ags_file_xml_set_prop:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ * @prop_name: property name
+ * @prop_value: property value
+ *
+ * Set property of @node.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_set_prop(AgsFile *file,
+		      xmlNode *node,
+		      gchar *prop_name,
+		      gchar *prop_value)
+{
+  xmlChar localized_prop_name[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+  xmlChar localized_prop_value[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+
+  GError *error;
+  
+  if(!AGS_IS_FILE(file) ||
+     node == NULL ||
+     prop_name == NULL){
+    return;
+  }
+
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      prop_name,
+		      strlen(prop_name),
+		      localized_prop_name,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      prop_value,
+		      strlen(prop_value),
+		      localized_prop_value,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+  
+  xmlNewProp(node,
+	     BAD_CAST localized_prop_name,
+	     BAD_CAST localized_prop_value);
+}
+
+/**
+ * ags_file_xml_get_content:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ *
+ * Get content of @node.
+ * 
+ * Returns: (transfer full): the content of #xmlNode-struct 
+ * 
+ * Since: 4.0.0
+ */
+gchar*
+ags_file_xml_get_content(AgsFile *file,
+			 xmlNode *node)
+{
+  xmlChar *str;
+  gchar localized_content[AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH];
+  gchar *content;  
+
+  GError *error;
+    
+  if(!AGS_IS_FILE(file) ||
+     node == NULL){
+    return(NULL);
+  }
+
+  str = xmlNodeGetContent(node);
+
+  error = NULL;
+  g_converter_convert(file->read_charset_converter,
+		      str,
+		      strlen(str),
+		      localized_content,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_STRING_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+  
+  content = g_strdup(localized_content);
+
+  xmlFree(str);
+  
+  return(content);
+}
+
+/**
+ * ags_file_xml_set_content:
+ * @file: the #AgsFile
+ * @node: the #xmlNode-struct
+ * @content: the content
+ * @is_cdata: if content is CDATA
+ *
+ * Set content of @node.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_file_xml_set_content(AgsFile *file,
+			 xmlNode *node,
+			 gchar *content,
+			 gboolean is_cdata)
+{
+  xmlChar localized_content[AGS_FILE_CHARSET_CONVERTER_MAX_CONTENT_LENGTH];
+
+  GError *error;
+  
+  if(!AGS_IS_FILE(file) ||
+     node == NULL ||
+     content == NULL){
+    return;
+  }
+
+  error = NULL;
+  g_converter_convert(file->write_charset_converter,
+		      content,
+		      strlen(content),
+		      localized_content,
+		      AGS_FILE_CHARSET_CONVERTER_MAX_CONTENT_LENGTH,
+		      G_CONVERTER_NO_FLAGS,
+		      NULL,
+		      NULL,
+		      &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  if(is_cdata){
+    xmlNode *cdata;
+
+    cdata = xmlNewCDataBlock(file->doc,
+			     localized_content,
+			     strlen(localized_content));
+    xmlAddChild(node,
+		cdata);
+  }else{
+    xmlNodeAddContent(node,
+		      localized_content);
+  }
+  
 }
 
 void

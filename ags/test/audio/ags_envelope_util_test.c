@@ -43,8 +43,8 @@ void ags_envelope_util_test_get_source_stride();
 void ags_envelope_util_test_set_source_stride();
 void ags_envelope_util_test_get_buffer_length();
 void ags_envelope_util_test_set_buffer_length();
-void ags_envelope_util_test_get_audio_buffer_util_format();
-void ags_envelope_util_test_set_audio_buffer_util_format();
+void ags_envelope_util_test_get_format();
+void ags_envelope_util_test_set_format();
 void ags_envelope_util_test_get_volume();
 void ags_envelope_util_test_set_volume();
 void ags_envelope_util_test_get_amount();
@@ -111,7 +111,7 @@ ags_envelope_util_test_alloc()
   CU_ASSERT(envelope_util->source_stride == 1);
   
   CU_ASSERT(envelope_util->buffer_length == 0);
-  CU_ASSERT(envelope_util->audio_buffer_util_format == AGS_ENVELOPE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+  CU_ASSERT(envelope_util->format == AGS_ENVELOPE_UTIL_DEFAULT_FORMAT);
 
   CU_ASSERT(envelope_util->volume == 1.0);
   CU_ASSERT(envelope_util->amount == 0.0);
@@ -145,7 +145,7 @@ ags_envelope_util_test_copy()
   CU_ASSERT(copy_envelope_util->source_stride == envelope_util.source_stride);
   
   CU_ASSERT(copy_envelope_util->buffer_length == envelope_util.buffer_length);
-  CU_ASSERT(copy_envelope_util->audio_buffer_util_format == envelope_util.audio_buffer_util_format);
+  CU_ASSERT(copy_envelope_util->format == envelope_util.format);
 
   CU_ASSERT(copy_envelope_util->volume == envelope_util.volume);
   CU_ASSERT(copy_envelope_util->amount == envelope_util.amount);
@@ -321,30 +321,30 @@ ags_envelope_util_test_set_buffer_length()
 }
 
 void
-ags_envelope_util_test_get_audio_buffer_util_format()
+ags_envelope_util_test_get_format()
 {
   AgsEnvelopeUtil envelope_util;
 
-  envelope_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  envelope_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  CU_ASSERT(ags_envelope_util_get_audio_buffer_util_format(&envelope_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  CU_ASSERT(ags_envelope_util_get_format(&envelope_util) == AGS_SOUNDCARD_SIGNED_16_BIT);
   
-  envelope_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  envelope_util.format = AGS_SOUNDCARD_FLOAT;
 
-  CU_ASSERT(ags_envelope_util_get_audio_buffer_util_format(&envelope_util) == envelope_util.audio_buffer_util_format);
+  CU_ASSERT(ags_envelope_util_get_format(&envelope_util) == envelope_util.format);
 }
 
 void
-ags_envelope_util_test_set_audio_buffer_util_format()
+ags_envelope_util_test_set_format()
 {
   AgsEnvelopeUtil envelope_util;
   
-  envelope_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  envelope_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  ags_envelope_util_set_audio_buffer_util_format(&envelope_util,
-					       AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  ags_envelope_util_set_format(&envelope_util,
+					       AGS_SOUNDCARD_FLOAT);
   
-  CU_ASSERT(envelope_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  CU_ASSERT(envelope_util.format == AGS_SOUNDCARD_FLOAT);
 }
 
 void
@@ -416,7 +416,7 @@ ags_envelope_util_test_compute_s8()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .format = AGS_SOUNDCARD_SIGNED_8_BIT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -441,7 +441,7 @@ ags_envelope_util_test_compute_s16()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -466,7 +466,7 @@ ags_envelope_util_test_compute_s24()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .format = AGS_SOUNDCARD_SIGNED_24_BIT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -491,7 +491,7 @@ ags_envelope_util_test_compute_s32()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .format = AGS_SOUNDCARD_SIGNED_32_BIT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -516,7 +516,7 @@ ags_envelope_util_test_compute_s64()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .format = AGS_SOUNDCARD_SIGNED_64_BIT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -541,7 +541,7 @@ ags_envelope_util_test_compute_float()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .format = AGS_SOUNDCARD_FLOAT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -566,7 +566,7 @@ ags_envelope_util_test_compute_double()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .format = AGS_SOUNDCARD_DOUBLE,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -589,7 +589,7 @@ ags_envelope_util_test_compute_complex()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .format = AGS_SOUNDCARD_COMPLEX,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -614,7 +614,7 @@ ags_envelope_util_test_compute()
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .volume = 0.5,
     .amount = 0.25
   };
@@ -657,8 +657,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsEnvelopeUtil set source stride", ags_envelope_util_test_set_source_stride) == NULL) ||
      (CU_add_test(pSuite, "test of AgsEnvelopeUtil get buffer length", ags_envelope_util_test_get_buffer_length) == NULL) ||
      (CU_add_test(pSuite, "test of AgsEnvelopeUtil set buffer length", ags_envelope_util_test_set_buffer_length) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsEnvelopeUtil get audio buffer util format", ags_envelope_util_test_get_audio_buffer_util_format) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsEnvelopeUtil set audio buffer util format", ags_envelope_util_test_set_audio_buffer_util_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsEnvelopeUtil get format", ags_envelope_util_test_get_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsEnvelopeUtil set format", ags_envelope_util_test_set_format) == NULL) ||
      (CU_add_test(pSuite, "test of AgsEnvelopeUtil get volume", ags_envelope_util_test_get_volume) == NULL) ||
      (CU_add_test(pSuite, "test of AgsEnvelopeUtil set volume", ags_envelope_util_test_set_volume) == NULL) ||
      (CU_add_test(pSuite, "test of AgsEnvelopeUtil get amount", ags_envelope_util_test_get_amount) == NULL) ||

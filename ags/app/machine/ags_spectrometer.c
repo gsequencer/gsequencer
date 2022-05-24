@@ -21,6 +21,8 @@
 #include <ags/app/machine/ags_spectrometer_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 
 void ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer);
 void ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -141,18 +143,59 @@ ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_spectrometer_init(AgsSpectrometer *spectrometer)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkBox *vbox;
   AgsCartesian *cartesian;
 
-  AgsPlot *fg_plot;
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
 
+  AgsApplicationContext *application_context;
+  
+  AgsPlot *fg_plot;
+  
+  gchar *machine_name;
+
+  gint position;
   guint buffer_size;
   gdouble width, height;
   gdouble default_width, default_height;
-  
-  g_signal_connect_after((GObject *) spectrometer, "parent_set",
-			 G_CALLBACK(ags_spectrometer_parent_set_callback), (gpointer) spectrometer);
 
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_SPECTROMETER);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(spectrometer,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    spectrometer);
+  
   ags_audio_set_flags(AGS_MACHINE(spectrometer)->audio, (AGS_AUDIO_SYNC));
   g_object_set(AGS_MACHINE(spectrometer)->audio,
 	       "min-audio-channels", 1,
@@ -186,8 +229,19 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) spectrometer),
-		    (GtkWidget *) vbox);
+
+  gtk_widget_set_vexpand(vbox,
+			 FALSE);
+  gtk_widget_set_hexpand(vbox,
+			 FALSE);
+
+  gtk_widget_set_halign(vbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(vbox,
+			GTK_ALIGN_START);
+  
+  gtk_frame_set_child(AGS_MACHINE(spectrometer)->frame,
+		      (GtkWidget *) vbox);
 
   /* cartesian */
   cartesian = 
@@ -238,10 +292,8 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) (width + 2.0 * cartesian->x_margin), (gint) (height + 2.0 * cartesian->y_margin));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) cartesian,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) cartesian);
 
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 
@@ -283,7 +335,7 @@ ags_spectrometer_connect(AgsConnectable *connectable)
 {
   AgsSpectrometer *spectrometer;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -298,7 +350,7 @@ ags_spectrometer_disconnect(AgsConnectable *connectable)
 {
   AgsSpectrometer *spectrometer;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

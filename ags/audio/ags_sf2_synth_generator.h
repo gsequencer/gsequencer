@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_sf2_util.h>
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_LIBINSTPATCH)
+#include <libinstpatch/libinstpatch.h>
+#endif
+
+#include <ags/audio/ags_sf2_synth_util.h>
 
 G_BEGIN_DECLS
 
@@ -46,6 +52,8 @@ G_BEGIN_DECLS
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_FORMAT (AGS_SOUNDCARD_DEFAULT_FORMAT)
 
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_VOLUME (1.0)
+
+#define AGS_SF2_SYNTH_GENERATOR_DEFAULT_PITCH_TYPE "ags-fluid-4th-order"
 
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_BASE_KEY (-48.0)
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_TUNING (0.0)
@@ -78,7 +86,7 @@ struct _AgsSF2SynthGenerator
   guint buffer_size;
   guint format;
 
-  guint pitch_type;
+  gchar *pitch_type;
   
   guint frame_count;
   guint loop_start;
@@ -92,7 +100,7 @@ struct _AgsSF2SynthGenerator
   gdouble base_key;
   gdouble tuning;
 
-  AgsSF2 *sf2;
+  AgsSF2SynthUtil *sf2_synth_util;
   
   GObject *timestamp;
 };
@@ -134,8 +142,8 @@ void ags_sf2_synth_generator_set_buffer_size(AgsSF2SynthGenerator *sf2_synth_gen
 guint ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, guint format);
 
-guint ags_sf2_synth_generator_get_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator);
-void ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator, guint pitch_type);
+gchar* ags_sf2_synth_generator_get_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator, gchar *pitch_type);
 
 gdouble ags_sf2_synth_generator_get_delay(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_delay(AgsSF2SynthGenerator *sf2_synth_generator, gdouble delay);

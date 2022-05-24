@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -898,6 +898,10 @@ ags_midi_builder_finalize(GObject *gobject)
     
   midi_builder = (AgsMidiBuilder *) gobject;
 
+  if(midi_builder->file != NULL){
+    fclose(midi_builder->file);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_midi_builder_parent_class)->finalize(gobject);
 }
@@ -3294,11 +3298,11 @@ ags_midi_builder_write(AgsMidiBuilder *midi_builder)
   }
 
   fwrite(midi_builder->data, sizeof(guchar), midi_builder->length, midi_builder->file);
+  fflush(midi_builder->file);
 }
 
 /**
  * ags_midi_builder_new:
- * @file: (nullable): the FILE handle
  * 
  * Creates a new instance of #AgsMidiBuilder
  *
@@ -3307,12 +3311,11 @@ ags_midi_builder_write(AgsMidiBuilder *midi_builder)
  * Since: 3.0.0
  */
 AgsMidiBuilder*
-ags_midi_builder_new(FILE *file)
+ags_midi_builder_new()
 {
   AgsMidiBuilder *midi_builder;
   
   midi_builder = (AgsMidiBuilder *) g_object_new(AGS_TYPE_MIDI_BUILDER,
-						 "file", file,
 						 NULL);
 
   

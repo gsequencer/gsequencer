@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -152,8 +152,6 @@ ags_application_context_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY, "AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY", "application-context-added-to-registry" },
-      { AGS_APPLICATION_CONTEXT_CONNECTED, "AGS_APPLICATION_CONTEXT_CONNECTED", "application-context-connected" },
       { AGS_APPLICATION_CONTEXT_TYPES_REGISTERED, "AGS_APPLICATION_CONTEXT_TYPES_REGISTERED", "application-context-types-registered" },
       { 0, NULL, NULL }
     };
@@ -379,7 +377,8 @@ ags_application_context_init(AgsApplicationContext *application_context)
 {
   GFile *file;
 
-  application_context->flags = 0;
+  application_context->flags = 0;  
+  application_context->connectable_flags = 0;
   
   g_rec_mutex_init(&(application_context->obj_mutex));
 
@@ -393,6 +392,9 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->version = g_strdup(AGS_VERSION);
   application_context->build_id = g_strdup(AGS_BUILD_ID);
 
+  g_atomic_int_set(&(application_context->is_ready),
+		   FALSE);
+  
   application_context->log = NULL;
   
   application_context->domain = NULL;
@@ -731,7 +733,7 @@ ags_application_context_is_ready(AgsConnectable *connectable)
   /* check is added */
   g_rec_mutex_lock(application_context_mutex);
 
-  is_ready = (((AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY & (application_context->flags)) != 0) ? TRUE: FALSE);
+  is_ready = (((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (application_context->connectable_flags)) != 0) ? TRUE: FALSE);
 
   g_rec_mutex_unlock(application_context_mutex);
   
@@ -742,6 +744,8 @@ void
 ags_application_context_add_to_registry(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
+
+  GRecMutex *application_context_mutex;
   
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -749,7 +753,14 @@ ags_application_context_add_to_registry(AgsConnectable *connectable)
   
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
-  ags_application_context_set_flags(application_context, AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY);
+  /* get application_context mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  g_rec_mutex_lock(application_context_mutex);
+
+  application_context->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 void
@@ -757,13 +768,22 @@ ags_application_context_remove_from_registry(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
 
+  GRecMutex *application_context_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
-  ags_application_context_unset_flags(application_context, AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY);
+  /* get application_context mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  g_rec_mutex_lock(application_context_mutex);
+
+  application_context->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 xmlNode*
@@ -814,7 +834,7 @@ ags_application_context_is_connected(AgsConnectable *connectable)
   /* check is connected */
   g_rec_mutex_lock(application_context_mutex);
 
-  is_connected = (((AGS_APPLICATION_CONTEXT_CONNECTED & (application_context->flags)) != 0) ? TRUE: FALSE);
+  is_connected = (((AGS_CONNECTABLE_CONNECTED & (application_context->connectable_flags)) != 0) ? TRUE: FALSE);
   
   g_rec_mutex_unlock(application_context_mutex);
   
@@ -826,13 +846,22 @@ ags_application_context_connect(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
 
+  GRecMutex *application_context_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
-  ags_application_context_set_flags(application_context, AGS_APPLICATION_CONTEXT_CONNECTED);
+  /* get application_context mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  g_rec_mutex_lock(application_context_mutex);
+
+  application_context->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 void
@@ -840,13 +869,22 @@ ags_application_context_disconnect(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
 
+  GRecMutex *application_context_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
-  ags_application_context_unset_flags(application_context, AGS_APPLICATION_CONTEXT_CONNECTED);
+  /* get application_context mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  g_rec_mutex_lock(application_context_mutex);
+
+  application_context->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 /**

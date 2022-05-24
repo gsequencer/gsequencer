@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,26 +36,18 @@ G_BEGIN_DECLS
 #define AGS_IS_LED_ARRAY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_LED_ARRAY))
 #define AGS_LED_ARRAY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_LED_ARRAY, AgsLedArrayClass))
 
-#define AGS_LED_ARRAY_DEFAULT_LED_WIDTH (10)
-#define AGS_LED_ARRAY_DEFAULT_LED_HEIGHT (10)
+#define AGS_LED_ARRAY_DEFAULT_SEGMENT_WIDTH (10)
+#define AGS_LED_ARRAY_DEFAULT_SEGMENT_HEIGHT (10)
 
 typedef struct _AgsLedArray AgsLedArray;
 typedef struct _AgsLedArrayClass AgsLedArrayClass;
 
-typedef enum{
-  AGS_LED_ARRAY_ACTIVE        = 1,
-}AgsLedArrayFlags;
-
 struct _AgsLedArray
 {
-  GtkBin bin;
+  GtkBox box;
 
-  guint flags;
-
-  GtkBox *box;
-
-  guint led_width;
-  guint led_height;
+  guint segment_width;
+  guint segment_height;
   
   AgsLed **led;
   guint led_count;
@@ -63,19 +55,19 @@ struct _AgsLedArray
 
 struct _AgsLedArrayClass
 {
-  GtkBinClass bin;
+  GtkBoxClass box;
 };
 
 GType ags_led_array_get_type(void);
 
 /* properties */
-guint ags_led_array_get_led_width(AgsLedArray *led_array);
-void ags_led_array_set_led_width(AgsLedArray *led_array,
-				 guint led_width);
+guint ags_led_array_get_segment_width(AgsLedArray *led_array);
+void ags_led_array_set_segment_width(AgsLedArray *led_array,
+				     guint segment_width);
 
-guint ags_led_array_get_led_height(AgsLedArray *led_array);
-void ags_led_array_set_led_height(AgsLedArray *led_array,
-				  guint led_height);
+guint ags_led_array_get_segment_height(AgsLedArray *led_array);
+void ags_led_array_set_segment_height(AgsLedArray *led_array,
+				      guint segment_height);
 
 guint ags_led_array_get_led_count(AgsLedArray *led_array);
 void ags_led_array_set_led_count(AgsLedArray *led_array,
@@ -87,7 +79,10 @@ void ags_led_array_set_nth(AgsLedArray *led_array,
 			   guint nth);
 
 /* instantiate */
-AgsLedArray* ags_led_array_new();
+AgsLedArray* ags_led_array_new(GtkOrientation orientation,
+			       guint segment_width,
+			       guint segment_height,
+			       guint led_count);
 
 G_END_DECLS
 

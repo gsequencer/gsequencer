@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -284,6 +284,7 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
 {
   /* flags */
   pulse_server->flags = 0;
+  pulse_server->connectable_flags = 0;
 
   /* server mutex */
   g_rec_mutex_init(&(pulse_server->obj_mutex)); 
@@ -611,10 +612,19 @@ ags_pulse_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *pulse_server_mutex;
+
   pulse_server = AGS_PULSE_SERVER(connectable);
 
-  /* check is added */
-  is_ready = ags_pulse_server_test_flags(pulse_server, AGS_PULSE_SERVER_ADDED_TO_REGISTRY);
+  /* get pulse server mutex */
+  pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
+
+  /* check is ready */
+  g_rec_mutex_lock(pulse_server_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (pulse_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_server_mutex);
   
   return(is_ready);
 }
@@ -624,13 +634,22 @@ ags_pulse_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsPulseServer *pulse_server;
 
+  GRecMutex *pulse_server_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   pulse_server = AGS_PULSE_SERVER(connectable);
 
-  ags_pulse_server_set_flags(pulse_server, AGS_PULSE_SERVER_ADDED_TO_REGISTRY);
+  /* get pulse server mutex */
+  pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
+
+  g_rec_mutex_lock(pulse_server_mutex);
+
+  pulse_server->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 void
@@ -638,13 +657,22 @@ ags_pulse_server_remove_from_registry(AgsConnectable *connectable)
 {
   AgsPulseServer *pulse_server;
 
+  GRecMutex *pulse_server_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   pulse_server = AGS_PULSE_SERVER(connectable);
 
-  ags_pulse_server_unset_flags(pulse_server, AGS_PULSE_SERVER_ADDED_TO_REGISTRY);
+  /* get pulse server mutex */
+  pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
+
+  g_rec_mutex_lock(pulse_server_mutex);
+
+  pulse_server->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 xmlNode*
@@ -685,10 +713,19 @@ ags_pulse_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *pulse_server_mutex;
+
   pulse_server = AGS_PULSE_SERVER(connectable);
 
+  /* get pulse server mutex */
+  pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
+
   /* check is connected */
-  is_connected = ags_pulse_server_test_flags(pulse_server, AGS_PULSE_SERVER_CONNECTED);
+  g_rec_mutex_lock(pulse_server_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (pulse_server->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(pulse_server_mutex);
   
   return(is_connected);
 }
@@ -708,13 +745,19 @@ ags_pulse_server_connect(AgsConnectable *connectable)
 
   pulse_server = AGS_PULSE_SERVER(connectable);
 
-  ags_pulse_server_set_flags(pulse_server, AGS_PULSE_SERVER_CONNECTED);
-
   /* get pulse server mutex */
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
+  g_rec_mutex_lock(pulse_server_mutex);
+
+  pulse_server->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(pulse_server_mutex);
+
   list =
-    list_start = g_list_copy(pulse_server->client);
+    list_start = g_list_copy_deep(pulse_server->client,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -722,7 +765,8 @@ ags_pulse_server_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
@@ -740,14 +784,20 @@ ags_pulse_server_disconnect(AgsConnectable *connectable)
 
   pulse_server = AGS_PULSE_SERVER(connectable);
   
-  ags_pulse_server_unset_flags(pulse_server, AGS_PULSE_SERVER_CONNECTED);
-
   /* get pulse server mutex */
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
+  g_rec_mutex_lock(pulse_server_mutex);
+
+  pulse_server->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(pulse_server_mutex);
+
   /* client */
   list =
-    list_start = g_list_copy(pulse_server->client);
+    list_start = g_list_copy_deep(pulse_server->client,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -755,7 +805,8 @@ ags_pulse_server_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

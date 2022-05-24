@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +37,12 @@ G_BEGIN_DECLS
 #define AGS_RULER_FONT_SIZE (12)
 #define AGS_RULER_FREE_SPACE (4.0)
 
+#define AGS_RULER_DEFAULT_FACTOR (16.0)
+#define AGS_RULER_DEFAULT_PRECISION (1.0)
+#define AGS_RULER_DEFAULT_SCALE_PRECISION (1.0)
+
 #define AGS_RULER_DEFAULT_HEIGHT (24)
+
 #define AGS_RULER_DEFAULT_STEP (16)
 #define AGS_RULER_DEFAULT_LARGE_STEP (8.0)
 #define AGS_RULER_DEFAULT_SMALL_STEP (6.0)
@@ -49,7 +54,7 @@ struct _AgsRuler
 {
   GtkWidget widget;
 
-  guint flags;
+  GtkOrientation orientation;
 
   guint font_size;
 
@@ -88,12 +93,28 @@ guint ags_ruler_get_small_step(AgsRuler *ruler);
 void ags_ruler_set_small_step(AgsRuler *ruler,
 			      guint small_step);
 
+gdouble ags_ruler_get_factor(AgsRuler *ruler);
+void ags_ruler_set_factor(AgsRuler *ruler,
+			  gdouble factor);
+
+gdouble ags_ruler_get_precision(AgsRuler *ruler);
+void ags_ruler_set_precision(AgsRuler *ruler,
+			     gdouble precision);
+
+gdouble ags_ruler_get_scale_precision(AgsRuler *ruler);
+void ags_ruler_set_scale_precision(AgsRuler *ruler,
+				   gdouble scale_precision);
+
 GtkAdjustment* ags_ruler_get_adjustment(AgsRuler *ruler);
 void ags_ruler_set_adjustment(AgsRuler *ruler,
 			      GtkAdjustment *adjustment);
 
 /* instantiate */
-AgsRuler* ags_ruler_new();
+AgsRuler* ags_ruler_new(GtkOrientation orientation,
+			guint step,
+			gdouble factor,
+			gdouble precision,
+			gdouble scale_precision);
 
 G_END_DECLS
 

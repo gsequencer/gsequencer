@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,8 +50,6 @@ typedef struct _AgsPulsePortClass AgsPulsePortClass;
 
 /**
  * AgsPulsePortFlags:
- * @AGS_PULSE_PORT_ADDED_TO_REGISTRY: the PULSE port was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_PULSE_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_PULSE_PORT_REGISTERED: the port was registered
  * @AGS_PULSE_PORT_IS_AUDIO: the port provides audio data
  * @AGS_PULSE_PORT_IS_MIDI: the port provides midi data
@@ -62,13 +60,11 @@ typedef struct _AgsPulsePortClass AgsPulsePortClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PULSE_PORT_ADDED_TO_REGISTRY  = 1,
-  AGS_PULSE_PORT_CONNECTED          = 1 <<  1,
-  AGS_PULSE_PORT_REGISTERED         = 1 <<  2,
-  AGS_PULSE_PORT_IS_AUDIO           = 1 <<  3,
-  AGS_PULSE_PORT_IS_MIDI            = 1 <<  4,
-  AGS_PULSE_PORT_IS_OUTPUT          = 1 <<  5,
-  AGS_PULSE_PORT_IS_INPUT           = 1 <<  6,
+  AGS_PULSE_PORT_REGISTERED         = 1,
+  AGS_PULSE_PORT_IS_AUDIO           = 1 <<  1,
+  AGS_PULSE_PORT_IS_MIDI            = 1 <<  2,
+  AGS_PULSE_PORT_IS_OUTPUT          = 1 <<  3,
+  AGS_PULSE_PORT_IS_INPUT           = 1 <<  4,
 }AgsPulsePortFlags;
 
 struct _AgsPulsePort
@@ -76,7 +72,8 @@ struct _AgsPulsePort
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GObject *pulse_client;
@@ -132,6 +129,7 @@ struct _AgsPulsePortClass
 };
 
 GType ags_pulse_port_get_type();
+GType ags_pulse_port_flags_get_type();
 
 gboolean ags_pulse_port_test_flags(AgsPulsePort *pulse_port, guint flags);
 void ags_pulse_port_set_flags(AgsPulsePort *pulse_port, guint flags);

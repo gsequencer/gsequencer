@@ -66,12 +66,9 @@ ags_connectable_test_init_suite()
   connectable_test_types[i++] = AGS_TYPE_AUDIO;
   connectable_test_types[i++] = AGS_TYPE_AUDIO_SIGNAL;
   connectable_test_types[i++] = AGS_TYPE_CHANNEL;
-  connectable_test_types[i++] = AGS_TYPE_DEVIN;
-  connectable_test_types[i++] = AGS_TYPE_DEVOUT;
   connectable_test_types[i++] = AGS_TYPE_FIFOOUT;
   connectable_test_types[i++] = AGS_TYPE_GENERIC_RECALL_CHANNEL_RUN;
   connectable_test_types[i++] = AGS_TYPE_GENERIC_RECALL_RECYCLING;
-  connectable_test_types[i++] = AGS_TYPE_MIDIIN;
   connectable_test_types[i++] = AGS_TYPE_PATTERN;
   connectable_test_types[i++] = AGS_TYPE_PORT;
   connectable_test_types[i++] = AGS_TYPE_RECALL;
@@ -83,6 +80,9 @@ ags_connectable_test_init_suite()
   connectable_test_types[i++] = AGS_TYPE_IPATCH_GIG_READER;
   connectable_test_types[i++] = AGS_TYPE_IPATCH_SF2_READER;
   connectable_test_types[i++] = AGS_TYPE_SNDFILE;
+  connectable_test_types[i++] = AGS_TYPE_ALSA_DEVIN;
+  connectable_test_types[i++] = AGS_TYPE_ALSA_DEVOUT;
+  connectable_test_types[i++] = AGS_TYPE_ALSA_MIDIIN;
   connectable_test_types[i++] = AGS_TYPE_CORE_AUDIO_CLIENT;
   connectable_test_types[i++] = AGS_TYPE_CORE_AUDIO_DEVOUT;
   connectable_test_types[i++] = AGS_TYPE_CORE_AUDIO_MIDIIN;

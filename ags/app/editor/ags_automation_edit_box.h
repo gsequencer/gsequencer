@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/editor/ags_automation_edit.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUTOMATION_EDIT_BOX                (ags_automation_edit_box_get_type())
@@ -39,31 +41,47 @@ G_BEGIN_DECLS
 #define AGS_AUTOMATION_EDIT_BOX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_EDIT_BOX, AgsAutomationEditBoxClass))
 
 #define AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT (128)
+#define AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING (6)
 
 typedef struct _AgsAutomationEditBox AgsAutomationEditBox;
 typedef struct _AgsAutomationEditBoxClass AgsAutomationEditBoxClass;
-
-typedef enum{
-  AGS_AUTOMATION_EDIT_BOX_FIXED_EDIT_SIZE  = 1,
-}AgsAutomationEditBoxFlags;
 
 struct _AgsAutomationEditBox
 {
   GtkBox box;
 
-  guint flags;
-
-  guint fixed_edit_height;
+  /* private */  
+  GList *automation_edit;
 };
 
 struct _AgsAutomationEditBoxClass
 {
   GtkBoxClass box;
+
+  void (*child_width_request)(AgsAutomationEditBox *automation_edit_box,
+			      GtkWidget *automation_edit,
+			      gint width_request);
+  void (*child_height_request)(AgsAutomationEditBox *automation_edit_box,
+			       GtkWidget *automation_edit,
+			       gint height_request);
 };
 
 GType ags_automation_edit_box_get_type(void);
 
-AgsAutomationEditBox* ags_automation_edit_box_new();
+GList* ags_automation_edit_box_get_automation_edit(AgsAutomationEditBox *automation_edit_box);
+void ags_automation_edit_box_add_automation_edit(AgsAutomationEditBox *automation_edit_box,
+						 AgsAutomationEdit *automation_edit);
+void ags_automation_edit_box_remove_automation_edit(AgsAutomationEditBox *automation_edit_box,
+						    AgsAutomationEdit *automation_edit);
+
+void ags_automation_edit_box_child_width_request(AgsAutomationEditBox *automation_edit_box,
+						 GtkWidget *automation_edit,
+						 gint width_request);
+void ags_automation_edit_box_child_height_request(AgsAutomationEditBox *automation_edit_box,
+						  GtkWidget *automation_edit,
+						  gint height_request);
+
+AgsAutomationEditBox* ags_automation_edit_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 

@@ -22,8 +22,10 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_notation_editor.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_machine.h>
+
+#include <ags/app/editor/ags_notation_edit.h>
 
 #include <ags/i18n.h>
 
@@ -32,12 +34,13 @@ void ags_select_note_dialog_connectable_interface_init(AgsConnectableInterface *
 void ags_select_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog);
 void ags_select_note_dialog_finalize(GObject *gobject);
+
 void ags_select_note_dialog_connect(AgsConnectable *connectable);
 void ags_select_note_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_select_note_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_select_note_dialog_apply(AgsApplicable *applicable);
 void ags_select_note_dialog_reset(AgsApplicable *applicable);
-gboolean ags_select_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_select_note_dialog
@@ -105,7 +108,6 @@ void
 ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_select_note_dialog_parent_class = g_type_class_peek_parent(select_note_dialog);
 
@@ -113,11 +115,6 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
   gobject = (GObjectClass *) select_note_dialog;
 
   gobject->finalize = ags_select_note_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) select_note_dialog;
-
-  widget->delete_event = ags_select_note_dialog_delete_event;
 }
 
 void
@@ -140,44 +137,41 @@ ags_select_note_dialog_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  select_note_dialog->flags = 0;
+  select_note_dialog->connectable_flags = 0;
 
   g_object_set(select_note_dialog,
 	       "title", i18n("select notes"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(select_note_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(select_note_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_note_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* copy selection */
   select_note_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active((GtkToggleButton *) select_note_dialog->copy_selection,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_note_dialog->copy_selection),
-		     FALSE, FALSE,
-		     0);  
+  gtk_check_button_set_active(select_note_dialog->copy_selection,
+			      TRUE);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_note_dialog->copy_selection));  
 
   /* select x0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x0 - spin button */
   select_note_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -185,24 +179,19 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 										   1.0);
   gtk_spin_button_set_value(select_note_dialog->select_x0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_note_dialog->select_x0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_note_dialog->select_x0));
   
   /* select y0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select y0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select y0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select y0 - spin button */
   select_note_dialog->select_y0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -210,24 +199,19 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 										   1.0);
   gtk_spin_button_set_value(select_note_dialog->select_y0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_note_dialog->select_y0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_note_dialog->select_y0));
 
   /* select x1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x1 - spin button */
   select_note_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -235,24 +219,19 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 										   1.0);
   gtk_spin_button_set_value(select_note_dialog->select_x1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_note_dialog->select_x1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_note_dialog->select_x1));
 
   /* select y1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select y1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select y1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select y1 - spin button */
   select_note_dialog->select_y1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -260,10 +239,8 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 										   1.0);
   gtk_spin_button_set_value(select_note_dialog->select_y1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_note_dialog->select_y1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_note_dialog->select_y1));
   
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_note_dialog,
@@ -280,11 +257,11 @@ ags_select_note_dialog_connect(AgsConnectable *connectable)
 
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(connectable);
 
-  if((AGS_SELECT_NOTE_DIALOG_CONNECTED & (select_note_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (select_note_dialog->connectable_flags)) != 0){
     return;
   }
 
-  select_note_dialog->flags |= AGS_SELECT_NOTE_DIALOG_CONNECTED;
+  select_note_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(select_note_dialog, "response",
 		   G_CALLBACK(ags_select_note_dialog_response_callback), select_note_dialog);
@@ -297,11 +274,11 @@ ags_select_note_dialog_disconnect(AgsConnectable *connectable)
 
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(connectable);
 
-  if((AGS_SELECT_NOTE_DIALOG_CONNECTED & (select_note_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (select_note_dialog->connectable_flags)) == 0){
     return;
   }
 
-  select_note_dialog->flags &= (~AGS_SELECT_NOTE_DIALOG_CONNECTED);
+  select_note_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(select_note_dialog),
 		      "any_signal::response",
@@ -330,8 +307,8 @@ void
 ags_select_note_dialog_apply(AgsApplicable *applicable)
 {
   AgsSelectNoteDialog *select_note_dialog;
-
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
 
@@ -348,7 +325,6 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 
   xmlChar *buffer;
   
-  gboolean use_composite_editor;
   int size;
   guint x0, y0;
   guint x1, y1;
@@ -361,29 +337,13 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  machine = NULL;
+  composite_editor = window->composite_editor;
 
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
-    
-    composite_editor = window->composite_editor;
+  machine = composite_editor->selected_machine;
 
-    machine = composite_editor->selected_machine;
-
-    notebook = composite_editor->notation_edit->channel_selector;
-  }else{
-    AgsNotationEditor *notation_editor;
-    
-    notation_editor = window->notation_editor;
-
-    machine = notation_editor->selected_machine;
-
-    notebook = notation_editor->notebook;
-  }
+  notebook = composite_editor->notation_edit->channel_selector;
   
   if(machine == NULL){
     return;
@@ -457,9 +417,9 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   /* write to clipboard */
   if(copy_selection){
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
-    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
-    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
+			   buffer);
     
     xmlFreeDoc(clipboard);
   }
@@ -469,16 +429,6 @@ void
 ags_select_note_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_select_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_select_note_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,9 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_effect_bulk_entry.h>
+#include <ags/app/ags_bulk_member.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_EFFECT_BULK                (ags_effect_bulk_get_type())
@@ -40,8 +43,8 @@ G_BEGIN_DECLS
 
 #define AGS_EFFECT_BULK_PLUGIN(ptr) ((AgsEffectBulkPlugin *)(ptr))
 
-#define AGS_EFFECT_BULK_DEFAULT_VERSION "0.7.8"
-#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
+#define AGS_EFFECT_BULK_DEFAULT_VERSION "4.0.0"
+#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "Sun Feb 27 22:00:52 UTC 2022"
 
 #define AGS_EFFECT_BULK_COLUMNS_COUNT (4)
 
@@ -52,10 +55,9 @@ typedef struct _AgsEffectBulkClass AgsEffectBulkClass;
 typedef enum{
   AGS_EFFECT_BULK_MAPPED_RECALL       = 1,
   AGS_EFFECT_BULK_PREMAPPED_RECALL    = 1 <<  1,
-  AGS_EFFECT_BULK_CONNECTED           = 1 <<  2,
-  AGS_EFFECT_BULK_HIDE_BUTTONS        = 1 <<  3,
-  AGS_EFFECT_BULK_HIDE_ENTRIES        = 1 <<  4,
-  AGS_EFFECT_BULK_SHOW_LABELS         = 1 <<  5,
+  AGS_EFFECT_BULK_HIDE_BUTTONS        = 1 <<  2,
+  AGS_EFFECT_BULK_HIDE_ENTRIES        = 1 <<  3,
+  AGS_EFFECT_BULK_SHOW_LABELS         = 1 <<  4,
 }AgsEffectBulkFlags;
 
 struct _AgsEffectBulk
@@ -63,7 +65,8 @@ struct _AgsEffectBulk
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;
@@ -72,16 +75,25 @@ struct _AgsEffectBulk
   GType channel_type;
   AgsAudio *audio;
 
+  GtkWidget *parent_bridge;
+  
+  GtkBox *control_box;
+  
   GtkButton *add;
   GtkButton *remove;
 
-  GtkBox *bulk_member;
-  GtkGrid *grid;
+  GList *bulk_member_entry;
+  
+  GtkBox *bulk_member_entry_box;
+  
+  GList *bulk_member;
+  
+  GtkGrid *bulk_member_grid;
 
   GList *plugin;
   GtkDialog *plugin_browser;
 
-  GList *queued_drawing;
+  GList *queued_refresh;
 };
 
 struct _AgsEffectBulkClass
@@ -129,6 +141,13 @@ struct _AgsEffectBulkPlugin
 
 GType ags_effect_bulk_get_type(void);
 
+gboolean ags_effect_bulk_test_flags(AgsEffectBulk *effect_bulk,
+				    guint flags);
+void ags_effect_bulk_set_flags(AgsEffectBulk *effect_bulk,
+			       guint flags);
+void ags_effect_bulk_unset_flags(AgsEffectBulk *effect_bulk,
+				 guint flags);
+
 AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 						  gchar *plugin_name,
 						  gchar *filename,
@@ -148,6 +167,20 @@ void ags_effect_bulk_add_plugin(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_remove_plugin(AgsEffectBulk *effect_bulk,
 				   guint nth);
 
+GList* ags_effect_bulk_get_bulk_member_entry(AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_add_bulk_member_entry(AgsEffectBulk *effect_bulk,
+					   AgsEffectBulkEntry *effect_bulk_entry);
+void ags_effect_bulk_remove_bulk_member_entry(AgsEffectBulk *effect_bulk,
+					      AgsEffectBulkEntry *effect_bulk_entry);
+
+GList* ags_effect_bulk_get_bulk_member(AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_add_bulk_member(AgsEffectBulk *effect_bulk,
+				     AgsBulkMember *bulk_member,
+				     guint x, guint y,
+				     guint width, guint height);
+void ags_effect_bulk_remove_bulk_member(AgsEffectBulk *effect_bulk,
+					AgsBulkMember *bulk_member);
+
 void ags_effect_bulk_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint new_size,
 					   guint old_size);
@@ -158,7 +191,7 @@ void ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_map_recall(AgsEffectBulk *effect_bulk);
 GList* ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk);
 
-gboolean ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget);
+gboolean ags_effect_bulk_indicator_refresh_timeout(GtkWidget *widget);
 
 AgsEffectBulk* ags_effect_bulk_new(AgsAudio *audio,
 				   GType channel_type);

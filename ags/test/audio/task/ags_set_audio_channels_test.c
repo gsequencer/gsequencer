@@ -57,13 +57,13 @@ ags_set_audio_channels_test_clean_suite()
 void
 ags_set_audio_channels_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsSetAudioChannels *set_audio_channels;
 
   guint audio_channels;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
 
   set_audio_channels = ags_set_audio_channels_new(devout,
 						  6);

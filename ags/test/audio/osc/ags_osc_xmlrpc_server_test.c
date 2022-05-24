@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,9 +43,9 @@ void ags_osc_xmlrpc_server_test_listen();
 void ags_osc_xmlrpc_server_test_dispatch();
 
 void ags_osc_xmlrpc_server_test_add_websocket_handler_callback(SoupServer *server,
-							       SoupWebsocketConnection *connection,
+							       SoupServerMessage *msg,
 							       const char *path,
-							       SoupClientContext *client,
+							       SoupWebsocketConnection *connection,
 							       gpointer user_data);
 
 #define AGS_OSC_XMLRPC_SERVER_TEST_CONFIG "[generic]\n" \
@@ -117,9 +117,9 @@ ags_osc_xmlrpc_server_test_clean_suite()
 }
 
 void ags_osc_xmlrpc_server_test_add_websocket_handler_callback(SoupServer *server,
-							       SoupWebsocketConnection *connection,
+							       SoupServerMessage *msg,
 							       const char *path,
-							       SoupClientContext *client,
+							       SoupWebsocketConnection *connection,
 							       gpointer user_data)
 {
 }

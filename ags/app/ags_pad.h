@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,14 +47,13 @@ typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
 
 typedef enum{
-  AGS_PAD_CONNECTED           = 1,
-  AGS_PAD_SHOW_GROUPING       = 1 << 1,
-  AGS_PAD_GROUP_ALL           = 1 << 2,
-  AGS_PAD_GROUP_LINE          = 1 << 3,
-  AGS_PAD_MAPPED_RECALL       = 1 << 4,
-  AGS_PAD_PREMAPPED_RECALL    = 1 << 5,
-  AGS_PAD_BLOCK_PLAY          = 1 << 6,
-  AGS_PAD_BLOCK_STOP          = 1 << 7,
+  AGS_PAD_SHOW_GROUPING       = 1,
+  AGS_PAD_GROUP_ALL           = 1 <<  1,
+  AGS_PAD_GROUP_LINE          = 1 <<  2,
+  AGS_PAD_MAPPED_RECALL       = 1 <<  3,
+  AGS_PAD_PREMAPPED_RECALL    = 1 <<  4,
+  AGS_PAD_BLOCK_PLAY          = 1 <<  5,
+  AGS_PAD_BLOCK_STOP          = 1 <<  6,
 }AgsPadFlags;
 
 struct _AgsPad
@@ -62,7 +61,8 @@ struct _AgsPad
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;
@@ -74,8 +74,13 @@ struct _AgsPad
 
   AgsChannel *channel;
 
+  GtkWidget *parent_machine;
+  
   guint cols;
-  AgsExpanderSet *expander_set;
+  
+  GList *line;
+  
+  AgsExpanderSet *line_expander_set;
 
   GtkToggleButton *group;
   GtkToggleButton *mute;
@@ -114,6 +119,14 @@ void ags_pad_format_changed(AgsPad *pad,
 			    guint format, guint old_format);
 
 void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
+
+GList* ags_pad_get_line(AgsPad *pad);
+void ags_pad_add_line(AgsPad *pad,
+		      AgsLine *line,
+		      guint x, guint y,
+		      guint width, guint height);
+void ags_pad_remove_line(AgsPad *pad,
+			 AgsLine *line);
 
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old);

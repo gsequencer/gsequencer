@@ -34,7 +34,13 @@
 
 G_BEGIN_DECLS
 
-#define AGS_TYPE_FX_FACTORY_CREATE_FLAGS       (ags_fx_factory_create_flags_get_type())
+#define AGS_TYPE_FX_FACTORY                (ags_fx_factory_get_type())
+#define AGS_TYPE_FX_FACTORY_CREATE_FLAGS   (ags_fx_factory_create_flags_get_type())
+#define AGS_FX_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FX_FACTORY, AgsFxFactory))
+#define AGS_FX_FACTORY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FX_FACTORY, AgsFxFactoryClass))
+#define AGS_IS_FX_FACTORY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_FX_FACTORY))
+#define AGS_IS_FX_FACTORY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_FX_FACTORY))
+#define AGS_FX_FACTORY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_FX_FACTORY, AgsFxFactoryClass))
 
 /**
  * AgsFxFactoryCreateFlags:
@@ -59,6 +65,21 @@ typedef enum{
   AGS_FX_FACTORY_BULK      = 1 << 6,
   AGS_FX_FACTORY_LIVE      = 1 << 7,
 }AgsFxFactoryCreateFlags;
+
+typedef struct _AgsFxFactory AgsFxFactory;
+typedef struct _AgsFxFactoryClass AgsFxFactoryClass;
+
+struct _AgsFxFactory
+{
+  GObject gobject;
+};
+
+struct _AgsFxFactoryClass
+{
+  GObjectClass gobject;
+};
+
+GType ags_fx_factory_get_type(void);
 
 GType ags_fx_factory_create_flags_get_type();
 

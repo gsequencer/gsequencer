@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 
@@ -93,7 +94,7 @@ ags_pattern_envelope_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_pattern_envelope = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_pattern_envelope = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsPatternEnvelope", &ags_pattern_envelope_info,
 						       0);
 
@@ -144,9 +145,9 @@ ags_pattern_envelope_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 {
-  GtkTable *table;
-  GtkHBox *hbox;
-  GtkVBox *control;
+  GtkGrid *grid;
+  GtkBox *hbox;
+  GtkBox *control;
   AgsCartesian *cartesian;
   GtkLabel *label;
   
@@ -157,6 +158,13 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   GtkListStore  *model;
 
   gdouble width, height;
+  guint i;
+  
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(pattern_envelope),
+				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(pattern_envelope,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   pattern_envelope->flags = 0;
 
@@ -166,10 +174,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   /* enabled */
   //NOTE:JK: it is edited in place since only preset is used
   pattern_envelope->enabled = NULL; // gtk_check_button_new_with_label(i18n("enabled"));
-    //  gtk_box_pack_start((GtkBox *) pattern_envelope,
-    //		     pattern_envelope->enabled,
-    //		     FALSE, FALSE,
-    //		     0);
+  //  gtk_box_append((GtkBox *) pattern_envelope,
+  //		     pattern_envelope->enabled);
 
   /* cartesian */
   cartesian = 
@@ -190,10 +196,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     (GtkWidget *) cartesian,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 (GtkWidget *) cartesian);
 
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 
@@ -283,10 +287,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 					      "text", AGS_PATTERN_ENVELOPE_COLUMN_X_END,
 					      NULL);
 
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     (GtkWidget *) pattern_envelope->tree_view,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 (GtkWidget *) pattern_envelope->tree_view);
 
   g_signal_connect(G_OBJECT(edit_renderer), "toggled",
 		   G_CALLBACK(ags_pattern_envelope_edit_callback), pattern_envelope);
@@ -294,391 +296,364 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   g_signal_connect(G_OBJECT(plot_renderer), "toggled",
 		   G_CALLBACK(ags_pattern_envelope_plot_callback), pattern_envelope);
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(6, 2,
-				     FALSE);
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     GTK_WIDGET(table),
-		     FALSE, FALSE,
-		     0);
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
 
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 TRUE);
+
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 GTK_WIDGET(grid));
+
+  i = 0;
+  
   /* audio channel - start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("audio channel start"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
   pattern_envelope->audio_channel_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											   0.0,
 											   1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->audio_channel_start),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->audio_channel_start),
+		  1, i,
+		  1, 1);
 
+  i++;
+  
   /* audio channel - end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("audio channel end"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
   pattern_envelope->audio_channel_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											 65535.0,
 											 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->audio_channel_end),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->audio_channel_end),
+		  1, i,
+		  1, 1);
 
+  i++;
+  
   /* pad - start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("pad start"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
   pattern_envelope->pad_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										 65535.0,
 										 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->pad_start),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->pad_start),
+		  1, i,
+		  1, 1);
 
+  i++;
+  
   /* pad - end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("pad end"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
   pattern_envelope->pad_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									       65535.0,
 									       1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->pad_end),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->pad_end),
+		  1, i,
+		  1, 1);
 
+  i++;
+  
   /* x - start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("x start"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
   pattern_envelope->x_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									       65535.0,
 									       1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->x_start),
-		   1, 2,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->x_start),
+		  1, i,
+		  1, 1);
 
+  i++;
+  
   /* x - end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("x end"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   5, 6,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
   pattern_envelope->x_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									     65535.0,
 									     1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->x_end),
-		   1, 2,
-		   5, 6,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->x_end),
+		  1, i,
+		  1, 1);
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(5, 2,
-				     FALSE);
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     GTK_WIDGET(table),
-		     FALSE, FALSE,
-		     0);
+  i++;
+  
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 GTK_WIDGET(grid));
 
+  i = 0;
+  
   /* attack */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("attack"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, i,
+		  1, 1);
   
-  pattern_envelope->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->attack_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								     0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->attack_x,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->attack_x);
 
-  pattern_envelope->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->attack_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								     -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->attack_y,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->attack_y);
 
+  i++;
+  
   /* decay */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("decay"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, i,
+		  1, 1);
 
-  pattern_envelope->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->decay_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								    0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->decay_x,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->decay_x);
 
-  pattern_envelope->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->decay_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								    -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->decay_y,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->decay_y);
 
+  i++;
+  
   /* sustain */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("sustain"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, i,
+		  1, 1);
 
-  pattern_envelope->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->sustain_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								      0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->sustain_x,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->sustain_x);
 
-  pattern_envelope->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->sustain_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								      -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->sustain_y,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->sustain_y);
 
+  i++;
+  
   /* release */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("release"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, i,
+		  1, 1);
 
-  pattern_envelope->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->release_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								      0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->release_x,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->release_x);
 
-  pattern_envelope->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  pattern_envelope->release_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								      -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) pattern_envelope->release_y,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(control,
+		 (GtkWidget *) pattern_envelope->release_y);
 
+  i++;
+  
   /* ratio */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("ratio"),
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, i,
+		  1, 1);
 
-  pattern_envelope->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  pattern_envelope->ratio = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								  0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
 		      1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(pattern_envelope->ratio),
-		   1, 2,
-		   4, 5,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(pattern_envelope->ratio),
+		  1, i,
+		  1, 1);
 
   /* rename dialog */
   pattern_envelope->rename = NULL;
   
   /* hbox - actions */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append((GtkBox *) pattern_envelope,
+		 GTK_WIDGET(hbox));
 
   /* move up */
   pattern_envelope->move_up = (GtkButton *) gtk_button_new_with_label(i18n("move up"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(pattern_envelope->move_up),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(pattern_envelope->move_up));
 
   /* move down */
   pattern_envelope->move_down = (GtkButton *) gtk_button_new_with_label(i18n("move down"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(pattern_envelope->move_down),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(pattern_envelope->move_down));
 
   /* add */
   pattern_envelope->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(pattern_envelope->add),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(pattern_envelope->add));
 
   /* remove */
   pattern_envelope->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(pattern_envelope->remove),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 GTK_WIDGET(pattern_envelope->remove));
 }
 
 void

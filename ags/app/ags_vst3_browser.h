@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_port_editor.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_VST3_BROWSER                (ags_vst3_browser_get_type())
@@ -39,29 +41,33 @@ G_BEGIN_DECLS
 #define AGS_IS_VST3_BROWSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_VST3_BROWSER))
 #define AGS_VST3_BROWSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_VST3_BROWSER, AgsVst3BrowserClass))
 
+#define AGS_VST3_BROWSER_FILENAME_HEIGHT_REQUEST (256)
+#define AGS_VST3_BROWSER_FILENAME_WIDTH_REQUEST (500)
+
+#define AGS_VST3_BROWSER_EFFECT_HEIGHT_REQUEST (256)
+#define AGS_VST3_BROWSER_EFFECT_WIDTH_REQUEST (500)
+
 typedef struct _AgsVst3Browser AgsVst3Browser;
 typedef struct _AgsVst3BrowserClass AgsVst3BrowserClass;
-
-typedef enum{
-  AGS_VST3_BROWSER_CONNECTED        = 1,
-}AgsVst3BrowserFlags;
 
 struct _AgsVst3Browser
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
   
   gchar *path;
 
   GtkBox *plugin;
 
-  GtkComboBox *filename;
-  GtkComboBox *effect;
+  GtkTreeView *filename_tree_view;
+  GtkTreeView *effect_tree_view;
 
   GtkBox *description;
 
-  GtkGrid *port_grid;
+  GList *port_editor;
+  
+  GtkGrid *port_editor_grid;
 
   GtkWidget *preview;
 };
@@ -76,11 +82,15 @@ GType ags_vst3_browser_get_type(void);
 gchar* ags_vst3_browser_get_plugin_filename(AgsVst3Browser *vst3_browser);
 gchar* ags_vst3_browser_get_plugin_effect(AgsVst3Browser *vst3_browser);
 
-GtkWidget* ags_vst3_browser_combo_box_output_boolean_controls_new();
-GtkWidget* ags_vst3_browser_combo_box_output_controls_new();
+GList* ags_vst3_browser_get_port_editor(AgsVst3Browser *vst3_browser);
+void ags_vst3_browser_add_port_editor(AgsVst3Browser *vst3_browser,
+				      AgsPortEditor *port_editor,
+				      guint x, guint y,
+				      guint width, guint height);
+void ags_vst3_browser_remove_port_editor(AgsVst3Browser *vst3_browser,
+					 AgsPortEditor *port_editor);
 
-GtkWidget* ags_vst3_browser_combo_box_boolean_controls_new();
-GtkWidget* ags_vst3_browser_combo_box_controls_new();
+void ags_vst3_browser_clear(AgsVst3Browser *vst3_browser);
 
 GtkWidget* ags_vst3_browser_preview_new();
 

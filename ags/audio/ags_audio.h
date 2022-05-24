@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,8 +47,6 @@ typedef struct _AgsAudioClass AgsAudioClass;
 
 /**
  * AgsAudioFlags:
- * @AGS_AUDIO_ADDED_TO_REGISTRY: the audio was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_AUDIO_CONNECTED: the audio was connected by #AgsConnectable::connect()
  * @AGS_AUDIO_NO_OUTPUT: no output provided
  * @AGS_AUDIO_NO_INPUT: no input provided
  * @AGS_AUDIO_SYNC: input/output is mapped synchronously
@@ -67,21 +65,19 @@ typedef struct _AgsAudioClass AgsAudioClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_ADDED_TO_REGISTRY           = 1,
-  AGS_AUDIO_CONNECTED                   = 1 <<  1,
-  AGS_AUDIO_NO_OUTPUT                   = 1 <<  2,
-  AGS_AUDIO_NO_INPUT                    = 1 <<  3,
-  AGS_AUDIO_SYNC                        = 1 <<  4, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 <<  5,
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  6,
-  AGS_AUDIO_OUTPUT_HAS_SYNTH            = 1 <<  7,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  8,
-  AGS_AUDIO_INPUT_HAS_SYNTH             = 1 <<  9,
-  AGS_AUDIO_INPUT_HAS_FILE              = 1 << 10,
-  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 11,
-  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 12,
-  AGS_AUDIO_SKIP_INPUT                  = 1 << 13,
-  AGS_AUDIO_BYPASS                      = 1 << 14,
+  AGS_AUDIO_NO_OUTPUT                   = 1,
+  AGS_AUDIO_NO_INPUT                    = 1 <<  1,
+  AGS_AUDIO_SYNC                        = 1 <<  2, // can be combined with below
+  AGS_AUDIO_ASYNC                       = 1 <<  3,
+  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  4,
+  AGS_AUDIO_OUTPUT_HAS_SYNTH            = 1 <<  5,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  6,
+  AGS_AUDIO_INPUT_HAS_SYNTH             = 1 <<  7,
+  AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  8,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 <<  9,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 10,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 11,
+  AGS_AUDIO_BYPASS                      = 1 << 12,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -89,6 +85,7 @@ struct _AgsAudio
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   guint ability_flags;
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];

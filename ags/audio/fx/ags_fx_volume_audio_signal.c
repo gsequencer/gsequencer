@@ -270,8 +270,6 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
     fx_volume_audio_signal->volume_util.buffer_length = buffer_size;
     fx_volume_audio_signal->volume_util.format = format;
 	
-    fx_volume_audio_signal->volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-
     fx_volume_audio_signal->volume_util.volume = volume;
       
     g_rec_mutex_lock(stream_mutex);

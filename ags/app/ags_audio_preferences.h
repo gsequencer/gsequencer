@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_soundcard_editor.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_PREFERENCES                (ags_audio_preferences_get_type())
@@ -51,7 +53,10 @@ struct _AgsAudioPreferences
 
   guint flags;
   
-  GtkBox *soundcard_editor;
+  GList *soundcard_editor;
+  
+  GtkBox *soundcard_editor_box;
+  
   GtkButton *add;
   
   GtkComboBoxText *jack_driver;
@@ -65,6 +70,12 @@ struct _AgsAudioPreferencesClass
 };
 
 GType ags_audio_preferences_get_type(void);
+
+GList* ags_audio_preferences_get_soundcard_editor(AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_soundcard_editor(AgsAudioPreferences *audio_preferences,
+						AgsSoundcardEditor *soundcard_editor);
+void ags_audio_preferences_remove_soundcard_editor(AgsAudioPreferences *audio_preferences,
+						   AgsSoundcardEditor *soundcard_editor);
 
 AgsAudioPreferences* ags_audio_preferences_new();
 

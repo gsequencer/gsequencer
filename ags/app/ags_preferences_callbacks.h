@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,8 +33,7 @@
 
 G_BEGIN_DECLS
 
-gboolean ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
-					       gpointer user_data);
+gboolean ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data);
 
 void ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@ G_BEGIN_DECLS
 #define AGS_TYPE_FAST_PITCH_UTIL         (ags_fast_pitch_util_get_type())
 #define AGS_FAST_PITCH_UTIL(ptr) ((AgsFastPitchUtil *)(ptr))
 
+#define AGS_FAST_PITCH_UTIL_DEFAULT_MAX_BUFFER_SIZE (65536)
+
 typedef struct _AgsFastPitchUtil AgsFastPitchUtil;
 
 struct _AgsFastPitchUtil
@@ -44,9 +46,16 @@ struct _AgsFastPitchUtil
   guint destination_stride;
 
   gpointer mix_buffer;
+  guint mix_buffer_max_buffer_length;
+
   gpointer im_mix_buffer;
+  guint im_mix_buffer_max_buffer_length;
+
   gpointer low_mix_buffer;
+  guint low_mix_buffer_max_buffer_length;
+
   gpointer new_mix_buffer;
+  guint new_mix_buffer_max_buffer_length;
 
   guint buffer_length;
   guint format;
@@ -108,55 +117,6 @@ void ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch(AgsFastPitchUtil *fast_pitch_util);
-
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_s8)
-void ags_fast_pitch_util_compute_s8(gint8 *buffer,
-				    guint buffer_length,
-				    guint samplerate,
-				    gdouble base_key,
-				    gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_s16)
-void ags_fast_pitch_util_compute_s16(gint16 *buffer,
-				     guint buffer_length,
-				     guint samplerate,
-				     gdouble base_key,
-				     gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_s24)
-void ags_fast_pitch_util_compute_s24(gint32 *buffer,
-				     guint buffer_length,
-				     guint samplerate,
-				     gdouble base_key,
-				     gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_s32)
-void ags_fast_pitch_util_compute_s32(gint32 *buffer,
-				     guint buffer_length,
-				     guint samplerate,
-				     gdouble base_key,
-				     gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_s64)
-void ags_fast_pitch_util_compute_s64(gint64 *buffer,
-				     guint buffer_length,
-				     guint samplerate,
-				     gdouble base_key,
-				     gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_float)
-void ags_fast_pitch_util_compute_float(gfloat *buffer,
-				       guint buffer_length,
-				       guint samplerate,
-				       gdouble base_key,
-				       gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_double)
-void ags_fast_pitch_util_compute_double(gdouble *buffer,
-					guint buffer_length,
-					guint samplerate,
-					gdouble base_key,
-					gdouble tuning);
-G_DEPRECATED_FOR(ags_fast_pitch_util_pitch_complex)
-void ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
-					 guint buffer_length,
-					 guint samplerate,
-					 gdouble base_key,
-					 gdouble tuning);
 
 G_END_DECLS
 

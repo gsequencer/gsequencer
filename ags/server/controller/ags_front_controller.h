@@ -51,9 +51,8 @@ struct _AgsFrontControllerClass
   AgsControllerClass controller;
 
   gpointer (*do_request)(AgsFrontController *front_controller,
-			 SoupMessage *msg,
+			 SoupServerMessage *msg,
 			 GHashTable *query,
-			 SoupClientContext *client,
 			 GObject *security_context,
 			 gchar *path,
 			 gchar *login,
@@ -63,9 +62,8 @@ struct _AgsFrontControllerClass
 GType ags_front_controller_get_type();
 
 gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
-					 SoupMessage *msg,
+					 SoupServerMessage *msg,
 					 GHashTable *query,
-					 SoupClientContext *client,
 					 GObject *security_context,
 					 gchar *path,
 					 gchar *login,

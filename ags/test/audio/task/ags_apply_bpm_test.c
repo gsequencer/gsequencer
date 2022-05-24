@@ -74,34 +74,26 @@ ags_apply_bpm_test_clean_suite()
 void
 ags_apply_bpm_test_launch_scope_recall()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
-  AgsDelayAudio *delay_audio;
 
   AgsApplyBpm *apply_bpm;
 
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
   g_object_ref(devout);
   
   audio = ags_audio_new(devout);
   g_object_ref(audio);
-
-  delay_audio = ags_delay_audio_new(audio);
-  g_object_set(delay_audio,
-	       "output-soundcard", devout,
-	       NULL);
   
-  apply_bpm = ags_apply_bpm_new(delay_audio,
+  apply_bpm = ags_apply_bpm_new(NULL,
 				AGS_APPLY_BPM_TEST_LAUNCH_SCOPE_RECALL_BPM);
   
   CU_ASSERT(AGS_IS_APPLY_BPM(apply_bpm));
-  CU_ASSERT(apply_bpm->scope == delay_audio);
+  CU_ASSERT(apply_bpm->scope == NULL);
   CU_ASSERT(apply_bpm->bpm == AGS_APPLY_BPM_TEST_LAUNCH_SCOPE_RECALL_BPM);
   
   /* test */
   ags_task_launch(apply_bpm);
-
-  CU_ASSERT(ags_tactable_get_bpm(AGS_TACTABLE(delay_audio)) == AGS_APPLY_BPM_TEST_LAUNCH_SCOPE_RECALL_BPM);
 }
 
 void
@@ -128,25 +120,16 @@ ags_apply_bpm_test_launch_scope_channel()
 void
 ags_apply_bpm_test_launch_scope_audio()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
-  AgsDelayAudio *delay_audio;
 
   AgsApplyBpm *apply_bpm;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
   g_object_ref(devout);
 
   audio = ags_audio_new(NULL);
   g_object_ref(audio);
-
-  delay_audio = ags_delay_audio_new(audio);
-  g_object_set(delay_audio,
-	       "output-soundcard", devout,
-	       NULL);
-  ags_audio_add_recall(audio,
-		       delay_audio,
-		       FALSE);
   
   apply_bpm = ags_apply_bpm_new(audio,
 				AGS_APPLY_BPM_TEST_LAUNCH_SCOPE_AUDIO_BPM);
@@ -159,17 +142,16 @@ ags_apply_bpm_test_launch_scope_audio()
   ags_task_launch(apply_bpm);
 
   CU_ASSERT(audio->bpm == AGS_APPLY_BPM_TEST_LAUNCH_SCOPE_AUDIO_BPM);
-  CU_ASSERT(ags_tactable_get_bpm(AGS_TACTABLE(delay_audio)) == AGS_APPLY_BPM_TEST_LAUNCH_SCOPE_AUDIO_BPM);
 }
 
 void
 ags_apply_bpm_test_launch_scope_soundcard()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsApplyBpm *apply_bpm;
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new(NULL);
   g_object_ref(devout);
 
   apply_bpm = ags_apply_bpm_new(devout,
@@ -188,11 +170,11 @@ ags_apply_bpm_test_launch_scope_soundcard()
 void
 ags_apply_bpm_test_launch_scope_sequencer()
 {
-  AgsMidiin *midiin;
+  AgsAlsaMidiin *midiin;
 
   AgsApplyBpm *apply_bpm;
   
-  midiin = ags_midiin_new(NULL);
+  midiin = ags_alsa_midiin_new(NULL);
   g_object_ref(midiin);
 
   apply_bpm = ags_apply_bpm_new(midiin,
@@ -211,8 +193,8 @@ ags_apply_bpm_test_launch_scope_sequencer()
 void
 ags_apply_bpm_test_launch_scope_application_context()
 {
-  AgsDevout *devout;
-  AgsMidiin *midiin;
+  AgsAlsaDevout *devout;
+  AgsAlsaMidiin *midiin;
   AgsAudio *audio;
 
   AgsApplyBpm *apply_bpm;
@@ -222,12 +204,12 @@ ags_apply_bpm_test_launch_scope_application_context()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
 
-  midiin = ags_midiin_new(application_context);
+  midiin = ags_alsa_midiin_new(application_context);
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, midiin));
   g_object_ref(midiin);

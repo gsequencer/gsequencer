@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,7 +29,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/app/ags_machine.h>
+#include <ags/app/ags_pcm_file_chooser_dialog.h>
 
 G_BEGIN_DECLS
 
@@ -44,9 +44,8 @@ typedef struct _AgsLinkEditor AgsLinkEditor;
 typedef struct _AgsLinkEditorClass AgsLinkEditorClass;
 
 typedef enum{
-  AGS_LINK_EDITOR_CONNECTED               = 1,
-  AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE  = 1 <<  1,
-  AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER      = 1 <<  2,
+  AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE  = 1,
+  AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER      = 1 <<  1,
 }AgsLinkEditorFlags;
 
 struct _AgsLinkEditor
@@ -54,13 +53,14 @@ struct _AgsLinkEditor
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GtkComboBox *combo;
   GtkSpinButton *spin_button;
 
   AgsAudioFile *audio_file;
 
-  GtkFileChooserDialog *file_chooser;
+  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 };
 
 struct _AgsLinkEditorClass

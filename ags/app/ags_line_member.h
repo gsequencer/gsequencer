@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,11 @@ G_BEGIN_DECLS
 #define AGS_IS_LINE_MEMBER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE_MEMBER))
 #define AGS_LINE_MEMBER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE_MEMBER, AgsLineMemberClass))
 
-#define AGS_LINE_MEMBER_DEFAULT_VERSION "0.7.33"
-#define AGS_LINE_MEMBER_DEFAULT_BUILD_ID "Wed Jun 15 13:48:15 UTC 2016"
+#define AGS_LINE_MEMBER_DEFAULT_VERSION "4.0.0"
+#define AGS_LINE_MEMBER_DEFAULT_BUILD_ID "Mi 04 Mai 2022 08:59:16 UTC"
+
+#define AGS_LINE_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH (16)
+#define AGS_LINE_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT (7)
 
 typedef struct _AgsLineMember AgsLineMember;
 typedef struct _AgsLineMemberClass AgsLineMemberClass;
@@ -69,6 +72,8 @@ struct _AgsLineMember
 
   guint flags;
   guint port_flags;
+
+  GtkWidget *parent_line;
   
   GType widget_type;
   guint widget_orientation;
@@ -114,7 +119,10 @@ struct _AgsLineMemberClass
 
 GType ags_line_member_get_type(void);
 
+void ags_line_member_set_widget(AgsLineMember *line_member,
+				GtkWidget *widget);
 GtkWidget* ags_line_member_get_widget(AgsLineMember *line_member);
+
 void ags_line_member_set_label(AgsLineMember *line_member,
 			       gchar *label);
 

@@ -45,14 +45,14 @@ typedef struct _AgsMachineRadioButtonClass AgsMachineRadioButtonClass;
 
 struct _AgsMachineRadioButton
 {
-  GtkRadioButton radio_button;
+  GtkCheckButton check_button;
 
   AgsMachine *machine;
 };
 
 struct _AgsMachineRadioButtonClass
 {
-  GtkRadioButtonClass radio_button;
+  GtkCheckButtonClass check_button;
 };
 
 GType ags_machine_radio_button_get_type(void);

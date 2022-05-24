@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,8 +114,20 @@ ags_fm_synth_input_pad_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_fm_synth_input_pad_init(AgsFMSynthInputPad *fm_synth_input_pad)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(fm_synth_input_pad),
+				 GTK_ORIENTATION_VERTICAL);
+
   fm_synth_input_pad->name = NULL;
-  fm_synth_input_pad->xml_type = "ags-fm_synth-input-pad";
+  fm_synth_input_pad->xml_type = "ags-fm-synth-input-pad";
+
+  gtk_widget_set_visible(AGS_PAD(fm_synth_input_pad)->group,
+			 FALSE);
+
+  gtk_widget_set_visible(AGS_PAD(fm_synth_input_pad)->mute,
+			 FALSE);
+
+  gtk_widget_set_visible(AGS_PAD(fm_synth_input_pad)->solo,
+			 FALSE);
 }
 
 void
@@ -126,7 +138,7 @@ ags_fm_synth_input_pad_connect(AgsConnectable *connectable)
   /* AgsFMSynthInputPad */
   fm_synth_input_pad = AGS_FM_SYNTH_INPUT_PAD(connectable);
 
-  if((AGS_PAD_CONNECTED & (AGS_PAD(fm_synth_input_pad)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_PAD(fm_synth_input_pad)->connectable_flags)) != 0){
     return;
   }
 

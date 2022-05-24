@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,6 @@
 #include <ags/app/ags_effect_pad_callbacks.h>
 
 #include <ags/app/ags_effect_bridge.h>
-#include <ags/app/ags_effect_line.h>
 
 #include <ags/i18n.h>
 
@@ -319,9 +318,9 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectPadClass, resize_lines),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
@@ -394,12 +393,15 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
 
   effect_pad->channel = NULL;
 
+  effect_pad->parent_effect_bridge = NULL;
+
   effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
-  effect_pad->grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) effect_pad,
-		     (GtkWidget *) effect_pad->grid,
-		     FALSE, TRUE,
-		     0);
+
+  effect_pad->effect_line = NULL;
+  
+  effect_pad->effect_line_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append((GtkBox *) effect_pad,
+		 (GtkWidget *) effect_pad->effect_line_grid);
 }
 
 void
@@ -432,7 +434,7 @@ ags_effect_pad_set_property(GObject *gobject,
 					samplerate, old_samplerate);
 
       list = 
-	start_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
+	start_list = ags_effect_pad_get_effect_line(effect_pad);
 
       while(list != NULL){
 	if(AGS_IS_EFFECT_LINE(list->data)){
@@ -466,7 +468,7 @@ ags_effect_pad_set_property(GObject *gobject,
 					 buffer_size, old_buffer_size);
 
       list = 
-	start_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
+	start_list = ags_effect_pad_get_effect_line(effect_pad);
 
       while(list != NULL){
 	if(AGS_IS_EFFECT_LINE(list->data)){
@@ -500,7 +502,7 @@ ags_effect_pad_set_property(GObject *gobject,
 				    format, old_format);
 
       list = 
-	start_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
+	start_list = ags_effect_pad_get_effect_line(effect_pad);
 
       while(list != NULL){
 	if(AGS_IS_EFFECT_LINE(list->data)){
@@ -576,7 +578,7 @@ ags_effect_pad_connect(AgsConnectable *connectable)
 {
   AgsEffectPad *effect_pad;
 
-  GList *effect_line_list, *effect_line_list_start;
+  GList *start_effect_line, *effect_line;
 
   /* AgsEffect_Pad */
   effect_pad = AGS_EFFECT_PAD(connectable);
@@ -596,16 +598,16 @@ ags_effect_pad_connect(AgsConnectable *connectable)
   }
 
   /* AgsEffectLine */
-  effect_line_list_start =  
-    effect_line_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
+  effect_line =
+    start_effect_line = ags_effect_pad_get_effect_line(effect_pad);
 
-  while(effect_line_list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(effect_line_list->data));
+  while(effect_line != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_line->data));
 
-    effect_line_list = effect_line_list->next;
+    effect_line = effect_line->next;
   }
 
-  g_list_free(effect_line_list_start);
+  g_list_free(start_effect_line);
 }
 
 void
@@ -613,7 +615,7 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
 {
   AgsEffectPad *effect_pad;
 
-  GList *effect_line_list, *effect_line_list_start;
+  GList *effect_line, *start_effect_line;
 
   /* AgsEffect_Pad */
   effect_pad = AGS_EFFECT_PAD(connectable);
@@ -625,16 +627,16 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   effect_pad->flags &= (~AGS_EFFECT_PAD_CONNECTED);
 
   /* AgsEffectLine */
-  effect_line_list_start =  
-    effect_line_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
+  effect_line =
+    start_effect_line = ags_effect_pad_get_effect_line(effect_pad);
 
-  while(effect_line_list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(effect_line_list->data));
+  while(effect_line != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(effect_line->data));
 
-    effect_line_list = effect_line_list->next;
+    effect_line = effect_line->next;
   }
 
-  g_list_free(effect_line_list_start);
+  g_list_free(start_effect_line);
 }
 
 /**
@@ -738,8 +740,8 @@ ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel)
   
   effect_pad->channel = channel;
 
-  start_effect_line =
-    effect_line = gtk_container_get_children((GtkContainer *) effect_pad->grid);
+  effect_line =
+    start_effect_line = ags_effect_pad_get_effect_line(effect_pad);
 
   while(effect_line != NULL){
     g_object_set(G_OBJECT(effect_line->data),
@@ -816,10 +818,10 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 	effect_line = (AgsEffectLine *) g_object_new(effect_line_type,
 						     "channel", channel,
 						     NULL);
-	gtk_grid_attach(effect_pad->grid,
-			(GtkWidget *) effect_line,
-			j, i / effect_pad->cols,
-			1, 1);
+	ags_effect_pad_add_effect_line(effect_pad,
+				       effect_line,
+				       j, i / effect_pad->cols,
+				       1, 1);
 
 	/* iterate */
 	if(channel != NULL){
@@ -828,13 +830,17 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
       }
     }
   }else{
-    start_list = gtk_container_get_children((GtkContainer *) effect_pad->grid);
+    start_list = ags_effect_pad_get_effect_line(effect_pad);
     list = g_list_nth(start_list,
 		      audio_channels);
 
     while(list != NULL){
-      gtk_widget_destroy(list->data);
+      ags_effect_pad_remove_effect_line(effect_pad,
+					list->data);
 
+      g_object_run_dispose(list->data);
+      g_object_unref(list->data);
+      
       list = list->next;
     }
 
@@ -871,6 +877,86 @@ ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
   g_object_unref((GObject *) effect_pad);
 }
 
+/**
+ * ags_effect_pad_get_effect_line:
+ * @effect_pad: the #AgsEffectPad
+ * 
+ * Get effect line of @effect_pad.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectLine
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_pad_get_effect_line(AgsEffectPad *effect_pad)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_PAD(effect_pad), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_pad->effect_line)));
+}
+
+/**
+ * ags_effect_pad_add_effect_line:
+ * @effect_pad: the #AgsEffectPad
+ * @effect_line: the #AgsEffectLine
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @effect_line to @effect_pad.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
+			       AgsEffectLine *effect_line,
+			       guint x, guint y,
+			       guint width, guint height)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  if(g_list_find(effect_pad->effect_line, effect_line) == NULL){
+    effect_pad->effect_line = g_list_prepend(effect_pad->effect_line,
+					     effect_line);
+
+    effect_line->parent_effect_pad = effect_pad;
+    
+    gtk_grid_attach(effect_pad->effect_line_grid,
+		    effect_line,
+		    x, y,
+		    width, height);
+  }
+}
+
+/**
+ * ags_effect_pad_remove_effect_line:
+ * @effect_pad: the #AgsEffectPad
+ * @effect_line: the #AgsEffectLine
+ * 
+ * Remove @effect_line to @effect_pad.
+ *
+ * Since: 4.0.0
+ */
+void
+ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
+				  AgsEffectLine *effect_line)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  if(g_list_find(effect_pad->effect_line, effect_line) != NULL){
+    effect_pad->effect_line = g_list_remove(effect_pad->effect_line,
+					    effect_line);
+
+    effect_line->parent_effect_pad = NULL;
+        
+    gtk_grid_remove(effect_pad->effect_line_grid,
+		    effect_line);
+  }
+}
+
 void
 ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad)
 {
@@ -905,16 +991,16 @@ ags_effect_pad_map_recall(AgsEffectPad *effect_pad)
 GList*
 ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
 {
-  GList *effect_line, *effect_line_start;
+  GList *effect_line, *start_effect_line;
   
   GList *port, *tmp_port;
 
   port = NULL;
 
   /* find output ports */
-  if(effect_pad->grid != NULL){
-    effect_line_start = 
-      effect_line = gtk_container_get_children((GtkContainer *) effect_pad->grid);
+  if(effect_pad->effect_line != NULL){
+    effect_line =
+      start_effect_line = ags_effect_pad_get_effect_line(effect_pad);
 
     while(effect_line != NULL){
       tmp_port = ags_effect_line_find_port(AGS_EFFECT_LINE(effect_line->data));
@@ -929,7 +1015,7 @@ ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
       effect_line = effect_line->next;
     }
 
-    g_list_free(effect_line_start);
+    g_list_free(start_effect_line);
   }
 
   return(port);

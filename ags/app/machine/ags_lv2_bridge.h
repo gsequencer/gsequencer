@@ -114,7 +114,7 @@ struct _AgsLv2Bridge
   GtkComboBox *program;
   GtkComboBox *preset;
   
-  GtkMenu *lv2_menu;
+  GMenu *lv2_menu;
 
   GtkWidget *lv2_gui;
   GtkWidget *ui_widget;

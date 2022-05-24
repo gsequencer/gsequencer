@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/app/editor/ags_envelope_editor.h>
 #include <ags/app/editor/ags_envelope_editor_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 
@@ -39,7 +40,6 @@ void ags_envelope_editor_disconnect(AgsConnectable *connectable);
 void ags_envelope_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_envelope_editor_apply(AgsApplicable *applicable);
 void ags_envelope_editor_reset(AgsApplicable *applicable);
-gboolean ags_envelope_editor_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 gchar* ags_envelope_editor_x_label_func(gdouble value,
 					gpointer data);
@@ -91,7 +91,7 @@ ags_envelope_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_envelope_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_envelope_editor = g_type_register_static(GTK_TYPE_BOX,
 						      "AgsEnvelopeEditor", &ags_envelope_editor_info,
 						      0);
 
@@ -136,62 +136,67 @@ void
 ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 {
   GtkFrame *frame;
-  GtkHBox *hbox;
-  GtkVBox *control;
-  GtkTable *table;
+  GtkBox *hbox;
+  GtkBox *control;
+  GtkGrid *grid;
   GtkLabel *label;
   AgsCartesian *cartesian;
+
+  AgsApplicationContext *application_context;   
   
   AgsPlot *plot;
 
+  gdouble gui_scale_factor;
   gdouble width, height;
   gdouble default_width, default_height;
   gdouble offset;
   
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(envelope_editor),
+				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_spacing(envelope_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   envelope_editor->flags = 0;
+  envelope_editor->connectable_flags = 0;
 
   envelope_editor->version = AGS_ENVELOPE_EDITOR_DEFAULT_VERSION;
   envelope_editor->build_id = AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID;
-
+  
   /* enabled */
   envelope_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start((GtkBox *) envelope_editor,
-		     (GtkWidget *) envelope_editor->enabled,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) envelope_editor,
+		 (GtkWidget *) envelope_editor->enabled);
 
   /* rename dialog */
   envelope_editor->rename = NULL;
 
   /* frame - preset */
   frame = (GtkFrame *) gtk_frame_new(i18n("preset"));
-  gtk_box_pack_start((GtkBox *) envelope_editor,
-		     (GtkWidget *) frame,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) envelope_editor,
+		 (GtkWidget *) frame);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_container_add((GtkContainer *) frame,
-		    (GtkWidget *) hbox);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_frame_set_child(frame,
+		      (GtkWidget *) hbox);
   
   envelope_editor->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) envelope_editor->preset,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) envelope_editor->preset);
 
   envelope_editor->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) envelope_editor->add,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) envelope_editor->add);
 
   envelope_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) envelope_editor->remove,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) envelope_editor->remove);
 
   /* cartesian */
   cartesian = 
@@ -260,22 +265,39 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 			 plot);
 
   /* cartesian - size, pack and redraw */
+  gtk_widget_set_valign(cartesian,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(cartesian,
+			GTK_ALIGN_START);
+
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
-  gtk_box_pack_start((GtkBox *) envelope_editor,
-		     GTK_WIDGET(cartesian),
-		     FALSE, FALSE,
-		     0);
+
+  gtk_box_append((GtkBox *) envelope_editor,
+		 GTK_WIDGET(cartesian));
 
   gtk_widget_queue_draw((GtkWidget *) cartesian);
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(5, 2,
-				     FALSE);
-  gtk_box_pack_start((GtkBox *) envelope_editor,
-		     GTK_WIDGET(table),
-		     FALSE, FALSE,
-		     0);
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 TRUE);
+
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append((GtkBox *) envelope_editor,
+		 GTK_WIDGET(grid));
 
   /* attack */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -283,41 +305,57 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 0,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_hexpand(control,
+			 TRUE);
+  gtk_widget_set_vexpand(control,
+			 TRUE);
+
+  gtk_widget_set_halign(control,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(control,
+			GTK_ALIGN_FILL);
+
+  gtk_box_set_spacing(control,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  envelope_editor->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, 0,
+		  1, 1);
+  
+  envelope_editor->attack_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								    0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->attack_x,
-		     FALSE, FALSE,
-		     0);
 
-  envelope_editor->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(envelope_editor->attack_x,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append(control,
+		 (GtkWidget *) envelope_editor->attack_x);
+
+  envelope_editor->attack_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								    -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->attack_y,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_size_request(envelope_editor->attack_y,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append(control,
+		 (GtkWidget *) envelope_editor->attack_y);
 
   /* decay */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -325,41 +363,43 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 1,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, 1,
+		  1, 1);
 
-  envelope_editor->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->decay_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								   0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->decay_x,
-		     FALSE, FALSE,
-		     0);
 
-  envelope_editor->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(envelope_editor->decay_x,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append((GtkBox *) control,
+		 (GtkWidget *) envelope_editor->decay_x);
+
+  envelope_editor->decay_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								   -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->decay_y,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_size_request(envelope_editor->decay_y,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append((GtkBox *) control,
+		 (GtkWidget *) envelope_editor->decay_y);
 
   /* sustain */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -367,41 +407,43 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 2,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, 2,
+		  1, 1);
 
-  envelope_editor->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->sustain_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								     0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->sustain_x,
-		     FALSE, FALSE,
-		     0);
 
-  envelope_editor->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(envelope_editor->sustain_x,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append((GtkBox *) control,
+		 (GtkWidget *) envelope_editor->sustain_x);
+
+  envelope_editor->sustain_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								     -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->sustain_y,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_size_request(envelope_editor->sustain_y,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append((GtkBox *) control,
+		 (GtkWidget *) envelope_editor->sustain_y);
 
   /* release */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -409,41 +451,43 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 3,
+		  1, 1);
 
-  control = (GtkVBox *) gtk_vbox_new(FALSE,
-				     0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(control),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  control = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(control),
+		  1, 3,
+		  1, 1);
 
-  envelope_editor->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->release_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								     0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_x,
 		      0.25);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->release_x,
-		     FALSE, FALSE,
-		     0);
 
-  envelope_editor->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(envelope_editor->release_x,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append((GtkBox *) control,
+		 (GtkWidget *) envelope_editor->release_x);
+
+  envelope_editor->release_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								     -1.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
 		      0.0);
-  gtk_box_pack_start((GtkBox *) control,
-		     (GtkWidget *) envelope_editor->release_y,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_widget_set_size_request(envelope_editor->release_y,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_box_append((GtkBox *) control,
+		 (GtkWidget *) envelope_editor->release_y);
 
   /* ratio */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -451,24 +495,25 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 				    "xalign", 0.0,
 				    "yalign", 1.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 4,
+		  1, 1);
 
-  envelope_editor->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->ratio = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+								 0.0, 1.0, 0.001);
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
 		      1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(envelope_editor->ratio),
-		   1, 2,
-		   4, 5,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_size_request(envelope_editor->ratio,
+			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(envelope_editor->ratio),
+		  1, 4,
+		  1, 1);
 }
 
 void
@@ -478,11 +523,11 @@ ags_envelope_editor_connect(AgsConnectable *connectable)
 
   envelope_editor = AGS_ENVELOPE_EDITOR(connectable);
 
-  if((AGS_ENVELOPE_EDITOR_CONNECTED & (envelope_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (envelope_editor->connectable_flags)) != 0){
     return;
   }
 
-  envelope_editor->flags |= AGS_ENVELOPE_EDITOR_CONNECTED;
+  envelope_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* preset */
   g_signal_connect((GObject *) envelope_editor->preset, "changed",
@@ -534,11 +579,11 @@ ags_envelope_editor_disconnect(AgsConnectable *connectable)
 
   envelope_editor = AGS_ENVELOPE_EDITOR(connectable);
 
-  if((AGS_ENVELOPE_EDITOR_CONNECTED & (envelope_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (envelope_editor->connectable_flags)) == 0){
     return;
   }
 
-  envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_CONNECTED);
+  envelope_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* preset */
   g_object_disconnect((GObject *) envelope_editor->preset,

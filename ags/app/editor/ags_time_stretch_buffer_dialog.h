@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,15 +47,11 @@ G_BEGIN_DECLS
 typedef struct _AgsTimeStretchBufferDialog AgsTimeStretchBufferDialog;
 typedef struct _AgsTimeStretchBufferDialogClass AgsTimeStretchBufferDialogClass;
 
-typedef enum{
-  AGS_TIME_STRETCH_BUFFER_DIALOG_CONNECTED   = 1,
-}AgsTimeStretchBufferDialogFlags;
-
 struct _AgsTimeStretchBufferDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
   GtkSpinButton *frequency;
 

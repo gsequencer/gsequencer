@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,32 +22,6 @@
 #include <ags/app/ags_window.h>
 
 #include <math.h>
-
-void
-ags_hybrid_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsHybridSynth *hybrid_synth)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_HYBRID_SYNTH)->counter);
-
-  g_object_set(AGS_MACHINE(hybrid_synth),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_HYBRID_SYNTH);
-
-  g_free(str);
-}
 
 void
 ags_hybrid_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsHybridSynth *hybrid_synth)

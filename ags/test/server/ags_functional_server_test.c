@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,8 +30,7 @@ int ags_functional_server_test_clean_suite();
 
 void ags_functional_server_test_authenticate();
 
-void ags_functional_server_test_authenticate_authenticate_callback(SoupSession *session,
-								   SoupMessage *msg,
+void ags_functional_server_test_authenticate_authenticate_callback(SoupMessage *msg,
 								   SoupAuth *auth,
 								   gboolean retrying,
 								   gpointer user_data);
@@ -100,21 +99,24 @@ ags_functional_server_test_init_suite()
 
   ags_application_context_prepare(server_application_context);
   ags_application_context_setup(server_application_context);
+
+  AGS_SERVER(server_application_context->server->data)->path = "/ags-xmlrpc";
   
   /* server */
   sleep(5);
 
   /* soup session */
-  soup_session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_BASIC,
-					       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_DIGEST,
-					       NULL);
+  soup_session = soup_session_new();
 
+  soup_session_add_feature_by_type(soup_session,
+				   SOUP_TYPE_AUTH_BASIC);
+
+  soup_session_add_feature_by_type(soup_session,
+				   SOUP_TYPE_AUTH_DIGEST);
+  
   jar = soup_cookie_jar_text_new(AGS_FUNCTIONAL_SERVER_TEST_XML_COOKIE_FILENAME,
 				 FALSE);     
   soup_session_add_feature(soup_session, jar);
-  
-  g_signal_connect(soup_session, "authenticate",
-		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
 
   return(0);
 }
@@ -136,30 +138,37 @@ ags_functional_server_test_authenticate()
 {
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
-  SoupMessageBody *response_body;
+
+  GBytes *response_body;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
 
+  gchar *buffer;
   gchar *login;
   gchar *security_token;
   char *name, *value;
-  
+
+  gsize buffer_size;
   guint status;
+  gsize read_count;
 
   GError *error;
   
-  msg = soup_form_request_new("GET",
-			      "http://127.0.0.1:8080/ags-xmlrpc",
-			      NULL);
+  msg = soup_message_new("GET",
+			 "http://127.0.0.1:8080/ags-xmlrpc");
+  
+  g_signal_connect(msg, "authenticate",
+		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
 
-  status = soup_session_send_message(soup_session,
-				     msg);
+  response_body = soup_session_send_and_read(soup_session,
+					     msg,
+					     NULL,
+					     NULL);
 
-  g_object_get(msg,
-	       "response-headers", &response_headers,
-	       "response-body", &response_body,
-	       NULL);
+  status = soup_message_get_status(msg);
+
+  response_headers = soup_message_get_response_headers(msg);
 
   g_message("status %d", status);
   
@@ -170,10 +179,13 @@ ags_functional_server_test_authenticate()
   while(soup_message_headers_iter_next(&iter, &name, &value)){    
     g_message("%s: %s", name, value);
   }
-  
-  g_message("%s", response_body->data);
 
-  CU_ASSERT(status == 200);
+  //  buffer = g_bytes_get_data(response_body,
+  //			    &buffer_size);
+  
+  g_message("%s", buffer);
+
+  CU_ASSERT(status == 302);
 
   cookie = soup_cookies_from_response(msg);
   
@@ -208,8 +220,7 @@ ags_functional_server_test_authenticate()
 }
 
 void
-ags_functional_server_test_authenticate_authenticate_callback(SoupSession *session,
-							      SoupMessage *msg,
+ags_functional_server_test_authenticate_authenticate_callback(SoupMessage *msg,
 							      SoupAuth *auth,
 							      gboolean retrying,
 							      gpointer user_data)

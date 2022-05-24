@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line.h>
@@ -129,20 +130,70 @@ ags_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_synth_init(AgsSynth *synth)
 {
-  AgsAudio *audio;
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkBox *hbox;
   GtkBox *vbox;
   GtkGrid *grid;
   GtkLabel *label;
 
-  g_signal_connect_after((GObject *) synth, "parent_set",
-			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
 
+  AgsAudio *audio;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *machine_name;
+
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_SYNTH);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(synth,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    synth);
+  
   audio = AGS_MACHINE(synth)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_ASYNC |
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_SYNTH));
+
+  AGS_MACHINE(synth)->input_pad_orientation = GTK_ORIENTATION_VERTICAL;
+  AGS_MACHINE(synth)->input_pad_type = AGS_TYPE_SYNTH_INPUT_PAD;
+  AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;
+  AGS_MACHINE(synth)->output_pad_type = G_TYPE_NONE;
+  AGS_MACHINE(synth)->output_line_type = G_TYPE_NONE;
+
   g_object_set(audio,
 	       "min-audio-channels", 1,
 	       "max-audio-channels", 1,
@@ -150,11 +201,6 @@ ags_synth_init(AgsSynth *synth)
 	       "max-output-pads", 128,
 	       "min-input-pads", 1,
 	       NULL);
-
-  AGS_MACHINE(synth)->input_pad_type = AGS_TYPE_SYNTH_INPUT_PAD;
-  AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;
-  AGS_MACHINE(synth)->output_pad_type = G_TYPE_NONE;
-  AGS_MACHINE(synth)->output_line_type = G_TYPE_NONE;
 
   //  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(synth)->mapping_flags |= AGS_MACHINE_MONO;
@@ -169,44 +215,55 @@ ags_synth_init(AgsSynth *synth)
   synth->mapped_output_pad = 0;
  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) synth)),
-		    (GtkWidget *) hbox);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  synth->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-					    0);
-  AGS_MACHINE(synth)->input = (GtkContainer *) synth->input_pad;
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) AGS_MACHINE(synth)->input,
-		     FALSE,
-		     FALSE,
-		     0);
+  gtk_widget_set_valign(hbox,
+			GTK_ALIGN_START);
+  gtk_widget_set_halign(hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand(hbox,
+			 FALSE);
+  gtk_widget_set_hexpand(hbox,
+			 FALSE);
+  
+  gtk_frame_set_child(AGS_MACHINE(synth)->frame,
+		      (GtkWidget *) hbox);
+
+  AGS_MACHINE(synth)->input_pad_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(AGS_MACHINE(synth)->input_pad_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(AGS_MACHINE(synth)->input_pad_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append(hbox,
+		 (GtkWidget *) AGS_MACHINE(synth)->input_pad_grid);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) vbox,
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(hbox,
+		 (GtkWidget *) vbox);
 
   synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) synth->auto_update,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) synth->auto_update);
 
   synth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) synth->update,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(vbox,
+		 (GtkWidget *) synth->update);
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(vbox,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) grid);
 
   /* frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -255,7 +312,7 @@ ags_synth_connect(AgsConnectable *connectable)
 {
   AgsSynth *synth;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -279,7 +336,7 @@ ags_synth_disconnect(AgsConnectable *connectable)
 {
   AgsSynth *synth;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -429,7 +486,7 @@ ags_synth_update(AgsSynth *synth)
   start_frequency = (gdouble) gtk_spin_button_get_value(synth->lower);
 
   /* clear output */
-  start_input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
+  start_input_pad = ags_machine_get_input_pad((AgsMachine *) synth);
 
   g_object_get(audio,
 	       "output", &start_output,
@@ -493,8 +550,8 @@ ags_synth_update(AgsSynth *synth)
   while(input_pad != NULL){
     guint current_frame_count;
     
-    start_input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(start_input_line->data)->expander->table)->data);
+    start_input_line = ags_pad_get_line(AGS_PAD(input_pad->data));
+    oscillator = AGS_SYNTH_INPUT_LINE(start_input_line->data)->oscillator;
 
     current_frame_count = gtk_spin_button_get_value(oscillator->attack) + gtk_spin_button_get_value(oscillator->frame_count);
     
@@ -520,8 +577,8 @@ ags_synth_update(AgsSynth *synth)
     guint i;
     gboolean do_sync;
     
-    start_input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(start_input_line->data)->expander->table)->data);
+    start_input_line = ags_pad_get_line(AGS_PAD(input_pad->data));
+    oscillator = AGS_SYNTH_INPUT_LINE(start_input_line->data)->oscillator;
 
     g_object_get(AGS_LINE(start_input_line->data),
 		 "channel", &input,
@@ -552,7 +609,7 @@ ags_synth_update(AgsSynth *synth)
 		 "volume", volume,
 		 NULL);
 
-    do_sync = gtk_toggle_button_get_active((GtkToggleButton *) oscillator->do_sync);
+    do_sync = gtk_check_button_get_active(oscillator->do_sync);
     
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;

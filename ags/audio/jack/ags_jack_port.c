@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,10 +113,34 @@ ags_jack_port_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_jack_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_JACK_PORT_REGISTERED, "AGS_JACK_PORT_REGISTERED", "jack-port-registered" },
+      { AGS_JACK_PORT_IS_AUDIO, "AGS_JACK_PORT_IS_AUDIO", "jack-port-is-audio" },
+      { AGS_JACK_PORT_IS_MIDI, "AGS_JACK_PORT_IS_MIDI", "jack-port-is-midi" },
+      { AGS_JACK_PORT_IS_OUTPUT, "AGS_JACK_PORT_IS_OUTPUT", "jack-port-is-output" },
+      { AGS_JACK_PORT_IS_INPUT, "AGS_JACK_PORT_IS_INPUT", "jack-port-is-input" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsJackPortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_jack_port_class_init(AgsJackPortClass *jack_port)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_jack_port_parent_class = g_type_class_peek_parent(jack_port);
@@ -191,6 +215,7 @@ ags_jack_port_init(AgsJackPort *jack_port)
 {
   /* flags */
   jack_port->flags = 0;
+  jack_port->connectable_flags = 0;
 
   /* port mutex */
   g_rec_mutex_init(&(jack_port->obj_mutex));
@@ -404,10 +429,19 @@ ags_jack_port_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *jack_port_mutex;
+
   jack_port = AGS_JACK_PORT(connectable);
 
-  /* check is added */
-  is_ready = ags_jack_port_test_flags(jack_port, AGS_JACK_PORT_ADDED_TO_REGISTRY);
+  /* get jack port mutex */
+  jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(jack_port);
+
+  /* check is ready */
+  g_rec_mutex_lock(jack_port_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (jack_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(jack_port_mutex);
   
   return(is_ready);
 }
@@ -417,13 +451,22 @@ ags_jack_port_add_to_registry(AgsConnectable *connectable)
 {
   AgsJackPort *jack_port;
 
+  GRecMutex *jack_port_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   jack_port = AGS_JACK_PORT(connectable);
 
-  ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_ADDED_TO_REGISTRY);
+  /* get jack port mutex */
+  jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(jack_port);
+
+  g_rec_mutex_lock(jack_port_mutex);
+
+  jack_port->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(jack_port_mutex);
 }
 
 void
@@ -431,13 +474,22 @@ ags_jack_port_remove_from_registry(AgsConnectable *connectable)
 {
   AgsJackPort *jack_port;
 
+  GRecMutex *jack_port_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   jack_port = AGS_JACK_PORT(connectable);
 
-  ags_jack_port_unset_flags(jack_port, AGS_JACK_PORT_ADDED_TO_REGISTRY);
+  /* get jack port mutex */
+  jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(jack_port);
+
+  g_rec_mutex_lock(jack_port_mutex);
+
+  jack_port->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(jack_port_mutex);
 }
 
 xmlNode*
@@ -478,10 +530,19 @@ ags_jack_port_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *jack_port_mutex;
+
   jack_port = AGS_JACK_PORT(connectable);
 
+  /* get jack port mutex */
+  jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(jack_port);
+
   /* check is connected */
-  is_connected = ags_jack_port_test_flags(jack_port, AGS_JACK_PORT_CONNECTED);
+  g_rec_mutex_lock(jack_port_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (jack_port->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(jack_port_mutex);
   
   return(is_connected);
 }
@@ -490,6 +551,8 @@ void
 ags_jack_port_connect(AgsConnectable *connectable)
 {
   AgsJackPort *jack_port;
+
+  GRecMutex *jack_port_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -497,22 +560,37 @@ ags_jack_port_connect(AgsConnectable *connectable)
 
   jack_port = AGS_JACK_PORT(connectable);
 
-  ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_CONNECTED);
+  /* get jack port mutex */
+  jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(jack_port);
+
+  g_rec_mutex_lock(jack_port_mutex);
+
+  jack_port->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(jack_port_mutex);
 }
 
 void
 ags_jack_port_disconnect(AgsConnectable *connectable)
 {
-
   AgsJackPort *jack_port;
+
+  GRecMutex *jack_port_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   jack_port = AGS_JACK_PORT(connectable);
+
+  /* get jack port mutex */
+  jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(jack_port);
+
+  g_rec_mutex_lock(jack_port_mutex);
+
+  jack_port->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_jack_port_unset_flags(jack_port, AGS_JACK_PORT_CONNECTED);
+  g_rec_mutex_unlock(jack_port_mutex);
 }
 
 /**

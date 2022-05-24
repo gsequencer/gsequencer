@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,34 +18,3 @@
  */
 
 #include <ags/app/ags_machine_editor_callbacks.h>
-
-int
-ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
-{
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor));
-
-  //TODO:JK: remove me
-  //  ags_applicable_reset(AGS_APPLICABLE(machine_editor));
-
-  return(0);
-}
-
-int
-ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
-{
-  //  ags_applicable_set_update(AGS_APPLICABLE(machine_editor), FALSE);
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor));
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor));
-
-  gtk_widget_destroy((GtkWidget *) machine_editor);
-
-  return(0);
-}
-
-int
-ags_machine_editor_cancel_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
-{
-  gtk_widget_destroy((GtkWidget *) machine_editor);
-
-  return(0);
-}

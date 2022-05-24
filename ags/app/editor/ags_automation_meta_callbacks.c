@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,7 @@
 #include <ags/app/editor/ags_automation_meta_callbacks.h>
 
 void
-ags_automation_meta_machine_changed_callback(AgsAutomationEditor *automation_editor, AgsMachine *machine,
+ags_automation_meta_machine_changed_callback(AgsCompositeEditor *composite_editor, AgsMachine *machine,
 					     AgsAutomationMeta *automation_meta)
 {
   ags_automation_meta_refresh(automation_meta);

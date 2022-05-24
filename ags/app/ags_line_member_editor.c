@@ -23,7 +23,6 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_machine_editor.h>
-#include <ags/app/ags_line_editor.h>
 
 #include <ags/i18n.h>
 
@@ -47,7 +46,7 @@ void ags_line_member_editor_reset(AgsApplicable *applicable);
  * @include: ags/app/ags_line_member_editor.h
  *
  * #AgsLineMemberEditor is a composite widget to modify line member. A line member
- * editor should be packed by a #AgsLineEditor. You may add/remove plugins with this
+ * editor should be packed by a #AgsMachineEditorLine. You may add/remove plugins with this
  * editor.
  */
 
@@ -130,35 +129,28 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(line_member_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
-  line_member_editor->flags = 0;
+  gtk_box_set_spacing((GtkBox *) line_member_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  line_member_editor->connectable_flags = 0;
   
-  line_member_editor->line_member = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							   0);
-  gtk_box_pack_start((GtkBox *) line_member_editor,
-		     (GtkWidget *) line_member_editor->line_member,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
-
+  line_member_editor->entry_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							 AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append((GtkBox *) line_member_editor,
+		 (GtkWidget *) line_member_editor->entry_box);
+  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start((GtkBox *) line_member_editor,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_box_append((GtkBox *) line_member_editor,
+		 (GtkWidget *) hbox);
 
-  line_member_editor->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
-									GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) line_member_editor->add,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  line_member_editor->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) line_member_editor->add);
 
-  line_member_editor->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
-									   GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) line_member_editor->remove,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  line_member_editor->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove");
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) line_member_editor->remove);
 
   line_member_editor->plugin_browser = NULL;
 }
@@ -170,11 +162,11 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
 
-  if((AGS_LINE_MEMBER_EDITOR_CONNECTED & (line_member_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (line_member_editor->connectable_flags)) != 0){
     return;
   }
 
-  line_member_editor->flags |= AGS_LINE_MEMBER_EDITOR_CONNECTED;
+  line_member_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   g_signal_connect(G_OBJECT(line_member_editor->add), "clicked",
 		   G_CALLBACK(ags_line_member_editor_add_callback), line_member_editor);
@@ -190,11 +182,11 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
 
-  if((AGS_LINE_MEMBER_EDITOR_CONNECTED & (line_member_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (line_member_editor->connectable_flags)) == 0){
     return;
   }
 
-  line_member_editor->flags &= (~AGS_LINE_MEMBER_EDITOR_CONNECTED);
+  line_member_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(line_member_editor->add),
 		      "any_signal::clicked",
@@ -234,7 +226,7 @@ ags_line_member_editor_apply(AgsApplicable *applicable)
 void
 ags_line_member_editor_reset(AgsApplicable *applicable)
 {
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *line_member_editor;
   GtkBox *hbox;
   GtkCheckButton *check_button;
@@ -249,20 +241,21 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
   list = 
-    start_list = gtk_container_get_children((GtkContainer *) line_member_editor->line_member);
+    start_list = ags_line_member_editor_get_entry(line_member_editor);
 
   while(list != NULL){
-    gtk_widget_destroy(list->data);
+    ags_line_member_editor_remove_entry(line_member_editor,
+					list->data);
     
     list = list->next;
   }
 
   g_list_free((GDestroyNotify) start_list);
   
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
-							  AGS_TYPE_LINE_EDITOR);
+  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
+									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
-  g_object_get(line_editor->channel,
+  g_object_get(machine_editor_line->channel,
 	       "play", &start_recall,
 	       NULL);
 
@@ -276,6 +269,8 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 						    AGS_TYPE_FX_VST3_CHANNEL,
 #endif
 						    G_TYPE_NONE)) != NULL){
+    AgsLineMemberEditorEntry *entry;
+    
     if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
       recall = recall->next;
 
@@ -289,29 +284,20 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 		 "filename", &filename,
 		 "effect", &effect,
 		 NULL);
-    
-    hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
-				   0);
-    gtk_box_pack_start(line_member_editor->line_member,
-		       (GtkWidget *) hbox,
-		       FALSE, FALSE,
-		       0);
-      
-    check_button = (GtkCheckButton *) gtk_check_button_new();
-    gtk_box_pack_start(hbox,
-		       (GtkWidget *) check_button,
-		       FALSE, FALSE,
-		       0);
+
+    entry = ags_line_member_editor_entry_new();
     
     str = g_strdup_printf("%s - %s",
 			  filename,
 			  effect);
-    label = (GtkLabel *) gtk_label_new(str);
-    gtk_box_pack_start(hbox,
-		       (GtkWidget *) label,
-		       FALSE, FALSE,
-		       0);
-    gtk_widget_show_all((GtkWidget *) hbox);
+
+    gtk_label_set_text(entry->label,
+		       str);
+
+    ags_line_member_editor_add_entry(line_member_editor,
+				     entry);
+    
+    gtk_widget_show((GtkWidget *) entry);
 
     g_free(str);
     
@@ -320,6 +306,74 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   g_list_free_full(start_recall,
 		   g_object_unref);
+}
+
+/**
+ * ags_line_member_editor_get_entry:
+ * @line_member_editor: the #AgsLineMemberEditor
+ * 
+ * Get entry.
+ * 
+ * Returns: the #GList-struct containig #AgsLineMemberEditorEntry
+ * 
+ * Since: 4.0.0
+ */
+GList*
+ags_line_member_editor_get_entry(AgsLineMemberEditor *line_member_editor)
+{
+  g_return_val_if_fail(AGS_IS_LINE_MEMBER_EDITOR(line_member_editor), NULL);
+
+  return(g_list_reverse(g_list_copy(line_member_editor->entry)));
+}
+
+/**
+ * ags_line_member_editor_add_entry:
+ * @line_member_editor: the #AgsLineMemberEditor
+ * @entry: the #AgsLineMemberEditorEntry
+ * 
+ * Add @entry to @line_member_editor.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_line_member_editor_add_entry(AgsLineMemberEditor *line_member_editor,
+				 AgsLineMemberEditorEntry *entry)
+{
+  g_return_if_fail(AGS_IS_LINE_MEMBER_EDITOR(line_member_editor));
+  g_return_if_fail(AGS_IS_LINE_MEMBER_EDITOR_ENTRY(entry));
+
+  if(g_list_find(line_member_editor->entry, entry) == NULL){
+    line_member_editor->entry = g_list_prepend(line_member_editor->entry,
+					       entry);
+    
+    gtk_box_append(line_member_editor->entry_box,
+		   entry);
+  }
+}
+
+/**
+ * ags_line_member_editor_remove_entry:
+ * @line_member_editor: the #AgsLineMemberEditor
+ * @entry: the #AgsLineMemberEditorEntry
+ * 
+ * Remove @entry from @line_member_editor.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_line_member_editor_remove_entry(AgsLineMemberEditor *line_member_editor,
+				    AgsLineMemberEditorEntry *entry)
+{
+  g_return_if_fail(AGS_IS_LINE_MEMBER_EDITOR(line_member_editor));
+  g_return_if_fail(AGS_IS_LINE_MEMBER_EDITOR_ENTRY(entry));
+
+  if(g_list_find(line_member_editor->entry, entry) != NULL){
+    line_member_editor->entry = g_list_remove(line_member_editor->entry,
+					      entry);
+    
+    gtk_box_remove(line_member_editor->entry_box,
+		   entry);
+  }
 }
 
 /**

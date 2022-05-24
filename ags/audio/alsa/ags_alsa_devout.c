@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -252,8 +252,6 @@ ags_alsa_devout_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY, "AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY", "alsa-devout-added-to-registry" },
-      { AGS_ALSA_DEVOUT_CONNECTED, "AGS_ALSA_DEVOUT_CONNECTED", "alsa-devout-connected" },
       { AGS_ALSA_DEVOUT_INITIALIZED, "AGS_ALSA_DEVOUT_INITIALIZED", "alsa-devout-initialized" },
       { AGS_ALSA_DEVOUT_START_PLAY, "AGS_ALSA_DEVOUT_START_PLAY", "alsa-devout-start-play" },
       { AGS_ALSA_DEVOUT_PLAY, "AGS_ALSA_DEVOUT_PLAY", "alsa-devout-play" },
@@ -577,6 +575,7 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   guint denominator, numerator;
   
   alsa_devout->flags = 0;
+  alsa_devout->connectable_flags = 0;
   
   /* insert alsa_devout mutex */
   g_rec_mutex_init(&(alsa_devout->obj_mutex));
@@ -1107,10 +1106,19 @@ ags_alsa_devout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *alsa_devout_mutex;
+
   alsa_devout = AGS_ALSA_DEVOUT(connectable);
 
-  /* check is added */
-  is_ready = ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY);
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
+  /* check is ready */
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (alsa_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(alsa_devout_mutex);
   
   return(is_ready);
 }
@@ -1120,13 +1128,22 @@ ags_alsa_devout_add_to_registry(AgsConnectable *connectable)
 {
   AgsAlsaDevout *alsa_devout;
 
+  GRecMutex *alsa_devout_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   alsa_devout = AGS_ALSA_DEVOUT(connectable);
 
-  ags_alsa_devout_set_flags(alsa_devout, AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY);
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  alsa_devout->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
 void
@@ -1134,13 +1151,22 @@ ags_alsa_devout_remove_from_registry(AgsConnectable *connectable)
 {
   AgsAlsaDevout *alsa_devout;
 
+  GRecMutex *alsa_devout_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   alsa_devout = AGS_ALSA_DEVOUT(connectable);
 
-  ags_alsa_devout_unset_flags(alsa_devout, AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY);
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  alsa_devout->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
 xmlNode*
@@ -1181,10 +1207,19 @@ ags_alsa_devout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *alsa_devout_mutex;
+
   alsa_devout = AGS_ALSA_DEVOUT(connectable);
 
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
   /* check is connected */
-  is_connected = ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_CONNECTED);
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (alsa_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(alsa_devout_mutex);
   
   return(is_connected);
 }
@@ -1193,6 +1228,8 @@ void
 ags_alsa_devout_connect(AgsConnectable *connectable)
 {
   AgsAlsaDevout *alsa_devout;
+
+  GRecMutex *alsa_devout_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1200,22 +1237,37 @@ ags_alsa_devout_connect(AgsConnectable *connectable)
 
   alsa_devout = AGS_ALSA_DEVOUT(connectable);
 
-  ags_alsa_devout_set_flags(alsa_devout, AGS_ALSA_DEVOUT_CONNECTED);
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  alsa_devout->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
 void
 ags_alsa_devout_disconnect(AgsConnectable *connectable)
 {
-
   AgsAlsaDevout *alsa_devout;
+
+  GRecMutex *alsa_devout_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   alsa_devout = AGS_ALSA_DEVOUT(connectable);
+
+  /* get alsa devout mutex */
+  alsa_devout_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(alsa_devout);
+
+  g_rec_mutex_lock(alsa_devout_mutex);
+
+  alsa_devout->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_alsa_devout_unset_flags(alsa_devout, AGS_ALSA_DEVOUT_CONNECTED);
+  g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
 /**

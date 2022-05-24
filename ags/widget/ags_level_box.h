@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_level.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_LEVEL_BOX                (ags_level_box_get_type())
@@ -34,34 +36,47 @@ G_BEGIN_DECLS
 #define AGS_IS_LEVEL_BOX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LEVEL_BOX))
 #define AGS_LEVEL_BOX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_LEVEL_BOX, AgsLevelBoxClass))
 
-#define AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH (60)
-#define AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT (128)
+#define AGS_LEVEL_BOX_DEFAULT_SPACING (8)
 
 typedef struct _AgsLevelBox AgsLevelBox;
 typedef struct _AgsLevelBoxClass AgsLevelBoxClass;
-
-typedef enum{
-  AGS_LEVEL_BOX_FIXED_LEVEL_SIZE  = 1,
-}AgsLevelBoxFlags;
 
 struct _AgsLevelBox
 {
   GtkBox box;
 
-  guint flags;
-
-  guint fixed_level_width;
-  guint fixed_level_height;
+  /* private */
+  GList *level;
 };
 
 struct _AgsLevelBoxClass
 {
   GtkBoxClass box;
+
+  void (*child_width_request)(AgsLevelBox *level_box,
+			      GtkWidget *level,
+			      gint width_request);
+  void (*child_height_request)(AgsLevelBox *level_box,
+			       GtkWidget *level,
+			       gint height_request);
 };
 
 GType ags_level_box_get_type(void);
 
-AgsLevelBox* ags_level_box_new();
+GList* ags_level_box_get_level(AgsLevelBox *level_box);
+void ags_level_box_add_level(AgsLevelBox *level_box,
+			     AgsLevel *level);
+void ags_level_box_remove_level(AgsLevelBox *level_box,
+				AgsLevel *level);
+
+void ags_level_box_child_width_request(AgsLevelBox *level_box,
+				       GtkWidget *level,
+				       gint width_request);
+void ags_level_box_child_height_request(AgsLevelBox *level_box,
+					GtkWidget *level,
+					gint height_request);
+
+AgsLevelBox* ags_level_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 

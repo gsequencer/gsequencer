@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,7 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_machine_editor_callbacks.h>
 
-#include <ags/app/ags_listing_editor.h>
-#include <ags/app/ags_property_collection_editor.h>
-#include <ags/app/ags_link_collection_editor.h>
-#include <ags/app/ags_resize_editor.h>
+#include <ags/app/ags_ui_provider.h>
 
 #include <ags/i18n.h>
 
@@ -73,6 +70,8 @@ enum{
 
 static guint machine_editor_signals[LAST_SIGNAL];
 
+static gpointer ags_machine_editor_parent_class = NULL;
+
 GType
 ags_machine_editor_get_type(void)
 {
@@ -105,7 +104,7 @@ ags_machine_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_editor = g_type_register_static(GTK_TYPE_DIALOG,
+    ags_type_machine_editor = g_type_register_static(GTK_TYPE_GRID,
 						     "AgsMachineEditor", &ags_machine_editor_info,
 						     0);
 
@@ -127,7 +126,10 @@ void
 ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
+
+  ags_machine_editor_parent_class = g_type_class_peek_parent(machine_editor);
 
   /* GObjectClass */
   gobject = (GObjectClass *) machine_editor;
@@ -199,73 +201,171 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
-  gtk_window_set_title((GtkWindow *) machine_editor,
-		       i18n("properties"));
+  gtk_grid_set_column_spacing(machine_editor,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(machine_editor,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  machine_editor->flags = 0;
+  machine_editor->connectable_flags = 0;
 
   machine_editor->version = AGS_MACHINE_EDITOR_DEFAULT_VERSION;
   machine_editor->build_id = AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID;
 
+  machine_editor->parent_dialog = NULL;
+
   machine_editor->machine = NULL;
 
-  machine_editor->notebook =
-    notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_editor),
-		     (GtkWidget *) notebook,
-		     TRUE, TRUE,
-		     0);
+  notebook = 
+    machine_editor->notebook = (GtkNotebook *) gtk_notebook_new();
+
+  gtk_widget_set_hexpand(machine_editor->notebook,
+			 TRUE);
+  gtk_widget_set_vexpand(machine_editor->notebook,
+			 TRUE);
+
+  gtk_widget_set_halign(machine_editor->notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(machine_editor->notebook,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) machine_editor,
+		  (GtkWidget *) notebook,
+		  0, 0,
+		  1, 1);
 
   /* AgsOutput */
-  machine_editor->output_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("output")));
 
+  machine_editor->output_editor_listing = ags_machine_editor_listing_new(AGS_TYPE_OUTPUT);  
+
+  machine_editor->output_editor_listing->parent_machine_editor = machine_editor;
+
+  gtk_widget_set_halign(machine_editor->output_editor_listing,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(machine_editor->output_editor_listing,
+			GTK_ALIGN_START);
+
+  gtk_scrolled_window_set_child(scrolled_window,
+				machine_editor->output_editor_listing);
+  
   /* AgsInput */
-  machine_editor->input_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("input")));
 
+  machine_editor->input_editor_listing = ags_machine_editor_listing_new(AGS_TYPE_INPUT);  
+
+  machine_editor->input_editor_listing->parent_machine_editor = machine_editor;
+  
+  gtk_widget_set_halign(machine_editor->input_editor_listing,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(machine_editor->input_editor_listing,
+			GTK_ALIGN_START);
+
+  gtk_scrolled_window_set_child(scrolled_window,
+				machine_editor->input_editor_listing);
 
   /* AgsOutput link editor */
-  machine_editor->output_link_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("link output")));
 
+  machine_editor->output_editor_collection = ags_machine_editor_collection_new(AGS_TYPE_OUTPUT);  
+
+  machine_editor->output_editor_collection->parent_machine_editor = machine_editor;
+
+  gtk_scrolled_window_set_child(scrolled_window,
+				machine_editor->output_editor_collection);
+
   /* AgsInput link editor */
-  machine_editor->input_link_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("link input")));
 
+  machine_editor->input_editor_collection = ags_machine_editor_collection_new(AGS_TYPE_INPUT);  
+
+  machine_editor->input_editor_collection->parent_machine_editor = machine_editor;
+
+  gtk_widget_set_halign(machine_editor->output_editor_listing,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(machine_editor->output_editor_listing,
+			GTK_ALIGN_START);
+
+  gtk_scrolled_window_set_child(scrolled_window,
+				machine_editor->input_editor_collection);
+
   /* resize editor */
-  machine_editor->resize_editor_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+
   gtk_notebook_append_page(notebook, (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 
-  /* GtkButton's in GtkDialog->action_area  */
-  machine_editor->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
-  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
-			       (GtkWidget *) machine_editor->apply,
-			       GTK_RESPONSE_NONE);
+  machine_editor->resize_editor = ags_resize_editor_new();
 
-  machine_editor->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
-  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
-			       (GtkWidget *) machine_editor->ok,
-			       GTK_RESPONSE_NONE);
+  machine_editor->resize_editor->parent_machine_editor = machine_editor;
 
-  machine_editor->cancel = (GtkButton *) gtk_button_new_with_mnemonic("_Cancel");
-  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
-			       (GtkWidget *) machine_editor->cancel,
-			       GTK_RESPONSE_NONE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				machine_editor->resize_editor);
 }
 
 void
@@ -321,30 +421,20 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  if((AGS_MACHINE_EDITOR_CONNECTED & (machine_editor->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) != 0){
     return;
   }
 
-  machine_editor->flags |= AGS_MACHINE_EDITOR_CONNECTED;
+  machine_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
   /* AgsMachineEditor tabs */
-  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->output_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->input_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->output_editor_listing));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->output_editor_collection));
 
-  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->output_link_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->input_link_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->input_editor_listing));
+  ags_connectable_connect(AGS_CONNECTABLE(machine_editor->input_editor_collection));
 
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor->resize_editor));
-
-  /* AgsMachineEditor buttons */
-  g_signal_connect((GObject *) machine_editor->apply, "clicked",
-		   G_CALLBACK(ags_machine_editor_apply_callback), (gpointer) machine_editor);
-
-  g_signal_connect((GObject *) machine_editor->ok, "clicked",
-		   G_CALLBACK(ags_machine_editor_ok_callback), (gpointer) machine_editor);
-
-  g_signal_connect((GObject *) machine_editor->cancel, "clicked",
-		   G_CALLBACK(ags_machine_editor_cancel_callback), (gpointer) machine_editor);
 }
 
 void
@@ -354,18 +444,18 @@ ags_machine_editor_disconnect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
-  if((AGS_MACHINE_EDITOR_CONNECTED & (machine_editor->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (machine_editor->connectable_flags)) == 0){
     return;
   }
   
-  machine_editor->flags &= (~AGS_MACHINE_EDITOR_CONNECTED);
+  machine_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
   /* AgsMachineEditor tabs */
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_editor));
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_editor_listing));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_editor_collection));
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_link_editor));
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_link_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_editor_listing));
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_editor_collection));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->resize_editor));
 }
@@ -377,11 +467,11 @@ ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update)
 
   machine_editor = AGS_MACHINE_EDITOR(applicable);
 
-  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->output_editor), update);
-  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->input_editor), update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->output_editor_listing), update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->output_editor_collection), update);
 
-  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->output_link_editor), update);
-  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->input_link_editor), update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->input_editor_listing), update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->input_editor_collection), update);
 
   ags_applicable_set_update(AGS_APPLICABLE(machine_editor->resize_editor), update);
 }
@@ -393,11 +483,11 @@ ags_machine_editor_apply(AgsApplicable *applicable)
 
   machine_editor = AGS_MACHINE_EDITOR(applicable);
 
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_editor));
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_editor_listing));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_editor_collection));
 
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_link_editor));
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_link_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_editor_listing));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_editor_collection));
 
   ags_applicable_apply(AGS_APPLICABLE(machine_editor->resize_editor));
 }
@@ -409,112 +499,19 @@ ags_machine_editor_reset(AgsApplicable *applicable)
 
   machine_editor = AGS_MACHINE_EDITOR(applicable);
 
-  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_editor));
-  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_editor_listing));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_editor_collection));
 
-  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_link_editor));
-  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_link_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_editor_listing));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_editor_collection));
 
   ags_applicable_reset(AGS_APPLICABLE(machine_editor->resize_editor));
-}
-
-/**
- * ags_machine_editor_add_children:
- * @machine_editor: the #AgsMachineEditor
- *
- * Add all child editors.
- *
- * Since: 3.0.0
- */
-void
-ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
-{
-  gchar **output_link_editor_child_strv;
-  gchar **input_link_editor_child_strv;
-
-  GValue *output_link_editor_child_value;
-  GValue *input_link_editor_child_value;
-
-  /* output */
-  output_link_editor_child_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
-
-  output_link_editor_child_strv[0] = g_strdup("channel-type");
-  output_link_editor_child_strv[1] = NULL;
-
-  output_link_editor_child_value = g_new0(GValue,
-					  1);
-
-  g_value_init(output_link_editor_child_value, G_TYPE_GTYPE);
-  g_value_set_gtype(output_link_editor_child_value,
-		    AGS_TYPE_OUTPUT);
-
-  /* input */
-  input_link_editor_child_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
-
-  input_link_editor_child_strv[0] = g_strdup("channel-type");
-  input_link_editor_child_strv[1] = NULL;
-  
-  input_link_editor_child_value = g_new0(GValue,
-					 1);
-
-  g_value_init(input_link_editor_child_value, G_TYPE_GTYPE);
-  g_value_set_gtype(input_link_editor_child_value,
-		    AGS_TYPE_INPUT);
-
-  /* AgsOutput */
-  machine_editor->output_editor = ags_listing_editor_new(AGS_TYPE_OUTPUT);
-  gtk_container_add((GtkContainer *) machine_editor->output_scrolled_window,
-		    (GtkWidget *) machine_editor->output_editor);
-
-  ags_listing_editor_add_children(machine_editor->output_editor,
-				  machine_editor->machine->audio, 0,
-				  FALSE);
-
-  /* AgsInput */
-  machine_editor->input_editor = ags_listing_editor_new(AGS_TYPE_INPUT);
-  gtk_container_add((GtkContainer *) machine_editor->input_scrolled_window,
-		    (GtkWidget *) machine_editor->input_editor);
-
-  ags_listing_editor_add_children(machine_editor->input_editor,
-				  machine_editor->machine->audio, 0,
-				  FALSE);
-
-  /* AgsOutput link editor */
-  machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-									  output_link_editor_child_strv,
-									  output_link_editor_child_value);
-  gtk_container_add((GtkContainer *) machine_editor->output_link_editor_scrolled_window,
-		    (GtkWidget *) machine_editor->output_link_editor);
-
-  /* AgsInput link editor */
-  machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-									 input_link_editor_child_strv,
-									 input_link_editor_child_value);
-  gtk_container_add((GtkContainer *) machine_editor->input_link_editor_scrolled_window,
-		    (GtkWidget *) machine_editor->input_link_editor);
-
-  /* resize editor */
-  machine_editor->resize_editor = ags_resize_editor_new();
-  gtk_container_add((GtkContainer *) machine_editor->resize_editor_scrolled_window,
-		    (GtkWidget *) machine_editor->resize_editor);
 }
 
 void
 ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
 {
-  if(machine_editor->machine != NULL){
-    gtk_widget_destroy(GTK_WIDGET(machine_editor->output_editor));
-    gtk_widget_destroy(GTK_WIDGET(machine_editor->input_editor));
-    gtk_widget_destroy(GTK_WIDGET(machine_editor->output_link_editor));
-    gtk_widget_destroy(GTK_WIDGET(machine_editor->input_link_editor));
-    gtk_widget_destroy(GTK_WIDGET(machine_editor->resize_editor));
-  }
-  
   machine_editor->machine = machine;
-
-  if(machine != NULL){
-    ags_machine_editor_add_children(machine_editor);
-  }
 }
 
 /**

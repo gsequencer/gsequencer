@@ -80,7 +80,7 @@ ags_apply_presets_test_clean_suite()
 void
 ags_apply_presets_test_launch_scope_soundcard()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
 
   AgsApplyPresets *apply_presets;
@@ -95,7 +95,7 @@ ags_apply_presets_test_launch_scope_soundcard()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -145,7 +145,7 @@ ags_apply_presets_test_launch_scope_soundcard()
 void
 ags_apply_presets_test_launch_scope_audio()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
   
@@ -161,7 +161,7 @@ ags_apply_presets_test_launch_scope_audio()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -230,7 +230,7 @@ ags_apply_presets_test_launch_scope_audio()
 void
 ags_apply_presets_test_launch_scope_channel()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;  
@@ -247,7 +247,7 @@ ags_apply_presets_test_launch_scope_channel()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -308,7 +308,7 @@ ags_apply_presets_test_launch_scope_channel()
 void
 ags_apply_presets_test_launch_scope_audio_signal()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;  
@@ -325,7 +325,7 @@ ags_apply_presets_test_launch_scope_audio_signal()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);

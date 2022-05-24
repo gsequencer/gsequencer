@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_syncsynth.h>
 
 G_BEGIN_DECLS
-
-void ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSyncsynth *syncsynth);
 
 void ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 					       guint samplerate, guint old_samplerate,

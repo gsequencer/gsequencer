@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
+#include <ags/audio/ags_lfo_synth_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FX_LFO_CHANNEL                (ags_fx_lfo_channel_get_type())
@@ -38,6 +40,7 @@ G_BEGIN_DECLS
 #define AGS_FX_LFO_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LFO_CHANNEL, AgsFxLfoChannelClass))
 
 typedef struct _AgsFxLfoChannel AgsFxLfoChannel;
+typedef struct _AgsFxLfoChannelInputData AgsFxLfoChannelInputData;
 typedef struct _AgsFxLfoChannelClass AgsFxLfoChannelClass;
 
 struct _AgsFxLfoChannel
@@ -53,6 +56,8 @@ struct _AgsFxLfoChannel
 
   AgsPort *lfo_depth;
   AgsPort *lfo_tuning;
+  
+  AgsFxLfoChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsFxLfoChannelClass
@@ -60,7 +65,19 @@ struct _AgsFxLfoChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+struct _AgsFxLfoChannelInputData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+
+  AgsLFOSynthUtil *lfo_synth_util;
+};
+
 GType ags_fx_lfo_channel_get_type();
+
+AgsFxLfoChannelInputData* ags_fx_lfo_channel_input_data_alloc();
+void ags_fx_lfo_channel_input_data_free(AgsFxLfoChannelInputData *input_data);
 
 /*  */
 AgsFxLfoChannel* ags_fx_lfo_channel_new(AgsChannel *channel);

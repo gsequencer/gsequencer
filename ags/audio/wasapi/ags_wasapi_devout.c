@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -203,7 +203,7 @@ struct _PROPERTYKEY{
   DWORD id;
 };
 
-static struct _PROPERTYKEY ags_wasapi_pkey_device_friendly_name_key = {ags_wasapi_pkey_device_friendly_name_guid,
+static struct _PROPERTYKEY ags_wasapi_pkey_device_friendly_name_key = {{0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0},
 								       14};
 #endif
 
@@ -256,6 +256,30 @@ ags_wasapi_devout_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_wasapi_devout_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_WASAPI_DEVOUT_INITIALIZED, "AGS_WASAPI_DEVOUT_INITIALIZED", "wasapi-devout-initialized" },
+      { AGS_WASAPI_DEVOUT_START_PLAY, "AGS_WASAPI_DEVOUT_START_PLAY", "wasapi-devout-start-play" },
+      { AGS_WASAPI_DEVOUT_PLAY, "AGS_WASAPI_DEVOUT_PLAY", "wasapi-devout-play" },
+      { AGS_WASAPI_DEVOUT_NONBLOCKING, "AGS_WASAPI_DEVOUT_NONBLOCKING", "wasapi-devout-nonblocking" },
+      { AGS_WASAPI_DEVOUT_ATTACK_FIRST, "AGS_WASAPI_DEVOUT_ATTACK_FIRST", "wasapi-devout-attack-first" },
+      { AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE, "AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE", "wasapi-devout-share-mode-exclusive" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsWasapiDevoutFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -562,6 +586,7 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   
   /* flags */
   wasapi_devout->flags = 0;
+  wasapi_devout->connectable_flags = 0;
 
   /* devout mutex */
   g_rec_mutex_init(&(wasapi_devout->obj_mutex));
@@ -623,33 +648,35 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   wasapi_devout->device = NULL;
 
   /* buffer */
-  wasapi_devout->buffer_mutex = (GRecMutex **) malloc(8 * sizeof(GRecMutex *));
+  wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_0;
+
+  wasapi_devout->app_buffer_mutex = (GRecMutex **) g_malloc(8 * sizeof(GRecMutex *));
 
   for(i = 0; i < 8; i++){
-    wasapi_devout->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    wasapi_devout->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
-    g_rec_mutex_init(wasapi_devout->buffer_mutex[i]);
+    g_rec_mutex_init(wasapi_devout->app_buffer_mutex[i]);
   }
 
   wasapi_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  wasapi_devout->sub_block_mutex = (GRecMutex **) malloc(8 * wasapi_devout->sub_block_count * wasapi_devout->pcm_channels * sizeof(GRecMutex *));
+  wasapi_devout->sub_block_mutex = (GRecMutex **) g_malloc(8 * wasapi_devout->sub_block_count * wasapi_devout->pcm_channels * sizeof(GRecMutex *));
 
   for(i = 0; i < 8 * wasapi_devout->sub_block_count * wasapi_devout->pcm_channels; i++){
-    wasapi_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    wasapi_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(wasapi_devout->sub_block_mutex[i]);
   }
 
-  wasapi_devout->buffer = (void **) malloc(8 * sizeof(void*));
+  wasapi_devout->app_buffer = (void **) g_malloc(8 * sizeof(void*));
 
-  wasapi_devout->buffer[0] = NULL;
-  wasapi_devout->buffer[1] = NULL;
-  wasapi_devout->buffer[2] = NULL;
-  wasapi_devout->buffer[3] = NULL;
-  wasapi_devout->buffer[4] = NULL;
-  wasapi_devout->buffer[5] = NULL;
-  wasapi_devout->buffer[6] = NULL;
-  wasapi_devout->buffer[7] = NULL;
+  wasapi_devout->app_buffer[0] = NULL;
+  wasapi_devout->app_buffer[1] = NULL;
+  wasapi_devout->app_buffer[2] = NULL;
+  wasapi_devout->app_buffer[3] = NULL;
+  wasapi_devout->app_buffer[4] = NULL;
+  wasapi_devout->app_buffer[5] = NULL;
+  wasapi_devout->app_buffer[6] = NULL;
+  wasapi_devout->app_buffer[7] = NULL;
   
   ags_wasapi_devout_realloc_buffer(wasapi_devout);
   
@@ -675,11 +702,11 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   }
 
   /* delay and attack */
-  wasapi_devout->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					    sizeof(gdouble));
+  wasapi_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					      sizeof(gdouble));
   
-  wasapi_devout->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					   sizeof(guint));
+  wasapi_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					     sizeof(guint));
 
   ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
   
@@ -727,178 +754,178 @@ ags_wasapi_devout_set_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_DEVICE:
-  {
-    char *device;
+    {
+      char *device;
 
-    device = (char *) g_value_get_string(value);
+      device = (char *) g_value_get_string(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    wasapi_devout->device = g_strdup(device);
+      wasapi_devout->device = g_strdup(device);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_DSP_CHANNELS:
-  {
-    guint dsp_channels;
+    {
+      guint dsp_channels;
 
-    dsp_channels = g_value_get_uint(value);
+      dsp_channels = g_value_get_uint(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    if(dsp_channels == wasapi_devout->dsp_channels){
+      if(dsp_channels == wasapi_devout->dsp_channels){
+	g_rec_mutex_unlock(wasapi_devout_mutex);
+
+	return;
+      }
+
+      wasapi_devout->dsp_channels = dsp_channels;
+
       g_rec_mutex_unlock(wasapi_devout_mutex);
-
-      return;
     }
-
-    wasapi_devout->dsp_channels = dsp_channels;
-
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+    break;
   case PROP_PCM_CHANNELS:
-  {
-    guint pcm_channels, old_pcm_channels;
-    guint i;
+    {
+      guint pcm_channels, old_pcm_channels;
+      guint i;
 
-    pcm_channels = g_value_get_uint(value);
+      pcm_channels = g_value_get_uint(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    if(pcm_channels == wasapi_devout->pcm_channels){
+      if(pcm_channels == wasapi_devout->pcm_channels){
+	g_rec_mutex_unlock(wasapi_devout_mutex);
+
+	return;
+      }
+
+      old_pcm_channels = wasapi_devout->pcm_channels;
+
+      /* destroy if less pcm-channels */
+      for(i = 8 * wasapi_devout->sub_block_count * pcm_channels; i < 8 * wasapi_devout->sub_block_count * old_pcm_channels; i++){
+	g_rec_mutex_clear(wasapi_devout->sub_block_mutex[i]);
+
+	g_free(wasapi_devout->sub_block_mutex[i]);
+      }
+
+      wasapi_devout->sub_block_mutex = (GRecMutex **) g_realloc(wasapi_devout->sub_block_mutex,
+								8 * wasapi_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
+
+      /* create if more pcm-channels */
+      for(i = 8 * wasapi_devout->sub_block_count * old_pcm_channels; i < 8 * wasapi_devout->sub_block_count * pcm_channels; i++){
+	wasapi_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+	g_rec_mutex_init(wasapi_devout->sub_block_mutex[i]);
+      }
+
+      wasapi_devout->pcm_channels = pcm_channels;
+
       g_rec_mutex_unlock(wasapi_devout_mutex);
 
-      return;
+      ags_wasapi_devout_realloc_buffer(wasapi_devout);
     }
-
-    old_pcm_channels = wasapi_devout->pcm_channels;
-
-    /* destroy if less pcm-channels */
-    for(i = 8 * wasapi_devout->sub_block_count * pcm_channels; i < 8 * wasapi_devout->sub_block_count * old_pcm_channels; i++){
-      g_rec_mutex_clear(wasapi_devout->sub_block_mutex[i]);
-
-      free(wasapi_devout->sub_block_mutex[i]);
-    }
-
-    wasapi_devout->sub_block_mutex = (GRecMutex **) realloc(wasapi_devout->sub_block_mutex,
-								  8 * wasapi_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
-
-    /* create if more pcm-channels */
-    for(i = 8 * wasapi_devout->sub_block_count * old_pcm_channels; i < 8 * wasapi_devout->sub_block_count * pcm_channels; i++){
-      wasapi_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
-
-      g_rec_mutex_init(wasapi_devout->sub_block_mutex[i]);
-    }
-
-    wasapi_devout->pcm_channels = pcm_channels;
-
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-
-    ags_wasapi_devout_realloc_buffer(wasapi_devout);
-  }
-  break;
+    break;
   case PROP_FORMAT:
-  {
-    guint format;
+    {
+      guint format;
 
-    format = g_value_get_uint(value);
+      format = g_value_get_uint(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    if(format == wasapi_devout->format){
+      if(format == wasapi_devout->format){
+	g_rec_mutex_unlock(wasapi_devout_mutex);
+
+	return;
+      }
+
+      wasapi_devout->format = format;
+
       g_rec_mutex_unlock(wasapi_devout_mutex);
 
-      return;
+      ags_wasapi_devout_realloc_buffer(wasapi_devout);
     }
-
-    wasapi_devout->format = format;
-
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-
-    ags_wasapi_devout_realloc_buffer(wasapi_devout);
-  }
-  break;
+    break;
   case PROP_BUFFER_SIZE:
-  {
-    guint buffer_size;
+    {
+      guint buffer_size;
 
-    buffer_size = g_value_get_uint(value);
+      buffer_size = g_value_get_uint(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    if(buffer_size == wasapi_devout->buffer_size){
+      if(buffer_size == wasapi_devout->buffer_size){
+	g_rec_mutex_unlock(wasapi_devout_mutex);
+
+	return;
+      }
+
+      wasapi_devout->buffer_size = buffer_size;
+
       g_rec_mutex_unlock(wasapi_devout_mutex);
 
-      return;
+      ags_wasapi_devout_realloc_buffer(wasapi_devout);
+      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
     }
-
-    wasapi_devout->buffer_size = buffer_size;
-
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-
-    ags_wasapi_devout_realloc_buffer(wasapi_devout);
-    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
-  }
-  break;
+    break;
   case PROP_SAMPLERATE:
-  {
-    guint samplerate;
+    {
+      guint samplerate;
 
-    samplerate = g_value_get_uint(value);
+      samplerate = g_value_get_uint(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
       
-    if(samplerate == wasapi_devout->samplerate){
+      if(samplerate == wasapi_devout->samplerate){
+	g_rec_mutex_unlock(wasapi_devout_mutex);
+
+	return;
+      }
+
+      wasapi_devout->samplerate = samplerate;
+
       g_rec_mutex_unlock(wasapi_devout_mutex);
 
-      return;
+      ags_wasapi_devout_realloc_buffer(wasapi_devout);
+      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
     }
-
-    wasapi_devout->samplerate = samplerate;
-
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-
-    ags_wasapi_devout_realloc_buffer(wasapi_devout);
-    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
-  }
-  break;
+    break;
   case PROP_BUFFER:
-  {
-    //TODO:JK: implement me
-  }
-  break;
+    {
+      //TODO:JK: implement me
+    }
+    break;
   case PROP_BPM:
-  {
-    gdouble bpm;
+    {
+      gdouble bpm;
       
-    bpm = g_value_get_double(value);
+      bpm = g_value_get_double(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    wasapi_devout->bpm = bpm;
+      wasapi_devout->bpm = bpm;
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
+      g_rec_mutex_unlock(wasapi_devout_mutex);
 
-    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
-  }
-  break;
+      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+    }
+    break;
   case PROP_DELAY_FACTOR:
-  {
-    gdouble delay_factor;
+    {
+      gdouble delay_factor;
       
-    delay_factor = g_value_get_double(value);
+      delay_factor = g_value_get_double(value);
 
-    g_rec_mutex_lock(wasapi_devout_mutex);
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    wasapi_devout->delay_factor = delay_factor;
+      wasapi_devout->delay_factor = delay_factor;
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
+      g_rec_mutex_unlock(wasapi_devout_mutex);
 
-    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
-  }
-  break;
+      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -922,95 +949,95 @@ ags_wasapi_devout_get_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_DEVICE:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_string(value, wasapi_devout->device);
+      g_value_set_string(value, wasapi_devout->device);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_DSP_CHANNELS:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_uint(value, wasapi_devout->dsp_channels);
+      g_value_set_uint(value, wasapi_devout->dsp_channels);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_PCM_CHANNELS:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_uint(value, wasapi_devout->pcm_channels);
+      g_value_set_uint(value, wasapi_devout->pcm_channels);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_FORMAT:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_uint(value, wasapi_devout->format);
+      g_value_set_uint(value, wasapi_devout->format);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_BUFFER_SIZE:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_uint(value, wasapi_devout->buffer_size);
+      g_value_set_uint(value, wasapi_devout->buffer_size);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_SAMPLERATE:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_uint(value, wasapi_devout->samplerate);
+      g_value_set_uint(value, wasapi_devout->samplerate);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_BUFFER:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_pointer(value, wasapi_devout->buffer);
+      g_value_set_pointer(value, wasapi_devout->app_buffer);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_BPM:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_double(value, wasapi_devout->bpm);
+      g_value_set_double(value, wasapi_devout->bpm);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_DELAY_FACTOR:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_double(value, wasapi_devout->delay_factor);
+      g_value_set_double(value, wasapi_devout->delay_factor);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   case PROP_ATTACK:
-  {
-    g_rec_mutex_lock(wasapi_devout_mutex);
+    {
+      g_rec_mutex_lock(wasapi_devout_mutex);
 
-    g_value_set_pointer(value, wasapi_devout->attack);
+      g_value_set_pointer(value, wasapi_devout->attack);
 
-    g_rec_mutex_unlock(wasapi_devout_mutex);
-  }
-  break;
+      g_rec_mutex_unlock(wasapi_devout_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1035,23 +1062,36 @@ ags_wasapi_devout_finalize(GObject *gobject)
 {
   AgsWasapiDevout *wasapi_devout;
 
+  guint i;
+
   wasapi_devout = AGS_WASAPI_DEVOUT(gobject);
 
-  /* free output buffer */
-  free(wasapi_devout->buffer[0]);
-  free(wasapi_devout->buffer[1]);
-  free(wasapi_devout->buffer[2]);
-  free(wasapi_devout->buffer[3]);
-  free(wasapi_devout->buffer[4]);
-  free(wasapi_devout->buffer[5]);
-  free(wasapi_devout->buffer[6]);
-  free(wasapi_devout->buffer[7]);
+  for(i = 0; i < AGS_WASAPI_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(wasapi_devout->app_buffer[i]);
+  }
 
-  /* free buffer array */
-  free(wasapi_devout->buffer);
+  g_free(wasapi_devout->app_buffer);
 
-  /* free AgsAttack */
-  free(wasapi_devout->attack);
+  for(i = 0; i < AGS_WASAPI_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(wasapi_devout->app_buffer_mutex[i]);
+    
+    g_free(wasapi_devout->app_buffer_mutex[i]);
+  }
+
+  g_free(wasapi_devout->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_WASAPI_DEVOUT_DEFAULT_APP_BUFFER_SIZE * wasapi_devout->sub_block_count * wasapi_devout->pcm_channels; i++){
+    g_rec_mutex_clear(wasapi_devout->sub_block_mutex[i]);
+    
+    g_free(wasapi_devout->sub_block_mutex[i]);
+  }
+
+  g_free(wasapi_devout->sub_block_mutex);
+
+  g_free(wasapi_devout->delay);
+  g_free(wasapi_devout->attack);
+  
+  g_free(wasapi_devout->device);
 
   /* call parent */
   G_OBJECT_CLASS(ags_wasapi_devout_parent_class)->finalize(gobject);
@@ -1094,10 +1134,19 @@ ags_wasapi_devout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *wasapi_devout_mutex;
+
   wasapi_devout = AGS_WASAPI_DEVOUT(connectable);
 
-  /* check is added */
-  is_ready = ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_ADDED_TO_REGISTRY);
+  /* get wasapi devout mutex */
+  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
+
+  /* check is ready */
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (wasapi_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(wasapi_devout_mutex);
   
   return(is_ready);
 }
@@ -1107,13 +1156,22 @@ ags_wasapi_devout_add_to_registry(AgsConnectable *connectable)
 {
   AgsWasapiDevout *wasapi_devout;
 
+  GRecMutex *wasapi_devout_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   wasapi_devout = AGS_WASAPI_DEVOUT(connectable);
 
-  ags_wasapi_devout_set_flags(wasapi_devout, AGS_WASAPI_DEVOUT_ADDED_TO_REGISTRY);
+  /* get wasapi devout mutex */
+  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
+
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  wasapi_devout->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(wasapi_devout_mutex);
 }
 
 void
@@ -1121,13 +1179,22 @@ ags_wasapi_devout_remove_from_registry(AgsConnectable *connectable)
 {
   AgsWasapiDevout *wasapi_devout;
 
+  GRecMutex *wasapi_devout_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   wasapi_devout = AGS_WASAPI_DEVOUT(connectable);
 
-  ags_wasapi_devout_unset_flags(wasapi_devout, AGS_WASAPI_DEVOUT_ADDED_TO_REGISTRY);
+  /* get wasapi devout mutex */
+  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
+
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  wasapi_devout->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(wasapi_devout_mutex);
 }
 
 xmlNode*
@@ -1168,10 +1235,19 @@ ags_wasapi_devout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *wasapi_devout_mutex;
+
   wasapi_devout = AGS_WASAPI_DEVOUT(connectable);
 
+  /* get wasapi devout mutex */
+  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
+
   /* check is connected */
-  is_connected = ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_CONNECTED);
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (wasapi_devout->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(wasapi_devout_mutex);
   
   return(is_connected);
 }
@@ -1180,6 +1256,8 @@ void
 ags_wasapi_devout_connect(AgsConnectable *connectable)
 {
   AgsWasapiDevout *wasapi_devout;
+
+  GRecMutex *wasapi_devout_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1187,22 +1265,37 @@ ags_wasapi_devout_connect(AgsConnectable *connectable)
 
   wasapi_devout = AGS_WASAPI_DEVOUT(connectable);
 
-  ags_wasapi_devout_set_flags(wasapi_devout, AGS_WASAPI_DEVOUT_CONNECTED);
+  /* get wasapi devout mutex */
+  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
+
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  wasapi_devout->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(wasapi_devout_mutex);
 }
 
 void
 ags_wasapi_devout_disconnect(AgsConnectable *connectable)
 {
-
   AgsWasapiDevout *wasapi_devout;
+
+  GRecMutex *wasapi_devout_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   wasapi_devout = AGS_WASAPI_DEVOUT(connectable);
+
+  /* get wasapi devout mutex */
+  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
+
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  wasapi_devout->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_wasapi_devout_unset_flags(wasapi_devout, AGS_WASAPI_DEVOUT_CONNECTED);
+  g_rec_mutex_unlock(wasapi_devout_mutex);
 }
 
 /**
@@ -1684,17 +1777,10 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   wasapi_devout->flags |= AGS_WASAPI_DEVOUT_INITIALIZED;
 #endif
-  wasapi_devout->flags |= (AGS_WASAPI_DEVOUT_BUFFER0 |
-			   AGS_WASAPI_DEVOUT_START_PLAY |
+  wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_7;
+  wasapi_devout->flags |= (AGS_WASAPI_DEVOUT_START_PLAY |
 			   AGS_WASAPI_DEVOUT_PLAY |
 			   AGS_WASAPI_DEVOUT_NONBLOCKING);
-  wasapi_devout->flags &= (~(AGS_WASAPI_DEVOUT_BUFFER1 |
-			     AGS_WASAPI_DEVOUT_BUFFER2 |
-			     AGS_WASAPI_DEVOUT_BUFFER3 |
-			     AGS_WASAPI_DEVOUT_BUFFER4 |
-			     AGS_WASAPI_DEVOUT_BUFFER5 |
-			     AGS_WASAPI_DEVOUT_BUFFER6 |
-			     AGS_WASAPI_DEVOUT_BUFFER7));
   
   g_rec_mutex_unlock(wasapi_devout_mutex);
 }
@@ -1746,20 +1832,20 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   /* retrieve word size */
   switch(wasapi_devout->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    word_size = sizeof(gint16);
-  }
-  break;
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   default:
     g_rec_mutex_unlock(wasapi_devout_mutex);
     
@@ -1777,7 +1863,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     WAVEFORMATEXTENSIBLE wave_format;
     WAVEFORMATEX *desired_format, *internal_format;
 
-    wchar_t dev_id[1024];
+    gunichar2 *dev_id;
 
     REFERENCE_TIME min_duration;
 
@@ -1787,6 +1873,8 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
     g_message("WASAPI initialize");
     
+    dev_id = NULL;
+
     CoInitialize(0);
 
     if(CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, (void **) &dev_enumerator)){
@@ -1809,8 +1897,11 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     }
 
     if(wasapi_devout->device != NULL){
-      memset(dev_id, 0, 1024 * sizeof(WCHAR));
-      swprintf(dev_id, 1024, L"%S", wasapi_devout->device);
+      dev_id = g_utf8_to_utf16(wasapi_devout->device,
+			       -1,
+			       NULL,
+			       NULL,
+			       NULL);
       
       if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
 	if(error != NULL){
@@ -1888,20 +1979,20 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
       switch(wasapi_devout->format){
       case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	bit_resolution = 16;
-      }
-      break;
+	{
+	  bit_resolution = 16;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	bit_resolution = 24;
-      }
-      break;
+	{
+	  bit_resolution = 24;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	bit_resolution = 32;
-      }
-      break;
+	{
+	  bit_resolution = 32;
+	}
+	break;
       }  
 
       if(bit_resolution == 24){
@@ -1963,20 +2054,20 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
       switch(wasapi_devout->format){
       case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	bit_resolution = 16;
-      }
-      break;
+	{
+	  bit_resolution = 16;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	bit_resolution = 24;
-      }
-      break;
+	{
+	  bit_resolution = 24;
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	bit_resolution = 32;
-      }
-      break;
+	{
+	  bit_resolution = 32;
+	}
+	break;
       }  
 
       if(bit_resolution == 24){
@@ -2047,30 +2138,25 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     return;
   }
 
-  //  g_message("play - 0x%0x", ((AGS_WASAPI_DEVOUT_BUFFER0 |
-  //				AGS_WASAPI_DEVOUT_BUFFER1 |
-  //				AGS_WASAPI_DEVOUT_BUFFER2 |
-  //				AGS_WASAPI_DEVOUT_BUFFER3) & (wasapi_devout->flags)));
-
   if((AGS_WASAPI_DEVOUT_SHUTDOWN & (wasapi_devout->flags)) == 0){
     /* check buffer flag */
     nth_buffer = 0;
 
-    if((AGS_WASAPI_DEVOUT_BUFFER0 & (wasapi_devout->flags)) != 0){
+    if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_0){
       nth_buffer = 0;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER1 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_1){
       nth_buffer = 1;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER2 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_2){
       nth_buffer = 2;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER3 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_3){
       nth_buffer = 3;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER4 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_4){
       nth_buffer = 4;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER5 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_5){
       nth_buffer = 5;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER6 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_6){
       nth_buffer = 6;
-    }else if((AGS_WASAPI_DEVOUT_BUFFER7 & (wasapi_devout->flags)) != 0){
+    }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_7){
       nth_buffer = 7;
     }
     
@@ -2084,35 +2170,35 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
       switch(res){
       case E_POINTER:
-      {
-	g_message("pointer");
-      }
-      break;
+	{
+	  g_message("pointer");
+	}
+	break;
       case E_NOINTERFACE:
-      {
-	g_message("no interface");
-      }
-      break;
+	{
+	  g_message("no interface");
+	}
+	break;
       case AUDCLNT_E_NOT_INITIALIZED:
-      {
-	g_message("not initialized");
-      }
-      break;
+	{
+	  g_message("not initialized");
+	}
+	break;
       case AUDCLNT_E_WRONG_ENDPOINT_TYPE:
-      {
-	g_message("wrong endpoint");
-      }
-      break;
+	{
+	  g_message("wrong endpoint");
+	}
+	break;
       case AUDCLNT_E_DEVICE_INVALIDATED:
-      {
-	g_message("device invalidated");
-      }
-      break;
+	{
+	  g_message("device invalidated");
+	}
+	break;
       case AUDCLNT_E_SERVICE_NOT_RUNNING:
-      {
-	g_message("no service");
-      }
-      break;
+	{
+	  g_message("no service");
+	}
+	break;
       }
     }
 
@@ -2149,82 +2235,82 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
       
       switch(res){
       case AUDCLNT_E_BUFFER_ERROR:
-      {
-	g_message("buffer error");
-      }
-      break;
+	{
+	  g_message("buffer error");
+	}
+	break;
       case AUDCLNT_E_BUFFER_TOO_LARGE:
-      {
-	g_message("buffer too large");
-      }
-      break;
+	{
+	  g_message("buffer too large");
+	}
+	break;
       case AUDCLNT_E_BUFFER_SIZE_ERROR:
-      {
-	g_message("buffer size error");
-      }
-      break;
+	{
+	  g_message("buffer size error");
+	}
+	break;
       case AUDCLNT_E_OUT_OF_ORDER:
-      {
-	g_message("out of order");
-      }
-      break;
+	{
+	  g_message("out of order");
+	}
+	break;
       case AUDCLNT_E_DEVICE_INVALIDATED:
-      {
-	g_message("invalidated");
-      }
-      break;
+	{
+	  g_message("invalidated");
+	}
+	break;
       case AUDCLNT_E_BUFFER_OPERATION_PENDING:
-      {
-	g_message("operation pending");
-      }
-      break;
+	{
+	  g_message("operation pending");
+	}
+	break;
       case AUDCLNT_E_SERVICE_NOT_RUNNING:
-      {
-	g_message("no service");
-      }
-      break;
+	{
+	  g_message("no service");
+	}
+	break;
       case E_POINTER:
-      {
-	g_message("pointer");
-      }
-      break;
+	{
+	  g_message("pointer");
+	}
+	break;
       }
     }
     
     /* retrieve word size */
     if(data != NULL){
       ags_soundcard_lock_buffer(soundcard,
-				wasapi_devout->buffer[nth_buffer]);
+				wasapi_devout->app_buffer[nth_buffer]);
       
       switch(wasapi_devout->format){
       case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint16));
-	ags_audio_buffer_util_copy_s16_to_s16((gint16 *) data, 1,
-					      (gint16 *) wasapi_devout->buffer[nth_buffer], 1,
-					      wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
-      }
-      break;
+	{
+	  memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint16));
+	  ags_audio_buffer_util_copy_s16_to_s16((gint16 *) data, 1,
+						(gint16 *) wasapi_devout->app_buffer[nth_buffer], 1,
+						wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
-	ags_audio_buffer_util_copy_s24_to_s24((gint32 *) data, 1,
-					      (gint32 *) wasapi_devout->buffer[nth_buffer], 1,
-					      wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
-      }
-      break;
+	{
+	  memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
+	  ags_audio_buffer_util_copy_s24_to_s24((gint32 *) data, 1,
+						(gint32 *) wasapi_devout->app_buffer[nth_buffer], 1,
+						wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
+	}
+	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
-	ags_audio_buffer_util_copy_s32_to_s32((gint32 *) data, 1,
-					      (gint32 *) wasapi_devout->buffer[nth_buffer], 1,
-					      wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
-      }
-      break;
+	{
+	  memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
+	  ags_audio_buffer_util_copy_s32_to_s32((gint32 *) data, 1,
+						(gint32 *) wasapi_devout->app_buffer[nth_buffer], 1,
+						wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
+	}
+	break;
       }
       
       ags_soundcard_unlock_buffer(soundcard,
-				  wasapi_devout->buffer[nth_buffer]);
+				  wasapi_devout->app_buffer[nth_buffer]);
     }else{
       g_message("data = NULL");
     }
@@ -2631,30 +2717,34 @@ ags_wasapi_devout_get_buffer(AgsSoundcard *soundcard)
   GRecMutex *wasapi_devout_mutex;  
   
   wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
-
+  
   /* get wasapi devout mutex */
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
 
-  if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER0)){
-    buffer = wasapi_devout->buffer[0];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER1)){
-    buffer = wasapi_devout->buffer[1];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER2)){
-    buffer = wasapi_devout->buffer[2];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER3)){
-    buffer = wasapi_devout->buffer[3];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER4)){
-    buffer = wasapi_devout->buffer[4];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER5)){
-    buffer = wasapi_devout->buffer[5];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER6)){
-    buffer = wasapi_devout->buffer[6];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER7)){
-    buffer = wasapi_devout->buffer[7];
+  g_rec_mutex_lock(wasapi_devout_mutex);
+
+  if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_0){
+    buffer = wasapi_devout->app_buffer[0];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_1){
+    buffer = wasapi_devout->app_buffer[1];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_2){
+    buffer = wasapi_devout->app_buffer[2];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_3){
+    buffer = wasapi_devout->app_buffer[3];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_4){
+    buffer = wasapi_devout->app_buffer[4];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_5){
+    buffer = wasapi_devout->app_buffer[5];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_6){
+    buffer = wasapi_devout->app_buffer[6];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_7){
+    buffer = wasapi_devout->app_buffer[7];
   }else{
     buffer = NULL;
   }
   
+  g_rec_mutex_unlock(wasapi_devout_mutex);
+
   return(buffer);
 }
 
@@ -2664,32 +2754,32 @@ ags_wasapi_devout_get_next_buffer(AgsSoundcard *soundcard)
   AgsWasapiDevout *wasapi_devout;
 
   void *buffer;
-  
+
   GRecMutex *wasapi_devout_mutex;  
-
+  
   wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
-
+  
   /* get wasapi devout mutex */
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
 
   g_rec_mutex_lock(wasapi_devout_mutex);
 
-  if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER0)){
-    buffer = wasapi_devout->buffer[1];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER1)){
-    buffer = wasapi_devout->buffer[2];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER2)){
-    buffer = wasapi_devout->buffer[3];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER3)){
-    buffer = wasapi_devout->buffer[4];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER4)){
-    buffer = wasapi_devout->buffer[5];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER5)){
-    buffer = wasapi_devout->buffer[6];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER6)){
-    buffer = wasapi_devout->buffer[7];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER7)){
-    buffer = wasapi_devout->buffer[0];
+  if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_0){
+    buffer = wasapi_devout->app_buffer[1];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_1){
+    buffer = wasapi_devout->app_buffer[2];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_2){
+    buffer = wasapi_devout->app_buffer[3];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_3){
+    buffer = wasapi_devout->app_buffer[4];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_4){
+    buffer = wasapi_devout->app_buffer[5];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_5){
+    buffer = wasapi_devout->app_buffer[6];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_6){
+    buffer = wasapi_devout->app_buffer[7];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_7){
+    buffer = wasapi_devout->app_buffer[0];
   }else{
     buffer = NULL;
   }
@@ -2705,9 +2795,9 @@ ags_wasapi_devout_get_prev_buffer(AgsSoundcard *soundcard)
   AgsWasapiDevout *wasapi_devout;
 
   void *buffer;
-  
-  GRecMutex *wasapi_devout_mutex;  
 
+  GRecMutex *wasapi_devout_mutex;  
+  
   wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
 
   /* get wasapi devout mutex */
@@ -2715,22 +2805,22 @@ ags_wasapi_devout_get_prev_buffer(AgsSoundcard *soundcard)
 
   g_rec_mutex_lock(wasapi_devout_mutex);
 
-  if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER0)){
-    buffer = wasapi_devout->buffer[7];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER1)){
-    buffer = wasapi_devout->buffer[0];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER2)){
-    buffer = wasapi_devout->buffer[1];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER3)){
-    buffer = wasapi_devout->buffer[2];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER4)){
-    buffer = wasapi_devout->buffer[3];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER5)){
-    buffer = wasapi_devout->buffer[4];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER6)){
-    buffer = wasapi_devout->buffer[5];
-  }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER7)){
-    buffer = wasapi_devout->buffer[6];
+  if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_0){
+    buffer = wasapi_devout->app_buffer[7];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_1){
+    buffer = wasapi_devout->app_buffer[0];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_2){
+    buffer = wasapi_devout->app_buffer[1];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_3){
+    buffer = wasapi_devout->app_buffer[2];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_4){
+    buffer = wasapi_devout->app_buffer[3];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_5){
+    buffer = wasapi_devout->app_buffer[4];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_6){
+    buffer = wasapi_devout->app_buffer[5];
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_7){
+    buffer = wasapi_devout->app_buffer[6];
   }else{
     buffer = NULL;
   }
@@ -2752,23 +2842,23 @@ ags_wasapi_devout_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(wasapi_devout->buffer != NULL){
-    if(buffer == wasapi_devout->buffer[0]){
-      buffer_mutex = wasapi_devout->buffer_mutex[0];
-    }else if(buffer == wasapi_devout->buffer[1]){
-      buffer_mutex = wasapi_devout->buffer_mutex[1];
-    }else if(buffer == wasapi_devout->buffer[2]){
-      buffer_mutex = wasapi_devout->buffer_mutex[2];
-    }else if(buffer == wasapi_devout->buffer[3]){
-      buffer_mutex = wasapi_devout->buffer_mutex[3];
-    }else if(buffer == wasapi_devout->buffer[4]){
-      buffer_mutex = wasapi_devout->buffer_mutex[4];
-    }else if(buffer == wasapi_devout->buffer[5]){
-      buffer_mutex = wasapi_devout->buffer_mutex[5];
-    }else if(buffer == wasapi_devout->buffer[6]){
-      buffer_mutex = wasapi_devout->buffer_mutex[6];
-    }else if(buffer == wasapi_devout->buffer[7]){
-      buffer_mutex = wasapi_devout->buffer_mutex[7];
+  if(wasapi_devout->app_buffer != NULL){
+    if(buffer == wasapi_devout->app_buffer[0]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[0];
+    }else if(buffer == wasapi_devout->app_buffer[1]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[1];
+    }else if(buffer == wasapi_devout->app_buffer[2]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[2];
+    }else if(buffer == wasapi_devout->app_buffer[3]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[3];
+    }else if(buffer == wasapi_devout->app_buffer[4]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[4];
+    }else if(buffer == wasapi_devout->app_buffer[5]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[5];
+    }else if(buffer == wasapi_devout->app_buffer[6]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[6];
+    }else if(buffer == wasapi_devout->app_buffer[7]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[7];
     }
   }
   
@@ -2789,23 +2879,23 @@ ags_wasapi_devout_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(wasapi_devout->buffer != NULL){
-    if(buffer == wasapi_devout->buffer[0]){
-      buffer_mutex = wasapi_devout->buffer_mutex[0];
-    }else if(buffer == wasapi_devout->buffer[1]){
-      buffer_mutex = wasapi_devout->buffer_mutex[1];
-    }else if(buffer == wasapi_devout->buffer[2]){
-      buffer_mutex = wasapi_devout->buffer_mutex[2];
-    }else if(buffer == wasapi_devout->buffer[3]){
-      buffer_mutex = wasapi_devout->buffer_mutex[3];
-    }else if(buffer == wasapi_devout->buffer[4]){
-      buffer_mutex = wasapi_devout->buffer_mutex[4];
-    }else if(buffer == wasapi_devout->buffer[5]){
-      buffer_mutex = wasapi_devout->buffer_mutex[5];
-    }else if(buffer == wasapi_devout->buffer[6]){
-      buffer_mutex = wasapi_devout->buffer_mutex[6];
-    }else if(buffer == wasapi_devout->buffer[7]){
-      buffer_mutex = wasapi_devout->buffer_mutex[7];
+  if(wasapi_devout->app_buffer != NULL){
+    if(buffer == wasapi_devout->app_buffer[0]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[0];
+    }else if(buffer == wasapi_devout->app_buffer[1]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[1];
+    }else if(buffer == wasapi_devout->app_buffer[2]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[2];
+    }else if(buffer == wasapi_devout->app_buffer[3]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[3];
+    }else if(buffer == wasapi_devout->app_buffer[4]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[4];
+    }else if(buffer == wasapi_devout->app_buffer[5]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[5];
+    }else if(buffer == wasapi_devout->app_buffer[6]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[6];
+    }else if(buffer == wasapi_devout->app_buffer[7]){
+      buffer_mutex = wasapi_devout->app_buffer_mutex[7];
     }
   }
 
@@ -3111,22 +3201,22 @@ ags_wasapi_devout_trylock_sub_block(AgsSoundcard *soundcard,
 
   success = FALSE;
   
-  if(wasapi_devout->buffer != NULL){
-    if(buffer == wasapi_devout->buffer[0]){
+  if(wasapi_devout->app_buffer != NULL){
+    if(buffer == wasapi_devout->app_buffer[0]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[sub_block];
-    }else if(buffer == wasapi_devout->buffer[1]){
+    }else if(buffer == wasapi_devout->app_buffer[1]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[2]){
+    }else if(buffer == wasapi_devout->app_buffer[2]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[3]){
+    }else if(buffer == wasapi_devout->app_buffer[3]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[4]){
+    }else if(buffer == wasapi_devout->app_buffer[4]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[5]){
+    }else if(buffer == wasapi_devout->app_buffer[5]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[6]){
+    }else if(buffer == wasapi_devout->app_buffer[6]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[7]){
+    }else if(buffer == wasapi_devout->app_buffer[7]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3167,22 +3257,22 @@ ags_wasapi_devout_unlock_sub_block(AgsSoundcard *soundcard,
   
   sub_block_mutex = NULL;
   
-  if(wasapi_devout->buffer != NULL){
-    if(buffer == wasapi_devout->buffer[0]){
+  if(wasapi_devout->app_buffer != NULL){
+    if(buffer == wasapi_devout->app_buffer[0]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[sub_block];
-    }else if(buffer == wasapi_devout->buffer[1]){
+    }else if(buffer == wasapi_devout->app_buffer[1]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[2]){
+    }else if(buffer == wasapi_devout->app_buffer[2]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[3]){
+    }else if(buffer == wasapi_devout->app_buffer[3]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[4]){
+    }else if(buffer == wasapi_devout->app_buffer[4]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[5]){
+    }else if(buffer == wasapi_devout->app_buffer[5]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[6]){
+    }else if(buffer == wasapi_devout->app_buffer[6]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == wasapi_devout->buffer[7]){
+    }else if(buffer == wasapi_devout->app_buffer[7]){
       sub_block_mutex = wasapi_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3215,30 +3305,22 @@ ags_wasapi_devout_switch_buffer_flag(AgsWasapiDevout *wasapi_devout)
   /* switch buffer flag */
   g_rec_mutex_lock(wasapi_devout_mutex);
 
-  if((AGS_WASAPI_DEVOUT_BUFFER0 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER0);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER1;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER1 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER1);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER2;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER2 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER2);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER3;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER3 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER3);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER4;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER4 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER4);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER5;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER5 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER5);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER6;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER6 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER6);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER7;
-  }else if((AGS_WASAPI_DEVOUT_BUFFER7 & (wasapi_devout->flags)) != 0){
-    wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_BUFFER7);
-    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_BUFFER0;
+  if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_0){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_1;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_1){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_2;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_2){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_3;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_3){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_4;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_4){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_5;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_5){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_6;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_6){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_7;
+  }else if(wasapi_devout->app_buffer_mode == AGS_WASAPI_DEVOUT_APP_BUFFER_7){
+    wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(wasapi_devout_mutex);
@@ -3299,80 +3381,80 @@ ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
 
   switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    word_size = sizeof(gint16);
-  }
-  break;
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    word_size = sizeof(gint32);
-  }
-  break;
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
   default:
     g_warning("ags_wasapi_devout_realloc_buffer(): unsupported word size");
     return;
   }
   
-  /* AGS_WASAPI_DEVOUT_BUFFER_0 */
-  if(wasapi_devout->buffer[0] != NULL){
-    free(wasapi_devout->buffer[0]);
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_0 */
+  if(wasapi_devout->app_buffer[0] != NULL){
+    g_free(wasapi_devout->app_buffer[0]);
   }
   
-  wasapi_devout->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  wasapi_devout->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_WASAPI_DEVOUT_BUFFER_1 */
-  if(wasapi_devout->buffer[1] != NULL){
-    free(wasapi_devout->buffer[1]);
-  }
-
-  wasapi_devout->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
-  
-  /* AGS_WASAPI_DEVOUT_BUFFER_2 */
-  if(wasapi_devout->buffer[2] != NULL){
-    free(wasapi_devout->buffer[2]);
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_1 */
+  if(wasapi_devout->app_buffer[1] != NULL){
+    g_free(wasapi_devout->app_buffer[1]);
   }
 
-  wasapi_devout->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  wasapi_devout->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_WASAPI_DEVOUT_BUFFER_3 */
-  if(wasapi_devout->buffer[3] != NULL){
-    free(wasapi_devout->buffer[3]);
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_2 */
+  if(wasapi_devout->app_buffer[2] != NULL){
+    g_free(wasapi_devout->app_buffer[2]);
   }
-  
-  wasapi_devout->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_WASAPI_DEVOUT_BUFFER_4 */
-  if(wasapi_devout->buffer[4] != NULL){
-    free(wasapi_devout->buffer[4]);
+  wasapi_devout->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+  
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_3 */
+  if(wasapi_devout->app_buffer[3] != NULL){
+    g_free(wasapi_devout->app_buffer[3]);
   }
   
-  wasapi_devout->buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  wasapi_devout->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_WASAPI_DEVOUT_BUFFER_5 */
-  if(wasapi_devout->buffer[5] != NULL){
-    free(wasapi_devout->buffer[5]);
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_4 */
+  if(wasapi_devout->app_buffer[4] != NULL){
+    g_free(wasapi_devout->app_buffer[4]);
   }
   
-  wasapi_devout->buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  wasapi_devout->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_WASAPI_DEVOUT_BUFFER_6 */
-  if(wasapi_devout->buffer[6] != NULL){
-    free(wasapi_devout->buffer[6]);
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_5 */
+  if(wasapi_devout->app_buffer[5] != NULL){
+    g_free(wasapi_devout->app_buffer[5]);
   }
   
-  wasapi_devout->buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  wasapi_devout->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
-  /* AGS_WASAPI_DEVOUT_BUFFER_7 */
-  if(wasapi_devout->buffer[7] != NULL){
-    free(wasapi_devout->buffer[7]);
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_6 */
+  if(wasapi_devout->app_buffer[6] != NULL){
+    g_free(wasapi_devout->app_buffer[6]);
   }
   
-  wasapi_devout->buffer[7] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  wasapi_devout->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  /* AGS_WASAPI_DEVOUT_APP_BUFFER_7 */
+  if(wasapi_devout->app_buffer[7] != NULL){
+    g_free(wasapi_devout->app_buffer[7]);
+  }
+  
+  wasapi_devout->app_buffer[7] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**

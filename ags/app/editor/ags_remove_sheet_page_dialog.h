@@ -41,15 +41,11 @@ G_BEGIN_DECLS
 typedef struct _AgsRemoveSheetPageDialog AgsRemoveSheetPageDialog;
 typedef struct _AgsRemoveSheetPageDialogClass AgsRemoveSheetPageDialogClass;
 
-typedef enum{
-  AGS_REMOVE_SHEET_PAGE_DIALOG_CONNECTED   = 1,
-}AgsRemoveSheetPageDialogFlags;
-
 struct _AgsRemoveSheetPageDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 };
 
 struct _AgsRemoveSheetPageDialogClass

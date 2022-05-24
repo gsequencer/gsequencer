@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,88 +34,47 @@ G_BEGIN_DECLS
 #define AGS_IS_NOTEBOOK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_NOTEBOOK))
 #define AGS_NOTEBOOK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_NOTEBOOK, AgsNotebookClass))
 
-#define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
-
 #define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
 #define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
 
-#define AGS_NOTEBOOK_TAB_DEFAULT_PREFIX "tab"
-
 typedef struct _AgsNotebook AgsNotebook;
 typedef struct _AgsNotebookClass AgsNotebookClass;
-typedef struct _AgsNotebookTab AgsNotebookTab;
-
-typedef enum{
-  AGS_NOTEBOOK_TAB_PREFIXED_LABEL   = 1,
-  AGS_NOTEBOOK_TAB_ENUMERATE        = 1 <<  1,
-}AgsNotebookFlags;
 
 struct _AgsNotebook
 {
-  GtkVBox vbox;
-
-  guint flags;
+  GtkBox box;
 
   guint tab_width;
   guint tab_height;
 
-  gchar *prefix;
-
-  GtkHBox *navigation;
+  GtkBox *navigation;
   GtkButton *scroll_prev;
   GtkButton *scroll_next;
   
-  GtkViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
+  GtkBox *tab_box;
 
-  GtkHBox *hbox;
-  
   GList *tab;
-  GDestroyNotify tab_free_func;
 };
 
 struct _AgsNotebookClass
 {
-  GtkVBoxClass vbox;
-};
-
-struct _AgsNotebookTab
-{
-  gpointer data;
-  
-  GtkToggleButton *toggle;
+  GtkBoxClass box;
 };
 
 GType ags_notebook_get_type(void);
 
-AgsNotebookTab* ags_notebook_tab_alloc();
-
-void ags_notebook_tab_free(AgsNotebookTab *tab);
-
-void ags_notebook_tab_set_data(AgsNotebook *notebook,
-			       gint position,
-			       gpointer data);
-
-gint ags_notebook_tab_index(AgsNotebook *notebook,
-			    gpointer data);
-
 gint ags_notebook_next_active_tab(AgsNotebook *notebook,
 				  gint position);
 
-gint ags_notebook_add_tab(AgsNotebook *notebook);
-gint ags_notebook_add_tab_with_label(AgsNotebook *notebook,
-				     gchar *label);
-
+GList* ags_notebook_get_tab(AgsNotebook *notebook);
+void ags_notebook_add_tab(AgsNotebook *notebook,
+			  GtkToggleButton *tab);
 void ags_notebook_insert_tab(AgsNotebook *notebook,
+			     GtkToggleButton *tab,
 			     gint position);
-void ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
-					gchar *label,
-					gint position);
-
 void ags_notebook_remove_tab(AgsNotebook *notebook,
-			     gint position);
-
-void ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
-				       gpointer data);
+			     GtkToggleButton *tab);
 
 AgsNotebook* ags_notebook_new();
 

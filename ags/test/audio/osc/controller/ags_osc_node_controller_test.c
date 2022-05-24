@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,26 +122,32 @@ ags_osc_node_controller_test_init_suite()
 					      panel));
 
   /* ags-play */
-  ags_recall_factory_create(panel,
-			    NULL, NULL,
-			    "ags-play-master",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(panel,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* ags-mute */
-  ags_recall_factory_create(panel,
-			    NULL, NULL,
-			    "ags-mute",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(panel,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* spectrometer */
   spectrometer = ags_audio_new(default_soundcard);
@@ -169,16 +175,19 @@ ags_osc_node_controller_test_init_suite()
 			       g_list_prepend(start_audio,
 					      spectrometer));
   
-  ags_recall_factory_create(spectrometer,
-			    NULL, NULL,
-			    "ags-analyse",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(spectrometer,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-analyse",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* drum */
   drum = ags_audio_new(default_soundcard);
@@ -210,39 +219,48 @@ ags_osc_node_controller_test_init_suite()
 					      drum));
 
   /* ags-copy-pattern */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-copy-pattern",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-pattern",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_REMAP |
+			 AGS_FX_FACTORY_RECALL),
+			0);
 
   /* ags-volume */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-volume",
-			    0, 2, 
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2, 
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* ags-envelope */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-envelope",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-envelope",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   return(0);
 }
@@ -272,9 +290,9 @@ ags_osc_node_controller_test_get_data()
   guint padding;
   gboolean success;
 
-  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
+  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
 
-  static const guint volume_message_size = 116;
+  static const guint volume_message_size = 120;
 
   osc_connection = ags_osc_connection_new(NULL);
   

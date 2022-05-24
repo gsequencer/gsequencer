@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,18 +33,17 @@
 
 G_BEGIN_DECLS
 
-gboolean ags_automation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw_callback(GtkWidget *drawing_area,
+				       cairo_t *cr,
+				       int width, int height,
+				       AgsAutomationEdit *automation_edit);
 
-gboolean ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEdit *automation_edit);
+void ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+						      gint width, gint height,
+						      AgsAutomationEdit *automation_edit);
 
-gboolean ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsAutomationEdit *automation_edit);
-
-void ags_automation_edit_vscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
-void ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
+void ags_automation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutomationEdit *automation_edit);
+void ags_automation_edit_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsAutomationEdit *automation_edit);
 
 G_END_DECLS
 

@@ -61,28 +61,28 @@ void ags_functional_line_member_add_and_destroy_test_ffplayer();
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB "GVerb"
 
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=true\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+  "autosave-thread=false\n"						\
+  "simple-file=true\n"							\
+  "disable-feature=experimental\n"					\
+  "segmentation=4/4\n"							\
+  "\n"									\
+  "[thread]\n"								\
+  "model=super-threaded\n"						\
+  "super-threaded-scope=channel\n"					\
+  "lock-global=ags-thread\n"						\
+  "lock-parent=ags-recycling-thread\n"					\
+  "\n"									\
+  "[soundcard-0]\n"							\
+  "backend=alsa\n"							\
+  "device=default\n"							\
+  "samplerate=44100\n"							\
+  "buffer-size=1024\n"							\
+  "pcm-channels=2\n"							\
+  "dsp-channels=2\n"							\
+  "format=16\n"								\
+  "\n"									\
+  "[recall]\n"								\
+  "auto-sense=true\n"							\
   "\n"
 
 CU_pSuite pSuite = NULL;
@@ -158,7 +158,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;  
   AgsPluginBrowser *plugin_browser;
 
   GList *list_start, *list;
@@ -216,7 +216,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add ladspa effect */
   nth_pad = 0;
@@ -250,13 +250,13 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* response OK */
   ags_test_enter();
 
-  machine_editor = machine->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -296,13 +296,13 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* response OK */
   ags_test_enter();
 
-  machine_editor = AGS_MACHINE(machine)->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -327,7 +327,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add lv2 effect */
   nth_pad = 0;
@@ -363,11 +363,11 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -396,7 +396,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* remove effect */
   nth_pad = 0;
@@ -443,7 +443,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;  
   AgsPluginBrowser *plugin_browser;
   
   GList *list_start, *list;
@@ -501,7 +501,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add ladspa effect */
   nth_pad = 0;
@@ -537,11 +537,11 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -581,13 +581,13 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /* response OK */
   ags_test_enter();
 
-  machine_editor = AGS_MACHINE(machine)->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -612,7 +612,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add lv2 effect */
   nth_pad = 0;
@@ -648,11 +648,11 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -681,7 +681,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* remove effect */
   nth_pad = 0;
@@ -728,7 +728,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;  
   AgsPluginBrowser *plugin_browser;
   
   GList *list_start, *list;
@@ -787,7 +787,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add ladspa effect */
   nth_pad = 0;
@@ -823,11 +823,11 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -867,13 +867,13 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /* response OK */
   ags_test_enter();
 
-  machine_editor = AGS_MACHINE(machine)->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -898,7 +898,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add lv2 effect */
   nth_pad = 0;
@@ -934,11 +934,11 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -967,7 +967,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* remove effect */
   nth_pad = 0;
@@ -1131,7 +1131,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
+  AgsMachineEditorLine *machine_editor_line;  
   AgsPluginBrowser *plugin_browser;
   
   GList *list_start, *list;
@@ -1189,7 +1189,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add ladspa effect */
   nth_pad = 0;
@@ -1225,11 +1225,11 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -1269,13 +1269,13 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /* response OK */
   ags_test_enter();
 
-  machine_editor = AGS_MACHINE(machine)->properties;
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -1300,7 +1300,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* add lv2 effect */
   nth_pad = 0;
@@ -1336,11 +1336,11 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   machine_editor = machine->properties;
 
-  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
-							 nth_pad, nth_audio_channel,
-							 FALSE);
+  machine_editor_line = ags_functional_test_util_get_machine_editor_dialog_line(machine->machine_editor_dialog,
+										nth_pad, nth_audio_channel,
+										FALSE);
 
-  plugin_browser = line_editor->member_editor->plugin_browser;
+  plugin_browser = machine_editor_line->member_editor->plugin_browser;
   
   ags_test_leave();
 
@@ -1365,7 +1365,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
   
   success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
-								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB);
 
   /* remove effect */
   nth_pad = 0;

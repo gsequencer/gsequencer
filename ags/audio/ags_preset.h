@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,19 +39,6 @@ G_BEGIN_DECLS
 typedef struct _AgsPreset AgsPreset;
 typedef struct _AgsPresetClass AgsPresetClass;
 
-/**
- * AgsPresetFlags:
- * @AGS_PRESET_ADDED_TO_REGISTRY: the preset was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_PRESET_CONNECTED: indicates the playback was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsPreset by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_PRESET_ADDED_TO_REGISTRY  = 1,
-  AGS_PRESET_CONNECTED          = 1 <<  1,
-}AgsPresetFlags;
-
 #define AGS_PRESET_ERROR (ags_preset_error_quark())
 
 typedef enum{
@@ -63,7 +50,8 @@ struct _AgsPreset
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
   
   GObject *audio;

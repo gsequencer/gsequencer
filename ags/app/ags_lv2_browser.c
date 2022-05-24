@@ -132,6 +132,15 @@ void
 ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 {
   GtkLabel *label;
+  GtkTreeViewColumn *filename_column;
+  GtkTreeViewColumn *effect_column;
+  GtkScrolledWindow *scrolled_window;
+
+  GtkCellRenderer *filename_renderer;
+  GtkCellRenderer *effect_renderer;
+
+  GtkListStore *filename_list_store;
+  GtkListStore *effect_list_store;
 
   AgsLv2Manager *lv2_manager;
 
@@ -146,27 +155,52 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(lv2_browser),
 				 GTK_ORIENTATION_VERTICAL);
 
-  lv2_browser->flags = 0;
+  gtk_box_set_spacing(lv2_browser,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  lv2_browser->connectable_flags = 0;
   
   /* plugin */
   lv2_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					       0);
-  gtk_box_pack_start((GtkBox *) lv2_browser,
-		     (GtkWidget *) lv2_browser->plugin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) lv2_browser,
+		 (GtkWidget *) lv2_browser->plugin);
 
-  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(lv2_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  /* filename */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_append(lv2_browser->plugin,
+		 (GtkWidget *) scrolled_window);
 
-  lv2_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(lv2_browser->plugin,
-		     (GtkWidget *) lv2_browser->filename,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  lv2_browser->filename_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(lv2_browser->filename_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) lv2_browser->filename_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) lv2_browser->filename_tree_view,
+			      AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST);
+
+  filename_renderer = gtk_cell_renderer_text_new();
+
+  filename_column = gtk_tree_view_column_new_with_attributes(i18n("filename"),
+							     filename_renderer,
+							     "text", 0,
+							     NULL);
+  gtk_tree_view_append_column(lv2_browser->filename_tree_view,
+			      filename_column);
+  
+  filename_list_store = gtk_list_store_new(1,
+					   G_TYPE_STRING);
+
+  gtk_tree_view_set_model(lv2_browser->filename_tree_view,
+			  GTK_TREE_MODEL(filename_list_store));  
 
   lv2_browser->path = NULL;
 
@@ -199,10 +233,16 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
        (filename_strv == NULL ||
 	!g_strv_contains(filename_strv,
 			 filename))){
+      GtkTreeIter tree_iter;
+
       guint length;
       
-      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename),
-				     filename);
+      gtk_list_store_append(filename_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(filename_list_store, &tree_iter,
+			 0, filename,
+			 -1);
 
       if(filename_strv == NULL){
 	length = 0;
@@ -223,84 +263,104 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   g_rec_mutex_unlock(lv2_manager_mutex);
 
   g_free(filename_strv);
-  
-  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
-  gtk_box_pack_start(lv2_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
 
-  lv2_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(lv2_browser->plugin,
-		     (GtkWidget *) lv2_browser->effect,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  /* effect */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_append(lv2_browser->plugin,
+		 (GtkWidget *) scrolled_window);
+
+  lv2_browser->effect_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(lv2_browser->effect_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) lv2_browser->effect_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) lv2_browser->effect_tree_view,
+			      AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST);
+
+  effect_renderer = gtk_cell_renderer_text_new();
+
+  effect_column = gtk_tree_view_column_new_with_attributes(i18n("effect"),
+							   effect_renderer,
+							   "text", 0,
+							   NULL);
+  gtk_tree_view_append_column(lv2_browser->effect_tree_view,
+			      effect_column);
+  
+  effect_list_store = gtk_list_store_new(1,
+					 G_TYPE_STRING);
+
+  gtk_tree_view_set_model(lv2_browser->effect_tree_view,
+			  GTK_TREE_MODEL(effect_list_store));  
 
   /* description */
   lv2_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						    0);
-  gtk_box_pack_start((GtkBox *) lv2_browser,
-		     (GtkWidget *) lv2_browser->description,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) lv2_browser,
+		 (GtkWidget *) lv2_browser->description);
 
+  /* name */
   str = g_strdup_printf("%s: ",
 			i18n("Name"));
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", str,
-				    NULL);
-  gtk_box_pack_start(lv2_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  lv2_browser->lv2_name = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						    "xalign", 0.0,
+						    "label", str,
+						    NULL);
+  gtk_box_append(lv2_browser->description,
+		 (GtkWidget *) lv2_browser->lv2_name);
 
   g_free(str);
-  
+
+  /* homepage */
   str = g_strdup_printf("%s: ",
 			i18n("Homepage"));
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", str,
-				    NULL);
-  gtk_box_pack_start(lv2_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  lv2_browser->lv2_homepage = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+							"xalign", 0.0,
+							"label", str,
+							NULL);
+  gtk_box_append(lv2_browser->description,
+		 (GtkWidget *) lv2_browser->lv2_homepage);
 
   g_free(str);
 
+  /* mbox */
   str = g_strdup_printf("%s: ",
 			i18n("M-Box"));
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", str,
-				    NULL);
-  gtk_box_pack_start(lv2_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  lv2_browser->lv2_mbox = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						    "xalign", 0.0,
+						    "label", str,
+						    NULL);
+  gtk_box_append(lv2_browser->description,
+		 (GtkWidget *) lv2_browser->lv2_mbox);
 
   g_free(str);
 
+  /* ports */
   str = g_strdup_printf("%s: ",
 			i18n("Ports"));
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
 				    "label", str,
 				    NULL);
-  gtk_box_pack_start(lv2_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append(lv2_browser->description,
+		 (GtkWidget *) label);
 
   g_free(str);
-  
-  lv2_browser->port_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(lv2_browser->description,
-		     (GtkWidget *) lv2_browser->port_grid,
-		     FALSE, FALSE,
-		     0);
+
+  /* port grid */
+  lv2_browser->port_editor_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append(lv2_browser->description,
+		 (GtkWidget *) lv2_browser->port_editor_grid);
+
+  /* preview */
+  lv2_browser->preview = NULL;
 }
 
 void
@@ -310,16 +370,16 @@ ags_lv2_browser_connect(AgsConnectable *connectable)
 
   lv2_browser = AGS_LV2_BROWSER(connectable);
 
-  if((AGS_LV2_BROWSER_CONNECTED & (lv2_browser->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (lv2_browser->connectable_flags)) != 0){
     return;
   }
 
-  lv2_browser->flags |= AGS_LV2_BROWSER_CONNECTED;
-  
-  g_signal_connect_after(G_OBJECT(lv2_browser->filename), "changed",
+  lv2_browser->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_signal_connect_after(G_OBJECT(lv2_browser->filename_tree_view), "row-activated",
 			 G_CALLBACK(ags_lv2_browser_plugin_filename_callback), lv2_browser);
 
-  g_signal_connect_after(G_OBJECT(lv2_browser->effect), "changed",
+  g_signal_connect_after(G_OBJECT(lv2_browser->effect_tree_view), "row-activated",
 			 G_CALLBACK(ags_lv2_browser_plugin_uri_callback), lv2_browser);
 }
 
@@ -330,20 +390,20 @@ ags_lv2_browser_disconnect(AgsConnectable *connectable)
 
   lv2_browser = AGS_LV2_BROWSER(connectable);
 
-  if((AGS_LV2_BROWSER_CONNECTED & (lv2_browser->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (lv2_browser->connectable_flags)) == 0){
     return;
   }
 
-  lv2_browser->flags &= (~AGS_LV2_BROWSER_CONNECTED);
-  
-  g_object_disconnect(G_OBJECT(lv2_browser->filename),
-		      "any_signal::changed",
+  lv2_browser->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(lv2_browser->filename_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_lv2_browser_plugin_filename_callback),
 		      lv2_browser,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(lv2_browser->effect),
-		      "any_signal::changed",
+  g_object_disconnect(G_OBJECT(lv2_browser->effect_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_lv2_browser_plugin_uri_callback),
 		      lv2_browser,
 		      NULL);
@@ -365,18 +425,22 @@ void
 ags_lv2_browser_reset(AgsApplicable *applicable)
 {
   AgsLv2Browser *lv2_browser;
-  GtkComboBoxText *filename;
-  GList *list;
+
+  GtkTreeModel *model;
+
+  GtkTreeIter tree_iter;
 
   lv2_browser = AGS_LV2_BROWSER(applicable);
 
-  list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(lv2_browser->filename_tree_view)));
 
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  g_list_free(list);
-
-  gtk_combo_box_set_active((GtkComboBox *) filename,
-			   0);
+  if(gtk_tree_model_get_iter_first(model, &tree_iter)){
+    gtk_tree_view_set_cursor(GTK_TREE_VIEW(lv2_browser->filename_tree_view),
+			     gtk_tree_model_get_path(model,
+						     &tree_iter),
+			     NULL,
+			     FALSE);
+  }
 }
 
 /**
@@ -392,160 +456,215 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *filename;
+  GtkListStore *filename_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
+  
+  GtkTreeIter iter;
 
-  GList *start_list, *list;
+  gchar *filename;
+  
+  if(!AGS_IS_LV2_BROWSER(lv2_browser)){
+    return(NULL);
+  }
 
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(lv2_browser->filename_tree_view));
 
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  gtk_tree_view_get_cursor(lv2_browser->filename_tree_view,
+			   &path,
+			   NULL);
+  
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path);
 
-  g_list_free(start_list);
+  gtk_tree_path_free(path);
 
-  return(gtk_combo_box_text_get_active_text(filename));
+  filename = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		     &iter,
+		     0, &filename,
+		     -1);
+  
+  return(filename);
 }
 
 /**
- * ags_lv2_browser_get_plugin_uri:
+ * ags_lv2_browser_get_plugin_effect:
  * @lv2_browser: the #AgsLv2Browser
  *
- * Retrieve selected lv2 uri.
+ * Retrieve selected lv2 effect.
  *
- * Returns: the active lv2 uri
+ * Returns: the active lv2 effect
  *
  * Since: 3.0.0
  */
 gchar*
 ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *effect;
-
-  GList *start_list, *list;
-
-  gchar *effect_name;
-
-  /* retrieve filename and effect */
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
-
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-
-  effect_name = gtk_combo_box_text_get_active_text(effect);
+  GtkListStore *effect_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
   
-  g_list_free(start_list);
+  GtkTreeIter iter;
 
-  return(effect_name);
+  gchar *effect;
+  
+  if(!AGS_IS_LV2_BROWSER(lv2_browser)){
+    return(NULL);
+  }
+
+  effect_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(lv2_browser->effect_tree_view));
+
+  gtk_tree_view_get_cursor(lv2_browser->effect_tree_view,
+			   &path,
+			   NULL);
+  
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path);
+
+  gtk_tree_path_free(path);
+
+  effect = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
+		     &iter,
+		     0, &effect,
+		     -1);
+  
+  return(effect);
 }
 
 /**
- * ags_lv2_browser_combo_box_output_boolean_controls_new:
+ * ags_lv2_browser_get_port_editor:
+ * @lv2_browser: the #AgsLv2Browser
+ * 
+ * Get bulk member of @lv2_browser.
+ * 
+ * Returns: the #GList-struct containing #AgsPortEditor
  *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_lv2_browser_combo_box_output_boolean_controls_new()
+GList*
+ags_lv2_browser_get_port_editor(AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *combo_box;
+  g_return_val_if_fail(AGS_IS_LV2_BROWSER(lv2_browser), NULL);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "led");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
+  return(g_list_reverse(g_list_copy(lv2_browser->port_editor)));
 }
 
 /**
- * ags_lv2_browser_combo_box_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
+ * ags_lv2_browser_add_port_editor:
+ * @lv2_browser: the #AgsLv2Browser
+ * @port_editor: the #AgsPortEditor
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @port_editor to @lv2_browser.
+ * 
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_lv2_browser_combo_box_output_controls_new()
+void
+ags_lv2_browser_add_port_editor(AgsLv2Browser *lv2_browser,
+				AgsPortEditor *port_editor,
+				guint x, guint y,
+				guint width, guint height)
 {
-  GtkComboBoxText *combo_box;
+  g_return_if_fail(AGS_IS_LV2_BROWSER(lv2_browser));
+  g_return_if_fail(AGS_IS_PORT_EDITOR(port_editor));
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "vertical indicator");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal indicator");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
+  if(g_list_find(lv2_browser->port_editor, port_editor) == NULL){
+    lv2_browser->port_editor = g_list_prepend(lv2_browser->port_editor,
+					      port_editor);
+    
+    gtk_grid_attach(lv2_browser->port_editor_grid,
+		    port_editor,
+		    x, y,
+		    width, height);
+  }
 }
 
 /**
- * ags_lv2_browser_combo_box_boolean_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
+ * ags_lv2_browser_remove_port_editor:
+ * @lv2_browser: the #AgsLv2Browser
+ * @port_editor: the #AgsPortEditor
+ * 
+ * Remove @port_editor from @lv2_browser.
+ * 
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_lv2_browser_combo_box_boolean_controls_new()
+void
+ags_lv2_browser_remove_port_editor(AgsLv2Browser *lv2_browser,
+				   AgsPortEditor *port_editor)
 {
-  GtkComboBoxText *combo_box;
+  g_return_if_fail(AGS_IS_LV2_BROWSER(lv2_browser));
+  g_return_if_fail(AGS_IS_PORT_EDITOR(port_editor));
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "check-button");
-  gtk_combo_box_text_append_text(combo_box,
-				 "toggle button");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
+  if(g_list_find(lv2_browser->port_editor, port_editor) != NULL){
+    lv2_browser->port_editor = g_list_remove(lv2_browser->port_editor,
+					     port_editor);
+    
+    gtk_grid_remove(lv2_browser->port_editor_grid,
+		    port_editor);
+  }
 }
 
 /**
- * ags_lv2_browser_combo_box_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.0.0
+ * ags_lv2_browser_clear:
+ * @lv2_browser: the #AgsLv2Browser
+ * 
+ * Clear @lv2_browser.
+ * 
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_lv2_browser_combo_box_controls_new()
+void
+ags_lv2_browser_clear(AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *combo_box;
+  GList *start_port_editor, *port_editor;
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gchar *str;
 
-  gtk_combo_box_text_append_text(combo_box,
-				 "spin button");
-  gtk_combo_box_text_append_text(combo_box,
-				 "dial");
-  gtk_combo_box_text_append_text(combo_box,
-				 "vertical scale");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal scale");
+  g_return_if_fail(AGS_IS_LV2_BROWSER(lv2_browser));
 
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
+  /* name */
+  str = g_strdup_printf("%s: ",
+			i18n("Name"));
+  gtk_label_set_text(lv2_browser->lv2_name,
+		     str);
 
-  return((GtkWidget *) combo_box);
+  g_free(str);
+
+  /* homepage */
+  str = g_strdup_printf("%s: ",
+			i18n("Homepage"));
+  gtk_label_set_text(lv2_browser->lv2_homepage,
+		     str);
+
+  g_free(str);
+
+  /* mbox */
+  str = g_strdup_printf("%s: ",
+			i18n("M-Box"));
+  gtk_label_set_text(lv2_browser->lv2_mbox,
+		     str);
+
+  g_free(str);
+
+  /* port editor */
+  port_editor =
+    start_port_editor = ags_lv2_browser_get_port_editor(lv2_browser);
+    
+  while(port_editor != NULL){
+    ags_lv2_browser_remove_port_editor(lv2_browser,
+					  port_editor->data);
+      
+    g_object_run_dispose(port_editor->data);
+    g_object_unref(port_editor->data);
+
+    port_editor = port_editor->next;
+  }
+
+  g_list_free(start_port_editor);
 }
 
 GtkWidget*

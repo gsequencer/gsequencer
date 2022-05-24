@@ -26,8 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_resample_util.h>
-#include <ags/audio/ags_generic_pitch_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
@@ -38,10 +37,6 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
 #define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
-
-typedef enum{
-  AGS_SFZ_SYNTH_UTIL_FX_ENGINE   = 1,
-}AgsSFZSynthUtilFlags;
 
 /**
  * AgsSFZSynthUtilLoopMode:
@@ -80,8 +75,6 @@ struct _AgsSFZSynthUtil
   
   guint sfz_resampled_buffer_length[128];
   gpointer *sfz_resampled_buffer;  
-  
-  AgsSFZSample *sfz_sample;
 
   gpointer source;
   guint source_stride;
@@ -108,8 +101,10 @@ struct _AgsSFZSynthUtil
   guint loop_end;
   
   AgsResampleUtil *resample_util;
-  AgsGenericPitchUtil *generic_pitch_util;
-  AgsHQPitchUtil *hq_pitch_util;
+
+  GType pitch_type;  
+  gpointer pitch_util;
+
   AgsVolumeUtil *volume_util;
 };
 
@@ -121,6 +116,10 @@ AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
 
 gpointer ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr);
 void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
+
+AgsAudioContainer* ags_sfz_synth_util_get_sfz_file(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_sfz_file(AgsSFZSynthUtil *sfz_synth_util,
+				     AgsAudioContainer *sfz_file);
 
 gpointer ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_source(AgsSFZSynthUtil *sfz_synth_util,
@@ -174,9 +173,13 @@ guint ags_sfz_synth_util_get_loop_end(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
 				     guint loop_end);
 
-AgsGenericPitchUtil* ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
-void ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
-					       AgsGenericPitchUtil *generic_pitch_util);
+GType ags_sfz_synth_util_get_pitch_type(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_pitch_type(AgsSFZSynthUtil *sfz_synth_util,
+				       GType pitch_type);
+
+gpointer ags_sfz_synth_util_get_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
+				       gpointer generic_pitch_util);
 
 void ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util);
 
@@ -189,98 +192,6 @@ void ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute(AgsSFZSynthUtil *sfz_synth_util);
-
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s8)
-void ags_sfz_synth_util_copy_s8(gint8 *buffer,
-				guint buffer_size,
-				AgsSFZSample *sfz_sample,
-				gdouble note,
-				gdouble volume,
-				guint samplerate,
-				guint offset, guint n_frames,
-				guint loop_mode,
-				gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s16)
-void ags_sfz_synth_util_copy_s16(gint16 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s24)
-void ags_sfz_synth_util_copy_s24(gint32 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s32)
-void ags_sfz_synth_util_copy_s32(gint32 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s64)
-void ags_sfz_synth_util_copy_s64(gint64 *buffer,
-				 guint buffer_size,
-				 AgsSFZSample *sfz_sample,
-				 gdouble note,
-				 gdouble volume,
-				 guint samplerate,
-				 guint offset, guint n_frames,
-				 guint loop_mode,
-				 gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_float)
-void ags_sfz_synth_util_copy_float(gfloat *buffer,
-				   guint buffer_size,
-				   AgsSFZSample *sfz_sample,
-				   gdouble note,
-				   gdouble volume,
-				   guint samplerate,
-				   guint offset, guint n_frames,
-				   guint loop_mode,
-				   gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_double)
-void ags_sfz_synth_util_copy_double(gdouble *buffer,
-				    guint buffer_size,
-				    AgsSFZSample *sfz_sample,
-				    gdouble note,
-				    gdouble volume,
-				    guint samplerate,
-				    guint offset, guint n_frames,
-				    guint loop_mode,
-				    gint loop_start, gint loop_end);
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute_complex)
-void ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
-				     guint buffer_size,
-				     AgsSFZSample *sfz_sample,
-				     gdouble note,
-				     gdouble volume,
-				     guint samplerate,
-				     guint offset, guint n_frames,
-				     guint loop_mode,
-				     gint loop_start, gint loop_end);
-
-G_DEPRECATED_FOR(ags_sfz_synth_util_compute)
-void ags_sfz_synth_util_copy(void *buffer,
-			     guint buffer_size,
-			     AgsSFZSample *sfz_sample,
-			     gdouble note,
-			     gdouble volume,
-			     guint samplerate, guint audio_buffer_util_format,
-			     guint offset, guint n_frames,
-			     guint loop_mode,
-			     gint loop_start, gint loop_end);
 
 G_END_DECLS
 

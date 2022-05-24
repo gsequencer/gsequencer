@@ -132,11 +132,28 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(server_preferences),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing(server_preferences,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(GTK_BOX(server_preferences),
-		     GTK_WIDGET(grid),
-		     FALSE, FALSE,
-		     2);
+
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
+  gtk_box_append(GTK_BOX(server_preferences),
+		 GTK_WIDGET(grid));
 
   server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("start server"));
 

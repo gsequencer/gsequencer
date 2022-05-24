@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,8 +43,6 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
 
 /**
  * AgsSndfileFlags:
- * @AGS_SNDFILE_ADDED_TO_REGISTRY: the sndfile was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_SNDFILE_CONNECTED: indicates the sndfile was connected by calling #AgsConnectable::connect()
  * @AGS_SNDFILE_VIRTUAL: virtual IO
  * @AGS_SNDFILE_FILL_CACHE: fill cache
  * 
@@ -52,10 +50,8 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_SNDFILE_ADDED_TO_REGISTRY    = 1,
-  AGS_SNDFILE_CONNECTED            = 1 <<  1,
-  AGS_SNDFILE_VIRTUAL              = 1 <<  2,
-  AGS_SNDFILE_FILL_CACHE           = 1 <<  3,
+  AGS_SNDFILE_VIRTUAL              = 1,
+  AGS_SNDFILE_FILL_CACHE           = 1 <<  1,
 }AgsSndfileFlags;
 
 struct _AgsSndfile
@@ -63,7 +59,8 @@ struct _AgsSndfile
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -94,6 +91,7 @@ struct _AgsSndfileClass
 };
 
 GType ags_sndfile_get_type();
+GType ags_sndfile_flags_get_type();
 
 gboolean ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags);
 void ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags);

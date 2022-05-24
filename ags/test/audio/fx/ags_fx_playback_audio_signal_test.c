@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,7 +73,7 @@ ags_fx_playback_audio_signal_test_new()
 void
 ags_fx_playback_audio_signal_test_run_inter()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsRecycling *recycling;
@@ -86,7 +86,7 @@ ags_fx_playback_audio_signal_test_run_inter()
   AgsFxPlaybackRecycling *fx_playback_recycling;
   AgsFxPlaybackAudioSignal *fx_playback_audio_signal;
 
-  devout = ags_devout_new();
+  devout = ags_alsa_devout_new();
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,

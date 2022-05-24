@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,32 +42,9 @@ G_BEGIN_DECLS
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
 
-/**
- * AgsFunctionFlags:
- * @AGS_FUNCTION_LINEAR: the function is linear
- * @AGS_FUNCTION_EXPONENTIAL: the function is exponential
- * @AGS_FUNCTION_LOGARITHMIC: the function is logarithmic
- * @AGS_FUNCTION_IS_UNIQUE: the function is unique
- * @AGS_FUNCTION_SOLVE_PIVOT_TABLE: do solve using pivot table
- * @AGS_FUNCTION_SOLVE_MAXIMUM_COLON: solve using maximum colon strategy
- * @AGS_FUNCTION_SOLVE_GAUSS: solve using gauss strategy
- * 
- * Enum values to control the behavior or indicate internal state of #AgsFunction by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_FUNCTION_LINEAR               = 1,
-  AGS_FUNCTION_EXPONENTIAL          = 1 <<  1,
-  AGS_FUNCTION_LOGARITHMIC          = 1 <<  2,
-  AGS_FUNCTION_IS_UNIQUE            = 1 <<  3,
-  AGS_FUNCTION_SOLVE_PIVOT_TABLE    = 1 <<  4,
-  AGS_FUNCTION_SOLVE_MAXIMUM_COLON  = 1 <<  5,
-  AGS_FUNCTION_SOLVE_GAUSS          = 1 <<  6,
-}AgsFunctionFlags;
-
 struct _AgsFunction
 {
-  AgsConversion conversion;
+  GObject gobject;
 
   guint flags;
   
@@ -97,41 +74,10 @@ struct _AgsFunction
 
 struct _AgsFunctionClass
 {
-  AgsConversionClass conversion;
-
-  void (*literal_solve)(AgsFunction *function);
+  GObjectClass gobject;
 };
 
 GType ags_function_get_type(void);
-
-gchar** ags_function_collapse_parantheses(AgsFunction *function,
-					  guint *function_count);
-
-gchar** ags_function_find_literals(AgsFunction *function,
-				   guint *symbol_count);
-void ags_function_literal_solve(AgsFunction *function);
-
-gboolean ags_function_push_equation(AgsFunction *function,
-				    gchar *equation);
-void ags_function_pop_equation(AgsFunction *function,
-			       GError **error);
-
-gchar* ags_function_get_expanded(AgsFunction *function,
-				 gchar **symbol,
-				 guint symbol_count);
-gchar* ags_function_get_normalized(AgsFunction *function);
-
-AgsComplex* ags_function_compute_term(gchar *term,
-				      gchar *substitute_symbol, AgsComplex *substitute_value);
-
-AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
-						   gchar *symbol,
-						   AgsComplex *value);
-
-gboolean ags_function_substitute_values(AgsFunction *function,
-					gchar *symbol, ...);
-AgsComplex* ags_function_translate_value(AgsFunction *function,
-					 AgsComplex *value);
 
 void ags_function_add_matrix(AgsFunction *function,
 			     AgsSolverMatrix *solver_matrix);

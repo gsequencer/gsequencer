@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -93,6 +93,26 @@ ags_playback_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_playback_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PLAYBACK_SINGLE_THREADED, "AGS_PLAYBACK_SINGLE_THREADED", "playback-single-threaded" },
+      { AGS_PLAYBACK_SUPER_THREADED_CHANNEL, "AGS_PLAYBACK_SUPER_THREADED_CHANNEL", "playback-super-threaded-channel" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPlaybackFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -190,7 +210,8 @@ ags_playback_init(AgsPlayback *playback)
   gboolean super_threaded_channel;
   guint i;
   
-  playback->flags = 0;
+  playback->flags = 0;  
+  playback->connectable_flags = 0;
   
   /* add playback mutex */
   g_rec_mutex_init(&(playback->obj_mutex)); 

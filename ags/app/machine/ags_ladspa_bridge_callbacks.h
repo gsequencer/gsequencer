@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_ladspa_bridge.h>
 
 G_BEGIN_DECLS
-
-void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLadspaBridge *ladspa_bridge);
 
 G_END_DECLS
 

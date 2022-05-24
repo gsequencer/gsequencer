@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -160,10 +160,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_ulong("widget-type",
+  param_spec = g_param_spec_gtype("widget-type",
 				  i18n_pspec("widget type of bulk member"),
 				  i18n_pspec("The widget type this bulk member packs"),
-				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -425,11 +424,10 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_ulong("task-type",
+  param_spec = g_param_spec_gtype("task-type",
 				  i18n_pspec("task type to apply"),
 				  i18n_pspec("The task type to apply the ports"),
-				  0, G_MAXULONG, 
-				  G_TYPE_NONE,
+				  AGS_TYPE_TASK,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TASK_TYPE,
@@ -497,18 +495,13 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 
   application_context = ags_application_context_get_instance();
 
-  g_signal_connect_after((GObject *) bulk_member, "parent_set",
-			 G_CALLBACK(ags_bulk_member_parent_set_callback), (gpointer) bulk_member);
-
   bulk_member->flags = (AGS_BULK_MEMBER_RESET_BY_ATOMIC |
 			AGS_BULK_MEMBER_APPLY_RECALL);
   bulk_member->port_flags = 0;
   
   bulk_member->widget_type = AGS_TYPE_DIAL;
   bulk_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
-  dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
-				  NULL);
+  dial = (AgsDial *) ags_dial_new();
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -520,8 +513,8 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 	       "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 	       NULL);
 
-  gtk_container_add(GTK_CONTAINER(bulk_member),
-		    (GtkWidget *) dial);
+  ags_bulk_member_set_widget(bulk_member,
+			     (GtkWidget *) dial);
 
   bulk_member->widget_label = NULL;
 
@@ -575,7 +568,7 @@ ags_bulk_member_set_property(GObject *gobject,
       gdouble current_value;
       gboolean active;
 
-      widget_type = g_value_get_ulong(value);
+      widget_type = g_value_get_gtype(value);
 
       if(widget_type == bulk_member->widget_type){
 	return;
@@ -583,7 +576,7 @@ ags_bulk_member_set_property(GObject *gobject,
 
       application_context = ags_application_context_get_instance();
 
-      child = gtk_bin_get_child(GTK_BIN(bulk_member));
+      child = ags_bulk_member_get_widget(bulk_member);
 
       /* preserver previous range */
       adjustment = NULL;
@@ -612,14 +605,18 @@ ags_bulk_member_set_property(GObject *gobject,
       }
 
       /* destroy old */
-      if(child != NULL){
-	gtk_widget_destroy(child);
-      }
+      ags_bulk_member_set_widget(bulk_member,
+				 NULL);
 
       bulk_member->widget_type = widget_type;
-      new_child = (GtkWidget *) g_object_new(widget_type,
-					     NULL);
 
+      new_child = NULL;
+      
+      if(widget_type != G_TYPE_NONE){
+	new_child = (GtkWidget *) g_object_new(widget_type,
+					       NULL);
+      }
+      
       /* scale factor */
       gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -649,26 +646,34 @@ ags_bulk_member_set_property(GObject *gobject,
 	  gtk_widget_set_size_request(new_child,
 				      gui_scale_factor * 100, gui_scale_factor * 16);
 	}
-      }else if(AGS_IS_VINDICATOR(new_child)){
-	g_object_set(new_child,
-		     "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
-		     "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
-		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
-		     NULL);
+      }else if(AGS_IS_INDICATOR(new_child)){
+	guint widget_orientation;
 
-	//FIXME:JK: make indicator orientable
-      }else if(AGS_IS_HINDICATOR(new_child)){
-	g_object_set(new_child,
-		     "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
-		     "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
-		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+	widget_orientation = GTK_ORIENTATION_VERTICAL;
+	
+	g_object_get(bulk_member,
+		     "widget-orientation", &widget_orientation,
 		     NULL);
+	
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(new_child),
+				       widget_orientation);
 
-	//FIXME:JK: make indicator orientable
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  g_object_set(new_child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		       NULL);
+	}else{
+	  g_object_set(new_child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		       NULL);
+	}
       }
 	
-      gtk_widget_queue_resize_no_redraw(new_child);
-      gtk_widget_queue_draw(new_child);
+      gtk_widget_queue_resize(new_child);
 
       /* set range */
       if(GTK_IS_RANGE(new_child)){
@@ -712,17 +717,13 @@ ags_bulk_member_set_property(GObject *gobject,
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
-      }else{
-	if(!(AGS_IS_INDICATOR(new_child) ||
-	     AGS_IS_LED(new_child))){
-	  g_warning("ags_bulk_member_set_property() - unknown child type %s", g_type_name(widget_type));
-	}
-      }
+      }else if(GTK_IS_CHECK_BUTTON(new_child)){
+	gtk_check_button_set_active((GtkToggleButton *) new_child,
+				    active);
+      }			
 
-      /* add */
-      gtk_container_add(GTK_CONTAINER(bulk_member),
-			new_child);
-			
+      ags_bulk_member_set_widget(bulk_member,
+				 new_child);
     }
     break;
   case PROP_WIDGET_ORIENTATION:
@@ -735,6 +736,10 @@ ags_bulk_member_set_property(GObject *gobject,
       gdouble gui_scale_factor;
 
       widget_orientation = g_value_get_uint(value);
+
+      if(widget_orientation == bulk_member->widget_orientation){
+	return;
+      }
       
       bulk_member->widget_orientation = widget_orientation;
 
@@ -743,7 +748,7 @@ ags_bulk_member_set_property(GObject *gobject,
       /* scale factor */
       gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-      child = gtk_bin_get_child(GTK_BIN(bulk_member));
+      child = ags_bulk_member_get_widget(bulk_member);
 
       if(GTK_IS_SCALE(child)){
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
@@ -760,7 +765,17 @@ ags_bulk_member_set_property(GObject *gobject,
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
 				       widget_orientation);
 
-	//FIXME:JK: make indicator orientable
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  g_object_set(child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       NULL);
+	}else{
+	  g_object_set(child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-height", (guint) (gui_scale_factor * AGS_BULK_MEMBER_INDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       NULL);
+	}
       }
     }
     break;
@@ -779,7 +794,8 @@ ags_bulk_member_set_property(GObject *gobject,
       }
       
       bulk_member->widget_label = g_strdup(label);
-      ags_bulk_member_set_label(bulk_member, label);
+      gtk_frame_set_label(bulk_member,
+			  label);
     }
     break;
   case PROP_PLAY_CONTAINER:
@@ -842,7 +858,7 @@ ags_bulk_member_set_property(GObject *gobject,
     }
     break;
   case PROP_FILENAME:
-    {
+    {      
       gchar *str;
       gchar *filename;
 
@@ -861,7 +877,11 @@ ags_bulk_member_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) bulk_member);
+	  AgsApplicationContext *application_context;
+
+	  application_context = ags_application_context_get_instance();
+	  
+	  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
 	  str = g_strdup_printf("%s %s",
 				i18n("Plugin file not present"),
@@ -945,7 +965,7 @@ ags_bulk_member_set_property(GObject *gobject,
       scale_precision = g_value_get_uint(value);
 
       bulk_member->scale_precision = scale_precision;
-      child = gtk_bin_get_child(GTK_BIN(bulk_member));
+      child = ags_bulk_member_get_widget(bulk_member);
 
       if(AGS_IS_DIAL(child)){
 	g_object_set(child,
@@ -1002,7 +1022,7 @@ ags_bulk_member_set_property(GObject *gobject,
       if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
 	GtkWidget *child;
 
-	child = gtk_bin_get_child(GTK_BIN(bulk_member));
+	child = ags_bulk_member_get_widget(bulk_member);
 
 	//TODO:JK: add more types
 
@@ -1042,7 +1062,7 @@ ags_bulk_member_set_property(GObject *gobject,
     {
       GType type;
 
-      type = g_value_get_ulong(value);
+      type = g_value_get_gtype(value);
       
       if(bulk_member->task_type == type){
 	return;
@@ -1070,7 +1090,7 @@ ags_bulk_member_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_WIDGET_TYPE:
     {
-      g_value_set_ulong(value, bulk_member->widget_type);
+      g_value_set_gtype(value, bulk_member->widget_type);
     }
     break;
   case PROP_WIDGET_ORIENTATION:
@@ -1140,7 +1160,7 @@ ags_bulk_member_get_property(GObject *gobject,
     break;
   case PROP_TASK_TYPE:
     {
-      g_value_set_ulong(value, bulk_member->task_type);
+      g_value_set_gtype(value, bulk_member->task_type);
     }
     break;
   default:
@@ -1204,7 +1224,7 @@ ags_bulk_member_connect(AgsConnectable *connectable)
   
   ags_bulk_member_remap_bulk_port(bulk_member);
   
-  control = gtk_bin_get_child(GTK_BIN(bulk_member));
+  control = ags_bulk_member_get_widget(bulk_member);
 
   if((AGS_BULK_MEMBER_APPLY_INITIAL & (bulk_member->flags)) != 0){
     GtkAdjustment *adjustment;
@@ -1254,11 +1274,11 @@ ags_bulk_member_connect(AgsConnectable *connectable)
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_bulk_member_spin_button_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "clicked",
-			   G_CALLBACK(ags_bulk_member_check_button_clicked_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+			   G_CALLBACK(ags_bulk_member_check_button_toggled_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect_after(GTK_WIDGET(control), "clicked",
-			   G_CALLBACK(ags_bulk_member_toggle_button_clicked_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "toggled",
+			   G_CALLBACK(ags_bulk_member_toggle_button_toggled_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "clicked",
 			   G_CALLBACK(ags_bulk_member_button_clicked_callback), bulk_member);
@@ -1279,7 +1299,7 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
 
   bulk_member->flags &= (~AGS_BULK_MEMBER_CONNECTED);
 
-  control = gtk_bin_get_child(GTK_BIN(bulk_member));
+  control = ags_bulk_member_get_widget(bulk_member);
 
   /* widget callback */
   if(bulk_member->widget_type == AGS_TYPE_DIAL){
@@ -1302,14 +1322,14 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::clicked",
-			G_CALLBACK(ags_bulk_member_check_button_clicked_callback),
+			"any_signal::toggled",
+			G_CALLBACK(ags_bulk_member_check_button_toggled_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::clicked",
-			G_CALLBACK(ags_bulk_member_toggle_button_clicked_callback),
+			"any_signal::toggled",
+			G_CALLBACK(ags_bulk_member_toggle_button_toggled_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
@@ -1321,10 +1341,37 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
   }
 }
 
+/**
+ * ags_bulk_member_set_widget:
+ * @bulk_member: the #AgsBulkMember
+ * @widget: the #GtkWidget
+ *
+ * Set @widget of @bulk_member.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_bulk_member_set_widget(AgsBulkMember *bulk_member,
+			   GtkWidget *widget)
+{
+  gtk_frame_set_child((GtkFrame *) bulk_member,
+		      widget);
+}
+
+/**
+ * ags_bulk_member_get_widget:
+ * @bulk_member: the #AgsBulkMember
+ *
+ * Get widget of @bulk_member.
+ *
+ * Returns: the #GtkWidget
+ * 
+ * Since: 4.0.0
+ */
 GtkWidget*
 ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
 {
-  return(gtk_bin_get_child(GTK_BIN(bulk_member)));
+  return(gtk_frame_get_child((GtkFrame *) bulk_member));
 }
 
 /**
@@ -1421,7 +1468,7 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
   GtkWidget *child_widget;
 
   if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_BUTTON)){
-    child_widget = gtk_bin_get_child(GTK_BIN(bulk_member));
+    child_widget = ags_bulk_member_get_widget(bulk_member);
 
     g_object_set(G_OBJECT(child_widget),
 		 "label", label,
@@ -1481,7 +1528,7 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
 	gdouble val;
 	gfloat port_val;
 	  
-	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	if(GTK_IS_TOGGLE_BUTTON(ags_bulk_member_get_widget(bulk_member))){
 	  if(((gboolean *) port_data)[0]){
 	    val = 1.0;
 	  }else{
@@ -1498,7 +1545,7 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
 
 	  success = FALSE;
 	    
-	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
+	  if(AGS_IS_DIAL(ags_bulk_member_get_widget(bulk_member))){
 	    success = TRUE;
 	  }else{
 	    g_warning("unsupported child type in conversion");
@@ -1520,7 +1567,7 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
 	gdouble val;
 	gdouble port_val;
 	  
-	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	if(GTK_IS_TOGGLE_BUTTON(ags_bulk_member_get_widget(bulk_member))){
 	  if(((gboolean *) port_data)[0]){
 	    val = 1.0;
 	  }else{
@@ -1537,7 +1584,7 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
 
 	  success = FALSE;
 	    
-	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
+	  if(AGS_IS_DIAL(ags_bulk_member_get_widget(bulk_member))){
 	    success = TRUE;
 	  }else{
 	    g_warning("unsupported child type in conversion");

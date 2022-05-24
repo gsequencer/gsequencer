@@ -134,27 +134,43 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(sequencer_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
+  gtk_box_set_spacing(sequencer_editor,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   sequencer_editor->flags = 0;
   
   sequencer_editor->sequencer = NULL;
   sequencer_editor->sequencer_thread = NULL;
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(GTK_BOX(sequencer_editor),
-		     GTK_WIDGET(grid),
-		     FALSE, FALSE,
-		     2);
+
+  gtk_widget_set_vexpand(grid,
+			 FALSE);
+  gtk_widget_set_hexpand(grid,
+			 FALSE);
+
+  gtk_widget_set_halign(grid,
+			GTK_ALIGN_START);
+  gtk_widget_set_valign(grid,
+			GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append(GTK_BOX(sequencer_editor),
+		 GTK_WIDGET(grid));
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("backend"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
@@ -195,13 +211,12 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   /* MIDI card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("MIDI card"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
@@ -229,7 +244,7 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   sequencer_editor->remove_jack = NULL;
 
   sequencer_editor->jack_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						       0);
+						       AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_widget_set_valign(sequencer_editor->jack_hbox,
 			GTK_ALIGN_FILL);
@@ -242,16 +257,12 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		  1, 1);
 
   sequencer_editor->add_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
-		     (GtkWidget *) sequencer_editor->add_jack,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) sequencer_editor->jack_hbox,
+		 (GtkWidget *) sequencer_editor->add_jack);
   
   sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
-  gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
-		     (GtkWidget *) sequencer_editor->remove_jack,
-		     FALSE, FALSE,
-		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) sequencer_editor->jack_hbox,
+		 (GtkWidget *) sequencer_editor->remove_jack);
   
   /*  */
   sequencer_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
@@ -352,7 +363,7 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
     
   AgsConfig *config;
 
-  GList *list;	
+  GList *start_list;	
 
   gchar *sequencer_group;
   gchar *backend;
@@ -365,22 +376,24 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
 
   sequencer_editor = AGS_SEQUENCER_EDITOR(applicable);
   midi_preferences = (AgsMidiPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-								      AGS_TYPE_MIDI_PREFERENCES);
+								    AGS_TYPE_MIDI_PREFERENCES);
 
   config = ags_config_get_instance();
 
-  list = gtk_container_get_children((GtkContainer *) midi_preferences->sequencer_editor);
-  nth = g_list_index(list,
+  start_list = ags_midi_preferences_get_sequencer_editor(midi_preferences);
+
+  nth = g_list_index(start_list,
 		     sequencer_editor);
 
-  if(nth < 0){
+  g_list_free(start_list);
+
+  if(nth < 0){    
     return;
   }
   
   sequencer_group = g_strdup_printf("%s-%d",
 				    AGS_CONFIG_SEQUENCER,
 				    nth);
-  g_list_free(list);
   
   /* backend */
   use_jack = TRUE;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,24 +51,7 @@ ags_desk_pad_move_down_callback(GtkButton *button, AgsDeskPad *desk_pad)
 void
 ags_desk_pad_add_callback(GtkButton *button, AgsDeskPad *desk_pad)
 {
-  AgsDesk *desk;
-  
-  GSList *start_filename, *filename;
-
-  desk = (AgsDesk *) gtk_widget_get_ancestor((GtkWidget *) desk_pad,
-				 AGS_TYPE_DESK);
-  
-  filename =
-    start_filename = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(desk->file_chooser));
-
-  while(filename != NULL){
-    ags_desk_pad_add_filename(desk_pad,
-			      filename->data);
-    
-    filename = filename->next;
-  }
-
-  g_slist_free(start_filename);
+  //TODO:JK: implement me
 }
 
 void

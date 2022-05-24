@@ -30,7 +30,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_automation_editor.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/app/editor/ags_select_acceleration_dialog.h>
 
@@ -44,7 +44,7 @@ void ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 void ags_select_acceleration_dialog_remove_callback(GtkWidget *button,
 						    AgsSelectAccelerationDialog *select_acceleration_dialog);
 
-void ags_select_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+void ags_select_acceleration_dialog_machine_changed_callback(AgsCompositeEditor *composite_editor,
 							     AgsMachine *machine,
 							     AgsSelectAccelerationDialog *select_acceleration_dialog);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,13 @@ G_BEGIN_DECLS
 typedef struct _AgsOscParser AgsOscParser;
 typedef struct _AgsOscParserClass AgsOscParserClass;
 
+/**
+ * AgsOscParserFlags:
+ * @AGS_OSC_PARSER_EOF: the parser reached EOF
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsOscParser by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_OSC_PARSER_EOF        = 1,
 }AgsOscParserFlags;
@@ -55,7 +62,7 @@ struct _AgsOscParser
 
   GRecMutex obj_mutex;
 
-  unsigned char *buffer;
+  guchar *buffer;
   
   size_t file_length;
   size_t offset;
@@ -76,7 +83,7 @@ struct _AgsOscParserClass
 
   xmlDoc* (*parse_full)(AgsOscParser *osc_parser);
   xmlNode* (*parse_bytes)(AgsOscParser *osc_parser,
-			  unsigned char *osc_buffer,
+			  guchar *osc_buffer,
 			  guint buffer_length);
 
   xmlNode* (*packet)(AgsOscParser *osc_parser);
@@ -106,7 +113,7 @@ void ags_osc_parser_on_error(AgsOscParser *osc_parser,
 
 xmlDoc* ags_osc_parser_parse_full(AgsOscParser *osc_parser);
 xmlNode* ags_osc_parser_parse_bytes(AgsOscParser *osc_parser,
-				    unsigned char *osc_buffer,
+				    guchar *osc_buffer,
 				    guint buffer_length);
 
 xmlNode* ags_osc_parser_packet(AgsOscParser *osc_parser);

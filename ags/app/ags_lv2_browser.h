@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_port_editor.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_BROWSER                (ags_lv2_browser_get_type())
@@ -39,29 +41,37 @@ G_BEGIN_DECLS
 #define AGS_IS_LV2_BROWSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_BROWSER))
 #define AGS_LV2_BROWSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_BROWSER, AgsLv2BrowserClass))
 
+#define AGS_LV2_BROWSER_FILENAME_HEIGHT_REQUEST (256)
+#define AGS_LV2_BROWSER_FILENAME_WIDTH_REQUEST (500)
+
+#define AGS_LV2_BROWSER_EFFECT_HEIGHT_REQUEST (256)
+#define AGS_LV2_BROWSER_EFFECT_WIDTH_REQUEST (500)
+
 typedef struct _AgsLv2Browser AgsLv2Browser;
 typedef struct _AgsLv2BrowserClass AgsLv2BrowserClass;
-
-typedef enum{
-  AGS_LV2_BROWSER_CONNECTED        = 1,
-}AgsLv2BrowserFlags;
 
 struct _AgsLv2Browser
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
   
   gchar *path;
 
   GtkBox *plugin;
 
-  GtkComboBox *filename;
-  GtkComboBox *effect;
+  GtkTreeView *filename_tree_view;
+  GtkTreeView *effect_tree_view;
 
   GtkBox *description;
 
-  GtkGrid *port_grid;
+  GtkLabel *lv2_name;  
+  GtkLabel *lv2_homepage;  
+  GtkLabel *lv2_mbox;  
+
+  GList *port_editor;
+  
+  GtkGrid *port_editor_grid;
 
   GtkWidget *preview;
 };
@@ -76,11 +86,15 @@ GType ags_lv2_browser_get_type(void);
 gchar* ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser);
 gchar* ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser);
 
-GtkWidget* ags_lv2_browser_combo_box_output_boolean_controls_new();
-GtkWidget* ags_lv2_browser_combo_box_output_controls_new();
+GList* ags_lv2_browser_get_port_editor(AgsLv2Browser *lv2_browser);
+void ags_lv2_browser_add_port_editor(AgsLv2Browser *lv2_browser,
+				     AgsPortEditor *port_editor,
+				     guint x, guint y,
+				     guint width, guint height);
+void ags_lv2_browser_remove_port_editor(AgsLv2Browser *lv2_browser,
+					AgsPortEditor *port_editor);
 
-GtkWidget* ags_lv2_browser_combo_box_boolean_controls_new();
-GtkWidget* ags_lv2_browser_combo_box_controls_new();
+void ags_lv2_browser_clear(AgsLv2Browser *lv2_browser);
 
 GtkWidget* ags_lv2_browser_preview_new();
 

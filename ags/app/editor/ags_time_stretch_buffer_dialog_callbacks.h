@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,6 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_wave_editor.h>
 
 #include <ags/app/editor/ags_time_stretch_buffer_dialog.h>
 

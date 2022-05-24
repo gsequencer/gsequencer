@@ -195,6 +195,8 @@ ags_functional_machine_add_and_destroy_test_mixer()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy mixer */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -211,6 +213,8 @@ ags_functional_machine_add_and_destroy_test_spectrometer()
 						 "Spectrometer");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy spectrometer */
   success = ags_functional_test_util_machine_destroy(0);
@@ -229,6 +233,8 @@ ags_functional_machine_add_and_destroy_test_equalizer10()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy equalizer10 */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -245,6 +251,8 @@ ags_functional_machine_add_and_destroy_test_drum()
 						 "Drum");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy drum */
   success = ags_functional_test_util_machine_destroy(0);
@@ -263,6 +271,8 @@ ags_functional_machine_add_and_destroy_test_matrix()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy matrix */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -279,6 +289,8 @@ ags_functional_machine_add_and_destroy_test_synth()
 						 "Synth");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy synth */
   success = ags_functional_test_util_machine_destroy(0);
@@ -297,6 +309,8 @@ ags_functional_machine_add_and_destroy_test_fm_synth()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy synth */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -314,6 +328,8 @@ ags_functional_machine_add_and_destroy_test_syncsynth()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy syncsynth */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -330,6 +346,8 @@ ags_functional_machine_add_and_destroy_test_fm_syncsynth()
 						 "FM Syncsynth");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy syncsynth */
   success = ags_functional_test_util_machine_destroy(0);
@@ -349,6 +367,8 @@ ags_functional_machine_add_and_destroy_test_hybrid_synth()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy synth */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -365,6 +385,8 @@ ags_functional_machine_add_and_destroy_test_hybrid_fm_synth()
 						 "Hybrid FM Synth");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy synth */
   success = ags_functional_test_util_machine_destroy(0);
@@ -383,6 +405,8 @@ ags_functional_machine_add_and_destroy_test_ffplayer()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy fplayer */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -400,6 +424,8 @@ ags_functional_machine_add_and_destroy_test_sf2_synth()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy fplayer */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -413,9 +439,11 @@ ags_functional_machine_add_and_destroy_test_pitch_sampler()
 
   /* add fplayer */
   success = ags_functional_test_util_add_machine(NULL,
-						 "Sampler");
+						 "Pitch Sampler");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy fplayer */
   success = ags_functional_test_util_machine_destroy(0);
@@ -434,6 +462,8 @@ ags_functional_machine_add_and_destroy_test_sfz_synth()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy fplayer */
   success = ags_functional_test_util_machine_destroy(0);
   
@@ -450,6 +480,8 @@ ags_functional_machine_add_and_destroy_test_audiorec()
 						 "Audiorec");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* destroy audiorec */
   success = ags_functional_test_util_machine_destroy(0);

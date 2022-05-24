@@ -30,6 +30,11 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_machine_counter_manager.h>
+#include <ags/app/ags_machine_counter.h>
+
+#include <ags/app/ags_pad.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE                (ags_machine_get_type())
@@ -43,8 +48,8 @@ G_BEGIN_DECLS
 
 #define AGS_MACHINE_AUTOMATION_PORT(ptr) ((AgsMachineAutomationPort *)(ptr))
 
-#define AGS_MACHINE_DEFAULT_VERSION "2.1.60"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "Wed Feb 20 18:38:17 UTC 2019"
+#define AGS_MACHINE_DEFAULT_VERSION "4.0.0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "Sat Feb 26 21:01:24 UTC 2022"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineInputLine AgsMachineInputLine;
@@ -63,9 +68,8 @@ typedef enum{
   AGS_MACHINE_BLOCK_PLAY              = 1 <<  8,
   AGS_MACHINE_BLOCK_STOP              = 1 <<  9,
   AGS_MACHINE_BLOCK_STOP_CALLBACK     = 1 << 10,
-  AGS_MACHINE_CONNECTED               = 1 << 11,
-  AGS_MACHINE_REVERSE_NOTATION        = 1 << 12,
-  AGS_MACHINE_STICKY_CONTROLS         = 1 << 13,
+  AGS_MACHINE_REVERSE_NOTATION        = 1 << 11,
+  AGS_MACHINE_STICKY_CONTROLS         = 1 << 12,
 }AgsMachineFlags;
 
 typedef enum{
@@ -108,16 +112,18 @@ typedef enum{
 
 struct _AgsMachine
 {
-  GtkBin bin;
+  GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint file_input_flags;
   guint mapping_flags;
   guint connection_flags;
   guint export_flags;
   guint import_flags;
 
-  char *machine_name;
+  gchar *uid;
+  gchar *machine_name;
 
   gchar *version;
   gchar *build_id;
@@ -138,38 +144,52 @@ struct _AgsMachine
 
   gchar *base_note;
   gint base_key_code;
+
+  GtkFrame *frame;
   
   GList *active_playback;
   
   GtkToggleButton *play;
 
+  GtkOrientation output_pad_orientation;
   GType output_pad_type;
   GType output_line_type;
-  GtkContainer *output;
+
+  GList *output_pad;
+  
+  GtkGrid *output_pad_grid;
 
   GtkWidget *selected_output_pad;
   
+  GtkOrientation input_pad_orientation;
   GType input_pad_type;
   GType input_line_type;
-  GtkContainer *input;
+
+  GList *input_pad;
+  
+  GtkGrid *input_pad_grid;
   
   GtkWidget *selected_input_pad;
 
   GList *machine_input_line;
   
-  GtkContainer *bridge;
+  GtkGrid *bridge;
 
   GList *port;
   GList *enabled_automation_port;
 
-  GtkMenuToolButton *menu_tool_button;
-  GtkMenu *popup;
+  GtkLabel *context_label;
   
-  GtkDialog *properties;
+  GtkMenuButton *context_menu_button;
+  GMenu *context_menu;
+
+  GList *dialog_model;
+  
+  GtkDialog *machine_editor_dialog;
   GtkDialog *rename;
   GtkDialog *rename_audio;
   GtkDialog *reposition_audio;
-  GtkDialog *connection_editor;
+  GtkDialog *connection_editor_dialog;
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;
   GtkDialog *envelope_info;
@@ -191,7 +211,7 @@ struct _AgsMachineInputLine
 
 struct _AgsMachineClass
 {
-  GtkBinClass bin;
+  GtkGridClass grid;
 
   void (*samplerate_changed)(AgsMachine *machine,
 			     guint samplerate, guint old_samplerate);
@@ -226,6 +246,10 @@ gint ags_machine_input_line_sort_func(gconstpointer a,
 
 AgsMachineInputLine* ags_machine_input_line_alloc();
 
+gchar* ags_machine_get_machine_name(AgsMachine *machine);
+void ags_machine_set_machine_name(AgsMachine *machine,
+				  gchar *machine_name);
+
 void ags_machine_reset_pattern_envelope(AgsMachine *machine);
 
 AgsMachineAutomationPort* ags_machine_automation_port_alloc(GType channel_type, gchar *control_name);
@@ -233,6 +257,22 @@ void ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
 
 GList* ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
 								       GType channel_type, gchar *control_name);
+
+GList* ags_machine_get_output_pad(AgsMachine *machine);
+void ags_machine_add_output_pad(AgsMachine *machine,
+				AgsPad *output_pad,
+				guint x, guint y,
+				guint width, guint height);
+void ags_machine_remove_output_pad(AgsMachine *machine,
+				   AgsPad *output_pad);
+
+GList* ags_machine_get_input_pad(AgsMachine *machine);
+void ags_machine_add_input_pad(AgsMachine *machine,
+			       AgsPad *input_pad,
+			       guint x, guint y,
+			       guint width, guint height);
+void ags_machine_remove_input_pad(AgsMachine *machine,
+				  AgsPad *input_pad);
 
 void ags_machine_samplerate_changed(AgsMachine *machine,
 				    guint samplerate, guint old_samplerate);
@@ -267,11 +307,21 @@ void ags_machine_set_run_extended(AgsMachine *machine,
 				  gboolean run,
 				  gboolean sequencer, gboolean notation, gboolean wave, gboolean midi);
 
+GList* ags_machine_get_dialog_model(AgsMachine *machine);
+void ags_machine_add_dialog_model(AgsMachine *machine,
+				  xmlNode *node);
+void ags_machine_remove_dialog_model(AgsMachine *machine,
+				     xmlNode *node);
+
+GList* ags_machine_find_dialog_model(AgsMachine *machine,
+				     GList *dialog_model,
+				     gchar *node_name,
+				     gchar *attribute,
+				     gchar *value);
+
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_output_connections(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_input_connections(AgsMachine *machine);
-
-GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 
 void ags_machine_open_files(AgsMachine *machine,
 			    GSList *filenames,
@@ -279,11 +329,6 @@ void ags_machine_open_files(AgsMachine *machine,
 			    gboolean create_channels);
 
 void ags_machine_copy_pattern(AgsMachine *machine);
-
-void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
-void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
-void ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options);
-void ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options);
 
 void ags_machine_check_message(AgsMachine *machine);
 

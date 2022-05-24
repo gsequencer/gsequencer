@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -185,7 +185,7 @@ void ags_midi_parser_set_file_length(AgsMidiParser *midi_parser,
 				     size_t file_length);
 
 /* instantiate */
-AgsMidiParser* ags_midi_parser_new(FILE *file);
+AgsMidiParser* ags_midi_parser_new();
 AgsMidiParser* ags_midi_parser_new_from_filename(gchar *filename);
 
 G_END_DECLS

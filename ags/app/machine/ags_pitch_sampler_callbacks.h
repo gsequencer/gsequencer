@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_pitch_sampler.h>
 
 G_BEGIN_DECLS
-
-void ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPitchSampler *pitch_sampler);
 
 void ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
 

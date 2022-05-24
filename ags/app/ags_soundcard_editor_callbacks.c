@@ -60,7 +60,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
+      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "pulse",
 				  6)){
@@ -82,7 +82,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
+      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "jack",
 				  5)){
@@ -99,7 +99,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       ags_soundcard_editor_load_jack_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
+      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "wasapi",
 				  6)){      
@@ -199,8 +199,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 							 GTK_MESSAGE_ERROR,
 							 GTK_BUTTONS_CLOSE,
 							 "%s", error->message);
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(GTK_WIDGET(dialog));
 
     gtk_spin_button_set_range(soundcard_editor->audio_channels, 0.0, 24.0);
     gtk_spin_button_set_range(soundcard_editor->samplerate, 1.0, 192000.0);
@@ -209,6 +207,8 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_CARD);
 
     g_error_free(error);
+
+    gtk_widget_show(GTK_WIDGET(dialog));
     
     return;
   }

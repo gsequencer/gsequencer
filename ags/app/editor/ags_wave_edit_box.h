@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/app/editor/ags_wave_edit.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_WAVE_EDIT_BOX                (ags_wave_edit_box_get_type())
@@ -38,32 +40,48 @@ G_BEGIN_DECLS
 #define AGS_IS_WAVE_EDIT_BOX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_WAVE_EDIT_BOX))
 #define AGS_WAVE_EDIT_BOX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_WAVE_EDIT_BOX, AgsWaveEditBoxClass))
 
-#define AGS_WAVE_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT (128)
+#define AGS_WAVE_EDIT_BOX_DEFAULT_WAVE_HEIGHT (128)
+#define AGS_WAVE_EDIT_BOX_DEFAULT_SPACING (8)
 
 typedef struct _AgsWaveEditBox AgsWaveEditBox;
 typedef struct _AgsWaveEditBoxClass AgsWaveEditBoxClass;
-
-typedef enum{
-  AGS_WAVE_EDIT_BOX_FIXED_EDIT_SIZE  = 1,
-}AgsWaveEditBoxFlags;
 
 struct _AgsWaveEditBox
 {
   GtkBox box;
 
-  guint flags;
-
-  guint fixed_edit_height;
+  /* private */  
+  GList *wave_edit;
 };
 
 struct _AgsWaveEditBoxClass
 {
   GtkBoxClass box;
+
+  void (*child_width_request)(AgsWaveEditBox *wave_edit_box,
+			      GtkWidget *wave_edit,
+			      gint width_request);
+  void (*child_height_request)(AgsWaveEditBox *wave_edit_box,
+			       GtkWidget *wave_edit,
+			       gint height_request);
 };
 
 GType ags_wave_edit_box_get_type(void);
 
-AgsWaveEditBox* ags_wave_edit_box_new();
+GList* ags_wave_edit_box_get_wave_edit(AgsWaveEditBox *wave_edit_box);
+void ags_wave_edit_box_add_wave_edit(AgsWaveEditBox *wave_edit_box,
+				     AgsWaveEdit *wave_edit);
+void ags_wave_edit_box_remove_wave_edit(AgsWaveEditBox *wave_edit_box,
+					AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_box_child_width_request(AgsWaveEditBox *wave_edit_box,
+					   GtkWidget *wave_edit,
+					   gint width_request);
+void ags_wave_edit_box_child_height_request(AgsWaveEditBox *wave_edit_box,
+					    GtkWidget *wave_edit,
+					    gint height_request);
+
+AgsWaveEditBox* ags_wave_edit_box_new(GtkOrientation orientation);
 
 G_END_DECLS
 

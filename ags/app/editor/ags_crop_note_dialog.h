@@ -43,20 +43,16 @@ G_BEGIN_DECLS
 typedef struct _AgsCropNoteDialog AgsCropNoteDialog;
 typedef struct _AgsCropNoteDialogClass AgsCropNoteDialogClass;
 
-typedef enum{
-  AGS_CROP_NOTE_DIALOG_CONNECTED   = 1,
-}AgsCropNoteDialogFlags;
-
 struct _AgsCropNoteDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
 
   GtkCheckButton *absolute;
   
-  GtkRadioButton *in_place;
-  GtkRadioButton *do_resize;
+  GtkCheckButton *in_place;
+  GtkCheckButton *do_resize;
 
   GtkSpinButton *crop_note;
   GtkSpinButton *padding_note;

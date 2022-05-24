@@ -22,15 +22,9 @@
 #include <ags/app/ags_ui_provider.h>
 
 gboolean
-ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
-				      gpointer user_data)
+ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data)
 {
-  AgsApplicationContext *application_context;
-
-  application_context = ags_application_context_get_instance();
-  
-  ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				  NULL);
+  ags_connectable_disconnect(AGS_CONNECTABLE(window));
   
   return(FALSE);
 }
@@ -69,7 +63,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
       ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
 				      NULL);
       
-      gtk_widget_destroy(GTK_WIDGET(dialog));
+      gtk_window_destroy(GTK_WINDOW(dialog));
     }
   }
 }
@@ -80,6 +74,10 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
 					      guint page_n,
 					      AgsPreferences *preferences)
 {
+  if((AGS_PREFERENCES_SHUTDOWN & (preferences->flags)) != 0){
+    return;
+  }
+  
   if(page_n == 1){
     gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,9 +35,6 @@
 void ags_composite_edit_class_init(AgsCompositeEditClass *composite_edit);
 void ags_composite_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_composite_edit_init(AgsCompositeEdit *composite_edit);
-
-void ags_composite_edit_show_all(GtkWidget *widget);
-void ags_composite_edit_show(GtkWidget *widget);
 
 AgsUUID* ags_composite_edit_get_uuid(AgsConnectable *connectable);
 gboolean ags_composite_edit_has_resource(AgsConnectable *connectable);
@@ -107,15 +104,7 @@ ags_composite_edit_get_type(void)
 void
 ags_composite_edit_class_init(AgsCompositeEditClass *composite_edit)
 {
-  GtkWidgetClass *widget;
-  
   ags_composite_edit_parent_class = g_type_class_peek_parent(composite_edit);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) composite_edit;
-
-  widget->show_all = ags_composite_edit_show_all;
-  widget->show = ags_composite_edit_show;
 }
 
 void
@@ -155,6 +144,7 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 				 GTK_ORIENTATION_VERTICAL);
   
   composite_edit->flags = 0;
+  composite_edit->connectable_flags = 0;
   composite_edit->scrollbar = 0;
 
   composite_edit->version = NULL;
@@ -182,10 +172,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   gtk_widget_set_hexpand((GtkWidget *) composite_edit->composite_paned,
 			 TRUE);
 
-  gtk_box_pack_start((GtkBox *) composite_edit,
-		     (GtkWidget *) composite_edit->composite_paned,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append((GtkBox *) composite_edit,
+		 (GtkWidget *) composite_edit->composite_paned);
 
   /* composite horizontal box */
   composite_edit->composite_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -201,8 +189,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   gtk_widget_set_hexpand((GtkWidget *) composite_edit->composite_box,
 			 TRUE);
 
-  gtk_paned_add1(composite_edit->composite_paned,
-		 (GtkWidget *) composite_edit->composite_box);
+  gtk_paned_set_start_child(composite_edit->composite_paned,
+			    (GtkWidget *) composite_edit->composite_box);
 
   /* composite grid */
   composite_edit->composite_grid = (GtkGrid *) gtk_grid_new();
@@ -217,10 +205,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   gtk_widget_set_hexpand((GtkWidget *) composite_edit->composite_grid,
 			 TRUE);
 
-  gtk_box_pack_start(composite_edit->composite_box,
-		     (GtkWidget *) composite_edit->composite_grid,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(composite_edit->composite_box,
+		 (GtkWidget *) composite_edit->composite_grid);
   
   /* channel selector */
   composite_edit->channel_selector = ags_notebook_new();
@@ -241,12 +227,15 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 		  1, 1);
 
   /* ruler */
-  composite_edit->ruler = ags_ruler_new();
+  composite_edit->ruler = ags_ruler_new(GTK_ORIENTATION_HORIZONTAL,
+					(guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+					AGS_RULER_DEFAULT_FACTOR,
+					AGS_RULER_DEFAULT_PRECISION,
+					AGS_RULER_DEFAULT_SCALE_PRECISION);
 
   g_object_set(composite_edit->ruler,
 	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       "font-size",  (guint) (gui_scale_factor * composite_edit->ruler->font_size),
-	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
@@ -258,7 +247,9 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 
   /* edit vertical box */
   composite_edit->edit_mode = 0;
-  composite_edit->paste_flags = 0;
+  composite_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL |
+				 AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
+				 AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
   
   composite_edit->edit_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						    0);
@@ -328,76 +319,15 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 		  1, 1);
 
   /* edit meta */
-  viewport = (GtkViewport *) gtk_viewport_new(NULL,
-					      NULL);
-  g_object_set(viewport,
-	       "shadow-type", GTK_SHADOW_NONE,
-	       NULL);
+  composite_edit->scrolled_edit_meta = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_valign((GtkWidget *) viewport,
-			GTK_ALIGN_START);
-  gtk_widget_set_halign((GtkWidget *) viewport,
-			GTK_ALIGN_START);
+  gtk_paned_set_end_child(composite_edit->composite_paned,
+			  (GtkWidget *) composite_edit->scrolled_edit_meta);
 
-  gtk_widget_set_vexpand((GtkWidget *) viewport,
+  gtk_widget_set_visible(composite_edit->scrolled_edit_meta,
 			 FALSE);
-  gtk_widget_set_hexpand((GtkWidget *) viewport,
-			 FALSE);
-
-  gtk_paned_add2(composite_edit->composite_paned,
-		 (GtkWidget *) viewport);
-
-  gtk_widget_set_no_show_all(viewport,
-			     TRUE);
-  
-  composite_edit->scrolled_edit_meta = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-										     NULL);
-  gtk_container_add(GTK_CONTAINER(viewport),
-		    GTK_WIDGET(composite_edit->scrolled_edit_meta));
   
   composite_edit->edit_meta = NULL;
-}
-
-void
-ags_composite_edit_show_all(GtkWidget *widget)
-{
-  AgsCompositeEdit *composite_edit;
-
-  composite_edit = (AgsCompositeEdit *) widget;
-  
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_composite_edit_parent_class)->show_all(widget);
-  
-  gtk_widget_show_all((GtkWidget *) composite_edit->channel_selector);
-  
-  if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL)){
-    gtk_widget_hide(composite_edit->hscrollbar);
-  }
-  
-  if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL)){
-    gtk_widget_hide(composite_edit->vscrollbar);
-  }
-}
-
-void
-ags_composite_edit_show(GtkWidget *widget)
-{
-  AgsCompositeEdit *composite_edit;
-
-  composite_edit = (AgsCompositeEdit *) widget;
-
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_composite_edit_parent_class)->show(widget);
-  
-  gtk_widget_show_all((GtkWidget *) composite_edit->channel_selector);
-  
-  if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL)){
-    gtk_widget_hide(composite_edit->hscrollbar);
-  }
-  
-  if(!ags_composite_edit_test_scrollbar(composite_edit, AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL)){
-    gtk_widget_hide(composite_edit->vscrollbar);
-  }
 }
 
 AgsUUID*
@@ -430,7 +360,7 @@ ags_composite_edit_is_ready(AgsConnectable *connectable)
   composite_edit = AGS_COMPOSITE_EDIT(connectable);
 
   /* check is added */
-  is_ready = ags_composite_edit_test_flags(composite_edit, AGS_COMPOSITE_EDIT_ADDED_TO_REGISTRY);
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (composite_edit->connectable_flags)) != 0) ? TRUE: FALSE;
   
   return(is_ready);
 }
@@ -451,7 +381,7 @@ ags_composite_edit_add_to_registry(AgsConnectable *connectable)
   
   composite_edit = AGS_COMPOSITE_EDIT(connectable);
 
-  ags_composite_edit_set_flags(composite_edit, AGS_COMPOSITE_EDIT_ADDED_TO_REGISTRY);
+  composite_edit->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
 
   application_context = ags_application_context_get_instance();
 
@@ -520,7 +450,7 @@ ags_composite_edit_is_connected(AgsConnectable *connectable)
   composite_edit = AGS_COMPOSITE_EDIT(connectable);
 
   /* check is connected */
-  is_connected = ags_composite_edit_test_flags(composite_edit, AGS_COMPOSITE_EDIT_CONNECTED);
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (composite_edit->connectable_flags)) != 0) ? TRUE: FALSE;
   
   return(is_connected);
 }
@@ -534,11 +464,11 @@ ags_composite_edit_connect(AgsConnectable *connectable)
 
   composite_edit = AGS_COMPOSITE_EDIT(connectable);
 
-  if((AGS_COMPOSITE_EDIT_CONNECTED & (composite_edit->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (composite_edit->connectable_flags)) != 0){
     return;
   }
 
-  composite_edit->flags |= AGS_COMPOSITE_EDIT_CONNECTED;
+  composite_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
     ags_connectable_connect(AGS_CONNECTABLE(composite_edit->edit));
@@ -547,8 +477,8 @@ ags_composite_edit_connect(AgsConnectable *connectable)
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
     GtkAdjustment *vadjustment, *hadjustment;
 
-    vadjustment = AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->viewport->vadjustment;
-    hadjustment = AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->viewport->hadjustment;
+    vadjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
+    hadjustment = gtk_scrolled_window_get_hadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
     
     g_signal_connect(vadjustment, "value-changed",
 		     G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
@@ -560,8 +490,8 @@ ags_composite_edit_connect(AgsConnectable *connectable)
   if(AGS_IS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)){
     GtkAdjustment *vadjustment, *hadjustment;
 
-    vadjustment = AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->viewport->vadjustment;
-    hadjustment = AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->viewport->hadjustment;
+    vadjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->scrolled_window);
+    hadjustment = gtk_scrolled_window_get_hadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->scrolled_window);
     
     g_signal_connect(vadjustment, "value-changed",
 		     G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
@@ -571,18 +501,18 @@ ags_composite_edit_connect(AgsConnectable *connectable)
   }
   
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
-    g_signal_connect(composite_edit->vscrollbar, "value-changed",
+    g_signal_connect(gtk_scrollbar_get_adjustment(composite_edit->vscrollbar), "value-changed",
 		     G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
 
-    g_signal_connect(composite_edit->hscrollbar, "value-changed",
+    g_signal_connect(gtk_scrollbar_get_adjustment(composite_edit->hscrollbar), "value-changed",
 		     G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
     
-    composite_adjustment = gtk_range_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar);
+    composite_adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar);
 
     g_signal_connect(composite_adjustment, "changed",
 		     G_CALLBACK(ags_composite_edit_vscrollbar_changed), composite_edit);
 
-    composite_adjustment = gtk_range_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar);
+    composite_adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar);
 
     g_signal_connect(composite_adjustment, "changed",
 		     G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_edit);
@@ -596,19 +526,19 @@ ags_composite_edit_disconnect(AgsConnectable *connectable)
   
   composite_edit = AGS_COMPOSITE_EDIT(connectable);
 
-  if((AGS_COMPOSITE_EDIT_CONNECTED & (composite_edit->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (composite_edit->connectable_flags)) == 0){
     return;
   }
 
-  composite_edit->flags &= (~AGS_COMPOSITE_EDIT_CONNECTED);
+  composite_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_edit->edit));
 
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
     GtkAdjustment *vadjustment, *hadjustment;
 
-    vadjustment = AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->viewport->vadjustment;
-    hadjustment = AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->viewport->hadjustment;
+    vadjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
+    hadjustment = gtk_scrolled_window_get_hadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
     
     g_object_disconnect(vadjustment,
 			"any_signal::value-changed",
@@ -626,8 +556,8 @@ ags_composite_edit_disconnect(AgsConnectable *connectable)
   if(AGS_IS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)){
     GtkAdjustment *vadjustment, *hadjustment;
 
-    vadjustment = AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->viewport->vadjustment;
-    hadjustment = AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->viewport->hadjustment;
+    vadjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->scrolled_window);
+    hadjustment = gtk_scrolled_window_get_hadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->scrolled_window);
     
     g_object_disconnect(vadjustment,
 			"any_signal::value-changed",
@@ -657,7 +587,7 @@ ags_composite_edit_disconnect(AgsConnectable *connectable)
 			composite_edit,
 			NULL);
     
-    composite_adjustment = gtk_range_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar);
+    composite_adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar);
 
     g_object_disconnect(composite_adjustment,
 			"any_signal::changed",
@@ -665,7 +595,7 @@ ags_composite_edit_disconnect(AgsConnectable *connectable)
 			composite_edit,
 			NULL);
 
-    composite_adjustment = gtk_range_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar);
+    composite_adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar);
 
     g_object_disconnect(composite_adjustment,
 			"any_signal::changed",
@@ -786,13 +716,17 @@ ags_composite_edit_set_scrollbar(AgsCompositeEdit *composite_edit, guint scrollb
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
     gtk_widget_show(composite_edit->hscrollbar);
   }else{
-    gtk_widget_hide(composite_edit->hscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) == 0){
+      gtk_widget_hide(composite_edit->hscrollbar);
+    }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
     gtk_widget_show(composite_edit->vscrollbar);
   }else{
-    gtk_widget_hide(composite_edit->vscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) == 0){
+      gtk_widget_hide(composite_edit->vscrollbar);
+    }
   }
   
   /* set scrollbar */
@@ -818,13 +752,17 @@ ags_composite_edit_unset_scrollbar(AgsCompositeEdit *composite_edit, guint scrol
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
     gtk_widget_hide(composite_edit->hscrollbar);
   }else{
-    gtk_widget_show(composite_edit->hscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) != 0){
+      gtk_widget_show(composite_edit->hscrollbar);
+    }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
     gtk_widget_hide(composite_edit->vscrollbar);
   }else{
-    gtk_widget_show(composite_edit->vscrollbar);
+    if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) != 0){
+      gtk_widget_show(composite_edit->vscrollbar);
+    }
   }
 
   /* unset scrollbar */
@@ -845,7 +783,7 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 {
   AgsCompositeEditor *composite_editor;
 
-  GList *tab;
+  GList *start_tab, *tab;
   
   guint length;
   guint i;
@@ -858,12 +796,17 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 					     AGS_TYPE_COMPOSITE_EDITOR);
   
   /* channel selector - remove tabs */
-  length = g_list_length(composite_edit->channel_selector->tab);
+  tab =
+    start_tab = ags_notebook_get_tab(composite_edit->channel_selector);
   
   for(i = 0; i < length; i++){
     ags_notebook_remove_tab(composite_edit->channel_selector,
-			    0);
+			    tab->data);
+
+    tab = tab->next;
   }
+
+  g_list_free(start_tab);
 
   if((AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_AUDIO_CHANNEL & (channel_selector_mode)) != 0){
     if(composite_editor != NULL &&
@@ -875,12 +818,15 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < audio_channels; i++){
-	ags_notebook_insert_tab(composite_edit->channel_selector,
-				i);
+	gchar *str;
 
-	tab = composite_edit->channel_selector->tab;
-	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				     TRUE);
+	str = g_strdup_printf("channel %d",
+			      i);
+
+	ags_notebook_add_tab(composite_edit->channel_selector,
+			     gtk_toggle_button_new_with_label(str));
+
+	g_free(str);
       }
     }
   }else if((AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_OUTPUT_LINE & (channel_selector_mode)) != 0){
@@ -893,12 +839,15 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < output_lines; i++){
-	ags_notebook_insert_tab(composite_edit->channel_selector,
-				i);
+	gchar *str;
 
-	tab = composite_edit->channel_selector->tab;
-	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				     TRUE);
+	str = g_strdup_printf("line %d",
+			      i);
+
+	ags_notebook_add_tab(composite_edit->channel_selector,
+			     gtk_toggle_button_new_with_label(str));
+
+	g_free(str);
       }
     }
   }else if((AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_INPUT_LINE & (channel_selector_mode)) != 0){
@@ -911,12 +860,15 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < input_lines; i++){
-	ags_notebook_insert_tab(composite_edit->channel_selector,
-				i);
+	gchar *str;
 
-	tab = composite_edit->channel_selector->tab;
-	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
-				     TRUE);
+	str = g_strdup_printf("line %d",
+			      i);
+
+	ags_notebook_add_tab(composite_edit->channel_selector,
+			     gtk_toggle_button_new_with_label(str));
+
+	g_free(str);
       }
     }
   }

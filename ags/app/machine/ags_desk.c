@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,16 +140,58 @@ ags_desk_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_desk_init(AgsDesk *desk)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkBox *hbox;
   GtkBox *balance_hbox;
   GtkBox *file_hbox;
   
   AgsAudio *audio;
-
-  gint baseline_allocation;
   
-  g_signal_connect_after((GObject *) desk, "parent_set",
-			 G_CALLBACK(ags_desk_parent_set_callback), (gpointer) desk);
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *machine_name;
+
+  gint position;
+  gint baseline_allocation;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_DESK);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(desk,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+
+
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    desk);
 
   audio = AGS_MACHINE(desk)->audio;
 
@@ -178,81 +220,61 @@ ags_desk_init(AgsDesk *desk)
   /* create widgets */
   desk->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				      0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) desk),
-		    (GtkWidget *) desk->vbox);
+  gtk_frame_set_child(AGS_MACHINE(desk)->frame,
+		      (GtkWidget *) desk->vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
-  gtk_box_pack_start((GtkBox *) desk->vbox,
-		     (GtkWidget *) hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(desk->vbox,
+		 (GtkWidget *) hbox);
 
   /* left pad */
   desk->left_pad = ags_desk_pad_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) desk->left_pad,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk->left_pad);
 
   /* console */  
   desk->console = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					 0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) desk->console,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk->console);
   
   balance_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					0);
-  gtk_box_pack_start((GtkBox *) desk->console,
-		     (GtkWidget *) balance_hbox,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(desk->console,
+		 (GtkWidget *) balance_hbox);
   
   desk->move_left = (GtkButton *) gtk_button_new_with_label(i18n("left"));
-  gtk_box_pack_start((GtkBox *) balance_hbox,
-		     (GtkWidget *) desk->move_left,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(balance_hbox,
+		 (GtkWidget *) desk->move_left);
 
   desk->balance = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 							-1.0, 1.0, 0.1);
   gtk_widget_set_size_request((GtkWidget *) desk->balance,
 			      200, -1);
-  gtk_box_pack_start((GtkBox *) balance_hbox,
-		     (GtkWidget *) desk->balance,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(balance_hbox,
+		 (GtkWidget *) desk->balance);
 
   desk->move_right = (GtkButton *) gtk_button_new_with_label(i18n("right"));
-  gtk_box_pack_start((GtkBox *) balance_hbox,
-		     (GtkWidget *) desk->move_right,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(balance_hbox,
+		 (GtkWidget *) desk->move_right);
 
   /* left pad */
   desk->right_pad = ags_desk_pad_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) desk->right_pad,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) desk->right_pad);
 
   /* file chooser */
   file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				     0);
-  gtk_box_pack_start((GtkBox *) desk->vbox,
-		     (GtkWidget *) file_hbox,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(desk->vbox,
+		 (GtkWidget *) file_hbox);
 
   desk->file_chooser = ags_desk_file_chooser_new();
   gtk_widget_set_size_request((GtkWidget *) desk->file_chooser,
 			      800, 480);
-  gtk_box_pack_start((GtkBox *) file_hbox,
-		     (GtkWidget *) desk->file_chooser,
-		     TRUE, TRUE,
-		     0);
+  gtk_box_append(file_hbox,
+		 (GtkWidget *) desk->file_chooser);
 }
 
 void
@@ -268,7 +290,7 @@ ags_desk_connect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -288,7 +310,7 @@ ags_desk_disconnect(AgsConnectable *connectable)
 
   int i;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 

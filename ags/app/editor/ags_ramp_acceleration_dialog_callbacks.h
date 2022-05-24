@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_automation_editor.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/app/editor/ags_ramp_acceleration_dialog.h>
 
@@ -42,7 +42,7 @@ void ags_ramp_acceleration_dialog_response_callback(GtkWidget *dialog, gint resp
 void ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 						AgsRampAccelerationDialog *ramp_acceleration_dialog);
 
-void ags_ramp_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+void ags_ramp_acceleration_dialog_machine_changed_callback(AgsCompositeEditor *composite_editor,
 							   AgsMachine *machine,
 							   AgsRampAccelerationDialog *ramp_acceleration_dialog);
 

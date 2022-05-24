@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,71 +32,80 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_PHASE_SHIFT_UTIL         (ags_phase_shift_util_get_type())
 
+#define AGS_PHASE_SHIFT_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
 typedef struct _AgsPhaseShiftUtil AgsPhaseShiftUtil;
 
 struct _AgsPhaseShiftUtil
 {
-  //empty
+  gpointer source;
+  guint source_stride;
+
+  gpointer destination;
+  guint destination_stride;
+  
+  guint buffer_length;
+  guint format;
+  guint samplerate;
+
+  gdouble frequency;
+  gdouble amount;
+  gdouble phase;
 };
 
 GType ags_phase_shift_util_get_type(void);
 
-void ags_phase_shift_util_compute_s8(gint8 *destination,
-				     gint8 *source,
-				     guint buffer_length,
-				     guint samplerate,
-				     gdouble frequency,
-				     gdouble amount,
-				     gdouble phase);
-void ags_phase_shift_util_compute_s16(gint16 *destination,
-				      gint16 *source,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gdouble phase);
-void ags_phase_shift_util_compute_s24(gint32 *destination,
-				      gint32 *source,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gdouble phase);
-void ags_phase_shift_util_compute_s32(gint32 *destination,
-				      gint32 *source,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gdouble phase);
-void ags_phase_shift_util_compute_s64(gint64 *destination,
-				      gint64 *source,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gdouble phase);
-void ags_phase_shift_util_compute_float(gfloat *destination,
-					gfloat *source,
-					guint buffer_length,
-					guint samplerate,
-					gdouble frequency,
-					gdouble amount,
-					gdouble phase);
-void ags_phase_shift_util_compute_double(gdouble *destination,
-					 gdouble *source,
-					 guint buffer_length,
-					 guint samplerate,
-					 gdouble frequency,
-					 gdouble amount,
-					 gdouble phase);
-void ags_phase_shift_util_compute_complex(AgsComplex *destination,
-					  AgsComplex *source,
-					  guint buffer_length,
-					  guint samplerate,
-					  gdouble frequency,
-					  gdouble amount,
-					  gdouble phase);
+AgsPhaseShiftUtil* ags_phase_shift_util_alloc();
+
+gpointer ags_phase_shift_util_copy(AgsPhaseShiftUtil *ptr);
+void ags_phase_shift_util_free(AgsPhaseShiftUtil *ptr);
+
+/* getter/setter */
+gpointer ags_phase_shift_util_get_destination(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_destination(AgsPhaseShiftUtil *phase_shift_util,
+					  gpointer destination);
+
+guint ags_phase_shift_util_get_destination_stride(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_destination_stride(AgsPhaseShiftUtil *phase_shift_util,
+						 guint destination_stride);
+
+gpointer ags_phase_shift_util_get_source(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_source(AgsPhaseShiftUtil *phase_shift_util,
+				     gpointer source);
+
+guint ags_phase_shift_util_get_source_stride(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_source_stride(AgsPhaseShiftUtil *phase_shift_util,
+					    guint source_stride);
+
+guint ags_phase_shift_util_get_buffer_length(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_buffer_length(AgsPhaseShiftUtil *phase_shift_util,
+					    guint buffer_length);
+
+guint ags_phase_shift_util_get_format(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_format(AgsPhaseShiftUtil *phase_shift_util,
+				     guint format);
+
+gdouble ags_phase_shift_util_get_frequency(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_frequency(AgsPhaseShiftUtil *phase_shift_util,
+					gdouble frequency);
+
+gdouble ags_phase_shift_util_get_amount(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_amount(AgsPhaseShiftUtil *phase_shift_util,
+				     gdouble amount);
+
+gdouble ags_phase_shift_util_get_phase(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_set_phase(AgsPhaseShiftUtil *phase_shift_util,
+				    gdouble phase);
+
+void ags_phase_shift_util_process_s8(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s16(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s24(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s32(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_s64(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_float(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_double(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process_complex(AgsPhaseShiftUtil *phase_shift_util);
+void ags_phase_shift_util_process(AgsPhaseShiftUtil *phase_shift_util);
 
 G_END_DECLS
 

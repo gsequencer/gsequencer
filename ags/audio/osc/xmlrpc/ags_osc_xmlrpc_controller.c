@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,16 +72,15 @@ gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_c
 					    gsize offset);
 gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 					     AgsOscWebsocketConnection *osc_websocket_connection,
-					     SoupMessage *msg,
+					     SoupServerMessage *msg,
 					     GHashTable *query,
 					     guchar *packet, gsize packet_size,
 					     gsize offset,
 					     gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
 
 gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
-					      SoupMessage *msg,
+					      SoupServerMessage *msg,
 					      GHashTable *query,
-					      SoupClientContext *client,
 					      GObject *security_context,
 					      gchar *context_path,
 					      gchar *login,
@@ -150,6 +149,27 @@ ags_osc_xmlrpc_controller_get_type()
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_osc_xmlrpc_controller_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED", "osc_xmlrpc_controller-delegate-started" },
+      { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING", "osc_xmlrpc_controller-delegate-running" },
+      { AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING, "AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING", "osc_xmlrpc_controller-delegate-terminating" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsOscXmlrpcControllerFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -1041,7 +1061,7 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
 gsize
 ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 				       AgsOscWebsocketConnection *osc_websocket_connection,
-				       SoupMessage *msg,
+				       SoupServerMessage *server_msg,
 				       GHashTable *query,
 				       guchar *packet, gsize packet_size,
 				       gsize offset,
@@ -1155,7 +1175,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 	       "immediately", immediately,
 	       "message-size", read_count,
 	       "message", message,
-	       "msg", msg,
+	       "server-msg", server_msg,
 	       "query", query,
 	       NULL);    
 
@@ -1167,9 +1187,8 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 
 gpointer
 ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
-				     SoupMessage *msg,
+				     SoupServerMessage *server_msg,
 				     GHashTable *query,
-				     SoupClientContext *client,
 				     GObject *security_context,
 				     gchar *path,
 				     gchar *login,
@@ -1178,6 +1197,8 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   AgsOscXmlrpcServer *osc_xmlrpc_server;
   AgsOscXmlrpcController *osc_xmlrpc_controller;
   AgsOscWebsocketConnection *osc_websocket_connection;
+
+  SoupMessageBody *msg_body;
   
   xmlDoc *doc;
   xmlDoc *response_doc;
@@ -1215,9 +1236,9 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     return(NULL);
   }
 
-  g_object_get(msg,
-	       "request-body-data", &request_body_data,
-	       NULL);
+  msg_body = soup_server_message_get_request_body(server_msg);
+  
+  request_body_data = soup_message_body_flatten(msg_body);
 
   data = g_bytes_get_data(request_body_data,
 			  &data_size);
@@ -1305,14 +1326,14 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 		if(!g_strcmp0(packet + offset, "#bundle")){      
 		  read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
 								     osc_websocket_connection,
-								     msg,
+								     server_msg,
 								     query,
 								     packet, packet_size,
 								     offset);
 		}else if(packet[offset] == '/'){
 		  read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
 								      osc_websocket_connection,
-								      msg,
+								      server_msg,
 								      query,
 								      packet, packet_size,
 								      offset,
@@ -1366,14 +1387,15 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   /* set body */
   xmlDocDumpFormatMemoryEnc(response_doc, &response_buffer, &response_buffer_length, "UTF-8", TRUE);
 
-  soup_message_set_response(msg,
-			    "text/xml; charset=UTF-8",
-			    SOUP_MEMORY_COPY,
-			    response_buffer,
-			    response_buffer_length);
+  soup_server_message_set_response(server_msg,
+				   "text/xml; charset=UTF-8",
+				   SOUP_MEMORY_COPY,
+				   response_buffer,
+				   response_buffer_length);
 
-  soup_message_set_status(msg,
-			  200);
+  soup_server_message_set_status(server_msg,
+				 200,
+				 NULL);
 
   xmlFree(response_buffer);
   xmlFreeDoc(response_doc);

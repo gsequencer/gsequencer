@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,16 +43,16 @@ typedef struct _AgsAutomationMeta AgsAutomationMeta;
 typedef struct _AgsAutomationMetaClass AgsAutomationMetaClass;
 
 typedef enum{
-  AGS_AUTOMATION_META_CONNECTED   = 1,
-  AGS_AUTOMATION_META_ENABLED     = 1 <<  1,
+  AGS_AUTOMATION_META_ENABLED     = 1,
 }AgsAutomationMetaFlags;
 
 struct _AgsAutomationMeta
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GtkLabel *machine_type;
   GtkLabel *machine_name;
 
@@ -78,7 +78,7 @@ struct _AgsAutomationMeta
 
 struct _AgsAutomationMetaClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_automation_meta_get_type(void);

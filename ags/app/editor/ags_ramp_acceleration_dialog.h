@@ -45,15 +45,11 @@ G_BEGIN_DECLS
 typedef struct _AgsRampAccelerationDialog AgsRampAccelerationDialog;
 typedef struct _AgsRampAccelerationDialogClass AgsRampAccelerationDialogClass;
 
-typedef enum{
-  AGS_RAMP_ACCELERATION_DIALOG_CONNECTED   = 1,
-}AgsRampAccelerationDialogFlags;
-
 struct _AgsRampAccelerationDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
   
   GtkComboBoxText *port;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,7 +46,7 @@ void ags_osc_xmlrpc_message_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_MSG,
+  PROP_SERVER_MSG,
   PROP_QUERY,
 };
 
@@ -102,19 +102,19 @@ ags_osc_xmlrpc_message_class_init(AgsOscXmlrpcMessageClass *osc_xmlrpc_message)
 
   /* properties */
   /**
-   * AgsOscXmlrpcMessage:msg:
+   * AgsOscXmlrpcMessage:server-msg:
    *
    * The assigned #SoupMessage.
    * 
-   * Since: 3.0.0
+   * Since: 4.0.0
    */
-  param_spec = g_param_spec_object("msg",
-				   i18n_pspec("assigned soup message"),
-				   i18n_pspec("The soup message it is assigned with"),
-				   SOUP_TYPE_MESSAGE,
+  param_spec = g_param_spec_object("server-msg",
+				   i18n_pspec("assigned soup server message"),
+				   i18n_pspec("The soup server message it is assigned with"),
+				   SOUP_TYPE_SERVER_MESSAGE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MSG,
+				  PROP_SERVER_MSG,
 				  param_spec);
 
   /**
@@ -138,7 +138,7 @@ ags_osc_xmlrpc_message_class_init(AgsOscXmlrpcMessageClass *osc_xmlrpc_message)
 void
 ags_osc_xmlrpc_message_init(AgsOscXmlrpcMessage *osc_xmlrpc_message)
 {
-  osc_xmlrpc_message->msg = NULL;
+  osc_xmlrpc_message->server_msg = NULL;
 
   osc_xmlrpc_message->query = NULL;
 }
@@ -159,29 +159,29 @@ ags_osc_xmlrpc_message_set_property(GObject *gobject,
   osc_message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(osc_xmlrpc_message);
   
   switch(prop_id){
-  case PROP_MSG:
+  case PROP_SERVER_MSG:
   {
-    GObject *msg;
+    GObject *server_msg;
 
-    msg = g_value_get_object(value);
+    server_msg = g_value_get_object(value);
 
     g_rec_mutex_lock(osc_message_mutex);
 
-    if(osc_xmlrpc_message->msg == msg){
+    if(osc_xmlrpc_message->server_msg == server_msg){
       g_rec_mutex_unlock(osc_message_mutex);
 
       return;
     }
 
-    if(osc_xmlrpc_message->msg != NULL){
-      g_object_unref(osc_xmlrpc_message->msg);
+    if(osc_xmlrpc_message->server_msg != NULL){
+      g_object_unref(osc_xmlrpc_message->server_msg);
     }
       
-    if(msg != NULL){
-      g_object_ref(msg);
+    if(server_msg != NULL){
+      g_object_ref(server_msg);
     }
       
-    osc_xmlrpc_message->msg = msg;
+    osc_xmlrpc_message->server_msg = server_msg;
 
     g_rec_mutex_unlock(osc_message_mutex);
   }
@@ -221,11 +221,11 @@ ags_osc_xmlrpc_message_get_property(GObject *gobject,
   osc_message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(osc_xmlrpc_message);
   
   switch(prop_id){
-  case PROP_MSG:
+  case PROP_SERVER_MSG:
   {
     g_rec_mutex_lock(osc_message_mutex);
 
-    g_value_set_object(value, osc_xmlrpc_message->msg);
+    g_value_set_object(value, osc_xmlrpc_message->server_msg);
 
     g_rec_mutex_unlock(osc_message_mutex);
   }
@@ -252,10 +252,10 @@ ags_osc_xmlrpc_message_dispose(GObject *gobject)
     
   osc_xmlrpc_message = (AgsOscXmlrpcMessage *) gobject;  
 
-  if(osc_xmlrpc_message->msg != NULL){
-    g_object_unref(osc_xmlrpc_message->msg);
+  if(osc_xmlrpc_message->server_msg != NULL){
+    g_object_unref(osc_xmlrpc_message->server_msg);
 
-    osc_xmlrpc_message->msg = NULL;
+    osc_xmlrpc_message->server_msg = NULL;
   }
   
   /* call parent */
@@ -269,8 +269,8 @@ ags_osc_xmlrpc_message_finalize(GObject *gobject)
     
   osc_xmlrpc_message = (AgsOscXmlrpcMessage *) gobject;
 
-  if(osc_xmlrpc_message->msg != NULL){
-    g_object_unref(osc_xmlrpc_message->msg);
+  if(osc_xmlrpc_message->server_msg != NULL){
+    g_object_unref(osc_xmlrpc_message->server_msg);
   }
 
   /* call parent */

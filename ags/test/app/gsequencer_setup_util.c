@@ -82,17 +82,37 @@ struct sigaction ags_test_sigact;
 
 extern AgsApplicationContext *ags_application_context;
 
+gpointer
+ags_test_get_display()
+{
+  static Display *display = NULL;
+
+  if(display == NULL){
+    display = XOpenDisplay(NULL);
+  }
+
+  return(display);
+}
+
 void
 ags_test_enter()
 {
+  Display *display;
+
+  display = ags_test_get_display();
+
+  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
-  gdk_threads_enter();
 }
 
 void
 ags_test_leave()
 {
-  gdk_threads_leave();
+  Display *display;
+
+  display = ags_test_get_display();
+
+  XUnlockDisplay(display);
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
 }
 
@@ -285,7 +305,7 @@ ags_test_init(int *argc, char ***argv,
   gst_init(&gst_argc, &gst_argv);
 #endif
 
-  gtk_init(argc, argv);
+  gtk_init();
   
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
@@ -365,6 +385,16 @@ ags_test_quit()
 }
 
 void
+ags_test_main_quit()
+{
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  ags_application_context_quit(application_context);
+}
+
+void
 ags_test_show_file_error(gchar *filename,
 			 GError *error)
 {
@@ -378,10 +408,12 @@ ags_test_show_file_error(gchar *filename,
 				  GTK_BUTTONS_OK,
 				  "Failed to open '%s'",
 				  filename);
-  gtk_widget_show_all((GtkWidget *) dialog);
+  gtk_widget_show((GtkWidget *) dialog);
   g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_main_quit), NULL);
-  gtk_main();
+		   G_CALLBACK(ags_test_main_quit), NULL);
+
+  g_main_loop_run(g_main_loop_new(NULL,
+				  FALSE));
 }
 
 void

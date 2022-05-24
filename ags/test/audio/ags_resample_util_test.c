@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,8 +43,8 @@ void ags_resample_util_test_get_source_stride();
 void ags_resample_util_test_set_source_stride();
 void ags_resample_util_test_get_buffer_length();
 void ags_resample_util_test_set_buffer_length();
-void ags_resample_util_test_get_audio_buffer_util_format();
-void ags_resample_util_test_set_audio_buffer_util_format();
+void ags_resample_util_test_get_format();
+void ags_resample_util_test_set_format();
 void ags_resample_util_test_get_samplerate();
 void ags_resample_util_test_set_samplerate();
 void ags_resample_util_test_get_target_samplerate();
@@ -113,7 +113,7 @@ ags_resample_util_test_alloc()
   CU_ASSERT(resample_util->source_stride == 1);
   
   CU_ASSERT(resample_util->buffer_length == 0);
-  CU_ASSERT(resample_util->audio_buffer_util_format == AGS_RESAMPLE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+  CU_ASSERT(resample_util->format == AGS_RESAMPLE_UTIL_DEFAULT_FORMAT);
   CU_ASSERT(resample_util->samplerate == AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE);
   
   CU_ASSERT(resample_util->target_samplerate == AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE);
@@ -147,7 +147,7 @@ ags_resample_util_test_copy()
   CU_ASSERT(copy_resample_util->source_stride == resample_util.source_stride);
   
   CU_ASSERT(copy_resample_util->buffer_length == resample_util.buffer_length);
-  CU_ASSERT(copy_resample_util->audio_buffer_util_format == resample_util.audio_buffer_util_format);
+  CU_ASSERT(copy_resample_util->format == resample_util.format);
   CU_ASSERT(copy_resample_util->samplerate == resample_util.samplerate);
 
   CU_ASSERT(copy_resample_util->target_samplerate == resample_util.target_samplerate);
@@ -331,30 +331,30 @@ ags_resample_util_test_set_buffer_length()
 }
 
 void
-ags_resample_util_test_get_audio_buffer_util_format()
+ags_resample_util_test_get_format()
 {
   AgsResampleUtil resample_util;
 
-  resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  resample_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  CU_ASSERT(ags_resample_util_get_audio_buffer_util_format(&resample_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  CU_ASSERT(ags_resample_util_get_format(&resample_util) == AGS_SOUNDCARD_SIGNED_16_BIT);
   
-  resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+  resample_util.format = AGS_SOUNDCARD_FLOAT;
 
-  CU_ASSERT(ags_resample_util_get_audio_buffer_util_format(&resample_util) == resample_util.audio_buffer_util_format);
+  CU_ASSERT(ags_resample_util_get_format(&resample_util) == AGS_SOUNDCARD_FLOAT);
 }
 
 void
-ags_resample_util_test_set_audio_buffer_util_format()
+ags_resample_util_test_set_format()
 {
   AgsResampleUtil resample_util;
   
-  resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  resample_util.format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
-  ags_resample_util_set_audio_buffer_util_format(&resample_util,
-						 AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  ags_resample_util_set_format(&resample_util,
+			       AGS_SOUNDCARD_FLOAT);
   
-  CU_ASSERT(resample_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  CU_ASSERT(resample_util.format == AGS_SOUNDCARD_FLOAT);
 }
 
 void
@@ -435,10 +435,11 @@ ags_resample_util_test_compute_s8()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .format = AGS_SOUNDCARD_SIGNED_8_BIT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -458,10 +459,11 @@ ags_resample_util_test_compute_s16()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -481,10 +483,11 @@ ags_resample_util_test_compute_s24()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .format = AGS_SOUNDCARD_SIGNED_24_BIT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -504,10 +507,11 @@ ags_resample_util_test_compute_s32()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .format = AGS_SOUNDCARD_SIGNED_32_BIT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -527,10 +531,11 @@ ags_resample_util_test_compute_s64()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .format = AGS_SOUNDCARD_SIGNED_64_BIT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -550,10 +555,11 @@ ags_resample_util_test_compute_float()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .format = AGS_SOUNDCARD_FLOAT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -573,10 +579,11 @@ ags_resample_util_test_compute_double()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .format = AGS_SOUNDCARD_DOUBLE,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -596,10 +603,11 @@ ags_resample_util_test_compute_complex()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .format = AGS_SOUNDCARD_COMPLEX,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -619,10 +627,11 @@ ags_resample_util_test_compute()
 
   resample_util = (AgsResampleUtil) {
     .destination = source,
+    .destination_stride = 1,
     .source = source,
     .source_stride = 1,
     .buffer_length = 1024,
-    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .format = AGS_SOUNDCARD_SIGNED_16_BIT,
     .samplerate = 48000,
     .target_samplerate = 44100
   };
@@ -663,8 +672,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsResampleUtil set source stride", ags_resample_util_test_set_source_stride) == NULL) ||
      (CU_add_test(pSuite, "test of AgsResampleUtil get buffer length", ags_resample_util_test_get_buffer_length) == NULL) ||
      (CU_add_test(pSuite, "test of AgsResampleUtil set buffer length", ags_resample_util_test_set_buffer_length) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsResampleUtil get audio buffer util format", ags_resample_util_test_get_audio_buffer_util_format) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsResampleUtil set audio buffer util format", ags_resample_util_test_set_audio_buffer_util_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsResampleUtil get format", ags_resample_util_test_get_format) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsResampleUtil set format", ags_resample_util_test_set_format) == NULL) ||
      (CU_add_test(pSuite, "test of AgsResampleUtil get samplerate", ags_resample_util_test_get_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsResampleUtil set samplerate", ags_resample_util_test_set_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsResampleUtil get target samplerate", ags_resample_util_test_get_target_samplerate) == NULL) ||

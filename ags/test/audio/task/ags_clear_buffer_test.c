@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,7 +57,7 @@ ags_clear_buffer_test_clean_suite()
 void
 ags_clear_buffer_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
 
   AgsClearBuffer *clear_buffer;
 
@@ -67,7 +67,7 @@ ags_clear_buffer_test_launch()
   gboolean success;
   
   /* create soundcard */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
 			NULL);
   g_object_set(devout,
 	       "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -75,8 +75,9 @@ ags_clear_buffer_test_launch()
   g_object_ref(devout);
 
   /* fill random data - attempt #0 */
-  devout->flags |= AGS_DEVOUT_BUFFER0;
-  
+  devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
+  devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
+
   buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(devout));
   
   for(i = 0; i < devout->buffer_size; i++){
@@ -107,8 +108,8 @@ ags_clear_buffer_test_launch()
   CU_ASSERT(success == TRUE);
 
   /* fill random data - attempt #1 */
-  devout->flags &= (~AGS_DEVOUT_BUFFER0);
-  devout->flags |= AGS_DEVOUT_BUFFER1;
+  devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_1;
+  devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_1;
   
   buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(devout));
   
@@ -140,8 +141,8 @@ ags_clear_buffer_test_launch()
   CU_ASSERT(success == TRUE);
 
   /* fill random data - attempt #2 */
-  devout->flags &= (~AGS_DEVOUT_BUFFER1);
-  devout->flags |= AGS_DEVOUT_BUFFER2;
+  devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_2;
+  devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_2;
   
   buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(devout));
   
@@ -173,8 +174,8 @@ ags_clear_buffer_test_launch()
   CU_ASSERT(success == TRUE);
 
   /* fill random data - attempt #3 */
-  devout->flags &= (~AGS_DEVOUT_BUFFER2);
-  devout->flags |= AGS_DEVOUT_BUFFER3;
+  devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_3;
+  devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_3;
   
   buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(devout));
   

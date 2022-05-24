@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,8 +47,6 @@ typedef struct _AgsGstreamerClientClass AgsGstreamerClientClass;
 
 /**
  * AgsGstreamerClientFlags:
- * @AGS_GSTREAMER_CLIENT_ADDED_TO_REGISTRY: the GSTREAMER client was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_GSTREAMER_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_GSTREAMER_CLIENT_ACTIVATED: the client was activated
  * @AGS_GSTREAMER_CLIENT_READY: the client is ready
  * 
@@ -56,8 +54,6 @@ typedef struct _AgsGstreamerClientClass AgsGstreamerClientClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_GSTREAMER_CLIENT_ADDED_TO_REGISTRY  = 1,
-  AGS_GSTREAMER_CLIENT_CONNECTED          = 1 <<  1,
   AGS_GSTREAMER_CLIENT_ACTIVATED          = 1 <<  2,
   AGS_GSTREAMER_CLIENT_READY              = 1 <<  3,
 }AgsGstreamerClientFlags;
@@ -67,7 +63,8 @@ struct _AgsGstreamerClient
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
   
   GObject *gstreamer_server;
@@ -93,6 +90,7 @@ struct _AgsGstreamerClientClass
 };
 
 GType ags_gstreamer_client_get_type();
+GType ags_gstreamer_client_flags_get_type();
 
 gboolean ags_gstreamer_client_test_flags(AgsGstreamerClient *gstreamer_client, guint flags);
 void ags_gstreamer_client_set_flags(AgsGstreamerClient *gstreamer_client, guint flags);

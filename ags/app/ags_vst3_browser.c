@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,8 @@
 #include <ags/app/ags_vst3_browser_callbacks.h>
 
 #include <ags/libags-vst.h>
+
+#include <ags/app/ags_ui_provider.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,13 +46,13 @@ void ags_vst3_browser_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_vst3_browser
- * @short_description: A composite to select vst3 uri.
+ * @short_description: A composite to select vst3 effect.
  * @title: AgsVst3Browser
  * @section_id:
  * @include: ags/app/ags_vst3_browser.h
  *
  * #AgsVst3Browser is a composite widget to select vst3 plugin and the desired
- * uri.
+ * effect.
  */
 
 GType
@@ -130,6 +132,15 @@ void
 ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
 {
   GtkLabel *label;
+  GtkTreeViewColumn *filename_column;
+  GtkTreeViewColumn *effect_column;
+  GtkScrolledWindow *scrolled_window;
+
+  GtkCellRenderer *filename_renderer;
+  GtkCellRenderer *effect_renderer;
+
+  GtkListStore *filename_list_store;
+  GtkListStore *effect_list_store;
 
   AgsVst3Manager *vst3_manager;
 
@@ -146,27 +157,52 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(vst3_browser),
 				 GTK_ORIENTATION_VERTICAL);
 
-  vst3_browser->flags = 0;
+  gtk_box_set_spacing(vst3_browser,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  vst3_browser->connectable_flags = 0;
   
   /* plugin */
   vst3_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						0);
-  gtk_box_pack_start((GtkBox *) vst3_browser,
-		     (GtkWidget *) vst3_browser->plugin,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) vst3_browser,
+		 (GtkWidget *) vst3_browser->plugin);
 
-  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  /* filename */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_VST3_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_VST3_BROWSER_FILENAME_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_append(vst3_browser->plugin,
+		 (GtkWidget *) scrolled_window);
 
-  vst3_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) vst3_browser->filename,
-		     FALSE, FALSE,
-		     0);
+  vst3_browser->filename_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(vst3_browser->filename_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) vst3_browser->filename_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) vst3_browser->filename_tree_view,
+			      AGS_VST3_BROWSER_FILENAME_WIDTH_REQUEST,
+			      AGS_VST3_BROWSER_FILENAME_HEIGHT_REQUEST);
+
+  filename_renderer = gtk_cell_renderer_text_new();
+
+  filename_column = gtk_tree_view_column_new_with_attributes(i18n("filename"),
+							     filename_renderer,
+							     "text", 0,
+							     NULL);
+  gtk_tree_view_append_column(vst3_browser->filename_tree_view,
+			      filename_column);
+  
+  filename_list_store = gtk_list_store_new(1,
+					   G_TYPE_STRING);
+
+  gtk_tree_view_set_model(vst3_browser->filename_tree_view,
+			  GTK_TREE_MODEL(filename_list_store));  
 
   vst3_browser->path = NULL;
 
@@ -193,8 +229,14 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
 			       g_strcmp0);
 
     while(list != NULL){
-      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(vst3_browser->filename),
-				     list->data);
+      GtkTreeIter tree_iter;
+
+      gtk_list_store_append(filename_list_store,
+			    &tree_iter);
+
+      gtk_list_store_set(filename_list_store, &tree_iter,
+			 0, list->data,
+			 -1);
  
       list = list->next;
     }
@@ -204,46 +246,76 @@ ags_vst3_browser_init(AgsVst3Browser *vst3_browser)
     g_strfreev(filenames_start);
   }
   
-  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  /* effect */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
+			      AGS_VST3_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_VST3_BROWSER_EFFECT_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
+  gtk_box_append(vst3_browser->plugin,
+		 (GtkWidget *) scrolled_window);
 
-  vst3_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(vst3_browser->plugin,
-		     (GtkWidget *) vst3_browser->effect,
-		     FALSE, FALSE,
-		     0);
+  vst3_browser->effect_tree_view = (GtkTreeView *) gtk_tree_view_new();
+  gtk_tree_view_set_activate_on_single_click(vst3_browser->effect_tree_view,
+					     TRUE);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) vst3_browser->effect_tree_view);
+    
+  gtk_widget_set_size_request((GtkWidget *) vst3_browser->effect_tree_view,
+			      AGS_VST3_BROWSER_EFFECT_WIDTH_REQUEST,
+			      AGS_VST3_BROWSER_EFFECT_HEIGHT_REQUEST);
+
+  effect_renderer = gtk_cell_renderer_text_new();
+
+  effect_column = gtk_tree_view_column_new_with_attributes(i18n("effect"),
+							   effect_renderer,
+							   "text", 0,
+							   NULL);
+  gtk_tree_view_append_column(vst3_browser->effect_tree_view,
+			      effect_column);
+  
+  effect_list_store = gtk_list_store_new(1,
+					 G_TYPE_STRING);
+
+  gtk_tree_view_set_model(vst3_browser->effect_tree_view,
+			  GTK_TREE_MODEL(effect_list_store));  
 
   /* description */
   vst3_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						     0);
-  gtk_box_pack_start((GtkBox *) vst3_browser,
-		     (GtkWidget *) vst3_browser->description,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) vst3_browser,
+		 (GtkWidget *) vst3_browser->description);
 
   //TODO:JK: implement me
   
-  str = g_strdup_printf("%s: ",
-			i18n("Ports"));
+  /* ports */
+  str = g_strconcat(i18n("Ports"),
+		    ": ",
+		    NULL);  
+
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
 				    "label", str,
 				    NULL);
-  gtk_box_pack_start(vst3_browser->description,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) vst3_browser->description,
+		 (GtkWidget *) label);
 
   g_free(str);
   
-  vst3_browser->port_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(vst3_browser->description,
-		     (GtkWidget *) vst3_browser->port_grid,
-		     FALSE, FALSE,
-		     0);
+  /* port editor */
+  vst3_browser->port_editor = NULL;
+  
+  vst3_browser->port_editor_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(vst3_browser->port_editor_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(vst3_browser->port_editor_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
+  gtk_box_append((GtkBox *) vst3_browser->description,
+		 (GtkWidget *) vst3_browser->port_editor_grid);
 }
 
 void
@@ -253,17 +325,17 @@ ags_vst3_browser_connect(AgsConnectable *connectable)
 
   vst3_browser = AGS_VST3_BROWSER(connectable);
 
-  if((AGS_VST3_BROWSER_CONNECTED & (vst3_browser->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (vst3_browser->connectable_flags)) != 0){
     return;
   }
 
-  vst3_browser->flags |= AGS_VST3_BROWSER_CONNECTED;
+  vst3_browser->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  g_signal_connect_after(G_OBJECT(vst3_browser->filename), "changed",
+  g_signal_connect_after(G_OBJECT(vst3_browser->filename_tree_view), "row-activated",
 			 G_CALLBACK(ags_vst3_browser_plugin_filename_callback), vst3_browser);
 
-  g_signal_connect_after(G_OBJECT(vst3_browser->effect), "changed",
-			 G_CALLBACK(ags_vst3_browser_plugin_uri_callback), vst3_browser);
+  g_signal_connect_after(G_OBJECT(vst3_browser->effect_tree_view), "row-activated",
+			 G_CALLBACK(ags_vst3_browser_plugin_effect_callback), vst3_browser);
 }
 
 void
@@ -273,21 +345,21 @@ ags_vst3_browser_disconnect(AgsConnectable *connectable)
 
   vst3_browser = AGS_VST3_BROWSER(connectable);
 
-  if((AGS_VST3_BROWSER_CONNECTED & (vst3_browser->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (vst3_browser->connectable_flags)) == 0){
     return;
   }
 
-  vst3_browser->flags &= (~AGS_VST3_BROWSER_CONNECTED);
-  
-  g_object_disconnect(G_OBJECT(vst3_browser->filename),
-		      "any_signal::changed",
+  vst3_browser->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(vst3_browser->filename_tree_view),
+		      "any_signal::row-activated",
 		      G_CALLBACK(ags_vst3_browser_plugin_filename_callback),
 		      vst3_browser,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(vst3_browser->effect),
-		      "any_signal::changed",
-		      G_CALLBACK(ags_vst3_browser_plugin_uri_callback),
+  g_object_disconnect(G_OBJECT(vst3_browser->effect_tree_view),
+		      "any_signal::row-activated",
+		      G_CALLBACK(ags_vst3_browser_plugin_effect_callback),
 		      vst3_browser,
 		      NULL);
 }
@@ -308,18 +380,22 @@ void
 ags_vst3_browser_reset(AgsApplicable *applicable)
 {
   AgsVst3Browser *vst3_browser;
-  GtkComboBoxText *filename;
-  GList *list;
+
+  GtkTreeModel *model;
+
+  GtkTreeIter tree_iter;
 
   vst3_browser = AGS_VST3_BROWSER(applicable);
 
-  list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->plugin));
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(vst3_browser->filename_tree_view)));
 
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  g_list_free(list);
-
-  gtk_combo_box_set_active((GtkComboBox *) filename,
-			   0);
+  if(gtk_tree_model_get_iter_first(model, &tree_iter)){
+    gtk_tree_view_set_cursor(GTK_TREE_VIEW(vst3_browser->filename_tree_view),
+			     gtk_tree_model_get_path(model,
+						     &tree_iter),
+			     NULL,
+			     FALSE);
+  }
 }
 
 /**
@@ -335,160 +411,193 @@ ags_vst3_browser_reset(AgsApplicable *applicable)
 gchar*
 ags_vst3_browser_get_plugin_filename(AgsVst3Browser *vst3_browser)
 {
-  GtkComboBoxText *filename;
+  GtkListStore *filename_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
+  
+  GtkTreeIter iter;
 
-  GList *start_list, *list;
+  gchar *filename;
+  
+  if(!AGS_IS_VST3_BROWSER(vst3_browser)){
+    return(NULL);
+  }
 
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->plugin));
+  filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(vst3_browser->filename_tree_view));
 
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  gtk_tree_view_get_cursor(vst3_browser->filename_tree_view,
+			   &path,
+			   NULL);
+  
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path);
 
-  g_list_free(start_list);
+  gtk_tree_path_free(path);
 
-  return(gtk_combo_box_text_get_active_text(filename));
+  filename = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		     &iter,
+		     0, &filename,
+		     -1);
+  
+  return(filename);
 }
 
 /**
- * ags_vst3_browser_get_plugin_uri:
+ * ags_vst3_browser_get_plugin_effect:
  * @vst3_browser: the #AgsVst3Browser
  *
- * Retrieve selected vst3 uri.
+ * Retrieve selected vst3 effect.
  *
- * Returns: the active vst3 uri
+ * Returns: the active vst3 effect
  *
  * Since: 3.10.12
  */
 gchar*
 ags_vst3_browser_get_plugin_effect(AgsVst3Browser *vst3_browser)
 {
-  GtkComboBoxText *effect;
-
-  GList *start_list, *list;
-
-  gchar *effect_name;
-
-  /* retrieve filename and effect */
-  list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(vst3_browser->plugin));
-
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-
-  effect_name = gtk_combo_box_text_get_active_text(effect);
+  GtkListStore *effect_list_store;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
   
-  g_list_free(start_list);
+  GtkTreeIter iter;
 
-  return(effect_name);
+  gchar *effect;
+  
+  if(!AGS_IS_VST3_BROWSER(vst3_browser)){
+    return(NULL);
+  }
+
+  effect_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(vst3_browser->effect_tree_view));
+
+  gtk_tree_view_get_cursor(vst3_browser->effect_tree_view,
+			   &path,
+			   NULL);
+  
+  gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path);
+
+  gtk_tree_path_free(path);
+
+  effect = NULL;
+  
+  gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
+		     &iter,
+		     0, &effect,
+		     -1);
+  
+  return(effect);
 }
 
 /**
- * ags_vst3_browser_combo_box_output_boolean_controls_new:
+ * ags_vst3_browser_get_port_editor:
+ * @vst3_browser: the #AgsVst3Browser
+ * 
+ * Get bulk member of @vst3_browser.
+ * 
+ * Returns: the #GList-struct containing #AgsPortEditor
  *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.10.12
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_vst3_browser_combo_box_output_boolean_controls_new()
+GList*
+ags_vst3_browser_get_port_editor(AgsVst3Browser *vst3_browser)
 {
-  GtkComboBoxText *combo_box;
+  g_return_val_if_fail(AGS_IS_VST3_BROWSER(vst3_browser), NULL);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "led");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
+  return(g_list_reverse(g_list_copy(vst3_browser->port_editor)));
 }
 
 /**
- * ags_vst3_browser_combo_box_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.10.12
+ * ags_vst3_browser_add_port_editor:
+ * @vst3_browser: the #AgsVst3Browser
+ * @port_editor: the #AgsPortEditor
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @port_editor to @vst3_browser.
+ * 
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_vst3_browser_combo_box_output_controls_new()
+void
+ags_vst3_browser_add_port_editor(AgsVst3Browser *vst3_browser,
+				 AgsPortEditor *port_editor,
+				 guint x, guint y,
+				 guint width, guint height)
 {
-  GtkComboBoxText *combo_box;
+  g_return_if_fail(AGS_IS_VST3_BROWSER(vst3_browser));
+  g_return_if_fail(AGS_IS_PORT_EDITOR(port_editor));
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "vertical indicator");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal indicator");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
+  if(g_list_find(vst3_browser->port_editor, port_editor) == NULL){
+    vst3_browser->port_editor = g_list_prepend(vst3_browser->port_editor,
+					       port_editor);
+    
+    gtk_grid_attach(vst3_browser->port_editor_grid,
+		    port_editor,
+		    x, y,
+		    width, height);
+  }
 }
 
 /**
- * ags_vst3_browser_combo_box_boolean_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.10.12
+ * ags_vst3_browser_remove_port_editor:
+ * @vst3_browser: the #AgsVst3Browser
+ * @port_editor: the #AgsPortEditor
+ * 
+ * Remove @port_editor from @vst3_browser.
+ * 
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_vst3_browser_combo_box_boolean_controls_new()
+void
+ags_vst3_browser_remove_port_editor(AgsVst3Browser *vst3_browser,
+				    AgsPortEditor *port_editor)
 {
-  GtkComboBoxText *combo_box;
+  g_return_if_fail(AGS_IS_VST3_BROWSER(vst3_browser));
+  g_return_if_fail(AGS_IS_PORT_EDITOR(port_editor));
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
-
-  gtk_combo_box_text_append_text(combo_box,
-				 "check-button");
-  gtk_combo_box_text_append_text(combo_box,
-				 "toggle button");
-
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
-
-  return((GtkWidget *) combo_box);
+  if(g_list_find(vst3_browser->port_editor, port_editor) != NULL){
+    vst3_browser->port_editor = g_list_remove(vst3_browser->port_editor,
+					      port_editor);
+    
+    gtk_grid_remove(vst3_browser->port_editor_grid,
+		    port_editor);
+  }
 }
 
 /**
- * ags_vst3_browser_combo_box_controls_new:
- *
- * Creates a #GtkComboBox containing suitable widgets as controls.
- *
- * Returns: a new #GtkComboBox
- *
- * Since: 3.10.12
+ * ags_vst3_browser_clear:
+ * @vst3_browser: the #AgsVst3Browser
+ * 
+ * Clear @vst3_browser.
+ * 
+ * Since: 4.0.0
  */
-GtkWidget*
-ags_vst3_browser_combo_box_controls_new()
+void
+ags_vst3_browser_clear(AgsVst3Browser *vst3_browser)
 {
-  GtkComboBoxText *combo_box;
+  GList *start_port_editor, *port_editor;
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gchar *str;
 
-  gtk_combo_box_text_append_text(combo_box,
-				 "spin button");
-  gtk_combo_box_text_append_text(combo_box,
-				 "dial");
-  gtk_combo_box_text_append_text(combo_box,
-				 "vertical scale");
-  gtk_combo_box_text_append_text(combo_box,
-				 "horizontal scale");
+  g_return_if_fail(AGS_IS_VST3_BROWSER(vst3_browser));
 
-  gtk_combo_box_set_active((GtkComboBox *) combo_box,
-			   1);
+  /* update ui - reading plugin file */
+  //TODO:JK: implement me
+  
+  port_editor =
+    start_port_editor = ags_vst3_browser_get_port_editor(vst3_browser);
+    
+  while(port_editor != NULL){
+    ags_vst3_browser_remove_port_editor(vst3_browser,
+					port_editor->data);
+      
+    g_object_run_dispose(port_editor->data);
+    g_object_unref(port_editor->data);
 
-  return((GtkWidget *) combo_box);
+    port_editor = port_editor->next;
+  }
+
+  g_list_free(start_port_editor);
 }
 
 GtkWidget*

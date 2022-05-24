@@ -67,7 +67,7 @@ ags_remove_audio_signal_test_launch_remove_audio_signal_callback()
 void
 ags_remove_audio_signal_test_launch()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
   AgsRecallID *recall_id;
@@ -75,7 +75,7 @@ ags_remove_audio_signal_test_launch()
   AgsRemoveAudioSignal *remove_audio_signal;
   
   /* create soundcard */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
 			NULL);
   g_object_ref(devout);
 

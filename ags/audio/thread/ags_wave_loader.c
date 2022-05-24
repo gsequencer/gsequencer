@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -163,6 +163,7 @@ void
 ags_wave_loader_init(AgsWaveLoader *wave_loader)
 {
   wave_loader->flags = 0;
+  wave_loader->connectable_flags = 0;
 
   /* add base plugin mutex */
   g_rec_mutex_init(&(wave_loader->obj_mutex));

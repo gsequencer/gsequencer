@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,24 +39,12 @@ G_BEGIN_DECLS
 typedef struct _AgsSFZRegion AgsSFZRegion;
 typedef struct _AgsSFZRegionClass AgsSFZRegionClass;
 
-/**
- * AgsSFZRegionFlags:
- * @AGS_SFZ_REGION_ADDED_TO_REGISTRY: the sfz region was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_SFZ_REGION_CONNECTED: indicates the sfz region was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsSFZRegion by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_SFZ_REGION_ADDED_TO_REGISTRY    = 1,
-  AGS_SFZ_REGION_CONNECTED            = 1 <<  1,
-}AgsSFZRegionFlags;
-
 struct _AgsSFZRegion
 {
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
 
   GRecMutex obj_mutex;
 

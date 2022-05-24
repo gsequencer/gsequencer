@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,14 +137,20 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
   GtkBox *filename_hbox;
   GtkLabel *label;
 
+  pitch_sampler_file->connectable_flags = 0;
+  
   gtk_orientable_set_orientation(GTK_ORIENTABLE(pitch_sampler_file),
 				 GTK_ORIENTATION_VERTICAL);
   
   grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) pitch_sampler_file,
-		     (GtkWidget *) grid,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append((GtkBox *) pitch_sampler_file,
+		 (GtkWidget *) grid);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -154,6 +160,9 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) filename_hbox,
 			GTK_ALIGN_FILL);
+
+  gtk_box_set_spacing(filename_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) filename_hbox,
@@ -161,21 +170,18 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		  2, 1); 
 
   pitch_sampler_file->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start(filename_hbox,
-		     (GtkWidget *) pitch_sampler_file->filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(filename_hbox,
+		 (GtkWidget *) pitch_sampler_file->filename);
 
   /* frequency */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("frequency"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -184,13 +190,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 
   pitch_sampler_file->freq = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 						       "label", "440.0",
-						       "xalign", 0.0,
 						       NULL);
 
   gtk_widget_set_valign((GtkWidget *) pitch_sampler_file->freq,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) pitch_sampler_file->freq,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) pitch_sampler_file->freq,
@@ -200,13 +205,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
   /* base key */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("base key"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -215,13 +219,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 
   pitch_sampler_file->base_key = g_object_new(GTK_TYPE_LABEL,
 					      "label", "48",
-					      "xalign", 0.0,
 					      NULL);
 
   gtk_widget_set_valign((GtkWidget *) pitch_sampler_file->base_key,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) pitch_sampler_file->base_key,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) pitch_sampler_file->base_key,
@@ -231,13 +234,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
   /* loop start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop start"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -246,13 +248,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 
   pitch_sampler_file->loop_start = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 							     "label", "0",
-							     "xalign", 0.0,
 							     NULL);
 
   gtk_widget_set_valign((GtkWidget *) pitch_sampler_file->loop_start,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) pitch_sampler_file->loop_start,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) pitch_sampler_file->loop_start,
@@ -262,13 +263,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
   /* loop end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop end"),
-				    "xalign", 0.0,
 				    NULL);
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -277,13 +277,12 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 
   pitch_sampler_file->loop_end = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 							   "label", "0",
-							   "xalign", 0.0,
 							   NULL);
 
   gtk_widget_set_valign((GtkWidget *) pitch_sampler_file->loop_end,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) pitch_sampler_file->loop_end,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) pitch_sampler_file->loop_end,
@@ -298,11 +297,11 @@ ags_pitch_sampler_file_connect(AgsConnectable *connectable)
   
   pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
 
-  if((AGS_PITCH_SAMPLER_FILE_CONNECTED & (pitch_sampler_file->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) != 0){
     return;
   }
 
-  pitch_sampler_file->flags |= AGS_PITCH_SAMPLER_FILE_CONNECTED;
+  pitch_sampler_file->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 }
 
 void
@@ -312,11 +311,11 @@ ags_pitch_sampler_file_disconnect(AgsConnectable *connectable)
   
   pitch_sampler_file = AGS_PITCH_SAMPLER_FILE(connectable);
 
-  if((AGS_PITCH_SAMPLER_FILE_CONNECTED & (pitch_sampler_file->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (pitch_sampler_file->connectable_flags)) == 0){
     return;
   }
 
-  pitch_sampler_file->flags &= (~AGS_PITCH_SAMPLER_FILE_CONNECTED);
+  pitch_sampler_file->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 }
 
 /**

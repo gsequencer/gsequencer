@@ -32,33 +32,8 @@
 #endif
 
 void
-ags_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsVst3Bridge *vst3_bridge)
-{
-  AgsWindow *window;
-
-  gchar *str;
-
-  if(old_parent != NULL){
-    return;
-  }
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
-
-  str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_VST3_BRIDGE)->counter);
-
-  g_object_set(AGS_MACHINE(vst3_bridge),
-	       "machine-name", str,
-	       NULL);
-
-  ags_window_increment_machine_counter(window,
-				       AGS_TYPE_VST3_BRIDGE);
-
-  g_free(str);
-}
-
-void
-ags_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsVst3Bridge *vst3_bridge)
+ags_vst3_bridge_show_vst3_ui_callback(GAction *action, GVariant *parameter,
+				      AgsVst3Bridge *vst3_bridge)
 {
   AgsVst3Plugin *vst3_plugin;
 
@@ -189,6 +164,8 @@ ags_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsVst3Bridge *
 AgsVstTResult
 ags_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsVst3Bridge *vst3_bridge)
 {
+  AgsEffectBridge *effect_bridge;
+
   AgsVst3Plugin *vst3_plugin;
   AgsPluginPort *plugin_port;
 
@@ -241,7 +218,9 @@ ags_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handle
 							     id,
 							     value_normalized);
 
-  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge)->bulk_input)->grid);
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(vst3_bridge)->bridge);
+
+  start_bulk_member = ags_effect_bulk_get_bulk_member(AGS_EFFECT_BULK(effect_bridge->bulk_input));
 
   bulk_member = start_bulk_member;
   
@@ -276,7 +255,8 @@ ags_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handle
 	  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				       active);
 	}else if(GTK_IS_BUTTON(child_widget)){
-	  gtk_button_clicked((GtkButton *) child_widget);
+	  g_signal_emit_by_name((GtkButton *) child_widget,
+				"clicked");
 	}
 
 	if(block_scope == NULL){

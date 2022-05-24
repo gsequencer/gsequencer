@@ -484,7 +484,7 @@ ags_audio_ref_count_test_recursive_set_property()
   ags_audio_ref_count_test_link_audio_tree();
 
   /* attempt #0 */
-  output_soundcard = ags_devout_new();
+  output_soundcard = ags_alsa_devout_new();
 
   output_soundcard_channel = 0;
   

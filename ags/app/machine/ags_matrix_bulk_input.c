@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -126,7 +126,7 @@ ags_matrix_bulk_input_finalize(GObject *gobject)
 void
 ags_matrix_bulk_input_connect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BULK(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -138,7 +138,7 @@ ags_matrix_bulk_input_connect(AgsConnectable *connectable)
 void
 ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_BULK(connectable)->connectable_flags)) == 0){
     return;
   }
 

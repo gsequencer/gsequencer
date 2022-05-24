@@ -43,16 +43,14 @@ G_BEGIN_DECLS
 typedef struct _AgsPitchSamplerFile AgsPitchSamplerFile;
 typedef struct _AgsPitchSamplerFileClass AgsPitchSamplerFileClass;
 
-typedef enum{
-  AGS_PITCH_SAMPLER_FILE_CONNECTED   = 1,
-}AgsPitchSamplerFileFlags;
-
 struct _AgsPitchSamplerFile
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
   
+  GtkCheckButton *selector;
+
   GtkEntry *filename;
 
   GtkLabel *freq;

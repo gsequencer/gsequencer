@@ -63,23 +63,23 @@ ags_osc_xmlrpc_message_test_set_property()
 {
   AgsOscXmlrpcMessage *osc_xmlrpc_message;
 
-  SoupMessage *soup_message;
+  SoupServerMessage *server_msg;
   GHashTable *query;
   
   osc_xmlrpc_message = ags_osc_xmlrpc_message_new();
 
-  soup_message = soup_message_new("/ags-test-osc-xmlrpc",
-				  "http://localhost/ags-test-osc-xmlrpc");
+  server_msg = g_object_new(SOUP_TYPE_SERVER_MESSAGE,
+			    NULL);
 
   query = g_hash_table_new(g_str_hash,
 			   g_str_equal);
 
   g_object_set(osc_xmlrpc_message,
-	       "msg", soup_message,
+	       "server-msg", server_msg,
 	       "query", query,
 	       NULL);
 
-  CU_ASSERT(osc_xmlrpc_message->msg == soup_message);
+  CU_ASSERT(osc_xmlrpc_message->server_msg == server_msg);
   CU_ASSERT(osc_xmlrpc_message->query == query);
 }
 
@@ -88,23 +88,23 @@ ags_osc_xmlrpc_message_test_get_property()
 {
   AgsOscXmlrpcMessage *osc_xmlrpc_message;
 
-  SoupMessage *soup_message;
+  SoupMessage *server_msg;
   GHashTable *query;
 
   osc_xmlrpc_message = ags_osc_xmlrpc_message_new();
 
-  osc_xmlrpc_message->msg = soup_message_new("/ags-test-osc-xmlrpc",
-					     "http://localhost/ags-test-osc-xmlrpc");
+  osc_xmlrpc_message->server_msg = g_object_new(SOUP_TYPE_SERVER_MESSAGE,
+						NULL);
 
   osc_xmlrpc_message->query = g_hash_table_new(g_str_hash,
 					       g_str_equal);
 
   g_object_get(osc_xmlrpc_message,
-	       "msg", &soup_message,
+	       "server-msg", &server_msg,
 	       "query", &query,
 	       NULL);
 
-  CU_ASSERT(osc_xmlrpc_message->msg == soup_message);
+  CU_ASSERT(osc_xmlrpc_message->server_msg == server_msg);
   CU_ASSERT(osc_xmlrpc_message->query == query);
 }
 

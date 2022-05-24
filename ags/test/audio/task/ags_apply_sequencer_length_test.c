@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,13 +65,11 @@ ags_apply_sequencer_length_test_clean_suite()
 void
 ags_apply_sequencer_length_test_launch_scope_audio()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *port;
 
-  AgsCountBeatsAudio *count_beats_audio;
-  
   AgsApplySequencerLength *apply_sequencer_length;
 
   AgsApplicationContext *application_context;
@@ -81,7 +79,7 @@ ags_apply_sequencer_length_test_launch_scope_audio()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -100,11 +98,6 @@ ags_apply_sequencer_length_test_launch_scope_audio()
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
 		     1, 0);
-
-  count_beats_audio = ags_count_beats_audio_new(audio);
-  ags_audio_add_recall(audio,
-		       count_beats_audio,
-		       FALSE);
   
   apply_sequencer_length = ags_apply_sequencer_length_new(audio,
 							  AGS_APPLY_SEQUENCER_LENGTH_TEST_LAUNCH_SCOPE_AUDIO_LENGTH);
@@ -115,21 +108,12 @@ ags_apply_sequencer_length_test_launch_scope_audio()
 
   /* test */
   ags_task_launch(apply_sequencer_length);
-
-  g_object_get(count_beats_audio,
-	       "sequencer-loop-end", &port,
-	       NULL);
-
-  g_value_init(&value, G_TYPE_UINT64);
-  ags_port_safe_read(port, &value);
-
-  CU_ASSERT(g_value_get_uint64(&value) == AGS_APPLY_SEQUENCER_LENGTH_TEST_LAUNCH_SCOPE_AUDIO_LENGTH);
 }
 
 void
 ags_apply_sequencer_length_test_launch_scope_channel()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
 
@@ -140,7 +124,7 @@ ags_apply_sequencer_length_test_launch_scope_channel()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -178,12 +162,10 @@ ags_apply_sequencer_length_test_launch_scope_channel()
 void
 ags_apply_sequencer_length_test_launch_scope_recall()
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *devout;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *port;
-
-  AgsCountBeatsAudio *count_beats_audio;
 
   AgsApplySequencerLength *apply_sequencer_length;
 
@@ -194,7 +176,7 @@ ags_apply_sequencer_length_test_launch_scope_recall()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
-  devout = ags_devout_new(application_context);
+  devout = ags_alsa_devout_new(application_context);
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(NULL, devout));
   g_object_ref(devout);
@@ -218,29 +200,15 @@ ags_apply_sequencer_length_test_launch_scope_recall()
 		     AGS_TYPE_INPUT,
 		     1, 0);
 
-  count_beats_audio = ags_count_beats_audio_new(audio);
-  ags_audio_add_recall(audio,
-		       count_beats_audio,
-		       FALSE);
-
-  apply_sequencer_length = ags_apply_sequencer_length_new(count_beats_audio,
+  apply_sequencer_length = ags_apply_sequencer_length_new(NULL,
 							  AGS_APPLY_SEQUENCER_LENGTH_TEST_LAUNCH_SCOPE_AUDIO_LENGTH);
 
   CU_ASSERT(AGS_IS_APPLY_SEQUENCER_LENGTH(apply_sequencer_length));
-  CU_ASSERT(apply_sequencer_length->scope == count_beats_audio);
+  CU_ASSERT(apply_sequencer_length->scope == NULL);
   CU_ASSERT(apply_sequencer_length->length == AGS_APPLY_SEQUENCER_LENGTH_TEST_LAUNCH_SCOPE_AUDIO_LENGTH);
 
   /* test */
   ags_task_launch(apply_sequencer_length);
-
-  g_object_get(count_beats_audio,
-	       "sequencer-loop-end", &port,
-	       NULL);
-
-  g_value_init(&value, G_TYPE_UINT64);
-  ags_port_safe_read(port, &value);
-
-  CU_ASSERT(g_value_get_uint64(&value) == AGS_APPLY_SEQUENCER_LENGTH_TEST_LAUNCH_SCOPE_AUDIO_LENGTH);
 }
 
 int

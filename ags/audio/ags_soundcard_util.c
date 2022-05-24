@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/audio/ags_soundcard_util.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_devin.h>
 
 #include <ags/audio/alsa/ags_alsa_devout.h>
 #include <ags/audio/alsa/ags_alsa_devin.h>
@@ -114,11 +111,7 @@ ags_soundcard_util_get_obj_mutex(GObject *soundcard)
 
   obj_mutex = NULL;
   
-  if(AGS_IS_DEVOUT(soundcard)){
-    obj_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(soundcard);
-  }else if(AGS_IS_DEVIN(soundcard)){
-    obj_mutex = AGS_DEVIN_GET_OBJ_MUTEX(soundcard);
-  }else if(AGS_IS_ALSA_DEVOUT(soundcard)){
+  if(AGS_IS_ALSA_DEVOUT(soundcard)){
     obj_mutex = AGS_ALSA_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_ALSA_DEVIN(soundcard)){
     obj_mutex = AGS_ALSA_DEVIN_GET_OBJ_MUTEX(soundcard);
@@ -200,13 +193,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   
   g_rec_mutex_lock(obj_mutex);
   
-  if(AGS_IS_DEVOUT(soundcard)){
-    attack = AGS_DEVOUT(soundcard)->attack;
-    delay = AGS_DEVOUT(soundcard)->delay;
-  }else if(AGS_IS_DEVIN(soundcard)){
-    attack = AGS_DEVIN(soundcard)->attack;
-    delay = AGS_DEVIN(soundcard)->delay;
-  }else if(AGS_IS_ALSA_DEVOUT(soundcard)){
+  if(AGS_IS_ALSA_DEVOUT(soundcard)){
     attack = AGS_ALSA_DEVOUT(soundcard)->attack;
     delay = AGS_ALSA_DEVOUT(soundcard)->delay;
   }else if(AGS_IS_ALSA_DEVIN(soundcard)){

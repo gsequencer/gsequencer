@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
-#include <ags/app/ags_listing_editor.h>
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line_member.h>
 
@@ -36,22 +35,17 @@ ags_line_check_message_callback(GObject *application_context, AgsLine *line)
 }
 
 void
-ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
+ags_line_group_toggled_callback(GtkWidget *widget, AgsLine *line)
 {
   AgsPad *pad;
   AgsLine *current;
 
-  GtkContainer *container;
+  GList *start_list, *list;
 
-  GList *list, *list_start;
+  pad = (AgsPad *) line->parent_pad;
 
-  pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line),
-					   AGS_TYPE_PAD);
-
-  container = (GtkContainer *) pad->expander_set;
-
-  list_start =
-    list = gtk_container_get_children(container);
+  list =
+    start_list = ags_pad_get_line(pad);
 
   if(gtk_toggle_button_get_active(line->group)){
     ags_line_group_changed(line);
@@ -60,7 +54,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
       current = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(current->group)){
-	g_list_free(list_start);
+	g_list_free(start_list);
 
 	return;
       }
@@ -80,7 +74,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
 	if(gtk_toggle_button_get_active(current->group)){
 	  ags_line_group_changed(line);
-	  g_list_free(list_start);
+	  g_list_free(start_list);
 
 	  return;
 	}
@@ -92,7 +86,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
     gtk_toggle_button_set_active(line->group, TRUE);
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -104,7 +98,7 @@ ags_line_stop_callback(AgsLine *line,
   
   gboolean reset_active;
 
-  pad = AGS_PAD(line->pad);
+  pad = AGS_PAD(line->parent_pad);
   
   if((AGS_PAD_BLOCK_STOP & (pad->flags)) != 0){
     return;

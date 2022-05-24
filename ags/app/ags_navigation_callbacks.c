@@ -26,35 +26,23 @@ void
 ags_navigation_expander_callback(GtkWidget *widget,
 				 AgsNavigation *navigation)
 {
-  GtkImage *image;
-
-  GList *start_list;
-
   gchar *icon_name;
   
-  start_list = gtk_container_get_children((GtkContainer *) widget);
-  image = (GtkImage *) start_list->data;
-  g_list_free(start_list);
-
-  start_list = gtk_container_get_children((GtkContainer *) navigation);
-  widget = (GtkWidget *) start_list->next->data;
-  g_list_free(start_list);
-
-  g_object_get(image,
+  g_object_get(navigation->expander,
 	       "icon-name", &icon_name,
 	       NULL);
   
   if(!g_strcmp0("pan-down",
 		icon_name)){
-    gtk_widget_hide(widget);
+    gtk_widget_hide(navigation->expansion_box);
 
-    g_object_set(image,
+    g_object_set(navigation->expander,
 		 "icon-name", "pan-end",
 		 NULL);
   }else{
-    gtk_widget_show_all(widget);
+    gtk_widget_show(navigation->expansion_box);
 
-    g_object_set(image,
+    g_object_set(navigation->expander,
 		 "icon-name", "pan-down",
 		 NULL);
   }
@@ -125,7 +113,6 @@ ags_navigation_play_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsApplicationContext *application_context;
 
@@ -139,22 +126,24 @@ ags_navigation_play_callback(GtkWidget *widget,
     return;
   }
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-
   application_context = ags_application_context_get_instance();
+
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
   
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-
-  machines_start =
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  
+  machines =
+    machines_start = ags_window_get_machine(window);
   
   initialized_time = FALSE;
   
   while(machines != NULL){
-    machine = AGS_MACHINE(machines->data);
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to play!\n");
 #endif
@@ -164,10 +153,10 @@ ags_navigation_play_callback(GtkWidget *widget,
 	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
       }
       
-      ags_machine_set_run_extended(machine,
+      ags_machine_set_run_extended(current_machine,
 				   TRUE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
-    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+				   !gtk_check_button_get_active(navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to play!\n");
 #endif
@@ -177,7 +166,7 @@ ags_navigation_play_callback(GtkWidget *widget,
 	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
       }
       
-      ags_machine_set_run_extended(machine,
+      ags_machine_set_run_extended(current_machine,
 				   TRUE,
 				   FALSE, TRUE, FALSE, FALSE);
     }
@@ -193,7 +182,6 @@ ags_navigation_stop_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsApplicationContext *application_context;
 
@@ -203,33 +191,35 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   gchar *timestr;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-
   application_context = ags_application_context_get_instance();
 
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
 
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  machines =
+    machines_start = ags_window_get_machine(window);
 
   while(machines != NULL){
-    machine = AGS_MACHINE(machines->data);
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to stop!");
 #endif
       
-      ags_machine_set_run_extended(machine,
+      ags_machine_set_run_extended(current_machine,
 				   FALSE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
-    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+				   !gtk_check_button_get_active(navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to stop!");
 #endif
       
-      ags_machine_set_run_extended(machine,
+      ags_machine_set_run_extended(current_machine,
 				   FALSE,
 				   FALSE, TRUE, FALSE, FALSE);
     }
@@ -306,7 +296,6 @@ ags_navigation_loop_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsAudio *audio;
   AgsRecall *recall;
@@ -321,37 +310,39 @@ ags_navigation_loop_callback(GtkWidget *widget,
   guint loop_left, loop_right;
   
   GValue do_loop_value = {0,};
-  
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
   application_context = ags_application_context_get_instance();
+  
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines =
+    machines_start = ags_window_get_machine(window);
 
   loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(widget)));
 			 
   g_value_init(&do_loop_value, G_TYPE_BOOLEAN);
   g_value_set_boolean(&do_loop_value,
-		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+		      gtk_check_button_get_active(GTK_CHECK_BUTTON(widget)));
 
   while(machines != NULL){
-    machine = AGS_MACHINE(machines->data);
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!");
 #endif
       
-      audio = machine->audio;
+      audio = current_machine->audio;
 
       /* do it so */
       g_object_get(audio,
@@ -404,12 +395,12 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
       g_list_free_full(list_start,
 		       g_object_unref);
-    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
 #endif
       
-      audio = machine->audio;
+      audio = current_machine->audio;
 
       /* do it so */
       g_object_get(audio,
@@ -493,7 +484,6 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 				       AgsNavigation *navigation)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsAudio *audio;
   AgsRecall *recall;
@@ -509,36 +499,38 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
   GValue value = {0,};
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-
   application_context = ags_application_context_get_instance();
+
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines =
+    machines_start = ags_window_get_machine(window);
 
   loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
 
   g_value_init(&value, G_TYPE_UINT64);
   g_value_set_uint64(&value,
 		     (guint64) loop_left);
 
   while(machines != NULL){
-    machine = AGS_MACHINE(machines->data);
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
 #endif
       
-      audio = machine->audio;
+      audio = current_machine->audio;
 
       /* do it so */
       g_object_get(audio,
@@ -595,12 +587,12 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
       g_list_free_full(list_start,
 		       g_object_unref);
-    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
 #endif
       
-      audio = machine->audio;
+      audio = current_machine->audio;
 
       /* do it so */
       g_object_get(audio,
@@ -670,7 +662,6 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 					AgsNavigation *navigation)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsAudio *audio;
   AgsRecall *recall;
@@ -686,36 +677,38 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
   GValue value = {0,};
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-
   application_context = ags_application_context_get_instance();
+
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) navigation, AGS_TYPE_WINDOW));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  machines_start = 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+  machines =
+    machines_start = ags_window_get_machine(window);
 
   loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
-			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			 gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
 
   g_value_init(&value, G_TYPE_UINT64);
   g_value_set_uint64(&value,
 		     (guint64) loop_right);
 
   while(machines != NULL){
-    machine = AGS_MACHINE(machines->data);
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
 #endif
       
-      audio = machine->audio;
+      audio = current_machine->audio;
 
       /* do it so */
       g_object_get(audio,
@@ -772,12 +765,12 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
       g_list_free_full(list_start,
 		       g_object_unref);
-    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
 #endif
       
-      audio = machine->audio;
+      audio = current_machine->audio;
 
       /* do it so */
       g_object_get(audio,

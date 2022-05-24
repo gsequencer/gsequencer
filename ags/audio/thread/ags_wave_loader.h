@@ -53,7 +53,8 @@ struct _AgsWaveLoader
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GThread *thread;

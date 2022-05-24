@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <cairo.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
@@ -53,8 +55,7 @@ typedef struct _AgsSheetEdit AgsSheetEdit;
 typedef struct _AgsSheetEditClass AgsSheetEditClass;
 
 typedef enum{
-  AGS_SHEET_EDIT_CONNECTED             = 1,
-  AGS_SHEET_EDIT_AUTO_SCROLL           = 1 <<  1,
+  AGS_SHEET_EDIT_AUTO_SCROLL           = 1,
 }AgsSheetEditFlags;
 
 typedef enum{
@@ -81,6 +82,7 @@ struct _AgsSheetEdit
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;
@@ -111,8 +113,8 @@ struct _AgsSheetEdit
   
   GtkDrawingArea *drawing_area;
   
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsSheetEditClass

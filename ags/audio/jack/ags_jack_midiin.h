@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,42 +45,45 @@ typedef struct _AgsJackMidiinClass AgsJackMidiinClass;
 
 /**
  * AgsJackMidiinFlags:
- * @AGS_JACK_MIDIIN_ADDED_TO_REGISTRY: the JACK midiin was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_JACK_MIDIIN_CONNECTED: indicates the JACK midiin was connected by calling #AgsConnectable::connect()
- * @AGS_JACK_MIDIIN_BUFFER0: ring-buffer 0
- * @AGS_JACK_MIDIIN_BUFFER1: ring-buffer 1
- * @AGS_JACK_MIDIIN_BUFFER2: ring-buffer 2
- * @AGS_JACK_MIDIIN_BUFFER3: ring-buffer 3
- * @AGS_JACK_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_JACK_MIDIIN_INITIALIZED: recording is initialized
+ * @AGS_JACK_MIDIIN_START_RECORD: just started recording
  * @AGS_JACK_MIDIIN_RECORD: is recording
  * @AGS_JACK_MIDIIN_SHUTDOWN: stop recording
- * @AGS_JACK_MIDIIN_START_RECORD: just started recording
  * @AGS_JACK_MIDIIN_NONBLOCKING: do non-blocking calls
- * @AGS_JACK_MIDIIN_INITIALIZED: recording is initialized
+ * @AGS_JACK_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
  *
  * Enum values to control the behavior or indicate internal state of #AgsJackMidiin by
  * enable/disable as flags.
  */
 typedef enum
 {
-  AGS_JACK_MIDIIN_ADDED_TO_REGISTRY  = 1,
-  AGS_JACK_MIDIIN_CONNECTED          = 1 <<  1,
+  AGS_JACK_MIDIIN_INITIALIZED        = 1,
 
-  AGS_JACK_MIDIIN_BUFFER0            = 1 <<  2,
-  AGS_JACK_MIDIIN_BUFFER1            = 1 <<  3,
-  AGS_JACK_MIDIIN_BUFFER2            = 1 <<  4,
-  AGS_JACK_MIDIIN_BUFFER3            = 1 <<  5,
+  AGS_JACK_MIDIIN_START_RECORD       = 1 <<  1,
+  AGS_JACK_MIDIIN_RECORD             = 1 <<  2,
+  AGS_JACK_MIDIIN_SHUTDOWN           = 1 <<  3,
 
-  AGS_JACK_MIDIIN_ATTACK_FIRST       = 1 <<  6,
-
-  AGS_JACK_MIDIIN_RECORD             = 1 <<  7,
-
-  AGS_JACK_MIDIIN_SHUTDOWN           = 1 <<  8,
-  AGS_JACK_MIDIIN_START_RECORD       = 1 <<  9,
-
-  AGS_JACK_MIDIIN_NONBLOCKING        = 1 << 10,
-  AGS_JACK_MIDIIN_INITIALIZED        = 1 << 11,
+  AGS_JACK_MIDIIN_NONBLOCKING        = 1 <<  4,
+  
+  AGS_JACK_MIDIIN_ATTACK_FIRST       = 1 <<  5,
 }AgsJackMidiinFlags;
+
+/**
+ * AgsJackMidiinAppBufferMode:
+ * @AGS_JACK_MIDIIN_APP_BUFFER_0: ring-buffer 0
+ * @AGS_JACK_MIDIIN_APP_BUFFER_1: ring-buffer 1
+ * @AGS_JACK_MIDIIN_APP_BUFFER_2: ring-buffer 2
+ * @AGS_JACK_MIDIIN_APP_BUFFER_3: ring-buffer 3
+ * 
+ * Enum values to indicate internal state of #AgsJackMidiin application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_JACK_MIDIIN_APP_BUFFER_0,
+  AGS_JACK_MIDIIN_APP_BUFFER_1,
+  AGS_JACK_MIDIIN_APP_BUFFER_2,
+  AGS_JACK_MIDIIN_APP_BUFFER_3,
+}AgsJackMidiinAppBufferMode;
 
 /**
  * AgsJackMidiinSyncFlags:
@@ -113,15 +116,18 @@ struct _AgsJackMidiin
   GObject gobject;
 
   guint flags;
+  guint connectable_flags;
   volatile guint sync_flags;
   
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
-  GRecMutex **buffer_mutex;
-  char **buffer;
-  guint buffer_size[4];
+  guint app_buffer_mode;
+
+  GRecMutex **app_buffer_mutex;
+  char **app_buffer;
+  guint app_buffer_size[4];
 
   double bpm; // beats per minute
 
@@ -156,6 +162,7 @@ struct _AgsJackMidiinClass
 };
 
 GType ags_jack_midiin_get_type();
+GType ags_jack_midiin_flags_get_type();
 
 GQuark ags_jack_midiin_error_quark();
 

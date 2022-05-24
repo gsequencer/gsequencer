@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,6 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_dssi.h>
-#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
@@ -217,8 +214,6 @@ ags_recall_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_RECALL_ADDED_TO_REGISTRY, "AGS_RECALL_ADDED_TO_REGISTRY", "recall-added-to-registry" },
-      { AGS_RECALL_CONNECTED, "AGS_RECALL_CONNECTED", "recall-connected" },
       { AGS_RECALL_TEMPLATE, "AGS_RECALL_TEMPLATE", "recall-template" },
       { AGS_RECALL_DEFAULT_TEMPLATE, "AGS_RECALL_DEFAULT_TEMPLATE", "recall-default-template" },
       { AGS_RECALL_HAS_OUTPUT_PORT, "AGS_RECALL_HAS_OUTPUT_PORT", "recall-has-output-port" },
@@ -1018,6 +1013,7 @@ void
 ags_recall_init(AgsRecall *recall)
 {  
   recall->flags = 0;
+  recall->connectable_flags = 0;
   recall->ability_flags = 0;
   recall->behaviour_flags = 0;
   recall->sound_scope = -1;
@@ -1955,11 +1951,20 @@ ags_recall_is_ready(AgsConnectable *connectable)
   AgsRecall *recall;
   
   gboolean is_ready;
+  
+  GRecMutex *recall_mutex;
 
   recall = AGS_RECALL(connectable);
 
-  /* check is added */
-  is_ready = ags_recall_test_flags(recall, AGS_RECALL_ADDED_TO_REGISTRY);
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+  /* check is ready */
+  g_rec_mutex_lock(recall_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (recall->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recall_mutex);
   
   return(is_ready);
 }
@@ -1976,15 +1981,24 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
 
   GList *list;
 
+  GRecMutex *recall_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
   
   recall = AGS_RECALL(connectable);
 
-  ags_recall_set_flags(recall, AGS_RECALL_ADDED_TO_REGISTRY);
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  application_context = ags_application_context_get_instance();
+  g_rec_mutex_lock(recall_mutex);
+
+  recall->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+
+  g_rec_mutex_unlock(recall_mutex);
 
   registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -2046,11 +2060,20 @@ ags_recall_is_connected(AgsConnectable *connectable)
   AgsRecall *recall;
   
   gboolean is_connected;
+  
+  GRecMutex *recall_mutex;
 
   recall = AGS_RECALL(connectable);
 
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
   /* check is connected */
-  is_connected = ags_recall_test_flags(recall, AGS_RECALL_CONNECTED);
+  g_rec_mutex_lock(recall_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (recall->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recall_mutex);
   
   return(is_connected);
 }
@@ -2071,11 +2094,15 @@ ags_recall_connect(AgsConnectable *connectable)
   }
 
   recall = AGS_RECALL(connectable);
-
-  ags_recall_set_flags(recall, AGS_RECALL_CONNECTED);  
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+  g_rec_mutex_lock(recall_mutex);
+
+  recall->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_rec_mutex_unlock(recall_mutex);
 
   children_lock_free = ags_recall_global_get_children_lock_free();
 
@@ -2136,16 +2163,20 @@ ags_recall_disconnect(AgsConnectable *connectable)
   
   GRecMutex *recall_mutex;
 
+  recall = AGS_RECALL(connectable);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  recall = AGS_RECALL(connectable);
+  g_rec_mutex_lock(recall_mutex);
 
-  ags_recall_unset_flags(recall, AGS_RECALL_CONNECTED);    
+  recall->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  g_rec_mutex_unlock(recall_mutex);
 
   children_lock_free = ags_recall_global_get_children_lock_free();
 
@@ -6082,9 +6113,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   /* apply flags */
   ags_recall_set_flags(copy_recall,
-		       (recall_flags & (~ (AGS_RECALL_ADDED_TO_REGISTRY |
-					   AGS_RECALL_CONNECTED |
-					   AGS_RECALL_TEMPLATE))));
+		       (recall_flags & (~AGS_RECALL_TEMPLATE)));
 
   ags_recall_set_ability_flags(copy_recall, ability_flags);
   ags_recall_set_behaviour_flags(copy_recall, behaviour_flags);

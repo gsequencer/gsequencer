@@ -24,13 +24,8 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <libintl.h>
 #include <stdio.h>
@@ -79,7 +74,7 @@ gboolean ags_recycling_test_create_audio_signal_with_frame_count_compare_frames(
 #define AGS_RECYCLING_TEST_FIND_NEXT_CHANNEL_N_CHANNEL (8)
 
 AgsApplicationContext *application_context;
-AgsDevout *devout;
+AgsAlsaDevout *devout;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -97,7 +92,7 @@ ags_recycling_test_init_suite()
   ags_application_context_prepare(application_context);
   ags_application_context_setup(application_context);
   
-  devout = ags_devout_new(NULL);
+  devout = ags_alsa_devout_new();
 
   return(0);
 }

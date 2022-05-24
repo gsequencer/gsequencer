@@ -22,9 +22,9 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
-#include <ags/app/ags_wave_window.h>
-#include <ags/app/ags_wave_editor.h>
 #include <ags/app/ags_machine.h>
+
+#include <ags/app/editor/ags_wave_edit.h>
 
 #include <ags/i18n.h>
 
@@ -40,7 +40,6 @@ void ags_select_buffer_dialog_disconnect(AgsConnectable *connectable);
 void ags_select_buffer_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_select_buffer_dialog_apply(AgsApplicable *applicable);
 void ags_select_buffer_dialog_reset(AgsApplicable *applicable);
-gboolean ags_select_buffer_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_select_buffer_dialog
@@ -108,7 +107,6 @@ void
 ags_select_buffer_dialog_class_init(AgsSelectBufferDialogClass *select_buffer_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_select_buffer_dialog_parent_class = g_type_class_peek_parent(select_buffer_dialog);
 
@@ -116,11 +114,6 @@ ags_select_buffer_dialog_class_init(AgsSelectBufferDialogClass *select_buffer_di
   gobject = (GObjectClass *) select_buffer_dialog;
 
   gobject->finalize = ags_select_buffer_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) select_buffer_dialog;
-
-  widget->delete_event = ags_select_buffer_dialog_delete_event;
 }
 
 void
@@ -143,45 +136,41 @@ ags_select_buffer_dialog_applicable_interface_init(AgsApplicableInterface *appli
 void
 ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
-  select_buffer_dialog->flags = 0;
+  select_buffer_dialog->connectable_flags = 0;
 
   g_object_set(select_buffer_dialog,
 	       "title", i18n("select buffers"),
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(select_buffer_dialog),
-		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
+  gtk_window_set_hide_on_close(select_buffer_dialog,
+			       TRUE);
+  
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_buffer_dialog),
+		 GTK_WIDGET(vbox));  
 
   /* copy selection */
   select_buffer_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active((GtkToggleButton *) select_buffer_dialog->copy_selection,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(select_buffer_dialog->copy_selection),
-		     FALSE, FALSE,
-		     0);  
+  gtk_check_button_set_active(select_buffer_dialog->copy_selection,
+			      TRUE);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(select_buffer_dialog->copy_selection));  
   
   /* select x0 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append((GtkBox *) vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x0"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x0 - spin button */
   select_buffer_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -191,24 +180,19 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 			     2);
   gtk_spin_button_set_value(select_buffer_dialog->select_x0,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_buffer_dialog->select_x0),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_buffer_dialog->select_x0));
   
   /* select x1 - hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_append(vbox,
+		 GTK_WIDGET(hbox));
 
   /* select x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x1"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(label));
 
   /* select x1 - spin button */
   select_buffer_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -218,10 +202,8 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 			     2);
   gtk_spin_button_set_value(select_buffer_dialog->select_x1,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(select_buffer_dialog->select_x1),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_buffer_dialog->select_x1));
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_buffer_dialog,
@@ -238,11 +220,11 @@ ags_select_buffer_dialog_connect(AgsConnectable *connectable)
 
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
 
-  if((AGS_SELECT_BUFFER_DIALOG_CONNECTED & (select_buffer_dialog->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (select_buffer_dialog->connectable_flags)) != 0){
     return;
   }
 
-  select_buffer_dialog->flags |= AGS_SELECT_BUFFER_DIALOG_CONNECTED;
+  select_buffer_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   g_signal_connect(select_buffer_dialog, "response",
 		   G_CALLBACK(ags_select_buffer_dialog_response_callback), select_buffer_dialog);
@@ -255,11 +237,11 @@ ags_select_buffer_dialog_disconnect(AgsConnectable *connectable)
 
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
 
-  if((AGS_SELECT_BUFFER_DIALOG_CONNECTED & (select_buffer_dialog->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (select_buffer_dialog->connectable_flags)) == 0){
     return;
   }
 
-  select_buffer_dialog->flags &= (~AGS_SELECT_BUFFER_DIALOG_CONNECTED);
+  select_buffer_dialog->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   g_object_disconnect(G_OBJECT(select_buffer_dialog),
 		      "any_signal::response",
@@ -288,8 +270,8 @@ void
 ags_select_buffer_dialog_apply(AgsApplicable *applicable)
 {
   AgsSelectBufferDialog *select_buffer_dialog;
-
   AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
   AgsWaveEdit *focused_wave_edit;
@@ -309,7 +291,6 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
 
   xmlChar *buffer;
 
-  gboolean use_composite_editor;
   guint samplerate;
   guint buffer_size;
   gdouble delay;
@@ -326,33 +307,15 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
-
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  machine = NULL;
-  
-  if(use_composite_editor){
-    AgsCompositeEditor *composite_editor;
     
-    composite_editor = window->composite_editor;
+  composite_editor = window->composite_editor;
 
-    machine = composite_editor->selected_machine;
+  machine = composite_editor->selected_machine;
 
-    focused_wave_edit = composite_editor->wave_edit->focused_edit;
+  focused_wave_edit = composite_editor->wave_edit->focused_edit;
     
-    notebook = composite_editor->wave_edit->channel_selector;
-  }else{
-    AgsWaveEditor *wave_editor;
-    
-    wave_editor = window->wave_window->wave_editor;
-
-    machine = wave_editor->selected_machine;
-
-    focused_wave_edit = wave_editor->focused_wave_edit;
-
-    notebook = wave_editor->notebook;
-  }
+  notebook = composite_editor->wave_edit->channel_selector;
   
   audio = machine->audio;
 
@@ -428,9 +391,9 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   /* write to clipboard */
   if(copy_selection){
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
-    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
-    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
+			   buffer);
     
     xmlFreeDoc(clipboard);
   }
@@ -440,16 +403,6 @@ void
 ags_select_buffer_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
-}
-
-gboolean
-ags_select_buffer_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_select_buffer_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**

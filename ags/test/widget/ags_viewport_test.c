@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,65 +22,48 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/libags-gui.h>
+#include <stdlib.h>
 
-int
-main(int argc, char **argv)
+void
+activate(GtkApplication *app,
+	 gpointer user_data)
 {
   GtkWindow *window;
-  GtkBox *vbox;
-  AgsViewport *viewport;
+  GtkGrid *grid;
+  GtkScrolledWindow *scrolled_window;
   GtkGrid *block;
 
-  guint i, j;
+  guint i;
+  guint j;
   
-  gtk_init(&argc, &argv);
+  window = gtk_application_window_new(app);
 
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  grid = gtk_grid_new();
+  gtk_window_set_child(window,
+		       grid);
 
-  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
-		     0);
+  scrolled_window = gtk_scrolled_window_new();  
+  gtk_grid_attach(grid,
+		  scrolled_window,
+		  0, 0,
+		  1, 1);
+
+  gtk_scrolled_window_set_policy(scrolled_window,
+  				 GTK_POLICY_EXTERNAL,
+  				 GTK_POLICY_EXTERNAL);
   
-  gtk_widget_set_halign(vbox,
-			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(vbox,
-			GTK_ALIGN_FILL);
-  gtk_widget_set_vexpand(vbox,
+  gtk_widget_set_vexpand(scrolled_window,
 			 TRUE);
-  gtk_widget_set_hexpand(vbox,
-			 TRUE);
-  
-  gtk_container_add(window,
-		    vbox);
 
-  gtk_widget_set_size_request(window,
-			      50, 50);
+  gtk_widget_set_margin_top(scrolled_window,
+			    20);
 
-  viewport = ags_viewport_new();
-  
-  gtk_widget_set_size_request(viewport,
-			      100, 100);
-
-  gtk_widget_set_halign(viewport,
-			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(viewport,
-			GTK_ALIGN_FILL);
-
-#if 0
-  gtk_widget_set_vexpand(viewport,
-			 TRUE);
-  gtk_widget_set_hexpand(viewport,
-			 TRUE);
-#endif
-  
-  gtk_box_pack_start(vbox,
-		     viewport,
-		     FALSE, FALSE,
-		     0);
+  gtk_widget_set_size_request(scrolled_window,
+			      60, -1);
 
   block = gtk_grid_new();
-  gtk_container_add(viewport,
-		    block);
+  gtk_scrolled_window_set_child(scrolled_window,
+				block);
 
   for(i = 0; i < 10; i++){
     for(j = 0; j < 10; j++){
@@ -101,9 +84,28 @@ main(int argc, char **argv)
     }
   }
   
-  gtk_widget_show_all(window);
+  gtk_widget_show(window);
+  gtk_widget_show(block);
+}
+
+int
+main(int argc, char **argv)
+{
+  GtkApplication *app;
+
+  int status;
   
-  gtk_main();
+  app = gtk_application_new("org.nongnu.gsequencer.ags_viewport_test",
+			    G_APPLICATION_FLAGS_NONE);
   
-  return(0);
+  g_signal_connect(app, "activate",
+		   G_CALLBACK(activate), NULL);
+
+  status = g_application_run(G_APPLICATION(app),
+			     argc,
+			     argv);
+
+  g_object_unref(app);
+  
+  return(status);
 }

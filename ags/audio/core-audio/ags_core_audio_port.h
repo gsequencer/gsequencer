@@ -55,8 +55,6 @@ typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
 
 /**
  * AgsCoreAudioPortFlags:
- * @AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY: the CoreAudio port was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_CORE_AUDIO_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_CORE_AUDIO_PORT_REGISTERED: the port was registered
  * @AGS_CORE_AUDIO_PORT_IS_AUDIO: the port provides audio data
  * @AGS_CORE_AUDIO_PORT_IS_MIDI: the port provides midi data
@@ -67,13 +65,11 @@ typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY  = 1,
-  AGS_CORE_AUDIO_PORT_CONNECTED          = 1 <<  1,
-  AGS_CORE_AUDIO_PORT_REGISTERED         = 1 <<  2,
-  AGS_CORE_AUDIO_PORT_IS_AUDIO           = 1 <<  3,
-  AGS_CORE_AUDIO_PORT_IS_MIDI            = 1 <<  4,
-  AGS_CORE_AUDIO_PORT_IS_OUTPUT          = 1 <<  5,
-  AGS_CORE_AUDIO_PORT_IS_INPUT           = 1 <<  6,
+  AGS_CORE_AUDIO_PORT_REGISTERED         = 1,
+  AGS_CORE_AUDIO_PORT_IS_AUDIO           = 1 <<  1,
+  AGS_CORE_AUDIO_PORT_IS_MIDI            = 1 <<  2,
+  AGS_CORE_AUDIO_PORT_IS_OUTPUT          = 1 <<  3,
+  AGS_CORE_AUDIO_PORT_IS_INPUT           = 1 <<  4,
 }AgsCoreAudioPortFlags;
 
 struct _AgsCoreAudioPort
@@ -81,7 +77,8 @@ struct _AgsCoreAudioPort
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   GObject *core_audio_client;
@@ -173,6 +170,7 @@ struct _AgsCoreAudioPortClass
 };
 
 GType ags_core_audio_port_get_type();
+GType ags_core_audio_port_flags_get_type();
 
 gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags);
 void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags);

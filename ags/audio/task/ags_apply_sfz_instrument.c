@@ -242,10 +242,8 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
   AgsSFZSynthUtil *synth;
   AgsResampleUtil *template_resample_util;
   AgsResampleUtil *synth_resample_util;
-  AgsHQPitchUtil *template_hq_pitch_util;
-  AgsHQPitchUtil *synth_hq_pitch_util;
-  AgsLinearInterpolateUtil *template_hq_pitch_linear_interpolate_util;
-  AgsLinearInterpolateUtil *synth_hq_pitch_linear_interpolate_util;
+  gpointer template_pitch_util;
+  gpointer synth_pitch_util;
 
   guint i;
   
@@ -307,12 +305,6 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
     synth->sfz_loop_end[i] = template->sfz_loop_end[i];
   }
   
-  synth->sfz_sample = template->sfz_sample;
-  
-  if(synth->sfz_sample != NULL){
-    g_object_ref(synth->sfz_sample);
-  }
-
   ags_stream_free(synth->source);
   
   synth->source_stride = template->source_stride;
@@ -376,51 +368,64 @@ ags_apply_sfz_instrument_launch(AgsTask *task)
   synth_resample_util->format = template_resample_util->format;
   synth_resample_util->samplerate = template_resample_util->samplerate;
 
-  synth_resample_util->audio_buffer_util_format = template_resample_util->audio_buffer_util_format;
   synth_resample_util->target_samplerate = template_resample_util->target_samplerate;
 
   /* HQ pitch util */
-  template_hq_pitch_util = template->hq_pitch_util;
-  synth_hq_pitch_util = synth->hq_pitch_util;
+  template_pitch_util = template->pitch_util;
+  synth_pitch_util = synth->pitch_util;
 
-  synth_hq_pitch_util->source_stride = template_hq_pitch_util->source_stride;
-  synth_hq_pitch_util->source = template_hq_pitch_util->source;
-  template_hq_pitch_util->source = NULL;
+  ags_common_pitch_util_set_source(synth_pitch_util,
+				   synth->pitch_type,
+				   ags_common_pitch_util_get_source(template_pitch_util,
+								    template->pitch_type));
   
-  synth_hq_pitch_util->destination_stride = template_hq_pitch_util->destination_stride;
-  synth_hq_pitch_util->destination = template_hq_pitch_util->destination;
-  template_hq_pitch_util->destination = NULL;
-  
-  synth_hq_pitch_util->low_mix_buffer = template_hq_pitch_util->low_mix_buffer;
-  template_hq_pitch_util->low_mix_buffer = NULL;
-  
-  synth_hq_pitch_util->new_mix_buffer = template_hq_pitch_util->new_mix_buffer;
-  template_hq_pitch_util->new_mix_buffer = NULL;
-  
-  synth_hq_pitch_util->buffer_length = template_hq_pitch_util->buffer_length;
-  synth_hq_pitch_util->format = template_hq_pitch_util->format;
-  synth_hq_pitch_util->samplerate = template_hq_pitch_util->samplerate;
+  ags_common_pitch_util_set_source_stride(synth_pitch_util,
+					  synth->pitch_type,
+					  ags_common_pitch_util_get_source_stride(template_pitch_util,
+										  template->pitch_type));  
 
-  synth_hq_pitch_util->base_key = template_hq_pitch_util->base_key;
-  synth_hq_pitch_util->tuning = template_hq_pitch_util->tuning;
-
-  /*  */
-  template_hq_pitch_linear_interpolate_util = template_hq_pitch_util->linear_interpolate_util;
-  synth_hq_pitch_linear_interpolate_util = synth_hq_pitch_util->linear_interpolate_util;
-
-  synth_hq_pitch_linear_interpolate_util->source_stride = template_hq_pitch_linear_interpolate_util->source_stride;
-  synth_hq_pitch_linear_interpolate_util->source = template_hq_pitch_linear_interpolate_util->source;
-  template_hq_pitch_linear_interpolate_util->source = NULL;
+  ags_common_pitch_util_set_source(template_pitch_util,
+				   synth->pitch_type,
+				   NULL);
   
-  synth_hq_pitch_linear_interpolate_util->destination_stride = template_hq_pitch_linear_interpolate_util->destination_stride;
-  synth_hq_pitch_linear_interpolate_util->destination = template_hq_pitch_linear_interpolate_util->destination;
-  template_hq_pitch_linear_interpolate_util->destination = NULL;
+  ags_common_pitch_util_set_destination(synth_pitch_util,
+					synth->pitch_type,
+					ags_common_pitch_util_get_destination(template_pitch_util,
+									      template->pitch_type));
   
-  synth_hq_pitch_linear_interpolate_util->buffer_length = template_hq_pitch_linear_interpolate_util->buffer_length;
-  synth_hq_pitch_linear_interpolate_util->format = template_hq_pitch_linear_interpolate_util->format;
-  synth_hq_pitch_linear_interpolate_util->samplerate = template_hq_pitch_linear_interpolate_util->samplerate;
+  ags_common_pitch_util_set_destination_stride(synth_pitch_util,
+					       synth->pitch_type,
+					       ags_common_pitch_util_get_destination_stride(template_pitch_util,
+											    template->pitch_type));  
 
-  synth_hq_pitch_linear_interpolate_util->factor = template_hq_pitch_linear_interpolate_util->factor;
+  ags_common_pitch_util_set_destination(template_pitch_util,
+					synth->pitch_type,
+					NULL);
+  
+  ags_common_pitch_util_set_buffer_length(synth_pitch_util,
+					  synth->pitch_type,
+					  ags_common_pitch_util_get_buffer_length(template_pitch_util,
+										  template->pitch_type));
+
+  ags_common_pitch_util_set_format(synth_pitch_util,
+				   synth->pitch_type,
+				   ags_common_pitch_util_get_format(template_pitch_util,
+								    template->pitch_type));
+
+  ags_common_pitch_util_set_samplerate(synth_pitch_util,
+				       synth->pitch_type,
+				       ags_common_pitch_util_get_samplerate(template_pitch_util,
+									    template->pitch_type));
+
+  ags_common_pitch_util_set_base_key(synth_pitch_util,
+				     synth->pitch_type,
+				     ags_common_pitch_util_get_base_key(template_pitch_util,
+									template->pitch_type));
+
+  ags_common_pitch_util_set_tuning(synth_pitch_util,
+				   synth->pitch_type,
+				   ags_common_pitch_util_get_tuning(template_pitch_util,
+								    template->pitch_type));
 }
 
 /**

@@ -72,6 +72,8 @@ struct _AgsExportSoundcard
   GtkButton *file_chooser_button;
 
   GtkComboBoxText *output_format;
+
+  GtkButton *remove_button;
 };
 
 struct _AgsExportSoundcardClass

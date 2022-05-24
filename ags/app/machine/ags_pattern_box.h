@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,7 +53,6 @@ typedef struct _AgsPatternBoxClass AgsPatternBoxClass;
 
 typedef enum{
   AGS_PATTERN_BOX_BLOCK_PATTERN    = 1,
-  AGS_PATTERN_BOX_CONNECTED        = 1 <<  1,
 }AgsPatternBoxFlags;
 
 typedef enum{
@@ -75,6 +74,7 @@ struct _AgsPatternBox
   GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   
   guint key_mask;
 
@@ -85,11 +85,16 @@ struct _AgsPatternBox
   guint cursor_y;
   
   guint active_led;
-  AgsHLedArray *hled_array;
+  AgsLedArray *hled_array;
 
-  GtkBox *pattern;
+  GList *pad;
+  
+  GtkBox *pad_box;
 
-  GtkBox *offset;
+  GtkCheckButton *page_0_15;
+  GtkCheckButton *page_16_31;
+  GtkCheckButton *page_32_47;
+  GtkCheckButton *page_48_63;
 };
 
 struct _AgsPatternBoxClass
@@ -98,6 +103,12 @@ struct _AgsPatternBoxClass
 };
 
 GType ags_pattern_box_get_type(void);
+
+GList* ags_pattern_box_get_pad(AgsPatternBox *pattern_box);
+void ags_pattern_box_add_pad(AgsPatternBox *pattern_box,
+			     GtkToggleButton *pad);
+void ags_pattern_box_remove_pad(AgsPatternBox *pattern_box,
+				GtkToggleButton *pad);
 
 gboolean ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box);
 

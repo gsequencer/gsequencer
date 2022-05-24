@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,9 +61,9 @@ void ags_osc_xmlrpc_server_start(AgsOscServer *osc_server);
 void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
 
 void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
-					      SoupWebsocketConnection *connection,
+					      SoupServerMessage *server_msg,
 					      const char *path,
-					      SoupClientContext *client,
+					      SoupWebsocketConnection *connection,
 					      AgsOscXmlrpcServer *osc_xmlrpc_server);
 
 /**
@@ -817,9 +817,9 @@ ags_osc_xmlrpc_server_websocket_message_callback(SoupWebsocketConnection *websoc
 
 void
 ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
-					 SoupWebsocketConnection *websocket_connection,
+					 SoupServerMessage *server_msg,
 					 const char *path,
-					 SoupClientContext *client,
+					 SoupWebsocketConnection *websocket_connection,
 					 AgsOscXmlrpcServer *osc_xmlrpc_server)
 {
   g_signal_connect(websocket_connection, "message",

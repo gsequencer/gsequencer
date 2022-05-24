@@ -95,10 +95,8 @@ ags_machine_util_new_panel()
   /* create panel */
   panel = ags_panel_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(panel),
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(panel));
 
   ags_connectable_connect(AGS_CONNECTABLE(panel));
 
@@ -112,7 +110,7 @@ ags_machine_util_new_panel()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all(GTK_WIDGET(panel));
+  gtk_widget_show(GTK_WIDGET(panel));
 
   return((GtkWidget *) panel);
 }
@@ -145,10 +143,8 @@ ags_machine_util_new_mixer()
   /* create mixer */
   mixer = ags_mixer_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(mixer),
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(mixer));
 
   ags_connectable_connect(AGS_CONNECTABLE(mixer));
 
@@ -162,7 +158,7 @@ ags_machine_util_new_mixer()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all(GTK_WIDGET(mixer));
+  gtk_widget_show(GTK_WIDGET(mixer));
 
   return((GtkWidget *) mixer);
 }
@@ -195,10 +191,8 @@ ags_machine_util_new_spectrometer()
   /* create spectrometer */
   spectrometer = ags_spectrometer_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(spectrometer),
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(spectrometer));
 
   ags_connectable_connect(AGS_CONNECTABLE(spectrometer));
 
@@ -212,7 +206,7 @@ ags_machine_util_new_spectrometer()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all(GTK_WIDGET(spectrometer));
+  gtk_widget_show(GTK_WIDGET(spectrometer));
 
   return((GtkWidget *) spectrometer);
 }
@@ -245,10 +239,8 @@ ags_machine_util_new_equalizer()
   /* create equalizer10 */
   equalizer10 = ags_equalizer10_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(equalizer10),
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(equalizer10));
 
   ags_connectable_connect(AGS_CONNECTABLE(equalizer10));
 
@@ -262,7 +254,7 @@ ags_machine_util_new_equalizer()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all(GTK_WIDGET(equalizer10));
+  gtk_widget_show(GTK_WIDGET(equalizer10));
 
   return((GtkWidget *) equalizer10);
 }
@@ -295,10 +287,8 @@ ags_machine_util_new_drum()
   /* create drum */
   drum = ags_drum_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(drum),
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(drum));
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(drum));
@@ -316,7 +306,7 @@ ags_machine_util_new_drum()
 		     1, 0);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(drum));
+  gtk_widget_show(GTK_WIDGET(drum));
 
   return((GtkWidget *) drum);
 }
@@ -349,10 +339,8 @@ ags_machine_util_new_matrix()
   /* create matrix */
   matrix = ags_matrix_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(matrix),
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(matrix));
   
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(matrix));
@@ -370,7 +358,7 @@ ags_machine_util_new_matrix()
 		     1, 0);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(matrix));
+  gtk_widget_show(GTK_WIDGET(matrix));
 
   return((GtkWidget *) matrix);
 }
@@ -403,10 +391,8 @@ ags_machine_util_new_synth()
   /* create synth */
   synth = ags_synth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) synth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(synth));
 
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
@@ -420,7 +406,7 @@ ags_machine_util_new_synth()
 		     AGS_TYPE_OUTPUT,
 		     78, 0);
 
-  gtk_widget_show_all((GtkWidget *) synth);
+  gtk_widget_show((GtkWidget *) synth);
 
   return((GtkWidget *) synth);  
 }
@@ -453,10 +439,8 @@ ags_machine_util_new_fm_synth()
   /* create fm_synth */
   fm_synth = ags_fm_synth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) fm_synth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(fm_synth));
 
   ags_connectable_connect(AGS_CONNECTABLE(fm_synth));
 
@@ -470,7 +454,7 @@ ags_machine_util_new_fm_synth()
 		     AGS_TYPE_OUTPUT,
 		     78, 0);
 
-  gtk_widget_show_all((GtkWidget *) fm_synth);
+  gtk_widget_show((GtkWidget *) fm_synth);
 
   return((GtkWidget *) fm_synth);  
 }
@@ -503,10 +487,8 @@ ags_machine_util_new_syncsynth()
   /* create syncsynth */
   syncsynth = ags_syncsynth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) syncsynth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(syncsynth));
 
   ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
 
@@ -520,7 +502,7 @@ ags_machine_util_new_syncsynth()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all((GtkWidget *) syncsynth);
+  gtk_widget_show((GtkWidget *) syncsynth);
 
   return((GtkWidget *) syncsynth);  
 }
@@ -553,10 +535,8 @@ ags_machine_util_new_fm_syncsynth()
   /* create fm_syncsynth */
   fm_syncsynth = ags_fm_syncsynth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) fm_syncsynth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(fm_syncsynth));
 
   ags_connectable_connect(AGS_CONNECTABLE(fm_syncsynth));
 
@@ -570,7 +550,7 @@ ags_machine_util_new_fm_syncsynth()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all((GtkWidget *) fm_syncsynth);
+  gtk_widget_show((GtkWidget *) fm_syncsynth);
 
   return((GtkWidget *) fm_syncsynth);  
 }
@@ -603,10 +583,8 @@ ags_machine_util_new_hybrid_synth()
   /* create hybrid_synth */
   hybrid_synth = ags_hybrid_synth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) hybrid_synth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(hybrid_synth));
 
   ags_connectable_connect(AGS_CONNECTABLE(hybrid_synth));
 
@@ -620,7 +598,7 @@ ags_machine_util_new_hybrid_synth()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all((GtkWidget *) hybrid_synth);
+  gtk_widget_show((GtkWidget *) hybrid_synth);
 
   return((GtkWidget *) hybrid_synth);  
 }
@@ -653,10 +631,8 @@ ags_machine_util_new_hybrid_fm_synth()
   /* create hybrid_fm_synth */
   hybrid_fm_synth = ags_hybrid_fm_synth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) hybrid_fm_synth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(hybrid_fm_synth));
 
   ags_connectable_connect(AGS_CONNECTABLE(hybrid_fm_synth));
 
@@ -670,7 +646,7 @@ ags_machine_util_new_hybrid_fm_synth()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  gtk_widget_show_all((GtkWidget *) hybrid_fm_synth);
+  gtk_widget_show((GtkWidget *) hybrid_fm_synth);
 
   return((GtkWidget *) hybrid_fm_synth);  
 }
@@ -704,10 +680,8 @@ ags_machine_util_new_ffplayer()
   /* create ffplayer */
   ffplayer = ags_ffplayer_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) ffplayer,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(ffplayer));
 
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
 
@@ -721,7 +695,7 @@ ags_machine_util_new_ffplayer()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);  
 
-  gtk_widget_show_all((GtkWidget *) ffplayer);
+  gtk_widget_show((GtkWidget *) ffplayer);
 
   return((GtkWidget *) ffplayer);
 #else
@@ -758,10 +732,8 @@ ags_machine_util_new_sf2_synth()
   /* create pitch sampler */
   sf2_synth = ags_sf2_synth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) sf2_synth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(sf2_synth));
 
   ags_connectable_connect(AGS_CONNECTABLE(sf2_synth));
 
@@ -775,7 +747,7 @@ ags_machine_util_new_sf2_synth()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);  
 
-  gtk_widget_show_all((GtkWidget *) sf2_synth);
+  gtk_widget_show((GtkWidget *) sf2_synth);
 
   return((GtkWidget *) sf2_synth);
 #else
@@ -811,10 +783,8 @@ ags_machine_util_new_pitch_sampler()
   /* create pitch sampler */
   pitch_sampler = ags_pitch_sampler_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) pitch_sampler,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(pitch_sampler));
 
   ags_connectable_connect(AGS_CONNECTABLE(pitch_sampler));
 
@@ -828,7 +798,7 @@ ags_machine_util_new_pitch_sampler()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);  
 
-  gtk_widget_show_all((GtkWidget *) pitch_sampler);
+  gtk_widget_show((GtkWidget *) pitch_sampler);
 
   return((GtkWidget *) pitch_sampler);
 }
@@ -861,10 +831,8 @@ ags_machine_util_new_sfz_synth()
   /* create pitch sampler */
   sfz_synth = ags_sfz_synth_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) sfz_synth,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(sfz_synth));
 
   ags_connectable_connect(AGS_CONNECTABLE(sfz_synth));
 
@@ -878,7 +846,7 @@ ags_machine_util_new_sfz_synth()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);  
 
-  gtk_widget_show_all((GtkWidget *) sfz_synth);
+  gtk_widget_show((GtkWidget *) sfz_synth);
 
   return((GtkWidget *) sfz_synth);
 }
@@ -911,10 +879,8 @@ ags_machine_util_new_audiorec()
   /* create audiorec */
   audiorec = ags_audiorec_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) audiorec,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(audiorec));
 
   ags_connectable_connect(AGS_CONNECTABLE(audiorec));
 
@@ -928,7 +894,7 @@ ags_machine_util_new_audiorec()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);  
 
-  gtk_widget_show_all((GtkWidget *) audiorec);
+  gtk_widget_show((GtkWidget *) audiorec);
 
   return((GtkWidget *) audiorec);
 }
@@ -961,10 +927,8 @@ ags_machine_util_new_desk()
   /* create desk */
   desk = ags_desk_new(G_OBJECT(default_soundcard));
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) desk,
-		     FALSE, FALSE,
-		     0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(desk));
 
   ags_connectable_connect(AGS_CONNECTABLE(desk));
 
@@ -978,7 +942,7 @@ ags_machine_util_new_desk()
 		     AGS_TYPE_OUTPUT,
 		     1, 0);  
 
-  gtk_widget_show_all((GtkWidget *) desk);
+  gtk_widget_show((GtkWidget *) desk);
 
   return((GtkWidget *) desk);
 }
@@ -1014,10 +978,9 @@ ags_machine_util_new_ladspa_bridge(gchar *filename, gchar *effect)
   ladspa_bridge = ags_ladspa_bridge_new(G_OBJECT(default_soundcard),
 					filename,
 					effect);
-  
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(ladspa_bridge),
-		     FALSE, FALSE, 0);
+
+  ags_window_add_machine(window,
+			 AGS_MACHINE(ladspa_bridge));
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
@@ -1035,7 +998,7 @@ ags_machine_util_new_ladspa_bridge(gchar *filename, gchar *effect)
 		     1, 0);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(ladspa_bridge));
+  gtk_widget_show(GTK_WIDGET(ladspa_bridge));
 
   return((GtkWidget *) ladspa_bridge);
 }
@@ -1071,10 +1034,9 @@ ags_machine_util_new_dssi_bridge(gchar *filename, gchar *effect)
   dssi_bridge = ags_dssi_bridge_new(G_OBJECT(default_soundcard),
 				    filename,
 				    effect);
-  
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(dssi_bridge),
-		     FALSE, FALSE, 0);
+
+  ags_window_add_machine(window,
+			 AGS_MACHINE(dssi_bridge));
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(dssi_bridge));
@@ -1094,7 +1056,7 @@ ags_machine_util_new_dssi_bridge(gchar *filename, gchar *effect)
   ags_dssi_bridge_load(dssi_bridge);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(dssi_bridge));
+  gtk_widget_show(GTK_WIDGET(dssi_bridge));
 
   return((GtkWidget *) dssi_bridge);
 }
@@ -1161,17 +1123,10 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
     
     AGS_MACHINE(vst3_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					AGS_MACHINE_REVERSE_NOTATION);
-
-    ags_machine_popup_add_connection_options((AgsMachine *) vst3_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-    ags_machine_popup_add_edit_options((AgsMachine *) vst3_bridge,
-				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(vst3_bridge),
-		     FALSE, FALSE, 0);
+  
+  ags_window_add_machine(window,
+			 AGS_MACHINE(vst3_bridge));
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(vst3_bridge));
@@ -1200,7 +1155,7 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
   ags_vst3_bridge_load(vst3_bridge);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(vst3_bridge));
+  gtk_widget_show(GTK_WIDGET(vst3_bridge));
 
   return((GtkWidget *) vst3_bridge);
 #else
@@ -1331,17 +1286,10 @@ ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect)
     
     AGS_MACHINE(lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				       AGS_MACHINE_REVERSE_NOTATION);
-
-    ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-    ags_machine_popup_add_edit_options((AgsMachine *) lv2_bridge,
-				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
 
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(lv2_bridge),
-		     FALSE, FALSE, 0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(lv2_bridge));
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
@@ -1371,7 +1319,7 @@ ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect)
   ags_lv2_bridge_load(lv2_bridge);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(lv2_bridge));
+  gtk_widget_show(GTK_WIDGET(lv2_bridge));
 
   return((GtkWidget *) lv2_bridge);
 }
@@ -1408,9 +1356,8 @@ ags_machine_util_new_live_dssi_bridge(gchar *filename, gchar *effect)
 					      filename,
 					      effect);
   
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(live_dssi_bridge),
-		     FALSE, FALSE, 0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(live_dssi_bridge));
   
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(live_dssi_bridge));
@@ -1431,7 +1378,7 @@ ags_machine_util_new_live_dssi_bridge(gchar *filename, gchar *effect)
   ags_live_dssi_bridge_load(live_dssi_bridge);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(live_dssi_bridge));
+  gtk_widget_show(GTK_WIDGET(live_dssi_bridge));
 
   return((GtkWidget *) live_dssi_bridge);
 }
@@ -1539,9 +1486,8 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
 					    filename,
 					    effect);
   
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(live_lv2_bridge),
-		     FALSE, FALSE, 0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(live_lv2_bridge));
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(live_lv2_bridge));
@@ -1571,7 +1517,7 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
   ags_live_lv2_bridge_load(live_lv2_bridge);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(live_lv2_bridge));
+  gtk_widget_show(GTK_WIDGET(live_lv2_bridge));
 
   return((GtkWidget *) live_lv2_bridge);
 }
@@ -1620,9 +1566,8 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
   
   live_vst3_bridge->vst3_plugin = vst3_plugin;
   
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(live_vst3_bridge),
-		     FALSE, FALSE, 0);
+  ags_window_add_machine(window,
+			 AGS_MACHINE(live_vst3_bridge));
   
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(live_vst3_bridge));
@@ -1652,7 +1597,7 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
   ags_live_vst3_bridge_load(live_vst3_bridge);
 
   /* */
-  gtk_widget_show_all(GTK_WIDGET(live_vst3_bridge));
+  gtk_widget_show(GTK_WIDGET(live_vst3_bridge));
 
   return((GtkWidget *) live_vst3_bridge);
 #else

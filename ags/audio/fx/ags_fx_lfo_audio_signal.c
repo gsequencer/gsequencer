@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2021 Joël Krähemann
+  * Copyright (C) 2005-2022 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -138,6 +138,7 @@ void
 ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
 {
   AgsFxLfoChannel *fx_lfo_channel;
+  AgsFxLfoChannelInputData *input_data;
   AgsFxLfoChannelProcessor *fx_lfo_channel_processor;
   AgsFxLfoRecycling *fx_lfo_recycling;
   AgsAudioSignal *source;
@@ -147,6 +148,7 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
 
   GList *start_note, *note;
 
+  gint sound_scope;
   guint buffer_size;
   guint samplerate;
   guint format;
@@ -160,10 +162,13 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
   guint note_offset, delay_counter;
   guint current_frame;
   
+  GRecMutex *recall_mutex;
   GRecMutex *stream_mutex;
 
   output_soundcard = NULL;
 
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
   fx_lfo_channel = NULL;
 
   fx_lfo_channel_processor = NULL;
@@ -175,6 +180,8 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   stream_mutex = NULL;
 
@@ -191,6 +198,12 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
 	       "recall-channel", &fx_lfo_channel,
 	       NULL);
 
+  g_rec_mutex_lock(recall_mutex);
+  
+  input_data = fx_lfo_channel->input_data[sound_scope];
+  
+  g_rec_mutex_unlock(recall_mutex);
+  
   g_object_get(source,
 	       "output-soundcard", &output_soundcard,
 	       "note", &start_note,
@@ -336,7 +349,7 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
     if(start_note != NULL){
       note = start_note;
     
-      while(note != NULL){
+      while(note != NULL){	
 	guint x0, x1;
 
 	g_object_get(note->data,
@@ -349,58 +362,47 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
 	}else{
 	  current_frame = 0;
 	}
+
+	input_data->lfo_synth_util->source = source->stream_current->data;
 	
+	input_data->lfo_synth_util->buffer_length = buffer_size;
+	input_data->lfo_synth_util->format = format;
+	input_data->lfo_synth_util->samplerate = samplerate;
+
+	input_data->lfo_synth_util->frequency = lfo_freq;
+	input_data->lfo_synth_util->phase = lfo_phase;
+	
+	input_data->lfo_synth_util->lfo_depth = lfo_depth;
+	input_data->lfo_synth_util->tuning = lfo_tuning;
+
+	input_data->lfo_synth_util->offset = current_frame;
+
 	g_rec_mutex_lock(stream_mutex);
 
 	switch(lfo_wave){
 	case AGS_SYNTH_OSCILLATOR_SIN:
 	{
-	  ags_lfo_synth_util_sin(source->stream_current->data,
-				 lfo_freq, lfo_phase,
-				 lfo_depth,
-				 lfo_tuning,
-				 samplerate, ags_audio_buffer_util_format_from_soundcard(format),
-				 current_frame, buffer_size);
+	  ags_lfo_synth_util_compute_sin(input_data->lfo_synth_util);
 	}
 	break;
 	case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
 	{
-	  ags_lfo_synth_util_sawtooth(source->stream_current->data,
-				      lfo_freq, lfo_phase,
-				      lfo_depth,
-				      lfo_tuning,
-				      samplerate, ags_audio_buffer_util_format_from_soundcard(format),
-				      current_frame, buffer_size);
+	  ags_lfo_synth_util_compute_sawtooth(input_data->lfo_synth_util);
 	}
 	break;
 	case AGS_SYNTH_OSCILLATOR_TRIANGLE:
 	{
-	  ags_lfo_synth_util_triangle(source->stream_current->data,
-				      lfo_freq, lfo_phase,
-				      lfo_depth,
-				      lfo_tuning,
-				      samplerate, ags_audio_buffer_util_format_from_soundcard(format),
-				      current_frame, buffer_size);
+	  ags_lfo_synth_util_compute_triangle(input_data->lfo_synth_util);
 	}
 	break;
 	case AGS_SYNTH_OSCILLATOR_SQUARE:
 	{
-	  ags_lfo_synth_util_square(source->stream_current->data,
-				    lfo_freq, lfo_phase,
-				    lfo_depth,
-				    lfo_tuning,
-				    samplerate, ags_audio_buffer_util_format_from_soundcard(format),
-				    current_frame, buffer_size);
+	  ags_lfo_synth_util_compute_square(input_data->lfo_synth_util);
 	}
 	break;
 	case AGS_SYNTH_OSCILLATOR_IMPULSE:
 	{
-	  ags_lfo_synth_util_impulse(source->stream_current->data,
-				     lfo_freq, lfo_phase,
-				     lfo_depth,
-				     lfo_tuning,
-				     samplerate, ags_audio_buffer_util_format_from_soundcard(format),
-				     current_frame, buffer_size);
+	  ags_lfo_synth_util_compute_impulse(input_data->lfo_synth_util);
 	}
 	break;    
 	default:
@@ -409,6 +411,8 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
     
 	g_rec_mutex_unlock(stream_mutex);
 	
+	input_data->lfo_synth_util->source = NULL;
+
 	note = note->next;
       }
     }

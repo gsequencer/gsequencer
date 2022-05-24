@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -221,8 +221,12 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   gdouble frequency;
   guint samplerate;
   guint buffer_size;
-  guint i;
-  
+  guint i;  
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
   thread = (AgsThread *) audio_thread;
 
   ags_thread_set_flags(thread, (AGS_THREAD_START_SYNCED_FREQ |
@@ -261,17 +265,13 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   audio_thread->sync_thread = NULL;
 
   /* staging program */
-  audio_thread->do_fx_staging = FALSE;
+  audio_thread->do_fx_staging = TRUE;
 
-  audio_thread->staging_program = g_malloc(3 * sizeof(guint));
+  audio_thread->staging_program = (guint *) g_malloc(sizeof(guint));
 
-  audio_thread->staging_program[0] = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-				      AGS_SOUND_STAGING_AUTOMATE |
-				      AGS_SOUND_STAGING_RUN_PRE);
-  audio_thread->staging_program[1] = (AGS_SOUND_STAGING_RUN_INTER);
-  audio_thread->staging_program[2] = (AGS_SOUND_STAGING_RUN_POST);
-
-  audio_thread->staging_program_count = 3;
+  audio_thread->staging_program[0] = staging_program[0];
+  
+  audio_thread->staging_program_count = 1;
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     audio_thread->scope_data[i] = ags_audio_thread_scope_data_alloc();

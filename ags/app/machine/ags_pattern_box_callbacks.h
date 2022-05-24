@@ -34,12 +34,6 @@
 G_BEGIN_DECLS
 
 /* controls */
-gboolean ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box);
-gboolean ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box);
-
-gboolean ags_pattern_box_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsPatternBox *pattern_box);
-gboolean ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatternBox *pattern_box);
-
 void ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box);
 void ags_pattern_box_offset_callback(GtkWidget *widget, AgsPatternBox *pattern_box);
 

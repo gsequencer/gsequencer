@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtk.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
-
-#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -44,20 +44,15 @@ G_BEGIN_DECLS
 typedef struct _AgsSelectAccelerationDialog AgsSelectAccelerationDialog;
 typedef struct _AgsSelectAccelerationDialogClass AgsSelectAccelerationDialogClass;
 
-typedef enum{
-  AGS_SELECT_ACCELERATION_DIALOG_CONNECTED   = 1,
-}AgsSelectAccelerationDialogFlags;
-
 struct _AgsSelectAccelerationDialog
 {
   GtkDialog dialog;
 
-  guint flags;
+  guint connectable_flags;
   
   GtkCheckButton *copy_selection;
 
-  GtkVBox *port;
-  GtkButton *add;
+  GtkComboBox *port;
 
   GtkSpinButton *select_x0;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,16 +24,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_effect_pad.h>
-#include <ags/app/ags_line_member.h>
 #include <ags/app/ags_effect_separator.h>
-#include <ags/app/ags_machine_editor.h>
-#include <ags/app/ags_pad_editor.h>
-#include <ags/app/ags_line_editor.h>
-#include <ags/app/ags_line_member_editor.h>
-#include <ags/app/ags_plugin_browser.h>
-#include <ags/app/ags_ladspa_browser.h>
-#include <ags/app/ags_dssi_browser.h>
-#include <ags/app/ags_lv2_browser.h>
 
 #include <ags/config.h>
 
@@ -543,24 +534,22 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 
   effect_line->channel = NULL;
 
+  effect_line->parent_effect_pad = NULL;
+
   effect_line->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 						 NULL);
-  gtk_box_pack_start(GTK_BOX(effect_line),
-		     GTK_WIDGET(effect_line->label),
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) effect_line,
+		 (GtkWidget *) effect_line->label);
 
   effect_line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("group"));
-  gtk_box_pack_start((GtkBox *) effect_line,
-		     (GtkWidget *) effect_line->group,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) effect_line,
+		 (GtkWidget *) effect_line->group);
 
-  effect_line->grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) effect_line,
-		     (GtkWidget *) effect_line->grid,
-		     FALSE, FALSE,
-		     0);
+  effect_line->line_member = NULL;
+  
+  effect_line->line_member_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_append((GtkBox *) effect_line,
+		 (GtkWidget *) effect_line->line_member_grid);
 
   effect_line->plugin = NULL;
 
@@ -766,7 +755,7 @@ ags_effect_line_connect(AgsConnectable *connectable)
 
   /* connect line members */
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_line->grid));
+    start_list = ags_effect_line_get_line_member(effect_line);
   
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -797,7 +786,7 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
 
   /* disconnect line members */
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_line->grid));
+    start_list = ags_effect_line_get_line_member(effect_line);
   
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -1041,6 +1030,86 @@ ags_effect_line_set_channel(AgsEffectLine *effect_line, AgsChannel *channel)
   g_object_unref((GObject *) effect_line);
 }
 
+/**
+ * ags_effect_line_get_line_member:
+ * @effect_line: the #AgsEffectLine
+ * 
+ * Get line member of @effect_line.
+ * 
+ * Returns: the #GList-struct containing #AgsLineMember
+ *
+ * Since: 4.0.0
+ */
+GList*
+ags_effect_line_get_line_member(AgsEffectLine *effect_line)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_LINE(effect_line), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_line->line_member)));
+}
+
+/**
+ * ags_effect_line_add_line_member:
+ * @effect_line: the #AgsEffectLine
+ * @line_member: the #AgsLineMember
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @line_member to @effect_line.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_line_add_line_member(AgsEffectLine *effect_line,
+				AgsLineMember *line_member,
+				guint x, guint y,
+				guint width, guint height)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+  g_return_if_fail(AGS_IS_LINE_MEMBER(line_member));
+
+  if(g_list_find(effect_line->line_member, line_member) == NULL){
+    effect_line->line_member = g_list_prepend(effect_line->line_member,
+					      line_member);
+
+    line_member->parent_line = effect_line;
+    
+    gtk_grid_attach(effect_line->line_member_grid,
+		    line_member,
+		    x, y,
+		    width, height);
+  }
+}
+
+/**
+ * ags_effect_line_remove_line_member:
+ * @effect_line: the #AgsEffectLine
+ * @line_member: the #AgsLineMember
+ * 
+ * Remove @line_member from @effect_line.
+ * 
+ * Since: 4.0.0
+ */
+void
+ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
+				   AgsLineMember *line_member)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+  g_return_if_fail(AGS_IS_LINE_MEMBER(line_member));
+
+  if(g_list_find(effect_line->line_member, line_member) != NULL){
+    effect_line->line_member = g_list_remove(effect_line->line_member,
+					     line_member);
+
+    line_member->parent_line = NULL;
+    
+    gtk_grid_remove(effect_line->line_member_grid,
+		    line_member);
+  }
+}
+
 void
 ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 				  GList *control_type_name,
@@ -1074,6 +1143,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   guint control_count;
 
   guint x, y;
+  guint i;
   guint k;
 
   audio = NULL;
@@ -1126,21 +1196,40 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(effect_line->grid);
+    start_list = ags_effect_line_get_line_member(effect_line);
+
+  i = 0;
 
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_line->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_line->line_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
-    list = list->next;
+    if(AGS_IS_EFFECT_SEPARATOR(child)){
+      i = 0;
+      y++;
+    }else{
+      i++;
+
+      if(i == AGS_EFFECT_LINE_COLUMNS_COUNT){
+	i = 0;
+	y++;
+      }
+      
+      if(child != list->data){
+	g_critical("unexpected child");
+      }
+    
+      list = list->next;
+    }
   }
 
   g_list_free(start_list);
@@ -1162,11 +1251,11 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   gtk_widget_set_halign(separator,
 			GTK_ALIGN_FILL);
 
-  gtk_grid_attach(effect_line->grid,
+  gtk_grid_attach(effect_line->line_member_grid,
 		  (GtkWidget *) separator,
 		  0, y,
 		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show_all(GTK_WIDGET(separator));
+  gtk_widget_show(GTK_WIDGET(separator));
 
   y++;
 
@@ -1194,6 +1283,8 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
       gchar *plugin_name;
       gchar *control_port;
       gchar *port_name;
+
+      GtkOrientation widget_orientation;      
       
       guint unique_id;
       guint scale_precision;
@@ -1212,6 +1303,8 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	x = 0;
 	y++;
       }
+
+      widget_orientation = GTK_ORIENTATION_VERTICAL;
       
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
@@ -1223,7 +1316,9 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+      
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -1274,6 +1369,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 				     port_count);
       
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
@@ -1643,13 +1739,13 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
       gtk_widget_set_halign(line_member,
 			    GTK_ALIGN_FILL);
 	  
-      gtk_grid_attach(effect_line->grid,
-		      (GtkWidget *) line_member,
-		      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
-		      1, 1);
+      ags_effect_line_add_line_member(effect_line,
+				      (GtkWidget *) line_member,
+				      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
+				      1, 1);
 
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
-      gtk_widget_show_all((GtkWidget *) line_member);
+      gtk_widget_show((GtkWidget *) line_member);
       
       /* iterate */
       x++;
@@ -1716,6 +1812,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   guint control_count;
 
   guint x, y;
+  guint i;
   guint k;
   
   GRecMutex *lv2_manager_mutex;
@@ -1854,21 +1951,40 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   y = 0;
 
   list =
-    start_list = gtk_container_get_children(effect_line->grid);
+    start_list = ags_effect_line_get_line_member(effect_line);
+
+  i = 0;
 
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_line->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_line->line_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
-    list = list->next;
+    if(AGS_IS_EFFECT_SEPARATOR(child)){
+      i = 0;
+      y++;
+    }else{
+      i++;
+
+      if(i == AGS_EFFECT_LINE_COLUMNS_COUNT){
+	i = 0;
+	y++;
+      }
+      
+      if(child != list->data){
+	g_critical("unexpected child");
+      }
+    
+      list = list->next;
+    }
   }
 
   g_list_free(start_list);
@@ -1890,11 +2006,11 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   gtk_widget_set_halign(separator,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(effect_line->grid,
+  gtk_grid_attach(effect_line->line_member_grid,
 		  (GtkWidget *) separator,
 		  0, y,
 		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show_all(GTK_WIDGET(separator));
+  gtk_widget_show(GTK_WIDGET(separator));
   
   y++;
 
@@ -1922,6 +2038,8 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
       gchar *plugin_name;
       gchar *control_port;
       gchar *port_name;
+
+      GtkOrientation widget_orientation;      
       
       guint scale_precision;
       gdouble step_count;
@@ -1940,6 +2058,8 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	y++;
       }
 
+      widget_orientation = GTK_ORIENTATION_VERTICAL;
+
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 
@@ -1950,7 +2070,9 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+      
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -1997,6 +2119,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 				     port_count);
 
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
@@ -2339,13 +2462,13 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
       gtk_widget_set_halign(line_member,
 			    GTK_ALIGN_FILL);
 
-      gtk_grid_attach(effect_line->grid,
-		      (GtkWidget *) line_member,
-		      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
-		      1, 1);
+      ags_effect_line_add_line_member(effect_line,
+				      (GtkWidget *) line_member,
+				      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
+				      1, 1);
       
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
-      gtk_widget_show_all((GtkWidget *) line_member);
+      gtk_widget_show((GtkWidget *) line_member);
 
       /* iterate */
       x++;
@@ -2411,6 +2534,7 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
   guint control_count;
 
   guint x, y;
+  guint i;
   guint k;
   
   GRecMutex *vst3_manager_mutex;
@@ -2472,21 +2596,40 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
   y = 0;
 
   list =
-    start_list = gtk_container_get_children(effect_line->grid);
+    start_list = ags_effect_line_get_line_member(effect_line);
+
+  i = 0;
 
   while(list != NULL){
-    guint top_attach;
+    GtkWidget *child;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_line->grid),
-			    list->data,
-			    "top-attach", &top_attach,
-			    NULL);
+    child = gtk_grid_get_child_at(effect_line->line_member_grid,
+				  i, y);
     
-    if(y <= top_attach){
-      y = top_attach + 1;
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
     }
 
-    list = list->next;
+    if(AGS_IS_EFFECT_SEPARATOR(child)){
+      i = 0;
+      y++;
+    }else{
+      i++;
+
+      if(i == AGS_EFFECT_LINE_COLUMNS_COUNT){
+	i = 0;
+	y++;
+      }
+      
+      if(child != list->data){
+	g_critical("unexpected child");
+      }
+    
+      list = list->next;
+    }
   }
 
   g_list_free(start_list);
@@ -2508,11 +2651,11 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
   gtk_widget_set_halign(separator,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(effect_line->grid,
+  gtk_grid_attach(effect_line->line_member_grid,
 		  (GtkWidget *) separator,
 		  0, y,
 		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show_all(GTK_WIDGET(separator));
+  gtk_widget_show(GTK_WIDGET(separator));
   
   y++;
 
@@ -2541,7 +2684,9 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
       gchar *plugin_name;
       gchar *control_port;
       gchar *port_name;
-      
+
+      GtkOrientation widget_orientation;      
+            
       guint scale_precision;
       gdouble step_count;
       gboolean disable_seemless;
@@ -2559,6 +2704,8 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 	y++;
       }
 
+      widget_orientation = GTK_ORIENTATION_VERTICAL;
+
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 
@@ -2569,7 +2716,9 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  widget_type = AGS_TYPE_HINDICATOR;
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+      
+	  widget_type = AGS_TYPE_INDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
 	}
@@ -2631,6 +2780,7 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 				     port_count);
 
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-orientation", widget_orientation,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
 						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
@@ -2962,13 +3112,13 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
       gtk_widget_set_halign(line_member,
 			    GTK_ALIGN_FILL);
 
-      gtk_grid_attach(effect_line->grid,
-		      (GtkWidget *) line_member,
-		      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
-		      1, 1);
+      ags_effect_line_add_line_member(effect_line,
+				      (GtkWidget *) line_member,
+				      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
+				      1, 1);
       
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
-      gtk_widget_show_all((GtkWidget *) line_member);
+      gtk_widget_show((GtkWidget *) line_member);
 
       /* iterate */
       x++;
@@ -3335,7 +3485,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
   ags_channel_remove_recall_container(effect_line->channel, (GObject *) effect_line_plugin->recall_container);
 
   /* destroy controls - expander table */
-  start_list = gtk_container_get_children((GtkContainer *) effect_line->grid);
+  start_list = ags_effect_line_get_line_member(effect_line);
 
   list = start_list;
   
@@ -3348,10 +3498,18 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 			    list->data);
       }
 
-      gtk_widget_destroy(list->data);
+      ags_effect_line_remove_line_member(effect_line,
+					 list->data);
+
+      g_object_run_dispose(list->data);
+      g_object_unref(list->data);
     }else if(AGS_IS_EFFECT_SEPARATOR(list->data) &&
 	     AGS_EFFECT_SEPARATOR(list->data)->play_container == effect_line_plugin->play_container){
-      gtk_widget_destroy(list->data);
+      ags_effect_line_remove_line_member(effect_line,
+					 list->data);
+
+      g_object_run_dispose(list->data);
+      g_object_unref(list->data);
     }
     
     list = list->next;
@@ -3433,12 +3591,12 @@ ags_effect_line_real_find_port(AgsEffectLine *effect_line)
   GList *line_member, *line_member_start;
 
   if(effect_line == NULL ||
-     effect_line->grid == NULL){
+     effect_line->line_member_grid == NULL){
     return(NULL);
   }
 
   line_member_start = 
-    line_member = gtk_container_get_children(GTK_CONTAINER(effect_line->grid));
+    line_member = ags_effect_line_get_line_member(effect_line);
   
   port = NULL;
 
@@ -3666,13 +3824,12 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 							    AGS_TYPE_EFFECT_LINE);
 
     list_start = 
-      list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(effect_line)->grid);
+      list = ags_effect_line_get_line_member(effect_line);
 
     /* check members */
     while(list != NULL){
       if(AGS_IS_LINE_MEMBER(list->data) &&
-	 (AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR ||
-	  AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_HINDICATOR ||
+	 (AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_INDICATOR ||
 	  AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
 	AgsLineMember *line_member;
 	GtkAdjustment *adjustment;
@@ -3694,7 +3851,7 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	GRecMutex *plugin_port_mutex;
 	
 	line_member = AGS_LINE_MEMBER(list->data);
-	child = gtk_bin_get_child(GTK_BIN(line_member));
+	child = ags_line_member_get_widget(line_member);
       
 	average_peak = 0.0;
       
@@ -3821,7 +3978,8 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	/* apply */
 	if(AGS_IS_LED(child)){
 	  if(average_peak != 0.0){
-	    ags_led_set_active((AgsLed *) child);
+	    ags_led_set_active((AgsLed *) child,
+			       TRUE);
 	  }
 	}else{
 	  g_object_get(child,

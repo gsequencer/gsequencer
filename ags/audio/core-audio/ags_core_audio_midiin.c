@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -182,6 +182,30 @@ ags_core_audio_midiin_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_core_audio_midiin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_CORE_AUDIO_MIDIIN_INITIALIZED, "AGS_CORE_AUDIO_MIDIIN_INITIALIZED", "core-audio-midiin-initialized" },
+      { AGS_CORE_AUDIO_MIDIIN_START_RECORD, "AGS_CORE_AUDIO_MIDIIN_START_RECORD", "core-audio-midiin-start-record" },
+      { AGS_CORE_AUDIO_MIDIIN_RECORD, "AGS_CORE_AUDIO_MIDIIN_RECORD", "core-audio-midiin-record" },
+      { AGS_CORE_AUDIO_MIDIIN_SHUTDOWN, "AGS_CORE_AUDIO_MIDIIN_SHUTDOWN", "core-audio-midiin-shutdown" },
+      { AGS_CORE_AUDIO_MIDIIN_NONBLOCKING, "AGS_CORE_AUDIO_MIDIIN_NONBLOCKING", "core-audio-midiin-nonblocking" },
+      { AGS_CORE_AUDIO_MIDIIN_ATTACK_FIRST, "AGS_CORE_AUDIO_MIDIIN_ATTACK_FIRST", "core-audio-midiin-attack-first" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsCoreAudioMidiinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -403,6 +427,7 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
 
   /* flags */
   core_audio_midiin->flags = 0;
+  core_audio_midiin->connectable_flags = 0;
   g_atomic_int_set(&(core_audio_midiin->sync_flags),
 		   AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
 
@@ -413,33 +438,28 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->uuid = ags_uuid_alloc();
   ags_uuid_generate(core_audio_midiin->uuid);
 
-  /* card and port */
-  core_audio_midiin->card_uri = NULL;
-  core_audio_midiin->core_audio_client = NULL;
-
-  core_audio_midiin->port_name = NULL;
-  core_audio_midiin->core_audio_port = NULL;
-
+  core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0;
+  
   /* buffer */
-  core_audio_midiin->buffer_mutex = (GRecMutex **) malloc(4 * sizeof(GRecMutex *));
+  core_audio_midiin->app_buffer_mutex = (GRecMutex **) g_malloc(4 * sizeof(GRecMutex *));
 
   for(i = 0; i < 4; i++){
-    core_audio_midiin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    core_audio_midiin->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
-    g_rec_mutex_init(core_audio_midiin->buffer_mutex[i]);
+    g_rec_mutex_init(core_audio_midiin->app_buffer_mutex[i]);
   }
 
-  core_audio_midiin->buffer = (char **) malloc(4 * sizeof(char*));
+  core_audio_midiin->app_buffer = (char **) g_malloc(4 * sizeof(char *));
 
-  core_audio_midiin->buffer[0] = NULL;
-  core_audio_midiin->buffer[1] = NULL;
-  core_audio_midiin->buffer[2] = NULL;
-  core_audio_midiin->buffer[3] = NULL;
+  core_audio_midiin->app_buffer[0] = NULL;
+  core_audio_midiin->app_buffer[1] = NULL;
+  core_audio_midiin->app_buffer[2] = NULL;
+  core_audio_midiin->app_buffer[3] = NULL;
 
-  core_audio_midiin->buffer_size[0] = 0;
-  core_audio_midiin->buffer_size[1] = 0;
-  core_audio_midiin->buffer_size[2] = 0;
-  core_audio_midiin->buffer_size[3] = 0;
+  core_audio_midiin->app_buffer_size[0] = 0;
+  core_audio_midiin->app_buffer_size[1] = 0;
+  core_audio_midiin->app_buffer_size[2] = 0;
+  core_audio_midiin->app_buffer_size[3] = 0;
 
   /* bpm */
   core_audio_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
@@ -473,6 +493,13 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->tact_counter = 0.0;
   core_audio_midiin->delay_counter = 0;
   core_audio_midiin->tic_counter = 0;
+
+  /* card and port */
+  core_audio_midiin->card_uri = NULL;
+  core_audio_midiin->core_audio_client = NULL;
+
+  core_audio_midiin->port_name = NULL;
+  core_audio_midiin->core_audio_port = NULL;
 
   /* callback mutex */
   g_mutex_init(&(core_audio_midiin->callback_mutex));
@@ -630,7 +657,7 @@ ags_core_audio_midiin_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(core_audio_midiin_mutex);
 
-      g_value_set_pointer(value, core_audio_midiin->buffer);
+      g_value_set_pointer(value, core_audio_midiin->app_buffer);
 
       g_rec_mutex_unlock(core_audio_midiin_mutex);
     }
@@ -716,24 +743,24 @@ ags_core_audio_midiin_finalize(GObject *gobject)
   ags_uuid_free(core_audio_midiin->uuid);
   
   /* free output buffer */
-  if(core_audio_midiin->buffer[0] != NULL){
-    free(core_audio_midiin->buffer[0]);
+  if(core_audio_midiin->app_buffer[0] != NULL){
+    g_free(core_audio_midiin->app_buffer[0]);
   }
 
-  if(core_audio_midiin->buffer[1] != NULL){
-    free(core_audio_midiin->buffer[1]);
+  if(core_audio_midiin->app_buffer[1] != NULL){
+    g_free(core_audio_midiin->app_buffer[1]);
   }
     
-  if(core_audio_midiin->buffer[2] != NULL){
-    free(core_audio_midiin->buffer[2]);
+  if(core_audio_midiin->app_buffer[2] != NULL){
+    g_free(core_audio_midiin->app_buffer[2]);
   }
   
-  if(core_audio_midiin->buffer[3] != NULL){
-    free(core_audio_midiin->buffer[3]);
+  if(core_audio_midiin->app_buffer[3] != NULL){
+    g_free(core_audio_midiin->app_buffer[3]);
   }
   
   /* free buffer array */
-  free(core_audio_midiin->buffer);
+  g_free(core_audio_midiin->app_buffer);
 
   /* core_audio client */
   if(core_audio_midiin->core_audio_client != NULL){
@@ -785,10 +812,19 @@ ags_core_audio_midiin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *core_audio_midiin_mutex;
+
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
-  /* check is added */
-  is_ready = ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_ADDED_TO_REGISTRY);
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  /* check is ready */
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (core_audio_midiin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
   
   return(is_ready);
 }
@@ -798,13 +834,22 @@ ags_core_audio_midiin_add_to_registry(AgsConnectable *connectable)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
 
+  GRecMutex *core_audio_midiin_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
-  ags_core_audio_midiin_set_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_ADDED_TO_REGISTRY);
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  core_audio_midiin->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
 
 void
@@ -812,13 +857,22 @@ ags_core_audio_midiin_remove_from_registry(AgsConnectable *connectable)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
 
+  GRecMutex *core_audio_midiin_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
 
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
-  ags_core_audio_midiin_unset_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_ADDED_TO_REGISTRY);
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  core_audio_midiin->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
 
 xmlNode*
@@ -859,10 +913,19 @@ ags_core_audio_midiin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *core_audio_midiin_mutex;
+
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
   /* check is connected */
-  is_connected = ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_CONNECTED);
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (core_audio_midiin->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
   
   return(is_connected);
 }
@@ -871,6 +934,8 @@ void
 ags_core_audio_midiin_connect(AgsConnectable *connectable)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
+
+  GRecMutex *core_audio_midiin_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -878,22 +943,37 @@ ags_core_audio_midiin_connect(AgsConnectable *connectable)
 
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
-  ags_core_audio_midiin_set_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_CONNECTED);
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  core_audio_midiin->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
 
 void
 ags_core_audio_midiin_disconnect(AgsConnectable *connectable)
 {
-
   AgsCoreAudioMidiin *core_audio_midiin;
+
+  GRecMutex *core_audio_midiin_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
+
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  core_audio_midiin->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
-  ags_core_audio_midiin_unset_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_CONNECTED);
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
 
 /**
@@ -1026,7 +1106,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
   }
 
   if(!g_str_has_prefix(device,
-		       "ags-core_audio-midiin-")){
+		       "ags-core-audio-midiin-")){
     g_warning("invalid CORE_AUDIO device prefix");
 
     g_rec_mutex_unlock(core_audio_midiin_mutex);
@@ -1035,7 +1115,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
   }
 
   ret = sscanf(device,
-	       "ags-core_audio-midiin-%u",
+	       "ags-core-audio-midiin-%u",
 	       &nth_card);
 
   if(ret != 1){
@@ -1237,8 +1317,8 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
   g_rec_mutex_lock(core_audio_midiin_mutex);
 
   /* prepare for record */
-  core_audio_midiin->flags |= (AGS_CORE_AUDIO_MIDIIN_BUFFER3 |
-			       AGS_CORE_AUDIO_MIDIIN_START_RECORD |
+  core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3;
+  core_audio_midiin->flags |= (AGS_CORE_AUDIO_MIDIIN_START_RECORD |
 			       AGS_CORE_AUDIO_MIDIIN_RECORD |
 			       AGS_CORE_AUDIO_MIDIIN_NONBLOCKING);
 
@@ -1431,11 +1511,8 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   callback_mutex = &(core_audio_midiin->callback_mutex);
   callback_finish_mutex = &(core_audio_midiin->callback_finish_mutex);
 
-  core_audio_midiin->flags &= (~(AGS_CORE_AUDIO_MIDIIN_BUFFER0 |
-				 AGS_CORE_AUDIO_MIDIIN_BUFFER1 |
-				 AGS_CORE_AUDIO_MIDIIN_BUFFER2 |
-				 AGS_CORE_AUDIO_MIDIIN_BUFFER3 |
-				 AGS_CORE_AUDIO_MIDIIN_RECORD));
+  core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0;
+  core_audio_midiin->flags &= (~(AGS_CORE_AUDIO_MIDIIN_RECORD));
 
   g_atomic_int_or(&(core_audio_midiin->sync_flags),
 		  AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
@@ -1471,24 +1548,24 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   /*  */
   g_rec_mutex_lock(core_audio_midiin_mutex);
 
-  if(core_audio_midiin->buffer[1] != NULL){
-    free(core_audio_midiin->buffer[1]);
-    core_audio_midiin->buffer_size[1] = 0;
+  if(core_audio_midiin->app_buffer[1] != NULL){
+    g_free(core_audio_midiin->app_buffer[1]);
+    core_audio_midiin->app_buffer_size[1] = 0;
   }
 
-  if(core_audio_midiin->buffer[2] != NULL){
-    free(core_audio_midiin->buffer[2]);
-    core_audio_midiin->buffer_size[2] = 0;
+  if(core_audio_midiin->app_buffer[2] != NULL){
+    g_free(core_audio_midiin->app_buffer[2]);
+    core_audio_midiin->app_buffer_size[2] = 0;
   }
 
-  if(core_audio_midiin->buffer[3] != NULL){
-    free(core_audio_midiin->buffer[3]);
-    core_audio_midiin->buffer_size[3] = 0;
+  if(core_audio_midiin->app_buffer[3] != NULL){
+    g_free(core_audio_midiin->app_buffer[3]);
+    core_audio_midiin->app_buffer_size[3] = 0;
   }
 
-  if(core_audio_midiin->buffer[0] != NULL){
-    free(core_audio_midiin->buffer[0]);
-    core_audio_midiin->buffer_size[0] = 0;
+  if(core_audio_midiin->app_buffer[0] != NULL){
+    g_free(core_audio_midiin->app_buffer[0]);
+    core_audio_midiin->app_buffer_size[0] = 0;
   }
 
   core_audio_midiin->note_offset = core_audio_midiin->start_note_offset;
@@ -1668,37 +1745,52 @@ ags_core_audio_midiin_get_buffer(AgsSequencer *sequencer,
 				 guint *buffer_length)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
+
   char *buffer;
+
+  GRecMutex *core_audio_midiin_mutex;  
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+  
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+  
   /* get buffer */
-  if((AGS_CORE_AUDIO_MIDIIN_BUFFER0 & (core_audio_midiin->flags)) != 0){
-    buffer = core_audio_midiin->buffer[0];
-  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER1 & (core_audio_midiin->flags)) != 0){
-    buffer = core_audio_midiin->buffer[1];
-  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER2 & (core_audio_midiin->flags)) != 0){
-    buffer = core_audio_midiin->buffer[2];
-  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER3 & (core_audio_midiin->flags)) != 0){
-    buffer = core_audio_midiin->buffer[3];
+  if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0){
+    buffer = core_audio_midiin->app_buffer[0];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[0];
+    }
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1){
+    buffer = core_audio_midiin->app_buffer[1];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[1];
+    }
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2){
+    buffer = core_audio_midiin->app_buffer[2];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[2];
+    }
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
+    buffer = core_audio_midiin->app_buffer[3];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[3];
+    }
   }else{
     buffer = NULL;
-  }
 
-  /* return the buffer's length */
-  if(buffer_length != NULL){
-    if((AGS_CORE_AUDIO_MIDIIN_BUFFER0 & (core_audio_midiin->flags)) != 0){
-      *buffer_length = core_audio_midiin->buffer_size[0];
-    }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER1 & (core_audio_midiin->flags)) != 0){
-      *buffer_length = core_audio_midiin->buffer_size[1];
-    }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER2 & (core_audio_midiin->flags)) != 0){
-      *buffer_length = core_audio_midiin->buffer_size[2];
-    }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER3 & (core_audio_midiin->flags)) != 0){
-      *buffer_length = core_audio_midiin->buffer_size[3];
-    }else{
-      *buffer_length = 0;
+    if(buffer_length != NULL){
+      buffer_length[0] = 0;
     }
   }
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
   
   return(buffer);
 }
@@ -1708,37 +1800,52 @@ ags_core_audio_midiin_get_next_buffer(AgsSequencer *sequencer,
 				      guint *buffer_length)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
+
   char *buffer;
+
+  GRecMutex *core_audio_midiin_mutex;  
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+  
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+  
   /* get buffer */
-  if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER0)){
-    buffer = core_audio_midiin->buffer[1];
-  }else if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER1)){
-    buffer = core_audio_midiin->buffer[2];
-  }else if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER2)){
-    buffer = core_audio_midiin->buffer[3];
-  }else if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER3)){
-    buffer = core_audio_midiin->buffer[0];
+  if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0){
+    buffer = core_audio_midiin->app_buffer[1];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[1];
+    }
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1){
+    buffer = core_audio_midiin->app_buffer[2];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[2];
+    }
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2){
+    buffer = core_audio_midiin->app_buffer[3];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[3];
+    }
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
+    buffer = core_audio_midiin->app_buffer[0];
+
+    if(buffer_length != NULL){
+      buffer_length[0] = core_audio_midiin->app_buffer_size[0];
+    }
   }else{
     buffer = NULL;
-  }
 
-  /* return the buffer's length */
-  if(buffer_length != NULL){
-    if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER0)){
-      *buffer_length = core_audio_midiin->buffer_size[1];
-    }else if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER1)){
-      *buffer_length = core_audio_midiin->buffer_size[2];
-    }else if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER2)){
-      *buffer_length = core_audio_midiin->buffer_size[3];
-    }else if(ags_core_audio_midiin_test_flags(core_audio_midiin, AGS_CORE_AUDIO_MIDIIN_BUFFER3)){
-      *buffer_length = core_audio_midiin->buffer_size[0];
-    }else{
-      *buffer_length = 0;
+    if(buffer_length != NULL){
+      buffer_length[0] = 0;
     }
   }
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
   
   return(buffer);
 }
@@ -1749,26 +1856,26 @@ ags_core_audio_midiin_lock_buffer(AgsSequencer *sequencer,
 {
   AgsCoreAudioMidiin *core_audio_midiin;
 
-  GRecMutex *buffer_mutex;
+  GRecMutex *app_buffer_mutex;
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
-  buffer_mutex = NULL;
+  app_buffer_mutex = NULL;
 
-  if(core_audio_midiin->buffer != NULL){
-    if(buffer == core_audio_midiin->buffer[0]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[0];
-    }else if(buffer == core_audio_midiin->buffer[1]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[1];
-    }else if(buffer == core_audio_midiin->buffer[2]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[2];
-    }else if(buffer == core_audio_midiin->buffer[3]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[3];
+  if(core_audio_midiin->app_buffer != NULL){
+    if(buffer == core_audio_midiin->app_buffer[0]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[0];
+    }else if(buffer == core_audio_midiin->app_buffer[1]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[1];
+    }else if(buffer == core_audio_midiin->app_buffer[2]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[2];
+    }else if(buffer == core_audio_midiin->app_buffer[3]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[3];
     }
   }
   
-  if(buffer_mutex != NULL){
-    g_rec_mutex_lock(buffer_mutex);
+  if(app_buffer_mutex != NULL){
+    g_rec_mutex_lock(app_buffer_mutex);
   }
 }
 
@@ -1778,26 +1885,26 @@ ags_core_audio_midiin_unlock_buffer(AgsSequencer *sequencer,
 {
   AgsCoreAudioMidiin *core_audio_midiin;
 
-  GRecMutex *buffer_mutex;
+  GRecMutex *app_buffer_mutex;
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
-  buffer_mutex = NULL;
+  app_buffer_mutex = NULL;
 
-  if(core_audio_midiin->buffer != NULL){
-    if(buffer == core_audio_midiin->buffer[0]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[0];
-    }else if(buffer == core_audio_midiin->buffer[1]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[1];
-    }else if(buffer == core_audio_midiin->buffer[2]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[2];
-    }else if(buffer == core_audio_midiin->buffer[3]){
-      buffer_mutex = core_audio_midiin->buffer_mutex[3];
+  if(core_audio_midiin->app_buffer != NULL){
+    if(buffer == core_audio_midiin->app_buffer[0]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[0];
+    }else if(buffer == core_audio_midiin->app_buffer[1]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[1];
+    }else if(buffer == core_audio_midiin->app_buffer[2]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[2];
+    }else if(buffer == core_audio_midiin->app_buffer[3]){
+      app_buffer_mutex = core_audio_midiin->app_buffer_mutex[3];
     }
   }
 
-  if(buffer_mutex != NULL){
-    g_rec_mutex_unlock(buffer_mutex);
+  if(app_buffer_mutex != NULL){
+    g_rec_mutex_unlock(app_buffer_mutex);
   }
 }
 
@@ -1904,56 +2011,56 @@ ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
 {
   GRecMutex *core_audio_midiin_mutex;  
 
+  if(!AGS_IS_CORE_AUDIO_MIDIIN(core_audio_midiin)){
+    return;
+  }
+    
   /* get core_audio midiin mutex */
   core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* switch buffer flag */
   g_rec_mutex_lock(core_audio_midiin_mutex);
 
-  if((AGS_CORE_AUDIO_MIDIIN_BUFFER0 & (core_audio_midiin->flags)) != 0){
-    core_audio_midiin->flags &= (~AGS_CORE_AUDIO_MIDIIN_BUFFER0);
-    core_audio_midiin->flags |= AGS_CORE_AUDIO_MIDIIN_BUFFER1;
+  if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0){
+    core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1;
 
     /* clear buffer */
-    if(core_audio_midiin->buffer[3] != NULL){
-      free(core_audio_midiin->buffer[3]);
+    if(core_audio_midiin->app_buffer[3] != NULL){
+      g_free(core_audio_midiin->app_buffer[3]);
     }
 
-    core_audio_midiin->buffer[3] = NULL;
-    core_audio_midiin->buffer_size[3] = 0;
-  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER1 & (core_audio_midiin->flags)) != 0){
-    core_audio_midiin->flags &= (~AGS_CORE_AUDIO_MIDIIN_BUFFER1);
-    core_audio_midiin->flags |= AGS_CORE_AUDIO_MIDIIN_BUFFER2;
+    core_audio_midiin->app_buffer[3] = NULL;
+    core_audio_midiin->app_buffer_size[3] = 0;
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_1){
+    core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2;
 
     /* clear buffer */
-    if(core_audio_midiin->buffer[0] != NULL){
-      free(core_audio_midiin->buffer[0]);
+    if(core_audio_midiin->app_buffer[0] != NULL){
+      g_free(core_audio_midiin->app_buffer[0]);
     }
 
-    core_audio_midiin->buffer[0] = NULL;
-    core_audio_midiin->buffer_size[0] = 0;
-  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER2 & (core_audio_midiin->flags)) != 0){
-    core_audio_midiin->flags &= (~AGS_CORE_AUDIO_MIDIIN_BUFFER2);
-    core_audio_midiin->flags |= AGS_CORE_AUDIO_MIDIIN_BUFFER3;
+    core_audio_midiin->app_buffer[0] = NULL;
+    core_audio_midiin->app_buffer_size[0] = 0;
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_2){
+    core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3;
 
     /* clear buffer */
-    if(core_audio_midiin->buffer[1] != NULL){
-      free(core_audio_midiin->buffer[1]);
+    if(core_audio_midiin->app_buffer[1] != NULL){
+      g_free(core_audio_midiin->app_buffer[1]);
     }
 
-    core_audio_midiin->buffer[1] = NULL;
-    core_audio_midiin->buffer_size[1] = 0;
-  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER3 & (core_audio_midiin->flags)) != 0){
-    core_audio_midiin->flags &= (~AGS_CORE_AUDIO_MIDIIN_BUFFER3);
-    core_audio_midiin->flags |= AGS_CORE_AUDIO_MIDIIN_BUFFER0;
+    core_audio_midiin->app_buffer[1] = NULL;
+    core_audio_midiin->app_buffer_size[1] = 0;
+  }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
+    core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0;
 
     /* clear buffer */
-    if(core_audio_midiin->buffer[2] != NULL){
-      free(core_audio_midiin->buffer[2]);
+    if(core_audio_midiin->app_buffer[2] != NULL){
+      g_free(core_audio_midiin->app_buffer[2]);
     }
 
-    core_audio_midiin->buffer[2] = NULL;
-    core_audio_midiin->buffer_size[2] = 0;
+    core_audio_midiin->app_buffer[2] = NULL;
+    core_audio_midiin->app_buffer_size[2] = 0;
   }
 
   g_rec_mutex_unlock(core_audio_midiin_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_resample_util.h>
 
 #include <math.h>
 
@@ -423,7 +424,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 	       "format", &format,
 	       NULL);
 
-  if(soundcard != NULL){
+  if(AGS_IS_SOUNDCARD(soundcard)){
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
 			      &target_samplerate,
@@ -505,6 +506,16 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     
     while(stream != NULL){
       if(samplerate != target_samplerate){
+	AgsResampleUtil resample_util;
+
+	guint allocated_buffer_length;
+
+	allocated_buffer_length = buffer_size;
+
+	if(allocated_buffer_length < target_buffer_size){
+	  allocated_buffer_length = target_buffer_size;
+	}
+
 	if(format == AGS_SOUNDCARD_DOUBLE){
 	  ags_audio_buffer_util_clear_double(data, 1,
 					     buffer_size);
@@ -523,12 +534,35 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
 	ags_audio_buffer_util_clear_buffer(target_data, 1,
 					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
-	ags_audio_buffer_util_resample_with_buffer(data, 1,
-						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						   buffer_size,
-						   target_samplerate,
-						   target_buffer_size,
-						   target_data);
+
+	resample_util.secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+	resample_util.secret_rabbit.input_frames = buffer_size;
+	resample_util.secret_rabbit.data_in = ags_stream_alloc(allocated_buffer_length,
+							       AGS_SOUNDCARD_FLOAT);
+
+	resample_util.secret_rabbit.output_frames = target_buffer_size;
+	resample_util.secret_rabbit.data_out = ags_stream_alloc(allocated_buffer_length,
+								AGS_SOUNDCARD_FLOAT);
+
+	resample_util.secret_rabbit.end_of_input = 0;
+	
+	resample_util.destination = target_data;
+	resample_util.destination_stride = 1;
+
+	resample_util.source = data;
+	resample_util.source_stride = 1;
+
+	resample_util.buffer_length = allocated_buffer_length;
+	resample_util.format = format;
+	resample_util.samplerate = samplerate;
+
+	resample_util.target_samplerate = target_samplerate;
+
+	ags_resample_util_compute(&resample_util);  
+
+	ags_stream_free(resample_util.secret_rabbit.data_out);
+	ags_stream_free(resample_util.secret_rabbit.data_in);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
 						    target_data, 1, 0,
@@ -617,7 +651,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	       "format", &format,
 	       NULL);
   
-  if(soundcard != NULL){
+  if(AGS_IS_SOUNDCARD(soundcard)){
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
 			      &target_samplerate,
@@ -717,6 +751,16 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		   NULL);
 
       if(samplerate != target_samplerate){
+	AgsResampleUtil resample_util;
+
+	guint allocated_buffer_length;
+
+	allocated_buffer_length = buffer_size;
+
+	if(allocated_buffer_length < target_buffer_size){
+	  allocated_buffer_length = target_buffer_size;
+	}
+
 	if(format == AGS_SOUNDCARD_DOUBLE){
 	  ags_audio_buffer_util_clear_double(data, 1,
 					     buffer_size);
@@ -735,12 +779,39 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
 	ags_audio_buffer_util_clear_buffer(target_data, 1,
 					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
-	ags_audio_buffer_util_resample_with_buffer(data, 1,
-						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						   buffer_size,
-						   target_samplerate,
-						   target_buffer_size,
-						   target_data);
+	
+	resample_util.secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+	//	g_message("buffer size -> %d", buffer_size);
+
+	resample_util.secret_rabbit.input_frames = buffer_size;
+	resample_util.secret_rabbit.data_in = ags_stream_alloc(allocated_buffer_length,
+							       AGS_SOUNDCARD_FLOAT);
+
+	//	g_message("target buffer size -> %d", target_buffer_size);
+	
+	resample_util.secret_rabbit.output_frames = target_buffer_size;
+	resample_util.secret_rabbit.data_out = ags_stream_alloc(allocated_buffer_length,
+								AGS_SOUNDCARD_FLOAT);
+
+	resample_util.secret_rabbit.end_of_input = 0;
+	
+	resample_util.destination = target_data;
+	resample_util.destination_stride = 1;
+
+	resample_util.source = data;
+	resample_util.source_stride = 1;
+
+	resample_util.buffer_length = allocated_buffer_length;
+	resample_util.format = format;
+	resample_util.samplerate = samplerate;
+  
+	resample_util.target_samplerate = target_samplerate;
+
+	ags_resample_util_compute(&resample_util);  
+
+	ags_stream_free(resample_util.secret_rabbit.data_out);
+	ags_stream_free(resample_util.secret_rabbit.data_in);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						    target_data, 1, 0,

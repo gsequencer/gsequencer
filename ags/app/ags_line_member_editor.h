@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/app/ags_line_member_editor_entry.h>
 #include <ags/app/ags_plugin_browser.h>
 
 G_BEGIN_DECLS
@@ -43,21 +44,17 @@ G_BEGIN_DECLS
 typedef struct _AgsLineMemberEditor AgsLineMemberEditor;
 typedef struct _AgsLineMemberEditorClass AgsLineMemberEditorClass;
 
-typedef enum{
-  AGS_LINE_MEMBER_EDITOR_CONNECTED    = 1,
-}AgsLineMemberEditorFlags;
-
 struct _AgsLineMemberEditor
 {
   GtkBox box;
 
-  guint flags;
+  guint connectable_flags;
+
+  GList *entry;
   
-  GtkBox *line_member;
+  GtkBox *entry_box;
 
   GtkButton *add;
-  GtkMenu *popup;
-
   GtkButton *remove;
 
   AgsPluginBrowser *plugin_browser;
@@ -69,6 +66,12 @@ struct _AgsLineMemberEditorClass
 };
 
 GType ags_line_member_editor_get_type(void);
+
+GList* ags_line_member_editor_get_entry(AgsLineMemberEditor *line_member_editor);
+void ags_line_member_editor_add_entry(AgsLineMemberEditor *line_member_editor,
+				      AgsLineMemberEditorEntry *entry);
+void ags_line_member_editor_remove_entry(AgsLineMemberEditor *line_member_editor,
+					 AgsLineMemberEditorEntry *entry);
 
 AgsLineMemberEditor* ags_line_member_editor_new();
 

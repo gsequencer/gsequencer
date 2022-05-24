@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,7 @@
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_synth_util.h>
 #include <ags/audio/ags_noise_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_chorus_util.h>
 #include <ags/audio/ags_fluid_iir_filter_util.h>
 
@@ -108,12 +108,15 @@ struct _AgsFxSynthAudio
   AgsPort *sequencer_enabled;
   AgsPort *sequencer_sign;
   
+  AgsPort *pitch_type;
   AgsPort *pitch_tuning;
   
   AgsPort *noise_gain;
 
   AgsPort *chorus_enabled;
   
+  AgsPort *chorus_pitch_type;
+
   AgsPort *chorus_input_volume;
   AgsPort *chorus_output_volume;
   
@@ -159,20 +162,18 @@ struct _AgsFxSynthAudioChannelData
   
   gpointer parent;
 
-  AgsSynthUtil synth_0;
-  AgsSynthUtil synth_1;
+  AgsSynthUtil *synth_0;
+  AgsSynthUtil *synth_1;
 
-  AgsNoiseUtil noise_util;
+  AgsNoiseUtil *noise_util;
+
+  GType pitch_type;
+  gpointer pitch_util;
   
-  AgsHQPitchUtil hq_pitch_util;
-  AgsLinearInterpolateUtil hq_pitch_linear_interpolate_util;
+  AgsChorusUtil *chorus_util;
   
-  AgsChorusUtil chorus_util;
-  AgsHQPitchUtil chorus_hq_pitch_util;
-  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
-  
-  AgsFluidIIRFilterUtil low_pass_filter;
-  AgsFluidIIRFilterUtil high_pass_filter;
+  AgsFluidIIRFilterUtil *low_pass_filter;
+  AgsFluidIIRFilterUtil *high_pass_filter;
 
   AgsFxSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };

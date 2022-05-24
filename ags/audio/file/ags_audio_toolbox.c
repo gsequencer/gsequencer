@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -322,8 +322,9 @@ ags_audio_toolbox_init(AgsAudioToolbox *audio_toolbox)
   AgsConfig *config;
 
   audio_toolbox->flags = AGS_AUDIO_TOOLBOX_FILL_CACHE;
+  audio_toolbox->connectable_flags = 0;
 
-  /* add audio file mutex */
+  /* add audio toolbox mutex */
   g_rec_mutex_init(&(audio_toolbox->obj_mutex));  
 
   /* uuid */
@@ -369,7 +370,7 @@ ags_audio_toolbox_set_property(GObject *gobject,
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(gobject);
 
-  /* get audio file mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
   switch(prop_id){
@@ -510,7 +511,7 @@ ags_audio_toolbox_get_property(GObject *gobject,
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(gobject);
 
-  /* get audio file mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
   
   switch(prop_id){
@@ -590,7 +591,7 @@ ags_audio_toolbox_get_uuid(AgsConnectable *connectable)
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
 
-  /* get audio file mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
   /* get UUID */
@@ -616,11 +617,20 @@ ags_audio_toolbox_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *audio_toolbox_mutex;
+
   audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
 
-  /* check is ready */
-  is_ready = ags_audio_toolbox_test_flags(audio_toolbox, AGS_AUDIO_TOOLBOX_ADDED_TO_REGISTRY);
+  /* get audio_toolbox mutex */
+  audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
+  /* check is ready */
+  g_rec_mutex_lock(audio_toolbox_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (audio_toolbox->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_toolbox_mutex);
+  
   return(is_ready);
 }
 
@@ -634,13 +644,22 @@ ags_audio_toolbox_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *audio_toolbox_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
 
-  ags_audio_toolbox_set_flags(audio_toolbox, AGS_AUDIO_TOOLBOX_ADDED_TO_REGISTRY);
+  /* get audio toolbox mutex */
+  audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
+
+  g_rec_mutex_lock(audio_toolbox_mutex);
+
+  audio_toolbox->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(audio_toolbox_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -658,9 +677,24 @@ ags_audio_toolbox_add_to_registry(AgsConnectable *connectable)
 void
 ags_audio_toolbox_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsAudioToolbox *audio_toolbox;
+
+  GRecMutex *audio_toolbox_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
+
+  /* get audio toolbox mutex */
+  audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
+
+  g_rec_mutex_lock(audio_toolbox_mutex);
+
+  audio_toolbox->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(audio_toolbox_mutex);
 
   //TODO:JK: implement me
 }
@@ -703,11 +737,20 @@ ags_audio_toolbox_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *audio_toolbox_mutex;
+
   audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
 
-  /* check is connected */
-  is_connected = ags_audio_toolbox_test_flags(audio_toolbox, AGS_AUDIO_TOOLBOX_CONNECTED);
+  /* get audio toolbox mutex */
+  audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
+  /* check is connected */
+  g_rec_mutex_lock(audio_toolbox_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (audio_toolbox->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(audio_toolbox_mutex);
+  
   return(is_connected);
 }
 
@@ -716,13 +759,22 @@ ags_audio_toolbox_connect(AgsConnectable *connectable)
 {
   AgsAudioToolbox *audio_toolbox;
 
+  GRecMutex *audio_toolbox_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
+
+  /* get audio toolbox mutex */
+  audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
+
+  g_rec_mutex_lock(audio_toolbox_mutex);
+
+  audio_toolbox->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_audio_toolbox_set_flags(audio_toolbox, AGS_AUDIO_TOOLBOX_CONNECTED);
+  g_rec_mutex_unlock(audio_toolbox_mutex);
 }
 
 void
@@ -730,13 +782,22 @@ ags_audio_toolbox_disconnect(AgsConnectable *connectable)
 {
   AgsAudioToolbox *audio_toolbox;
 
+  GRecMutex *audio_toolbox_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(connectable);
 
-  ags_audio_toolbox_unset_flags(audio_toolbox, AGS_AUDIO_TOOLBOX_CONNECTED);
+  /* get audio toolbox mutex */
+  audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
+
+  g_rec_mutex_lock(audio_toolbox_mutex);
+
+  audio_toolbox->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(audio_toolbox_mutex);
 }
 
 /**
@@ -761,7 +822,7 @@ ags_audio_toolbox_test_flags(AgsAudioToolbox *audio_toolbox, guint flags)
     return(FALSE);
   }
 
-  /* get audio_toolbox mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
   /* test */
@@ -792,7 +853,7 @@ ags_audio_toolbox_set_flags(AgsAudioToolbox *audio_toolbox, guint flags)
     return;
   }
 
-  /* get audio_toolbox mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
   //TODO:JK: add more?
@@ -823,7 +884,7 @@ ags_audio_toolbox_unset_flags(AgsAudioToolbox *audio_toolbox, guint flags)
     return;
   }
 
-  /* get audio_toolbox mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
   //TODO:JK: add more?
@@ -854,7 +915,7 @@ ags_audio_toolbox_open(AgsSoundResource *sound_resource,
 
   audio_toolbox = AGS_AUDIO_TOOLBOX(sound_resource);
 
-  /* get audio_toolbox mutex */
+  /* get audio toolbox mutex */
   audio_toolbox_mutex = AGS_AUDIO_TOOLBOX_GET_OBJ_MUTEX(audio_toolbox);
 
   /* info */

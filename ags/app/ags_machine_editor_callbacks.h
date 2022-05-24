@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,10 +32,6 @@
 #include <ags/app/ags_machine_editor.h>
 
 G_BEGIN_DECLS
-
-int ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
-int ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
-int ags_machine_editor_cancel_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
 
 G_END_DECLS
 

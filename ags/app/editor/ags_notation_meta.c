@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,9 @@
 #include <ags/app/editor/ags_notation_meta.h>
 #include <ags/app/editor/ags_notation_meta_callbacks.h>
 
-#include <ags/app/ags_notation_editor.h>
+#include <ags/app/ags_composite_editor.h>
+
+#include <ags/app/editor/ags_notation_edit.h>
 
 #include <ags/i18n.h>
 
@@ -67,7 +69,7 @@ ags_notation_meta_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_notation_meta = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_notation_meta = g_type_register_static(GTK_TYPE_BOX,
 						    "AgsNotationMeta", &ags_notation_meta_info,
 						    0);
     
@@ -105,13 +107,11 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
   guint i;
   
   notation_meta->flags = 0;
+  notation_meta->connectable_flags = 0;
 
   grid = gtk_grid_new();
-  gtk_box_pack_start((GtkBox *) notation_meta,
-		     (GtkWidget *) grid,
-		     FALSE,
-		     TRUE,
-		     0);
+  gtk_box_append((GtkBox *) notation_meta,
+		 (GtkWidget *) grid);
 
   /* machine type */
   i = 0;
@@ -329,22 +329,22 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
 void
 ags_notation_meta_connect(AgsConnectable *connectable)
 {
-  AgsNotationEditor *notation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsNotationMeta *notation_meta;
 
   notation_meta = AGS_NOTATION_META(connectable);
 
-  if((AGS_NOTATION_META_CONNECTED & (notation_meta->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (notation_meta->connectable_flags)) != 0){
     return;
   }
 
-  notation_meta->flags |= AGS_NOTATION_META_CONNECTED;
+  notation_meta->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  notation_editor = gtk_widget_get_ancestor(notation_meta,
-					    AGS_TYPE_NOTATION_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(notation_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(notation_editor != NULL){
-    g_signal_connect_after(notation_editor, "machine-changed",
+  if(composite_editor != NULL){
+    g_signal_connect_after(composite_editor, "machine-changed",
 			   G_CALLBACK(ags_notation_meta_machine_changed_callback), notation_meta);
   }
 }
@@ -352,22 +352,22 @@ ags_notation_meta_connect(AgsConnectable *connectable)
 void
 ags_notation_meta_disconnect(AgsConnectable *connectable)
 {
-  AgsNotationEditor *notation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsNotationMeta *notation_meta;
   
   notation_meta = AGS_NOTATION_META(connectable);
 
-  if((AGS_NOTATION_META_CONNECTED & (notation_meta->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (notation_meta->connectable_flags)) == 0){
     return;
   }
 
-  notation_meta->flags &= (~AGS_NOTATION_META_CONNECTED);
+  notation_meta->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  notation_editor = gtk_widget_get_ancestor(notation_meta,
-					    AGS_TYPE_NOTATION_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(notation_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(notation_editor != NULL){
-    g_object_disconnect(notation_editor,
+  if(composite_editor != NULL){
+    g_object_disconnect(composite_editor,
 			"any_signal::machine-changed",
 			G_CALLBACK(ags_notation_meta_machine_changed_callback),
 			notation_meta,
@@ -386,20 +386,20 @@ ags_notation_meta_disconnect(AgsConnectable *connectable)
 void
 ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 {
-  AgsNotationEditor *notation_editor;
+  AgsCompositeEditor *composite_editor;
   
   if(!AGS_IS_NOTATION_META(notation_meta)){
     return;
   }
   
-  notation_editor = gtk_widget_get_ancestor(notation_meta,
-					    AGS_TYPE_NOTATION_EDITOR);
+  composite_editor = gtk_widget_get_ancestor(notation_meta,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  if(notation_editor == NULL){
+  if(composite_editor == NULL){
     return;
   }
 
-  if(notation_editor->selected_machine == NULL){
+  if(composite_editor->selected_machine == NULL){
     gtk_label_set_label(notation_meta->machine_type,
 			"(null)"); 
 
@@ -446,12 +446,12 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     guint i;
     
     gtk_label_set_label(notation_meta->machine_type,
-			G_OBJECT_TYPE_NAME(notation_editor->selected_machine)); 
+			G_OBJECT_TYPE_NAME(composite_editor->selected_machine)); 
 
     gtk_label_set_label(notation_meta->machine_name,
-			notation_editor->selected_machine->machine_name); 
+			composite_editor->selected_machine->machine_name); 
 
-    g_object_get(notation_editor->selected_machine->audio,
+    g_object_get(composite_editor->selected_machine->audio,
 		 "audio-channels", &audio_channels,
 		 "output-pads", &output_pads,
 		 "input-pads", &input_pads,
@@ -480,13 +480,13 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 
     str = NULL;
 
-    if(notation_editor->notation_toolbar->selected_edit_mode == notation_editor->notation_toolbar->position){
+    if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
       str = i18n("position");
-    }else if(notation_editor->notation_toolbar->selected_edit_mode == notation_editor->notation_toolbar->edit){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->edit){
       str = i18n("edit");
-    }else if(notation_editor->notation_toolbar->selected_edit_mode == notation_editor->notation_toolbar->clear){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->clear){
       str = i18n("clear");
-    }else if(notation_editor->notation_toolbar->selected_edit_mode == notation_editor->notation_toolbar->select){
+    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->select){
       str = i18n("select");
     }
 
@@ -506,7 +506,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 
     position = 0;
     
-    for(; (position = ags_notebook_next_active_tab(notation_editor->notebook, position)) != -1; position++){
+    for(; (position = ags_notebook_next_active_tab(composite_editor->notation_edit->channel_selector, position)) != -1; position++){
       if(active_start == -1){
 	active_start = position;
 	active_end = position;
@@ -605,21 +605,21 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     }
 
     /* cursor position x */
-    str = g_strdup_printf("%u", notation_editor->notation_edit->cursor_position_x);
+    str = g_strdup_printf("%u", AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x);
     gtk_label_set_label(notation_meta->cursor_x_position,
 			str);
 
     g_free(str);
 
     /* cursor position y */
-    str = g_strdup_printf("%u", notation_editor->notation_edit->cursor_position_y);
+    str = g_strdup_printf("%u", AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_y);
     gtk_label_set_label(notation_meta->cursor_y_position,
 			str);
 
     g_free(str);
 
     /* current note */
-    g_object_get(notation_editor->selected_machine->audio,
+    g_object_get(composite_editor->selected_machine->audio,
 		 "notation", &start_notation,
 		 NULL);
 
@@ -628,10 +628,10 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    x0 = notation_editor->notation_edit->cursor_position_x;
-    y0 = notation_editor->notation_edit->cursor_position_y;
+    x0 = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x;
+    y0 = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_y;
 
-    x1 = x0 + exp2(6.0 - (double) gtk_combo_box_get_active(notation_editor->notation_toolbar->zoom));    
+    x1 = x0 + exp2(6.0 - (double) gtk_combo_box_get_active(composite_editor->toolbar->zoom));    
     y1 = y0 + 1;
 
     str = NULL;
@@ -642,7 +642,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
       timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x0 / AGS_NOTATION_DEFAULT_OFFSET);
       
       position = i;
-      position = ags_notebook_next_active_tab(notation_editor->notebook, position);
+      position = ags_notebook_next_active_tab(composite_editor->notation_edit->channel_selector, position);
 
       if(position == -1){
 	break;

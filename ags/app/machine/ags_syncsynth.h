@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,8 +79,11 @@ struct _AgsSyncsynth
   
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
+
+  GList *oscillator;
   
-  GtkBox *oscillator;
+  GtkBox *oscillator_box;
+  
   GtkButton *add;
   GtkButton *remove;
   
@@ -105,10 +108,11 @@ gboolean ags_syncsynth_test_flags(AgsSyncsynth *syncsynth, guint flags);
 void ags_syncsynth_set_flags(AgsSyncsynth *syncsynth, guint flags);
 void ags_syncsynth_unset_flags(AgsSyncsynth *syncsynth, guint flags);
 
+GList* ags_syncsynth_get_oscillator(AgsSyncsynth *syncsynth);
 void ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
 				  AgsOscillator *oscillator);
 void ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
-				     guint nth);
+				     AgsOscillator *oscillator);
 
 void ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth);
 void ags_syncsynth_update(AgsSyncsynth *syncsynth);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,8 +47,6 @@ typedef struct _AgsOssDevoutClass AgsOssDevoutClass;
 
 /**
  * AgsOssDevoutFlags:
- * @AGS_OSS_DEVOUT_ADDED_TO_REGISTRY: the oss_devout was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_OSS_DEVOUT_CONNECTED: indicates the oss_devout was connected by calling #AgsConnectable::connect()
  * @AGS_OSS_DEVOUT_INITIALIZED: the soundcard was initialized
  * @AGS_OSS_DEVOUT_START_PLAY: playback starting
  * @AGS_OSS_DEVOUT_PLAY: devout is running
@@ -61,18 +59,15 @@ typedef struct _AgsOssDevoutClass AgsOssDevoutClass;
  */
 typedef enum
 {
-  AGS_OSS_DEVOUT_ADDED_TO_REGISTRY  = 1,
-  AGS_OSS_DEVOUT_CONNECTED          = 1 <<  1,
+  AGS_OSS_DEVOUT_INITIALIZED        = 1,
 
-  AGS_OSS_DEVOUT_INITIALIZED        = 1 <<  2,
+  AGS_OSS_DEVOUT_PLAY               = 1 <<  1,
+  AGS_OSS_DEVOUT_START_PLAY         = 1 <<  2,
+  AGS_OSS_DEVOUT_SHUTDOWN           = 1 <<  3,
 
-  AGS_OSS_DEVOUT_PLAY               = 1 <<  3,
-  AGS_OSS_DEVOUT_START_PLAY         = 1 <<  4,
-  AGS_OSS_DEVOUT_SHUTDOWN           = 1 <<  5,
-
-  AGS_OSS_DEVOUT_NONBLOCKING        = 1 <<  6,
+  AGS_OSS_DEVOUT_NONBLOCKING        = 1 <<  4,
   
-  AGS_OSS_DEVOUT_ATTACK_FIRST       = 1 <<  7,
+  AGS_OSS_DEVOUT_ATTACK_FIRST       = 1 <<  5,
 }AgsOssDevoutFlags;
 
 /**
@@ -135,7 +130,8 @@ struct _AgsOssDevout
   GObject gobject;
 
   guint flags;
-
+  guint connectable_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;

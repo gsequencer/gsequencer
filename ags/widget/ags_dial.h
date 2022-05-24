@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 
 #define AGS_DIAL_DEFAULT_PRECISION (8.0)
 
-#define AGS_DIAL_DEFAULT_RADIUS (8)
+#define AGS_DIAL_DEFAULT_RADIUS (10)
 #define AGS_DIAL_DEFAULT_OUTLINE_STRENGTH (4)
 #define AGS_DIAL_DEFAULT_FONT_SIZE (12)
 #define AGS_DIAL_DEFAULT_BUTTON_WIDTH (12)

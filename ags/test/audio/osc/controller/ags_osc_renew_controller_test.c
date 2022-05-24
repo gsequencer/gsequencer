@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,29 +36,29 @@ int ags_osc_renew_controller_test_clean_suite();
 
 void ags_osc_renew_controller_test_set_data();
 
-#define AGS_OSC_RENEW_CONTROLLER_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=false\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#define AGS_OSC_RENEW_CONTROLLER_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"					\
+  "simple-file=false\n"						\
+  "disable-feature=experimental\n"				\
+  "segmentation=4/4\n"						\
+  "\n"								\
+  "[thread]\n"							\
+  "model=super-threaded\n"					\
+  "super-threaded-scope=channel\n"				\
+  "lock-global=ags-thread\n"					\
+  "lock-parent=ags-recycling-thread\n"				\
+  "\n"								\
+  "[soundcard-0]\n"						\
+  "backend=alsa\n"						\
+  "device=default\n"						\
+  "samplerate=44100\n"						\
+  "buffer-size=1024\n"						\
+  "pcm-channels=2\n"						\
+  "dsp-channels=2\n"						\
+  "format=16\n"							\
+  "\n"								\
+  "[recall]\n"							\
+  "auto-sense=true\n"						\
   "\n"
 
 AgsApplicationContext *application_context;
@@ -121,27 +121,33 @@ ags_osc_renew_controller_test_init_suite()
 			       g_list_prepend(start_audio,
 					      panel));
 
-  /* ags-play */
-  ags_recall_factory_create(panel,
-			    NULL, NULL,
-			    "ags-play-master",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-playback */
+  ags_fx_factory_create(panel,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-playback",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
-  /* ags-mute */
-  ags_recall_factory_create(panel,
-			    NULL, NULL,
-			    "ags-mute",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-volume */
+  ags_fx_factory_create(panel,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT,
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* spectrometer */
   spectrometer = ags_audio_new(default_soundcard);
@@ -169,16 +175,19 @@ ags_osc_renew_controller_test_init_suite()
 			       g_list_prepend(start_audio,
 					      spectrometer));
   
-  ags_recall_factory_create(spectrometer,
-			    NULL, NULL,
-			    "ags-analyse",
-			    0, 2,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  ags_fx_factory_create(spectrometer,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-analyse",
+			NULL,
+			NULL,
+			0, 2,
+			0, 1,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   /* drum */
   drum = ags_audio_new(default_soundcard);
@@ -209,40 +218,49 @@ ags_osc_renew_controller_test_init_suite()
 			       g_list_prepend(start_audio,
 					      drum));
 
-  /* ags-copy-pattern */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-copy-pattern",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
+  /* ags-fx-pattern */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-pattern",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_REMAP |
+			 AGS_FX_FACTORY_RECALL),
+			0);
 
-  /* ags-volume */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-volume",
-			    0, 2, 
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-volume */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-volume",
+			NULL,
+			NULL,
+			0, 2, 
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
-  /* ags-envelope */
-  ags_recall_factory_create(drum,
-			    NULL, NULL,
-			    "ags-envelope",
-			    0, 2,
-			    0, 8,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-envelope */
+  ags_fx_factory_create(drum,
+			ags_recall_container_new(), ags_recall_container_new(),
+			"ags-fx-envelope",
+			NULL,
+			NULL,
+			0, 2,
+			0, 8,
+			0,
+			(AGS_FX_FACTORY_INPUT |
+			 AGS_FX_FACTORY_PLAY |
+			 AGS_FX_FACTORY_RECALL |
+			 AGS_FX_FACTORY_ADD),
+			0);
 
   return(0);
 }
@@ -268,8 +286,8 @@ ags_osc_renew_controller_test_set_data()
 
   GList *osc_response;
 
-  unsigned char *message;
-  unsigned char *magnitude_message;
+  guchar *message;
+  guchar *magnitude_message;
 
   gdouble *magnitude_buffer;
   
@@ -282,20 +300,20 @@ ags_osc_renew_controller_test_set_data()
   
   GValue value = {0,};
   
-  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00\x00";
-  static const unsigned char *magnitude_path = "/AgsSoundProvider/AgsAudio[\"test-spectrometer\"]/AgsInput[0-1]/AgsAnalyseChannel[0]/AgsPort[\"./magnitude-buffer[0]\"]:value";
+  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00\x00\x00";
+  static const guchar *magnitude_path = "/AgsSoundProvider/AgsAudio[\"test-spectrometer\"]/AgsInput[0-1]/AgsFxAnalyseChannel[0]/AgsPort[\"./magnitude[0]\"]:value";
 
-  static const guint mute_message_size = 120;
+  static const guint mute_message_size = 128;
   
   osc_connection = ags_osc_connection_new(NULL);
   
   osc_renew_controller = ags_osc_renew_controller_new();
 
   /* panel */
-  message = (unsigned char *) malloc(mute_message_size * sizeof(unsigned char));
-  memcpy(message, mute_message, mute_message_size * sizeof(unsigned char));
+  message = (guchar *) malloc(mute_message_size * sizeof(guchar));
+  memcpy(message, mute_message, mute_message_size * sizeof(guchar));
 
-  ags_osc_buffer_util_put_float(message + mute_message_size - 4,
+  ags_osc_buffer_util_put_float(message + mute_message_size - 8,
 				1.0);
   
   g_value_init(&value,
@@ -315,7 +333,7 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_MUTE_CHANNEL);
+					 AGS_TYPE_FX_VOLUME_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
@@ -360,7 +378,7 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_MUTE_CHANNEL);
+					 AGS_TYPE_FX_VOLUME_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
@@ -386,11 +404,11 @@ ags_osc_renew_controller_test_set_data()
   CU_ASSERT(success);
 
   /* spectrometer */
-  magnitude_message = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+  magnitude_message = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
 
-  cache_buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance()) / 2;
+  cache_buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 
-  memcpy(magnitude_message, "/renew\x00\x00,s[", 11 * sizeof(unsigned char));
+  memcpy(magnitude_message, "/renew\x00\x00,s[", 11 * sizeof(guchar));
   magnitude_message_size = 11;
 
   for(i = 0; i < cache_buffer_size; i++){
@@ -409,7 +427,7 @@ ags_osc_renew_controller_test_set_data()
   magnitude_message_size += padding;
 
   length = strlen(magnitude_path);
-  memcpy(magnitude_message + magnitude_message_size, magnitude_path, (length) * sizeof(unsigned char));
+  memcpy(magnitude_message + magnitude_message_size, magnitude_path, (length) * sizeof(guchar));
 
   padding = (4 * (guint) ceil((length + 1) / 4.0)) - length;
 
@@ -431,7 +449,7 @@ ags_osc_renew_controller_test_set_data()
   g_value_unset(&value);
   g_value_init(&value,
 	       G_TYPE_POINTER);
-
+  
   magnitude_buffer = (gdouble *) malloc(cache_buffer_size * sizeof(gdouble));
   g_value_set_pointer(&value,
 		      magnitude_buffer);
@@ -450,14 +468,14 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_ANALYSE_CHANNEL);
+					 AGS_TYPE_FX_ANALYSE_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
 		 NULL);
 
     port = ags_port_find_specifier(start_port,
-				   "./magnitude-buffer[0]");
+				   "./magnitude[0]");
     
     ags_port_safe_read(port->data,
 		       &value);
@@ -495,14 +513,14 @@ ags_osc_renew_controller_test_set_data()
 		 NULL);
 
     play = ags_recall_template_find_type(start_play,
-					 AGS_TYPE_ANALYSE_CHANNEL);
+					 AGS_TYPE_FX_ANALYSE_CHANNEL);
 
     g_object_get(play->data,
 		 "port", &start_port,
 		 NULL);
 
     port = ags_port_find_specifier(start_port,
-				   "./magnitude-buffer[0]");
+				   "./magnitude[0]");
 
     ags_port_safe_read(port->data,
 		       &value);

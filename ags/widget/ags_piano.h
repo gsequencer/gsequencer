@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 #define AGS_IS_PIANO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PIANO))
 #define AGS_PIANO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PIANO, AgsPianoClass))
 
+#define AGS_PIANO_DEFAULT_FONT_SIZE (12)
+
 #define AGS_PIANO_DEFAULT_BASE_NOTE AGS_PIANO_KEYS_OCTAVE_0_C
 #define AGS_PIANO_DEFAULT_BASE_KEY_CODE (0)
 
@@ -55,11 +57,6 @@ typedef enum{
 typedef enum{
   AGS_PIANO_BUTTON_1_PRESSED     = 1,
 }AgsPianoButtonState;
-
-typedef enum{
-  AGS_PIANO_LAYOUT_VERTICAL,
-  AGS_PIANO_LAYOUT_HORIZONTAL,
-}AgsPianoLayout;
 
 typedef enum{
   AGS_PIANO_MOVE_CURSOR_UP,
@@ -88,8 +85,9 @@ struct _AgsPiano
 
   guint flags;
 
+  GtkOrientation orientation;
+
   guint button_state;
-  guint layout;
 
   guint font_size;
   
@@ -127,10 +125,6 @@ void ags_piano_set_button_state(AgsPiano *piano,
 				guint button_state);
 guint ags_piano_get_button_state(AgsPiano *piano);
 
-void ags_piano_set_layout(AgsPiano *piano,
-			  guint layout);
-guint ags_piano_get_layout(AgsPiano *piano);
-
 /* getter and setter */
 void ags_piano_set_base_note(AgsPiano *piano,
 			     gchar *base_note);
@@ -167,7 +161,9 @@ gint* ags_piano_get_active_key(AgsPiano *piano,
 			       guint *active_key_count);
 
 /* instantiate */
-AgsPiano* ags_piano_new();
+AgsPiano* ags_piano_new(GtkOrientation orientation,
+			guint key_width,
+			guint key_height);
 
 G_END_DECLS
 

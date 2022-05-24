@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,9 +36,10 @@ ags_online_help_window_load_changed(WebKitWebView *web_view,
 }
 #endif
 
-gboolean
+void
 ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_area,
 						      cairo_t *cr,
+						      int width, int height,
 						      AgsOnlineHelpWindow *online_help_window)
 {
 #if defined(AGS_WITH_POPPLER)
@@ -52,11 +53,10 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
   gdouble vvalue, hvalue;
   gdouble voffset, hoffset;
   gint num_pages, i;
-  gdouble width, height;
   gint current_width, current_height;
 
-  vadjustment = gtk_range_get_adjustment(online_help_window->pdf_vscrollbar);
-  hadjustment = gtk_range_get_adjustment(online_help_window->pdf_hscrollbar);
+  vadjustment = gtk_scrollbar_get_adjustment(online_help_window->pdf_vscrollbar);
+  hadjustment = gtk_scrollbar_get_adjustment(online_help_window->pdf_hscrollbar);
 
   vvalue = gtk_adjustment_get_value(vadjustment);
   hvalue = gtk_adjustment_get_value(hadjustment);
@@ -80,6 +80,8 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
   
   for(i = 0; i < num_pages; i++){
     PopplerPage *page;
+
+    gdouble page_height, page_width;
     
     page = poppler_document_get_page(online_help_window->pdf_document,
 				     i);
@@ -91,13 +93,13 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
     }
     
     poppler_page_get_size(page,
-    			  &width, &height);
+    			  &page_width, &page_height);
 
-    if(current_height + height > vvalue &&
+    if(current_height + page_height > vvalue &&
        current_height < vvalue + allocation.height){
       pdf_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
-					       width,
-					       height);
+					       page_width,
+					       page_height);
   
       pdf_cr = cairo_create(pdf_surface);
 
@@ -123,7 +125,7 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
       cairo_surface_destroy(pdf_surface);
     }
 
-    current_height += height;
+    current_height += page_height;
 
     g_object_unref(page);
 
@@ -132,21 +134,19 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
     }
   }  
 #endif
-
-  return(FALSE);
 }
 
-gboolean
-ags_online_help_window_pdf_drawing_area_configure_callback(GtkWidget *pdf_drawing_area,
-							   GdkEvent  *event,
-							   AgsOnlineHelpWindow *online_help_window)
+void
+ags_online_help_window_pdf_drawing_area_resize_callback(GtkWidget *pdf_drawing_area,
+							gint width, gint height,
+							AgsOnlineHelpWindow *online_help_window)
 {
 #if defined(AGS_WITH_POPPLER)  
   GtkAdjustment *vadjustment, *hadjustment;
   GtkAllocation allocation;
 
-  vadjustment = gtk_range_get_adjustment(online_help_window->pdf_vscrollbar);
-  hadjustment = gtk_range_get_adjustment(online_help_window->pdf_hscrollbar);
+  vadjustment = gtk_scrollbar_get_adjustment(online_help_window->pdf_vscrollbar);
+  hadjustment = gtk_scrollbar_get_adjustment(online_help_window->pdf_hscrollbar);
 
   gtk_widget_get_allocation(online_help_window->pdf_drawing_area,
 			    &allocation);
@@ -166,13 +166,11 @@ ags_online_help_window_pdf_drawing_area_configure_callback(GtkWidget *pdf_drawin
 			   5.0,
 			   15.0,
 			   (double) 10.0);
-#endif
-  
-  return(FALSE);
+#endif  
 }
 
 void
-ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkRange *vscrollbar,
+ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkAdjustment *vscrollbar,
 							     AgsOnlineHelpWindow *online_help_window)
 {
 #if defined(AGS_WITH_POPPLER)
@@ -181,7 +179,7 @@ ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkRange *vscrollba
 }
 
 void
-ags_online_help_window_pdf_hscrollbar_value_changed_callback(GtkRange *hscrollbar,
+ags_online_help_window_pdf_hscrollbar_value_changed_callback(GtkAdjustment *hscrollbar,
 							     AgsOnlineHelpWindow *online_help_window)
 {
 #if defined(AGS_WITH_POPPLER)  

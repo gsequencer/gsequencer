@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/app/ags_machine.h>
 
+#include <ags/app/editor/ags_machine_radio_button.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_SELECTOR                (ags_machine_selector_get_type())
@@ -44,10 +46,9 @@ typedef struct _AgsMachineSelector AgsMachineSelector;
 typedef struct _AgsMachineSelectorClass AgsMachineSelectorClass;
 
 typedef enum{
-  AGS_MACHINE_SELECTOR_CONNECTED              = 1,
-  AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING   = 1 <<  1,
-  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO       = 1 <<  2,
-  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  3,
+  AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING   = 1,
+  AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO       = 1 <<  1,
+  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  2,
 }AgsMachineSelectorFlags;
 
 typedef enum{
@@ -59,44 +60,71 @@ typedef enum{
 
 struct _AgsMachineSelector
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
+  guint connectable_flags;
   guint edit;
   
   GtkLabel *label;
 
-  GtkMenuToolButton *menu_button;
-  GtkMenu *popup;
+  GSimpleActionGroup *action_group;
 
-  GtkWidget *shift_piano;
+  GtkMenuButton *menu_button;
+
+  GMenu *popup;
+  GMenu *add_index_menu;
+  GMenu *shift_piano;
+
+  GSimpleAction *reverse_mapping_action;
   
   GtkWidget *current;
+  
+  GtkBox *machine_radio_button_box;
 
+  GList *machine_radio_button;
+  
   GtkDialog *machine_selection;
 };
 
 struct _AgsMachineSelectorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*changed)(AgsMachineSelector *machine_selector, AgsMachine *machine);
 };
 
 GType ags_machine_selector_get_type(void);
 
+gboolean ags_machine_selector_test_flags(AgsMachineSelector *machine_selector,
+					 guint flags);
+void ags_machine_selector_set_flags(AgsMachineSelector *machine_selector,
+				    guint flags);
+void ags_machine_selector_unset_flags(AgsMachineSelector *machine_selector,
+				    guint flags);
+
+void ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selector,
+					       gint position,
+					       AgsMachine *machine);
+void ags_machine_selector_popup_remove_machine(AgsMachineSelector *machine_selector,
+					       gint position);
+
+GList* ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_selector);
+void ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_selector,
+						      gint position,
+						      AgsMachineRadioButton *machine_radio_button);
+void ags_machine_selector_remove_machine_radio_button(AgsMachineSelector *machine_selector,
+						      AgsMachineRadioButton *machine_radio_button);
+
 void ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit);
 
-void ags_machine_selector_add_index(AgsMachineSelector *machine_selector);
+void ags_machine_selector_insert_index(AgsMachineSelector *machine_selector,
+				       gint position,
+				       AgsMachine *machine);
 void ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 				       guint nth);
 
-void ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
-				     AgsMachine *machine);
-
 void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
-
-GtkMenu* ags_machine_selector_popup_new(AgsMachineSelector *machine_selector);
 
 AgsMachineSelector* ags_machine_selector_new();
 

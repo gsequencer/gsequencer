@@ -20,6 +20,10 @@
 #include <ags/app/machine/ags_sf2_synth.h>
 #include <ags/app/machine/ags_sf2_synth_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
+
 #include <ags/i18n.h>
 
 void ags_sf2_synth_class_init(AgsSF2SynthClass *sf2_synth);
@@ -53,12 +57,12 @@ gint ags_sf2_synth_int_compare_func(gconstpointer a,
 
 /**
  * SECTION:ags_sf2_synth
- * @short_description: sf2_synth
+ * @short_description: SF2 synth
  * @title: AgsSF2Synth
  * @section_id:
  * @include: ags/app/machine/ags_sf2_synth.h
  *
- * The #AgsSF2Synth is a composite widget to act as sf2_synth.
+ * The #AgsSF2Synth is a composite widget to act as SF2 synth.
  */
 
 static gpointer ags_sf2_synth_parent_class = NULL;
@@ -137,6 +141,8 @@ ags_sf2_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   GtkBox *sf2_hbox;
   GtkBox *sf2_file_hbox;
   GtkBox *sf2_preset_hbox;
@@ -162,10 +168,50 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkAdjustment *adjustment;
   
   AgsAudio *audio;
+
+  AgsMachineCounterManager *machine_counter_manager;
+  AgsMachineCounter *machine_counter;
   
-  g_signal_connect_after((GObject *) sf2_synth, "parent_set",
-			 G_CALLBACK(ags_sf2_synth_parent_set_callback), (gpointer) sf2_synth);
+  AgsApplicationContext *application_context;
   
+  gchar *machine_name;
+
+  gint position;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* machine counter */
+  machine_counter_manager = ags_machine_counter_manager_get_instance();
+
+  machine_counter = ags_machine_counter_manager_find_machine_counter(machine_counter_manager,
+								     AGS_TYPE_SF2_SYNTH);
+
+  machine_name = NULL;
+
+  if(machine_counter != NULL){
+    machine_name = g_strdup_printf("Default %d",
+				   machine_counter->counter);
+  
+    ags_machine_counter_increment(machine_counter);
+  }
+  
+  g_object_set(sf2_synth,
+	       "machine-name", machine_name,
+	       NULL);
+
+  g_free(machine_name);
+  
+  /* machine selector */
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  position = g_list_length(window->machine);
+  
+  ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
+					    position,
+					    sf2_synth);
+    
   audio = AGS_MACHINE(sf2_synth)->audio;
 
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -191,10 +237,6 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   AGS_MACHINE(sf2_synth)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				    AGS_MACHINE_REVERSE_NOTATION);
   AGS_MACHINE(sf2_synth)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
-
-  /* context menu */
-  ags_machine_popup_add_connection_options((AgsMachine *) sf2_synth,
-  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
   g_signal_connect_after(G_OBJECT(sf2_synth), "resize-audio-channels",
@@ -224,10 +266,6 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   sf2_synth->buffer_play_container = ags_recall_container_new();
   sf2_synth->buffer_recall_container = ags_recall_container_new();
-
-  /* context menu */
-  ags_machine_popup_add_edit_options((AgsMachine *) sf2_synth,
-				     (AGS_MACHINE_POPUP_ENVELOPE));
   
   /* name and xml type */
   sf2_synth->name = NULL;
@@ -239,36 +277,46 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   /* SF2 */
   sf2_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				    0);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) sf2_synth)),
-		    (GtkWidget *) sf2_hbox);
+
+  gtk_widget_set_valign(sf2_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(sf2_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(sf2_hbox,
+			 FALSE);
+
+  gtk_box_set_spacing(sf2_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_frame_set_child(AGS_MACHINE(sf2_synth)->frame,
+		      (GtkWidget *) sf2_hbox);
 
   /* file */
   sf2_file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					 0);  
-  gtk_box_pack_start(sf2_hbox,
-		     (GtkWidget *) sf2_file_hbox,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_box_set_spacing(sf2_file_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(sf2_hbox,
+		 (GtkWidget *) sf2_file_hbox);
 
   sf2_synth->filename = (GtkEntry *) gtk_entry_new();
 
   gtk_widget_set_valign((GtkWidget *) sf2_synth->filename,
 			GTK_ALIGN_START);
   
-  gtk_box_pack_start(sf2_file_hbox,
-		     (GtkWidget *) sf2_synth->filename,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(sf2_file_hbox,
+		 (GtkWidget *) sf2_synth->filename);
   
   sf2_synth->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"));
 
   gtk_widget_set_valign((GtkWidget *) sf2_synth->open,
 			GTK_ALIGN_START);
 
-  gtk_box_pack_start(sf2_file_hbox,
-		     (GtkWidget *) sf2_synth->open,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(sf2_file_hbox,
+		 (GtkWidget *) sf2_synth->open);
 
   sf2_synth->sf2_loader = NULL;
 
@@ -278,12 +326,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->position = -1;
 
   sf2_synth->sf2_loader_spinner = (GtkSpinner *) gtk_spinner_new();
-  gtk_box_pack_start(sf2_file_hbox,
-		     (GtkWidget *) sf2_synth->sf2_loader_spinner,
-		     FALSE, FALSE,
-		     0);
-  gtk_widget_set_no_show_all((GtkWidget *) sf2_synth->sf2_loader_spinner,
-			     TRUE);
+  gtk_box_append(sf2_file_hbox,
+		     (GtkWidget *) sf2_synth->sf2_loader_spinner);
   gtk_widget_hide((GtkWidget *) sf2_synth->sf2_loader_spinner);
 
   /* preset - bank and program */
@@ -292,30 +336,29 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   
   sf2_preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					   0);
-  gtk_box_pack_start(sf2_hbox,
-		     (GtkWidget *) sf2_preset_hbox,
-		     FALSE, FALSE,
-		     0);
 
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-								  NULL);
+  gtk_box_set_spacing(sf2_preset_hbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(sf2_hbox,
+		 (GtkWidget *) sf2_preset_hbox);
+
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_widget_set_size_request((GtkWidget *) scrolled_window,
 			      AGS_SF2_SYNTH_BANK_WIDTH_REQUEST,
 			      AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST);
   gtk_scrolled_window_set_policy(scrolled_window,
 				 GTK_POLICY_AUTOMATIC,
 				 GTK_POLICY_ALWAYS);
-  gtk_box_pack_start(sf2_preset_hbox,
-		     (GtkWidget *) scrolled_window,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append(sf2_preset_hbox,
+		 (GtkWidget *) scrolled_window);
   
   sf2_synth->bank_tree_view = 
     sf2_bank_tree_view = gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_bank_tree_view,
 					     TRUE);
-  gtk_container_add((GtkContainer *) scrolled_window,
-		    (GtkWidget *) sf2_bank_tree_view);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) sf2_bank_tree_view);
     
   gtk_widget_set_size_request((GtkWidget *) sf2_bank_tree_view,
 			      AGS_SF2_SYNTH_BANK_WIDTH_REQUEST,
@@ -336,25 +379,22 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_tree_view_set_model(sf2_bank_tree_view,
 			  GTK_TREE_MODEL(sf2_bank));  
   
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-								  NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   gtk_widget_set_size_request((GtkWidget *) scrolled_window,
 			      AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST,
 			      AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST);
   gtk_scrolled_window_set_policy(scrolled_window,
 				 GTK_POLICY_AUTOMATIC,
 				 GTK_POLICY_ALWAYS);
-  gtk_box_pack_start((GtkBox *) sf2_preset_hbox,
-		     (GtkWidget *) scrolled_window,
-		     FALSE, FALSE,
-		     0);
+  gtk_box_append((GtkBox *) sf2_preset_hbox,
+		 (GtkWidget *) scrolled_window);
 
   sf2_synth->program_tree_view = 
     sf2_program_tree_view = gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_program_tree_view,
 					     TRUE);
-  gtk_container_add((GtkContainer *) scrolled_window,
-		    (GtkWidget *) sf2_program_tree_view);
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) sf2_program_tree_view);
 
   gtk_widget_set_size_request((GtkWidget *) sf2_program_tree_view,
 			      AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST,
@@ -388,20 +428,36 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   /* effect control */
   effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				       0);
-  gtk_container_add((GtkContainer *) sf2_hbox,
-		    (GtkWidget *) effect_vbox);
+
+  gtk_box_set_spacing(effect_vbox,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_box_append(sf2_hbox,
+		 (GtkWidget *) effect_vbox);
 
   /*  */
   synth_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(effect_vbox,
-		     (GtkWidget *) synth_grid,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_grid_set_column_spacing(synth_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(synth_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_valign(synth_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(synth_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(synth_grid,
+			 FALSE);
+
+  gtk_box_append(effect_vbox,
+		 (GtkWidget *) synth_grid);
 
   /* WAV 1 - octave */
   label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - octave"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -436,8 +492,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* WAV 1 - key */
   label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - key"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -471,8 +527,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* WAV 1 - volume */
   label = (GtkLabel *) gtk_label_new(i18n("WAV 1 - volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(synth_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -505,15 +561,27 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
-  gtk_box_pack_start(effect_vbox,
-		     (GtkWidget *) chorus_grid,
-		     FALSE, FALSE,
-		     0);
+
+  gtk_grid_set_column_spacing(chorus_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(chorus_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_valign(chorus_grid,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign(chorus_grid,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand(chorus_grid,
+			 FALSE);
+
+  gtk_box_append(effect_vbox,
+		 (GtkWidget *) chorus_grid);
   
   /* chorus input volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus input volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  0, 0,
@@ -546,8 +614,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus output volume */
   label = (GtkLabel *) gtk_label_new(i18n("chorus output volume"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  0, 1,
@@ -580,8 +648,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   
   /* chorus LFO */
   label = (GtkLabel *) gtk_label_new(i18n("chorus LFO"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  2, 0,
@@ -610,8 +678,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus LFO frequency */
   label = (GtkLabel *) gtk_label_new(i18n("chorus LFO frequency"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  2, 1,
@@ -625,8 +693,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus depth */
   label = (GtkLabel *) gtk_label_new(i18n("chorus depth"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 0,
@@ -659,8 +727,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus mix */
   label = (GtkLabel *) gtk_label_new(i18n("chorus mix"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 1,
@@ -693,8 +761,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* chorus delay */
   label = (GtkLabel *) gtk_label_new(i18n("chorus delay"));
-  gtk_label_set_xalign(label,
-		       0.0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
   gtk_grid_attach(chorus_grid,
 		  (GtkWidget *) label,
 		  4, 2,
@@ -759,7 +827,7 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 {
   AgsSF2Synth *sf2_synth;
   
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) != 0){
     return;
   }
 
@@ -819,7 +887,7 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 {
   AgsSF2Synth *sf2_synth;
 
-  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_MACHINE(connectable)->connectable_flags)) == 0){
     return;
   }
 
@@ -1478,7 +1546,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 	    ags_sf2_midi_locale_loader_set_flags(sf2_midi_locale_loader,
 						 AGS_SF2_MIDI_LOCALE_LOADER_RUN_APPLY_MIDI_LOCALE);
       
-	    sf2_midi_locale_loader->synth = &(channel_data->synth);
+	    sf2_midi_locale_loader->synth = channel_data->synth;
       
 	    ags_sf2_midi_locale_loader_start(sf2_midi_locale_loader);
 	  }

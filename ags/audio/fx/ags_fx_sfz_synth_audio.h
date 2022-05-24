@@ -29,7 +29,7 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_sfz_synth_util.h>
-#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_chorus_util.h>
 
@@ -43,8 +43,6 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_SFZ_SYNTH_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FX_SFZ_SYNTH_AUDIO))
 #define AGS_IS_FX_SFZ_SYNTH_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_SFZ_SYNTH_AUDIO))
 #define AGS_FX_SFZ_SYNTH_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_SFZ_SYNTH_AUDIO, AgsFxSFZSynthAudioClass))
-
-#define AGS_FX_SFZ_SYNTH_AUDIO_DEFAULT_BUFFER_SIZE (65536)
 
 typedef struct _AgsFxSFZSynthAudio AgsFxSFZSynthAudio;
 typedef struct _AgsFxSFZSynthAudioScopeData AgsFxSFZSynthAudioScopeData;
@@ -65,6 +63,8 @@ struct _AgsFxSFZSynthAudio
   
   AgsPort *chorus_enabled;
   
+  AgsPort *chorus_pitch_type;
+
   AgsPort *chorus_input_volume;
   AgsPort *chorus_output_volume;
   
@@ -74,7 +74,7 @@ struct _AgsFxSFZSynthAudio
   AgsPort *chorus_depth;
   AgsPort *chorus_mix;
   AgsPort *chorus_delay;
-
+ 
   AgsFxSFZSynthAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
@@ -100,15 +100,9 @@ struct _AgsFxSFZSynthAudioChannelData
   
   gpointer parent;
 
-  AgsSFZSynthUtil synth;
-  AgsResampleUtil synth_resample_util;
-  AgsHQPitchUtil synth_hq_pitch_util;
-  AgsLinearInterpolateUtil synth_hq_pitch_linear_interpolate_util;
-  AgsVolumeUtil synth_volume_util;
+  AgsSFZSynthUtil *synth;
     
-  AgsChorusUtil chorus_util;
-  AgsHQPitchUtil chorus_hq_pitch_util;
-  AgsLinearInterpolateUtil chorus_linear_interpolate_util;
+  AgsChorusUtil *chorus_util;
   
   AgsFxSFZSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };

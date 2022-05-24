@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_eq10_audio.h>
 #include <ags/audio/fx/ags_fx_eq10_channel.h>
@@ -140,6 +141,8 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxEq10Channel *fx_eq10_channel;
   AgsFxEq10ChannelProcessor *fx_eq10_channel_processor;
   AgsFxEq10Recycling *fx_eq10_recycling;
+
+  AgsVolumeUtil volume_util;
   
   gdouble *output_buffer;
   gdouble *input_buffer;
@@ -981,9 +984,18 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     }
 
     /* apply boost */
-    ags_audio_buffer_util_volume_double(output_buffer, 1,
-					buffer_size,
-					pressure);
+    volume_util.destination = output_buffer;
+    volume_util.destination_stride = 1;
+    
+    volume_util.source = output_buffer;
+    volume_util.source_stride = 1;
+
+    volume_util.buffer_length = buffer_size;
+    volume_util.format = AGS_SOUNDCARD_DOUBLE;
+
+    volume_util.volume = pressure;
+
+    ags_volume_util_compute_double(&volume_util);
   
     /* clear buffer and copy output  */
     g_rec_mutex_lock(stream_mutex);

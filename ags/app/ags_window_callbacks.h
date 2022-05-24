@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,10 +35,6 @@
 G_BEGIN_DECLS
 
 void ags_window_setup_completed_callback(AgsApplicationContext *application_context, AgsWindow *window);
-
-gboolean ags_window_delete_event_callback(GtkWidget *widget, gpointer data);
-
-gboolean ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindow *window);
 
 G_END_DECLS
 

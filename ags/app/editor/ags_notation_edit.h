@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -89,9 +89,10 @@ typedef enum{
 
 struct _AgsNotationEdit
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
+  guint connectable_flags;
   guint mode;
 
   guint button_mask;
@@ -124,13 +125,13 @@ struct _AgsNotationEdit
 
   GtkDrawingArea *drawing_area;
 
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkScrollbar *hscrollbar;
 };
 
 struct _AgsNotationEditClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_notation_edit_get_type(void);

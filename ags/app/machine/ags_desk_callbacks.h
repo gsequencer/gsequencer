@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/app/machine/ags_desk.h>
 
 G_BEGIN_DECLS
-
-void ags_desk_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDesk *desk);
 
 void ags_desk_resize_audio_channels_callback(AgsDesk *desk,
 					     guint audio_channels, guint audio_channels_old,

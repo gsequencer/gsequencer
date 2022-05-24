@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
+#include <ags/app/ags_pcm_file_chooser_dialog.h>
 #include <ags/app/ags_line_callbacks.h>
 
 #include <math.h>
@@ -37,74 +38,52 @@ void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response,
 void
 ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_pad)
 {
-  GtkFileChooserDialog *file_chooser;
-  GtkBox *hbox;
-  GtkLabel *label;
-  GtkSpinButton *spin_button;
-//  GtkToggleButton *play;
+  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
-  if(drum_input_pad->file_chooser != NULL)
-    return;
-
-  drum_input_pad->file_chooser =
-    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open File"),
-									(GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
-									GTK_FILE_CHOOSER_ACTION_OPEN,
-									i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-									i18n("_Open"), GTK_RESPONSE_ACCEPT,
-									NULL);
-  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
-					   "file:///usr/share/hydrogen/data/drumkits",
-					   NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
-				       FALSE);
-  g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
-  g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME, NULL);
-
-  hbox = (GtkHBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
-				  0);
-  gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser,
-				    (GtkWidget *) hbox);
+  GFile *file;
   
-  label = (GtkLabel *) gtk_label_new(i18n("channel: "));
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) label,
-		     FALSE, FALSE,
-		     0);
+  GError *error;
 
-  spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_AUDIO(AGS_PAD(drum_input_pad)->channel->audio)->audio_channels - 1, 1.0);
-  g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON, spin_button);
-  gtk_box_pack_start(hbox,
-		     (GtkWidget *) spin_button,
-		     FALSE, FALSE,
-		     0);
+  if(drum_input_pad->file_chooser != NULL){
+    return;
+  }
+  
+  pcm_file_chooser_dialog = ags_pcm_file_chooser_dialog_new(i18n("open audio files"),
+							    (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
+												  AGS_TYPE_WINDOW));
+
+  file = g_file_new_for_path("/usr/share/hydrogen/data/drumkits");
+
+  error = NULL;
+  gtk_file_chooser_add_shortcut_folder(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
+				       file,
+				       &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+    
+    g_error_free(error);
+  }
+
+  drum_input_pad->file_chooser = pcm_file_chooser_dialog;
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
+				       FALSE);
 
   if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad)->group)){
-    gtk_widget_set_sensitive((GtkWidget *) spin_button,
+    gtk_widget_set_sensitive((GtkWidget *) pcm_file_chooser_dialog->audio_channel,
 			     FALSE);
   }
 
-#if 0
-  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-  					  "label", GTK_STOCK_MEDIA_PLAY,
-  					  "use-stock", TRUE,
-  					  "use-underline", TRUE,
-  					  NULL);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
-  gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);
-#endif
-  
-  gtk_widget_show_all((GtkWidget *) file_chooser);
+  gtk_widget_show((GtkWidget *) pcm_file_chooser_dialog);
 
-  g_signal_connect((GObject *) file_chooser, "response",
+  g_signal_connect((GObject *) pcm_file_chooser_dialog, "response",
 		   G_CALLBACK(ags_drum_input_pad_open_response_callback), (gpointer) drum_input_pad);
 }
 
 void
 ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
 {
-  GtkFileChooserDialog *file_chooser;
-  GtkSpinButton *spin_button;
+  AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
   AgsAudioFile *audio_file;
 
@@ -112,27 +91,18 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
   AgsApplicationContext *application_context;
 
+  GFile *file;
+  
   GList *task;
   
-  char *name0, *name1;
+  gchar *filename;
 
   application_context = ags_application_context_get_instance();
 
-  file_chooser = drum_input_pad->file_chooser;
+  pcm_file_chooser_dialog = drum_input_pad->file_chooser;
 
   if(response == GTK_RESPONSE_ACCEPT){
-    name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
-    name1 = (char *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME);
-
-    spin_button = (GtkSpinButton *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON);
-
-    /* open audio file and read audio signal */
-    if(g_strcmp0(name0, name1)){
-      if(name1 != NULL){
-	audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
-	g_object_unref(G_OBJECT(audio_file));
-      }
-    }
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
 
     /* task */
     task = NULL;
@@ -154,7 +124,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       
       for(i = 0; current != next_pad; i++){
 	open_single_file = ags_open_single_file_new(current,
-						    name0,
+						    filename,
 						    i);
 	task = g_list_prepend(task,
 			      open_single_file);
@@ -176,33 +146,32 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       }
     }else{
       AgsLine *line;
-      GList *list;
-      
-      list = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set));
-      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
-      open_single_file = ags_open_single_file_new(line->channel,
-						  name0,
-						  (guint) gtk_spin_button_get_value(spin_button));
-      task = g_list_prepend(task,
-			    open_single_file);
+      GList *start_list, *list;
       
-      g_list_free(list);
+      list =
+	start_list = ags_pad_get_line(AGS_PAD(drum_input_pad));
+      
+      list = ags_line_find_next_grouped(start_list);
+
+      if(list != NULL){
+	line = list->data;
+	
+	open_single_file = ags_open_single_file_new(line->channel,
+						    filename,
+						    (guint) gtk_spin_button_get_value(pcm_file_chooser_dialog->audio_channel));
+	task = g_list_prepend(task,
+			      open_single_file);
+      }
+      
+      g_list_free(start_list);
     }
 
     ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
 				      task);
-
-    gtk_widget_destroy((GtkWidget *) file_chooser);
-  }else if(response == GTK_RESPONSE_CANCEL){
-    audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
-
-    if(audio_file != NULL){
-      g_object_unref(G_OBJECT(audio_file));
-    }
-
-    gtk_widget_destroy((GtkWidget *) file_chooser);
   }
+
+  gtk_window_destroy((GtkWindow *) pcm_file_chooser_dialog);
 
   drum_input_pad->file_chooser = NULL;
 }

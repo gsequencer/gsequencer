@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -118,10 +118,30 @@ ags_recall_container_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_recall_container_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_RECALL_CONTAINER_PLAY, "AGS_RECALL_CONTAINER_PLAY", "recall-container-play" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRecallContainerFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_recall_container_parent_class = g_type_class_peek_parent(recall_container);
@@ -288,6 +308,7 @@ void
 ags_recall_container_init(AgsRecallContainer *recall_container)
 {
   recall_container->flags = 0;
+  recall_container->connectable_flags = 0;
 
   /* add recall container mutex */
   g_rec_mutex_init(&(recall_container->obj_mutex)); 
@@ -825,10 +846,19 @@ ags_recall_container_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *recall_container_mutex;
+
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
-  /* check is added */
-  is_ready = ags_recall_container_test_flags(recall_container, AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY);
+  /* get recall container mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
+
+  /* check is ready */
+  g_rec_mutex_lock(recall_container_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (recall_container->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recall_container_mutex);
   
   return(is_ready);
 }
@@ -844,6 +874,8 @@ ags_recall_container_add_to_registry(AgsConnectable *connectable)
   AgsApplicationContext *application_context;
 
   GList *list;
+  
+  GRecMutex *recall_container_mutex;
 
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -851,7 +883,14 @@ ags_recall_container_add_to_registry(AgsConnectable *connectable)
   
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
-  ags_recall_container_set_flags(recall_container, AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY);
+  /* get recall container mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
+
+  g_rec_mutex_lock(recall_container_mutex);
+
+  recall_container->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(recall_container_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -871,9 +910,24 @@ ags_recall_container_add_to_registry(AgsConnectable *connectable)
 void
 ags_recall_container_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsRecallContainer *recall_container;
+
+  GRecMutex *recall_container_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  /* get recall  mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
+
+  g_rec_mutex_lock(recall_container_mutex);
+
+  recall_container->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(recall_container_mutex);
 
   //TODO:JK: implement me
 }
@@ -916,10 +970,19 @@ ags_recall_container_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *recall_container_mutex;
+
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
+  /* get recall container mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
+
   /* check is connected */
-  is_connected = ags_recall_container_test_flags(recall_container, AGS_RECALL_CONTAINER_CONNECTED);
+  g_rec_mutex_lock(recall_container_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (recall_container->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recall_container_mutex);
   
   return(is_connected);
 }
@@ -939,7 +1002,14 @@ ags_recall_container_connect(AgsConnectable *connectable)
 
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
-  ags_recall_container_set_flags(recall_container, AGS_RECALL_CONTAINER_CONNECTED);  
+  /* get recall container mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
+
+  g_rec_mutex_lock(recall_container_mutex);
+
+  recall_container->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  g_rec_mutex_unlock(recall_container_mutex);
 }
 
 void
@@ -957,7 +1027,14 @@ ags_recall_container_disconnect(AgsConnectable *connectable)
 
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
-  ags_recall_container_unset_flags(recall_container, AGS_RECALL_CONTAINER_CONNECTED);    
+  /* get recall container mutex */
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
+
+  g_rec_mutex_lock(recall_container_mutex);
+
+  recall_container->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(recall_container_mutex);
 }
 
 /**

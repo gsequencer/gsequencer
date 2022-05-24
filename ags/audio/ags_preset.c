@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -276,6 +276,7 @@ void
 ags_preset_init(AgsPreset *preset)
 {
   preset->flags = 0;
+  preset->connectable_flags = 0;
 
   /* preset mutex */
   g_rec_mutex_init(&(preset->obj_mutex));

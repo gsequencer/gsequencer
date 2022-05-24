@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -344,6 +344,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   AgsConfig *config;
 
   gstreamer_file->flags = 0;
+  gstreamer_file->connectable_flags = 0;
 
   /* add gstreamer file mutex */
   g_rec_mutex_init(&(gstreamer_file->obj_mutex));  
@@ -679,11 +680,20 @@ ags_gstreamer_file_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
+  GRecMutex *gstreamer_file_mutex;
+
   gstreamer_file = AGS_GSTREAMER_FILE(connectable);
 
-  /* check is ready */
-  is_ready = ags_gstreamer_file_test_flags(gstreamer_file, AGS_GSTREAMER_FILE_ADDED_TO_REGISTRY);
+  /* get gstreamer file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
+  /* check is ready */
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  is_ready = ((AGS_CONNECTABLE_ADDED_TO_REGISTRY & (gstreamer_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
   return(is_ready);
 }
 
@@ -697,13 +707,22 @@ ags_gstreamer_file_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
+  GRecMutex *gstreamer_file_mutex;
+
   if(ags_connectable_is_ready(connectable)){
     return;
   }
 
   gstreamer_file = AGS_GSTREAMER_FILE(connectable);
 
-  ags_gstreamer_file_set_flags(gstreamer_file, AGS_GSTREAMER_FILE_ADDED_TO_REGISTRY);
+  /* get gstreamer file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->connectable_flags |= AGS_CONNECTABLE_ADDED_TO_REGISTRY;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 
   application_context = ags_application_context_get_instance();
 
@@ -721,9 +740,24 @@ ags_gstreamer_file_add_to_registry(AgsConnectable *connectable)
 void
 ags_gstreamer_file_remove_from_registry(AgsConnectable *connectable)
 {
+  AgsGstreamerFile *gstreamer_file;
+
+  GRecMutex *gstreamer_file_mutex;
+
   if(!ags_connectable_is_ready(connectable)){
     return;
   }
+
+  gstreamer_file = AGS_GSTREAMER_FILE(connectable);
+
+  /* get gstreamer file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->connectable_flags &= (~AGS_CONNECTABLE_ADDED_TO_REGISTRY);
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 
   //TODO:JK: implement me
 }
@@ -766,11 +800,20 @@ ags_gstreamer_file_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
+  GRecMutex *gstreamer_file_mutex;
+
   gstreamer_file = AGS_GSTREAMER_FILE(connectable);
 
-  /* check is connected */
-  is_connected = ags_gstreamer_file_test_flags(gstreamer_file, AGS_GSTREAMER_FILE_CONNECTED);
+  /* get gstreamer file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
+  /* check is connected */
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (gstreamer_file->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
   return(is_connected);
 }
 
@@ -779,13 +822,22 @@ ags_gstreamer_file_connect(AgsConnectable *connectable)
 {
   AgsGstreamerFile *gstreamer_file;
 
+  GRecMutex *gstreamer_file_mutex;
+
   if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   gstreamer_file = AGS_GSTREAMER_FILE(connectable);
+
+  /* get gstreamer file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
-  ags_gstreamer_file_set_flags(gstreamer_file, AGS_GSTREAMER_FILE_CONNECTED);
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 }
 
 void
@@ -793,13 +845,22 @@ ags_gstreamer_file_disconnect(AgsConnectable *connectable)
 {
   AgsGstreamerFile *gstreamer_file;
 
+  GRecMutex *gstreamer_file_mutex;
+
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   gstreamer_file = AGS_GSTREAMER_FILE(connectable);
 
-  ags_gstreamer_file_unset_flags(gstreamer_file, AGS_GSTREAMER_FILE_CONNECTED);
+  /* get gstreamer file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 }
 
 /**
@@ -824,7 +885,7 @@ ags_gstreamer_file_test_flags(AgsGstreamerFile *gstreamer_file, guint flags)
     return(FALSE);
   }
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   /* test */
@@ -855,7 +916,7 @@ ags_gstreamer_file_set_flags(AgsGstreamerFile *gstreamer_file, guint flags)
     return;
   }
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   //TODO:JK: add more?
@@ -886,7 +947,7 @@ ags_gstreamer_file_unset_flags(AgsGstreamerFile *gstreamer_file, guint flags)
     return;
   }
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   //TODO:JK: add more?
@@ -924,7 +985,7 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -1748,7 +1809,7 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -1863,7 +1924,7 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   /* get buffer size and format */
@@ -1964,7 +2025,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   /* get source audio channels */
@@ -2149,7 +2210,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
    
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   /* get source audio channels */
@@ -2416,7 +2477,7 @@ ags_gstreamer_file_flush(AgsSoundResource *sound_resource)
    
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -2458,7 +2519,7 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -2536,7 +2597,7 @@ ags_gstreamer_file_close(AgsSoundResource *sound_resource)
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
   
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -2941,7 +3002,7 @@ ags_gstreamer_file_detect_encoding_profile(AgsGstreamerFile *gstreamer_file)
     return(FALSE);
   }
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   success = FALSE;

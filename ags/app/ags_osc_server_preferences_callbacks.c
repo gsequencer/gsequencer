@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -150,10 +150,14 @@ ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPr
 void
 ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
 {
+  GtkEntryBuffer *entry_buffer;
+  
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
 
+  gchar *ip4;
+  
   if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
     return;
   }
@@ -164,8 +168,12 @@ ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscSer
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
+    entry_buffer = gtk_entry_get_buffer(GTK_ENTRY(editable));
+
+    ip4 = gtk_entry_buffer_get_text(entry_buffer);
+    
     g_object_set(list->data,
-		 "ip4", gtk_entry_get_text(GTK_ENTRY(editable)),
+		 "ip4", ip4,
 		 NULL);
   
     g_list_free_full(start_list,
@@ -206,9 +214,13 @@ ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPr
 void
 ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
 {
+  GtkEntryBuffer *entry_buffer;
+
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
+
+  gchar *ip6;
 
   if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
     return;
@@ -220,8 +232,12 @@ ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscSer
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
+    entry_buffer = gtk_entry_get_buffer(GTK_ENTRY(editable));
+
+    ip6 = gtk_entry_buffer_get_text(entry_buffer);
+
     g_object_set(list->data,
-		 "ip6", gtk_entry_get_text(GTK_ENTRY(editable)),
+		 "ip6", ip6,
 		 NULL);
   
     g_list_free_full(start_list,
@@ -232,6 +248,8 @@ ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscSer
 void
 ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
 {
+  GtkEntryBuffer *entry_buffer;
+
   AgsApplicationContext *application_context;
   
   GList *start_list, *list;
@@ -249,9 +267,11 @@ ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPref
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
+    entry_buffer = gtk_entry_get_buffer(GTK_ENTRY(editable));
+
     server_port = AGS_OSC_SERVER_DEFAULT_SERVER_PORT;
 
-    str = gtk_entry_get_text(GTK_ENTRY(editable));
+    str = gtk_entry_buffer_get_text(entry_buffer);
 
     if(str != NULL){
       server_port = (guint) g_ascii_strtoull(str,
