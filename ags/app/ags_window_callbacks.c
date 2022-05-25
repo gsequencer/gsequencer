@@ -23,6 +23,7 @@
 
 #include <ags/app/ags_gsequencer_application.h>
 #include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_app_action_util.h>
 
 #if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
@@ -100,4 +101,12 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   
   /* connect and show window */
   gtk_widget_show((GtkWidget *) window);
+}
+
+gboolean
+ags_window_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  ags_app_action_util_quit();
+  
+  return(TRUE);
 }

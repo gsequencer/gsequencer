@@ -1,3 +1,12 @@
+ags (4.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsWindow missing close-request callback
+	* fixed meta-data window hide on close
+	* fixed removing AgsSoundcardEditor
+	* fixed AgsHybridSynth callbacks to use GtkCheckButton
+	* fixed AgsHybridFMSynth callbacks to use GtkCheckButton
+
 ags (4.0.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -404,6 +404,9 @@ ags_window_connect(AgsConnectable *connectable)
 
   window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
+  g_signal_connect(window, "close-request",
+		   G_CALLBACK(ags_window_close_request_callback), NULL);
+  
   list =
     start_list = ags_window_get_machine(window);
 
@@ -438,6 +441,12 @@ ags_window_disconnect(AgsConnectable *connectable)
   application_context = ags_application_context_get_instance();
 
   window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
+  g_object_disconnect(window,
+		      "any_signal::close-request",
+		      G_CALLBACK(ags_window_close_request_callback),
+		      NULL,
+		      NULL);
   
   list =
     start_list = ags_window_get_machine(window);

@@ -258,7 +258,7 @@ ags_sfz_synth_chorus_enabled_callback(GtkButton *button, AgsSFZSynth *sfz_synth)
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
-  chorus_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  chorus_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);

@@ -1215,7 +1215,7 @@ ags_machine_stop_callback(AgsMachine *machine,
   /* play button - check reset active */
   reset_active = (sound_scope == AGS_SOUND_SCOPE_SEQUENCER) ? TRUE: FALSE;
   
-  if(reset_active){
+  if(reset_active && machine->play != NULL){
     gtk_toggle_button_set_active(machine->play, FALSE);
   }
 

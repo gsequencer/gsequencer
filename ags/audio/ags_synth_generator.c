@@ -2342,7 +2342,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     
     if(sync_point != NULL){
       if(floor(sync_point[j][0].real) > 0.0 &&
-	 last_sync + sync_point[j][0].real < offset + current_count){
+	 (gdouble) last_sync + sync_point[j][0].real < (gdouble) offset + (gdouble) current_count){
 	current_phase = sync_point[j][0].imag;
 
 	synced = TRUE;
@@ -2367,12 +2367,12 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     if(sync_point != NULL){
       if(j + 1 < sync_point_count &&
 	 floor(sync_point[j + 1][0].real) > 0.0){
-	if(sync_point[j + 1][0].real < current_count){
+	if(sync_point[j + 1][0].real < (gdouble) current_count){
 	  current_count = sync_point[j + 1][0].real;
 	}
       }else{
 	if(floor(sync_point[0][0].real) > 0.0 &&
-	   sync_point[0][0].real < current_count){
+	   sync_point[0][0].real < (gdouble) current_count){
 	  current_count = sync_point[0][0].real;
 	}
       }
