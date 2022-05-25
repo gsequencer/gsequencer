@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-24 08:44+0200\n"
+"POT-Creation-Date: 2022-05-26 00:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1945,33 +1945,37 @@ msgstr "szybkie ustawienia"
 msgid "Port control orientation"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:86
+#: ags/app/ags_meta_data_window.c:77
+msgid "meta-data editor"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:91
 msgid "author"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:104
+#: ags/app/ags_meta_data_window.c:109
 msgid "title"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:122
+#: ags/app/ags_meta_data_window.c:127
 msgid "album"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:140
+#: ags/app/ags_meta_data_window.c:145
 #, fuzzy
 msgid "release date"
 msgstr "wydanie"
 
-#: ags/app/ags_meta_data_window.c:158
+#: ags/app/ags_meta_data_window.c:163
 #, fuzzy
 msgid "copyright"
 msgstr "prawy"
 
-#: ags/app/ags_meta_data_window.c:176
+#: ags/app/ags_meta_data_window.c:181
 msgid "license"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:194
+#: ags/app/ags_meta_data_window.c:199
 msgid "comment"
 msgstr ""
 
