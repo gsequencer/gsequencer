@@ -9405,11 +9405,15 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
   	  if(!g_strcmp0(((GParameter *) property->data)->name,
 			"machine")){
 	    AgsWindow *window;
-	    AgsMachine *machine;
+	    AgsMachine *current_machine;
 
 	    GList *file_id_ref;
+	    GList *start_machine, *machine;
 	    GList *start_list, *list;
 
+	    gint position;
+	    gboolean success;
+	    
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 
 	    if(str != NULL){
@@ -9422,15 +9426,45 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 		window = gtk_widget_get_ancestor(composite_editor,
 						 AGS_TYPE_WINDOW);
 
-		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
-		
-		start_list = ags_window_get_machine(window);		
-	    
-		ags_machine_selector_insert_index(composite_editor->machine_selector,
-						  g_list_index(start_list,
-							       machine),
-						  machine);
+		current_machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 
+		machine = 
+		  start_machine = ags_window_get_machine(window);
+
+		start_list = ags_machine_selector_get_machine_radio_button(window->composite_editor->machine_selector);
+
+		while(machine != NULL){
+		  if(machine->data == current_machine){
+		    break;
+		  }
+    
+		  list = start_list;
+
+		  success = FALSE;
+
+		  while(!success && list != NULL){
+		    if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == current_machine){
+		      break;
+		    }
+      
+		    if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine->data){
+		      success = TRUE;
+		    } 
+      
+		    list = list->next;
+		  }
+    
+		  if(success){
+		    position++;
+		  }
+    
+		  machine = machine->next;
+		}
+
+		ags_machine_selector_insert_index(window->composite_editor->machine_selector,
+						  position,
+						  current_machine);
+		
 		g_list_free(start_list);
 	      }
 	    }
@@ -14728,8 +14762,9 @@ ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_looku
   
   node = file_lookup->node;
   property_list = NULL;
-  
-  start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
+
+  list =   
+    start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
 
   if(list != NULL){
     property_list = xmlNewNode(NULL,

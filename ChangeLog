@@ -1,3 +1,8 @@
+ags (4.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsCompositeEditor machine radio button XML IO in ags_simple_file.c
+
 ags (4.0.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

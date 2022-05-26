@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.0.7" date="2022-05-26">
+      <description>
+	<p>
+	  Fixed XML IO of composite editor's machine selector.
+	</p>
+      </description>
+    </release>
+
     <release version="4.0.6" date="2022-05-26">
       <description>
 	<p>
