@@ -1285,8 +1285,8 @@ ags_window_load_file_timeout(AgsWindow *window)
       window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
 				     window->name);
 
-      gtk_label_set_text(label,
-			 window_title);
+      gtk_label_set_label(label,
+			  window_title);
 
       g_free(window_title);
       
