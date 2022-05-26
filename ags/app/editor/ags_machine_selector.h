@@ -76,6 +76,10 @@ struct _AgsMachineSelector
   GMenu *add_index_menu;
   GMenu *shift_piano;
 
+  guint add_index_item_count;
+  
+  GMenuItem **add_index_item;
+  
   GSimpleAction *reverse_mapping_action;
   
   GtkWidget *current;
