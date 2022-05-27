@@ -130,9 +130,21 @@
 	Dialogs related to machine.
       </para>
 
+      <xi:include href="xml/ags_machine_editor_dialog.xml"/>
       <xi:include href="xml/ags_machine_editor.xml"/>
+      <xi:include href="xml/ags_machine_editor_listing.xml"/>
+      <xi:include href="xml/ags_machine_editor_pad.xml"/>
+      <xi:include href="xml/ags_machine_editor_line.xml"/>
+      <xi:include href="xml/ags_machine_editor_collection.xml"/>
+      <xi:include href="xml/ags_machine_editor_bulk.xml"/>
 
+      <xi:include href="xml/ags_connection_editor_dialog.xml"/>
       <xi:include href="xml/ags_connection_editor.xml"/>
+      <xi:include href="xml/ags_connection_editor_listing.xml"/>
+      <xi:include href="xml/ags_connection_editor_pad.xml"/>
+      <xi:include href="xml/ags_connection_editor_line.xml"/>
+      <xi:include href="xml/ags_connection_editor_collection.xml"/>
+      <xi:include href="xml/ags_connection_editor_bulk.xml"/>
 
       <xi:include href="xml/ags_resize_editor.xml"/>
       

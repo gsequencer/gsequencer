@@ -15,7 +15,7 @@ interactive_test_dependencies = [
   common_dependencies,
   dependency('gtk+-3.0'),
   dependency('libxml-2.0'),
-  dependency('libsoup-2.4'),
+  dependency('libsoup-3.0'),
   compiler.find_library('m', required: true),
 ]
 

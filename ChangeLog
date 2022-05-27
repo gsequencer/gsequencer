@@ -1,3 +1,9 @@
+ags (4.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed meson test dependency of libsoup-3.0
+	* improved gtk-doc
+
 ags (4.0.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

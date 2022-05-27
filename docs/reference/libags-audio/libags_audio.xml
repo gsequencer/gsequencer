@@ -58,7 +58,7 @@
     <chapter id="plugin-dssi">
       <title>DSSI plugins</title>
       <para>
-	The LADSPA plugin objects.
+	The DSSI plugin objects.
       </para>
       
       <xi:include href="xml/ags_dssi_plugin.xml"/>
@@ -89,6 +89,18 @@
       <xi:include href="xml/ags_lv2ui_plugin.xml"/>
     </chapter>
 
+    <!-- 
+    <chapter id="plugin-vst3">
+      <title>VST3 plugins</title>
+      <para>
+	The VST3 plugin objects.
+      </para>
+      
+      <xi:include href="xml/ags_vst3_conversion.xml"/>
+      <xi:include href="xml/ags_vst3_plugin.xml"/>
+      <xi:include href="xml/ags_vst3_manager.xml"/>
+      </chapter>
+      -->
   </part>
     
   <part id="audio">
@@ -122,6 +134,7 @@
       <xi:include href="xml/ags_volume_util.xml"/>
       <xi:include href="xml/ags_envelope_util.xml"/>
       <xi:include href="xml/ags_peak_util.xml"/>
+      <xi:include href="xml/ags_noise_util.xml"/>
       <xi:include href="xml/ags_resample_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
       <xi:include href="xml/ags_fm_synth_util.xml"/>
@@ -382,6 +395,7 @@
       <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
       <xi:include href="xml/ags_ipatch_sample.xml"/>
       <xi:include href="xml/ags_sndfile.xml"/>
+      <!-- <xi:include href="xml/ags_audio_toolbox.xml"/> -->
       <xi:include href="xml/ags_sfz_file.xml"/>
       <xi:include href="xml/ags_sfz_group.xml"/>
       <xi:include href="xml/ags_sfz_region.xml"/>
@@ -450,6 +464,15 @@
       <xi:include href="xml/ags_fx_lv2_channel.xml"/>
       <xi:include href="xml/ags_fx_lv2_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_lv2_recycling.xml"/>      
+
+      <!--
+      <xi:include href="xml/ags_fx_vst3_audio.xml"/>
+      <xi:include href="xml/ags_fx_vst3_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_vst3_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_vst3_channel.xml"/>
+      <xi:include href="xml/ags_fx_vst3_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_vst3_recycling.xml"/>      
+      -->
       
       <para>
 	Synths extending ags-fx-notation.
@@ -599,6 +622,7 @@
       <xi:include href="xml/ags_crop_note.xml"/>
       <xi:include href="xml/ags_export_output.xml"/>
       <xi:include href="xml/ags_free_selection.xml"/>
+      <!-- <xi:include href="xml/ags_instantiate_vst3_plugin.xml"/> -->
       <xi:include href="xml/ags_link_channel.xml"/>
       <xi:include href="xml/ags_move_note.xml"/>
       <xi:include href="xml/ags_open_file.xml"/>
@@ -632,6 +656,7 @@
       <xi:include href="xml/ags_switch_buffer_flag.xml"/>
       <xi:include href="xml/ags_tic_device.xml"/>
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
+      <!-- <xi:include href="xml/ags_write_vst3_port.xml"/> -->
     </chapter>
   </part>
 
