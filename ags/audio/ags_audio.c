@@ -5607,6 +5607,8 @@ ags_audio_get_audio_name(AgsAudio *audio)
     return(NULL);
   }
 
+  audio_name = NULL;
+  
   g_object_get(audio,
 	       "audio-name", &audio_name,
 	       NULL);

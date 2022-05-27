@@ -126,12 +126,9 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 					  soundcard_editor->soundcard);
   }
 
-  gtk_box_remove(audio_preferences->soundcard_editor_box,
-		 soundcard_editor);
+  ags_audio_preferences_remove_soundcard_editor(audio_preferences,
+						soundcard_editor);
   
-  g_object_run_dispose(soundcard_editor);
-  g_object_unref(soundcard_editor);
-
   /* reset default card */
   if(audio_preferences->soundcard_editor != NULL){
     gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(audio_preferences->soundcard_editor->data)->buffer_size,

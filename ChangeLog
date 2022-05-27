@@ -1,3 +1,33 @@
+ags (4.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed meson test dependency of libsoup-3.0
+	* improved gtk-doc
+
+ags (4.0.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed rename machine dialog and machine selector popover
+	* fixed rename machine audio dialog
+	* fixed reposition machine audio dialog
+
+ags (4.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsCompositeEditor machine radio button XML IO in ags_simple_file.c
+	* fixed ags_window_file_timeout() to set title with markup
+
+ags (4.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsWindow missing close-request callback
+	* fixed meta-data window hide on close
+	* fixed removing AgsSoundcardEditor
+	* fixed AgsHybridSynth callbacks to use GtkCheckButton
+	* fixed AgsHybridFMSynth callbacks to use GtkCheckButton
+	* fixed ags_lfo_synth_util.c OS X accelerated code
+	* fixed AgsCoreAudioPort CoreAudio callbacks to use app_buffer_mode
+
 ags (4.0.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

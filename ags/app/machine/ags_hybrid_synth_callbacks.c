@@ -289,7 +289,7 @@ ags_hybrid_synth_synth_0_sync_enabled_callback(GtkButton *button, AgsHybridSynth
 
   audio = AGS_MACHINE(hybrid_synth)->audio;
 
-  sync_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  sync_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1054,7 +1054,7 @@ ags_hybrid_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsHybridSynth
 
   audio = AGS_MACHINE(hybrid_synth)->audio;
 
-  sync_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  sync_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1564,7 +1564,7 @@ ags_hybrid_synth_sequencer_enabled_callback(GtkButton *button, AgsHybridSynth *h
 
   audio = AGS_MACHINE(hybrid_synth)->audio;
 
-  sequencer_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  sequencer_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1768,7 +1768,7 @@ ags_hybrid_synth_low_pass_enabled_callback(GtkButton *button, AgsHybridSynth *hy
 
   audio = AGS_MACHINE(hybrid_synth)->audio;
 
-  low_pass_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  low_pass_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1921,7 +1921,7 @@ ags_hybrid_synth_high_pass_enabled_callback(GtkButton *button, AgsHybridSynth *h
 
   audio = AGS_MACHINE(hybrid_synth)->audio;
 
-  high_pass_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  high_pass_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -2074,7 +2074,7 @@ ags_hybrid_synth_chorus_enabled_callback(GtkButton *button, AgsHybridSynth *hybr
 
   audio = AGS_MACHINE(hybrid_synth)->audio;
 
-  chorus_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  chorus_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);

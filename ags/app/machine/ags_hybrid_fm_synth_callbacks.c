@@ -1411,7 +1411,7 @@ ags_hybrid_fm_synth_sequencer_enabled_callback(GtkButton *button, AgsHybridFMSyn
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
-  sequencer_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  sequencer_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1615,7 +1615,7 @@ ags_hybrid_fm_synth_low_pass_enabled_callback(GtkButton *button, AgsHybridFMSynt
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
-  low_pass_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  low_pass_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1768,7 +1768,7 @@ ags_hybrid_fm_synth_high_pass_enabled_callback(GtkButton *button, AgsHybridFMSyn
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
-  high_pass_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  high_pass_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -1921,7 +1921,7 @@ ags_hybrid_fm_synth_chorus_enabled_callback(GtkButton *button, AgsHybridFMSynth 
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
-  chorus_enabled = gtk_toggle_button_get_active((GtkToggleButton *) button);
+  chorus_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
   
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);

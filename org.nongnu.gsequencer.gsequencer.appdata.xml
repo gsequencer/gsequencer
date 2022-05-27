@@ -40,6 +40,39 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.0.8" date="2022-05-26">
+      <description>
+	<p>
+	  Fixed input dialogs of machine.
+	</p>
+      </description>
+    </release>
+
+    <release version="4.0.7" date="2022-05-26">
+      <description>
+	<p>
+	  Fixed XML IO of composite editor's machine selector.
+	</p>
+      </description>
+    </release>
+
+    <release version="4.0.6" date="2022-05-26">
+      <description>
+	<p>
+	  Fixed missing close request callback of main window.
+	</p>
+	<p>
+	  Fixed missing hide on close of meta window.
+	</p>
+	<p>
+	  Fixed remove soundcard editor of preferences.
+	</p>
+	<p>
+	  Fixed Hybrid Synth and Hybrid FM Synth callbacks check button access.
+	</p>
+      </description>
+    </release>
+
     <release version="4.0.1" date="2022-05-24">
       <description>
 	<p>

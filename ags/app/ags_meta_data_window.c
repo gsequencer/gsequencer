@@ -73,6 +73,11 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
   GtkScrolledWindow *scrolled_window;
   GtkLabel *label;
 
+  g_object_set(meta_data_window,
+	       "title", i18n("meta-data editor"),
+	       "hide-on-close", TRUE,
+	       NULL);
+
   grid = gtk_grid_new();
 
   gtk_grid_set_column_spacing(grid,

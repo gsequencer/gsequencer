@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 
 void ags_window_setup_completed_callback(AgsApplicationContext *application_context, AgsWindow *window);
 
+gboolean ags_window_close_request_callback(GtkWindow *window, gpointer user_data);
+
 G_END_DECLS
 
 #endif /*__AGS_WINDOW_CALLBACKS_H__*/

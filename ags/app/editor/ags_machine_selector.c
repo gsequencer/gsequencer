@@ -324,6 +324,9 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   
   machine_selector->shift_piano = NULL;
 
+  machine_selector->add_index_item_count = 0;
+  machine_selector->add_index_item = NULL;
+  
   machine_selector->machine_radio_button_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 								      AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(GTK_BOX(machine_selector),
@@ -548,7 +551,9 @@ ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selector,
   gchar *action_name;
   gchar *detailed_action;
   gchar *label;
-  
+
+  guint add_index_item_count;
+    
   g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
   g_return_if_fail(AGS_IS_MACHINE(machine));
 
@@ -577,6 +582,23 @@ ags_machine_selector_popup_insert_machine(AgsMachineSelector *machine_selector,
 		     position,
 		     item);
 
+  add_index_item_count = machine_selector->add_index_item_count + 1;
+
+  if(machine_selector->add_index_item == NULL){
+    machine_selector->add_index_item = g_malloc(2 * sizeof(GMenuItem *));
+
+    machine_selector->add_index_item[0] = item;
+    machine_selector->add_index_item[1] = NULL;    
+  }else{
+    machine_selector->add_index_item = g_realloc(machine_selector->add_index_item,
+						 (add_index_item_count + 1) * sizeof(GMenuItem *));
+
+    machine_selector->add_index_item[machine_selector->add_index_item_count] = item;
+    machine_selector->add_index_item[add_index_item_count] = NULL;    
+  }
+
+  machine_selector->add_index_item_count = add_index_item_count;
+  
   g_free(action_name);
   g_free(detailed_action);
 }
@@ -585,8 +607,44 @@ void
 ags_machine_selector_popup_remove_machine(AgsMachineSelector *machine_selector,
 					  gint position)
 {
+  guint add_index_item_count;
+  
   g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
 
+  add_index_item_count = machine_selector->add_index_item_count - 1;
+
+  if(machine_selector->add_index_item_count > 0){
+    if(machine_selector->add_index_item_count > 1){
+      GMenuItem **add_index_item;
+      
+      add_index_item = g_malloc((add_index_item_count + 1) * sizeof(GMenuItem *));
+
+      if(position > 0){
+	memcpy(add_index_item, machine_selector->add_index_item, position * sizeof(GMenuItem *));
+
+	if(add_index_item_count - position > 0){
+	  memcpy(add_index_item + position, machine_selector->add_index_item + position, (add_index_item_count - position) * sizeof(GMenuItem *));
+	}
+      }else{
+	memcpy(add_index_item, machine_selector->add_index_item + 1, add_index_item_count * sizeof(GMenuItem *));
+      }
+      
+      machine_selector->add_index_item[add_index_item_count] = NULL;      
+
+      g_free(machine_selector->add_index_item);
+
+      machine_selector->add_index_item = add_index_item;
+
+      machine_selector->add_index_item_count = add_index_item_count;
+    }else{
+      g_free(machine_selector->add_index_item);
+
+      machine_selector->add_index_item = NULL;
+
+      machine_selector->add_index_item_count = add_index_item_count;
+    }
+  }
+  
   g_menu_remove(machine_selector->add_index_menu,
 		position);
 }

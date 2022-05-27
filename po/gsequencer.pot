@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 4.0.5\n"
+"Project-Id-Version: gsequencer 4.0.9\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-24 08:44+0200\n"
+"POT-Creation-Date: 2022-05-27 12:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,32 +88,32 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:650
+#: ags/app/ags_machine_callbacks.c:729
 msgid "rename machine"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:689
+#: ags/app/ags_machine_callbacks.c:774
 msgid "rename audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:746
+#: ags/app/ags_machine_callbacks.c:853
 msgid "reposition audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:753 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:859 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:427 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:784
+#: ags/app/ags_machine_callbacks.c:900
 msgid "properties"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:858
+#: ags/app/ags_machine_callbacks.c:974
 msgid "envelope"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:900
+#: ags/app/ags_machine_callbacks.c:1016
 msgid "connections"
 msgstr ""
 
@@ -407,59 +407,59 @@ msgstr ""
 msgid "add machine"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:425
+#: ags/app/editor/ags_machine_selector.c:428
 msgid "reverse mapping"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:436
+#: ags/app/editor/ags_machine_selector.c:439
 msgid "shift piano"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:446
+#: ags/app/editor/ags_machine_selector.c:449
 msgid "A"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:451
+#: ags/app/editor/ags_machine_selector.c:454
 msgid "A#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:456
+#: ags/app/editor/ags_machine_selector.c:459
 msgid "H"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:461
+#: ags/app/editor/ags_machine_selector.c:464
 msgid "C"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:466
+#: ags/app/editor/ags_machine_selector.c:469
 msgid "C#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:471
+#: ags/app/editor/ags_machine_selector.c:474
 msgid "D"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:476
+#: ags/app/editor/ags_machine_selector.c:479
 msgid "D#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:481
+#: ags/app/editor/ags_machine_selector.c:484
 msgid "E"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:486
+#: ags/app/editor/ags_machine_selector.c:489
 msgid "F"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:491
+#: ags/app/editor/ags_machine_selector.c:494
 msgid "F#"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:496
+#: ags/app/editor/ags_machine_selector.c:499
 msgid "G"
 msgstr ""
 
-#: ags/app/editor/ags_machine_selector.c:501
+#: ags/app/editor/ags_machine_selector.c:504
 msgid "G#"
 msgstr ""
 
@@ -1872,31 +1872,35 @@ msgstr ""
 msgid "Port control orientation"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:86
+#: ags/app/ags_meta_data_window.c:77
+msgid "meta-data editor"
+msgstr ""
+
+#: ags/app/ags_meta_data_window.c:91
 msgid "author"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:104
+#: ags/app/ags_meta_data_window.c:109
 msgid "title"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:122
+#: ags/app/ags_meta_data_window.c:127
 msgid "album"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:140
+#: ags/app/ags_meta_data_window.c:145
 msgid "release date"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:158
+#: ags/app/ags_meta_data_window.c:163
 msgid "copyright"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:176
+#: ags/app/ags_meta_data_window.c:181
 msgid "license"
 msgstr ""
 
-#: ags/app/ags_meta_data_window.c:194
+#: ags/app/ags_meta_data_window.c:199
 msgid "comment"
 msgstr ""
 
