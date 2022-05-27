@@ -78,7 +78,6 @@
 ./ags_check_system_audio_buffer_util_test
 ./ags_check_system_char_buffer_util_test
 ./ags_check_system_envelope_util_test
-./ags_check_system_filter_util_test
 ./ags_check_system_synth_util_test
 ./ags_check_system_volume_util_test
 ./ags_check_system_peak_util_test
