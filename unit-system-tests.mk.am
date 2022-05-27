@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2021 Joel Kraehemann
+# Copyright (C) 2005-2022 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -2063,10 +2063,7 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_lv2ui_plugin_test
 	./ags_check_system_plugin_port_test
 	./ags_check_system_audio_application_context_test
-	./ags_check_system_devin_test
-	./ags_check_system_devout_test
 	./ags_check_system_fifoout_test
-	./ags_check_system_midiin_test
 	./ags_check_system_audio_test
 	./ags_check_system_audio_ref_count_test
 	./ags_check_system_fx_ref_count_test
