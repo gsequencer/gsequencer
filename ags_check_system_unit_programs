@@ -62,10 +62,7 @@
 ./ags_check_system_lv2ui_plugin_test
 ./ags_check_system_plugin_port_test
 ./ags_check_system_audio_application_context_test
-./ags_check_system_devin_test
-./ags_check_system_devout_test
 ./ags_check_system_fifoout_test
-./ags_check_system_midiin_test
 ./ags_check_system_audio_test
 ./ags_check_system_audio_ref_count_test
 ./ags_check_system_fx_ref_count_test
