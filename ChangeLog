@@ -1,3 +1,8 @@
+ags (4.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unitialized value in ags_functional_fourier_transform_test.c
+
 ags (4.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
