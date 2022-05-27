@@ -2,6 +2,7 @@ ags (4.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed removed unit tests in unit-system-tests.mk.am
+	* fixed missing return values in libgsequencer_test.so
 
 ags (4.0.9)
 

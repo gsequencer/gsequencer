@@ -1550,7 +1550,9 @@ ags_functional_test_util_export_set_filename(guint nth,
 gboolean
 ags_functional_test_util_export_nth(guint nth)
 {
-  //TODO:JK: 
+  //TODO:JK:
+
+  return(TRUE);
 }
 
 gboolean
@@ -1558,6 +1560,8 @@ ags_functional_test_util_export_set_format(guint nth,
 					   gchar *format)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -1565,12 +1569,16 @@ ags_functional_test_util_export_do_export(guint nth,
 					  gchar *format)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_quit()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -1801,12 +1809,16 @@ gboolean
 ags_functional_test_util_automation_open()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_automation_close()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -1871,90 +1883,120 @@ gboolean
 ags_functional_test_util_about_open()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_about_close()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_expand()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_bpm(gdouble bpm)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_rewind()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_prev()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_play()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_stop()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_next()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_forward()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_loop()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_position(gdouble position)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_loop_left(gdouble loop_left)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_loop_right(gdouble loop_right)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_navigation_exclude_sequencers()
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -2101,6 +2143,8 @@ gboolean
 ags_functional_test_util_composite_toolbar_paste_click()
 {
   //TODO:JK: implement me
+
+  return(TRUE);
 }
 
 gboolean
@@ -2255,6 +2299,8 @@ ags_functional_test_util_notation_edit_select_region(guint x0, guint x1,
 						     guint y0, guint y1)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -2263,6 +2309,8 @@ ags_functional_test_util_automation_edit_delete_point(guint nth_index,
 						      guint y)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -2271,6 +2319,8 @@ ags_functional_test_util_automation_edit_add_point(guint nth_index,
 						   guint y)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -2279,6 +2329,8 @@ ags_functional_test_util_automation_edit_select_region(guint nth_index,
 						       guint y0, guint y1)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -2837,6 +2889,8 @@ gboolean
 ags_functional_test_util_machine_rename_close(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -2844,6 +2898,8 @@ ags_functional_test_util_machine_rename_set_name(guint nth_machine,
 						 gchar *name)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 GtkWidget*
@@ -3224,6 +3280,8 @@ ags_functional_test_util_machine_editor_dialog_link_open(guint nth_machine,
 							 guint pad, guint audio_channel)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4249,6 +4307,8 @@ ags_functional_test_util_machine_editor_dialog_bulk_remove(guint nth_machine,
 							   guint nth_bulk)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4762,6 +4822,8 @@ gboolean
 ags_functional_test_util_machine_edit_copy(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4769,6 +4831,8 @@ ags_functional_test_util_line_member_set_toggled(gchar *specifier,
 						 gboolean is_toggled)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4776,6 +4840,8 @@ ags_functional_test_util_line_member_set_value(gchar *specifier,
 					       gdouble value)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4783,12 +4849,16 @@ ags_functional_test_util_machine_audio_connection_click_tab(guint nth_machine,
 							    guint nth_tab)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_machine_audio_connection_click_enable(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4797,6 +4867,8 @@ ags_functional_test_util_machine_audio_connection_set_device(guint nth_machine,
 							     gchar *device)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4805,12 +4877,16 @@ ags_functional_test_util_machine_audio_connection_set_line(guint nth_machine,
 							   guint line)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_machine_audio_connection_bulk_add(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4818,6 +4894,8 @@ ags_functional_test_util_machine_audio_connection_bulk_remove(guint nth_machine,
 							      guint nth_bulk)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4826,6 +4904,8 @@ ags_functional_test_util_machine_audio_connection_bulk_first_line(guint nth_mach
 								  guint first_line)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4834,6 +4914,8 @@ ags_functional_test_util_machine_audio_connection_bulk_count(guint nth_machine,
 							     guint count)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4842,6 +4924,8 @@ ags_functional_test_util_machine_audio_connection_bulk_device(guint nth_machine,
 							      gchar *device)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4849,6 +4933,8 @@ ags_functional_test_util_machine_midi_connection_midi_channel(guint nth_machine,
 							      guint midi_channel)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4856,6 +4942,8 @@ ags_functional_test_util_machine_midi_connection_audio_start_mapping(guint nth_m
 								     guint audio_start_mapping)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4863,6 +4951,8 @@ ags_functional_test_util_machine_midi_connection_audio_end_mapping(guint nth_mac
 								   guint audio_end_mapping)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4870,6 +4960,8 @@ ags_functional_test_util_machine_midi_connection_midi_start_mapping(guint nth_ma
 								    guint midi_start_mapping)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4877,6 +4969,8 @@ ags_functional_test_util_machine_midi_connection_midi_end_mapping(guint nth_mach
 								  guint midi_end_mapping)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4884,6 +4978,8 @@ ags_functional_test_util_machine_midi_connection_midi_device(guint nth_machine,
 							     gchar *device)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4891,6 +4987,8 @@ ags_functional_test_util_pad_group(guint nth_machine,
 				   guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4898,6 +4996,8 @@ ags_functional_test_util_pad_mute(guint nth_machine,
 				  guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4905,6 +5005,8 @@ ags_functional_test_util_pad_solo(guint nth_machine,
 				  guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4912,6 +5014,8 @@ ags_functional_test_util_pad_play(guint nth_machine,
 				  guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4919,12 +5023,16 @@ ags_functional_test_util_expander(guint nth_machine,
 				  guint nth_pad, guint nth_audio_channel)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_effect_bulk_add(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4932,6 +5040,8 @@ ags_functional_test_util_effect_bulk_remove(guint nth_machine,
 					    guint nth_bulk_effect)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4939,6 +5049,8 @@ ags_functional_test_util_effect_bulk_ladspa_filename(guint nth_machine,
 						     gchar *filename)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4946,6 +5058,8 @@ ags_functional_test_util_effect_bulk_ladspa_effect(guint nth_machine,
 						   gchar *effect)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4953,6 +5067,8 @@ ags_functional_test_util_effect_bulk_lv2_filename(guint nth_machine,
 						  gchar *filename)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4960,6 +5076,8 @@ ags_functional_test_util_effect_bulk_lv2_effect(guint nth_machine,
 						gchar *effect)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4967,6 +5085,8 @@ ags_functional_test_util_panel_mute_line(guint nth_machine,
 					 guint nth_pad, guint nth_audio_channel)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -4975,6 +5095,8 @@ ags_functional_test_util_mixer_input_line_volume(guint nth_machine,
 						 gdouble volume)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5030,12 +5152,16 @@ gboolean
 ags_functional_test_util_drum_run(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_drum_loop(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5043,6 +5169,8 @@ ags_functional_test_util_drum_bank_0(guint nth_machine,
 				     guint bank_0)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5050,6 +5178,8 @@ ags_functional_test_util_drum_bank_1(guint nth_machine,
 				     guint bank_1)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5057,6 +5187,8 @@ ags_functional_test_util_drum_length(guint nth_machine,
 				     guint length)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5064,6 +5196,8 @@ ags_functional_test_util_drum_index(guint nth_machine,
 				    guint nth_radio)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5071,6 +5205,8 @@ ags_functional_test_util_drum_pad(guint nth_machine,
 				  guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5078,6 +5214,8 @@ ags_functional_test_util_drum_pad_open(guint nth_machine,
 				       guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5085,6 +5223,8 @@ ags_functional_test_util_drum_pad_edit(guint nth_machine,
 				       guint nth_pad)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5093,18 +5233,24 @@ ags_functional_test_util_drum_input_line_volume(guint nth_machine,
 						gdouble volume)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_matrix_run(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_matrix_loop(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5112,6 +5258,8 @@ ags_functional_test_util_matrix_bank_1(guint nth_machine,
 				       guint bank_1)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5119,6 +5267,8 @@ ags_functional_test_util_matrix_length(guint nth_machine,
 				       guint length)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5126,6 +5276,8 @@ ags_functional_test_util_matrix_gutter(guint nth_machine,
 				       guint nth_gutter)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5133,18 +5285,24 @@ ags_functional_test_util_drum_cell(guint nth_machine,
 				   guint x, guint y)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_synth_auto_update(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
 ags_functional_test_util_synth_update(guint nth_machine)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean ags_functional_test_util_oscillator_wave(guint nth_machine,
@@ -5152,6 +5310,8 @@ gboolean ags_functional_test_util_oscillator_wave(guint nth_machine,
 						  gchar *wave)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5160,6 +5320,8 @@ ags_functional_test_util_oscillator_phase(guint nth_machine,
 					  gdouble phase)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5168,6 +5330,8 @@ ags_functional_test_util_oscillator_attack(guint nth_machine,
 					   gdouble attack)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5176,6 +5340,8 @@ ags_functional_test_util_oscillator_frequency(guint nth_machine,
 					      gdouble frequency)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5184,6 +5350,8 @@ ags_functional_test_util_oscillator_length(guint nth_machine,
 					   gdouble length)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5192,6 +5360,8 @@ ags_functional_test_util_oscillator_volume(guint nth_machine,
 					   gdouble volume)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5248,6 +5418,8 @@ ags_functional_test_util_ffplayer_preset(guint nth_machine,
 					 gchar *preset)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
 
 gboolean
@@ -5255,4 +5427,6 @@ ags_functional_test_util_ffplayer_instrument(guint nth_machine,
 					     gchar *instrument)
 {
   //TODO:JK: 
+
+  return(TRUE);
 }
