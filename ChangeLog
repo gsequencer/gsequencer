@@ -3,6 +3,7 @@ ags (4.0.10)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed removed unit tests in unit-system-tests.mk.am
 	* fixed missing return values in libgsequencer_test.so
+	* fixed ags_functional_fourier_transform_test_s16() potential floating point overflow
 
 ags (4.0.9)
 

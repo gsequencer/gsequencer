@@ -412,9 +412,9 @@ ags_functional_fourier_transform_test_s16()
   GList *start_buffer, *buffer;
   GList *task;
 
-  AgsComplex **ptr_ptr_val;
-  AgsComplex *ptr_val;
-  AgsComplex val;
+  double _Complex **ptr_ptr_val;
+  double _Complex *ptr_val;
+  double _Complex val;
   gint16 **ptr_ptr_data;
   gint16 *ptr_data;
 
