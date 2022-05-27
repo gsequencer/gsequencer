@@ -186,6 +186,9 @@ ags_functional_fourier_transform_test_init_suite()
   ags_application_context_prepare(audio_application_context);
   ags_application_context_setup(audio_application_context);
 
+  /* audio loop */ 
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+  
   /* output soundcard */
   output_soundcard = audio_application_context->soundcard->data;
 
