@@ -403,7 +403,7 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
  * 
  * Get tab.
  * 
- * Returns: the #GList-struct containing #GtkToggleButton
+ * Returns: (element-type Gtk.ToggleButton) (transfer container): the #GList-struct containing #GtkToggleButton
  * 
  * Since: 4.0.0
  */

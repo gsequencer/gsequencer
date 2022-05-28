@@ -104,6 +104,8 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
   /**
    * AgsLevelBox::child-width-request:
    * @level_box: the #AgsLevelBox.
+   * @level: the #AgsLevel
+   * @width_request: the level's width-request
    *
    * The ::child-width-request
    *
@@ -122,6 +124,8 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
   /**
    * AgsLevelBox::child-height-request:
    * @level_box: the #AgsLevelBox.
+   * @level: the #AgsLevel
+   * @height_request: the level's height-request
    *
    * The ::child-height-request
    *
@@ -219,7 +223,7 @@ ags_level_box_notify_height_request_callback(GObject *gobject,
  * 
  * Get level.
  * 
- * Returns: the #GList-struct containing #AgsLevel
+ * Returns: (element-type AgsGui.Level) (transfer container): the #GList-struct containing #AgsLevel
  * 
  * Since: 4.0.0
  */

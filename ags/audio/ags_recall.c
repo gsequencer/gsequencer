@@ -3750,7 +3750,7 @@ ags_recall_set_effect_index(AgsRecall *recall,
  * 
  * Get recall container of @recall.
  * 
- * Returns: the #AgsRecallContainer
+ * Returns:  (transfer full): the #AgsRecallContainer
  * 
  * Since: 3.1.0
  */
@@ -3798,7 +3798,7 @@ ags_recall_set_recall_container(AgsRecall *recall,
  * 
  * Get recall id of @recall.
  * 
- * Returns: the #AgsRecallID
+ * Returns:  (transfer full): the #AgsRecallID
  * 
  * Since: 3.1.0
  */

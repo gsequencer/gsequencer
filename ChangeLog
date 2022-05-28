@@ -1,3 +1,10 @@
+ags (4.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFMSyncsynth remove callback
+	* fixed AgsCompositeEditor remove wave channel selector callback
+	* fixed AgsCompositeEditor machine selector set flags
+
 ags (4.0.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

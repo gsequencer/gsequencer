@@ -102,19 +102,13 @@ ags_fm_syncsynth_remove_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth
 {
   GList *start_list, *list;
 
-  guint nth;
-  
   list =
     start_list = ags_fm_syncsynth_get_fm_oscillator(fm_syncsynth);
-
-  nth = 0;
   
   while(list != NULL){
     if(gtk_check_button_get_active(AGS_FM_OSCILLATOR(list->data)->selector)){
       ags_fm_syncsynth_remove_fm_oscillator(fm_syncsynth,
-					    nth);
-    }else{
-      nth++;
+					    list->data);
     }
     
     list = list->next;
