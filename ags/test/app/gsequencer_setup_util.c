@@ -97,23 +97,31 @@ ags_test_get_display()
 void
 ags_test_enter()
 {
+  GMainContext *main_context;
+  
   Display *display;
 
   display = ags_test_get_display();
 
-  XLockDisplay(display);
+  //  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
+
+  main_context = g_main_context_default();
 }
 
 void
 ags_test_leave()
 {
+  GMainContext *main_context;
+  
   Display *display;
 
   display = ags_test_get_display();
 
-  XUnlockDisplay(display);
+  main_context = g_main_context_default();
+
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
+  //  XUnlockDisplay(display);
 }
 
 GRecMutex*
