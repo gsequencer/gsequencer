@@ -4,6 +4,7 @@ ags (4.0.12)
 	* fixed AgsFMSyncsynth remove callback
 	* fixed AgsCompositeEditor remove wave channel selector callback
 	* fixed AgsCompositeEditor machine selector set flags
+	* improved AgsGui and AgsAudio introspected annotations
 
 ags (4.0.11)
 
