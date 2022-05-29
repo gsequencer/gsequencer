@@ -40,6 +40,15 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.0.13" date="2022-05-29">
+      <description>
+	<p>
+	  Fixed missing destination of AgsHybridSynth, AgsHybridFMSynth,
+	  AgsSF2Synth and AgsSFZSynth chorus.
+	</p>
+      </description>
+    </release>
+
     <release version="4.0.12" date="2022-05-29">
       <description>
 	<p>

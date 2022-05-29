@@ -1,6 +1,14 @@
 ags (4.0.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-synth missing chorus destination buffer
+	* fixed ags-fx-fm-synth missing chorus destination buffer
+	* fixed ags-fx-sf2-synth missing chorus destination buffer
+	* fixed ags-fx-sfz-synth missing chorus destination buffer
+
+ags (4.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsFMSyncsynth remove callback
 	* fixed AgsCompositeEditor remove wave channel selector callback
 	* fixed AgsCompositeEditor machine selector set flags

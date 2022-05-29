@@ -221,6 +221,8 @@ ags_common_pitch_util_get_destination(gpointer pitch_util,
     return(ags_fluid_interpolate_4th_order_util_get_destination(pitch_util));
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     return(ags_fluid_interpolate_7th_order_util_get_destination(pitch_util));
+  }else{
+    g_warning("unknown pitch type");
   }
 
   return(NULL);

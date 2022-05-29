@@ -727,9 +727,6 @@ ags_gsequencer_application_open(GApplication *application,
       while(list != NULL){
 	ags_machine_selector_remove_machine_radio_button(AGS_WINDOW(window)->composite_editor->machine_selector,
 							 list->data);
-
-	g_object_run_dispose(list->data);
-	g_object_unref(list->data);
     
 	list = list->next;
       }
@@ -752,9 +749,8 @@ ags_gsequencer_application_open(GApplication *application,
 	g_object_ref(audio);
 
 	ags_connectable_disconnect(AGS_CONNECTABLE(machine->data));
-
-	g_object_run_dispose(machine->data);
-	g_object_unref(machine->data);
+	ags_window_remove_machine(window,
+				  machine->data);
 
 	/* get task thread */
 	remove_audio = ags_remove_audio_new(audio);
