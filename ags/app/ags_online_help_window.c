@@ -113,7 +113,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 #if defined(AGS_WITH_POPPLER)
   GtkBox *vbox;
   GtkGrid *grid;
-
+  GtkLabel *label;
+  
   GtkAdjustment *vadjustment, *hadjustment;
   GtkAllocation allocation;
 
@@ -135,6 +136,9 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   gtk_window_set_hide_on_close((GtkWindow *) online_help_window,
 			       TRUE);
+
+  online_help_window->flags = AGS_ONLINE_HELP_WINDOW_SHOW_PDF_CONTROLS;
+  online_help_window->connectable_flags = 0;
   
   width = 800.0;
   height = 600.0;
@@ -145,12 +149,52 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 	       NULL);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_window_set_child(online_help_window,
 		       (GtkWidget *) vbox);
+  
+  online_help_window->pdf_controls = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+							    AGS_UI_PROVIDER_DEFAULT_SPACING);
 
+  //  gtk_widget_set_visible(online_help_window->pdf_controls,
+  //			 TRUE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) online_help_window->pdf_controls);
+
+  label = (GtkLabel *) gtk_label_new(i18n("zoom"));  
+  gtk_box_append(online_help_window->pdf_controls,
+		 (GtkWidget *) label);
+
+  online_help_window->zoom = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) online_help_window->zoom,
+				 "50 %");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) online_help_window->zoom,
+				 "75 %");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) online_help_window->zoom,
+				 "100 %");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) online_help_window->zoom,
+				 "125 %");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) online_help_window->zoom,
+				 "150 %");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) online_help_window->zoom,
+				 "200 %");
+
+  gtk_combo_box_set_active(online_help_window->zoom,
+			   2);
+  
+  gtk_box_append(online_help_window->pdf_controls,
+		 (GtkWidget *) online_help_window->zoom);
+  
   grid = gtk_grid_new();
-  gtk_box_append((GtkBox *) vbox,
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append(vbox,
 		 (GtkWidget *) grid);
   
   online_help_window->pdf_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
@@ -269,6 +313,9 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
     g_object_unref(page);
   }
 
+  online_help_window->zoom_x = 1.0;
+  online_help_window->zoom_y = 1.0;
+
   online_help_window->max_height = max_height;
   online_help_window->max_width = max_width;
   
@@ -312,6 +359,9 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 				 online_help_window,
 				 NULL);
 
+  g_signal_connect_after(G_OBJECT(online_help_window->zoom), "changed",
+			 G_CALLBACK(ags_online_help_window_pdf_zoom_changed_callback), online_help_window);
+
   g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "resize",
 			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_resize_callback), online_help_window);
 
@@ -341,6 +391,12 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 				 NULL,
 				 online_help_window,
 				 NULL);
+
+  g_object_disconnect(G_OBJECT(online_help_window->zoom),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_online_help_window_pdf_zoom_changed_callback),
+		      online_help_window,
+		      NULL);
 
   g_object_disconnect(G_OBJECT(online_help_window->pdf_drawing_area),
 		      "any_signal::resize",

@@ -37,6 +37,52 @@ ags_online_help_window_load_changed(WebKitWebView *web_view,
 #endif
 
 void
+ags_online_help_window_pdf_zoom_changed_callback(GtkComboBox *combo_box,
+						 AgsOnlineHelpWindow *online_help_window)
+{
+  switch(gtk_combo_box_get_active(combo_box)){
+  case 0:
+    {
+      online_help_window->zoom_x =
+	online_help_window->zoom_y = 0.5;
+    }
+    break;
+  case 1:
+    {
+      online_help_window->zoom_x =
+	online_help_window->zoom_y = 0.75;
+    }
+    break;
+  case 2:
+    {
+      online_help_window->zoom_x =
+	online_help_window->zoom_y = 1.0;
+    }
+    break;
+  case 3:
+    {
+      online_help_window->zoom_x =
+	online_help_window->zoom_y = 1.25;
+    }
+    break;
+  case 4:
+    {
+      online_help_window->zoom_x =
+	online_help_window->zoom_y = 1.5;
+    }
+    break;
+  case 5:
+    {
+      online_help_window->zoom_x =
+	online_help_window->zoom_y = 2.0;
+    }
+    break;
+  }
+
+  gtk_widget_queue_draw(online_help_window->pdf_drawing_area);
+}
+
+void
 ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_area,
 						      cairo_t *cr,
 						      int width, int height,
@@ -76,6 +122,9 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
 
   cairo_fill(cr);
 
+  cairo_scale(cr,
+	      online_help_window->zoom_x, online_help_window->zoom_y);
+  
   voffset = 0.0;
   
   for(i = 0; i < num_pages; i++){
@@ -98,9 +147,12 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
     if(current_height + page_height > vvalue &&
        current_height < vvalue + allocation.height){
       pdf_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
-					       page_width,
-					       page_height);
-  
+					       online_help_window->zoom_x * page_width,
+					       online_help_window->zoom_y * page_height);
+      
+      cairo_surface_set_device_scale(pdf_surface,
+				     online_help_window->zoom_x, online_help_window->zoom_y);
+      
       pdf_cr = cairo_create(pdf_surface);
 
       hoffset = (-1.0 * hvalue);
@@ -112,7 +164,7 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
 			  pdf_cr);
 
       cairo_restore(cr);
-    
+      
       cairo_set_source_surface(cr,
 			       pdf_surface,
 			       hoffset,

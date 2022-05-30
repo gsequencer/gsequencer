@@ -52,10 +52,15 @@ G_BEGIN_DECLS
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
 
+typedef enum{
+  AGS_ONLINE_HELP_WINDOW_SHOW_PDF_CONTROLS,
+}AgsOnlineHelpWindowFlags;
+
 struct _AgsOnlineHelpWindow
 {
   GtkWindow window;
 
+  guint flags;
   guint connectable_flags;
   
   GtkButton *home;
@@ -73,6 +78,13 @@ struct _AgsOnlineHelpWindow
   gpointer web_view;
 #endif
 
+  GtkBox *pdf_controls;
+
+  GtkComboBox *zoom;
+  
+  gdouble zoom_x;
+  gdouble zoom_y;
+  
   gint max_width;
   gint max_height;
 
