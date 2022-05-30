@@ -1293,7 +1293,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   }else{
     memcpy((char *) chorus_util->pitch_mix_buffer_history, (char *) chorus_util->pitch_mix_buffer + ((pitch_mix_buffer_length - chorus_util->history_buffer_length) * word_size), chorus_util->history_buffer_length * word_size);
   }
-
+  
   for(i = 0; i < buffer_length; i++){
     gint16 new_z;
     gint position;
@@ -1340,7 +1340,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
     destination[i * destination_stride] = new_z;
   }
 
-  chorus_util->offset += buffer_length;
+  //  chorus_util->offset += buffer_length;
 }
 
 /**

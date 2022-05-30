@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+* Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,6 +104,8 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
   /**
    * AgsScaleBox::child-width-request:
    * @scale_box: the #AgsScaleBox.
+   * @scale: the #AgsScale
+   * @width_request: the scale's width-request
    *
    * The ::child-width-request
    *
@@ -122,6 +124,8 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
   /**
    * AgsScaleBox::child-height-request:
    * @scale_box: the #AgsScaleBox.
+   * @scale: the #AgsScale
+   * @height_request: the scale's height-request
    *
    * The ::child-height-request
    *
@@ -219,7 +223,7 @@ ags_scale_box_notify_height_request_callback(GObject *gobject,
  * 
  * Get scale.
  * 
- * Returns: the #GList-struct containing #AgsScale
+ * Returns: (element-type AgsGui.Scale) (transfer container): the #GList-struct containing #AgsScale
  * 
  * Since: 4.0.0
  */

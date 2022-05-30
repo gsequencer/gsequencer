@@ -1480,7 +1480,21 @@ ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
       for(j = 0; j < scope_data->audio_channels; j++){
 	AgsFxSF2SynthAudioChannelData *channel_data;
 
+	gpointer destination;
+
 	channel_data = scope_data->channel_data[j];
+ 
+	/* free chorus destination */
+	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
+	
+	ags_stream_free(destination);
+
+	/* alloc chorus destination */
+	destination = ags_stream_alloc(buffer_size,
+				       ags_chorus_util_get_format(channel_data->chorus_util));
+	
+	ags_chorus_util_set_destination(channel_data->chorus_util,
+					destination);
 
 	ags_sf2_synth_util_set_buffer_length(channel_data->synth,
 					     buffer_size);
@@ -1531,10 +1545,24 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
       for(j = 0; j < scope_data->audio_channels; j++){
 	AgsFxSF2SynthAudioChannelData *channel_data;
 
+	gpointer destination;
+
 	channel_data = scope_data->channel_data[j];
 
 	ags_sf2_synth_util_set_format(channel_data->synth,
 				      format);
+
+	/* free chorus destination */
+	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
+	
+	ags_stream_free(destination);
+
+	/* alloc chorus destination */
+	destination = ags_stream_alloc(ags_chorus_util_get_buffer_length(channel_data->chorus_util),
+				       format);
+	
+	ags_chorus_util_set_destination(channel_data->chorus_util,
+					destination);
 
 	ags_chorus_util_set_format(channel_data->chorus_util,
 				   format);
@@ -1658,6 +1686,8 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	for(j = scope_data->audio_channels; j < audio_channels; j++){
 	  AgsFxSF2SynthAudioChannelData *channel_data;
 
+	  gpointer destination;  
+
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_sf2_synth_audio_channel_data_alloc();
 
@@ -1674,6 +1704,13 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 				     format);
 	  ags_chorus_util_set_samplerate(channel_data->chorus_util,
 					 samplerate);
+
+	  /* alloc chorus destination */
+	  destination = ags_stream_alloc(buffer_size,
+					 format);
+
+	  ags_chorus_util_set_destination(channel_data->chorus_util,
+					  destination);	  
 
 	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxSF2SynthAudioInputData *input_data;

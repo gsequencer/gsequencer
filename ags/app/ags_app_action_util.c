@@ -356,7 +356,8 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
 {
   if(response == GTK_RESPONSE_ACCEPT){
     AgsWindow *window;
-        
+    GtkLabel *label;
+    
     AgsSimpleFile *simple_file;
 
     AgsApplicationContext *application_context;
@@ -436,10 +437,12 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
     
     g_free(window_title);    
 
+    label = gtk_header_bar_get_title_widget(window->header_bar);
+
     window_title = g_strdup_printf("GSequencer\n<small>%s</small>", window->name);
 
-    gtk_header_bar_set_title_widget(window->header_bar,
-				    gtk_label_new(window_title));
+    gtk_label_set_label(label,
+			window_title);
     
     g_free(window_title);
 

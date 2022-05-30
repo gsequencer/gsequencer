@@ -1943,7 +1943,7 @@ ags_notation_free_selection(AgsNotation *notation)
 
 /**
  * ags_notation_free_all_selection:
- * @notation: the #GList-struct containing #AgsNotation
+ * @notation: (element-type AgsAudio.Notation): the #GList-struct containing #AgsNotation
  *
  * Clear all selection of @notation.
  *

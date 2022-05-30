@@ -1215,7 +1215,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
     
-    ags_machine_selector_set_flags(composite_editor->machine_selector->flags,
+    ags_machine_selector_set_flags(composite_editor->machine_selector,
 				   (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
 				    AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO));
     

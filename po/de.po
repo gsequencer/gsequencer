@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-27 18:10+0200\n"
+"POT-Creation-Date: 2022-05-29 20:18+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -1190,7 +1190,7 @@ msgstr "Kanal grösse anpassen"
 msgid "Open file"
 msgstr "Öffne Datei"
 
-#: ags/app/ags_app_action_util.c:471
+#: ags/app/ags_app_action_util.c:474
 #, fuzzy
 msgid "save file as"
 msgstr "Speichern unter"

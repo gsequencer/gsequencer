@@ -396,10 +396,19 @@ ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine,
     }
     
     if(AGS_IS_AUDIOREC(machine)){      
+      start_list = ags_notebook_get_tab(composite_editor->wave_edit->channel_selector);
+
+      list = g_list_nth(start_list,
+			audio_channels);
+      
       for(i = audio_channels; i < audio_channels_old; i++){
 	ags_notebook_remove_tab(composite_editor->wave_edit->channel_selector,
-				audio_channels);
+				list->data);
+
+	list = list->next;
       }
+
+      g_list_free(start_list);
       
       list = 
 	start_list = ags_level_box_get_level(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box);

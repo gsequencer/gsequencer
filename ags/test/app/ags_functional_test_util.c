@@ -107,11 +107,11 @@ ags_functional_test_util_driver_dispatch(GSource *source,
 			   FALSE);
 
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
-  XUnlockDisplay(display);
+  //  XUnlockDisplay(display);
   
   usleep(4000);
   
-  XLockDisplay(display);
+  //  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
 
   g_main_context_iteration(g_main_context_default(),
@@ -125,15 +125,28 @@ ags_functional_test_timeout(gpointer data)
 {
   Display *display;
 
+  GMainContext *main_context;
+
+  main_context = g_main_context_default();
+
   display = ags_test_get_display();
+
+  usleep(4000);
   
   g_rec_mutex_unlock(ags_test_get_driver_mutex());
-  XUnlockDisplay(display);
+  //  XUnlockDisplay(display);
+  
+  g_mutex_lock((GMutex *) main_context);
   
   usleep(4000);
 
-  XLockDisplay(display);
+  g_mutex_unlock((GMutex *) main_context);
+
+  //  XLockDisplay(display);
   g_rec_mutex_lock(ags_test_get_driver_mutex());
+
+  g_main_context_iteration(main_context,
+			   FALSE);
 
   return(G_SOURCE_CONTINUE);
 }

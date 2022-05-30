@@ -7925,7 +7925,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     g_value_init(&(message->value[0]),
 		 G_TYPE_POINTER);
     g_value_set_pointer(&(message->value[0]),
-			channel_type);
+			(gpointer) channel_type);
 
     /* pads */
     message->parameter_name[1] = "pads";

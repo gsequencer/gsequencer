@@ -4549,6 +4549,8 @@ ags_fx_fm_synth_audio_notify_buffer_size_callback(GObject *gobject,
       for(j = 0; j < scope_data->audio_channels; j++){
 	AgsFxFMSynthAudioChannelData *channel_data;
 
+	gpointer destination;
+
 	channel_data = scope_data->channel_data[j];
 
 	ags_fm_synth_util_set_buffer_length(channel_data->synth_0,
@@ -4566,6 +4568,18 @@ ags_fx_fm_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	ags_common_pitch_util_set_buffer_length(channel_data->pitch_util,
 						channel_data->pitch_type,
 						buffer_size);
+ 
+	/* free chorus destination */
+	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
+	
+	ags_stream_free(destination);
+
+	/* alloc chorus destination */
+	destination = ags_stream_alloc(buffer_size,
+				       ags_chorus_util_get_format(channel_data->chorus_util));
+	
+	ags_chorus_util_set_destination(channel_data->chorus_util,
+					destination);
 
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);
@@ -4619,6 +4633,8 @@ ags_fx_fm_synth_audio_notify_format_callback(GObject *gobject,
       for(j = 0; j < scope_data->audio_channels; j++){
 	AgsFxFMSynthAudioChannelData *channel_data;
 
+	gpointer destination;
+
 	channel_data = scope_data->channel_data[j];
 
 	ags_fm_synth_util_set_format(channel_data->synth_0,
@@ -4636,6 +4652,18 @@ ags_fx_fm_synth_audio_notify_format_callback(GObject *gobject,
 	ags_common_pitch_util_set_format(channel_data->pitch_util,
 					 channel_data->pitch_type,
 					 format);
+
+	/* free chorus destination */
+	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
+	
+	ags_stream_free(destination);
+
+	/* alloc chorus destination */
+	destination = ags_stream_alloc(ags_chorus_util_get_buffer_length(channel_data->chorus_util),
+				       format);
+	
+	ags_chorus_util_set_destination(channel_data->chorus_util,
+					destination);
 
 	ags_chorus_util_set_format(channel_data->chorus_util,
 				   format);
@@ -4784,6 +4812,8 @@ ags_fx_fm_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	for(j = scope_data->audio_channels; j < audio_channels; j++){
 	  AgsFxFMSynthAudioChannelData *channel_data;
 
+	  gpointer destination;  
+
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_fm_synth_audio_channel_data_alloc();
 
@@ -4831,6 +4861,13 @@ ags_fx_fm_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 				     format);
 	  ags_chorus_util_set_samplerate(channel_data->chorus_util,
 					 samplerate);
+
+	  /* alloc chorus destination */
+	  destination = ags_stream_alloc(buffer_size,
+					 format);
+
+	  ags_chorus_util_set_destination(channel_data->chorus_util,
+					  destination);	  
 
 	  ags_fluid_iir_filter_util_set_buffer_length(channel_data->low_pass_filter,
 						      buffer_size);
