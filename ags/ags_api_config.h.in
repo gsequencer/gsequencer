@@ -40,7 +40,7 @@
 
 #undef AGS_WITH_QUARTZ
 
-#undef AGS_WITH_WEBKIT
+#undef AGS_WITH_GTK_UNIX_PRINT
 
 #undef AGS_WITH_POPPLER
 

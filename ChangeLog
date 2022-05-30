@@ -2,6 +2,7 @@ ags (4.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented zoom of PDF user manual
+	* implemented unix print support
 
 ags (4.0.13)
 

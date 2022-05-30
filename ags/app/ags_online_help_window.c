@@ -21,10 +21,17 @@
 #include <ags/app/ags_online_help_window_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_gsequencer_application_context.h>
 #include <ags/app/ags_window.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+#include <ags/config.h>
+
+#if defined(AGS_WITH_GTK_UNIX_PRINT) 
+#include <gtk/gtkunixprint.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -159,6 +166,12 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   //  gtk_widget_set_visible(online_help_window->pdf_controls,
   //			 TRUE);
 
+#if defined(AGS_WITH_GTK_UNIX_PRINT) 
+  online_help_window->print = (GtkButton *) gtk_button_new_from_icon_name("document-print");
+  gtk_box_append(online_help_window->pdf_controls,
+		 (GtkWidget *) online_help_window->print);
+#endif
+  
   gtk_box_append(vbox,
 		 (GtkWidget *) online_help_window->pdf_controls);
 
@@ -229,15 +242,15 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 #ifdef AGS_ONLINE_HELP_PDF_FILENAME
   pdf_filename = g_strdup(AGS_ONLINE_HELP_PDF_FILENAME);
 #else
-  if((pdf_filename = getenv("AGS_ONLINE_HELP_PDF_FILENAME")) != NULL){
+  if((pdf_filename = g_getenv("AGS_ONLINE_HELP_PDF_FILENAME")) != NULL){
     pdf_filename = g_strdup(pdf_filename);
   }else{
-#if defined (AGS_W32API)
     AgsApplicationContext *application_context;
-    
-    gchar *app_dir;
-    
+        
     application_context = ags_application_context_get_instance();
+    
+#if defined (AGS_W32API)
+    gchar *app_dir;
 
     app_dir = NULL;
 
@@ -246,28 +259,135 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
     }
   
-    pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual.pdf",
-				   g_get_current_dir());
+    if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		  "a4")){
+      pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf",
+				     g_get_current_dir());
+    }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			"letter")){
+      pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf",
+				     g_get_current_dir());
+      
+    }
     
     if(!g_file_test(pdf_filename,
 		    G_FILE_TEST_IS_REGULAR)){
       g_free(pdf_filename);
 
       if(g_path_is_absolute(app_dir)){
-	pdf_filename = g_strdup_printf("%s\\%s",
-				       app_dir,
-				       "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual.pdf");
+	if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		      "a4")){
+	  pdf_filename = g_strdup_printf("%s\\%s",
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf");
+	}else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			    "letter")){
+	  pdf_filename = g_strdup_printf("%s\\%s",
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf");
+	}
       }else{
-	pdf_filename = g_strdup_printf("%s\\%s\\%s",
-				       g_get_current_dir(),
-				       app_dir,
-				       "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual.pdf");
+	if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		      "a4")){
+	  pdf_filename = g_strdup_printf("%s\\%s\\%s",
+					 g_get_current_dir(),
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf");
+	}else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			    "letter")){
+	  pdf_filename = g_strdup_printf("%s\\%s\\%s",
+					 g_get_current_dir(),
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf");
+	}
       }
     }
 
     g_free(app_dir);
-#else  
-    pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual.pdf");
+#else
+    if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		  "a4")){
+      pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual-a4.pdf");
+    }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			"letter")){
+      pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual-letter.pdf");
+    }
+#endif
+  }
+#endif
+#ifdef AGS_ONLINE_HELP_PDF_FILENAME
+  pdf_filename = g_strdup(AGS_ONLINE_HELP_PDF_FILENAME);
+#else
+  if((pdf_filename = g_getenv("AGS_ONLINE_HELP_PDF_FILENAME")) != NULL){
+    pdf_filename = g_strdup(pdf_filename);
+  }else{
+    AgsApplicationContext *application_context;
+    
+    application_context = ags_application_context_get_instance();
+
+#if defined (AGS_W32API)
+    gchar *app_dir;
+
+    app_dir = NULL;
+
+    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
+    }
+  
+    if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		  "a4")){
+      pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf",
+				     g_get_current_dir());
+    }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			"letter")){
+      pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf",
+				     g_get_current_dir());
+      
+    }
+    
+    if(!g_file_test(pdf_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(pdf_filename);
+
+      if(g_path_is_absolute(app_dir)){
+	if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		      "a4")){
+	  pdf_filename = g_strdup_printf("%s\\%s",
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf");
+	}else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			    "letter")){
+	  pdf_filename = g_strdup_printf("%s\\%s",
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf");
+	}
+      }else{
+	if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		      "a4")){
+	  pdf_filename = g_strdup_printf("%s\\%s\\%s",
+					 g_get_current_dir(),
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf");
+	}else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			    "letter")){
+	  pdf_filename = g_strdup_printf("%s\\%s\\%s",
+					 g_get_current_dir(),
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf");
+	}
+      }
+    }
+
+    g_free(app_dir);
+#else
+    if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		  "a4")){
+      pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual-a4.pdf");
+    }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+			"letter")){
+      pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual-letter.pdf");
+    }
 #endif
   }
 #endif
@@ -338,6 +458,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 			   15.0,
 			   (double) 100.0);
 #endif
+
+  online_help_window->print_dialog = NULL;
 }
 
 void
@@ -352,12 +474,17 @@ ags_online_help_window_connect(AgsConnectable *connectable)
   }
 
   online_help_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-
+  
 #if defined(AGS_WITH_POPPLER)
   gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
 				 ags_online_help_window_pdf_drawing_area_draw_callback,
 				 online_help_window,
 				 NULL);
+
+#if defined(AGS_WITH_GTK_UNIX_PRINT) 
+  g_signal_connect_after(G_OBJECT(online_help_window->print), "clicked",
+			 G_CALLBACK(ags_online_help_window_pdf_print_callback), online_help_window);
+#endif
 
   g_signal_connect_after(G_OBJECT(online_help_window->zoom), "changed",
 			 G_CALLBACK(ags_online_help_window_pdf_zoom_changed_callback), online_help_window);
@@ -391,6 +518,14 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 				 NULL,
 				 online_help_window,
 				 NULL);
+
+#if defined(AGS_WITH_GTK_UNIX_PRINT) 
+  g_object_disconnect(G_OBJECT(online_help_window->print),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_online_help_window_pdf_print_callback),
+		      online_help_window,
+		      NULL);
+#endif
 
   g_object_disconnect(G_OBJECT(online_help_window->zoom),
 		      "any_signal::changed",

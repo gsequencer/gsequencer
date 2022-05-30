@@ -144,6 +144,12 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   
   AgsApplicationContext *application_context;  
 
+  FILE *paper_size_file;
+
+  char buffer[256];
+  gchar *paper_conf;
+  gchar *paper_size;
+  
   const gchar * const open_accel[] = { "<Ctrl>o", NULL};
   const gchar * const save_accel[] = { "<Ctrl>s", NULL};
   const gchar * const save_as_accel[] = { "<Ctrl><Shift>s", NULL};
@@ -153,7 +159,67 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   application_context = 
     ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
   g_object_ref(application_context);
+  
+  /* check /etc/papersize */
+  paper_conf = g_getenv("PAPERCONF");
 
+  if(paper_conf != NULL){
+    paper_conf = g_strdup(paper_conf);
+  }
+  
+  if(paper_conf == NULL){
+    paper_conf = g_strdup("/etc/papersize");
+  }
+  
+  paper_size_file = fopen(paper_conf,
+			  "r");
+
+  memset(buffer, 0, 256 * sizeof(char));
+  
+  if(paper_size_file != NULL){
+    fgets(buffer, 255, paper_size_file);
+    buffer[255]= '\0';
+
+    fclose(paper_size_file);
+    
+    paper_size = NULL;
+  }
+  
+  if(!g_strcmp0(buffer, "a3")){
+    paper_size = "a4";
+  }else if(!g_strcmp0(buffer, "b4")){
+    paper_size = "a4";
+  }else if(!g_strcmp0(buffer, "a4")){
+    paper_size = "a4";
+  }else if(!g_strcmp0(buffer, "b5")){
+    paper_size = "a4";
+  }else if(!g_strcmp0(buffer, "a5")){
+    paper_size = "a4";
+  }else if(!g_strcmp0(buffer, "tabloid")){
+    paper_size = "letter";
+  }else if(!g_strcmp0(buffer, "legal")){
+    paper_size = "letter";
+  }else if(!g_strcmp0(buffer, "letter")){
+    paper_size = "letter";
+  }
+  
+  if(paper_size != NULL){
+    g_free(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size);
+    
+    AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size = g_strdup(paper_size);
+  }
+
+  g_free(paper_conf);
+  
+  /* check PAPERSIZE environment variable */
+  paper_size = g_getenv("PAPERSIZE");
+  
+  if(paper_size != NULL){
+    g_free(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size);
+    
+    AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size = g_strdup(paper_size);
+  }
+  
   ags_ui_provider_set_app(AGS_UI_PROVIDER(application_context),
 			  gsequencer_app);
   

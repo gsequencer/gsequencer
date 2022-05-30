@@ -26,7 +26,7 @@ AC_ARG_VAR(INTROSPECTION_COMPILER, introspection compiler)
 AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
 
 AC_ARG_VAR(GOBJECT_API_DOC, path for use with sed to GObject API Reference Manual)
-AC_ARG_VAR(GTK_API_DOC, path for use with sed to Gtk-3 API Reference Manual)
+AC_ARG_VAR(GTK_API_DOC, path for use with sed to Gtk-4 API Reference Manual)
 AC_ARG_VAR(LIBAGS_API_DOC, path for use with sed to Libags API Reference Manual)
 AC_ARG_VAR(LIBAGS_AUDIO_API_DOC, path for use with sed to Libags-audio API Reference Manual)
 AC_ARG_VAR(LIBAGS_GUI_API_DOC, path for use with sed to Libags-gui API Reference Manual)
@@ -180,6 +180,12 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
                                 [experimental (default is no)])],
               [],
               [enable_experimental=no])
+
+AC_ARG_WITH([gtk_unix_print],
+            [AS_HELP_STRING([--with-gtk-unix-print],
+                            [enable support for Gtk4 Unix print])],
+            [],
+            [with_gtk_unix_print=no])
 
 AC_ARG_WITH([poppler],
             [AS_HELP_STRING([--with-poppler],
@@ -493,6 +499,18 @@ AC_SUBST(CAIRO_LIBS)
 PKG_CHECK_MODULES([GTK], [gtk4 >= 4.0.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
+
+PKG_CHECK_MODULES([GTK_UNIX_PRINT], [gtk4-unix-print >= 4.0.0])
+AC_SUBST(GTK_UNIX_PRINT_CFLAGS)
+AC_SUBST(GTK_UNIX_PRINT_LIBS)
+
+AS_IF([test "x$with_gtk_unix_print" != xno],
+      [PKG_CHECK_MODULES([GTK_UNIX_PRINT], [gtk4-unix-print >= 4.0.0])
+       AC_SUBST(GTK_UNIX_PRINT_CFLAGS)
+       AC_SUBST(GTK_UNIX_PRINT_LIBS)
+       AC_DEFINE([AGS_WITH_GTK_UNIX_PRINT], [1],
+                 [Define if you have Gtk4 Unix print])
+      ])
 
 AS_IF([test "x$with_poppler" != xno],
       [PKG_CHECK_MODULES([POPPLER], [poppler-glib >= 0.71.0])

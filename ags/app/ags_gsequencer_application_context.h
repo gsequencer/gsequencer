@@ -42,6 +42,8 @@ G_BEGIN_DECLS
 #define AGS_GSEQUENCER_VERSION "3.0.0"
 #define AGS_GSEQUENCER_BUILD_ID "Thu Nov  7 01:44:21 UTC 2019"
 
+#define AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_PAPER_SIZE "a4"
+
 #define AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL (1000 / 25)
 
 typedef struct _AgsGSequencerApplicationContext AgsGSequencerApplicationContext;
@@ -140,6 +142,8 @@ struct _AgsGSequencerApplicationContext
   GtkApplication *app;
 
   GtkWidget *meta_data_window;
+
+  gchar *paper_size;
 };
 
 struct _AgsGSequencerApplicationContextClass

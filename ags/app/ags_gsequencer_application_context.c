@@ -677,6 +677,8 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 
   gsequencer_application_context->meta_data_window = NULL;
 
+  gsequencer_application_context->paper_size = g_strdup(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_PAPER_SIZE);
+
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);

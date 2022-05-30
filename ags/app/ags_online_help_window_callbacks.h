@@ -39,6 +39,11 @@ void ags_online_help_window_load_changed(WebKitWebView *web_view,
 					 AgsOnlineHelpWindow *online_help_window);
 #endif
 
+#if defined(AGS_WITH_GTK_UNIX_PRINT) 
+void ags_online_help_window_pdf_print_callback(GtkButton *button,
+					       AgsOnlineHelpWindow *online_help_window);
+#endif
+
 void ags_online_help_window_pdf_zoom_changed_callback(GtkComboBox *combo_box,
 						      AgsOnlineHelpWindow *online_help_window);
 

@@ -80,6 +80,8 @@ struct _AgsOnlineHelpWindow
 
   GtkBox *pdf_controls;
 
+  GtkButton *print;
+  
   GtkComboBox *zoom;
   
   gdouble zoom_x;
@@ -98,6 +100,8 @@ struct _AgsOnlineHelpWindow
 #else
   gpointer pdf_document;
 #endif
+
+  GtkDialog *print_dialog;
 };
 
 struct _AgsOnlineHelpWindowClass
