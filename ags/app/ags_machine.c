@@ -733,6 +733,8 @@ ags_machine_init(AgsMachine *machine)
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
 
+  machine->preset_dialog = NULL;
+
   machine->midi_export_dialog = NULL;
   machine->wave_export_dialog = NULL;
   machine->midi_import_dialog = NULL;

@@ -2975,6 +2975,10 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
 	ags/app/editor/ags_position_wave_cursor_dialog.h \
 	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_preset_dialog_callbacks.h \
+	ags/app/editor/ags_preset_dialog.h \
+	ags/app/editor/ags_preset_editor_callbacks.h \
+	ags/app/editor/ags_preset_editor.h \
 	ags/app/editor/ags_ramp_acceleration_dialog.h \
 	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.h \
@@ -3041,6 +3045,10 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.c \
 	ags/app/editor/ags_position_wave_cursor_dialog.c \
 	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_preset_dialog_callbacks.c \
+	ags/app/editor/ags_preset_dialog.c \
+	ags/app/editor/ags_preset_editor_callbacks.c \
+	ags/app/editor/ags_preset_editor.c \
 	ags/app/editor/ags_ramp_acceleration_dialog.c \
 	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.c \
