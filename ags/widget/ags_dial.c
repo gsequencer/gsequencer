@@ -369,6 +369,9 @@ ags_dial_class_init(AgsDialClass *dial)
   
   widget->snapshot = ags_dial_snapshot;
 
+  gtk_widget_class_set_accessible_role(widget,
+				       GTK_ACCESSIBLE_ROLE_SLIDER);
+  
   /* AgsDialClass */
   dial->value_changed = NULL;
 
@@ -2193,6 +2196,8 @@ ags_dial_get_adjustment(AgsDial *dial)
   if(!AGS_IS_DIAL(dial)){
     return(NULL);
   }
+
+  adjustment = NULL;
   
   g_object_get(dial,
 	       "adjustment", &adjustment,
@@ -2224,6 +2229,12 @@ void
 ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 				     AgsDial *dial)
 {
+  gtk_accessible_update_property(GTK_ACCESSIBLE(dial),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, gtk_adjustment_get_upper(adjustment),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(adjustment),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(adjustment),
+				 -1);
+
   ags_dial_value_changed(dial);
 }
 

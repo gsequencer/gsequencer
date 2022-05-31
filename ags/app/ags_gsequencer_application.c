@@ -149,12 +149,20 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   char buffer[256];
   gchar *paper_conf;
   gchar *paper_size;
-  
+
+#if defined(AGS_OSXAPI)
+  const gchar * const open_accel[] = { "<Meta>o", NULL};
+  const gchar * const save_accel[] = { "<Meta>s", NULL};
+  const gchar * const save_as_accel[] = { "<Meta><Shift>s", NULL};
+  const gchar * const help_accel[] = { "<Meta>h", NULL};
+  const gchar * const quit_accel[] = { "<Meta>q", NULL};
+#else
   const gchar * const open_accel[] = { "<Ctrl>o", NULL};
   const gchar * const save_accel[] = { "<Ctrl>s", NULL};
   const gchar * const save_as_accel[] = { "<Ctrl><Shift>s", NULL};
   const gchar * const help_accel[] = { "<Ctrl>h", NULL};
   const gchar * const quit_accel[] = { "<Ctrl>q", NULL};
+#endif
   
   application_context = 
     ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
@@ -200,6 +208,8 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   }else if(!g_strcmp0(buffer, "legal")){
     paper_size = "letter";
   }else if(!g_strcmp0(buffer, "letter")){
+    paper_size = "letter";
+  }else if(!g_strcmp0(buffer, "executive")){
     paper_size = "letter";
   }
   

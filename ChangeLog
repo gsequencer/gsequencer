@@ -3,6 +3,11 @@ ags (4.1.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented zoom of PDF user manual
 	* implemented unix print support
+	* implemented application OS X accelerators
+	* implemented notation edit OS X accelerators
+	* implemented automation edit OS X accelerators
+	* implemented wave edit OS X accelerators
+	* new configure switch --with-gtk-unix-print
 
 ags (4.0.13)
 
