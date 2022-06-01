@@ -7,6 +7,7 @@ ags (4.1.0)
 	* implemented notation edit OS X accelerators
 	* implemented automation edit OS X accelerators
 	* implemented wave edit OS X accelerators
+	* implemented preset editor
 	* new configure switch --with-gtk-unix-print
 
 ags (4.0.13)

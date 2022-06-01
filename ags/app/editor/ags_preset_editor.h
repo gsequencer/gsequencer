@@ -41,6 +41,9 @@ G_BEGIN_DECLS
 #define AGS_PRESET_EDITOR_DEFAULT_VERSION "4.1.0"
 #define AGS_PRESET_EDITOR_DEFAULT_BUILD_ID "Tue May 31 07:48:20 AM UTC 2022"
 
+#define AGS_PRESET_EDITOR_TREE_VIEW_HEIGHT_REQUEST (600)
+#define AGS_PRESET_EDITOR_TREE_VIEW_WIDTH_REQUEST (1000)
+
 typedef struct _AgsPresetEditor AgsPresetEditor;
 typedef struct _AgsPresetEditorClass AgsPresetEditorClass;
 
@@ -57,10 +60,9 @@ struct _AgsPresetEditor
   GtkEntry *filename;
 
   GtkButton *load;
-  GtkButton *new_preset;
-  GtkButton *save_preset;
   GtkButton *open_preset;
-  GtkButton *apply;
+  GtkButton *save_preset;
+  GtkButton *apply_preset;
 
   GtkTreeView *preset_tree_view;
 };
@@ -71,6 +73,13 @@ struct _AgsPresetEditorClass
 };
 
 GType ags_preset_editor_get_type(void);
+
+void ags_preset_editor_save_preset(AgsPresetEditor *preset_editor);
+
+void ags_preset_editor_open_preset(AgsPresetEditor *preset_editor,
+				   gchar *filename);
+
+void ags_preset_editor_apply_preset(AgsPresetEditor *preset_editor);
 
 AgsPresetEditor* ags_preset_editor_new();
 

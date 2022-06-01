@@ -187,12 +187,26 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
   /* preset editor */
   preset_dialog->preset_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand(scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand(scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign(scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(scrolled_window,
+			GTK_ALIGN_FILL);
+  
   gtk_box_append((GtkBox *) gtk_dialog_get_content_area(preset_dialog),
 		 (GtkWidget *) scrolled_window);
 
   preset_dialog->preset_editor = ags_preset_editor_new();
   gtk_scrolled_window_set_child(preset_dialog->preset_editor_scrolled_window,
 				(GtkWidget *) preset_dialog->preset_editor);
+
+  gtk_window_set_default_size(preset_dialog,
+			      1024, 800);
 
   /* GtkButton's in GtkDialog->action_area  */
   preset_dialog->ok = (GtkButton *) gtk_dialog_add_button(GTK_DIALOG(preset_dialog),

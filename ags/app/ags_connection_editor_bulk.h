@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <libxml/tree.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_CONNECTION_EDITOR_BULK                (ags_connection_editor_bulk_get_type())

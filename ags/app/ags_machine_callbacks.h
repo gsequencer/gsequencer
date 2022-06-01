@@ -67,6 +67,8 @@ void ags_machine_paste_pattern_callback(GAction *action, GVariant *parameter,
 					AgsMachine *machine);
 void ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 				   AgsMachine *machine);
+void ags_machine_preset_callback(GAction *action, GVariant *parameter,
+				 AgsMachine *machine);
 
 void ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
 					   AgsMachine *machine);

@@ -33,6 +33,11 @@
 
 G_BEGIN_DECLS
 
+void ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_editor);
+void ags_preset_editor_new_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
+void ags_preset_editor_save_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
+void ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
+void ags_preset_editor_apply_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
 
 G_END_DECLS
 

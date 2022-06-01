@@ -165,8 +165,8 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 
   /* file chooser */  
   gtk_dialog_add_buttons((GtkDialog *) pcm_file_chooser_dialog,
-			 "_Cancel", GTK_RESPONSE_CANCEL,
-			 "_Open", GTK_RESPONSE_ACCEPT,
+			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+			 i18n("_Open"), GTK_RESPONSE_ACCEPT,
 			 NULL);  
 }
 
