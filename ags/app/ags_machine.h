@@ -193,6 +193,7 @@ struct _AgsMachine
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;
   GtkDialog *envelope_info;
+  GtkDialog *preset_dialog;
   GtkDialog *midi_export_dialog;
   GtkDialog *wave_export_dialog;
   GtkDialog *midi_import_dialog;

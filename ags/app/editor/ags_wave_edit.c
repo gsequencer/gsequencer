@@ -564,6 +564,7 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 
   AgsApplicationContext *application_context;
 
+  guint l_control_key, r_control_key;  
   gboolean key_handled;
   
   if(keyval == GDK_KEY_Tab ||
@@ -572,6 +573,8 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
      keyval == GDK_KEY_Shift_R ||
      keyval == GDK_KEY_Alt_L ||
      keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Meta_L ||
+     keyval == GDK_KEY_Meta_R ||
      keyval == GDK_KEY_Control_L ||
      keyval == GDK_KEY_Control_R ){
     key_handled = FALSE;
@@ -585,6 +588,14 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 				   AGS_TYPE_COMPOSITE_EDITOR);
     
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+
+#if defined(AGS_OSXAPI)
+  l_control_key = AGS_WAVE_EDIT_KEY_L_META;
+  r_control_key = AGS_WAVE_EDIT_KEY_R_META;
+#else
+  l_control_key = AGS_WAVE_EDIT_KEY_L_CONTROL;
+  r_control_key = AGS_WAVE_EDIT_KEY_R_CONTROL;
+#endif  
   
   if(machine != NULL){
     switch(keyval){
@@ -608,10 +619,20 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_R_SHIFT;
       }
       break;
+    case GDK_KEY_Meta_L:
+      {
+	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_L_META;
+      }
+      break;
+    case GDK_KEY_Meta_R:
+      {
+	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_R_META;
+      }
+      break;
     case GDK_KEY_a:
       {
 	/* select all accelerations */
-	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	if((l_control_key & (wave_edit->key_mask)) != 0 || (r_control_key & (wave_edit->key_mask)) != 0){
 	  ags_composite_editor_select_all(editor);
 	}
       }
@@ -619,7 +640,7 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_c:
       {
 	/* copy accelerations */
-	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	if((l_control_key & (wave_edit->key_mask)) != 0 || (r_control_key & (wave_edit->key_mask)) != 0){
 	  ags_composite_editor_copy(editor);
 	}
       }
@@ -627,7 +648,7 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_v:
       {
 	/* paste accelerations */
-	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	if((l_control_key & (wave_edit->key_mask)) != 0 || (r_control_key & (wave_edit->key_mask)) != 0){
 	  ags_composite_editor_paste(editor);
 	}
       }
@@ -635,7 +656,7 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_x:
       {
 	/* cut accelerations */
-	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	if((l_control_key & (wave_edit->key_mask)) != 0 || (r_control_key & (wave_edit->key_mask)) != 0){
 	  ags_composite_editor_cut(editor);
 	}
       }
@@ -643,7 +664,7 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_m:
       {
 	/* meta */
-	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	if((l_control_key & (wave_edit->key_mask)) != 0 || (r_control_key & (wave_edit->key_mask)) != 0){
 	  AgsWaveMeta *wave_meta;
 
 	  wave_meta = AGS_COMPOSITE_EDITOR(editor)->wave_edit->edit_meta;
@@ -684,6 +705,7 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
   
   GtkAllocation allocation;
 
+  guint l_control_key, r_control_key;  
   double zoom_factor;
   gint i;
   gboolean key_handled;
@@ -703,6 +725,8 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
      keyval == GDK_KEY_Shift_R ||
      keyval == GDK_KEY_Alt_L ||
      keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Meta_L ||
+     keyval == GDK_KEY_Meta_R ||
      keyval == GDK_KEY_Control_L ||
      keyval == GDK_KEY_Control_R ){
     key_handled = FALSE;
@@ -714,6 +738,14 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
+
+#if defined(AGS_OSXAPI)
+  l_control_key = AGS_WAVE_EDIT_KEY_L_META;
+  r_control_key = AGS_WAVE_EDIT_KEY_R_META;
+#else
+  l_control_key = AGS_WAVE_EDIT_KEY_L_CONTROL;
+  r_control_key = AGS_WAVE_EDIT_KEY_R_CONTROL;
+#endif  
 
   if(machine != NULL){    
     /* check key value */

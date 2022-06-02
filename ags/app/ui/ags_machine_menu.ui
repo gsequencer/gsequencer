@@ -57,6 +57,10 @@
             <attribute name="label" translatable="yes">envelope</attribute>
             <attribute name="action">machine.envelope</attribute>
 	  </item>	  
+	  <item>
+            <attribute name="label" translatable="yes">preset</attribute>
+            <attribute name="action">machine.preset</attribute>
+	  </item>	  
 	</section>	  
       </submenu>
       <submenu>

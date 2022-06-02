@@ -514,6 +514,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 
   AgsApplicationContext *application_context;
 
+  guint l_control_key, r_control_key;  
   gboolean key_handled;
 
   if(keyval == GDK_KEY_Tab ||
@@ -522,6 +523,8 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
      keyval == GDK_KEY_Shift_R ||
      keyval == GDK_KEY_Alt_L ||
      keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Meta_L ||
+     keyval == GDK_KEY_Meta_R ||
      keyval == GDK_KEY_Control_L ||
      keyval == GDK_KEY_Control_R ){
     key_handled = FALSE;
@@ -537,6 +540,14 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 				   AGS_TYPE_COMPOSITE_EDITOR);
     
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+
+#if defined(AGS_OSXAPI)
+  l_control_key = AGS_NOTATION_EDIT_KEY_L_META;
+  r_control_key = AGS_NOTATION_EDIT_KEY_R_META;
+#else
+  l_control_key = AGS_NOTATION_EDIT_KEY_L_CONTROL;
+  r_control_key = AGS_NOTATION_EDIT_KEY_R_CONTROL;
+#endif
   
   if(machine != NULL){
     switch(keyval){
@@ -560,10 +571,20 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
       notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_R_SHIFT;
     }
     break;
+    case GDK_KEY_Meta_L:
+    {
+      notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_L_META;
+    }
+    break;
+    case GDK_KEY_Meta_R:
+    {
+      notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_R_META;
+    }
+    break;
     case GDK_KEY_a:
     {
       /* select all notes */
-      if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+      if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
 	ags_composite_editor_select_all(editor);
       }
     }
@@ -571,7 +592,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_c:
     {
       /* copy notes */
-      if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+      if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
 	ags_composite_editor_copy(editor);
       }
     }
@@ -579,7 +600,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_v:
     {
       /* paste notes */
-      if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+      if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
 	ags_composite_editor_paste(editor);
       }
     }
@@ -587,7 +608,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_x:
     {
       /* cut notes */
-      if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+      if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
 	ags_composite_editor_cut(editor);
       }
     }
@@ -595,7 +616,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_i:
     {
       /* invert notes */
-      if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+      if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
 	ags_composite_editor_invert(editor);
       }
     }
@@ -607,7 +628,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
       /* meta */
       notation_meta = NULL;
       
-      if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+      if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
 	notation_meta = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_meta;
 	if((AGS_NOTATION_META_ENABLED & (notation_meta->flags)) != 0){
 	  notation_meta->flags &= (~AGS_NOTATION_META_ENABLED);
@@ -646,6 +667,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
   
   GtkAllocation allocation;
 
+  guint l_control_key, r_control_key;  
   gboolean pattern_mode;
   double zoom_factor;
   gint i;
@@ -660,6 +682,8 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
      keyval == GDK_KEY_Shift_R ||
      keyval == GDK_KEY_Alt_L ||
      keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Meta_L ||
+     keyval == GDK_KEY_Meta_R ||
      keyval == GDK_KEY_Control_L ||
      keyval == GDK_KEY_Control_R ){
     key_handled = FALSE;
@@ -682,6 +706,14 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
+
+#if defined(AGS_OSXAPI)
+  l_control_key = AGS_NOTATION_EDIT_KEY_L_META;
+  r_control_key = AGS_NOTATION_EDIT_KEY_R_META;
+#else
+  l_control_key = AGS_NOTATION_EDIT_KEY_L_CONTROL;
+  r_control_key = AGS_NOTATION_EDIT_KEY_R_CONTROL;
+#endif
 
   if(machine != NULL){
     /* get audio mutex */
@@ -710,6 +742,16 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
     case GDK_KEY_Shift_R:
       {
 	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_R_SHIFT);
+      }
+      break;
+    case GDK_KEY_Meta_L:
+      {
+	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_L_META);
+      }
+      break;
+    case GDK_KEY_Meta_R:
+      {
+	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_R_META);
       }
       break;
     case GDK_KEY_Left:

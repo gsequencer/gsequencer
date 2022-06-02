@@ -835,6 +835,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 
   AgsApplicationContext *application_context;
   
+  guint l_control_key, r_control_key;  
   gboolean key_handled;
 
   application_context = ags_application_context_get_instance();
@@ -845,6 +846,8 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
      keyval == GDK_KEY_Shift_R ||
      keyval == GDK_KEY_Alt_L ||
      keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Meta_L ||
+     keyval == GDK_KEY_Meta_R ||
      keyval == GDK_KEY_Control_L ||
      keyval == GDK_KEY_Control_R ){
     key_handled = FALSE;
@@ -858,6 +861,14 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 				   AGS_TYPE_COMPOSITE_EDITOR);
     
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+
+#if defined(AGS_OSXAPI)
+  l_control_key = AGS_AUTOMATION_EDIT_KEY_L_META;
+  r_control_key = AGS_AUTOMATION_EDIT_KEY_R_META;
+#else
+  l_control_key = AGS_AUTOMATION_EDIT_KEY_L_CONTROL;
+  r_control_key = AGS_AUTOMATION_EDIT_KEY_R_CONTROL;
+#endif  
   
   if(machine != NULL){
     switch(keyval){
@@ -881,10 +892,20 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_R_SHIFT;
       }
       break;
+    case GDK_KEY_Meta_L:
+      {
+	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_L_META;
+      }
+      break;
+    case GDK_KEY_Meta_R:
+      {
+	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_R_META;
+      }
+      break;
     case GDK_KEY_a:
       {
 	/* select all accelerations */
-	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	if((l_control_key & (automation_edit->key_mask)) != 0 || (r_control_key & (automation_edit->key_mask)) != 0){
 	  ags_composite_editor_select_all(editor);
 	}
       }
@@ -892,7 +913,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
     case GDK_KEY_c:
       {
 	/* copy accelerations */
-	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	if((l_control_key & (automation_edit->key_mask)) != 0 || (r_control_key & (automation_edit->key_mask)) != 0){
 	  ags_composite_editor_copy(editor);
 	}
       }
@@ -900,7 +921,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
     case GDK_KEY_v:
       {
 	/* paste accelerations */
-	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	if((l_control_key & (automation_edit->key_mask)) != 0 || (r_control_key & (automation_edit->key_mask)) != 0){
 	  ags_composite_editor_paste(editor);
 	}
       }
@@ -908,7 +929,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
     case GDK_KEY_x:
       {
 	/* cut accelerations */
-	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	if((l_control_key & (automation_edit->key_mask)) != 0 || (r_control_key & (automation_edit->key_mask)) != 0){
 	  ags_composite_editor_cut(editor);
 	}
       }
@@ -916,7 +937,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
     case GDK_KEY_i:
       {
 	/* invert accelerations */
-	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	if((l_control_key & (automation_edit->key_mask)) != 0 || (r_control_key & (automation_edit->key_mask)) != 0){
 	  ags_composite_editor_invert(editor);
 	}
       }
@@ -924,7 +945,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
     case GDK_KEY_m:
       {
 	/* meta */
-	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	if((l_control_key & (automation_edit->key_mask)) != 0 || (r_control_key & (automation_edit->key_mask)) != 0){
 	  AgsAutomationMeta *automation_meta;
 
 	  automation_meta = NULL;
@@ -967,6 +988,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
   
   GtkAllocation allocation;
 
+  guint l_control_key, r_control_key;  
   double zoom_factor;
   gint i;
   gboolean key_handled;
@@ -989,12 +1011,22 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
      keyval == GDK_KEY_Shift_R ||
      keyval == GDK_KEY_Alt_L ||
      keyval == GDK_KEY_Alt_R ||
+     keyval == GDK_KEY_Meta_L ||
+     keyval == GDK_KEY_Meta_R ||
      keyval == GDK_KEY_Control_L ||
      keyval == GDK_KEY_Control_R ){
     key_handled = FALSE;
   }else{
     key_handled = TRUE;
   }
+
+#if defined(AGS_OSXAPI)
+  l_control_key = AGS_AUTOMATION_EDIT_KEY_L_META;
+  r_control_key = AGS_AUTOMATION_EDIT_KEY_R_META;
+#else
+  l_control_key = AGS_AUTOMATION_EDIT_KEY_L_CONTROL;
+  r_control_key = AGS_AUTOMATION_EDIT_KEY_R_CONTROL;
+#endif  
 
   if(machine != NULL){    
     /* check key value */
@@ -1017,6 +1049,16 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
     case GDK_KEY_Shift_R:
       {
 	automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_R_SHIFT);
+      }
+      break;
+    case GDK_KEY_Meta_L:
+      {
+	automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_L_META);
+      }
+      break;
+    case GDK_KEY_Meta_R:
+      {
+	automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_R_META);
       }
       break;
     case GDK_KEY_Left:

@@ -559,6 +559,14 @@ ags_machine_init(AgsMachine *machine)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
 
+  /* preset */
+  action = g_simple_action_new("preset",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_machine_preset_callback), machine);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
   /* audio connection */
   action = g_simple_action_new("audio_connection",
 			       NULL);
@@ -732,6 +740,8 @@ ags_machine_init(AgsMachine *machine)
   machine->connection_editor_dialog = NULL;
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
+
+  machine->preset_dialog = NULL;
 
   machine->midi_export_dialog = NULL;
   machine->wave_export_dialog = NULL;

@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.1.0" date="2022-06-02">
+      <description>
+	<p>
+	  New, load, open, or save presets and apply them. 
+	</p>
+	<p>
+	  New, zoom PDF manual or print it. 
+	</p>
+      </description>
+    </release>
+
     <release version="4.0.13" date="2022-05-29">
       <description>
 	<p>

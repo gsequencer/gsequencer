@@ -125,6 +125,10 @@ if get_option('poppler')
 ags_config.set('AGS_WITH_POPPLER', true)
 endif
 
+if get_option('gtk_unix_print')
+ags_config.set('AGS_WITH_GTK_UNIX_PRINT', true)
+endif
+
 # TODO: it looks like this must be mandatory
 ags_config.set('AGS_WITH_LIBINSTPATCH', true)
 
@@ -993,6 +997,10 @@ libgsequencer_sources = files(
   'app/editor/ags_position_sheet_cursor_dialog_callbacks.c',
   'app/editor/ags_position_wave_cursor_dialog.c',
   'app/editor/ags_position_wave_cursor_dialog_callbacks.c',
+  'app/editor/ags_preset_dialog.c',
+  'app/editor/ags_preset_dialog_callbacks.c',
+  'app/editor/ags_preset_editor.c',
+  'app/editor/ags_preset_editor_callbacks.c',
   'app/editor/ags_ramp_acceleration_dialog.c',
   'app/editor/ags_ramp_acceleration_dialog_callbacks.c',
   'app/editor/ags_remove_sheet_page_dialog.c',
@@ -1160,6 +1168,15 @@ endif
 
 if get_option('poppler')
   libgsequencer_dependencies += poppler_dependency
+endif
+
+libgsequencer_compiler_flags = compiler_flags
+if get_option('gtk_unix_print')
+  libgsequencer_dependencies += gtk_unix_print_dependency
+endif
+
+if get_option('gtk_unix_print')
+  libgsequencer_dependencies += gtk_unix_print_dependency
 endif
 
 if get_option('gstreamer')

@@ -32,6 +32,7 @@
 #include <ags/app/export/ags_wave_export_dialog.h>
 
 #include <ags/app/editor/ags_envelope_dialog.h>
+#include <ags/app/editor/ags_preset_dialog.h>
 #include <ags/app/editor/ags_machine_radio_button.h>
 
 #include <ags/app/machine/ags_panel.h>
@@ -964,6 +965,10 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
   AgsEnvelopeDialog *envelope_dialog;
 
   gchar *title;
+
+  if(machine->envelope_dialog != NULL){
+    return;
+  }
   
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
@@ -973,16 +978,52 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
 			  machine->machine_name,
 			  i18n("envelope"));
   
-  envelope_dialog = ags_envelope_dialog_new(title,
-					    window,
-					    machine);
+  envelope_dialog =
+    machine->envelope_dialog = ags_envelope_dialog_new(title,
+						       window,
+						       machine);
 
   if(AGS_IS_DRUM(machine) ||
      AGS_IS_MATRIX(machine)){
     ags_envelope_dialog_add_pattern_tab(envelope_dialog);
   }
+
+  ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
   
   gtk_widget_show((GtkWidget *) envelope_dialog);
+  
+  g_free(title);
+}
+
+void
+ags_machine_preset_callback(GAction *action, GVariant *parameter,
+			      AgsMachine *machine)
+{
+  AgsWindow *window;
+  AgsPresetDialog *preset_dialog;
+
+  gchar *title;
+
+  if(machine->preset_dialog != NULL){
+    return;
+  }
+  
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  title = g_strdup_printf("%s:%s %s",
+			  G_OBJECT_TYPE_NAME(machine),
+			  machine->machine_name,
+			  i18n("preset"));
+  
+  preset_dialog =
+    machine->preset_dialog = ags_preset_dialog_new(title,
+						     window,
+						     machine);
+
+  ags_connectable_connect(AGS_CONNECTABLE(machine->preset_dialog));
+  
+  gtk_widget_show((GtkWidget *) preset_dialog);
   
   g_free(title);
 }

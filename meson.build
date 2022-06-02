@@ -9,7 +9,7 @@ project('gsequencer', 'c', 'cpp',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
         meson_version: '>=0.53.0',
-        version: '4.0.13')
+        version: '4.1.0')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -50,6 +50,9 @@ if get_option('pulse')
 endif
 if get_option('poppler')
   poppler_dependency = dependency('poppler-glib')
+endif
+if get_option('gtk_unix_print')
+  poppler_dependency = dependency('gtk4-unix-print')
 endif
 if get_option('gstreamer')
   gstreamer_dependency = dependency('gstreamer-1.0')

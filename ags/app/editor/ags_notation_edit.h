@@ -85,6 +85,8 @@ typedef enum{
   AGS_NOTATION_EDIT_KEY_R_CONTROL       = 1 <<  1,
   AGS_NOTATION_EDIT_KEY_L_SHIFT         = 1 <<  2,
   AGS_NOTATION_EDIT_KEY_R_SHIFT         = 1 <<  3,
+  AGS_NOTATION_EDIT_KEY_L_META          = 1 <<  4,
+  AGS_NOTATION_EDIT_KEY_R_META          = 1 <<  5,
 }AgsNotationEditKeyMask;
 
 struct _AgsNotationEdit

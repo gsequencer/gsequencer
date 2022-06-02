@@ -100,6 +100,8 @@ typedef enum{
   AGS_AUTOMATION_EDIT_KEY_R_CONTROL       = 1 <<  1,
   AGS_AUTOMATION_EDIT_KEY_L_SHIFT         = 1 <<  2,
   AGS_AUTOMATION_EDIT_KEY_R_SHIFT         = 1 <<  3,
+  AGS_AUTOMATION_EDIT_KEY_L_META          = 1 <<  4,
+  AGS_AUTOMATION_EDIT_KEY_R_META          = 1 <<  5,
 }AgsAutomationEditKeyMask;
 
 struct _AgsAutomationEdit

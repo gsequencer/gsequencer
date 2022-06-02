@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --enable-vst3 --with-poppler
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --enable-vst3 --with-poppler --with-gtk-unix-print
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
@@ -845,9 +845,9 @@ libgsequencer_la_CPPFLAGS = -std=gnu99
 endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
-libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 $(PIC_FLAGS) -pthread
-libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(POPPLER_LIBS) $(W32API_LIBS)
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libgsequencer_la_CPPFLAGS += -DAGS_LIBRARY_SUFFIX=\".dll\"
@@ -892,9 +892,9 @@ endif
 
 gsequencer_CPPFLAGS += $(CPPFLAGS)
 
-gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
+gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(W32API_CFLAGS)
 gsequencer_LDFLAGS += -pthread
-gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(POPPLER_LIBS) $(W32API_LIBS)
+gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_UNIX_PRINT_LIBS) $(POPPLER_LIBS) $(W32API_LIBS)
 
 if WITH_OSXAPI
 gsequencer_LDFLAGS += -framework Cocoa
@@ -2975,6 +2975,10 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.h \
 	ags/app/editor/ags_position_wave_cursor_dialog.h \
 	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.h \
+	ags/app/editor/ags_preset_dialog_callbacks.h \
+	ags/app/editor/ags_preset_dialog.h \
+	ags/app/editor/ags_preset_editor_callbacks.h \
+	ags/app/editor/ags_preset_editor.h \
 	ags/app/editor/ags_ramp_acceleration_dialog.h \
 	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.h \
@@ -3041,6 +3045,10 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_position_sheet_cursor_dialog_callbacks.c \
 	ags/app/editor/ags_position_wave_cursor_dialog.c \
 	ags/app/editor/ags_position_wave_cursor_dialog_callbacks.c \
+	ags/app/editor/ags_preset_dialog_callbacks.c \
+	ags/app/editor/ags_preset_dialog.c \
+	ags/app/editor/ags_preset_editor_callbacks.c \
+	ags/app/editor/ags_preset_editor.c \
 	ags/app/editor/ags_ramp_acceleration_dialog.c \
 	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.c \
@@ -3484,7 +3492,7 @@ if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(docdir)/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(docdir)/pdf/
 else
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 endif

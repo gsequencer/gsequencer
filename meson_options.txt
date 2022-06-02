@@ -24,6 +24,8 @@ option('gstreamer', type: 'boolean', value: false,
        description: 'Enable gstreamer')
 option('poppler', type: 'boolean', value: false,
        description: 'Enable poppler')
+option('gtk_unix_print', type: 'boolean', value: false,
+       description: 'Enable gtk unix print')
 
 option('vst3', type: 'boolean', value: false,
        description: 'Enable VST3')

@@ -1853,7 +1853,7 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
     return;
   }
 
-  collected_specifier = (gchar **) malloc(sizeof(gchar*));
+  collected_specifier = (gchar **) g_malloc(sizeof(gchar*));
 
   collected_specifier[0] = NULL;
   length = 1;
@@ -1920,8 +1920,8 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
 			 -1);      
 
       /* add to collected specifier */
-      collected_specifier = (gchar **) realloc(collected_specifier,
-					       (length + 1) * sizeof(gchar *));
+      collected_specifier = (gchar **) g_realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
       collected_specifier[length - 1] = g_strdup(specifier);
       collected_specifier[length] = NULL;
 
@@ -1956,7 +1956,7 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
     g_object_ref(channel);
   }
   
-  collected_specifier = (gchar **) malloc(sizeof(gchar*));
+  collected_specifier = (gchar **) g_malloc(sizeof(gchar*));
 
   collected_specifier[0] = NULL;
   length = 1;
@@ -2013,8 +2013,8 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
 			   -1);      
 
 	/* add to collected specifier */
-	collected_specifier = (gchar **) realloc(collected_specifier,
-						 (length + 1) * sizeof(gchar *));
+	collected_specifier = (gchar **) g_realloc(collected_specifier,
+						   (length + 1) * sizeof(gchar *));
 	collected_specifier[length - 1] = g_strdup(specifier);
 	collected_specifier[length] = NULL;
 
@@ -2113,8 +2113,8 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
 			   -1);      
 
 	/* add to collected specifier */
-	collected_specifier = (gchar **) realloc(collected_specifier,
-						 (length + 1) * sizeof(gchar *));
+	collected_specifier = (gchar **) g_realloc(collected_specifier,
+						   (length + 1) * sizeof(gchar *));
 	collected_specifier[length - 1] = g_strdup(specifier);
 	collected_specifier[length] = NULL;
 

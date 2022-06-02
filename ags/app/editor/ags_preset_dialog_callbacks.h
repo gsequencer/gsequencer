@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,35 +17,24 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_API_CONFIG_H__
-#define __AGS_API_CONFIG_H__
+#ifndef __AGS_PRESET_DIALOG_CALLBACKS_H__
+#define __AGS_PRESET_DIALOG_CALLBACKS_H__
 
-#undef AGS_W32API
+#include <glib.h>
+#include <glib-object.h>
 
-#undef AGS_OSXAPI
+#include <gtk/gtk.h>
 
-#undef AGS_WITH_ALSA
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#undef AGS_WITH_OSS
+#include <ags/app/editor/ags_preset_dialog.h>
 
-#undef AGS_WITH_CORE_AUDIO
+G_BEGIN_DECLS
 
-#undef AGS_WITH_JACK
+int ags_preset_dialog_ok_callback(GtkWidget *widget, AgsPresetDialog *preset_dialog);
 
-#undef AGS_WITH_PULSE
+G_END_DECLS
 
-#undef AGS_WITH_WASAPI
-
-#undef AGS_WITH_LIBINSTPATCH
-
-#undef AGS_WITH_QUARTZ
-
-#undef AGS_WITH_GTK_UNIX_PRINT
-
-#undef AGS_WITH_POPPLER
-
-#undef AGS_WITH_GSTREAMER
-
-#undef AGS_WITH_VST3
-
-#endif /*__AGS_API_CONFIG_H__*/
+#endif /*__AGS_PRESET_DIALOG_CALLBACKS_H__*/
