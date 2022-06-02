@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[4.0.13],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[4.1.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -24,6 +24,7 @@ AC_ARG_VAR(INTROSPECTION_SCANNER, introspection scanner)
 AC_ARG_VAR(INTROSPECTION_COMPILER, introspection compiler)
 
 AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
+AC_ARG_VAR(DBLATEX_XSL, path to Docbook XML dblatex XSL file)
 
 AC_ARG_VAR(GOBJECT_API_DOC, path for use with sed to GObject API Reference Manual)
 AC_ARG_VAR(GTK_API_DOC, path for use with sed to Gtk-4 API Reference Manual)
@@ -629,6 +630,12 @@ AS_IF([test "x$HTMLHELP_XSL" != x],
        AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])],
       [AC_SUBST(HTMLHELP_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl)
        AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])])
+
+AS_IF([test "x$DBLATEX_XSL" != x],
+      [AC_SUBST(DBLATEX_XSL, $DBLATEX_XSL)
+       AC_MSG_NOTICE([DBLATEX_XSL = $DBLATEX_XSL])],
+      [AC_SUBST(DBLATEX_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/fo/docbook.xsl)
+       AC_MSG_NOTICE([DBLATEX_XSL = $DBLATEX_XSL])])
 
 AS_IF([test "x$enable_upstream_gtk_doc" != xno],
 [AS_IF([test "x$GOBJECT_API_DOC" != x],

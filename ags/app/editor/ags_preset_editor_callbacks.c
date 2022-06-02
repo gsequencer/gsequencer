@@ -43,6 +43,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
   AgsChannel *channel;
 
   GList *start_port, *port;
+  GList *start_context_specifier;
 
   gchar **collected_specifier;
 
@@ -79,6 +80,8 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
   port =
     start_port = ags_audio_collect_all_audio_ports(machine->audio);
 
+  start_context_specifier = NULL;
+  
   while(port != NULL){
     AgsPluginPort *plugin_port;
 
@@ -105,7 +108,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 
       continue;
     }
-    
+
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(collected_specifier,
 					    specifier);
@@ -113,9 +116,13 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
     contains_control_name = ags_strv_contains(collected_specifier,
 					      specifier);
 #endif
-
-    if(plugin_port != NULL){
+    
+    if(plugin_port != NULL &&
+       g_list_find_custom(start_context_specifier, specifier, g_strcmp0) == NULL){
       GValue port_value = G_VALUE_INIT;
+
+      start_context_specifier = g_list_prepend(start_context_specifier,
+					       specifier);
       
       /* create list store entry */
       if(G_VALUE_HOLDS_FLOAT(plugin_port->default_value)){
@@ -165,9 +172,9 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 
 	length++;
       }
+    }else{
+      g_free(specifier);
     }
-
-    g_free(specifier);
     
     if(plugin_port != NULL){
       g_object_unref(plugin_port);
@@ -179,6 +186,8 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
   
   g_strfreev(collected_specifier);
 
+  g_list_free_full(start_context_specifier,
+		   g_free);
   g_list_free_full(start_port,
 		   g_object_unref);
 
@@ -206,6 +215,8 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
     guint line;
     
     line = ags_channel_get_line(channel);
+
+    start_context_specifier = NULL;
     
     /* output */
     port =
@@ -241,7 +252,11 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
       contains_control_name = g_strv_contains(collected_specifier,
 					      specifier);
 
-      if(plugin_port != NULL){
+      if(plugin_port != NULL &&
+	 g_list_find_custom(start_context_specifier, specifier, g_strcmp0) == NULL){
+	start_context_specifier = g_list_prepend(start_context_specifier,
+						 specifier);
+	
 	/* create list store entry */
 	if(G_VALUE_HOLDS_FLOAT(plugin_port->default_value)){
 	  g_value_init(&port_value,
@@ -290,9 +305,9 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	  
 	  length++;
 	}
+      }else{
+	g_free(specifier);
       }
-
-      g_free(specifier);
       
       if(plugin_port != NULL){
 	g_object_unref(plugin_port);
@@ -302,6 +317,9 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
       /* iterate */
       port = port->next;
     }
+
+    g_list_free_full(start_context_specifier,
+		     g_free);
 
     g_list_free_full(start_port,
 		     g_object_unref);
@@ -338,6 +356,8 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
     guint line;
     
     line = ags_channel_get_line(channel);
+
+    start_context_specifier = NULL;
     
     /* input */
     port =
@@ -376,7 +396,11 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
       contains_control_name = g_strv_contains(collected_specifier,
 					      specifier);
 
-      if(plugin_port != NULL){
+      if(plugin_port != NULL &&
+	 g_list_find_custom(start_context_specifier, specifier, g_strcmp0) == NULL){
+	start_context_specifier = g_list_prepend(start_context_specifier,
+						 specifier);
+	
 	/* create list store entry */
 	if(G_VALUE_HOLDS_FLOAT(plugin_port->default_value)){
 	  g_value_init(&port_value,
@@ -425,9 +449,9 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 
 	  length++;
 	}
+      }else{
+	g_free(specifier);
       }
-
-      g_free(specifier);
       
       if(plugin_port != NULL){
 	g_object_unref(plugin_port);
@@ -436,6 +460,9 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
       /* iterate */
       port = port->next;
     }
+
+    g_list_free_full(start_context_specifier,
+		     g_free);
 
     g_list_free_full(start_port,
 		     g_object_unref);

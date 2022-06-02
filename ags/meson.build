@@ -125,6 +125,10 @@ if get_option('poppler')
 ags_config.set('AGS_WITH_POPPLER', true)
 endif
 
+if get_option('gtk_unix_print')
+ags_config.set('AGS_WITH_GTK_UNIX_PRINT', true)
+endif
+
 # TODO: it looks like this must be mandatory
 ags_config.set('AGS_WITH_LIBINSTPATCH', true)
 
@@ -1164,6 +1168,15 @@ endif
 
 if get_option('poppler')
   libgsequencer_dependencies += poppler_dependency
+endif
+
+libgsequencer_compiler_flags = compiler_flags
+if get_option('gtk_unix_print')
+  libgsequencer_dependencies += gtk_unix_print_dependency
+endif
+
+if get_option('gtk_unix_print')
+  libgsequencer_dependencies += gtk_unix_print_dependency
 endif
 
 if get_option('gstreamer')

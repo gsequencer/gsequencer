@@ -199,7 +199,7 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
   gtk_box_append(hbox,
 		 (GtkWidget *) preset_editor->save_preset);
 
-  preset_editor->apply_preset = (GtkButton *) gtk_button_new_from_icon_name("dialog-apply");
+  preset_editor->apply_preset = (GtkButton *) gtk_button_new_from_icon_name("task-due");
 
   gtk_widget_set_has_tooltip(preset_editor->apply_preset,
 			     TRUE);
@@ -739,7 +739,8 @@ ags_preset_editor_save_preset(AgsPresetEditor *preset_editor)
 
   filename = gtk_editable_get_text(GTK_EDITABLE(preset_editor->filename));
 
-  if(filename == NULL){
+  if(filename == NULL  ||
+     strlen(filename) <= 0){
     return;
   }
   

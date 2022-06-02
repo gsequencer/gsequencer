@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 4.0.13\n"
+"Project-Id-Version: gsequencer 4.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-05-29 20:18+0200\n"
+"POT-Creation-Date: 2022-06-02 14:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,32 +88,41 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:729
+#: ags/app/ags_machine_callbacks.c:730
 msgid "rename machine"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:774
+#: ags/app/ags_machine_callbacks.c:775
 msgid "rename audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:853
+#: ags/app/ags_machine_callbacks.c:854
 msgid "reposition audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:859 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:860 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:427 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:900
+#: ags/app/ags_machine_callbacks.c:901
 msgid "properties"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:974
+#: ags/app/ags_machine_callbacks.c:979
 msgid "envelope"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1016
+#: ags/app/ags_machine_callbacks.c:1017
+#: ags/app/editor/ags_pattern_envelope.c:243
+#: ags/app/editor/ags_envelope_editor.c:180
+#: ags/app/machine/ags_live_lv2_bridge.c:495
+#: ags/app/machine/ags_lv2_bridge.c:480 ags/app/machine/ags_sf2_synth.c:413
+#: ags/app/machine/ags_ffplayer.c:361
+msgid "preset"
+msgstr ""
+
+#: ags/app/ags_machine_callbacks.c:1057
 msgid "connections"
 msgstr ""
 
@@ -151,6 +160,7 @@ msgid "_OK"
 msgstr ""
 
 #: ags/app/ags_machine_editor_dialog.c:104
+#: ags/app/ags_pcm_file_chooser_dialog.c:168
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:58
 #: ags/app/export/ags_midi_export_wizard.c:231
 #: ags/app/export/ags_wave_export_dialog.c:343 ags/app/ags_input_dialog.c:88
@@ -217,21 +227,21 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3356
+#: ags/app/ags_gsequencer_application_context.c:3358
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3366
+#: ags/app/ags_gsequencer_application_context.c:3368
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3602
+#: ags/app/ags_gsequencer_application_context.c:3604
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3612
+#: ags/app/ags_gsequencer_application_context.c:3614
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -266,6 +276,13 @@ msgstr ""
 
 #: ags/app/ags_pcm_file_chooser_dialog.c:153
 msgid "override existing links"
+msgstr ""
+
+#: ags/app/ags_pcm_file_chooser_dialog.c:169
+#: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/machine/ags_drum.c:363
+#: ags/app/machine/ags_sfz_synth.c:305 ags/app/machine/ags_audiorec.c:299
+#: ags/app/machine/ags_sf2_synth.c:313 ags/app/machine/ags_ffplayer.c:400
+msgid "_Open"
 msgstr ""
 
 #: ags/app/ags_performance_preferences.c:141
@@ -603,7 +620,7 @@ msgid "position tool"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:861
-#: ags/app/ags_gsequencer_application.c:599
+#: ags/app/ags_gsequencer_application.c:675
 msgid "Edit"
 msgstr ""
 
@@ -668,6 +685,7 @@ msgid "tool dialog option"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1293
+#: ags/app/ags_online_help_window.c:178
 msgid "zoom"
 msgstr ""
 
@@ -856,14 +874,6 @@ msgstr ""
 msgid "select x1"
 msgstr ""
 
-#: ags/app/editor/ags_pattern_envelope.c:243
-#: ags/app/editor/ags_envelope_editor.c:180
-#: ags/app/machine/ags_live_lv2_bridge.c:495
-#: ags/app/machine/ags_lv2_bridge.c:480 ags/app/machine/ags_sf2_synth.c:413
-#: ags/app/machine/ags_ffplayer.c:361
-msgid "preset"
-msgstr ""
-
 #: ags/app/editor/ags_pattern_envelope.c:250
 #: ags/app/editor/ags_pattern_envelope.c:324
 msgid "audio channel start"
@@ -1007,12 +1017,6 @@ msgstr ""
 msgid "input pads count"
 msgstr ""
 
-#: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/machine/ags_drum.c:363
-#: ags/app/machine/ags_sfz_synth.c:305 ags/app/machine/ags_audiorec.c:299
-#: ags/app/machine/ags_sf2_synth.c:313 ags/app/machine/ags_ffplayer.c:400
-msgid "_Open"
-msgstr ""
-
 #: ags/app/ags_machine_editor_pad.c:182 ags/app/ags_connection_editor_pad.c:182
 msgid "pad"
 msgstr ""
@@ -1061,64 +1065,64 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:544
+#: ags/app/ags_gsequencer_application.c:620
 msgid "Open"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:549
+#: ags/app/ags_gsequencer_application.c:625
 msgid "Save"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:554
+#: ags/app/ags_gsequencer_application.c:630
 msgid "Save as"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:559
+#: ags/app/ags_gsequencer_application.c:635
 msgid "Export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:564
+#: ags/app/ags_gsequencer_application.c:640
 msgid "Quit"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:571
+#: ags/app/ags_gsequencer_application.c:647
 msgid "File"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:584
+#: ags/app/ags_gsequencer_application.c:660
 msgid "Add"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:587
+#: ags/app/ags_gsequencer_application.c:663
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:592 ags/app/ags_preferences.c:159
+#: ags/app/ags_gsequencer_application.c:668 ags/app/ags_preferences.c:159
 msgid "Preferences"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:605
+#: ags/app/ags_gsequencer_application.c:681
 msgid "SMF import"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:610
+#: ags/app/ags_gsequencer_application.c:686
 msgid "SMF export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:617
+#: ags/app/ags_gsequencer_application.c:693
 msgid "MIDI"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:623
-#: ags/app/ags_gsequencer_application.c:635
+#: ags/app/ags_gsequencer_application.c:699
+#: ags/app/ags_gsequencer_application.c:711
 msgid "Help"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:628
+#: ags/app/ags_gsequencer_application.c:704
 msgid "About"
 msgstr ""
 
-#: ags/app/ags_online_help_window.c:133
+#: ags/app/ags_online_help_window.c:141
 msgid "Online help"
 msgstr ""
 
@@ -1858,6 +1862,14 @@ msgstr ""
 
 #: ags/app/ags_plugin_browser.c:180
 msgid "Plugin type"
+msgstr ""
+
+#: ags/app/ags_online_help_window_callbacks.c:73
+msgid "Print GSequencer user manual"
+msgstr ""
+
+#: ags/app/ags_online_help_window_callbacks.c:280
+msgid "Print manual ..."
 msgstr ""
 
 #: ags/app/ags_port_editor.c:149
