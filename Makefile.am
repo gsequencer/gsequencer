@@ -3299,7 +3299,8 @@ html:
 
 pdf:
 	mkdir -p $(top_builddir)/pdf/
-	dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
+	 $(shell) PAGESIZE="A4" dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual-a4.pdf
+	 $(shell) PAGESIZE="letter" dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual-letter.pdf
 	dblatex --pdf $(top_builddir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
 	dblatex --pdf $(top_builddir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
 
@@ -3488,11 +3489,13 @@ endif
 
 install-pdf: install-pdf-mkdir
 if AGS_WITH_SINGLE_DOCDIR
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual-a4.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual-letter.pdf $(DESTDIR)$(docdir)/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(docdir)/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(docdir)/pdf/
 else
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual-letter.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 endif
