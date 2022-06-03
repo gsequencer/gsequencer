@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-06-03 15:01+0200\n"
+"POT-Creation-Date: 2022-06-03 16:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -709,7 +709,7 @@ msgid "tool dialog option"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1293
-#: ags/app/ags_online_help_window.c:178
+#: ags/app/ags_online_help_window.c:182
 msgid "zoom"
 msgstr ""
 
@@ -1163,7 +1163,7 @@ msgstr "Pomoc"
 msgid "About"
 msgstr "O Programie"
 
-#: ags/app/ags_online_help_window.c:141
+#: ags/app/ags_online_help_window.c:145
 msgid "Online help"
 msgstr "Pomoc Online"
 
