@@ -3507,8 +3507,8 @@ if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-a4.pdf $(DESTDIR)$(docdir)/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-letter.pdf $(DESTDIR)$(docdir)/pdf/
 else
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual-letter.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual-a4.pdf $(DESTDIR)$(datadir)/doc/gsequencer/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual-letter.pdf $(DESTDIR)$(datadir)/doc/gsequencer/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/developer-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/developer-manual-letter.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/

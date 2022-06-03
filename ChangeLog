@@ -1,3 +1,8 @@
+ags (4.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed install path of gsequencer documentation
+
 ags (4.1.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
