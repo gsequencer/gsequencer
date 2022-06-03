@@ -24,7 +24,7 @@ AC_ARG_VAR(INTROSPECTION_SCANNER, introspection scanner)
 AC_ARG_VAR(INTROSPECTION_COMPILER, introspection compiler)
 
 AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
-AC_ARG_VAR(DBLATEX_XSL, path to Docbook XML dblatex XSL file)
+AC_ARG_VAR(FO_XSL, path to Docbook XML fo XSL file)
 
 AC_ARG_VAR(GOBJECT_API_DOC, path for use with sed to GObject API Reference Manual)
 AC_ARG_VAR(GTK_API_DOC, path for use with sed to Gtk-4 API Reference Manual)
@@ -631,11 +631,11 @@ AS_IF([test "x$HTMLHELP_XSL" != x],
       [AC_SUBST(HTMLHELP_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl)
        AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])])
 
-AS_IF([test "x$DBLATEX_XSL" != x],
-      [AC_SUBST(DBLATEX_XSL, $DBLATEX_XSL)
-       AC_MSG_NOTICE([DBLATEX_XSL = $DBLATEX_XSL])],
-      [AC_SUBST(DBLATEX_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/fo/docbook.xsl)
-       AC_MSG_NOTICE([DBLATEX_XSL = $DBLATEX_XSL])])
+AS_IF([test "x$FO_XSL" != x],
+      [AC_SUBST(FO_XSL, $FO_XSL)
+       AC_MSG_NOTICE([FO_XSL = $FO_XSL])],
+      [AC_SUBST(FO_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/fo/docbook.xsl)
+       AC_MSG_NOTICE([FO_XSL = $FO_XSL])])
 
 AS_IF([test "x$enable_upstream_gtk_doc" != xno],
 [AS_IF([test "x$GOBJECT_API_DOC" != x],

@@ -82,6 +82,7 @@ lib_LTLIBRARIES += libags_audio.la libags_gui.la
 bin_PROGRAMS = gsequencer midi2xml
 
 HTMLHELP_XSL = @HTMLHELP_XSL@
+FO_XSL = @FO_XSL@
 
 if AGS_WITH_PUBLIC_LIBGSEQUENCER
 libgsequencerdir = $(libdir)
@@ -116,6 +117,8 @@ EXTRA_DIST = config.rpath \
 	gsequencer.1 \
 	README \
 	ags_example.xml \
+	fop-a4.xml \
+	fop-letter.xml \
 	midi2xml.1 \
 	ags_check_system_unit_programs \
 	ags_check_system_valgrind_unit_programs \
@@ -3299,10 +3302,18 @@ html:
 
 pdf:
 	mkdir -p $(top_builddir)/pdf/
-	 $(shell) PAGESIZE="A4" dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual-a4.pdf
-	 $(shell) PAGESIZE="letter" dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual-letter.pdf
-	dblatex --pdf $(top_builddir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
-	dblatex --pdf $(top_builddir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
+	$(shell) PAGESIZE="A4" xsltproc --output $(top_builddir)/users-book-a4.fo --xinclude --stringparam paper.type A4 --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/usersBook.xml 
+	$(shell) PAGESIZE="A4" fop -c fop-a4.xml -fo $(top_builddir)/users-book-a4.fo -pdf $(top_builddir)/pdf/user-manual-a4.pdf
+	$(shell) PAGESIZE="letter" xsltproc --output $(top_builddir)/users-book-letter.fo --xinclude --stringparam paper.type Letter --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/usersBook.xml 
+	$(shell) PAGESIZE="letter" fop -c fop-letter.xml -fo $(top_builddir)/users-book-letter.fo -pdf $(top_builddir)/pdf/user-manual-letter.pdf
+	$(shell) PAGESIZE="A4" xsltproc --output $(top_builddir)/developers-book-a4.fo --xinclude --stringparam paper.type A4 --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/developersBook.xml 
+	$(shell) PAGESIZE="A4" fop -c fop-a4.xml -fo $(top_builddir)/developers-book-a4.fo -pdf $(top_builddir)/pdf/developer-manual-a4.pdf
+	$(shell) PAGESIZE="letter" xsltproc --output $(top_builddir)/developers-book-letter.fo --xinclude --stringparam paper.type Letter --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/developersBook.xml 
+	$(shell) PAGESIZE="letter" fop -c fop-letter.xml -fo $(top_builddir)/developers-book-letter.fo -pdf $(top_builddir)/pdf/developer-manual-letter.pdf
+	$(shell) PAGESIZE="A4" xsltproc --output $(top_builddir)/osc-book-a4.fo --xinclude --stringparam paper.type A4 --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/oscBook.xml 
+	$(shell) PAGESIZE="A4" fop -c fop-a4.xml -fo $(top_builddir)/osc-book-a4.fo -pdf $(top_builddir)/pdf/osc-manual-a4.pdf
+	$(shell) PAGESIZE="letter" xsltproc --output $(top_builddir)/osc-book-letter.fo --xinclude --stringparam paper.type Letter --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/oscBook.xml 
+	$(shell) PAGESIZE="letter" fop -c fop-letter.xml -fo $(top_builddir)/osc-book-letter.fo -pdf $(top_builddir)/pdf/osc-manual-letter.pdf
 
 sphinx:
 	mkdir -p $(top_builddir)/xml/
@@ -3491,13 +3502,17 @@ install-pdf: install-pdf-mkdir
 if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(top_builddir)/pdf/user-manual-a4.pdf $(DESTDIR)$(docdir)/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/user-manual-letter.pdf $(DESTDIR)$(docdir)/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(docdir)/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual-a4.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual-letter.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-a4.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-letter.pdf $(DESTDIR)$(docdir)/pdf/
 else
 	install -c -p -m 644 $(top_builddir)/pdf/user-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 	install -c -p -m 644 $(top_builddir)/pdf/user-manual-letter.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual-letter.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-a4.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual-letter.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 endif
 
 uninstall-hook:
@@ -3551,6 +3566,12 @@ clean-local:
 	rm -rf docs/reference/libgsequencer/libgsequencer-html
 	rm -rf docs/reference/libgsequencer/tmpl
 	rm -rf html
+	rm -f users-book-a4.fo
+	rm -f users-book-letter.fo
+	rm -f developers-book-a4.fo
+	rm -f developers-book-letter.fo
+	rm -f osc-book-a4.fo
+	rm -f osc-book-letter.fo
 	rm -rf pdf
 	rm -rf xml
 	rm -rf sphinx
