@@ -1,3 +1,9 @@
+ags (4.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* using fop instead of dblatex to generate PDFs
+	* fixed missing include of Gdk4 in ags_app_action_util.c
+
 ags (4.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

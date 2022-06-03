@@ -77,6 +77,8 @@
 
 #include <ags/app/file/ags_simple_file.h>
 
+#include <gdk/gdk.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
