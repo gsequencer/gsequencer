@@ -66,7 +66,7 @@
 
 /**
  * SECTION:ags_channel
- * @short_description: Acts as entry point to the audio tree.
+ * @short_description: A channel is a node within the audio processing tree and does recycling
  * @title: AgsChannel
  * @section_id:
  * @include: ags/audio/ags_channel.h
@@ -81,7 +81,7 @@
  *
  * Make sure you have set the matching #AgsSoundAbilityFlags-enum flags using
  * ags_channel_set_ability_flags(). This is going to setup threads per matching
- * #AgsSoundScope scope.
+ * #AgsSoundScope-enum scope.
  *
  * Multi-threaded processing per output line only applies if
  * AGS_PLAYBACK_SUPER_THREADED_CHANNEL is set on matching #AgsPlayback.

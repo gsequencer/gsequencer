@@ -82,6 +82,20 @@ void ags_audio_signal_real_remove_note(AgsAudioSignal *audio_signal,
  *
  * #AgsAudioSignal organizes audio data within a #GList-struct whereby data
  * pointing to the buffer.
+ *
+ * It has `output-soundcard` and `input-soundcard` properties #AgsRecall implementations
+ * should default to.
+ *
+ * The `stream` property contains the processing audio data. You may set `loop-start` and `loop-end`
+ * to loop over samples until desired audio buffer length is achieved.
+ *
+ * As accessing the audio data you should lock it with ags_audio_signal_stream_lock() and as
+ * completed your work you release the lock with ags_audio_signal_stream_unlock().
+ *
+ * The `note` property contains information about assigned #AgsNote objects coming from #AgsNotation
+ * residing in #AgsAudio.
+ *
+ * As you might see multiple key presses may apply to one #AgsAudioSignal.
  */
 
 enum{

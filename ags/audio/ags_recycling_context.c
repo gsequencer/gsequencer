@@ -41,13 +41,22 @@ void ags_recycling_context_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recycling_context
- * @short_description: A context of recycling acting as dynamic context.
+ * @short_description: A context of recycling acting as dynamic context
  * @title: AgsRecyclingContext
  * @section_id:
  * @include: ags/audio/ags_recycling_context.h
  *
  * #AgsRecyclingContext organizes #AgsRecycling objects as dynamic context
  * within nested tree.
+ *
+ * This object is only to reference the current recycling context. This may be replaced by another
+ * recycling context as calling ags_channel_set_link().
+ *
+ * Further it provides the `parent` property, if this is %NULL your audio signal won't be recycled
+ * anymore. This means you are going to copy the recycling's audio signals to soundcard. As it is not %NULL
+ * you are entering recursion.
+ *
+ * There is a strong relation to #AgsRecallID.
  */
 
 enum{

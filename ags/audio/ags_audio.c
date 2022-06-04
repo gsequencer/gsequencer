@@ -90,12 +90,12 @@
  * In other words the producer of your #AgsAudioSignal.
  *
  * The dispatcher function ags_audio_recursive_run_stage() is invoked as per
- * #AgsSoundScope-flags threads, hosted by #AgsAudio. The staging program can
+ * #AgsSoundScope-enum threads, hosted by #AgsAudio. The staging program can
  * be modified. It calls then ags_channel_recursive_run_stage() per output
  * channel.
  *
  * #AgsSoundStagingFlags-enum is used to build your staging program for
- * #AgsAudioThread. The audio threads are created per #AgsSoundScope-flags
+ * #AgsAudioThread. The audio threads are created per #AgsSoundScope-enum
  * and are provided by #AgsAudio `playback-domain` property.
  *
  * You have in general one #AgsPlaybackDomain referring one #AgsAudio and

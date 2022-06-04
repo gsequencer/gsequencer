@@ -67,13 +67,27 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 /**
  * SECTION:ags_recycling
- * @short_description: recycling container of audio signals
+ * @short_description: Recycling container of audio signals
  * @title: AgsRecycling
  * @section_id:
  * @include: ags/audio/ags_recycling.h
  *
- * #AgsRecycling forms the nested tree of AgsChannel. Every channel
- * owning audio signal contains therefor an #AgsRecycling.
+ * #AgsRecycling forms the nested tree of #AgsAudio and #AgsChannel. The recycling tree
+ * is the actual audio processing tree, because it hosts #AgsAudioSignal.
+ *
+ * Every recycling node introduces a new #AgsAudioSignal for specific #AgsSoundScope-enum
+ * specified by assigned #AgsRecallID.
+ *
+ * All audio processing happens on #AgsAudioSignal and is added to #AgsRecycling by
+ * ags_recycling_add_audio_signal(). While you call it, the function takes the audio signal
+ * with AGS_AUDIO_SIGNAL_TEMPLATE flag set and creates a copy #AgsAudioSignal with the very
+ * same audio data of `stream` property.
+ *
+ * The actual audio processing functionality is provided by #AgsRecall implementations. Its
+ * entry point is #AgsAudio or #AgsChannel.
+ *
+ * #AgsRecall objectss except templates are assigned with a #AgsRecallID with a relation to
+ * #AgsRecyclingContext.
  */
 
 enum{
