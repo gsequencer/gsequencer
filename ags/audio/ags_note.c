@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,12 +40,17 @@ void ags_note_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_note
- * @short_description: note class
+ * @short_description: Note class
  * @title: AgsNote
  * @section_id:
  * @include: ags/audio/ags_note.h
  *
- * #AgsNote represents a tone.
+ * #AgsNote represents a tone. The note object contains envelope information by
+ * specifying `attack`, `decay`, `sustain`, `release` and `ratio` properties as
+ * #AgsComplex data type.
+ *
+ * The real field of AgsComplex is the magnitude of the envelope and the imag
+ * field the relative offset. Raised by `ratio` real field amount.
  */
 
 enum{
