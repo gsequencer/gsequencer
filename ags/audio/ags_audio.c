@@ -77,8 +77,67 @@
  * At least one #AgsRecallID is assigned to it and has one more if
  * %AGS_AUDIO_OUTPUT_HAS_RECYCLING is set as flag.
  *
- * If %AGS_AUDIO_HAS_NOTATION is set as flag one #AgsNotation is allocated per audio
+ * It hosts common storage objects like #AgsNotation, #AgsAutomation and #AgsWave.
+ * In order to make use of #AgsNotation or #AgsWave you have to set
+ * %AGS_AUDIO_OUTPUT_HAS_RECYCLING.
+ *
+ * Make sure you have set the matching #AgsSoundAbilityFlags-enum flags using
+ * ags_audio_set_ability_flags(). This is going to setup threads per matching
+ * #AgsSoundScope scope. See #AgsPlaybackDomain and #AgsPlayback.
+ *
+ * Threads are usually run per #AgsAudio with %AGS_AUDIO_OUTPUT_HAS_RECYCLING.
+ * This are instruments, samplers, synthesizer, step sequencers or wave players.
+ * In other words the producer of your #AgsAudioSignal.
+ *
+ * The dispatcher function ags_audio_recursive_run_stage() is invoked as per
+ * #AgsSoundScope-flags threads, hosted by #AgsAudio. The staging program can
+ * be modified. It calls then ags_channel_recursive_run_stage() per output
  * channel.
+ *
+ * #AgsSoundStagingFlags-enum is used to build your staging program for
+ * #AgsAudioThread. The audio threads are created per #AgsSoundScope-flags
+ * and are provided by #AgsAudio `playback-domain` property.
+ *
+ * You have in general one #AgsPlaybackDomain referring one #AgsAudio and
+ * one #AgsPlayback referring one #AgsChannel.
+ *
+ * AGS_AUDIO_SYNC and AGS_AUDIO_ASYNC #AgsAudioFlags-enum affect channel
+ * alignment. There 3 possible combinations available.
+ * 
+ * AGS_AUDIO_SYNC means channels go straight from input line to matching
+ * output line.
+ *
+ * AGS_AUDIO_ASYNC means input channels are bundled in output i.e. many
+ * inputs of the same audio channel arrive at one output channel of the
+ * same audio channel.
+ *
+ * AGS_AUDIO_SYNC and AGS_AUDIO_ASYNC combined is only available if
+ * %AGS_AUDIO_OUTPUT_HAS_RECYCLING is set. It is actually the same behaviour
+ * as AGS_AUDIO_ASYNC except you can have more than one output pad.
+ * 
+ * `output-soundcard` and `input-soundcard` properties are #AgsSoundcard
+ * implementations to read or write to a soundcard backend.
+ *
+ * `output-sequencer` and `input-sequencer` properties are #AgsSequencer
+ * implementations to read or write to a sequencer backend.
+ *
+ * You may add #AgsNotaion objects using ags_audio_add_notation(). Make sure
+ * the #AgsNotation timestamp offset occurs only once per audio channel and is
+ * correct padded using AGS_NOTATION_DEFAULT_OFFSET.
+ *
+ * You may add #AgsWave objects using ags_audio_add_wave(). Make sure the
+ * #AgsWave timestamp offset occurs only once per line and is correct padded
+ * using relative offset. The relative offset is calculated as following:
+ * 
+ * relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+ * 
+ * You may add #AgsAutomation objects using ags_audio_add_automation(). Make
+ * sure #AgsAutomation timestamp offset occurs only once per channel type and
+ * line. If the context of the automation is #AgsAudio `channel-type` is
+ * G_TYPE_NONE and `line` is 0.
+ *
+ * To modify the alignment of output or input channels use
+ * ags_audio_set_audio_channels() and to increase pads ags_audio_set_pads().
  */
 
 void ags_audio_class_init(AgsAudioClass *audio_class);
