@@ -805,12 +805,27 @@ ags_preset_editor_save_preset(AgsPresetEditor *preset_editor)
 
   buffer = NULL;
 
-  out = fopen(filename, "w+");
-  
-  xmlDocDumpFormatMemoryEnc(doc, &buffer, &size, "UTF-8", TRUE);
+  out = NULL;
 
-  fwrite(buffer, size, sizeof(xmlChar), out);
-  fflush(out);
+  if(!g_file_test(filename, G_FILE_TEST_IS_DIR)){
+    out = fopen(filename, "w+");
+  }
+  
+  if(out != NULL){
+    buffer = NULL;
+    size = 0;
+    
+    xmlDocDumpFormatMemoryEnc(doc, &buffer, &size, "UTF-8", TRUE);
+    
+    fwrite(buffer, size, sizeof(xmlChar), out);
+    fflush(out);
+
+    fclose(out);
+    
+    xmlFree(buffer);   
+  }
+
+  xmlFreeDoc(doc);
 }
 
 /**

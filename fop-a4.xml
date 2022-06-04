@@ -1,0 +1,10 @@
+<fop version="1.0">
+
+  <!-- Base URL for resolving relative URLs -->
+  <base>./</base>
+  
+  <!-- default page-height and page-width, in case
+       value is specified as auto -->
+  <default-page-settings height="297mm" width="210mm"/>
+
+</fop>

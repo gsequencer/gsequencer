@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-06-02 14:49+0200\n"
+"POT-Creation-Date: 2022-06-03 16:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -685,7 +685,7 @@ msgid "tool dialog option"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:1293
-#: ags/app/ags_online_help_window.c:178
+#: ags/app/ags_online_help_window.c:182
 msgid "zoom"
 msgstr ""
 
@@ -1122,7 +1122,7 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: ags/app/ags_online_help_window.c:141
+#: ags/app/ags_online_help_window.c:145
 msgid "Online help"
 msgstr ""
 
@@ -1147,11 +1147,11 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:128
+#: ags/app/ags_app_action_util.c:130
 msgid "Open file"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:474
+#: ags/app/ags_app_action_util.c:476
 msgid "save file as"
 msgstr ""
 

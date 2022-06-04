@@ -125,6 +125,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   GtkAdjustment *vadjustment, *hadjustment;
   GtkAllocation allocation;
 
+  AgsApplicationContext *application_context;
+
   cairo_t *cr;
 
   gchar *data;
@@ -136,6 +138,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gint max_width, max_height;
   
   GError *error;
+        
+  application_context = ags_application_context_get_instance();
 
   g_object_set(online_help_window,
 	       "title", i18n("Online help"),
@@ -239,92 +243,18 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 		  0, 1,
 		  1, 1);
 
-#ifdef AGS_ONLINE_HELP_PDF_FILENAME
-  pdf_filename = g_strdup(AGS_ONLINE_HELP_PDF_FILENAME);
-#else
-  if((pdf_filename = g_getenv("AGS_ONLINE_HELP_PDF_FILENAME")) != NULL){
-    pdf_filename = g_strdup(pdf_filename);
-  }else{
-    AgsApplicationContext *application_context;
-        
-    application_context = ags_application_context_get_instance();
-    
-#if defined (AGS_W32API)
-    gchar *app_dir;
-
-    app_dir = NULL;
-
-    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
-    }
-  
-    if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-		  "a4")){
-      pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf",
-				     g_get_current_dir());
-    }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-			"letter")){
-      pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf",
-				     g_get_current_dir());
-      
-    }
-    
-    if(!g_file_test(pdf_filename,
-		    G_FILE_TEST_IS_REGULAR)){
-      g_free(pdf_filename);
-
-      if(g_path_is_absolute(app_dir)){
-	if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-		      "a4")){
-	  pdf_filename = g_strdup_printf("%s\\%s",
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf");
-	}else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-			    "letter")){
-	  pdf_filename = g_strdup_printf("%s\\%s",
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf");
-	}
-      }else{
-	if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-		      "a4")){
-	  pdf_filename = g_strdup_printf("%s\\%s\\%s",
-					 g_get_current_dir(),
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-a4.pdf");
-	}else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-			    "letter")){
-	  pdf_filename = g_strdup_printf("%s\\%s\\%s",
-					 g_get_current_dir(),
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual-letter.pdf");
-	}
-      }
-    }
-
-    g_free(app_dir);
-#else
-    if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-		  "a4")){
-      pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual-a4.pdf");
-    }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
-			"letter")){
-      pdf_filename = g_strdup_printf("%s%s", AGS_DOC_DIR, "/pdf/user-manual-letter.pdf");
-    }
-#endif
+#if defined(AGS_ONLINE_HELP_A4_PDF_FILENAME) && defined(AGS_ONLINE_HELP_LETTER_PDF_FILENAME)
+  if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		"a4")){
+    pdf_filename = g_strdup(AGS_ONLINE_HELP_A4_PDF_FILENAME);
+  }else if(!g_strcmp0(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->paper_size,
+		      "letter")){
+    pdf_filename = g_strdup(AGS_ONLINE_HELP_LETTER_PDF_FILENAME);      
   }
-#endif
-#ifdef AGS_ONLINE_HELP_PDF_FILENAME
-  pdf_filename = g_strdup(AGS_ONLINE_HELP_PDF_FILENAME);
 #else
   if((pdf_filename = g_getenv("AGS_ONLINE_HELP_PDF_FILENAME")) != NULL){
     pdf_filename = g_strdup(pdf_filename);
   }else{
-    AgsApplicationContext *application_context;
-    
-    application_context = ags_application_context_get_instance();
-
 #if defined (AGS_W32API)
     gchar *app_dir;
 
