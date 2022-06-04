@@ -47,6 +47,8 @@ void ags_recall_id_finalize(GObject *gobject);
  * #AgsRecallID acts as dynamic context identifier. #AgsAudioSignal and #AgsRecall are
  * assigned to an #AgsRecallID. The recall is looking for audio signals with the very same
  * recall id.
+ *
+ * There is a strong relation to #AgsRecyclingContext.
  */
 
 enum{
