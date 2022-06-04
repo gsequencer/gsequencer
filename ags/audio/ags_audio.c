@@ -121,7 +121,7 @@
  * `output-sequencer` and `input-sequencer` properties are #AgsSequencer
  * implementations to read or write to a sequencer backend.
  *
- * You may add #AgsNotaion objects using ags_audio_add_notation(). Make sure
+ * You may add #AgsNotation objects using ags_audio_add_notation(). Make sure
  * the #AgsNotation timestamp offset occurs only once per audio channel and is
  * correct padded using AGS_NOTATION_DEFAULT_OFFSET.
  *
@@ -138,6 +138,10 @@
  *
  * To modify the alignment of output or input channels use
  * ags_audio_set_audio_channels() and to increase pads ags_audio_set_pads().
+ *
+ * There is a playback and recall context for hosting #AgsRecall implementations.
+ * Usually you instantiate a recall for both contices. See `play` and `recall`
+ * properties.
  */
 
 void ags_audio_class_init(AgsAudioClass *audio_class);
