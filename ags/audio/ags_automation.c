@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,12 +65,23 @@ void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation
 
 /**
  * SECTION:ags_automation
- * @short_description: Automation class supporting selection and clipboard.
+ * @short_description: Automation class supporting selection and clipboard
  * @title: AgsAutomation
  * @section_id:
  * @include: ags/audio/ags_automation.h
  *
- * #AgsAutomation acts as a container of #AgsAcceleration.
+ * #AgsAutomation acts as a container of #AgsAcceleration. The `timestamp` property tells the
+ * engine what the first x offset of #AgsAcceleration applies.
+ * 
+ * You can lookup #AgsAutomation by start x offset with ags_automation_find_near_timestamp().
+ * The next x offset is calculated as following:
+ *
+ * next_x_offset = x_offset + AGS_AUTOMATION_DEFAULT_OFFSET;
+ *
+ * Use ags_automation_add_acceleration() to add #AgsAcceleration to #AgsAutomation and
+ * ags_automation_remove_acceleration() to remove it again.
+ *
+ * In order to copy or cut accelerations you select them first by calling ags_automation_add_region_to_selection().
  */
 
 enum{
