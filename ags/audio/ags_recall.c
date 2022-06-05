@@ -108,7 +108,41 @@ void ags_recall_child_done(AgsRecall *child,
  * @section_id: 
  * @include: ags/audio/ags_recall.h
  *
- * #AgsRecall acts as effect processor.
+ * #AgsRecall acts as effect processor. It depends on staging program from #AgsAudioThread and #AgsChannelThread
+ * what signals are invoked.
+ *
+ * ags-fx staging does actually only run duplicate and intialization of a recall:
+ * 
+ * * play-duplicate
+ * * play-run-init-pre, play-run-init-inter and play-run-init-post
+ *
+ * And the actuall audio processing:
+ *
+ * * play-automate
+ * * play-run-inter
+ *
+ * Termination of audio processing usually follows:
+ *
+ * * play-done
+ * * play-cancel
+ * 
+ * You usually create recalls of the same audio processing effect for different contices. For those
+ * contices exists derived recalls you inherit from.
+ *
+ * * #AgsRecallAudio
+ * * #AgsRecallAudioRun
+ * * #AgsRecallChannel
+ * * #AgsRecallChannelRun
+ * * #AgsRecallRecycling
+ * * #AgsREcallAudioSignal
+ *
+ * You add the derived #AgsRecallAudio and #AgsRecallAudioRun to #AgsAudio by calling ags_audio_add_recall().
+ * Analogously, you do this for #AgsRecallChannel and #AgsRecallChannelRun by calling ags_channel_add_recall().
+ *
+ * Make sure you set property `child-type` of #AgsRecallChannelRun to #AgsRecallRecycling and of
+ * #AgsRecallRecycling to #AgsRecallAudioSignal derived type.
+ *
+ * Further #AgsRecall is packed by #AgsRecallContainer.
  */
 
 enum{

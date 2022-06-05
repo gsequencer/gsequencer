@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,7 +42,8 @@ void ags_acceleration_finalize(GObject *gobject);
  * @section_id:
  * @include: ags/audio/ags_acceleration.h
  *
- * #AgsAcceleration represents a downhill-grade.
+ * #AgsAcceleration represents an automated value of a port. You specify y the value written to a port
+ * by offset x.
  */
 
 enum{

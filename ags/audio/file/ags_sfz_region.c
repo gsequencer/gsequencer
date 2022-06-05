@@ -837,7 +837,7 @@ ags_sfz_region_set_sample(AgsSFZRegion *sfz_region,
  *
  * Get all control of @sfz_region.
  * 
- * Returns: (transfer container): the #GList-struct containing controls as string
+ * Returns: (element-type utf8) (transfer container): the #GList-struct containing controls as string
  *
  * Since: 3.17.0
  */

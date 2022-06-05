@@ -1267,7 +1267,7 @@ ags_audio_thread_set_processing(AgsAudioThread *audio_thread,
  * 
  * Get task launcher.
  * 
- * Returns: the #AgsTaskLauncher
+ * Returns: (transfer full): the #AgsTaskLauncher
  * 
  * Since: 3.11.0
  */

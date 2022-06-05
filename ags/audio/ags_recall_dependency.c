@@ -44,7 +44,7 @@ void ags_recall_dependency_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_dependency
- * @short_description: recall dependency
+ * @short_description: Recall dependency
  * @title: AgsRecallDependency
  * @section_id:
  * @include: ags/audio/ags_recall_dependency.h

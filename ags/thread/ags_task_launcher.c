@@ -56,12 +56,20 @@ gboolean ags_task_launcher_source_func(AgsTaskLauncher *task_launcher);
 
 /**
  * SECTION:ags_task_launcher
- * @short_description: task launcher
+ * @short_description: Task launcher thread-safe context within tree
  * @title: AgsTaskLauncher
  * @section_id:
  * @include: ags/thread/ags_task_launcher.h
  *
- * The #AgsTaskLauncher acts as task launcher.
+ * The #AgsTaskLauncher acts as task launcher. The task launcher provides
+ * you a thread-safe context within tree tree.
+ *
+ * It might be used to inject work from one thread to another, too.
+ *
+ * AgsTaskLauncher::run() is called from #AgsThread::clock() default
+ * implementation.
+ *
+ * There are some threads providing injection via dedicated #AgsTaskLauncher.
  */
 
 enum{

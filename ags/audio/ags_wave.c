@@ -81,12 +81,27 @@ void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
 /**
  * SECTION:ags_wave
- * @short_description: Wave class supporting selection and clipboard.
+ * @short_description: Wave class supporting selection and clipboard
  * @title: AgsWave
  * @section_id:
  * @include: ags/audio/ags_wave.h
  *
- * #AgsWave acts as a container of #AgsBuffer.
+ * #AgsWave acts as a container of #AgsBuffer. The `timestamp` property tells the
+ * engine what the first x offset of #AgsBuffer applies.
+ *
+ * You can lookup #AgsBuffer by start x offet with ags_wave_find_near_timestamp().
+ * The next x offset is calculated as following:
+ *
+ * next_x_offset = x_offset + relative_offset;
+ *
+ * The relative_offset is calculated as following:
+ *
+ * relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+ *
+ * Use ags_wave_add_buffer() to add #AgsBuffer to #AgsWave and
+ * ags_wave_remove_buffer() to remove it again.
+ *
+ * In order to copy or cut accelerations you select them first by calling ags_wave_add_region_to_selection().  
  */
 
 enum{

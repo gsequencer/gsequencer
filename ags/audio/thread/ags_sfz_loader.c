@@ -588,7 +588,7 @@ ags_sfz_loader_run(void *ptr)
  * 
  * Get audio of @sfz_loader.
  * 
- * Returns: the assigned #AgsAudio
+ * Returns: (transfer full): the assigned #AgsAudio
  * 
  * Since: 3.2.0
  */

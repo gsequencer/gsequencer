@@ -78,12 +78,14 @@ void ags_server_xmlrpc_callback(SoupServer *soup_server,
 
 /**
  * SECTION:ags_server
- * @short_description: remote control server
+ * @short_description: Remote control server
  * @title: AgsServer
  * @section_id:
  * @include: ags/server/ags_server.h
  *
- * The #AgsServer is a XML-RPC server.
+ * The #AgsServer is a XML-RPC server supporting authentication. See
+ * #AgsXmlPasswordStore for a built-in authentication module using XML
+ * password files.
  */
 
 enum{

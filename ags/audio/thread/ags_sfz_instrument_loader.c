@@ -806,7 +806,7 @@ ags_sfz_instrument_loader_set_filename(AgsSFZInstrumentLoader *sfz_instrument_lo
  * 
  * Get audio container of @sfz_instrument_loader.
  * 
- * Returns: the assigned #AgsAudioContainer
+ * Returns: (transfer full): the assigned #AgsAudioContainer
  * 
  * Since: 3.17.0
  */

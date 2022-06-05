@@ -587,7 +587,7 @@ ags_wave_loader_run(void *ptr)
  * 
  * Get audio of @wave_loader.
  * 
- * Returns: the assigned #AgsAudio
+ * Returns: (transfer full): the assigned #AgsAudio
  * 
  * Since: 3.2.0
  */
@@ -683,7 +683,7 @@ ags_wave_loader_set_filename(AgsWaveLoader *wave_loader,
  * 
  * Get audio file of @wave_loader.
  * 
- * Returns: the assigned #AgsAudioFile
+ * Returns: (transfer full): the assigned #AgsAudioFile
  * 
  * Since: 3.2.0
  */

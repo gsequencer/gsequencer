@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,12 +51,12 @@ AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 
 /**
  * SECTION:ags_recall_audio_run
- * @short_description: audio context of dynamic recall
+ * @short_description: The recall base class of dynamic audio context
  * @title: AgsRecallAudioRun
  * @section_id:
  * @include: ags/audio/ags_recall_audio_run.h
  *
- * #AgsRecallAudioRun acts as dynamic audio recall.
+ * #AgsRecallAudioRun acts as dynamic audio recall. It does audio processing for audio context.
  */
 
 enum{

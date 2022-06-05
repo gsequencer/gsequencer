@@ -63,7 +63,12 @@ void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_
  * @section_id:
  * @include: ags/audio/ags_pattern.h
  *
- * #AgsPattern represents an audio pattern of tones.
+ * #AgsPattern represents an audio pattern of tones. The bitmask pattern is stored in
+ * has 2 level of banks.
+ *
+ * You can check if a bit is set by calling ags_pattern_get_bit().
+ *
+ * To enable/disable a bit call ags_pattern_toggle_bit().
  */
 
 enum{

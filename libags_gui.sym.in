@@ -265,8 +265,6 @@ ags_scale_box_remove_scale
 ags_scale_box_child_width_request
 ags_scale_box_child_height_request
 ags_scale_box_new
-ags_scrolled_window_get_type
-ags_scrolled_window_new
 ags_led_get_type
 ags_led_get_segment_width
 ags_led_set_segment_width

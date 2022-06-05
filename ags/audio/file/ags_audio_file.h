@@ -84,6 +84,46 @@ void ags_audio_file_unset_flags(AgsAudioFile *audio_file, guint flags);
 gboolean ags_audio_file_check_suffix(gchar *filename);
 
 /* fields */
+GObject* ags_audio_file_get_soundcard(AgsAudioFile *audio_file);
+void ags_audio_file_set_soundcard(AgsAudioFile *audio_file,
+				  GObject *soundcard);
+
+gchar* ags_audio_file_get_filename(AgsAudioFile *audio_file);
+void ags_audio_file_set_filename(AgsAudioFile *audio_file,
+				 gchar *filename);
+
+guint ags_audio_file_get_file_audio_channels(AgsAudioFile *audio_file);
+void ags_audio_file_set_file_audio_channels(AgsAudioFile *audio_file,
+					    guint file_audio_channels);
+
+guint ags_audio_file_get_file_samplerate(AgsAudioFile *audio_file);
+void ags_audio_file_set_file_samplerate(AgsAudioFile *audio_file,
+					guint file_samplerate);
+
+guint ags_audio_file_get_file_frame_count(AgsAudioFile *audio_file);
+void ags_audio_file_set_file_frame_count(AgsAudioFile *audio_file,
+					 guint file_frame_count);
+
+guint ags_audio_file_get_samplerate(AgsAudioFile *audio_file);
+void ags_audio_file_set_samplerate(AgsAudioFile *audio_file,
+				   guint samplerate);
+
+guint ags_audio_file_get_frame_count(AgsAudioFile *audio_file);
+void ags_audio_file_set_frame_count(AgsAudioFile *audio_file,
+				    guint frame_count);
+
+guint ags_audio_file_get_format(AgsAudioFile *audio_file);
+void ags_audio_file_set_format(AgsAudioFile *audio_file,
+			       guint format);
+
+guint ags_audio_file_get_audio_channel(AgsAudioFile *audio_file);
+void ags_audio_file_set_audio_channel(AgsAudioFile *audio_file,
+				      gint audio_channel);
+
+GObject* ags_audio_file_get_sound_resource(AgsAudioFile *audio_file);
+void ags_audio_file_set_sound_resource(AgsAudioFile *audio_file,
+				       GObject *sound_resource);
+
 void ags_audio_file_add_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal);
 void ags_audio_file_remove_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal);
 

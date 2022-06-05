@@ -80,6 +80,18 @@ void ags_file_real_read_start(AgsFile *file);
  *
  * The #AgsFile is an object to read or write files using XML. It
  * is the persisting layer of Advanced Gtk+ Sequencer.
+ *
+ * The application encoding used is either C.UTF-8 or taken from LANG environment
+ * variable.
+ *
+ * The following functions convert between encoding and app_encoding:
+ *
+ * * ags_file_xml_new_doc()
+ * * ags_file_xml_new_node()
+ * * ags_file_xml_get_prop()
+ * * ags_file_xml_set_prop()
+ * * ags_file_xml_get_content()
+ * * ags_file_xml_set_content()
  */
 
 enum{

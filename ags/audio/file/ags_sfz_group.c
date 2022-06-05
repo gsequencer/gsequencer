@@ -846,7 +846,7 @@ ags_sfz_group_set_sample(AgsSFZGroup *sfz_group,
  *
  * Get all control of @sfz_group.
  * 
- * Returns: (transfer container): the #GList-struct containing controls as string
+ * Returns: (element-type utf8) (transfer container): the #GList-struct containing controls as string
  *
  * Since: 3.17.0
  */

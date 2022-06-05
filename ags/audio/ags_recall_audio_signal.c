@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,12 +39,12 @@ void ags_recall_audio_signal_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_audio_signal
- * @Short_description: audio signal context of recall
+ * @Short_description: The recall base class of dynamic audio signal context
  * @Title: AgsRecallAudioSignal
  * @section_id:
  * @include: ags/audio/ags_recall_audio_signal.h
  *
- * #AgsRecallAudioSignal acts as audio signal recall.
+ * #AgsRecallAudioSignal acts as dynamic audio signal recall. It does audio processing for audio signal context.
  */
 
 enum{

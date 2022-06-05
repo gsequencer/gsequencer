@@ -883,7 +883,7 @@ ags_sf2_loader_set_instrument(AgsSF2Loader *sf2_loader,
  * 
  * Get audio container of @sf2_loader.
  * 
- * Returns: the assigned #AgsAudioContainer
+ * Returns: (transfer full): the assigned #AgsAudioContainer
  * 
  * Since: 3.2.0
  */

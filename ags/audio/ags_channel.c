@@ -66,7 +66,7 @@
 
 /**
  * SECTION:ags_channel
- * @short_description: Acts as entry point to the audio tree.
+ * @short_description: A channel is a node within the audio processing tree and does recycling
  * @title: AgsChannel
  * @section_id:
  * @include: ags/audio/ags_channel.h
@@ -76,6 +76,34 @@
  *
  * Every channel has its own #AgsRecallID. As modifying link a new #AgsRecyclingContext
  * is indicated, since it acts as a kind of recall id tree context.
+ *
+ * It hosts #AgsPattern to implement step sequencers.
+ *
+ * Make sure you have set the matching #AgsSoundAbilityFlags-enum flags using
+ * ags_channel_set_ability_flags(). This is going to setup threads per matching
+ * #AgsSoundScope-enum scope.
+ *
+ * Multi-threaded processing per output line only applies if
+ * AGS_PLAYBACK_SUPER_THREADED_CHANNEL is set on matching #AgsPlayback.
+ *
+ * You might want to listen to changes in the nested recycling tree, too.
+ * ags_channel_recycling_changed() notifies about changes of processing structure
+ * in the deep audio tree.
+ *
+ * The `first-recycling` and `last-recycling` property gives you the boundaries of
+ * processing structure in the audio tree.
+ *
+ * If channel is an #AgsOutput and is a signal source i.e. instrument or such `first-recycling`
+ * and `last-recycling` point to the very same #AgsRecycling. In this case it is never
+ * altered.
+ *
+ * On the other hand ags_channel_set_link() may alter your nested recycling tree. It may change
+ * the recycling context.
+ *
+ * There are common functions to iterate channels.
+ *
+ * There is a playback and recall context for hosting #AgsRecall implementations.
+ * Usually you instantiate a recall for both contices. See `play` and `recall` properties.
  */
 
 void ags_channel_class_init(AgsChannelClass *channel_class);

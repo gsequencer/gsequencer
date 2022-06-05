@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,12 +42,13 @@ void ags_message_queue_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_message_queue
- * @short_description: message queue
+ * @short_description: Message queue
  * @title: AgsMessageQueue
  * @section_id:
  * @include: ags/thread/ags_message_queue.h
  *
- * The #AgsMessageQueue acts as messages passing system.
+ * The #AgsMessageQueue acts as messages passing system. The queue hosts
+ * the #AgsMessageEnevelope.
  */
 
 enum{

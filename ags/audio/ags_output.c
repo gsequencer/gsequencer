@@ -32,7 +32,7 @@ void ags_output_init(AgsOutput *output);
  * @section_id:
  * @include: ags/audio/ags_output.h
  *
- * #AgsOutput represents an output channel of #AgsAudio.
+ * #AgsOutput represents a output channel of #AgsAudio.
  */
 
 static gpointer ags_output_parent_class = NULL;

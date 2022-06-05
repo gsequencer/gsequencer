@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,6 +46,13 @@ void ags_message_envelope_finalize(GObject *gobject);
  * @include: ags/thread/ags_message_envelope.h
  *
  * The #AgsMessageEnvelope acts as messages passing system.
+ *
+ * You create the message envelope with a #xmlDoc-struct which is your actual
+ * message, this is your `xml-doc` property.
+ * 
+ * You may provide additional parameters and obtain them by calling:
+ *
+ * * ags_message_envelope_get_parameter()
  */
 
 enum{

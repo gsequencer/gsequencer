@@ -66,12 +66,13 @@ void ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *sour
 
 /**
  * SECTION:ags_recall_recycling
- * @short_description: recycling context of recall
+ * @short_description: The recall base class of recycling context
  * @title: AgsRecallRecycling
  * @section_id:
  * @include: ags/audio/ags_recall_recycling.h
  *
- * #AgsRecallRecycling acts as recycling recall.
+ * #AgsRecallRecycling acts as dynamic recycling recall. It usually does not do any audio processing
+ * but providing #AgsRecallAudioSignal child recalls.
  */
 
 enum{

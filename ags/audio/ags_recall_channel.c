@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,12 +54,12 @@ AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 
 /**
  * SECTION:ags_recall_channel
- * @short_description: channel context of recall
+ * @short_description: The recall base class of channel context
  * @title: AgsRecallChannel
  * @section_id:
  * @include: ags/audio/ags_recall_channel.h
  *
- * #AgsRecallChannel acts as channel recall.
+ * #AgsRecallChannel acts as channel recall and hosts #AgsPort for audio context ports.
  */
 
 enum{

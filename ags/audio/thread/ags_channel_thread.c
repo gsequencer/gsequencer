@@ -842,7 +842,7 @@ ags_channel_thread_set_processing(AgsChannelThread *channel_thread,
  * 
  * Get task launcher.
  * 
- * Returns: the #AgsTaskLauncher
+ * Returns: (transfer full): the #AgsTaskLauncher
  * 
  * Since: 3.11.0
  */

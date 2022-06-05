@@ -65,12 +65,23 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 /**
  * SECTION:ags_notation
- * @short_description: Notation class supporting selection and clipboard.
+ * @short_description: Notation class supporting selection and clipboard
  * @title: AgsNotation
  * @section_id:
  * @include: ags/audio/ags_notation.h
  *
- * #AgsNotation acts as a container of #AgsNote.
+ * #AgsNotation acts as a container of #AgsNote. The `timestamp` property tells the
+ * engine what the first x offset of #AgsNote applies.
+ *
+ * You can lookup #AgsNotation by start x offset with ags_notation_find_near_timestamp().
+ * The next x offset is calculated as following:
+ *
+ * next_x_offset = x_offset + AGS_NOTATION_DEFAULT_OFFSET;
+ *
+ * Use ags_notation_add_note() to add #AgsNote to #AgsNotation and ags_notation_remove_note()
+ * to remove it again.
+ *
+ * In order to copy or cut notes you select them first by calling ags_notation_add_region_to_selection().
  */
 
 enum{

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,12 +39,16 @@ void ags_recall_id_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_id
- * @short_description: The object specifies run context.
+ * @short_description: The recall id specifies run context
  * @title: AgsRecallID
  * @section_id:
  * @include: ags/audio/ags_recall_id.h
  *
- * #AgsRecallID acts as dynamic context identifier.
+ * #AgsRecallID acts as dynamic context identifier. #AgsAudioSignal and #AgsRecall are
+ * assigned to an #AgsRecallID. The recall is looking for audio signals with the very same
+ * recall id.
+ *
+ * There is a strong relation to #AgsRecyclingContext.
  */
 
 enum{

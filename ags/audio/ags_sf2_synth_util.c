@@ -295,7 +295,7 @@ ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
  * 
  * Get Soundfont2 file of @sf2_synth_util.
  * 
- * Returns: the Soundfont2 file
+ * Returns: (transfer full): the Soundfont2 file
  * 
  * Since: 4.0.0
  */
@@ -4588,6 +4588,8 @@ ags_sf2_synth_util_compute(AgsSF2SynthUtil *sf2_synth_util)
  * @sample: (out): the sample
  * 
  * Find sample near MIDI key.
+ *
+ * Returns: (transfer full): the #AgsIpatchSample
  * 
  * Since: 3.4.0
  */
@@ -4736,8 +4738,15 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
       
       list = list->next;
     }
+
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
   }
 
+  if(ipatch_sample != NULL){
+    g_object_ref(ipatch_sample);
+  }
+  
   if(preset != NULL){
     preset[0] = matching_preset;
   }

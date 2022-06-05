@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,12 +81,12 @@ void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *c
 
 /**
  * SECTION:ags_recall_channel_run
- * @short_description: dynamic channel context of recall
+ * @short_description: The recall base class of dynamic channel context
  * @title: AgsRecallChannelRun
  * @section_id:
  * @include: ags/audio/ags_recall_channel_run.h
  *
- * #AgsRecallChannelRun acts as channel recall run.
+ * #AgsRecallChannelRun acts as dynamic channel recall. It does audio processing for channel context.
  */
 
 enum{
