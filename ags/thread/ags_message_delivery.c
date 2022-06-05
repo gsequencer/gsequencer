@@ -43,6 +43,10 @@ void ags_message_delivery_finalize(GObject *gobject);
  * * ags_message_delivery_find_recipient()
  * * ags_message_delivery_query_message()
  *
+ * Make sure to cleanup the queue after you queried it.
+ *
+ * ags_message_delivery_remove_message_envelope()
+ *
  * You instatiate a message queue with `sender-namespace` and `recipient-namespace`.
  *
  * * ags_message_queue_new()
@@ -51,6 +55,11 @@ void ags_message_delivery_finalize(GObject *gobject);
  * Then you subscribe to a message queue by calling
  * 
  * * ags_message_delivery_add_message_queue()
+ *
+ * If you want to send a message, you first check if the #AgsMessageQueue is available.
+ * Then you can add a message envelope by calling:
+ *
+ * * ags_message_delivery_add_message_envelope()
  */
 
 AgsMessageDelivery *ags_message_delivery = NULL;
