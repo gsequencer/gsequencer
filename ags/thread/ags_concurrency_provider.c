@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@ void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginter
 
 /**
  * SECTION:ags_concurrency_provider
- * @short_description: concurrency provider interface
+ * @short_description: Concurrency provider interface
  * @title: AgsConcurrencyProvider
  * @section_id: AgsConcurrencyProvider
  * @include: ags/thread/ags_concurrency_provider.h

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,12 +29,28 @@ void ags_message_delivery_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_message_delivery
- * @short_description: message delivery
+ * @short_description: Message delivery singleton
  * @title: AgsMessageDelivery
  * @section_id:
  * @include: ags/thread/ags_message_delivery.h
  *
- * The #AgsMessageDelivery acts as messages passing system.
+ * The #AgsMessageDelivery acts as messages passing system. Obtain the singleton
+ * instance by calling ags_message_delivery_get_instance().
+ *
+ * To query the message queue for message envelopes there are functions like:
+ * 
+ * * ags_message_delivery_find_sender()
+ * * ags_message_delivery_find_recipient()
+ * * ags_message_delivery_query_message()
+ *
+ * You instatiate a message queue with `sender-namespace` and `recipient-namespace`.
+ *
+ * * ags_message_queue_new()
+ * * ags_message_queue_set_recipient_namespace()
+ * 
+ * Then you subscribe to a message queue by calling
+ * 
+ * * ags_message_delivery_add_message_queue()
  */
 
 AgsMessageDelivery *ags_message_delivery = NULL;

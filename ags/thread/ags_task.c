@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,12 +38,20 @@ void ags_task_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_task
- * @short_description: thread safe task
+ * @short_description: Thread-safe task
  * @title: AgsTask
  * @section_id: 
  * @include: ags/thread/ags_task.h
  *
- * #AgsTask object acts an interceptor in a thread safe context.
+ * #AgsTask object acts an interceptor in a thread safe context. It's
+ * #AgsTask::launch() function is normally called by #AgsTaskLauncher.
+ *
+ * The #AgsTaskLauncher within thread tree provides thread-safety within
+ * entire tree context. You obtain the task launcher of the thread tree
+ * by calling AgsConcurrencyProvider::get_task_launcher()
+ *
+ * There are some task launcher with threads, too. In order to inject
+ * from one thread to another.
  */
 
 enum{

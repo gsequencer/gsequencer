@@ -72,13 +72,35 @@ void* ags_thread_loop(void *ptr);
 
 /**
  * SECTION:ags_thread
- * @short_description: threads
+ * @short_description: Thread class with base frequency
  * @title: AgsThread
  * @section_id:
  * @include: ags/thread/ags_thread.h
  *
  * The #AgsThread base class. It supports organizing them within a tree,
  * perform syncing and frequencies.
+ *
+ * The thread class synchronizes within tree at `max-precision` property
+ * JIFFIE. AgsThread::run() is called at `frequency` property JIFFIE.
+ *
+ * The AgsThread::run() function can sync to the very same tic with
+ * AGS_THREAD_IMMEDIATE_SYNC flag, sync to the previous or next tic with
+ * AGS_THREAD_INTERMEDIATE_PRE_SYNC or AGS_THREAD_INTERMEDIATE_POST_SYNC
+ * flag set.
+ *
+ * The AgsTread::clock() function is called at `max-precision` property
+ * rate per second.
+ * 
+ * Note you usually have a default source giving you timing hints i.e.
+ * poll is used. If not you can still set the AGS_THREAD_TIME_ACCOUNTING
+ * flags, causing a sleep for every tic.
+ * 
+ * Further there is no time promise within one second. But you should
+ * make sure you hit the real-time dead-line or use a worker thread
+ * instead for time expensive work or tasks.
+ *
+ * ags_thread_self() returns you your own #AgsThread you are running
+ * in or %NULL if not applicable.
  */
 
 enum{

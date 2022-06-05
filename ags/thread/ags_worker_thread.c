@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,13 +33,18 @@ void* ags_woker_thread_do_poll_loop(void *ptr);
 
 /**
  * SECTION:ags_worker_thread
- * @short_description: worker thread
+ * @short_description: Worker thread class discarding base frequency
  * @title: AgsWorkerThread
  * @section_id:
  * @include: ags/thread/ags_worker_thread.h
  *
  * The #AgsWorkerThread does non-realtime work. You might want
  * to synchronize to the run signal within your ::do_poll() method.
+ *
+ * You usually connect to AgsThread::do_poll() event. The poll event
+ * is invoked as long as AGS_WORKER_THREAD_STATUS_RUNNING status flag is set.
+ *
+ * You might want to inject to a thread tree using a #AgsTask implementation.
  */
 
 enum{
