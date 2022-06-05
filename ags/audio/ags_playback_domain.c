@@ -48,12 +48,17 @@ void ags_playback_domain_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_playback_domain
- * @short_description: Outputting to soundcard domain
+ * @short_description: Outputting audio to soundcard
  * @title: AgsPlaybackDomain
  * @section_id:
  * @include: ags/audio/ags_playback_domain.h
  *
- * #AgsPlaybackDomain represents a domain to output.
+ * #AgsPlaybackDomain represents a domain to output. It provides you the audio processing threads
+ * per #AgsSoundScope-enum. The
+ * 
+ * The assigned #AgsAudioThread calls ags_channel_recursive_run_stage() for you.
+ * 
+ * The `output-playback` and `input-playback` properties provide a #GList-struct containing #AgsPlayback.
  */
 
 static gpointer ags_playback_domain_parent_class = NULL;

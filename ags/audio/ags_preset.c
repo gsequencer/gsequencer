@@ -38,7 +38,7 @@ void ags_preset_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_preset
- * @short_description: presets
+ * @short_description: Presets
  * @title: AgsPreset
  * @section_id:
  * @include: ags/audio/ags_preset.h

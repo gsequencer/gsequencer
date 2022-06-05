@@ -141,6 +141,8 @@ void ags_recall_child_done(AgsRecall *child,
  *
  * Make sure you set property `child-type` of #AgsRecallChannelRun to #AgsRecallRecycling and of
  * #AgsRecallRecycling to #AgsRecallAudioSignal derived type.
+ *
+ * Further #AgsRecall is packed by #AgsRecallContainer.
  */
 
 enum{

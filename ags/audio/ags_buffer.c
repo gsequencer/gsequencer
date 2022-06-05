@@ -49,6 +49,8 @@ void ags_buffer_finalize(GObject *gobject);
  * #AgsBuffer represents audio data. If you want to modify `data` property you
  * have to lock the buffer using ags_buffer_lock() and when you are done release it
  * using ags_buffer_unlock().
+ *
+ * The `x` property is the offset in frames matching samplerate.
  */
 
 enum{

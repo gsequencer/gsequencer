@@ -1078,6 +1078,507 @@ ags_audio_file_check_suffix(gchar *filename)
 }
 
 /**
+ * ags_audio_file_get_soundcard:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get soundcard of @audio_file.
+ *
+ * Returns: (transfer full): the #GObject implementing #AgsSoundcard
+ *
+ * Since: 4.2.0
+ */
+GObject*
+ags_audio_file_get_soundcard(AgsAudioFile *audio_file)
+{
+  GObject *soundcard;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(NULL);
+  }
+
+  soundcard = NULL;
+
+  g_object_get(audio_file,
+	       "soundcard", &soundcard,
+	       NULL);
+  
+  return(soundcard);
+}
+
+/**
+ * ags_audio_file_set_soundcard:
+ * @audio_file: the #AgsAudioFile
+ * @soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set soundcard of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_soundcard(AgsAudioFile *audio_file,
+			     GObject *soundcard)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "soundcard", soundcard,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_filename:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get filename of @audio_file.
+ *
+ * Returns: the filename
+ *
+ * Since: 4.2.0
+ */
+gchar*
+ags_audio_file_get_filename(AgsAudioFile *audio_file)
+{
+  gchar *filename;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(NULL);
+  }
+ 
+  filename = NULL;
+
+  g_object_get(audio_file,
+	       "filename", &filename,
+	       NULL);
+  
+  return(filename);
+}
+
+/**
+ * ags_audio_file_set_filename:
+ * @audio_file: the #AgsAudioFile
+ * @filename: the filename
+ *
+ * Set filename of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_filename(AgsAudioFile *audio_file,
+			    gchar *filename)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_file_audio_channels:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get file audio channels of @audio_file.
+ *
+ * Returns: the file audio channels
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_file_audio_channels(AgsAudioFile *audio_file)
+{
+  guint file_audio_channels;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  file_audio_channels = 0;
+
+  g_object_get(audio_file,
+	       "file-audio-channels", &file_audio_channels,
+	       NULL);
+  
+  return(file_audio_channels);
+}
+
+/**
+ * ags_audio_file_set_file_audio_channels:
+ * @audio_file: the #AgsAudioFile
+ * @file_audio_channels: the file audio channels
+ *
+ * Get file audio channels of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_file_audio_channels(AgsAudioFile *audio_file,
+				       guint file_audio_channels)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "file-audio-channels", file_audio_channels,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_file_samplerate:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get file samplerate of @audio_file.
+ *
+ * Returns: the file samplerate
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_file_samplerate(AgsAudioFile *audio_file)
+{
+  guint file_samplerate;
+
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  file_samplerate = 0;
+
+  g_object_get(audio_file,
+	       "file-samplerate", &file_samplerate,
+	       NULL);
+  
+  return(file_samplerate);
+}
+
+/**
+ * ags_audio_file_set_file_samplerate:
+ * @audio_file: the #AgsAudioFile
+ * @file_samplerate: the file samplerate
+ *
+ * Get file samplerate of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_file_samplerate(AgsAudioFile *audio_file,
+				   guint file_samplerate)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "file-samplerate", file_samplerate,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_file_frame_count:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get file frame count of @audio_file.
+ *
+ * Returns: the file frame count
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_file_frame_count(AgsAudioFile *audio_file)
+{
+  guint file_frame_count;
+
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  file_frame_count = 0;
+
+  g_object_get(audio_file,
+	       "file-frame-count", &file_frame_count,
+	       NULL);
+  
+  return(file_frame_count);
+}
+
+/**
+ * ags_audio_file_set_file_frame_count:
+ * @audio_file: the #AgsAudioFile
+ * @file_frame_count: the file frame count
+ *
+ * Get file frame count of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_file_frame_count(AgsAudioFile *audio_file,
+				    guint file_frame_count)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "file-frame-count", file_frame_count,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_samplerate:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get samplerate of @audio_file.
+ *
+ * Returns: the samplerate
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_samplerate(AgsAudioFile *audio_file)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  samplerate = 0;
+
+  g_object_get(audio_file,
+	       "samplerate", &samplerate,
+	       NULL);
+  
+  return(samplerate);
+}
+
+/**
+ * ags_audio_file_set_samplerate:
+ * @audio_file: the #AgsAudioFile
+ * @samplerate: the samplerate
+ *
+ * Get samplerate of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_samplerate(AgsAudioFile *audio_file,
+			      guint samplerate)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "samplerate", samplerate,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_frame_count:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get frame_count of @audio_file.
+ *
+ * Returns: the frame_count
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_frame_count(AgsAudioFile *audio_file)
+{
+  guint frame_count;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  frame_count = 0;
+
+  g_object_get(audio_file,
+	       "frame-count", &frame_count,
+	       NULL);
+  
+  return(frame_count);
+}
+
+/**
+ * ags_audio_file_set_frame_count:
+ * @audio_file: the #AgsAudioFile
+ * @frame_count: the frame_count
+ *
+ * Get frame_count of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_frame_count(AgsAudioFile *audio_file,
+			       guint frame_count)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "frame-count", frame_count,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_format:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get format of @audio_file.
+ *
+ * Returns: the format
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_format(AgsAudioFile *audio_file)
+{
+  guint format;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  format = 0;
+
+  g_object_get(audio_file,
+	       "format", &format,
+	       NULL);
+  
+  return(format);
+}
+
+/**
+ * ags_audio_file_set_format:
+ * @audio_file: the #AgsAudioFile
+ * @format: the format
+ *
+ * Get format of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_format(AgsAudioFile *audio_file,
+			  guint format)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "format", format,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_audio_channel:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get audio channel of @audio_file.
+ *
+ * Returns: the audio channel
+ *
+ * Since: 4.2.0
+ */
+guint
+ags_audio_file_get_audio_channel(AgsAudioFile *audio_file)
+{
+  guint audio_channel;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(0);
+  }
+ 
+  audio_channel = 0;
+
+  g_object_get(audio_file,
+	       "audio-channel", &audio_channel,
+	       NULL);
+  
+  return(audio_channel);
+}
+
+/**
+ * ags_audio_file_set_audio_channel:
+ * @audio_file: the #AgsAudioFile
+ * @audio_channel: the audio channel
+ *
+ * Get audio channel of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_audio_channel(AgsAudioFile *audio_file,
+				 gint audio_channel)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "audio-channel", audio_channel,
+	       NULL);
+}
+
+/**
+ * ags_audio_file_get_sound_resource:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Get sound resource of @audio_file.
+ *
+ * Returns: (transfer full): the #GObject implementing #AgsSoundResource
+ *
+ * Since: 4.2.0
+ */
+GObject*
+ags_audio_file_get_sound_resource(AgsAudioFile *audio_file)
+{
+  GObject *sound_resource;
+  
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return(NULL);
+  }
+
+  sound_resource = NULL;
+
+  g_object_get(audio_file,
+	       "sound-resource", &sound_resource,
+	       NULL);
+  
+  return(sound_resource);
+}
+
+/**
+ * ags_audio_file_set_sound_resource:
+ * @audio_file: the #AgsAudioFile
+ * @sound_resource: the #GObject implementing #AgsSoundResource
+ *
+ * Set sound resource of @audio_file.
+ *
+ * Since: 4.2.0
+ */
+void
+ags_audio_file_set_sound_resource(AgsAudioFile *audio_file,
+				  GObject *sound_resource)
+{
+  if(!AGS_IS_AUDIO_FILE(audio_file)){
+    return;
+  }
+
+  g_object_set(audio_file,
+	       "sound-resource", sound_resource,
+	       NULL);
+}
+
+
+/**
  * ags_audio_file_add_audio_signal:
  * @audio_file: the #AgsAudioFile
  * @audio_signal: the #AgsAudioSignal

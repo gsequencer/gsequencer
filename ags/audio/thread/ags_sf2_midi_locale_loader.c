@@ -991,7 +991,7 @@ ags_sf2_midi_locale_loader_set_program(AgsSF2MidiLocaleLoader *sf2_midi_locale_l
  * 
  * Get audio container of @sf2_midi_locale_loader.
  * 
- * Returns: the assigned #AgsAudioContainer
+ * Returns: (transfer full): the assigned #AgsAudioContainer
  * 
  * Since: 3.16.0
  */

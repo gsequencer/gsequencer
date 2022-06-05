@@ -46,12 +46,15 @@ void ags_playback_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_playback
- * @short_description: Outputting to soundcard context
+ * @short_description: Outputting channel to soundcard
  * @title: AgsPlayback
  * @section_id:
  * @include: ags/audio/ags_playback.h
  *
- * #AgsPlayback represents a context to output.
+ * #AgsPlayback represents a context to output. It provides you the channel processing threads
+ * per #AgsSoundScope-enum.
+ * 
+ * The assigned #AgsChannelThread calls ags_channel_recursive_run_stage() for you.
  */
 
 static gpointer ags_playback_parent_class = NULL;

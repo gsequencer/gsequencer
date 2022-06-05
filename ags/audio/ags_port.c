@@ -68,6 +68,11 @@ void ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue
  * @include: ags/audio/ags_port.h
  *
  * #AgsPort provides a thread-safe way to access or change values or properties.
+ *
+ * The `specifier` property has to be unique within context.
+ *
+ * You call ags_port_safe_write() to alter a value or ags_port_safe_read() to read a
+ * port.
  */
 
 enum{
