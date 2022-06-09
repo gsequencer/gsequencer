@@ -1,3 +1,8 @@
+ags (4.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* rebuild gtk-doc sections
+
 ags (4.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

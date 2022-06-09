@@ -176,11 +176,6 @@ ags_cartesian_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_container</FILE>
-ags_container_add_all
-</SECTION>
-
-<SECTION>
 <FILE>ags_dial</FILE>
 <TITLE>AgsDial</TITLE>
 AGS_DIAL_DEFAULT_PRECISION
@@ -216,6 +211,7 @@ ags_dial_set_adjustment
 ags_dial_get_adjustment
 ags_dial_value_changed
 ags_dial_set_value
+ags_dial_get_value
 ags_dial_new
 <SUBSECTION Public>
 AGS_DIAL
@@ -262,7 +258,6 @@ AgsExpanderSetChild
 ags_expander_set_child_alloc
 ags_expander_set_child_free
 ags_expander_set_child_find
-ags_expander_set_set_flags
 ags_expander_set_add
 ags_expander_set_remove
 ags_expander_set_new
@@ -311,12 +306,14 @@ ags_indicator_get_type
 <SECTION>
 <FILE>ags_led</FILE>
 <TITLE>AgsLed</TITLE>
-AGS_LED_DEFAULT_WIDTH
-AGS_LED_DEFAULT_HEIGHT
-AgsLedFlags
+AGS_LED_DEFAULT_SEGMENT_WIDTH
+AGS_LED_DEFAULT_SEGMENT_HEIGHT
+ags_led_get_segment_width
+ags_led_set_segment_width
+ags_led_get_segment_height
+ags_led_set_segment_height
 ags_led_is_active
 ags_led_set_active
-ags_led_unset_active
 ags_led_new
 <SUBSECTION Public>
 AGS_IS_LED
@@ -333,13 +330,12 @@ ags_led_get_type
 <SECTION>
 <FILE>ags_led_array</FILE>
 <TITLE>AgsLedArray</TITLE>
-AGS_LED_ARRAY_DEFAULT_LED_WIDTH
-AGS_LED_ARRAY_DEFAULT_LED_HEIGHT
-AgsLedArrayFlags
-ags_led_array_get_led_width
-ags_led_array_set_led_width
-ags_led_array_get_led_height
-ags_led_array_set_led_height
+AGS_LED_ARRAY_DEFAULT_SEGMENT_WIDTH
+AGS_LED_ARRAY_DEFAULT_SEGMENT_HEIGHT
+ags_led_array_get_segment_width
+ags_led_array_set_segment_width
+ags_led_array_get_segment_height
+ags_led_array_set_segment_height
 ags_led_array_get_led_count
 ags_led_array_set_led_count
 ags_led_array_unset_all
@@ -360,23 +356,19 @@ ags_led_array_get_type
 <SECTION>
 <FILE>ags_level</FILE>
 <TITLE>AgsLevel</TITLE>
-AGS_LEVEL_DEFAULT_LEVEL_WIDTH
-AGS_LEVEL_DEFAULT_LEVEL_HEIGHT
+AGS_LEVEL_DEFAULT_WIDTH_REQUEST
+AGS_LEVEL_DEFAULT_HEIGHT_REQUEST
 AGS_LEVEL_DEFAULT_LOWER
 AGS_LEVEL_DEFAULT_UPPER
 AGS_LEVEL_DEFAULT_NORMALIZED_VOLUME
 AGS_LEVEL_DEFAULT_STEP_COUNT
 AGS_LEVEL_DEFAULT_PAGE_SIZE
+AGS_LEVEL_DEFAULT_DATA_FORMAT
 AGS_LEVEL_DEFAULT_SAMPLERATE
-AgsLevelFlags
+AgsLevelDataFormat
 AgsLevelButtonState
 AgsLevelKeyMask
-AgsLevelLayout
 AgsLevelAction
-ags_level_set_level_width
-ags_level_get_level_width
-ags_level_set_level_height
-ags_level_get_level_height
 ags_level_set_upper
 ags_level_get_upper
 ags_level_set_lower
@@ -400,9 +392,12 @@ ags_level_get_type
 <SECTION>
 <FILE>ags_level_box</FILE>
 <TITLE>AgsLevelBox</TITLE>
-AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH
-AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT
-AgsLevelBoxFlags
+AGS_LEVEL_BOX_DEFAULT_SPACING
+ags_level_box_get_level
+ags_level_box_add_level
+ags_level_box_remove_level
+ags_level_box_child_width_request
+ags_level_box_child_height_request
 ags_level_box_new
 <SUBSECTION Public>
 AGS_IS_LEVEL_BOX
@@ -419,23 +414,13 @@ ags_level_box_get_type
 <SECTION>
 <FILE>ags_notebook</FILE>
 <TITLE>AgsNotebook</TITLE>
-AGS_NOTEBOOK_TAB
 AGS_NOTEBOOK_TAB_DEFAULT_WIDTH
 AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT
-AGS_NOTEBOOK_TAB_DEFAULT_PREFIX
-AgsNotebookFlags
-AgsNotebookTab
-ags_notebook_tab_alloc
-ags_notebook_tab_free
-ags_notebook_tab_set_data
-ags_notebook_tab_index
 ags_notebook_next_active_tab
+ags_notebook_get_tab
 ags_notebook_add_tab
-ags_notebook_add_tab_with_label
 ags_notebook_insert_tab
-ags_notebook_insert_tab_with_label
 ags_notebook_remove_tab
-ags_notebook_remove_tab_with_data
 ags_notebook_new
 <SUBSECTION Public>
 AGS_IS_NOTEBOOK
@@ -452,6 +437,7 @@ ags_notebook_get_type
 <SECTION>
 <FILE>ags_piano</FILE>
 <TITLE>AgsPiano</TITLE>
+AGS_PIANO_DEFAULT_FONT_SIZE
 AGS_PIANO_DEFAULT_BASE_NOTE
 AGS_PIANO_DEFAULT_BASE_KEY_CODE
 AGS_PIANO_DEFAULT_KEY_WIDTH
@@ -459,13 +445,10 @@ AGS_PIANO_DEFAULT_KEY_HEIGHT
 AGS_PIANO_DEFAULT_KEY_COUNT
 AgsPianoFlags
 AgsPianoButtonState
-AgsPianoLayout
 AgsPianoAction
 AgsPianoOctave
 ags_piano_set_button_state
 ags_piano_get_button_state
-ags_piano_set_layout
-ags_piano_get_layout
 ags_piano_set_base_note
 ags_piano_get_base_note
 ags_piano_set_base_key_code
@@ -635,6 +618,9 @@ AGS_PIANO_KEYS_OCTAVE_10_H
 <TITLE>AgsRuler</TITLE>
 AGS_RULER_FONT_SIZE
 AGS_RULER_FREE_SPACE
+AGS_RULER_DEFAULT_FACTOR
+AGS_RULER_DEFAULT_PRECISION
+AGS_RULER_DEFAULT_SCALE_PRECISION
 AGS_RULER_DEFAULT_HEIGHT
 AGS_RULER_DEFAULT_STEP
 AGS_RULER_DEFAULT_LARGE_STEP
@@ -647,6 +633,12 @@ ags_ruler_get_large_step
 ags_ruler_set_large_step
 ags_ruler_get_small_step
 ags_ruler_set_small_step
+ags_ruler_get_factor
+ags_ruler_set_factor
+ags_ruler_get_precision
+ags_ruler_set_precision
+ags_ruler_get_scale_precision
+ags_ruler_set_scale_precision
 ags_ruler_get_adjustment
 ags_ruler_set_adjustment
 ags_ruler_new
@@ -665,8 +657,9 @@ ags_ruler_get_type
 <SECTION>
 <FILE>ags_scale</FILE>
 <TITLE>AgsScale</TITLE>
-AGS_SCALE_DEFAULT_SCALE_WIDTH
-AGS_SCALE_DEFAULT_SCALE_HEIGHT
+AGS_SCALE_DEFAULT_WIDTH_REQUEST
+AGS_SCALE_DEFAULT_HEIGHT_REQUEST
+AGS_SCALE_DEFAULT_CONTROL_NAME
 AGS_SCALE_DEFAULT_LOWER
 AGS_SCALE_DEFAULT_UPPER
 AGS_SCALE_DEFAULT_VALUE
@@ -677,10 +670,6 @@ AgsScaleButtonState
 AgsScaleKeyMask
 AgsScaleLayout
 AgsScaleAction
-ags_scale_set_scale_width
-ags_scale_get_scale_width
-ags_scale_set_scale_height
-ags_scale_get_scale_height
 ags_scale_set_control_name
 ags_scale_get_control_name
 ags_scale_set_upper
@@ -706,9 +695,12 @@ ags_scale_get_type
 <SECTION>
 <FILE>ags_scale_box</FILE>
 <TITLE>AgsScaleBox</TITLE>
-AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH
-AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT
-AgsScaleBoxFlags
+AGS_SCALE_BOX_DEFAULT_SPACING
+ags_scale_box_get_scale
+ags_scale_box_add_scale
+ags_scale_box_remove_scale
+ags_scale_box_child_width_request
+ags_scale_box_child_height_request
 ags_scale_box_new
 <SUBSECTION Public>
 AGS_IS_SCALE_BOX
@@ -725,6 +717,8 @@ ags_scale_box_get_type
 <SECTION>
 <FILE>ags_scrolled_level_box</FILE>
 <TITLE>AgsScrolledLevelBox</TITLE>
+ags_scrolled_level_box_get_scrolled_window
+ags_scrolled_level_box_get_level_box
 ags_scrolled_level_box_new
 <SUBSECTION Public>
 AGS_IS_SCROLLED_LEVEL_BOX
@@ -741,7 +735,7 @@ ags_scrolled_level_box_get_type
 <SECTION>
 <FILE>ags_scrolled_piano</FILE>
 <TITLE>AgsScrolledPiano</TITLE>
-ags_scrolled_piano_get_viewport
+ags_scrolled_piano_get_scrolled_window
 ags_scrolled_piano_get_piano
 ags_scrolled_piano_new
 <SUBSECTION Public>
@@ -759,6 +753,7 @@ ags_scrolled_piano_get_type
 <SECTION>
 <FILE>ags_scrolled_scale_box</FILE>
 <TITLE>AgsScrolledScaleBox</TITLE>
+ags_scrolled_scale_box_get_scrolled_window
 ags_scrolled_scale_box_new
 <SUBSECTION Public>
 AGS_IS_SCROLLED_SCALE_BOX
@@ -775,5 +770,6 @@ ags_scrolled_scale_box_get_type
 <SECTION>
 <FILE>ags_widget_marshal</FILE>
 ags_widget_cclosure_marshal_VOID__STRING_INT
+ags_widget_cclosure_marshal_VOID__OBJECT_INT
 </SECTION>
 

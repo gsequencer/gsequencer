@@ -28,7 +28,6 @@
   <chapter>
     <title>UI Widgets</title>
     <xi:include href="xml/ags_cartesian.xml"/>
-    <xi:include href="xml/ags_container.xml"/>
     <xi:include href="xml/ags_dial.xml"/>
     <xi:include href="xml/ags_expander.xml"/>
     <xi:include href="xml/ags_expander_set.xml"/>
