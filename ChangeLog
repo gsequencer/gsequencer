@@ -2,6 +2,8 @@ ags (4.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsHybridFMSynth::refresh-port()
+	* implemented AgsSF2Synth::refresh-port()
+	* implemented AgsSFZSynth::refresh-port()
 
 ags (4.2.1)
 
