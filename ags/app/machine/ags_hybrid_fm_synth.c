@@ -57,6 +57,8 @@ void ags_hybrid_fm_synth_output_map_recall(AgsHybridFMSynth *hybrid_fm_synth,
 					   guint audio_channel_start,
 					   guint output_pad_start);
 
+void ags_hybrid_fm_synth_refresh_port(AgsMachine *machine);
+
 /**
  * SECTION:ags_hybrid_fm_synth
  * @short_description: FM hybrid synth
@@ -127,6 +129,8 @@ ags_hybrid_fm_synth_class_init(AgsHybridFMSynthClass *hybrid_fm_synth)
   machine = (AgsMachineClass *) hybrid_fm_synth;
 
   machine->map_recall = ags_hybrid_fm_synth_map_recall;
+
+  machine->refresh_port = ags_hybrid_fm_synth_refresh_port;
 }
 
 void
@@ -2243,6 +2247,946 @@ ags_hybrid_fm_synth_output_map_recall(AgsHybridFMSynth *hybrid_fm_synth,
 	       NULL);
   
   hybrid_fm_synth->mapped_output_pad = output_pads;
+}
+
+void
+ags_hybrid_fm_synth_refresh_port(AgsMachine *machine)
+{
+  AgsHybridFMSynth *hybrid_fm_synth;
+  
+  GList *start_play, *start_recall, *recall;
+
+  hybrid_fm_synth = (AgsHybridFMSynth *) machine;
+  
+  start_play = ags_audio_get_play(machine->audio);
+  start_recall = ags_audio_get_recall(machine->audio);
+
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    /* synth-0 oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->synth_0_oscillator,
+			       (gint) g_value_get_float(&value));
+
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 octave */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-octave", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_0_octave,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 key */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-key", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_0_key,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 phase */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-phase", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_0_phase,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 volume */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_0_volume,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->synth_0_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(hybrid_fm_synth->synth_0_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 lfo depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_0_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 lfo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-lfo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_0_lfo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->synth_1_oscillator,
+			       (gint) g_value_get_float(&value));
+
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 octave */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-octave", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_1_octave,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 key */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-key", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_1_key,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 phase */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-phase", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_1_phase,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 volume */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_1_volume,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->synth_1_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(hybrid_fm_synth->synth_1_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 lfo depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_1_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 lfo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-lfo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_1_lfo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->synth_2_oscillator,
+			       (gint) g_value_get_float(&value));
+
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 octave */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-octave", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_2_octave,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 key */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-key", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_2_key,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 phase */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-phase", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_2_phase,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 volume */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_2_volume,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 sync lfo oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-sync-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->synth_2_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 sync lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-sync-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(hybrid_fm_synth->synth_2_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 lfo depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-lfo-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_2_lfo_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* synth-2 lfo tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-2-lfo-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->synth_2_lfo_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* pitch tuning */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "pitch-tuning", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->pitch_tuning,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* noise gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "noise-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->noise_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* low pass enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "low-pass-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(hybrid_fm_synth->low_pass_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(hybrid_fm_synth->low_pass_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* low pass q-lin */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "low-pass-q-lin", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->low_pass_q_lin,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* low pass filter gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "low-pass-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->low_pass_filter_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* high pass enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "high-pass-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(hybrid_fm_synth->high_pass_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(hybrid_fm_synth->high_pass_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
+    /* high pass q-lin */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "high-pass-q-lin", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->high_pass_q_lin,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* high pass filter gain */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "high-pass-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->high_pass_filter_gain,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }    
+
+    /* chorus enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(hybrid_fm_synth->chorus_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(hybrid_fm_synth->chorus_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+    
+    /* chorus LFO oscillator */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_combo_box_set_active(hybrid_fm_synth->chorus_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus LFO frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(hybrid_fm_synth->chorus_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus depth */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->chorus_depth,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus mix */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-mix", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->chorus_mix,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* chorus delay */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "chorus-delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_dial_set_value(hybrid_fm_synth->chorus_delay,
+			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+  }
 }
 
 /**

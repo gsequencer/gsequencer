@@ -2433,8 +2433,7 @@ ags_hybrid_synth_refresh_port(AgsMachine *machine)
 			 (gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
-    }
-    
+    }    
 
     /* synth-0 sync enabled */
     port = NULL;
@@ -2633,8 +2632,8 @@ ags_hybrid_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(hybrid_synth->synth_0_sync_lfo_oscillator,
-			 (gdouble) g_value_get_float(&value));
+      gtk_combo_box_set_active(hybrid_synth->synth_0_sync_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -2655,8 +2654,8 @@ ags_hybrid_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(hybrid_synth->synth_0_sync_lfo_frequency,
-			 (gdouble) g_value_get_float(&value));
+      gtk_spin_button_set_value(hybrid_synth->synth_0_sync_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -2968,8 +2967,8 @@ ags_hybrid_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(hybrid_synth->synth_1_sync_lfo_oscillator,
-			 (gdouble) g_value_get_float(&value));
+      gtk_combo_box_set_active(hybrid_synth->synth_1_sync_lfo_oscillator,
+			       (gint) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -2990,8 +2989,8 @@ ags_hybrid_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      ags_dial_set_value(hybrid_synth->synth_1_sync_lfo_frequency,
-			 (gdouble) g_value_get_float(&value));
+      gtk_spin_button_set_value(hybrid_synth->synth_1_sync_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
