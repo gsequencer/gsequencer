@@ -46,6 +46,8 @@ void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 void ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad);
 GList* ags_effect_pad_real_find_port(AgsEffectPad *effect_pad);
 
+void ags_effect_pad_real_refresh_port(AgsEffectPad *effect_pad);
+
 /**
  * SECTION:ags_effect_pad
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -65,6 +67,7 @@ enum{
   RESIZE_LINES,
   MAP_RECALL,
   FIND_PORT,
+  REFRESH_PORT,
   LAST_SIGNAL,
 };
 
@@ -218,6 +221,8 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
   effect_pad->map_recall = ags_effect_pad_real_map_recall;
   effect_pad->find_port = ags_effect_pad_real_find_port;
 
+  effect_pad->refresh_port = ags_effect_pad_real_refresh_port;
+
   /* signals */
   /**
    * AgsEffectPad::samplerate-changed:
@@ -359,6 +364,23 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsEffectPad::refresh-port:
+   * @effect_pad: the #AgsEffectPad
+   *
+   * The ::refresh-port signal.
+   * 
+   * Since: 4.2.2
+   */
+  effect_pad_signals[REFRESH_PORT] =
+    g_signal_new("refresh-port",
+                 G_TYPE_FROM_CLASS(effect_pad),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectPadClass, refresh_port),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 }
 
 void
@@ -1047,6 +1069,43 @@ ags_effect_pad_find_port(AgsEffectPad *effect_pad)
   g_object_unref((GObject *) effect_pad);
 
   return(list);
+}
+
+void
+ags_effect_pad_real_refresh_port(AgsEffectPad *effect_pad)
+{
+  GList *start_line, *line;
+
+  /* output */
+  line =
+    start_line = ags_effect_pad_get_effect_line(effect_pad);
+
+  while(line != NULL){
+    ags_effect_line_refresh_port(line->data);
+
+    line = line->next;
+  }
+
+  g_list_free(start_line);
+}
+
+/**
+ * ags_effect_pad_refresh_port:
+ * @effect_pad: the #AgsEffectPad
+ *
+ * Notify about to refresh ports.
+ * 
+ * Since: 4.2.2
+ */
+void
+ags_effect_pad_refresh_port(AgsEffectPad *effect_pad)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  g_object_ref((GObject *) effect_pad);
+  g_signal_emit((GObject *) effect_pad,
+		effect_pad_signals[REFRESH_PORT], 0);
+  g_object_unref((GObject *) effect_pad);
 }
 
 /**

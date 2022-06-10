@@ -5,6 +5,7 @@ ags (4.2.2)
 	* implemented AgsSF2Synth::refresh-port()
 	* implemented AgsSFZSynth::refresh-port()
 	* implemented AgsMachine::refresh-port(), AgsPad::refresh-port() and AgsLine::refresh-port()
+	* implemented AgsEffectBridge::refresh-port(), AgsEffectPad::refresh-port() and AgsEffectLine::refresh-port()
 
 ags (4.2.1)
 

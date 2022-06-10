@@ -50,7 +50,6 @@ GList* ags_pad_real_find_port(AgsPad *pad);
 
 void ags_pad_real_refresh_port(AgsPad *pad);
 
-
 /**
  * SECTION:ags_pad
  * @short_description: A composite widget to visualize a bunch of #AgsChannel

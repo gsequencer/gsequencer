@@ -124,6 +124,8 @@ struct _AgsEffectBridgeClass
 
   void (*map_recall)(AgsEffectBridge *effect_bridge);
   GList* (*find_port)(AgsEffectBridge *effect_bridge);
+
+  void (*refresh_port)(AgsEffectBridge *effect_bridge);
 };
 
 GType ags_effect_bridge_get_type(void);
@@ -155,6 +157,8 @@ void ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
 
 void ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge);
 GList* ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge);
+
+void ags_effect_bridge_refresh_port(AgsEffectBridge *effect_bridge);
 
 AgsEffectBridge* ags_effect_bridge_new(AgsAudio *audio);
 

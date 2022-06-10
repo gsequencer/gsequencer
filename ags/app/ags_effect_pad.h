@@ -102,6 +102,8 @@ struct _AgsEffectPadClass
 
   void (*map_recall)(AgsEffectPad *effect_pad);
   GList* (*find_port)(AgsEffectPad *effect_pad);
+
+  void (*refresh_port)(AgsEffectPad *effect_pad);
 };
 
 GType ags_effect_pad_get_type(void);
@@ -128,6 +130,8 @@ void ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
 
 void ags_effect_pad_map_recall(AgsEffectPad *effect_pad);
 GList* ags_effect_pad_find_port(AgsEffectPad *effect_pad);
+
+void ags_effect_pad_refresh_port(AgsEffectPad *effect_pad);
 
 AgsEffectPad* ags_effect_pad_new(AgsChannel *channel);
 

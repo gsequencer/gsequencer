@@ -118,6 +118,8 @@ void ags_effect_line_real_map_recall(AgsEffectLine *effect_line,
 				     guint output_pad_start);
 GList* ags_effect_line_real_find_port(AgsEffectLine *effect_line);
 
+void ags_effect_line_real_refresh_port(AgsEffectLine *effect_line);
+
 /**
  * SECTION:ags_effect_line
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -138,6 +140,7 @@ enum{
   REMOVE_PLUGIN,
   MAP_RECALL,
   FIND_PORT,
+  REFRESH_PORT,
   DONE,
   LAST_SIGNAL,
 };
@@ -295,6 +298,8 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 
   effect_line->map_recall = ags_effect_line_real_map_recall;
   effect_line->find_port = ags_effect_line_real_find_port;
+
+  effect_line->refresh_port = ags_effect_line_real_refresh_port;
 
   effect_line->done = NULL;
 
@@ -469,6 +474,23 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsEffectLine::refresh-port:
+   * @effect_line: the #AgsEffectLine
+   *
+   * The ::refresh-port signal.
+   * 
+   * Since: 4.2.2
+   */
+  effect_line_signals[REFRESH_PORT] =
+    g_signal_new("refresh-port",
+                 G_TYPE_FROM_CLASS(effect_line),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, refresh_port),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 
   /**
    * AgsEffectLine::done:
@@ -3668,6 +3690,73 @@ ags_effect_line_done(AgsEffectLine *effect_line, GObject *recall_id)
   g_signal_emit((GObject *) effect_line,
 		effect_line_signals[DONE], 0,
 		recall_id);
+  g_object_unref((GObject *) effect_line);
+}
+
+void
+ags_effect_line_real_refresh_port(AgsEffectLine *effect_line)
+{
+  GList *start_line_member, *line_member;
+
+  line_member = 
+    start_line_member = ags_effect_line_get_line_member(effect_line);
+
+  while(line_member != NULL){
+    AgsPort *port;
+
+    port = AGS_LINE_MEMBER(line_member->data)->port;
+    
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(AGS_LINE_MEMBER(line_member->data)->widget_type == AGS_TYPE_DIAL){
+	ags_dial_set_value(ags_line_member_get_widget(line_member->data),
+			   (gdouble) g_value_get_float(&value));
+      }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_SCALE){
+	gtk_adjustment_set_value(gtk_range_get_adjustment(ags_line_member_get_widget(line_member->data)),
+				 (gdouble) g_value_get_float(&value));
+      }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_SPIN_BUTTON){
+	gtk_spin_button_set_value(ags_line_member_get_widget(line_member->data),
+				  (gdouble) g_value_get_float(&value));
+      }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_CHECK_BUTTON){
+	gtk_check_button_set_active(ags_line_member_get_widget(line_member->data),
+				    (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
+      }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+	gtk_toggle_button_set_active(ags_line_member_get_widget(line_member->data),
+				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
+      }
+      
+      g_object_unref(port);
+    }
+    
+    line_member = line_member->next;
+  }
+
+  g_list_free(start_line_member);
+}
+
+/**
+ * ags_effect_line_refresh_port:
+ * @effect_line: the #AgsEffectLine
+ *
+ * Notify about to refresh ports.
+ * 
+ * Since: 4.2.2
+ */
+void
+ags_effect_line_refresh_port(AgsEffectLine *effect_line)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit((GObject *) effect_line,
+		effect_line_signals[REFRESH_PORT], 0);
   g_object_unref((GObject *) effect_line);
 }
 
