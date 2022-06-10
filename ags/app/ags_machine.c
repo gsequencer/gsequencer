@@ -77,6 +77,7 @@ enum{
   MAP_RECALL,
   FIND_PORT,
   STOP,
+  REFRESH_PORT,
   LAST_SIGNAL,
 };
 
@@ -246,6 +247,7 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->map_recall = ags_machine_real_map_recall;
   machine->find_port = ags_machine_real_find_port;
   machine->stop = NULL;
+  machine->refresh_port = NULL;
 
   /* signals */
   /**
@@ -411,6 +413,23 @@ ags_machine_class_init(AgsMachineClass *machine)
                  ags_cclosure_marshal_VOID__POINTER_INT,
                  G_TYPE_NONE, 2,
 		 G_TYPE_POINTER, G_TYPE_INT);
+
+  /**
+   * AgsMachine::refresh-port:
+   * @machine: the #AgsMachine
+   *
+   * The ::refresh-port signal.
+   * 
+   * Since: 4.2.1
+   */
+  machine_signals[REFRESH_PORT] =
+    g_signal_new("refresh-port",
+                 G_TYPE_FROM_CLASS(machine),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMachineClass, refresh_port),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 }
 
 void
@@ -564,6 +583,15 @@ ags_machine_init(AgsMachine *machine)
 			       NULL);
   g_signal_connect(action, "activate",
 		   G_CALLBACK(ags_machine_preset_callback), machine);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* fresh ports */
+  action = g_simple_action_new_stateful("refresh_port",
+					NULL,
+					g_variant_new_boolean(FALSE));
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_machine_refresh_port_callback), machine);
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
   
@@ -2763,6 +2791,25 @@ ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
   g_signal_emit((GObject *) machine,
 		machine_signals[STOP], 0,
 		recall_id, sound_scope);
+  g_object_unref((GObject *) machine);
+}
+
+/**
+ * ags_machine_refresh_port:
+ * @machine: the #AgsMachine
+ *
+ * Notify about to refresh ports.
+ * 
+ * Since: 4.2.1
+ */
+void
+ags_machine_refresh_port(AgsMachine *machine)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit((GObject *) machine,
+		machine_signals[REFRESH_PORT], 0);
   g_object_unref((GObject *) machine);
 }
 

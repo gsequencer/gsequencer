@@ -35,6 +35,7 @@ enum {
   SETUP_COMPLETED,
   CHECK_MESSAGE,
   CLEAN_MESSAGE,
+  UPDATE_UI,
   LAST_SIGNAL,
 };
 
@@ -113,6 +114,24 @@ ags_ui_provider_class_init(AgsUiProviderInterface *ginterface)
 		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsUiProviderInterface, clean_message),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsUiProvider::update-uid:
+   * @ui_provider: the #AgsUiProvider object
+   *
+   * The ::update-ui signal is emitted every %AGS_UI_PROVIDER_DEFAULT_TIMEOUT
+   * interval.
+   *
+   * Since: 4.2.1
+   */
+  ui_provider_signals[UPDATE_UI] =
+    g_signal_new("update-ui",
+		 G_TYPE_FROM_INTERFACE(ginterface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsUiProviderInterface, update_ui),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -384,6 +403,20 @@ void
 ags_ui_provider_clean_message(AgsUiProvider *ui_provider)
 {
   g_signal_emit(ui_provider, ui_provider_signals[CLEAN_MESSAGE], 0);
+}
+
+/**
+ * ags_ui_provider_update_ui:
+ * @ui_provider: the #AgsUiProvider
+ *
+ * Update UI.
+ *
+ * Since: 4.2.1
+ */
+void
+ags_ui_provider_update_ui(AgsUiProvider *ui_provider)
+{
+  g_signal_emit(ui_provider, ui_provider_signals[UPDATE_UI], 0);
 }
 
 /**

@@ -1,6 +1,8 @@
 ags (4.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed apply presets
+	* implemented AgsHybridSynth::refresh-port()
 	* rebuild gtk-doc sections
 
 ags (4.2.0)

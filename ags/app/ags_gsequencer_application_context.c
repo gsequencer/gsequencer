@@ -287,6 +287,8 @@ static locale_t c_locale;
 
 static gboolean locale_initialized = FALSE;
 
+gboolean ags_gsequencer_application_context_update_ui = TRUE;
+
 GType
 ags_gsequencer_application_context_get_type()
 {
@@ -524,7 +526,10 @@ ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInter
   ui_provider->schedule_task = ags_gsequencer_application_context_schedule_task;
   ui_provider->schedule_task_all = ags_gsequencer_application_context_schedule_task_all;
 
+  ui_provider->check_message = NULL;
   ui_provider->clean_message = ags_gsequencer_application_context_clean_message;
+
+  ui_provider->update_ui = NULL;
 
   ui_provider->get_animation_window = ags_gsequencer_application_context_get_animation_window;
   ui_provider->set_animation_window = ags_gsequencer_application_context_set_animation_window;
@@ -682,6 +687,10 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);
+
+  g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_DEFAULT_TIMEOUT),
+  		(GSourceFunc) ags_gsequencer_application_context_update_ui_timeout,
+  		(gpointer) gsequencer_application_context);
 }
 
 void
@@ -866,6 +875,8 @@ ags_gsequencer_application_context_finalize(GObject *gobject)
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
   gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(gobject);
+
+  ags_gsequencer_application_context_update_ui = FALSE;
 
   /* thread pool */
   if(gsequencer_application_context->thread_pool != NULL){
@@ -5202,6 +5213,16 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 #endif
 
   return(TRUE);
+}
+
+gboolean
+ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationContext *gsequencer_application_context)
+{
+  if(ags_gsequencer_application_context_update_ui){
+    ags_ui_provider_update_ui(AGS_UI_PROVIDER(gsequencer_application_context));
+  }
+  
+  return(ags_gsequencer_application_context_update_ui);
 }
 
 AgsGSequencerApplicationContext*

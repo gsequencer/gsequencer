@@ -1029,6 +1029,50 @@ ags_machine_preset_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_machine_refresh_port_update_ui_callback(AgsUiProvider *ui_provider, AgsMachine *machine)
+{
+  if((AGS_MACHINE_REFRESH_PORTS & (machine->flags)) != 0){
+    ags_machine_refresh_port(machine);
+  }
+}
+
+void
+ags_machine_refresh_port_callback(GAction *action, GVariant *parameter,
+				  AgsMachine *machine)
+{
+  AgsApplicationContext *application_context;
+  
+  GVariant *variant;
+
+  application_context = ags_application_context_get_instance();
+  
+  variant = g_action_get_state(action);
+
+  if(g_variant_get_boolean(variant)){
+    g_object_set(action,
+		 "state", g_variant_new_boolean(FALSE),
+		 NULL);
+
+    machine->flags &= (~AGS_MACHINE_REFRESH_PORTS);
+
+    g_object_disconnect(application_context,
+			"any_signal::update-ui",
+			G_CALLBACK(ags_machine_refresh_port_update_ui_callback),
+			machine,
+			NULL);
+  }else{
+    g_object_set(action,
+		 "state", g_variant_new_boolean(TRUE),
+		 NULL);
+
+    machine->flags |= AGS_MACHINE_REFRESH_PORTS;
+
+    g_signal_connect(application_context, "update-ui",
+		     G_CALLBACK(ags_machine_refresh_port_update_ui_callback), machine);
+  }
+}
+
+void
 ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
   if(response == GTK_RESPONSE_ACCEPT){

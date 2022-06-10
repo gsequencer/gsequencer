@@ -1872,7 +1872,7 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 			    child_widget, ags_line_indicator_refresh_timeout);
 	line->queued_refresh = g_list_prepend(line->queued_refresh,
 					      child_widget);
-	g_timeout_add(1000 / 30,
+	g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_DEFAULT_TIMEOUT),
 		      (GSourceFunc) ags_line_indicator_refresh_timeout,
 		      (gpointer) child_widget);
       }

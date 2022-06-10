@@ -867,6 +867,7 @@ ags_preset_editor_apply_preset(AgsPresetEditor *preset_editor)
 				   &iter)){
     do{
       gchar *context;
+      gchar *line;
       gchar *specifier;
       gchar *range;
       gchar *value;
@@ -878,9 +879,10 @@ ags_preset_editor_apply_preset(AgsPresetEditor *preset_editor)
       
       gtk_tree_model_get(GTK_TREE_MODEL(list_store), &iter,
 			 0, &context,
-			 1, &specifier,
-			 2, &range,
-			 3, &value,
+			 1, &line,
+			 2, &specifier,
+			 3, &range,
+			 4, &value,
 			 -1);
 
       /* get start port */
@@ -891,92 +893,80 @@ ags_preset_editor_apply_preset(AgsPresetEditor *preset_editor)
       }else if(!xmlStrncmp(BAD_CAST "output",
 			   context,
 			   7)){
-	channel = 
-	  start_channel = ags_audio_get_output(machine->audio);
+	start_channel = ags_audio_get_output(machine->audio);
 
-	if(channel != NULL){
-	  g_object_ref(channel);
-	}
+	channel = ags_channel_nth(start_channel,
+				  g_ascii_strtoull(line,
+						   NULL,
+						   10));
 
 	start_port = NULL;
-	    
-	while(channel != NULL){
-	  AgsChannel *next;
-    
-	  /* output */
-	  port = ags_channel_collect_all_channel_ports(channel);
 
-	  if(start_port != NULL){
-	    if(port != NULL){
-	      start_port = g_list_concat(start_port,
-					 port);
-	    }
-	  }else{
-	    start_port = port;
+	/* output */
+	port = ags_channel_collect_all_channel_ports(channel);
+	
+	if(start_port != NULL){
+	  if(port != NULL){
+	    start_port = g_list_concat(start_port,
+				       port);
 	  }
-	      
-	  /* iterate */
-	  next = ags_channel_next(channel);
-
-	  g_object_unref(channel);
-
-	  channel = next;
+	}else{
+	  start_port = port;
 	}
 
 	/* unref */
 	if(start_channel != NULL){
 	  g_object_unref(start_channel);
 	}	      
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}	      
       }else if(!xmlStrncmp(BAD_CAST "input",
 			   context,
 			   6)){
-	channel = 
-	  start_channel = ags_audio_get_input(machine->audio);
+	start_channel = ags_audio_get_input(machine->audio);
 
-	if(channel != NULL){
-	  g_object_ref(channel);
-	}
+	channel = ags_channel_nth(start_channel,
+				  g_ascii_strtoull(line,
+						   NULL,
+						   10));
 
 	start_port = NULL;
 
-	while(channel != NULL){
-	  AgsChannel *next;
-    
-	  /* input */
-	  port = ags_channel_collect_all_channel_ports(channel);
-
-	  if(start_port != NULL){
-	    if(port != NULL){
-	      start_port = g_list_concat(start_port,
-					 port);
-	    }
-	  }else{
-	    start_port = port;
+	/* input */
+	port = ags_channel_collect_all_channel_ports(channel);
+	
+	if(start_port != NULL){
+	  if(port != NULL){
+	    start_port = g_list_concat(start_port,
+				       port);
 	  }
-	      
-	  /* iterate */
-	  next = ags_channel_next(channel);
-
-	  g_object_unref(channel);
-
-	  channel = next;
+	}else{
+	  start_port = port;
 	}
 
 	/* unref */
 	if(start_channel != NULL){
 	  g_object_unref(start_channel);
-	}	    
+	}	      
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}	      
       }
 
-      while((port = ags_port_find_specifier(start_port,
+      port = start_port;
+      
+      while((port = ags_port_find_specifier(port,
 					    specifier)) != NULL){
 	GValue port_value = G_VALUE_INIT;
 
-	gboolean success;
+	gboolean success;  
 
 	success = FALSE;
 	
-	if(!AGS_PORT(port->data)->port_value_is_pointer){
+	if(!(AGS_PORT(port->data)->port_value_is_pointer)){
 	  if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
 	    success = TRUE;
 	    

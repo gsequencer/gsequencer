@@ -78,7 +78,9 @@ struct _AgsUiProviderInterface
 
   void (*check_message)(AgsUiProvider *ui_provider);
   void (*clean_message)(AgsUiProvider *ui_provider);
-  
+
+  void (*update_ui)(AgsUiProvider *ui_provider);
+   
   GtkWidget* (*get_animation_window)(AgsUiProvider *ui_provider);
   void (*set_animation_window)(AgsUiProvider *ui_provider,
 			       GtkWidget *animation_window);
@@ -167,6 +169,8 @@ void ags_ui_provider_setup_completed(AgsUiProvider *ui_provider);
 
 void ags_ui_provider_check_message(AgsUiProvider *ui_provider);
 void ags_ui_provider_clean_message(AgsUiProvider *ui_provider);
+
+void ags_ui_provider_update_ui(AgsUiProvider *ui_provider);
 
 GtkWidget* ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
