@@ -688,7 +688,7 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 		ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);
 
-  g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_DEFAULT_TIMEOUT),
+  g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT),
   		(GSourceFunc) ags_gsequencer_application_context_update_ui_timeout,
   		(gpointer) gsequencer_application_context);
 }

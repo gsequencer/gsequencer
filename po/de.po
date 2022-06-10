@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-06-05 08:15+0200\n"
+"POT-Creation-Date: 2022-06-10 09:04+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -125,7 +125,7 @@ msgstr "Envelope"
 msgid "preset"
 msgstr "Voreinstellung"
 
-#: ags/app/ags_machine_callbacks.c:1057
+#: ags/app/ags_machine_callbacks.c:1101
 msgid "connections"
 msgstr "Verbindungen"
 
@@ -234,21 +234,21 @@ msgstr "Eingang"
 msgid "bulk input"
 msgstr "Eingabe verknüpfen"
 
-#: ags/app/ags_gsequencer_application_context.c:3358
+#: ags/app/ags_gsequencer_application_context.c:3369
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3368
+#: ags/app/ags_gsequencer_application_context.c:3379
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:3604
+#: ags/app/ags_gsequencer_application_context.c:3615
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3614
+#: ags/app/ags_gsequencer_application_context.c:3625
 msgid "unknown sequencer backend - NULL"
 msgstr "unbekannte Sequenzer Schnittstelle - NULL"
 
@@ -1486,44 +1486,44 @@ msgstr "Lautstärke"
 
 #: ags/app/machine/ags_sfz_synth.c:532
 #: ags/app/machine/ags_hybrid_fm_synth.c:1555
-#: ags/app/machine/ags_sf2_synth.c:582 ags/app/machine/ags_hybrid_synth.c:1603
+#: ags/app/machine/ags_sf2_synth.c:582 ags/app/machine/ags_hybrid_synth.c:1609
 msgid "chorus input volume"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:566
 #: ags/app/machine/ags_hybrid_fm_synth.c:1589
-#: ags/app/machine/ags_sf2_synth.c:616 ags/app/machine/ags_hybrid_synth.c:1637
+#: ags/app/machine/ags_sf2_synth.c:616 ags/app/machine/ags_hybrid_synth.c:1643
 msgid "chorus output volume"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:600
 #: ags/app/machine/ags_hybrid_fm_synth.c:1623
-#: ags/app/machine/ags_sf2_synth.c:650 ags/app/machine/ags_hybrid_synth.c:1671
+#: ags/app/machine/ags_sf2_synth.c:650 ags/app/machine/ags_hybrid_synth.c:1677
 msgid "chorus LFO"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:630
 #: ags/app/machine/ags_hybrid_fm_synth.c:1653
-#: ags/app/machine/ags_sf2_synth.c:680 ags/app/machine/ags_hybrid_synth.c:1701
+#: ags/app/machine/ags_sf2_synth.c:680 ags/app/machine/ags_hybrid_synth.c:1707
 #, fuzzy
 msgid "chorus LFO frequency"
 msgstr "LFO Frequenz"
 
 #: ags/app/machine/ags_sfz_synth.c:645
 #: ags/app/machine/ags_hybrid_fm_synth.c:1668
-#: ags/app/machine/ags_sf2_synth.c:695 ags/app/machine/ags_hybrid_synth.c:1716
+#: ags/app/machine/ags_sf2_synth.c:695 ags/app/machine/ags_hybrid_synth.c:1722
 msgid "chorus depth"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:679
 #: ags/app/machine/ags_hybrid_fm_synth.c:1702
-#: ags/app/machine/ags_sf2_synth.c:729 ags/app/machine/ags_hybrid_synth.c:1750
+#: ags/app/machine/ags_sf2_synth.c:729 ags/app/machine/ags_hybrid_synth.c:1756
 msgid "chorus mix"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:713
 #: ags/app/machine/ags_hybrid_fm_synth.c:1736
-#: ags/app/machine/ags_sf2_synth.c:763 ags/app/machine/ags_hybrid_synth.c:1784
+#: ags/app/machine/ags_sf2_synth.c:763 ags/app/machine/ags_hybrid_synth.c:1790
 msgid "chorus delay"
 msgstr ""
 
@@ -1597,28 +1597,28 @@ msgid "Open Soundfont2 file"
 msgstr "Öffne Audio-Dateien"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:324
-#: ags/app/machine/ags_hybrid_synth.c:323
+#: ags/app/machine/ags_hybrid_synth.c:327
 msgid "OSC 1"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:354
-#: ags/app/machine/ags_hybrid_synth.c:353
+#: ags/app/machine/ags_hybrid_synth.c:357
 msgid "OSC 1 - octave"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:390
-#: ags/app/machine/ags_hybrid_synth.c:389
+#: ags/app/machine/ags_hybrid_synth.c:393
 msgid "OSC 1 - key"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:425
-#: ags/app/machine/ags_hybrid_synth.c:424
+#: ags/app/machine/ags_hybrid_synth.c:428
 #, fuzzy
 msgid "OSC 1 - phase"
 msgstr "LFO Phase"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:459
-#: ags/app/machine/ags_hybrid_synth.c:458
+#: ags/app/machine/ags_hybrid_synth.c:462
 #, fuzzy
 msgid "OSC 1 - volume"
 msgstr "Lautstärke"
@@ -1643,28 +1643,28 @@ msgid "OSC 1 - LFO depth"
 msgstr "LFO Tiefe"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:621
-#: ags/app/machine/ags_hybrid_synth.c:793
+#: ags/app/machine/ags_hybrid_synth.c:797
 msgid "OSC 2"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:651
-#: ags/app/machine/ags_hybrid_synth.c:823
+#: ags/app/machine/ags_hybrid_synth.c:827
 msgid "OSC 2 - octave"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:687
-#: ags/app/machine/ags_hybrid_synth.c:858
+#: ags/app/machine/ags_hybrid_synth.c:862
 msgid "OSC 2 - key"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:722
-#: ags/app/machine/ags_hybrid_synth.c:893
+#: ags/app/machine/ags_hybrid_synth.c:897
 #, fuzzy
 msgid "OSC 2 - phase"
 msgstr "LFO Phase"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:756
-#: ags/app/machine/ags_hybrid_synth.c:927
+#: ags/app/machine/ags_hybrid_synth.c:931
 #, fuzzy
 msgid "OSC 2 - volume"
 msgstr "Lautstärke"
@@ -1730,56 +1730,56 @@ msgid "OSC 3 - LFO depth"
 msgstr "LFO Tiefe"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1226
-#: ags/app/machine/ags_hybrid_synth.c:1270
+#: ags/app/machine/ags_hybrid_synth.c:1274
 #, fuzzy
 msgid "sequencer enabled"
 msgstr "Sequenz: "
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1232
-#: ags/app/machine/ags_hybrid_synth.c:1276
+#: ags/app/machine/ags_hybrid_synth.c:1280
 #, fuzzy
 msgid "sequencer sign"
 msgstr "Sequenz: "
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1276
-#: ags/app/machine/ags_hybrid_synth.c:1320
+#: ags/app/machine/ags_hybrid_synth.c:1324
 #, fuzzy
 msgid "pitch tuning"
 msgstr "LFO Tuning"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1310
-#: ags/app/machine/ags_hybrid_synth.c:1354
+#: ags/app/machine/ags_hybrid_synth.c:1358
 msgid "noise gain"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1368
-#: ags/app/machine/ags_hybrid_synth.c:1416
+#: ags/app/machine/ags_hybrid_synth.c:1420
 #, fuzzy
 msgid "low pass enabled"
 msgstr "eingeschaltet"
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1375
-#: ags/app/machine/ags_hybrid_synth.c:1423
+#: ags/app/machine/ags_hybrid_synth.c:1427
 msgid "low pass q-lin"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1409
-#: ags/app/machine/ags_hybrid_synth.c:1457
+#: ags/app/machine/ags_hybrid_synth.c:1461
 msgid "low pass filter gain"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1461
-#: ags/app/machine/ags_hybrid_synth.c:1509
+#: ags/app/machine/ags_hybrid_synth.c:1513
 msgid "high pass enabled"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1468
-#: ags/app/machine/ags_hybrid_synth.c:1516
+#: ags/app/machine/ags_hybrid_synth.c:1520
 msgid "high pass q-lin"
 msgstr ""
 
 #: ags/app/machine/ags_hybrid_fm_synth.c:1502
-#: ags/app/machine/ags_hybrid_synth.c:1550
+#: ags/app/machine/ags_hybrid_synth.c:1554
 msgid "high pass filter gain"
 msgstr ""
 
@@ -1787,87 +1787,92 @@ msgstr ""
 msgid "bank"
 msgstr "Bank"
 
-#: ags/app/machine/ags_hybrid_synth.c:492
+#: ags/app/machine/ags_hybrid_synth.c:496
 msgid "OSC 1 - sync enabled"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:499
+#: ags/app/machine/ags_hybrid_synth.c:503
 msgid "OSC 1 - sync factor"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:533
+#: ags/app/machine/ags_hybrid_synth.c:537
 msgid "OSC 1 - sync attack 0"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:567
+#: ags/app/machine/ags_hybrid_synth.c:571
 msgid "OSC 1 - sync phase 0"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:601
+#: ags/app/machine/ags_hybrid_synth.c:605
 msgid "OSC 1 - sync attack 1"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:635
+#: ags/app/machine/ags_hybrid_synth.c:639
 msgid "OSC 1 - sync phase 1"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:669
+#: ags/app/machine/ags_hybrid_synth.c:673
 msgid "OSC 1 - sync attack 2"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:703
+#: ags/app/machine/ags_hybrid_synth.c:707
 msgid "OSC 1 - sync phase 2"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:737
+#: ags/app/machine/ags_hybrid_synth.c:741
 msgid "OSC 1 LFO"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:767
+#: ags/app/machine/ags_hybrid_synth.c:771
 #, fuzzy
 msgid "OSC 1 LFO frequency"
 msgstr "LFO Frequenz"
 
-#: ags/app/machine/ags_hybrid_synth.c:961
+#: ags/app/machine/ags_hybrid_synth.c:965
 msgid "OSC 2 - sync enabled"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:968
+#: ags/app/machine/ags_hybrid_synth.c:972
 msgid "OSC 2 - sync factor"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1002
+#: ags/app/machine/ags_hybrid_synth.c:1006
 msgid "OSC 2 - sync attack 0"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1036
+#: ags/app/machine/ags_hybrid_synth.c:1040
 msgid "OSC 2 - sync phase 0"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1070
+#: ags/app/machine/ags_hybrid_synth.c:1074
 msgid "OSC 2 - sync attack 1"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1104
+#: ags/app/machine/ags_hybrid_synth.c:1108
 msgid "OSC 2 - sync phase 1"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1138
+#: ags/app/machine/ags_hybrid_synth.c:1142
 msgid "OSC 2 - sync attack 2"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1172
+#: ags/app/machine/ags_hybrid_synth.c:1176
 msgid "OSC 2 - sync phase 2"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1206
+#: ags/app/machine/ags_hybrid_synth.c:1210
 msgid "OSC 2 LFO"
 msgstr ""
 
-#: ags/app/machine/ags_hybrid_synth.c:1236
+#: ags/app/machine/ags_hybrid_synth.c:1240
 #, fuzzy
 msgid "OSC 2 LFO frequency"
 msgstr "LFO Frequenz"
+
+#: ags/app/machine/ags_hybrid_synth.c:1606
+#, fuzzy
+msgid "chorus enabled"
+msgstr "eingeschaltet"
 
 #: ags/app/machine/ags_pitch_sampler_file.c:207
 msgid "base key"
