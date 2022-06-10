@@ -4,6 +4,7 @@ ags (4.2.2)
 	* implemented AgsHybridFMSynth::refresh-port()
 	* implemented AgsSF2Synth::refresh-port()
 	* implemented AgsSFZSynth::refresh-port()
+	* implemented AgsMachine::refresh-port(), AgsPad::refresh-port() and AgsLine::refresh-port()
 
 ags (4.2.1)
 

@@ -50,6 +50,8 @@ void ags_machine_real_resize_pads(AgsMachine *machine,
 void ags_machine_real_map_recall(AgsMachine *machine);
 GList* ags_machine_real_find_port(AgsMachine *machine);
 
+void ags_machine_real_refresh_port(AgsMachine *machine);
+
 xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
 					      AgsChannel *start_current,
 					      guint input_pads);
@@ -247,7 +249,7 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->map_recall = ags_machine_real_map_recall;
   machine->find_port = ags_machine_real_find_port;
   machine->stop = NULL;
-  machine->refresh_port = NULL;
+  machine->refresh_port = ags_machine_real_refresh_port;
 
   /* signals */
   /**
@@ -2792,6 +2794,36 @@ ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
 		machine_signals[STOP], 0,
 		recall_id, sound_scope);
   g_object_unref((GObject *) machine);
+}
+
+void
+ags_machine_real_refresh_port(AgsMachine *machine)
+{
+  GList *start_pad, *pad;
+
+  /* output */
+  pad =
+    start_pad = ags_machine_get_output_pad(machine);
+
+  while(pad != NULL){
+    ags_pad_refresh_port(pad->data);
+
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
+
+  /* input */
+  pad =
+    start_pad = ags_machine_get_input_pad(machine);
+
+  while(pad != NULL){
+    ags_pad_refresh_port(pad->data);
+
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
 }
 
 /**

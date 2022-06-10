@@ -129,6 +129,8 @@ struct _AgsLineClass
 
   void (*stop)(AgsLine *line,
 	       GList *recall_id, gint sound_scope);
+
+  void (*refresh_port)(AgsLine *line);
 };
 
 struct _AgsLinePlugin
@@ -197,6 +199,8 @@ void ags_line_remove_plugin(AgsLine *line,
 void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);
 GList* ags_line_find_port(AgsLine *line);
+
+void ags_line_refresh_port(AgsLine *line);
 
 void ags_line_stop(AgsLine *line,
 		   GList *recall_id, gint sound_scope);
