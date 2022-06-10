@@ -48,7 +48,7 @@ void ags_message_queue_finalize(GObject *gobject);
  * @include: ags/thread/ags_message_queue.h
  *
  * The #AgsMessageQueue acts as messages passing system. The queue hosts
- * the #AgsMessageEnevelope.
+ * the #AgsMessageEnvelope.
  */
 
 enum{

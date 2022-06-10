@@ -42,7 +42,7 @@ void* ags_woker_thread_do_poll_loop(void *ptr);
  * to synchronize to the run signal within your ::do_poll() method.
  *
  * You usually connect to AgsThread::do_poll() event. The poll event
- * is invoked as long as AGS_WORKER_THREAD_STATUS_RUNNING status flag is set.
+ * is invoked as long as %AGS_WORKER_THREAD_STATUS_RUNNING status flag is set.
  *
  * You might want to inject to a thread tree using a #AgsTask implementation.
  */
