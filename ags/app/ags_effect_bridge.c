@@ -368,7 +368,6 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
-
   /**
    * AgsEffectBridge::refresh-port:
    * @effect_bridge: the #AgsEffectBridge
@@ -1669,6 +1668,14 @@ ags_effect_bridge_real_refresh_port(AgsEffectBridge *effect_bridge)
 {
   GList *start_pad, *pad;
 
+  if(effect_bridge->bulk_output != NULL){
+    ags_effect_bulk_refresh_port(AGS_EFFECT_BULK(effect_bridge->bulk_output));
+  }
+
+  if(effect_bridge->bulk_input != NULL){
+    ags_effect_bulk_refresh_port(AGS_EFFECT_BULK(effect_bridge->bulk_input));
+  }
+  
   /* output */
   pad =
     start_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);

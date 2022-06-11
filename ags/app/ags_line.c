@@ -3758,8 +3758,6 @@ ags_line_real_refresh_port(AgsLine *line)
 	gtk_toggle_button_set_active(ags_line_member_get_widget(line_member->data),
 				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }
-      
-      g_object_unref(port);
     }
     
     line_member = line_member->next;

@@ -2801,6 +2801,10 @@ ags_machine_real_refresh_port(AgsMachine *machine)
 {
   GList *start_pad, *pad;
 
+  if(machine->bridge != NULL){
+    ags_effect_bridge_refresh_port(machine->bridge);
+  }
+  
   /* output */
   pad =
     start_pad = ags_machine_get_output_pad(machine);
