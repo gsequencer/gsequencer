@@ -1290,6 +1290,8 @@ ags_sf2_synth_refresh_port(AgsMachine *machine)
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
+  machine->flags |= AGS_MACHINE_NO_UPDATE;
+
   if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
@@ -1496,6 +1498,8 @@ ags_sf2_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
   }  
+
+  machine->flags &= (~AGS_MACHINE_NO_UPDATE);
 }
 
 /**

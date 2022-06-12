@@ -3514,6 +3514,8 @@ ags_effect_bulk_real_refresh_port(AgsEffectBulk *effect_bulk)
       ags_port_safe_read(port,
 			 &value);
 
+      AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+      
       if(AGS_BULK_MEMBER(bulk_member->data)->widget_type == AGS_TYPE_DIAL){
 	ags_dial_set_value(ags_bulk_member_get_widget(bulk_member->data),
 			   (gdouble) g_value_get_float(&value));
@@ -3530,6 +3532,8 @@ ags_effect_bulk_real_refresh_port(AgsEffectBulk *effect_bulk)
 	gtk_toggle_button_set_active(ags_bulk_member_get_widget(bulk_member->data),
 				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }
+      
+      AGS_BULK_MEMBER(bulk_member->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
     }
     
     bulk_member = bulk_member->next;

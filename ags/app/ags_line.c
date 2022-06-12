@@ -3742,6 +3742,8 @@ ags_line_real_refresh_port(AgsLine *line)
       ags_port_safe_read(port,
 			 &value);
 
+      AGS_LINE_MEMBER(line_member->data)->flags |= AGS_LINE_MEMBER_NO_UPDATE;
+      
       if(AGS_LINE_MEMBER(line_member->data)->widget_type == AGS_TYPE_DIAL){
 	ags_dial_set_value(ags_line_member_get_widget(line_member->data),
 			   (gdouble) g_value_get_float(&value));
@@ -3758,6 +3760,8 @@ ags_line_real_refresh_port(AgsLine *line)
 	gtk_toggle_button_set_active(ags_line_member_get_widget(line_member->data),
 				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }
+
+      AGS_LINE_MEMBER(line_member->data)->flags &= (~AGS_LINE_MEMBER_NO_UPDATE);
     }
     
     line_member = line_member->next;

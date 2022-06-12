@@ -71,6 +71,7 @@ typedef enum{
   AGS_MACHINE_REVERSE_NOTATION        = 1 << 11,
   AGS_MACHINE_STICKY_CONTROLS         = 1 << 12,
   AGS_MACHINE_REFRESH_PORTS           = 1 << 13,
+  AGS_MACHINE_NO_UPDATE               = 1 << 14,
 }AgsMachineFlags;
 
 typedef enum{
