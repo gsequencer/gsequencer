@@ -1034,6 +1034,8 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
   
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(ladspa_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -1480,6 +1482,8 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
   
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(dssi_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -2003,6 +2007,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
 
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -2429,6 +2435,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
 
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(vst3_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);

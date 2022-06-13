@@ -693,7 +693,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 
   /* get some preferences */
   if(export_window->live_export != NULL){
-    live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
+    live_performance = gtk_check_button_get_active((GtkCheckButton *) export_window->live_export);
   }else{
     live_performance = TRUE;
   }
@@ -717,7 +717,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 
       ags_machine_set_run_extended(current_machine,
 				   TRUE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
+				   !gtk_check_button_get_active((GtkCheckButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
       success = TRUE;
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
       g_message("found machine to play!");
