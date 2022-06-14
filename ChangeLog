@@ -1,3 +1,8 @@
+ags (4.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsNotationEdit delete note
+
 ags (4.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

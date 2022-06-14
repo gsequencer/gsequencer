@@ -1348,7 +1348,7 @@ ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
 
   /* note */
   new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  new_x = zoom_factor * floor(x / zoom_factor);
+  new_x = zoom_factor * floor(new_x / zoom_factor);
     
   new_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
