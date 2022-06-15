@@ -1,3 +1,8 @@
+ags (4.2.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFMSyncsynth missing synth generator
+
 ags (4.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
