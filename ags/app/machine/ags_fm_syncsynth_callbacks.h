@@ -43,14 +43,14 @@ void ags_fm_syncsynth_fm_oscillator_control_changed_callback(AgsFMOscillator *fm
 void ags_fm_syncsynth_add_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_remove_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth);
 
-void ags_fm_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsFMSyncsynth *fm_syncsynth);
+void ags_fm_syncsynth_auto_update_callback(GtkCheckButton *check_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_update_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth);
 
 void ags_fm_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_loop_start_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_loop_end_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 
-void ags_fm_syncsynth_enable_lfo_callback(GtkToggleButton *toggle, AgsFMSyncsynth *fm_syncsynth);
+void ags_fm_syncsynth_enable_lfo_callback(GtkCheckButton *check_button, AgsFMSyncsynth *fm_syncsynth);
 
 void ags_fm_syncsynth_lfo_freq_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_lfo_phase_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);

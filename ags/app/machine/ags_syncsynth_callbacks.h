@@ -43,7 +43,7 @@ void ags_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator
 void ags_syncsynth_add_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_remove_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 
-void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
+void ags_syncsynth_auto_update_callback(GtkCheckButton *check_button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 
 void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);

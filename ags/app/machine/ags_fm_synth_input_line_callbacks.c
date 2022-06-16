@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,8 +55,11 @@ ags_fm_synth_input_line_fm_oscillator_control_changed_callback(AgsFMOscillator *
 {
   AgsFMSynth *fm_synth;
 
-  fm_synth = (AgsFMSynth *) gtk_widget_get_ancestor((GtkWidget *) fm_synth_input_line,
-						    AGS_TYPE_FM_SYNTH);
+  fm_synth = NULL;
+
+  if(AGS_LINE(fm_synth_input_line)->parent_pad != NULL){
+    fm_synth = (AgsFMSynth *) AGS_PAD(AGS_LINE(fm_synth_input_line)->parent_pad)->parent_machine;
+  }
 
   if(ags_fm_synth_test_flags(fm_synth, AGS_FM_SYNTH_AUTO_UPDATE)){
     ags_fm_synth_update(fm_synth);

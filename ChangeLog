@@ -1,3 +1,9 @@
+ags (4.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSyncsynth and AgsFMSyncsynth check button type of auto-update
+	* fixed AgsSynth and AgsFMSynth control changed callback correct parent accessor
+
 ags (4.2.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
