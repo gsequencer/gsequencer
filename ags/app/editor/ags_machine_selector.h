@@ -130,6 +130,8 @@ void ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 
 void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
 
+GMenu* ags_machine_selector_build_add_machine(AgsMachineSelector *machine_selector);
+
 AgsMachineSelector* ags_machine_selector_new();
 
 G_END_DECLS

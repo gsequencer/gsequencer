@@ -9433,6 +9433,8 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
 
 		start_list = ags_machine_selector_get_machine_radio_button(window->composite_editor->machine_selector);
 
+		position = 0;
+		
 		while(machine != NULL){
 		  if(machine->data == current_machine){
 		    break;
