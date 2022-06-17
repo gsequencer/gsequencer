@@ -1,7 +1,7 @@
 ags (4.2.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved XML restore machine selector
+	* fixed XML restore machine selector unitialized value
 
 ags (4.2.7)
 
