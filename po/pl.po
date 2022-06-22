@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-06-17 09:40+0200\n"
+"POT-Creation-Date: 2022-06-22 10:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,8 +119,8 @@ msgstr "koperta"
 #: ags/app/ags_machine_callbacks.c:1017
 #: ags/app/editor/ags_pattern_envelope.c:243
 #: ags/app/editor/ags_envelope_editor.c:180
-#: ags/app/machine/ags_live_lv2_bridge.c:495
-#: ags/app/machine/ags_lv2_bridge.c:480 ags/app/machine/ags_sf2_synth.c:417
+#: ags/app/machine/ags_live_lv2_bridge.c:501
+#: ags/app/machine/ags_lv2_bridge.c:486 ags/app/machine/ags_sf2_synth.c:417
 #: ags/app/machine/ags_ffplayer.c:361
 msgid "preset"
 msgstr "ustawienia wstępne"
@@ -1322,8 +1322,8 @@ msgstr "rozmiar bufora WASAPI"
 msgid "mute"
 msgstr ""
 
-#: ags/app/machine/ags_live_lv2_bridge.c:471
-#: ags/app/machine/ags_dssi_bridge.c:352 ags/app/machine/ags_lv2_bridge.c:458
+#: ags/app/machine/ags_live_lv2_bridge.c:474
+#: ags/app/machine/ags_dssi_bridge.c:352 ags/app/machine/ags_lv2_bridge.c:461
 #: ags/app/machine/ags_live_dssi_bridge.c:351
 #: ags/app/machine/ags_live_vst3_bridge.c:358
 #: ags/app/machine/ags_sf2_synth.c:410 ags/app/machine/ags_vst3_bridge.c:340

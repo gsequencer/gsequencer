@@ -480,11 +480,11 @@ ags_composite_edit_connect(AgsConnectable *connectable)
     vadjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
     hadjustment = gtk_scrolled_window_get_hadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
     
-    g_signal_connect(vadjustment, "value-changed",
-		     G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
+    g_signal_connect_after(vadjustment, "value-changed",
+			   G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
     
-    g_signal_connect(hadjustment, "value-changed",
-		     G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
+    g_signal_connect_after(hadjustment, "value-changed",
+			   G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
   }
 
   if(AGS_IS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)){
@@ -493,29 +493,29 @@ ags_composite_edit_connect(AgsConnectable *connectable)
     vadjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->scrolled_window);
     hadjustment = gtk_scrolled_window_get_hadjustment(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->scrolled_window);
     
-    g_signal_connect(vadjustment, "value-changed",
-		     G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
+    g_signal_connect_after(vadjustment, "value-changed",
+			   G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
     
-    g_signal_connect(hadjustment, "value-changed",
-		     G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
+    g_signal_connect_after(hadjustment, "value-changed",
+			   G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
   }
   
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
-    g_signal_connect(gtk_scrollbar_get_adjustment(composite_edit->vscrollbar), "value-changed",
-		     G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
+    g_signal_connect_after(gtk_scrollbar_get_adjustment(composite_edit->vscrollbar), "value-changed",
+			   G_CALLBACK(ags_composite_edit_vscrollbar_callback), composite_edit);
 
-    g_signal_connect(gtk_scrollbar_get_adjustment(composite_edit->hscrollbar), "value-changed",
-		     G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
+    g_signal_connect_after(gtk_scrollbar_get_adjustment(composite_edit->hscrollbar), "value-changed",
+			   G_CALLBACK(ags_composite_edit_hscrollbar_callback), composite_edit);
     
     composite_adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->vscrollbar);
 
-    g_signal_connect(composite_adjustment, "changed",
-		     G_CALLBACK(ags_composite_edit_vscrollbar_changed), composite_edit);
+    g_signal_connect_after(composite_adjustment, "changed",
+			   G_CALLBACK(ags_composite_edit_vscrollbar_changed), composite_edit);
 
     composite_adjustment = gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar);
 
-    g_signal_connect(composite_adjustment, "changed",
-		     G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_edit);
+    g_signal_connect_after(composite_adjustment, "changed",
+			   G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_edit);
   }
 }
 

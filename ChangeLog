@@ -1,3 +1,9 @@
+ags (4.2.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsNotationEdit resize and reset scrollars
+	* improved AgsLv2Bridge and AgsLiveLv2Bridge hide/show preset and program
+
 ags (4.2.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

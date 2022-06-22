@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.2.9" date="2022-06-21">
+      <description>
+	<p>
+	  Improved notation edit resize and reset scrollbars.
+	</p>
+      </description>
+    </release>
+
     <release version="4.2.8" date="2022-06-17">
       <description>
 	<p>
