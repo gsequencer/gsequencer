@@ -81,6 +81,8 @@ typedef enum{
   AGS_AUTOMATION_EDIT_LOGARITHMIC                 = 1 <<  4,
   AGS_AUTOMATION_EDIT_INTEGER                     = 1 <<  5,
   AGS_AUTOMATION_EDIT_TOGGLED                     = 1 <<  6,
+  AGS_AUTOMATION_EDIT_BLOCK_RESET_VSCROLLBAR      = 1 <<  7,
+  AGS_AUTOMATION_EDIT_BLOCK_RESET_HSCROLLBAR      = 1 <<  8,
 }AgsAutomationEditFlags;
 
 typedef enum{
