@@ -1041,7 +1041,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
       {
 	gchar **sublevel_name;
 	
-	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
+	sublevel_name = (gchar **) g_malloc(2 * sizeof(gchar*));
 
 	g_rec_mutex_lock(ipatch_mutex);
 	
@@ -1077,7 +1077,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
       {
 	gchar **sublevel_name;
 	
-	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
+	sublevel_name = (gchar **) g_malloc(2 * sizeof(gchar*));
 
 	g_rec_mutex_lock(ipatch_mutex);
 	
@@ -1118,7 +1118,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
       {
 	gchar **sublevel_name;
 	
-	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
+	sublevel_name = (gchar **) g_malloc(2 * sizeof(gchar*));
 
 	g_rec_mutex_lock(ipatch_mutex);
 	
@@ -1213,7 +1213,7 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
   ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* sublevel */
-  sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch));
+  sublevel = ags_sound_container_get_nesting_level(sound_container);
   retval = 0;
   
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -1229,21 +1229,27 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
     switch(sublevel){
     case AGS_DLS2_FILENAME:
       {
-	if(ags_ipatch_dls2_reader_select_instrument(ipatch_dls2_reader, level_index)){
-	  retval = AGS_DLS2_FILENAME;
-	}
+	retval = AGS_DLS2_FILENAME;
+
+	ipatch->nesting_level += 1;
       }
       break;
     case AGS_DLS2_IHDR:
       {
-	if(ags_ipatch_dls2_reader_select_sample(ipatch_dls2_reader, level_index)){
+	if(ags_ipatch_dls2_reader_select_instrument(ipatch_dls2_reader, level_index)){
 	  retval = AGS_DLS2_IHDR;
+
+	  ipatch->nesting_level += 1;
 	}
       }
       break;
     case AGS_DLS2_SHDR:
       {
-	retval = AGS_DLS2_SHDR;
+	if(ags_ipatch_dls2_reader_select_sample(ipatch_dls2_reader, level_index)){
+	  retval = AGS_DLS2_SHDR;
+
+	  ipatch->nesting_level += 1;
+	}
       }
       break;
     };
@@ -1259,28 +1265,36 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
     switch(sublevel){
     case AGS_SF2_FILENAME:
       {
-	if(ags_ipatch_sf2_reader_select_preset(ipatch_sf2_reader, level_index)){
-	  retval = AGS_SF2_FILENAME;
-	}
+	retval = AGS_SF2_FILENAME;
+
+	ipatch->nesting_level += 1;
       }
       break;
     case AGS_SF2_PHDR:
       {
-	if(ags_ipatch_sf2_reader_select_instrument(ipatch_sf2_reader, level_index)){
+	if(ags_ipatch_sf2_reader_select_preset(ipatch_sf2_reader, level_index)){
 	  retval = AGS_SF2_PHDR;
+
+	  ipatch->nesting_level += 1;
 	}
       }
       break;
     case AGS_SF2_IHDR:
       {
-	if(ags_ipatch_sf2_reader_select_sample(ipatch_sf2_reader, level_index)){
+	if(ags_ipatch_sf2_reader_select_instrument(ipatch_sf2_reader, level_index)){
 	  retval = AGS_SF2_IHDR;
+
+	  ipatch->nesting_level += 1;
 	}
       }
       break;
     case AGS_SF2_SHDR:
       {
-	retval = AGS_SF2_SHDR;
+	if(ags_ipatch_sf2_reader_select_sample(ipatch_sf2_reader, level_index)){
+	  retval = AGS_SF2_SHDR;
+
+	  ipatch->nesting_level += 1;
+	}
       }
       break;
     };
@@ -1296,21 +1310,27 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
     switch(sublevel){
     case AGS_GIG_FILENAME:
       {
-	if(ags_ipatch_gig_reader_select_instrument(ipatch_gig_reader, level_index)){
-	  retval = AGS_GIG_FILENAME;
-	}
+	retval = AGS_GIG_FILENAME;
+
+	ipatch->nesting_level += 1;
       }
       break;
     case AGS_GIG_IHDR:
       {
-	if(ags_ipatch_gig_reader_select_sample(ipatch_gig_reader, level_index)){
+	if(ags_ipatch_gig_reader_select_instrument(ipatch_gig_reader, level_index)){
 	  retval = AGS_GIG_IHDR;
+
+	  ipatch->nesting_level += 1;
 	}
       }
       break;
     case AGS_GIG_SHDR:
       {
-	retval = AGS_GIG_SHDR;
+	if(ags_ipatch_gig_reader_select_sample(ipatch_gig_reader, level_index)){
+	  retval = AGS_GIG_SHDR;
+
+	  ipatch->nesting_level += 1;
+	}
       }
       break;
     };

@@ -859,9 +859,6 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
     while(list != NULL){
       ags_effect_pad_remove_effect_line(effect_pad,
 					list->data);
-
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
       
       list = list->next;
     }

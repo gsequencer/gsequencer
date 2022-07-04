@@ -1490,12 +1490,16 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 			      &requested_frame_count,
 			      NULL, NULL);
     }
+
+    if(start_sf2_synth_generator != NULL){      
+      ags_sf2_synth_util_load_instrument(AGS_SF2_SYNTH_GENERATOR(start_sf2_synth_generator->data)->sf2_synth_util,
+					 preset_str,
+					 instrument_str);
     
-    if(start_sf2_synth_generator != NULL){
       g_object_set(start_sf2_synth_generator->data,
 		   "filename", audio_container->filename,
-		   "preset", audio_container->preset,
-		   "instrument", audio_container->instrument,
+		   "preset", preset_str,
+		   "instrument", instrument_str,
 		   "frame-count", requested_frame_count,
 		   "pitch-type", pitch_type,
 		   NULL);
