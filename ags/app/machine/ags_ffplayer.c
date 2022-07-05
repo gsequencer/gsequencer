@@ -1432,11 +1432,11 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 
   if(!g_ascii_strncasecmp(str,
 			  "ags-fast-pitch",
-			  16)){
+			  15)){
     pitch_type = "ags-fast-pitch";
   }else if(!g_ascii_strncasecmp(str,
 				"ags-hq-pitch",
-				14)){
+				13)){
     pitch_type = "ags-hq-pitch";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-no-interpolate",
@@ -1444,15 +1444,15 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
     pitch_type = "ags-fluid-none";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-linear-interpolate",
-				26)){
+				25)){
     pitch_type = "ags-fluid-linear";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-4th-order-interpolate",
-				29)){
+				28)){
     pitch_type = "ags-fluid-4th-order";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-7th-order-interpolate",
-				29)){
+				28)){
     pitch_type = "ags-fluid-7th-order";
   }
   
