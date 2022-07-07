@@ -2,6 +2,8 @@ ags (4.2.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed potential SIGSEGV with AgsEffectPad
+	* fixed missing pitch selection of AgsFFPlayer
+	* started to refactor functional tests
 
 ags (4.2.10)
 

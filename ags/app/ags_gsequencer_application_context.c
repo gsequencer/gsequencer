@@ -3179,11 +3179,15 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   has_core_audio = FALSE;
 
   /* pulse server */
+#if 0
   pulse_server = ags_pulse_server_new(NULL);
   gsequencer_application_context->sound_server = g_list_append(gsequencer_application_context->sound_server,
-							       pulse_server);
+  							       pulse_server);
   g_object_ref(G_OBJECT(pulse_server));
-
+#else
+  pulse_server = NULL;
+#endif
+  
   has_pulse = FALSE;
   
   /* jack server */

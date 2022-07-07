@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-06-30 09:24+0200\n"
+"POT-Creation-Date: 2022-07-07 18:16+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -234,21 +234,21 @@ msgstr "intrant"
 msgid "bulk input"
 msgstr "lien intrant"
 
-#: ags/app/ags_gsequencer_application_context.c:3369
+#: ags/app/ags_gsequencer_application_context.c:3373
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "carte son backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3379
+#: ags/app/ags_gsequencer_application_context.c:3383
 msgid "unknown soundcard backend - NULL"
 msgstr "carte son backend inconnu - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:3615
+#: ags/app/ags_gsequencer_application_context.c:3619
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "séquencer backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3625
+#: ags/app/ags_gsequencer_application_context.c:3629
 msgid "unknown sequencer backend - NULL"
 msgstr "séquencer backend inconnu - NULL"
 

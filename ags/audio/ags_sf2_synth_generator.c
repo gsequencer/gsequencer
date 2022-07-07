@@ -1541,6 +1541,8 @@ ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator
     
     sf2_synth_util->pitch_util = ags_fluid_interpolate_7th_order_util_alloc();
   }
+
+  
   
   g_rec_mutex_unlock(sf2_synth_generator_mutex);
 }
@@ -1970,7 +1972,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   gint midi_key, matching_midi_key;
   gdouble delay;
   guint attack;
-  guint frame_count;
+  guint frame_count, allocated_frame_count;
   guint buffer_size;
   guint length;
   guint current_frame_count, requested_frame_count;
@@ -2189,14 +2191,20 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-  buffer = ags_stream_alloc(frame_count,
+  if(frame_count > buffer_size){
+    allocated_frame_count = frame_count;
+  }else{
+    allocated_frame_count = buffer_size;
+  }
+
+  buffer = ags_stream_alloc(allocated_frame_count,
 			    format);
 
   sf2_synth_util = sf2_synth_generator->sf2_synth_util;
   
-  sf2_synth_util->sample_buffer = ags_stream_alloc(frame_count,
+  sf2_synth_util->sample_buffer = ags_stream_alloc(allocated_frame_count,
 						   AGS_SOUNDCARD_DOUBLE);
-  sf2_synth_util->im_buffer = ags_stream_alloc(frame_count,
+  sf2_synth_util->im_buffer = ags_stream_alloc(allocated_frame_count,
 					       AGS_SOUNDCARD_DOUBLE);
   
 #if 0
@@ -2242,7 +2250,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   ags_common_pitch_util_set_samplerate(sf2_synth_util->pitch_util,
 				       sf2_synth_util->pitch_type,
 				       samplerate);
-
+  
   sf2_synth_util->volume_util->source = sf2_synth_util->im_buffer;
     
   sf2_synth_util->volume_util->destination = sf2_synth_util->im_buffer;
@@ -2286,13 +2294,28 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   ags_sf2_synth_util_load_instrument(sf2_synth_util,
 				     preset,
 				     instrument);
-  
+
+  /* SF2 synth util compute */
   ags_sf2_synth_util_compute(sf2_synth_util);
+
+  /* reset */
+  ags_sf2_synth_util_set_source(sf2_synth_util,
+				NULL);
+
+  ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(sf2_synth_util->pitch_util,
+					sf2_synth_util->pitch_type,
+					NULL);
+    
+  sf2_synth_util->volume_util->destination = NULL;
 
   g_rec_mutex_unlock(sf2_synth_generator_mutex);    
   
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  audio_buffer_util_format);
   
   g_rec_mutex_lock(stream_mutex);
 
@@ -2301,7 +2324,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
     copy_count = buffer_size;
 
-    if(i + copy_count > frame_count){
+    if(frame_count < i + copy_count){
       copy_count = frame_count - i;
     }
 

@@ -28,7 +28,6 @@ endif
 
 libgsequencer_test_sources = [
   'ags_functional_test_util.c',
-  'gsequencer_setup_util.c',
 ]
 
 libgsequencer_test = static_library(

@@ -231,6 +231,8 @@ main(int argc, char **argv)
   priority_filename = g_strdup_printf("%s/priority.conf",
 				      wdir);
 
+  priority = ags_priority_get_instance();
+
   ags_priority_load_from_file(priority,
 			      priority_filename);
 

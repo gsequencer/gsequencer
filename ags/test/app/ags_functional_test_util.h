@@ -39,13 +39,25 @@
 #define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8 (5)
 #define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_16 (6)
 
+#define AGS_FUNCTIONAL_TEST_UTIL_DRIVER_PROGRAM(ptr) ((AgsFunctionalTestUtilDriverProgram *)(ptr))
 #define AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(f) ((AgsFunctionalTestUtilIdleCondition)(f))
 
+typedef struct _AgsFunctionalTestUtilDriverProgram AgsFunctionalTestUtilDriverProgram;
 typedef struct _AgsFunctionalTestUtilListLengthCondition AgsFunctionalTestUtilListLengthCondition;
 
-typedef void (*AgsFunctionalTestUtilAddTest)();
+typedef void (*AgsFunctionalTestUtilDriverProgramFunc)();
 
 typedef gboolean (*AgsFunctionalTestUtilIdleCondition)(gpointer data);
+
+struct _AgsFunctionalTestUtilDriverProgram
+{
+  AgsFunctionalTestUtilDriverProgramFunc driver_program_func;
+
+  guint n_params;
+  
+  gchar **param_strv;
+  GValue *param;
+};
 
 struct _AgsFunctionalTestUtilListLengthCondition
 {
@@ -53,26 +65,16 @@ struct _AgsFunctionalTestUtilListLengthCondition
   guint length;
 };
 
-GThread* ags_functional_test_util_test_runner_thread();
+void ags_functional_test_util_add_driver(gdouble timeout_s);
 
 struct timespec* ags_functional_test_util_get_default_timeout();
-
-/* legacy setup */
-void ags_functional_test_util_setup_and_launch();
-void ags_functional_test_util_setup_and_launch_filename(gchar *filename);
-
-/* gtk_main() related */
-void ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
-				       volatile gboolean *is_available);
-void ags_functional_test_util_notify_add_test(volatile gboolean *is_available);
-
-void ags_functional_test_util_do_run(int argc, char **argv,
-				     AgsFunctionalTestUtilAddTest add_test, volatile gboolean *is_available);
 
 /* synchronization */
 void ags_functional_test_util_reaction_time();
 void ags_functional_test_util_reaction_time_long();
-void ags_functional_test_util_idle();
+
+void ags_functional_test_util_idle(gint64 idle_time);
+
 void ags_functional_test_util_idle_condition_and_timeout(AgsFunctionalTestUtilIdleCondition idle_condition,
 							 struct timespec *timeout,
 							 gpointer data);
@@ -95,9 +97,9 @@ void ags_functional_test_util_fake_mouse_button_release(gpointer display, guint 
 void ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button);
 
 /* common */
-gboolean ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button,
-							       gchar **item_path,
-							       gchar *action);
+void ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button,
+							   gchar **item_path,
+							   gchar *action);
 
 gboolean ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 						  guint nth);

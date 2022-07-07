@@ -27,7 +27,7 @@ check_PROGRAMS += \
 	ags_functional_osc_xmlrpc_server_test
 
 # functional test util library
-libgsequencer_test_la_SOURCES = ags/test/app/gsequencer_setup_util.c ags/test/app/gsequencer_setup_util.h ags/test/app/ags_functional_test_util.c ags/test/app/ags_functional_test_util.h ags/test/app/libgsequencer.h
+libgsequencer_test_la_SOURCES = ags/test/app/ags_functional_test_util.c ags/test/app/ags_functional_test_util.h ags/test/app/libgsequencer.h
 libgsequencer_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_test_la_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"gsequencer.share\"
 
