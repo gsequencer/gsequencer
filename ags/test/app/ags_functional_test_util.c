@@ -83,7 +83,46 @@ void ags_functional_test_util_file_chooser_select_filenames_driver_program(guint
 									   gchar **param_strv,
 									   GValue *param);
 
-  
+void ags_functional_test_util_file_default_window_resize_driver_program(guint n_params,
+									gchar **param_strv,
+									GValue *param);
+
+void ags_functional_test_util_open_driver_program(guint n_params,
+						  gchar **param_strv,
+						  GValue *param);
+void ags_functional_test_util_save_driver_program(guint n_params,
+						  gchar **param_strv,
+						  GValue *param);
+void ags_functional_test_util_save_as_driver_program(guint n_params,
+						     gchar **param_strv,
+						     GValue *param);
+void ags_functional_test_util_export_open_driver_program(guint n_params,
+							 gchar **param_strv,
+							 GValue *param);
+
+void ags_functional_test_util_export_close_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param);
+void ags_functional_test_util_export_add_driver_program(guint n_params,
+							gchar **param_strv,
+							GValue *param);
+void ags_functional_test_util_export_tact_driver_program(guint n_params,
+							 gchar **param_strv,
+							 GValue *param);
+void ags_functional_test_util_export_remove_driver_program(guint n_params,
+							   gchar **param_strv,
+							   GValue *param);
+void ags_functional_test_util_export_set_backend_driver_program(guint n_params,
+								gchar **param_strv,
+								GValue *param);
+void ags_functional_test_util_export_set_device_driver_program(guint n_params,
+							       gchar **param_strv,
+							       GValue *param);
+void ags_functional_test_util_export_set_filename_driver_program(guint n_params,
+								 gchar **param_strv,
+								 GValue *param);
+
+
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (750000)
@@ -1305,7 +1344,9 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
 }
 
 void
-ags_functional_test_util_file_default_window_resize()
+ags_functional_test_util_file_default_window_resize_driver_program(guint n_params,
+								   gchar **param_strv,
+								   GValue *param)
 {
   AgsWindow *window;
 
@@ -1322,7 +1363,31 @@ ags_functional_test_util_file_default_window_resize()
 }
 
 void
-ags_functional_test_util_open()
+ags_functional_test_util_file_default_window_resize()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_file_default_window_resize_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_open_driver_program(guint n_params,
+					     gchar **param_strv,
+					     GValue *param)
 {
   AgsWindow *window;
   
@@ -1345,7 +1410,31 @@ ags_functional_test_util_open()
 }
 
 void
-ags_functional_test_util_save()
+ags_functional_test_util_open()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+  
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_open_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_save_driver_program(guint n_params,
+					     gchar **param_strv,
+					     GValue *param)
 {
   AgsWindow *window;
   
@@ -1368,7 +1457,31 @@ ags_functional_test_util_save()
 }
 
 void
-ags_functional_test_util_save_as()
+ags_functional_test_util_save()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_save_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_save_as_driver_program(guint n_params,
+						gchar **param_strv,
+						GValue *param)
 {
   AgsWindow *window;
   
@@ -1391,7 +1504,31 @@ ags_functional_test_util_save_as()
 }
 
 void
-ags_functional_test_util_export_open()
+ags_functional_test_util_save_as()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_save_as_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_open_driver_program(guint n_params,
+						    gchar **param_strv,
+						    GValue *param)
 {
   AgsWindow *window;
   
@@ -1414,16 +1551,35 @@ ags_functional_test_util_export_open()
 }
 
 void
-ags_functional_test_util_export_close()
+ags_functional_test_util_export_open()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_open_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_close_driver_program(guint n_params,
+						     gchar **param_strv,
+						     GValue *param)
 {
   AgsExportWindow *export_window;
   
   AgsApplicationContext *application_context;
-
-  static gchar* path_strv[] = {
-    "_Export",
-    NULL
-  };
 
   application_context = ags_application_context_get_instance();
 
@@ -1432,13 +1588,38 @@ ags_functional_test_util_export_close()
   ags_functional_test_util_dialog_close(export_window);
   
   ags_functional_test_util_reaction_time_long();
+
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_hidden),
 						      &ags_functional_test_util_default_timeout,
 						      &export_window);
 }
 
 void
-ags_functional_test_util_export_add()
+ags_functional_test_util_export_close()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_close_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_add_driver_program(guint n_params,
+						   gchar **param_strv,
+						   GValue *param)
 {
   AgsExportWindow *export_window;
   GtkButton *add_button;
@@ -1446,8 +1627,6 @@ ags_functional_test_util_export_add()
   AgsApplicationContext *application_context;
 
   AgsFunctionalTestUtilListLengthCondition condition;
-
-  gboolean success;
 
   application_context = ags_application_context_get_instance();
 
@@ -1467,11 +1646,39 @@ ags_functional_test_util_export_add()
 }
 
 void
-ags_functional_test_util_export_tact(gdouble tact)
+ags_functional_test_util_export_add()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+  
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_add_driver_program;
+  
+  driver_program->n_params = 0;
+
+  /* param string vector */
+  driver_program->param_strv = NULL;
+  
+  /* param value array */
+  driver_program->param = NULL;
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_tact_driver_program(guint n_params,
+						    gchar **param_strv,
+						    GValue *param)
 {
   AgsExportWindow *export_window;
 
   AgsApplicationContext *application_context;
+
+  gdouble tact;
+
+  tact = g_value_get_double(param);
 
   application_context = ags_application_context_get_instance();
 
@@ -1484,7 +1691,40 @@ ags_functional_test_util_export_tact(gdouble tact)
 }
 
 void
-ags_functional_test_util_export_remove(guint nth)
+ags_functional_test_util_export_tact(gdouble tact)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+  
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_tact_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("tact");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_DOUBLE);
+  g_value_set_double(driver_program->param,
+		     tact);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_remove_driver_program(guint n_params,
+						      gchar **param_strv,
+						      GValue *param)
 {
   AgsExportWindow *export_window;
   GtkButton *remove_button;
@@ -1495,8 +1735,11 @@ ags_functional_test_util_export_remove(guint nth)
 
   GList *list;
 
+  guint nth;
   guint i;
   gboolean success;
+
+  nth = g_value_get_uint(param);
 
   application_context = ags_application_context_get_instance();
 
@@ -1541,8 +1784,40 @@ ags_functional_test_util_export_remove(guint nth)
 }
 
 void
-ags_functional_test_util_export_set_backend(guint nth,
-					    gchar *backend)
+ags_functional_test_util_export_remove(guint nth)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+  
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_remove_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_set_backend_driver_program(guint n_params,
+							   gchar **param_strv,
+							   GValue *param)
 {
   AgsExportWindow *export_window;
 
@@ -1550,8 +1825,15 @@ ags_functional_test_util_export_set_backend(guint nth,
 
   GList *list_start, *list;
 
+  gchar *backend;
+
+  guint nth;
   guint i;
   gboolean success;
+  
+  nth = g_value_get_uint(param);
+  
+  backend = g_value_get_string(param + 1);
 
   application_context = ags_application_context_get_instance();
 
@@ -1605,8 +1887,47 @@ ags_functional_test_util_export_set_backend(guint nth,
 }
 
 void
-ags_functional_test_util_export_set_device(guint nth,
-					   gchar *device)
+ags_functional_test_util_export_set_backend(guint nth,
+					    gchar *backend)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+  
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_set_backend_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth");
+  driver_program->param_strv[1] = g_strdup("backend");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 1,
+		     backend);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_set_device_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param)
 {
   AgsExportWindow *export_window;
 
@@ -1614,8 +1935,15 @@ ags_functional_test_util_export_set_device(guint nth,
 
   GList *list;
 
+  gchar *device;
+  
+  guint nth;
   guint i;
   gboolean success;
+
+  nth = g_value_get_uint(param);
+  
+  device = g_value_get_string(param + 1);
 
   application_context = ags_application_context_get_instance();
 
@@ -1669,8 +1997,47 @@ ags_functional_test_util_export_set_device(guint nth,
 }
 
 void
-ags_functional_test_util_export_set_filename(guint nth,
-					     gchar *filename)
+ags_functional_test_util_export_set_device(guint nth,
+					   gchar *device)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_set_device_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth");
+  driver_program->param_strv[1] = g_strdup("device");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 1,
+		     device);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_export_set_filename_driver_program(guint n_params,
+							    gchar **param_strv,
+							    GValue *param)
 {
   AgsExportWindow *export_window;
 
@@ -1678,8 +2045,15 @@ ags_functional_test_util_export_set_filename(guint nth,
 
   GList *list;
 
+  gchar *filename;
+  
+  guint nth;
   guint i;
   gboolean success;
+
+  nth = g_value_get_uint(param);
+  
+  filename = g_value_get_string(param + 1);
 
   application_context = ags_application_context_get_instance();
 
@@ -1706,6 +2080,44 @@ ags_functional_test_util_export_set_filename(guint nth,
   }
   
   ags_functional_test_util_reaction_time_long();
+}
+
+void
+ags_functional_test_util_export_set_filename(guint nth,
+					     gchar *filename)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_export_set_filename_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth");
+  driver_program->param_strv[1] = g_strdup("filename");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 1,
+		     filename);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
 }
 
 void

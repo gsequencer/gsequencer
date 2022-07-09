@@ -45,7 +45,9 @@
 typedef struct _AgsFunctionalTestUtilDriverProgram AgsFunctionalTestUtilDriverProgram;
 typedef struct _AgsFunctionalTestUtilListLengthCondition AgsFunctionalTestUtilListLengthCondition;
 
-typedef void (*AgsFunctionalTestUtilDriverProgramFunc)();
+typedef void (*AgsFunctionalTestUtilDriverProgramFunc)(guint n_params,
+						       gchar **param_strv,
+						       GValue *param);
 
 typedef gboolean (*AgsFunctionalTestUtilIdleCondition)(gpointer data);
 
