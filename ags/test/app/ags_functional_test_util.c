@@ -35,6 +35,10 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 
+void ags_functional_test_util_assert_driver_program(guint n_params,
+						    gchar **param_strv,
+						    GValue *param);
+
 gboolean ags_functional_test_util_driver_timeout(gpointer data);
 
 void ags_functional_test_util_idle_condition_and_timeout_driver_program(guint n_params,
@@ -157,6 +161,8 @@ gboolean test_driver_program_glue = FALSE;
 
 struct timespec idle_condition_start_time;
 
+gboolean driver_program_status = TRUE;
+
 gboolean
 ags_functional_test_util_driver_timeout(gpointer data)
 {
@@ -214,6 +220,87 @@ ags_functional_test_util_add_driver(gdouble timeout_s)
   g_timeout_add((guint) (1000.0 * timeout_s),
 		(GSourceFunc) ags_functional_test_util_driver_timeout,
 		NULL);
+}
+
+void
+ags_functional_test_util_assert_driver_program(guint n_params,
+					       gchar **param_strv,
+					       GValue *param)
+{
+  gchar *filename;
+  gchar *function_str;
+  gchar *condition_str;
+
+  guint line;
+  gboolean value;
+  
+  value = g_value_get_boolean(param);
+
+  filename = g_value_get_string(param + 1);
+  line = g_value_get_uint(param + 2);
+  function_str = g_value_get_string(param + 3);
+  condition_str = g_value_get_string(param + 4);
+  
+  CU_assertImplementation((value), line, condition_str, filename, "", CU_FALSE);
+}
+
+void
+ags_functional_test_util_assert(gboolean value, gchar *filename, guint line, gchar *function_str, gchar *condition_str)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  gint64 time_stamp;
+  
+  time_stamp = g_get_monotonic_time();
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_assert_driver_program;
+  
+  driver_program->n_params = 5;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(6 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("value");
+  driver_program->param_strv[1] = g_strdup("filename");
+  driver_program->param_strv[2] = g_strdup("line");
+  driver_program->param_strv[3] = g_strdup("function_str");
+  driver_program->param_strv[4] = g_strdup("condition_str");
+  driver_program->param_strv[5] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 5);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_BOOLEAN);
+  g_value_set_boolean(driver_program->param,
+		      value);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 1,
+		     filename);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   line);
+
+  g_value_init(driver_program->param + 3,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 3,
+		     function_str);
+
+  g_value_init(driver_program->param + 4,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 4,
+		     condition_str);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
 }
 
 void

@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <CUnit/CUnit.h>
+
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_OUTPUT_TAB (0)
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB (1)
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_BULK_OUTPUT_TAB (2)
@@ -70,6 +72,10 @@ struct _AgsFunctionalTestUtilListLengthCondition
 void ags_functional_test_util_add_driver(gdouble timeout_s);
 
 struct timespec* ags_functional_test_util_get_default_timeout();
+
+#define AGS_FUNCTIONAL_TEST_UTIL_ASSERT(value) (ags_functional_test_util_assert((value), __FILE__, __LINE__, "", #value))
+
+void ags_functional_test_util_assert(gboolean value, gchar *filename, guint line, gchar *function_str, gchar *condition_str);
 
 /* synchronization */
 void ags_functional_test_util_reaction_time();
