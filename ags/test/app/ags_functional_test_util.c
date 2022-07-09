@@ -40,14 +40,50 @@ gboolean ags_functional_test_util_driver_timeout(gpointer data);
 void ags_functional_test_util_idle_condition_and_timeout_driver_program(guint n_params,
 									gchar **param_strv,
 									GValue *param);
-void ags_functional_test_util_leave_program(guint n_params,
-					    gchar **param_strv,
-					    GValue *param);
+void ags_functional_test_util_leave_driver_program(guint n_params,
+						   gchar **param_strv,
+						   GValue *param);
 
 void ags_functional_test_util_header_bar_menu_button_click_driver_program(guint n_params,
 									  gchar **param_strv,
 									  GValue *param);
+void ags_functional_test_util_combo_box_click_driver_program(guint n_params,
+							     gchar **param_strv,
+							     GValue *param);
+void ags_functional_test_util_button_click_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param);
+void ags_functional_test_util_toggle_button_click_driver_program(guint n_params,
+								 gchar **param_strv,
+								 GValue *param);
+void ags_functional_test_util_check_button_click_driver_program(guint n_params,
+								gchar **param_strv,
+								GValue *param);
+void ags_functional_test_util_menu_button_click_driver_program(guint n_params,
+							       gchar **param_strv,
+							       GValue *param);
 
+void ags_functional_test_util_dialog_apply_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param);
+void ags_functional_test_util_dialog_ok_driver_program(guint n_params,
+						       gchar **param_strv,
+						       GValue *param);
+void ags_functional_test_util_dialog_cancel_driver_program(guint n_params,
+							   gchar **param_strv,
+							   GValue *param);
+
+void ags_functional_test_util_file_chooser_open_path_driver_program(guint n_params,
+								    gchar **param_strv,
+								    GValue *param);
+void ags_functional_test_util_file_chooser_select_filename_driver_program(guint n_params,
+									  gchar **param_strv,
+									  GValue *param);
+void ags_functional_test_util_file_chooser_select_filenames_driver_program(guint n_params,
+									   gchar **param_strv,
+									   GValue *param);
+
+  
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (750000)
@@ -394,9 +430,9 @@ ags_functional_test_util_idle_test_list_length(AgsFunctionalTestUtilListLengthCo
 }
 
 void
-ags_functional_test_util_leave_program(guint n_params,
-				       gchar **param_strv,
-				       GValue *param)
+ags_functional_test_util_leave_driver_program(guint n_params,
+					      gchar **param_strv,
+					      GValue *param)
 {
   GtkWidget *window;
 
@@ -419,7 +455,7 @@ ags_functional_test_util_leave(GtkWidget *window)
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
-  driver_program->driver_program_func = ags_functional_test_util_leave_program;
+  driver_program->driver_program_func = ags_functional_test_util_leave_driver_program;
   
   driver_program->n_params = 1;
 
@@ -562,6 +598,8 @@ ags_functional_test_util_header_bar_menu_button_click_driver_program(guint n_par
   if(!success){
     g_warning("unknown action");
   }
+
+  ags_functional_test_util_reaction_time_long();
 }
 
 void
@@ -578,14 +616,14 @@ ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
-  driver_program->driver_program_func = ags_functional_test_util_leave_program;
+  driver_program->driver_program_func = ags_functional_test_util_header_bar_menu_button_click_driver_program;
   
   driver_program->n_params = 3;
 
   /* param string vector */
   driver_program->param_strv = g_malloc(4 * sizeof(gchar *));
 
-  driver_program->param_strv[0] = g_strdup("window");
+  driver_program->param_strv[0] = g_strdup("menu_button");
   driver_program->param_strv[1] = g_strdup("item_path");
   driver_program->param_strv[2] = g_strdup("action");
   driver_program->param_strv[3] = NULL;
@@ -599,360 +637,615 @@ ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button
   g_value_set_object(driver_program->param,
 		     menu_button);
 
-  g_value_init(driver_program->param,
+  g_value_init(driver_program->param + 1,
 	       G_TYPE_POINTER);
-  g_value_set_pointer(driver_program->param,
+  g_value_set_pointer(driver_program->param + 1,
 		      item_path);
 
-  g_value_init(driver_program->param,
+  g_value_init(driver_program->param + 2,
 	       G_TYPE_STRING);
-  g_value_set_string(driver_program->param,
+  g_value_set_string(driver_program->param + 2,
 		     action);
   
   test_driver_program = g_list_prepend(test_driver_program,
 				       driver_program);
 }
 
-gboolean
-ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
-					 guint nth)
+void
+ags_functional_test_util_combo_box_click_driver_program(guint n_params,
+							gchar **param_strv,
+							GValue *param)
 {
-  GtkWidget *widget;
-
-  GtkAllocation allocation;
+  GtkComboBox *combo_box;
   
-  gint x, y;
-  gint origin_x, origin_y;	
-  gint position_x, position_y;
+  guint nth;
   
-  if(combo_box == NULL ||
-     !GTK_IS_COMBO_BOX(combo_box)){
-    return(FALSE);
-  }
-
-  widget = combo_box;
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &widget);
+  combo_box = g_value_get_object(param);
   
-  /*  */
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  x = allocation.x;
-  y = allocation.y;
-
-  position_x = allocation.width / 2.0;
-  position_y = allocation.height / 2.0;
-
-  ags_functional_test_util_reaction_time();
-  
-  /*  */
+  nth = g_value_get_uint(param + 1);
 
   gtk_combo_box_set_active(combo_box,
 			   nth);
 	
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
+void
+ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
+					 guint nth)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+  
+  if(!GTK_IS_COMBO_BOX(combo_box)){
+    return;
+  }
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &combo_box);
+
+  /*  */
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_combo_box_click_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("combo_box");
+  driver_program->param_strv[1] = g_strdup("nth");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     combo_box);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_button_click_driver_program(guint n_params,
+						     gchar **param_strv,
+						     GValue *param)
+{
+  GtkButton *button;
+  
+  button = g_value_get_object(param);
+
+  /* emit signal */
+  g_signal_emit_by_name(button,
+			"clicked");
+
+  ags_functional_test_util_reaction_time_long();
+}
+
+void
 ags_functional_test_util_button_click(GtkButton *button)
 {
-  GtkWidget *widget;
+  AgsFunctionalTestUtilDriverProgram *driver_program;
 
-  GtkAllocation allocation;
-  
-  gint x, y;
-  gint origin_x, origin_y;
-  gint position_x, position_y;
-  gboolean is_realized;
-  
-  if(button == NULL ||
-     !GTK_IS_BUTTON(button)){
-    return(FALSE);
+  if(!GTK_IS_BUTTON(button)){
+    return;
   }
-  
-  widget = button;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_test_util_default_timeout,
-						      &widget);
-  
-  /*  */
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  x = allocation.x;
-  y = allocation.y;
+						      &button);
 
-  position_x = allocation.width / 2.0;
-  position_y = allocation.height / 2.0;
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
 
-#if 0
-  //TODO:JK: implement me
-#else
-  /* emit signal */
-  g_signal_emit_by_name(widget,
-			"clicked");
-  #endif
+  driver_program->driver_program_func = ags_functional_test_util_button_click_driver_program;
   
-  ags_functional_test_util_reaction_time_long();
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("button");
+  driver_program->param_strv[1] = NULL;
   
-  return(TRUE);
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     button);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
 }
 
-gboolean
-ags_functional_test_util_toggle_button_click(GtkToggleButton *button)
+void
+ags_functional_test_util_toggle_button_click_driver_program(guint n_params,
+							    gchar **param_strv,
+							    GValue *param)
 {
-  GtkWidget *widget;
+  GtkToggleButton *toggle_button;
+  
+  toggle_button = g_value_get_object(param);
 
-  GtkAllocation allocation;
-  
-  gint x, y;
-  gint origin_x, origin_y;
-  gint position_x, position_y;
-  gboolean is_realized;
-  
-  if(button == NULL ||
-     !GTK_IS_BUTTON(button)){
-    return(FALSE);
-  }
-  
-  widget = button;
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &widget);
-  
-  /*  */
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  x = allocation.x;
-  y = allocation.y;
-
-  position_x = allocation.width / 2.0;
-  position_y = allocation.height / 2.0;
-
-#if 0
-  //TODO:JK: implement me
-#else
   /* emit signal */
-  g_signal_emit_by_name(widget,
+  g_signal_emit_by_name(toggle_button,
 			"toggled");
-  #endif
-  
+
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
-ags_functional_test_util_check_button_click(GtkCheckButton *button)
+void
+ags_functional_test_util_toggle_button_click(GtkToggleButton *toggle_button)
 {
-  GtkWidget *widget;
+  AgsFunctionalTestUtilDriverProgram *driver_program;
 
-  GtkAllocation allocation;
-  
-  gint x, y;
-  gint origin_x, origin_y;
-  gint position_x, position_y;
-  gboolean is_realized;
-  
-  if(button == NULL ||
-     !GTK_IS_BUTTON(button)){
-    return(FALSE);
+  if(!GTK_IS_TOGGLE_BUTTON(toggle_button)){
+    return;
   }
-  
-  widget = button;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_test_util_default_timeout,
-						      &widget);
-  
-  /*  */
-  gtk_widget_get_allocation(widget,
-			    &allocation);
-  
-  x = allocation.x;
-  y = allocation.y;
+						      &toggle_button);
 
-  position_x = allocation.width / 2.0;
-  position_y = allocation.height / 2.0;
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
 
-#if 0
-  //TODO:JK: implement me
-#else
+  driver_program->driver_program_func = ags_functional_test_util_toggle_button_click_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("toggle_button");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     toggle_button);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_check_button_click_driver_program(guint n_params,
+							   gchar **param_strv,
+							   GValue *param)
+{
+  GtkCheckButton *check_button;
+  
+  check_button = g_value_get_object(param);
+
   /* emit signal */
-  g_signal_emit_by_name(widget,
+  g_signal_emit_by_name(check_button,
 			"toggled");
-  #endif
-  
+
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
-ags_functional_test_util_menu_button_click(GtkMenuButton *button)
+void
+ags_functional_test_util_check_button_click(GtkCheckButton *check_button)
 {
-  GtkWidget *widget;
+  AgsFunctionalTestUtilDriverProgram *driver_program;
 
-  GtkAllocation allocation;
-  
-  gint x, y;
-  gint origin_x, origin_y;
-  gint position_x, position_y;
-	
-  if(button == NULL ||
-     !GTK_IS_MENU_BUTTON(button)){
-    return(FALSE);
+  if(!GTK_IS_CHECK_BUTTON(check_button)){
+    return;
   }
-  
-  widget = button;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_test_util_default_timeout,
-						      &widget);
+						      &check_button);
 
-  gtk_widget_get_allocation(widget,
-			    &allocation);  
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
 
-  x = allocation.x;
-  y = allocation.y;
+  driver_program->driver_program_func = ags_functional_test_util_check_button_click_driver_program;
+  
+  driver_program->n_params = 1;
 
-  position_x = allocation.width / 2.0;
-  position_y = allocation.height / 2.0;
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
-#if 0
-  /* warp and click */
-  //TODO:JK: implement me
-#else
-  /* emit signal */  
-  ags_functional_test_util_reaction_time_long();
+  driver_program->param_strv[0] = g_strdup("check_button");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
 
-  /*  */
-  g_signal_emit_by_name(widget,
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     check_button);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_menu_button_click_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param)
+{
+  GtkMenuButton *menu_button;
+  
+  menu_button = g_value_get_object(param);
+
+  /* emit signal */
+  g_signal_emit_by_name(menu_button,
 			"activate");
-  #endif
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
-ags_functional_test_util_dialog_apply(GtkDialog *dialog)
+void
+ags_functional_test_util_menu_button_click(GtkMenuButton *menu_button)
 {
-  if(!GTK_IS_DIALOG(dialog)){
-    return(FALSE);
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!GTK_IS_MENU_BUTTON(menu_button)){
+    return;
   }
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &menu_button);
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_menu_button_click_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("menu_button");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     menu_button);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_dialog_apply_driver_program(guint n_params,
+						     gchar **param_strv,
+						     GValue *param)
+{
+  GtkDialog *dialog;
+  
+  dialog = g_value_get_object(param);
 
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_APPLY);
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
+void
+ags_functional_test_util_dialog_apply(GtkDialog *dialog)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!GTK_IS_DIALOG(dialog)){
+    return;
+  }
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &dialog);
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_dialog_apply_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("dialog");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     dialog);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_dialog_ok_driver_program(guint n_params,
+						  gchar **param_strv,
+						  GValue *param)
+{
+  GtkDialog *dialog;
+  
+  dialog = g_value_get_object(param);
+
+  gtk_dialog_response(dialog,
+		      GTK_RESPONSE_OK);
+
+  ags_functional_test_util_reaction_time_long();
+}
+
+void
 ags_functional_test_util_dialog_ok(GtkDialog *dialog)
 {
-  GtkButton *ok_button;
-
-  gboolean success;
+  AgsFunctionalTestUtilDriverProgram *driver_program;
   
   if(!GTK_IS_DIALOG(dialog)){
-    return(FALSE);
+    return;
   }
 
-  if(ok_button == NULL){
-    return(FALSE);
-  }
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &dialog);
 
-  ok_button = gtk_dialog_get_widget_for_response(dialog,
-						 GTK_RESPONSE_OK);
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_dialog_ok_driver_program;
   
-  success = ags_functional_test_util_button_click(ok_button);
+  driver_program->n_params = 1;
 
-  ags_functional_test_util_reaction_time_long();
-    
-  return(success);
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("dialog");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     dialog);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
 }
 
-gboolean
+void
+ags_functional_test_util_dialog_cancel_driver_program(guint n_params,
+						      gchar **param_strv,
+						      GValue *param)
+{
+  GtkDialog *dialog;
+  
+  dialog = g_value_get_object(param);
+
+  gtk_dialog_response(dialog,
+		      GTK_RESPONSE_CANCEL);
+
+  ags_functional_test_util_reaction_time_long();
+}
+
+void
 ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
 {
-  GtkButton *cancel_button;
-
-  gboolean success;
+  AgsFunctionalTestUtilDriverProgram *driver_program;
   
   if(!GTK_IS_DIALOG(dialog)){
-    return(FALSE);
+    return;
   }
 
-  cancel_button = gtk_dialog_get_widget_for_response(dialog,
-						     GTK_RESPONSE_CANCEL);
-  
-  success = ags_functional_test_util_button_click(cancel_button);
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &dialog);
 
-  ags_functional_test_util_reaction_time_long();
-    
-  return(success);
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_dialog_cancel_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("dialog");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     dialog);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
 }
 
-gboolean
-ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
-						gchar *path)
+void
+ags_functional_test_util_file_chooser_open_path_driver_program(guint n_params,
+							       gchar **param_strv,
+							       GValue *param)
 {
-  if(file_chooser == NULL ||
-     path == NULL ||
-     !GTK_IS_FILE_CHOOSER(file_chooser)){
-    return(FALSE);
-  }
+  GtkFileChooser *file_chooser;
+  
+  gchar *path;
+
+  file_chooser = g_value_get_object(param);
+
+  path = g_value_get_string(param + 1);
 
   gtk_file_chooser_set_current_folder(file_chooser,
 				      g_file_new_for_path(path),
 				      NULL);
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
-ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_chooser,
-						      gchar *filename)
+void
+ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
+						gchar *path)
 {
-  if(file_chooser == NULL ||
-     filename == NULL ||
-     !GTK_IS_FILE_CHOOSER(file_chooser)){
-    return(FALSE);
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!GTK_IS_FILE_CHOOSER(file_chooser) ||
+     path == NULL){
+    return;
   }
 
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &file_chooser);
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_file_chooser_open_path_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("file_chooser");
+  driver_program->param_strv[1] = g_strdup("path");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     file_chooser);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 1,
+		     path);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_file_chooser_select_filename_driver_program(guint n_params,
+								     gchar **param_strv,
+								     GValue *param)
+{
+  GtkFileChooser *file_chooser;
+  
+  gchar *filename;
+  
+  file_chooser = g_value_get_object(param);
+  
+  filename = g_value_get_string(param + 1);
+  
   gtk_file_chooser_set_file(file_chooser,
 			    g_file_new_for_path(filename),
 			    NULL);
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
-ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
-						       GSList *filename)
+void
+ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_chooser,
+						      gchar *filename)
 {
-  if(file_chooser == NULL ||
-     filename == NULL ||
-     !GTK_IS_FILE_CHOOSER(file_chooser)){
-    return(FALSE);
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!GTK_IS_FILE_CHOOSER(file_chooser) ||
+      filename == NULL){
+    return;
   }
 
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &file_chooser);
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_file_chooser_select_filename_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("file_chooser");
+  driver_program->param_strv[1] = g_strdup("filename");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     file_chooser);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param + 1,
+		     filename);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
+ags_functional_test_util_file_chooser_select_filenames_driver_program(guint n_params,
+								      gchar **param_strv,
+								      GValue *param)
+{
+  GtkFileChooser *file_chooser;
+
+  GSList *filename;
+  
+  file_chooser = g_value_get_object(param);
+  
+  filename = g_value_get_pointer(param + 1);
+  
   while(filename != NULL){
     gtk_file_chooser_set_file(file_chooser,
 			      g_file_new_for_path(filename->data),
@@ -962,11 +1255,56 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
   }
   
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE); 
 }
 
-gboolean
+void
+ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
+						       GSList *filename)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!GTK_IS_FILE_CHOOSER(file_chooser) ||
+      filename == NULL){
+    return;
+  }
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &file_chooser);
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_file_chooser_select_filename_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("file_chooser");
+  driver_program->param_strv[1] = g_strdup("filename");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     file_chooser);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param + 1,
+		     filename);
+  
+  test_driver_program = g_list_prepend(test_driver_program,
+				       driver_program);
+}
+
+void
 ags_functional_test_util_file_default_window_resize()
 {
   AgsWindow *window;
@@ -981,18 +1319,14 @@ ags_functional_test_util_file_default_window_resize()
 			      1920 - 128, 1080 - 64);
     
   ags_functional_test_util_reaction_time_long();
-
-  return(TRUE);
 }
 
-gboolean
+void
 ags_functional_test_util_open()
 {
   AgsWindow *window;
   
   AgsApplicationContext *application_context;
-
-  gboolean success;
 
   static gchar* path_strv[] = {
     "_Open",
@@ -1003,25 +1337,19 @@ ags_functional_test_util_open()
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  success = TRUE;
-
   ags_functional_test_util_header_bar_menu_button_click(window->app_button,
 							path_strv,
 							"app.open");
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(success); 
 }
 
-gboolean
+void
 ags_functional_test_util_save()
 {
   AgsWindow *window;
   
   AgsApplicationContext *application_context;
-
-  gboolean success;
 
   static gchar* path_strv[] = {
     "_Save",
@@ -1032,25 +1360,19 @@ ags_functional_test_util_save()
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  success = TRUE;
-
   ags_functional_test_util_header_bar_menu_button_click(window->app_button,
 							path_strv,
 							"app.save");
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(success); 
 }
 
-gboolean
+void
 ags_functional_test_util_save_as()
 {
   AgsWindow *window;
   
   AgsApplicationContext *application_context;
-
-  gboolean success;
 
   static gchar* path_strv[] = {
     "Save as",
@@ -1061,25 +1383,19 @@ ags_functional_test_util_save_as()
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  success = TRUE;
-
   ags_functional_test_util_header_bar_menu_button_click(window->app_button,
 							path_strv,
 							"app.save_as");
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(success); 
 }
 
-gboolean
+void
 ags_functional_test_util_export_open()
 {
   AgsWindow *window;
   
   AgsApplicationContext *application_context;
-
-  gboolean success;
 
   static gchar* path_strv[] = {
     "_Export",
@@ -1089,26 +1405,20 @@ ags_functional_test_util_export_open()
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-  
-  success = TRUE;
 
   ags_functional_test_util_header_bar_menu_button_click(window->app_button,
 							path_strv,
 							"app.export");
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(success); 
 }
 
-gboolean
+void
 ags_functional_test_util_export_close()
 {
   AgsExportWindow *export_window;
   
   AgsApplicationContext *application_context;
-
-  gboolean success;
 
   static gchar* path_strv[] = {
     "_Export",
@@ -1119,17 +1429,15 @@ ags_functional_test_util_export_close()
 
   export_window = ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
 
-  success = ags_functional_test_util_dialog_close(export_window);
+  ags_functional_test_util_dialog_close(export_window);
   
   ags_functional_test_util_reaction_time_long();
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_hidden),
 						      &ags_functional_test_util_default_timeout,
 						      &export_window);
-  
-  return(success); 
 }
 
-gboolean
+void
 ags_functional_test_util_export_add()
 {
   AgsExportWindow *export_window;
@@ -1151,16 +1459,14 @@ ags_functional_test_util_export_add()
 
   condition.length = g_list_length(export_window->export_soundcard) + 1;
     
-  success = ags_functional_test_util_button_click(add_button);
+  ags_functional_test_util_button_click(add_button);
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_test_util_default_timeout,
 						      &condition);
-  
-  return(success);
 }
 
-gboolean
+void
 ags_functional_test_util_export_tact(gdouble tact)
 {
   AgsExportWindow *export_window;
@@ -1175,11 +1481,9 @@ ags_functional_test_util_export_tact(gdouble tact)
 			    tact);
 
   ags_functional_test_util_reaction_time_long();
-  
-  return(TRUE);
 }
 
-gboolean
+void
 ags_functional_test_util_export_remove(guint nth)
 {
   AgsExportWindow *export_window;
@@ -1224,19 +1528,19 @@ ags_functional_test_util_export_remove(guint nth)
     g_list_free(list);
   
     if(!success){
-      return(FALSE);
+      return;
     }
     
-    success = ags_functional_test_util_button_click(remove_button);
+    success = TRUE;
+
+    ags_functional_test_util_button_click(remove_button);
     ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 							&ags_functional_test_util_default_timeout,
 							&condition);
   }
-  
-  return(success);
 }
 
-gboolean
+void
 ags_functional_test_util_export_set_backend(guint nth,
 					    gchar *backend)
 {
@@ -1298,11 +1602,9 @@ ags_functional_test_util_export_set_backend(guint nth,
   }
   
   ags_functional_test_util_reaction_time_long();
-  
-  return(success);
 }
 
-gboolean
+void
 ags_functional_test_util_export_set_device(guint nth,
 					   gchar *device)
 {
@@ -1364,11 +1666,9 @@ ags_functional_test_util_export_set_device(guint nth,
   }
   
   ags_functional_test_util_reaction_time_long();
-  
-  return(success);
 }
 
-gboolean
+void
 ags_functional_test_util_export_set_filename(guint nth,
 					     gchar *filename)
 {
@@ -1406,42 +1706,32 @@ ags_functional_test_util_export_set_filename(guint nth,
   }
   
   ags_functional_test_util_reaction_time_long();
-  
-  return(success);
 }
 
-gboolean
+void
 ags_functional_test_util_export_nth(guint nth)
 {
   //TODO:JK:
-
-  return(TRUE);
 }
 
-gboolean
+void
 ags_functional_test_util_export_set_format(guint nth,
 					   gchar *format)
 {
   //TODO:JK: 
-
-  return(TRUE);
 }
 
-gboolean
+void
 ags_functional_test_util_export_do_export(guint nth,
 					  gchar *format)
 {
   //TODO:JK: 
-
-  return(TRUE);
 }
 
-gboolean
+void
 ags_functional_test_util_quit()
 {
   //TODO:JK: 
-
-  return(TRUE);
 }
 
 gboolean
@@ -1724,7 +2014,9 @@ ags_functional_test_util_preferences_close()
 
   preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  success = ags_functional_test_util_dialog_close(preferences);
+  success = TRUE;
+
+  ags_functional_test_util_dialog_close(preferences);
   
   ags_functional_test_util_reaction_time_long();
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_null),
@@ -1873,7 +2165,9 @@ ags_functional_test_util_composite_toolbar_cursor_click()
 
   position = composite_toolbar->position;
   
-  success = ags_functional_test_util_toggle_button_click(position);
+  success = TRUE;
+
+  ags_functional_test_util_toggle_button_click(position);
 
   return(success);
 }
@@ -1897,7 +2191,9 @@ ags_functional_test_util_composite_toolbar_edit_click()
 
   edit = composite_toolbar->edit;
   
-  success = ags_functional_test_util_toggle_button_click(edit);
+  success = TRUE;
+
+  ags_functional_test_util_toggle_button_click(edit);
 
   return(success);
 }
@@ -1921,7 +2217,9 @@ ags_functional_test_util_composite_toolbar_delete_click()
 
   clear = composite_toolbar->clear;
   
-  success = ags_functional_test_util_toggle_button_click(clear);
+  success = TRUE;
+
+  ags_functional_test_util_toggle_button_click(clear);
 
   return(success);
 }
@@ -1945,7 +2243,9 @@ ags_functional_test_util_composite_toolbar_select_click()
 
   select = composite_toolbar->select;
   
-  success = ags_functional_test_util_toggle_button_click(select);
+  success = TRUE;
+
+  ags_functional_test_util_toggle_button_click(select);
 
   return(success);
 }
@@ -1969,7 +2269,9 @@ ags_functional_test_util_composite_toolbar_invert_click()
 
   invert = composite_toolbar->invert;
   
-  success = ags_functional_test_util_button_click(invert);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(invert);
 
   return(success);
 }
@@ -2001,7 +2303,9 @@ ags_functional_test_util_composite_toolbar_copy_click()
 
   copy = composite_toolbar->copy;
   
-  success = ags_functional_test_util_button_click(copy);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(copy);
 
   return(success);
 }
@@ -2025,7 +2329,9 @@ ags_functional_test_util_composite_toolbar_cut_click()
 
   cut = composite_toolbar->cut;
   
-  success = ags_functional_test_util_button_click(cut);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(cut);
 
   return(success);
 }
@@ -2049,8 +2355,10 @@ ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom)
 
   zoom = composite_toolbar->zoom;
   
-  success = ags_functional_test_util_combo_box_click(zoom,
-						     nth_zoom);
+  success = TRUE;
+
+  ags_functional_test_util_combo_box_click(zoom,
+					   nth_zoom);
 
   return(success);
 }
@@ -2819,7 +3127,9 @@ ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
     break;
   }
   
-  success = ags_functional_test_util_check_button_click(enable_button);
+  success = TRUE;
+
+  ags_functional_test_util_check_button_click(enable_button);
 
   ags_functional_test_util_reaction_time_long();
 
@@ -3054,7 +3364,9 @@ ags_functional_test_util_machine_editor_dialog_effect_add(guint nth_machine,
   effect_dialog = &(member_editor->plugin_browser);
   add_button = member_editor->add;
   
-  success = ags_functional_test_util_button_click(add_button);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(add_button);
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
 						      &ags_functional_test_util_default_timeout,
@@ -3176,13 +3488,17 @@ ags_functional_test_util_machine_editor_dialog_effect_remove(guint nth_machine,
   }
   
   /* click check button */
-  success = ags_functional_test_util_check_button_click(member_editor_entry->check_button);
+  success = TRUE;
+
+  ags_functional_test_util_check_button_click(member_editor_entry->check_button);
 
   /* click remove */
   if(success){
     ags_functional_test_util_reaction_time_long();
   
-    success = ags_functional_test_util_button_click(remove_button);
+    success = TRUE;
+
+    ags_functional_test_util_button_click(remove_button);
   
     ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 							&ags_functional_test_util_default_timeout,
@@ -3834,7 +4150,9 @@ ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
   add_collection = machine_editor_collection->add_bulk;
   
   /* add collection */
-  success = ags_functional_test_util_button_click(add_collection);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(add_collection);
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4590,7 +4908,9 @@ ags_functional_test_util_drum_open(guint nth_machine)
   open_dialog = &(drum->open_dialog);
   
   /* click open */
-  success = ags_functional_test_util_button_click(open_button);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(open_button);
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
 						      &ags_functional_test_util_default_timeout,
@@ -4847,7 +5167,9 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   open_dialog = &(ffplayer->open_dialog);
 
   /* click open */
-  success = ags_functional_test_util_button_click(open_button);
+  success = TRUE;
+
+  ags_functional_test_util_button_click(open_button);
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
 						      &ags_functional_test_util_default_timeout,

@@ -101,57 +101,57 @@ void ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_b
 							   gchar **item_path,
 							   gchar *action);
 
-gboolean ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
-						  guint nth);
+void ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
+					      guint nth);
 
-gboolean ags_functional_test_util_button_click(GtkButton *button);
-gboolean ags_functional_test_util_toggle_button_click(GtkToggleButton *toggle_button);
-gboolean ags_functional_test_util_check_button_click(GtkCheckButton *check_button);
-gboolean ags_functional_test_util_menu_button_click(GtkMenuButton *button);
+void ags_functional_test_util_button_click(GtkButton *button);
+void ags_functional_test_util_toggle_button_click(GtkToggleButton *toggle_button);
+void ags_functional_test_util_check_button_click(GtkCheckButton *check_button);
+void ags_functional_test_util_menu_button_click(GtkMenuButton *button);
 
 /* generic dialog */
-gboolean ags_functional_test_util_dialog_apply(GtkDialog *dialog);
-gboolean ags_functional_test_util_dialog_ok(GtkDialog *dialog);
-gboolean ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
+void ags_functional_test_util_dialog_apply(GtkDialog *dialog);
+void ags_functional_test_util_dialog_ok(GtkDialog *dialog);
+void ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
 
 #define ags_functional_test_util_dialog_close ags_functional_test_util_dialog_cancel
 
 /* file chooser */
-gboolean ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
-							 gchar *path);
-gboolean ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_chooser,
-							       gchar *filename);
-gboolean ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
-								GSList *filename);
+void ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
+						     gchar *path);
+void ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_chooser,
+							   gchar *filename);
+void ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
+							    GSList *filename);
 
 /* UI control */
-gboolean ags_functional_test_util_file_default_window_resize();
+void ags_functional_test_util_file_default_window_resize();
 
 /* file */
-gboolean ags_functional_test_util_open();
+void ags_functional_test_util_open();
 
-gboolean ags_functional_test_util_save();
-gboolean ags_functional_test_util_save_as();
+void ags_functional_test_util_save();
+void ags_functional_test_util_save_as();
 
-gboolean ags_functional_test_util_export_open();
-gboolean ags_functional_test_util_export_close();
-gboolean ags_functional_test_util_export_add();
-gboolean ags_functional_test_util_export_tact(gdouble tact);
+void ags_functional_test_util_export_open();
+void ags_functional_test_util_export_close();
+void ags_functional_test_util_export_add();
+void ags_functional_test_util_export_tact(gdouble tact);
 
-gboolean ags_functional_test_util_export_remove(guint nth);
-gboolean ags_functional_test_util_export_set_backend(guint nth,
-						     gchar *backend);
-gboolean ags_functional_test_util_export_set_device(guint nth,
-						    gchar *device);
-gboolean ags_functional_test_util_export_set_filename(guint nth,
-						      gchar *filename);
-gboolean ags_functional_test_util_export_nth(guint nth);
-gboolean ags_functional_test_util_export_set_format(guint nth,
-						    gchar *format);
+void ags_functional_test_util_export_remove(guint nth);
+void ags_functional_test_util_export_set_backend(guint nth,
+						 gchar *backend);
+void ags_functional_test_util_export_set_device(guint nth,
+						gchar *device);
+void ags_functional_test_util_export_set_filename(guint nth,
+						  gchar *filename);
+void ags_functional_test_util_export_nth(guint nth);
+void ags_functional_test_util_export_set_format(guint nth,
+						gchar *format);
 
-gboolean ags_functional_test_util_export_do_export();
+void ags_functional_test_util_export_do_export();
 
-gboolean ags_functional_test_util_quit();
+void ags_functional_test_util_quit();
 
 /* edit */
 gboolean ags_functional_test_util_add_machine(gchar *submenu,
