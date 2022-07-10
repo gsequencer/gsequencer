@@ -110,6 +110,8 @@ gboolean ags_functional_test_util_idle_test_widget_realized(GtkWidget **widget);
 gboolean ags_functional_test_util_idle_test_null(GtkWidget **widget);
 gboolean ags_functional_test_util_idle_test_list_length(AgsFunctionalTestUtilListLengthCondition *condition);
 
+void ags_functional_test_util_sync();
+
 /* leave */
 void ags_functional_test_util_leave(GtkWidget *window);
 

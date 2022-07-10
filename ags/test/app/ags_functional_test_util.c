@@ -51,6 +51,10 @@ void ags_functional_test_util_assert_driver_program(guint n_params,
 
 gboolean ags_functional_test_util_driver_timeout(gpointer data);
 
+void ags_functional_test_util_sync_driver_program(guint n_params,
+						  gchar **param_strv,
+						  GValue *param);
+
 void ags_functional_test_util_idle_condition_and_timeout_driver_program(guint n_params,
 									gchar **param_strv,
 									GValue *param);
@@ -684,6 +688,59 @@ ags_functional_test_util_driver_timeout(gpointer data)
   }
   
   return(G_SOURCE_CONTINUE);
+}
+
+void
+ags_functional_test_util_sync_driver_program(guint n_params,
+					     gchar **param_strv,
+					     GValue *param)
+{
+  volatile gint *is_done;
+  
+  is_done = g_value_get_pointer(param);
+
+  g_atomic_int_set(is_done,
+		   TRUE);
+}
+
+void
+ags_functional_test_util_sync()
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  volatile gint is_done;
+  
+  g_atomic_int_set(&is_done,
+		   FALSE);
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_sync_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("value");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_POINTER);
+  g_value_set_pointer(driver_program->param,
+		      &is_done);
+  
+  ags_functional_test_util_add_driver_program(driver_program);
+
+
+  while(!g_atomic_int_get(&is_done)){
+    g_usleep(1000000);
+  }
 }
 
 void
@@ -2714,15 +2771,15 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 						    gchar **param_strv,
 						    GValue *param)
 {
-  AgsWindow *window;
+  //  AgsWindow *window;
   
-  AgsApplicationContext *application_context;
+  //  AgsApplicationContext *application_context;
 
   gchar *submenu;
   gchar *machine_name;
   gchar **path_strv;
   gchar *action;
-  
+
   submenu = g_value_get_string(param);
 
   machine_name = g_value_get_string(param + 1);
@@ -2742,6 +2799,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = panel_path;
       
       action = "app.add_panel";
+
+      ags_app_action_util_add_panel();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Spectrometer",
 				  13)){
@@ -2753,6 +2812,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = spectrometer_path;
       
       action = "app.add_spectrometer";
+
+      ags_app_action_util_add_spectrometer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Equalizer",
 				  10)){
@@ -2764,6 +2825,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = equalizer_path;
       
       action = "app.add_equalizer";
+
+      ags_app_action_util_add_equalizer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Mixer",
 				  6)){
@@ -2775,6 +2838,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = mixer_path;
       
       action = "app.add_mixer";
+
+      ags_app_action_util_add_mixer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Drum",
 				  5)){
@@ -2786,7 +2851,9 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = drum_path;
       
       action = "app.add_drum";
-    }else if(!g_ascii_strncasecmp(machine_name,
+
+      ags_app_action_util_add_drum();
+     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Matrix",
 				  13)){
       static gchar* matrix_path[] = {
@@ -2797,6 +2864,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = matrix_path;
       
       action = "app.add_matrix";
+
+      ags_app_action_util_add_matrix();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Synth",
 				  6)){
@@ -2808,6 +2877,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = synth_path;
       
       action = "app.add_synth";
+
+      ags_app_action_util_add_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FM Synth",
 				  9)){
@@ -2819,6 +2890,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = fm_synth_path;
       
       action = "app.add_fm_synth";
+
+      ags_app_action_util_add_fm_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Syncsynth",
 				  10)){
@@ -2830,6 +2903,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = syncsynth_path;
       
       action = "app.add_syncsynth";
+
+      ags_app_action_util_add_syncsynth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FM Syncsynth",
 				  13)){
@@ -2841,6 +2916,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = fm_syncsynth_path;
       
       action = "app.add_fm_syncsynth";
+
+      ags_app_action_util_add_fm_syncsynth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Hybrid Synth",
 				  13)){
@@ -2852,6 +2929,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = hybrid_synth_path;
       
       action = "app.add_hybrid_synth";
+
+      ags_app_action_util_add_hybrid_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Hybrid FM Synth",
 				  16)){
@@ -2863,6 +2942,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = hybrid_fm_synth_path;
       
       action = "app.add_hybrid_fm_synth";
+
+      ags_app_action_util_add_hybrid_fm_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FPlayer",
 				  8)){
@@ -2874,6 +2955,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = ffplayer_path;
       
       action = "app.add_ffplayer";
+
+      ags_app_action_util_add_ffplayer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "SF2 Synth",
 				  10)){
@@ -2885,6 +2968,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = sf2_synth_path;
       
       action = "app.add_sf2_synth";
+
+      ags_app_action_util_add_sf2_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Pitch Sampler",
 				  8)){
@@ -2896,6 +2981,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = pitch_sampler_path;
       
       action = "app.add_pitch_sampler";
+
+      ags_app_action_util_add_pitch_sampler();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "SFZ Synth",
 				  10)){
@@ -2907,6 +2994,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = sfz_synth_path;
       
       action = "app.add_sfz_synth";
+
+      ags_app_action_util_add_sfz_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Audiorec",
 				  9)){
@@ -2918,16 +3007,20 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       path_strv = audiorec_path;
       
       action = "app.add_audiorec";
+
+      ags_app_action_util_add_audiorec();
     }
   }
-    
+
+#if 0
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   ags_functional_test_util_header_bar_menu_button_click(window->add_button,
-							path_strv,
-							action);
+  							path_strv,
+  							action);
+#endif
   
   ags_functional_test_util_reaction_time_long();
 }
@@ -3497,7 +3590,7 @@ ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom)
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
-  driver_program->driver_program_func = ags_functional_test_util_idle_driver_program;
+  driver_program->driver_program_func = ags_functional_test_util_composite_toolbar_zoom;
   
   driver_program->n_params = 1;
 
@@ -3883,7 +3976,7 @@ ags_functional_test_util_machine_menu_button_click(guint nth_machine,
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
-  driver_program->driver_program_func = ags_functional_test_util_idle_driver_program;
+  driver_program->driver_program_func = ags_functional_test_util_machine_menu_button_click;
   
   driver_program->n_params = 4;
 
@@ -4112,11 +4205,16 @@ ags_functional_test_util_machine_destroy_driver_program(guint n_params,
   machine = g_list_nth_data(start_list,
 			    nth_machine);
   
-  /* activate hide */  
+  /* activate hide */
+#if 0
   ags_functional_test_util_machine_menu_button_click(nth_machine,
 						     machine->context_menu_button,
 						     path_strv,
 						     "machine.destroy");
+#else
+  ags_machine_destroy_callback(NULL, NULL,
+			       machine);
+#endif
 }
 
 void

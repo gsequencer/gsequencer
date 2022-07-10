@@ -179,6 +179,8 @@ ags_functional_machine_add_and_destroy_test_panel()
 
   /* destroy panel */
   ags_functional_test_util_machine_destroy(0);
+
+  ags_functional_test_util_sync();
 }
 
 void
@@ -192,7 +194,8 @@ ags_functional_machine_add_and_destroy_test_mixer()
 
   /* destroy mixer */
   ags_functional_test_util_machine_destroy(0);
-  
+
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -206,7 +209,8 @@ ags_functional_machine_add_and_destroy_test_spectrometer()
 
   /* destroy spectrometer */
   ags_functional_test_util_machine_destroy(0);
-  
+
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -221,6 +225,7 @@ ags_functional_machine_add_and_destroy_test_equalizer10()
   /* destroy equalizer10 */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -235,6 +240,7 @@ ags_functional_machine_add_and_destroy_test_drum()
   /* destroy drum */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -249,6 +255,7 @@ ags_functional_machine_add_and_destroy_test_matrix()
   /* destroy matrix */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -263,6 +270,7 @@ ags_functional_machine_add_and_destroy_test_synth()
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -277,6 +285,7 @@ ags_functional_machine_add_and_destroy_test_fm_synth()
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -291,6 +300,7 @@ ags_functional_machine_add_and_destroy_test_syncsynth()
   /* destroy syncsynth */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -305,8 +315,8 @@ ags_functional_machine_add_and_destroy_test_fm_syncsynth()
   /* destroy syncsynth */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
-
 
 void
 ags_functional_machine_add_and_destroy_test_hybrid_synth()
@@ -320,6 +330,7 @@ ags_functional_machine_add_and_destroy_test_hybrid_synth()
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -334,6 +345,7 @@ ags_functional_machine_add_and_destroy_test_hybrid_fm_synth()
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -348,6 +360,7 @@ ags_functional_machine_add_and_destroy_test_ffplayer()
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -362,6 +375,7 @@ ags_functional_machine_add_and_destroy_test_sf2_synth()
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -376,6 +390,7 @@ ags_functional_machine_add_and_destroy_test_pitch_sampler()
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -390,6 +405,7 @@ ags_functional_machine_add_and_destroy_test_sfz_synth()
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 void
@@ -404,6 +420,7 @@ ags_functional_machine_add_and_destroy_test_audiorec()
   /* destroy audiorec */
   ags_functional_test_util_machine_destroy(0);
   
+  ags_functional_test_util_sync();  
 }
 
 int
