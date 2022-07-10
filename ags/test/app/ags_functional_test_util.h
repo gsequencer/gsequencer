@@ -47,6 +47,8 @@
 typedef struct _AgsFunctionalTestUtilDriverProgram AgsFunctionalTestUtilDriverProgram;
 typedef struct _AgsFunctionalTestUtilListLengthCondition AgsFunctionalTestUtilListLengthCondition;
 
+typedef void (*AgsFunctionalTestUtilAddTest)();
+
 typedef void (*AgsFunctionalTestUtilDriverProgramFunc)(guint n_params,
 						       gchar **param_strv,
 						       GValue *param);
@@ -69,7 +71,22 @@ struct _AgsFunctionalTestUtilListLengthCondition
   guint length;
 };
 
+void ags_functional_test_util_init(int *argc, char ***argv,
+				   gchar *conf_str);
+
+GThread* ags_functional_test_util_test_runner_thread();
+
+void ags_functional_test_util_do_run(int argc, char **argv,
+				     AgsFunctionalTestUtilAddTest add_test, volatile gboolean *is_available);
+
+void ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
+				       volatile gboolean *is_available);
+
+void ags_functional_test_util_notify_add_test(volatile gboolean *is_available);
+
 void ags_functional_test_util_add_driver(gdouble timeout_s);
+
+void ags_functional_test_util_add_driver_program(AgsFunctionalTestUtilDriverProgram *driver_program);
 
 struct timespec* ags_functional_test_util_get_default_timeout();
 
@@ -233,6 +250,7 @@ void ags_functional_test_util_automation_edit_select_region(guint nth_index,
 
 /* preferences */
 void ags_functional_test_util_preferences_click_tab(guint nth_tab);
+
 void ags_functional_test_util_audio_preferences_buffer_size(guint nth_backend,
 							    guint buffer_size);
 void ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,

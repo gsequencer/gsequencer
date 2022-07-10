@@ -32,8 +32,9 @@
 
 #include <ags/test/app/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
+
+#include "config.h"
 
 void ags_functional_machine_add_and_destroy_test_add_test();
 
@@ -60,29 +61,31 @@ void ags_functional_machine_add_and_destroy_test_pitch_sampler();
 void ags_functional_machine_add_and_destroy_test_sfz_synth();
 void ags_functional_machine_add_and_destroy_test_audiorec();
 
+#define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
+
 #define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=true\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+  "autosave-thread=false\n"						\
+  "simple-file=true\n"							\
+  "disable-feature=experimental\n"					\
+  "segmentation=4/4\n"							\
+  "\n"									\
+  "[thread]\n"								\
+  "model=super-threaded\n"						\
+  "super-threaded-scope=channel\n"					\
+  "lock-global=ags-thread\n"						\
+  "lock-parent=ags-recycling-thread\n"					\
+  "\n"									\
+  "[soundcard-0]\n"							\
+  "backend=alsa\n"							\
+  "device=default\n"							\
+  "samplerate=44100\n"							\
+  "buffer-size=1024\n"							\
+  "pcm-channels=2\n"							\
+  "dsp-channels=2\n"							\
+  "format=16\n"								\
+  "\n"									\
+  "[recall]\n"								\
+  "auto-sense=true\n"							\
   "\n"
 
 CU_pSuite pSuite = NULL;
@@ -129,8 +132,8 @@ ags_functional_machine_add_and_destroy_test_add_test()
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
-  
-  ags_test_quit();
+
+  ags_functional_test_util_quit();
   
   CU_cleanup_registry();
   
@@ -168,325 +171,239 @@ ags_functional_machine_add_and_destroy_test_clean_suite()
 void
 ags_functional_machine_add_and_destroy_test_panel()
 {  
-  gboolean success;
-  
   /* add panel */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Panel");
+  ags_functional_test_util_add_machine(NULL,
+				       "Panel");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy panel */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_machine_destroy(0);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_mixer()
 {
-  gboolean success;
-
   /* add mixer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Mixer");
+  ags_functional_test_util_add_machine(NULL,
+				       "Mixer");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy mixer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_spectrometer()
 {
-  gboolean success;
-
   /* add spectrometer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Spectrometer");
+  ags_functional_test_util_add_machine(NULL,
+				       "Spectrometer");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy spectrometer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_equalizer10()
 {
-  gboolean success;
-
   /* add equalizer10 */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Equalizer");
+  ags_functional_test_util_add_machine(NULL,
+				       "Equalizer");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy equalizer10 */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_drum()
 {
-  gboolean success;
-
   /* add drum */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Drum");
+  ags_functional_test_util_add_machine(NULL,
+				       "Drum");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy drum */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_matrix()
 {
-  gboolean success;
-
   /* add matrix */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Matrix");
+  ags_functional_test_util_add_machine(NULL,
+				       "Matrix");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy matrix */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_synth()
 {
-  gboolean success;
-
   /* add synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "Synth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy synth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_fm_synth()
 {
-  gboolean success;
-
   /* add synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FM Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "FM Synth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy synth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_syncsynth()
 {
-  gboolean success;
-
   /* add syncsynth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Syncsynth");
+  ags_functional_test_util_add_machine(NULL,
+				       "Syncsynth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy syncsynth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_fm_syncsynth()
 {
-  gboolean success;
-
   /* add syncsynth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FM Syncsynth");
+  ags_functional_test_util_add_machine(NULL,
+				       "FM Syncsynth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy syncsynth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 
 void
 ags_functional_machine_add_and_destroy_test_hybrid_synth()
 {
-  gboolean success;
-
   /* add synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Hybrid Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "Hybrid Synth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy synth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_hybrid_fm_synth()
 {
-  gboolean success;
-
   /* add synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Hybrid FM Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "Hybrid FM Synth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy synth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_ffplayer()
 {
-  gboolean success;
-
   /* add fplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
+  ags_functional_test_util_add_machine(NULL,
+				       "FPlayer");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy fplayer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_sf2_synth()
 {
-  gboolean success;
-
   /* add fplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "SF2 Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "SF2 Synth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy fplayer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_pitch_sampler()
 {
-  gboolean success;
-
   /* add fplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Pitch Sampler");
+  ags_functional_test_util_add_machine(NULL,
+				       "Pitch Sampler");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy fplayer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_sfz_synth()
 {
-  gboolean success;
-
   /* add fplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "SFZ Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "SFZ Synth");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy fplayer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_audiorec()
 {
-  gboolean success;
-
   /* add audiorec */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Audiorec");
+  ags_functional_test_util_add_machine(NULL,
+				       "Audiorec");
 
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
   /* destroy audiorec */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
   
-  CU_ASSERT(success == TRUE);
 }
 
 int
@@ -512,15 +429,15 @@ main(int argc, char **argv)
 		   FALSE);
   
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &argv,
-		  str);
+    ags_functional_test_util_init(&argc, &argv,
+				  str);
   }else{
-    ags_test_init(&argc, &argv,
-		  AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &argv,
+				  AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG);
   }
 #endif
     
