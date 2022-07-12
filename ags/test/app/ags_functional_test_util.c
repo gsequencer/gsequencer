@@ -40,6 +40,16 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
+#define _GNU_SOURCE
+#include <locale.h>
+
+#include <stdlib.h>
+
+#ifndef AGS_W32API
+#include <sys/time.h>
+#include <sys/resource.h>
+#endif
+
 #include <ags/i18n.h>
 
 void* ags_functional_test_util_add_test_thread(void *ptr);
@@ -195,6 +205,9 @@ void ags_functional_test_util_machine_menu_button_click_driver_program(guint n_p
 void ags_functional_test_util_machine_move_up_driver_program(guint n_params,
 							     gchar **param_strv,
 							     GValue *param);
+void ags_functional_test_util_machine_move_down_driver_program(guint n_params,
+							       gchar **param_strv,
+							       GValue *param);
 
 void ags_functional_test_util_machine_destroy_driver_program(guint n_params,
 							     gchar **param_strv,
@@ -3913,22 +3926,29 @@ ags_functional_test_util_machine_menu_button_click_driver_program(guint n_params
 			    nth_machine);
   
   if(!g_strcmp0(action, "machine.move_up")){
-    //TODO:JK: implement me
+    ags_machine_move_up_callback(NULL, NULL,
+				 machine);
   }else if(!g_strcmp0(action, "machine.move_down")){
-    //TODO:JK: implement me
+    ags_machine_move_down_callback(NULL, NULL,
+				   machine);
   }else if(!g_strcmp0(action, "machine.hide")){
-    //TODO:JK: implement me
+    ags_machine_hide_callback(NULL, NULL,
+			      machine);
   }else if(!g_strcmp0(action, "machine.show")){
-    //TODO:JK: implement me
+    ags_machine_show_callback(NULL, NULL,
+			      machine);
   }else if(!g_strcmp0(action, "machine.destroy")){
     ags_machine_destroy_callback(NULL, NULL,
 				 machine);
   }else if(!g_strcmp0(action, "machine.rename")){
-    //TODO:JK: implement me
+    ags_machine_rename_callback(NULL, NULL,
+			      machine);
   }else if(!g_strcmp0(action, "machine.rename_audio")){
-    //TODO:JK: implement me
+    ags_machine_rename_audio_callback(NULL, NULL,
+			      machine);
   }else if(!g_strcmp0(action, "machine.reposition_audio")){
-    //TODO:JK: implement me
+    ags_machine_reposition_audio_callback(NULL, NULL,
+					  machine);
   }else if(!g_strcmp0(action, "machine.properties")){
     GtkWidget **widget;
     
@@ -3943,25 +3963,35 @@ ags_functional_test_util_machine_menu_button_click_driver_program(guint n_params
 
     ags_functional_test_util_reaction_time_long();
   }else if(!g_strcmp0(action, "machine.sticky_controls")){
-    //TODO:JK: implement me
+    ags_machine_sticky_controls_callback(NULL, NULL,
+					 machine);
   }else if(!g_strcmp0(action, "machine.copy_pattern")){
-    //TODO:JK: implement me
+    ags_machine_copy_pattern_callback(NULL, NULL,
+				      machine);
   }else if(!g_strcmp0(action, "machine.paste_pattern")){
-    //TODO:JK: implement me
+    ags_machine_paste_pattern_callback(NULL, NULL,
+				       machine);
   }else if(!g_strcmp0(action, "machine.envelope")){
-    //TODO:JK: implement me
+    ags_machine_envelope_callback(NULL, NULL,
+				  machine);
   }else if(!g_strcmp0(action, "machine.audio_connection")){
-    //TODO:JK: implement me
+    ags_machine_audio_connection_callback(NULL, NULL,
+					  machine);
   }else if(!g_strcmp0(action, "machine.midi_connection")){
-    //TODO:JK: implement me
+    ags_machine_midi_connection_callback(NULL, NULL,
+					 machine);
   }else if(!g_strcmp0(action, "machine.audio_export")){
-    //TODO:JK: implement me
+    ags_machine_audio_export_callback(NULL, NULL,
+				      machine);
   }else if(!g_strcmp0(action, "machine.midi_export")){
-    //TODO:JK: implement me
+    ags_machine_midi_export_callback(NULL, NULL,
+				     machine);
   }else if(!g_strcmp0(action, "machine.audio_import")){
-    //TODO:JK: implement me
+    ags_machine_audio_import_callback(NULL, NULL,
+				      machine);
   }else if(!g_strcmp0(action, "machine.midi_import")){
-    //TODO:JK: implement me
+    ags_machine_midi_import_callback(NULL, NULL,
+				     machine);
   }  
 }
 
@@ -4046,10 +4076,8 @@ ags_functional_test_util_machine_move_up_driver_program(guint n_params,
   machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  /* activate hide */  
-  ags_functional_test_util_machine_menu_button_click(nth_machine,machine->context_menu_button,
-						     path_strv,
-						     "machine.move_up");
+  ags_machine_move_up_callback(NULL, NULL,
+			       machine);
 }
 
 void
@@ -4083,7 +4111,9 @@ ags_functional_test_util_machine_move_up(guint nth_machine)
 }
 
 void
-ags_functional_test_util_machine_move_down(guint nth_machine)
+ags_functional_test_util_machine_move_down_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param)
 {
   AgsWindow *window;
   AgsMachine *machine;
@@ -4092,10 +4122,14 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
 
   GList *start_list;
 
+  guint nth_machine;
+  
   static gchar* path_strv[] = {
     "move down",
     NULL
   };
+
+  nth_machine = g_value_get_uint(param);
 
   application_context = ags_application_context_get_instance();
 
@@ -4106,11 +4140,39 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
   machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  /* activate hide */  
-  ags_functional_test_util_machine_menu_button_click(nth_machine,
-						     machine->context_menu_button,
-						     path_strv,
-						     "machine.move_down");
+  /* activate move down */  
+  ags_machine_move_down_callback(NULL, NULL,
+				 machine);
+}
+
+void
+ags_functional_test_util_machine_move_down(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_move_down_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  ags_functional_test_util_add_driver_program(driver_program);    
 }
 
 void

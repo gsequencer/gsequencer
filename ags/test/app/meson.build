@@ -39,6 +39,7 @@ libgsequencer_test = static_library(
 )
 
 interactive_tests = [
+  'ags_functional_machine_add_and_destroy_test',
 ]
 
 foreach interactive_test : interactive_tests
