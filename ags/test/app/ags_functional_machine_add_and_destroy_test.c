@@ -177,10 +177,14 @@ ags_functional_machine_add_and_destroy_test_panel()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_PANEL);
+  
   /* destroy panel */
   ags_functional_test_util_machine_destroy(0);
 
   ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -192,10 +196,14 @@ ags_functional_machine_add_and_destroy_test_mixer()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MIXER);
+
   /* destroy mixer */
   ags_functional_test_util_machine_destroy(0);
 
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -207,10 +215,14 @@ ags_functional_machine_add_and_destroy_test_spectrometer()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SPECTROMETER);
+
   /* destroy spectrometer */
   ags_functional_test_util_machine_destroy(0);
 
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -222,10 +234,14 @@ ags_functional_machine_add_and_destroy_test_equalizer10()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_EQUALIZER10);
+
   /* destroy equalizer10 */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -237,10 +253,14 @@ ags_functional_machine_add_and_destroy_test_drum()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_DRUM);
+
   /* destroy drum */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -252,10 +272,14 @@ ags_functional_machine_add_and_destroy_test_matrix()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MATRIX);
+
   /* destroy matrix */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -267,10 +291,14 @@ ags_functional_machine_add_and_destroy_test_synth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SYNTH);
+
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -282,10 +310,14 @@ ags_functional_machine_add_and_destroy_test_fm_synth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FM_SYNTH);
+
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -297,10 +329,14 @@ ags_functional_machine_add_and_destroy_test_syncsynth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SYNCSYNTH);
+
   /* destroy syncsynth */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -312,10 +348,14 @@ ags_functional_machine_add_and_destroy_test_fm_syncsynth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FM_SYNCSYNTH);
+
   /* destroy syncsynth */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -327,10 +367,14 @@ ags_functional_machine_add_and_destroy_test_hybrid_synth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_HYBRID_SYNTH);
+
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -342,10 +386,14 @@ ags_functional_machine_add_and_destroy_test_hybrid_fm_synth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_HYBRID_FM_SYNTH);
+
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -357,10 +405,14 @@ ags_functional_machine_add_and_destroy_test_ffplayer()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FFPLAYER);
+
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -372,10 +424,14 @@ ags_functional_machine_add_and_destroy_test_sf2_synth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SF2_SYNTH);
+
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -387,10 +443,14 @@ ags_functional_machine_add_and_destroy_test_pitch_sampler()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_PITCH_SAMPLER);
+
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -402,10 +462,14 @@ ags_functional_machine_add_and_destroy_test_sfz_synth()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SFZ_SYNTH);
+
   /* destroy fplayer */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 void
@@ -417,10 +481,14 @@ ags_functional_machine_add_and_destroy_test_audiorec()
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
 
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_AUDIOREC);
+
   /* destroy audiorec */
   ags_functional_test_util_machine_destroy(0);
   
-  ags_functional_test_util_sync();  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
 }
 
 int

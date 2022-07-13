@@ -249,6 +249,7 @@ gint64 reaction_idle_time = 0;
 gboolean test_driver_yield = FALSE;
 
 GList *test_driver_program = NULL;
+GList *test_stack = NULL;
 
 gboolean test_driver_program_glue = FALSE;
 
@@ -766,9 +767,28 @@ ags_functional_test_util_add_driver(gdouble timeout_s)
 
 void
 ags_functional_test_util_add_driver_program(AgsFunctionalTestUtilDriverProgram *driver_program)
-{  
+{
   test_driver_program = g_list_prepend(test_driver_program,
 				       driver_program);
+}
+
+GValue*
+ags_functional_test_util_stack_get(gint position)
+{
+  return(g_list_nth_data(test_stack, position));
+}
+
+void
+ags_functional_test_util_stack_add(GValue *value)
+{
+  test_stack = g_list_prepend(test_stack,
+			      value);
+}
+
+void
+ags_functional_test_util_stack_clear()
+{
+  test_stack = NULL;
 }
 
 void
@@ -965,10 +985,10 @@ ags_functional_test_util_idle_condition_and_timeout_driver_program(guint n_param
   clock_gettime(CLOCK_MONOTONIC,
                 &current_time);
 
-  if(idle_condition(data)){
-    g_usleep(4);    
+  if(!idle_condition(data)){
+      g_usleep(4);
   }else{
-    if(idle_condition_start_time.tv_sec + timeout->tv_sec < current_time.tv_sec){
+    if(idle_condition_start_time.tv_sec + timeout->tv_sec > current_time.tv_sec){
       test_driver_program_glue = TRUE;
 
       test_driver_yield = TRUE;
@@ -2784,21 +2804,27 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 						    gchar **param_strv,
 						    GValue *param)
 {
-  //  AgsWindow *window;
+  AgsWindow *window;
   
-  //  AgsApplicationContext *application_context;
+  AgsApplicationContext *application_context;
 
   gchar *submenu;
   gchar *machine_name;
   gchar **path_strv;
   gchar *action;
 
+  gboolean success;
+  
+  GValue *value;
+  
   submenu = g_value_get_string(param);
 
   machine_name = g_value_get_string(param + 1);
 
   path_strv = NULL;
   action = NULL;
+
+  success = FALSE;
   
   if(submenu == NULL){
     if(!g_ascii_strncasecmp(machine_name,
@@ -2813,6 +2839,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_panel";
 
+      success = TRUE;
+      
       ags_app_action_util_add_panel();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Spectrometer",
@@ -2826,6 +2854,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_spectrometer";
 
+      success = TRUE;
+      
       ags_app_action_util_add_spectrometer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Equalizer",
@@ -2839,6 +2869,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_equalizer";
 
+      success = TRUE;
+      
       ags_app_action_util_add_equalizer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Mixer",
@@ -2852,6 +2884,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_mixer";
 
+      success = TRUE;
+      
       ags_app_action_util_add_mixer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Drum",
@@ -2865,6 +2899,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_drum";
 
+      success = TRUE;
+      
       ags_app_action_util_add_drum();
      }else if(!g_ascii_strncasecmp(machine_name,
 				  "Matrix",
@@ -2878,6 +2914,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_matrix";
 
+      success = TRUE;
+      
       ags_app_action_util_add_matrix();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Synth",
@@ -2891,6 +2929,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_synth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FM Synth",
@@ -2904,6 +2944,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_fm_synth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_fm_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Syncsynth",
@@ -2917,6 +2959,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_syncsynth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_syncsynth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FM Syncsynth",
@@ -2930,6 +2974,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_fm_syncsynth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_fm_syncsynth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Hybrid Synth",
@@ -2943,6 +2989,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_hybrid_synth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_hybrid_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Hybrid FM Synth",
@@ -2956,6 +3004,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_hybrid_fm_synth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_hybrid_fm_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FPlayer",
@@ -2969,6 +3019,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_ffplayer";
 
+      success = TRUE;
+      
       ags_app_action_util_add_ffplayer();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "SF2 Synth",
@@ -2982,6 +3034,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_sf2_synth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_sf2_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Pitch Sampler",
@@ -2995,6 +3049,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_pitch_sampler";
 
+      success = TRUE;
+      
       ags_app_action_util_add_pitch_sampler();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "SFZ Synth",
@@ -3008,6 +3064,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_sfz_synth";
 
+      success = TRUE;
+      
       ags_app_action_util_add_sfz_synth();
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Audiorec",
@@ -3021,19 +3079,27 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       action = "app.add_audiorec";
 
+      success = TRUE;
+      
       ags_app_action_util_add_audiorec();
     }
   }
 
-#if 0
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  ags_functional_test_util_header_bar_menu_button_click(window->add_button,
-  							path_strv,
-  							action);
-#endif
+  if(success){
+    value = g_new0(GValue,
+		   1);
+    g_value_init(value,
+		 G_TYPE_OBJECT);
+    
+    g_value_set_object(value,
+		       window->machine->data);
+  
+    ags_functional_test_util_stack_add(value);
+  }
   
   ags_functional_test_util_reaction_time_long();
 }

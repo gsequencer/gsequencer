@@ -88,9 +88,18 @@ void ags_functional_test_util_add_driver(gdouble timeout_s);
 
 void ags_functional_test_util_add_driver_program(AgsFunctionalTestUtilDriverProgram *driver_program);
 
+GValue* ags_functional_test_util_stack_get(gint position);
+
+void ags_functional_test_util_stack_add(GValue *value);
+void ags_functional_test_util_stack_clear();
+
 struct timespec* ags_functional_test_util_get_default_timeout();
 
 #define AGS_FUNCTIONAL_TEST_UTIL_ASSERT(value) (ags_functional_test_util_assert((value), __FILE__, __LINE__, "", #value))
+
+#define AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_POINTER_NOT_NULL(position) (ags_functional_test_util_assert((g_value_get_pointer(ags_functional_test_util_stack_get(position)) != NULL), __FILE__, __LINE__, "", #position))
+#define AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_NOT_NULL(position) (ags_functional_test_util_assert((g_value_get_object(ags_functional_test_util_stack_get(position)) != NULL), __FILE__, __LINE__, "", #position))
+#define AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(position, gtype) (ags_functional_test_util_assert((g_type_is_a(G_OBJECT_TYPE(g_value_get_object(ags_functional_test_util_stack_get(position))), gtype)), __FILE__, __LINE__, "", #position))
 
 void ags_functional_test_util_assert(gboolean value, gchar *filename, guint line, gchar *function_str, gchar *condition_str);
 
