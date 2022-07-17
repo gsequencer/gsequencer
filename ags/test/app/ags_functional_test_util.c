@@ -208,10 +208,41 @@ void ags_functional_test_util_machine_move_up_driver_program(guint n_params,
 void ags_functional_test_util_machine_move_down_driver_program(guint n_params,
 							       gchar **param_strv,
 							       GValue *param);
-
+void ags_functional_test_util_machine_hide_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param);
+void ags_functional_test_util_machine_show_driver_program(guint n_params,
+							  gchar **param_strv,
+							  GValue *param);
 void ags_functional_test_util_machine_destroy_driver_program(guint n_params,
 							     gchar **param_strv,
 							     GValue *param);
+void ags_functional_test_util_machine_rename_open_driver_program(guint n_params,
+								 gchar **param_strv,
+								 GValue *param);
+void ags_functional_test_util_machine_editor_dialog_open_driver_program(guint n_params,
+									gchar **param_strv,
+									GValue *param);
+
+void ags_functional_test_util_machine_editor_dialog_click_tab_driver_program(guint n_params,
+									     gchar **param_strv,
+									     GValue *param);
+void ags_functional_test_util_machine_editor_dialog_click_enable_driver_program(guint n_params,
+										gchar **param_strv,
+										GValue *param);
+void ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_params,
+									    gchar **param_strv,
+									    GValue *param);
+
+void ags_functional_test_util_machine_editor_dialog_resize_audio_channels_driver_program(guint n_params,
+											 gchar **param_strv,
+											 GValue *param);
+void ags_functional_test_util_machine_editor_dialog_resize_inputs_driver_program(guint n_params,
+										 gchar **param_strv,
+										 GValue *param);
+void ags_functional_test_util_machine_editor_dialog_resize_outputs_driver_program(guint n_params,
+										  gchar **param_strv,
+										  GValue *param);
 
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
@@ -248,7 +279,9 @@ gint64 reaction_idle_time = 0;
 
 gboolean test_driver_yield = FALSE;
 
+GRecMutex test_driver_mutex;
 GList *test_driver_program = NULL;
+
 GList *test_stack = NULL;
 
 gboolean test_driver_program_glue = FALSE;
@@ -679,13 +712,19 @@ ags_functional_test_util_driver_timeout(gpointer data)
 
 	gboolean success;
 
+	g_rec_mutex_lock(&test_driver_mutex);
+      
 	list = g_list_last(test_driver_program);
 	
 	driver_program = list->data;
 
+	g_rec_mutex_unlock(&test_driver_mutex);
+      
 	driver_program->driver_program_func(driver_program->n_params,
 					    driver_program->param_strv,
 					    driver_program->param);
+
+	g_rec_mutex_lock(&test_driver_mutex);
 	
 	if(!test_driver_program_glue){
 	  test_driver_program = g_list_remove(test_driver_program,
@@ -693,6 +732,8 @@ ags_functional_test_util_driver_timeout(gpointer data)
 	}else{
 	  test_driver_program_glue = FALSE;
 	}
+
+	g_rec_mutex_unlock(&test_driver_mutex);
       }
     }
   }while(!test_driver_yield && current_stamp + time_limit < driver_stamp + action_time && test_driver_program != NULL);
@@ -768,8 +809,12 @@ ags_functional_test_util_add_driver(gdouble timeout_s)
 void
 ags_functional_test_util_add_driver_program(AgsFunctionalTestUtilDriverProgram *driver_program)
 {
+  g_rec_mutex_lock(&test_driver_mutex);
+  
   test_driver_program = g_list_prepend(test_driver_program,
 				       driver_program);
+
+  g_rec_mutex_unlock(&test_driver_mutex);
 }
 
 GValue*
@@ -1057,7 +1102,7 @@ ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget)
      gtk_widget_is_visible(*widget)){
     do_idle = FALSE;
   }
-  
+
   return(do_idle);
 }
 
@@ -1204,6 +1249,26 @@ ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
   XTestFakeButtonEvent((Display *) display, button, 1, delay);
   XTestFakeButtonEvent((Display *) display, button, 0, delay);
   XFlush((Display *) display);
+}
+
+void
+ags_functional_test_util_fake_button_click(GtkButton *button)
+{
+  g_signal_emit_by_name(button, "clicked");
+}
+
+void
+ags_functional_test_util_fake_toggle_button_click(GtkToggleButton *toggle_button)
+{
+  gtk_toggle_button_set_active(toggle_button,
+			       !gtk_toggle_button_get_active(toggle_button));
+}
+
+void
+ags_functional_test_util_fake_check_button_click(GtkCheckButton *check_button)
+{
+  gtk_check_button_set_active(check_button,
+			      !gtk_check_button_get_active(check_button));
 }
 
 void
@@ -1370,10 +1435,6 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
     return;
   }
 
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &combo_box);
-
   /*  */
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1416,8 +1477,7 @@ ags_functional_test_util_button_click_driver_program(guint n_params,
   button = g_value_get_object(param);
 
   /* emit signal */
-  g_signal_emit_by_name(button,
-			"clicked");
+  ags_functional_test_util_fake_button_click(button);
 
   ags_functional_test_util_reaction_time_long();
 }
@@ -1430,10 +1490,6 @@ ags_functional_test_util_button_click(GtkButton *button)
   if(!GTK_IS_BUTTON(button)){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &button);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1470,8 +1526,7 @@ ags_functional_test_util_toggle_button_click_driver_program(guint n_params,
   toggle_button = g_value_get_object(param);
 
   /* emit signal */
-  g_signal_emit_by_name(toggle_button,
-			"toggled");
+  ags_functional_test_util_fake_toggle_button_click(toggle_button);
 
   ags_functional_test_util_reaction_time_long();
 }
@@ -1484,10 +1539,6 @@ ags_functional_test_util_toggle_button_click(GtkToggleButton *toggle_button)
   if(!GTK_IS_TOGGLE_BUTTON(toggle_button)){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &toggle_button);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1524,8 +1575,7 @@ ags_functional_test_util_check_button_click_driver_program(guint n_params,
   check_button = g_value_get_object(param);
 
   /* emit signal */
-  g_signal_emit_by_name(check_button,
-			"toggled");
+  ags_functional_test_util_fake_check_button_click(check_button);
 
   ags_functional_test_util_reaction_time_long();
 }
@@ -1538,10 +1588,6 @@ ags_functional_test_util_check_button_click(GtkCheckButton *check_button)
   if(!GTK_IS_CHECK_BUTTON(check_button)){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &check_button);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1593,10 +1639,6 @@ ags_functional_test_util_menu_button_click(GtkMenuButton *menu_button)
     return;
   }
 
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &menu_button);
-
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
@@ -1645,10 +1687,6 @@ ags_functional_test_util_dialog_apply(GtkDialog *dialog)
   if(!GTK_IS_DIALOG(dialog)){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &dialog);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1699,10 +1737,6 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
     return;
   }
 
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &dialog);
-
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
@@ -1751,10 +1785,6 @@ ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
   if(!GTK_IS_DIALOG(dialog)){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &dialog);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1811,10 +1841,6 @@ ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
      path == NULL){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &file_chooser);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1877,10 +1903,6 @@ ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_choos
      filename == NULL){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &file_chooser);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -1947,10 +1969,6 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
      filename == NULL){
     return;
   }
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_test_util_default_timeout,
-						      &file_chooser);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -2816,11 +2834,13 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
   gboolean success;
   
   GValue *value;
-  
+
   submenu = g_value_get_string(param);
 
   machine_name = g_value_get_string(param + 1);
 
+  application_context = ags_application_context_get_instance();
+  
   path_strv = NULL;
   action = NULL;
 
@@ -2840,8 +2860,9 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       action = "app.add_panel";
 
       success = TRUE;
-      
-      ags_app_action_util_add_panel();
+
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_panel",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Spectrometer",
 				  13)){
@@ -2856,7 +2877,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_spectrometer();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_spectrometer",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Equalizer",
 				  10)){
@@ -2871,7 +2893,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_equalizer();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_equalizer",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Mixer",
 				  6)){
@@ -2886,7 +2909,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_mixer();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_mixer",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Drum",
 				  5)){
@@ -2901,7 +2925,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_drum();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_drum",
+				     NULL);
      }else if(!g_ascii_strncasecmp(machine_name,
 				  "Matrix",
 				  13)){
@@ -2916,7 +2941,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_matrix();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_matrix",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Synth",
 				  6)){
@@ -2931,7 +2957,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_synth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_synth",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FM Synth",
 				  9)){
@@ -2946,7 +2973,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_fm_synth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_fm_synth",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Syncsynth",
 				  10)){
@@ -2961,7 +2989,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_syncsynth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_syncsynth",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FM Syncsynth",
 				  13)){
@@ -2976,7 +3005,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_fm_syncsynth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_fm_syncsynth",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Hybrid Synth",
 				  13)){
@@ -2991,7 +3021,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_hybrid_synth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_hybrid_synth",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Hybrid FM Synth",
 				  16)){
@@ -3006,7 +3037,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_hybrid_fm_synth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_hybrid_fm_synth",
+ 				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FPlayer",
 				  8)){
@@ -3021,7 +3053,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_ffplayer();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_ffplayer",
+ 				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "SF2 Synth",
 				  10)){
@@ -3036,7 +3069,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_sf2_synth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_sf2_synth",
+ 				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Pitch Sampler",
 				  8)){
@@ -3051,7 +3085,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_pitch_sampler();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_pitch_sampler",
+ 				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "SFZ Synth",
 				  10)){
@@ -3066,7 +3101,8 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_sfz_synth();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_sfz_synth",
+ 				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "Audiorec",
 				  9)){
@@ -3081,11 +3117,10 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
 
       success = TRUE;
       
-      ags_app_action_util_add_audiorec();
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_audiorec",
+ 				     NULL);
     }
   }
-
-  application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
@@ -3992,72 +4027,81 @@ ags_functional_test_util_machine_menu_button_click_driver_program(guint n_params
 			    nth_machine);
   
   if(!g_strcmp0(action, "machine.move_up")){
-    ags_machine_move_up_callback(NULL, NULL,
-				 machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.move_up",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.move_down")){
-    ags_machine_move_down_callback(NULL, NULL,
-				   machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.move_down",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.hide")){
-    ags_machine_hide_callback(NULL, NULL,
-			      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.hide",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.show")){
-    ags_machine_show_callback(NULL, NULL,
-			      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.show",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.destroy")){
-    ags_machine_destroy_callback(NULL, NULL,
-				 machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.destroy",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.rename")){
-    ags_machine_rename_callback(NULL, NULL,
-			      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.rename",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.rename_audio")){
-    ags_machine_rename_audio_callback(NULL, NULL,
-			      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.rename_audio",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.reposition_audio")){
-    ags_machine_reposition_audio_callback(NULL, NULL,
-					  machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.reposition_audio",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.properties")){
-    GtkWidget **widget;
-    
-    ags_machine_properties_callback(NULL, NULL,
-				    machine);
-
-    widget = &(machine->machine_editor_dialog);
-
-    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-							&ags_functional_test_util_default_timeout,
-							widget);
-
-    ags_functional_test_util_reaction_time_long();
+    gtk_widget_activate_action_variant(machine,
+				       "machine.properties",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.sticky_controls")){
-    ags_machine_sticky_controls_callback(NULL, NULL,
-					 machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.sticky_controls",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.copy_pattern")){
-    ags_machine_copy_pattern_callback(NULL, NULL,
-				      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.copy_pattern",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.paste_pattern")){
-    ags_machine_paste_pattern_callback(NULL, NULL,
-				       machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.paste_pattern",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.envelope")){
-    ags_machine_envelope_callback(NULL, NULL,
-				  machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.envelope",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.audio_connection")){
-    ags_machine_audio_connection_callback(NULL, NULL,
-					  machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.audio_connection",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.midi_connection")){
-    ags_machine_midi_connection_callback(NULL, NULL,
-					 machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.midi_connection",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.audio_export")){
-    ags_machine_audio_export_callback(NULL, NULL,
-				      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.audio_export",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.midi_export")){
-    ags_machine_midi_export_callback(NULL, NULL,
-				     machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.midi_export",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.audio_import")){
-    ags_machine_audio_import_callback(NULL, NULL,
-				      machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.audio_import",
+				       NULL);
   }else if(!g_strcmp0(action, "machine.midi_import")){
-    ags_machine_midi_import_callback(NULL, NULL,
-				     machine);
+    gtk_widget_activate_action_variant(machine,
+				       "machine.midi_import",
+				       NULL);
   }  
 }
 
@@ -4142,8 +4186,9 @@ ags_functional_test_util_machine_move_up_driver_program(guint n_params,
   machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  ags_machine_move_up_callback(NULL, NULL,
-			       machine);
+  gtk_widget_activate_action_variant(machine,
+				     "machine.move_up",
+				     NULL);
 }
 
 void
@@ -4207,8 +4252,9 @@ ags_functional_test_util_machine_move_down_driver_program(guint n_params,
 			    nth_machine);
 
   /* activate move down */  
-  ags_machine_move_down_callback(NULL, NULL,
-				 machine);
+  gtk_widget_activate_action_variant(machine,
+				     "machine.move_down",
+				     NULL);
 }
 
 void
@@ -4242,7 +4288,9 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
 }
 
 void
-ags_functional_test_util_machine_hide(guint nth_machine)
+ags_functional_test_util_machine_hide_driver_program(guint n_params,
+						     gchar **param_strv,
+						     GValue *param)
 {
   AgsWindow *window;
   AgsMachine *machine;
@@ -4251,10 +4299,14 @@ ags_functional_test_util_machine_hide(guint nth_machine)
 
   GList *start_list;
 
+  guint nth_machine;
+  
   static gchar* path_strv[] = {
     "hide",
     NULL
   };
+
+  nth_machine = g_value_get_uint(param);
 
   application_context = ags_application_context_get_instance();
 
@@ -4266,14 +4318,45 @@ ags_functional_test_util_machine_hide(guint nth_machine)
 			    nth_machine);
 
   /* activate hide */
-  ags_functional_test_util_machine_menu_button_click(nth_machine,
-						     machine->context_menu_button,
-						     path_strv,
-						     "machine.hide");
+  gtk_widget_activate_action_variant(machine,
+				     "machine.hide",
+				     NULL);
 }
 
 void
-ags_functional_test_util_machine_show(guint nth_machine)
+ags_functional_test_util_machine_hide(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_hide_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
+ags_functional_test_util_machine_show_driver_program(guint n_params,
+						     gchar **param_strv,
+						     GValue *param)
 {
   AgsWindow *window;
   AgsMachine *machine;
@@ -4282,10 +4365,14 @@ ags_functional_test_util_machine_show(guint nth_machine)
 
   GList *start_list;
 
+  guint nth_machine;
+  
   static gchar* path_strv[] = {
     "show",
     NULL
   };
+
+  nth_machine = g_value_get_uint(param);
 
   application_context = ags_application_context_get_instance();
 
@@ -4296,11 +4383,40 @@ ags_functional_test_util_machine_show(guint nth_machine)
   machine = g_list_nth_data(start_list,
 			    nth_machine);
   
-  /* activate hide */  
-  ags_functional_test_util_machine_menu_button_click(nth_machine,
-						     machine->context_menu_button,
-						     path_strv,
-						     "machine.show");
+  /* activate show */  
+  gtk_widget_activate_action_variant(machine,
+				     "machine.show",
+				     NULL);
+}
+
+void
+ags_functional_test_util_machine_show(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_show_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  ags_functional_test_util_add_driver_program(driver_program);    
 }
 
 void
@@ -4340,8 +4456,9 @@ ags_functional_test_util_machine_destroy_driver_program(guint n_params,
 						     path_strv,
 						     "machine.destroy");
 #else
-  ags_machine_destroy_callback(NULL, NULL,
-			       machine);
+  gtk_widget_activate_action_variant(machine,
+				     "machine.destroy",
+				     NULL);
 #endif
 }
 
@@ -4376,7 +4493,9 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
 }
 
 void
-ags_functional_test_util_machine_rename_open(guint nth_machine)
+ags_functional_test_util_machine_rename_open_driver_program(guint n_params,
+							    gchar **param_strv,
+							    GValue *param)
 {
   AgsWindow *window;
   AgsMachine *machine;
@@ -4385,10 +4504,14 @@ ags_functional_test_util_machine_rename_open(guint nth_machine)
 
   GList *start_list;
 
+  guint nth_machine;
+  
   static gchar* path_strv[] = {
     "rename",
     NULL
   };
+
+  nth_machine = g_value_get_uint(param);
 
   application_context = ags_application_context_get_instance();
 
@@ -4399,24 +4522,53 @@ ags_functional_test_util_machine_rename_open(guint nth_machine)
   machine = g_list_nth_data(start_list,
 			    nth_machine);
   
-  /* activate hide */  
-  ags_functional_test_util_machine_menu_button_click(nth_machine,
-						     machine->context_menu_button,
-						     path_strv,
-						     "machine.rename");
+  /* activate rename */  
+  gtk_widget_activate_action_variant(machine,
+				     "machine.rename",
+				     NULL);
+}
+
+void
+ags_functional_test_util_machine_rename_open(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_rename_open_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  ags_functional_test_util_add_driver_program(driver_program);    
 }
 
 void
 ags_functional_test_util_machine_rename_close(guint nth_machine)
 {
-  //TODO:JK: 
+  //TODO:JK: implement me
 }
 
 void
 ags_functional_test_util_machine_rename_set_name(guint nth_machine,
 						 gchar *name)
 {
-  //TODO:JK: 
+  //TODO:JK: implement me 
 }
 
 GtkWidget*
@@ -4459,43 +4611,91 @@ ags_functional_test_util_get_machine_editor_dialog_line(GtkWidget *machine_edito
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_open(guint nth_machine)
+ags_functional_test_util_machine_editor_dialog_open_driver_program(guint n_params,
+								   gchar **param_strv,
+								   GValue *param)
 {
   AgsWindow *window;
   AgsMachine *machine;
   
   AgsApplicationContext *application_context;
 
+  GList *start_list;
+  
+  guint nth_machine;
+  
   static gchar* path_strv[] = {
     "properties",
     NULL
   };
+
+  nth_machine = g_value_get_uint(param);
 
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   /* retrieve machine */
-  machine = g_list_nth_data(window->machine,
+  start_list = ags_window_get_machine(window);
+  
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  /* activate hide */
-  ags_functional_test_util_machine_menu_button_click(nth_machine,
-						     machine->context_menu_button,
-						     path_strv,
-						     "machine.properties");
+  g_list_free(start_list);
+  
+  /* activate properties */
+  gtk_widget_activate_action_variant(machine,
+				     "machine.properties",
+				     NULL);
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
-							 guint nth_tab)
+ags_functional_test_util_machine_editor_dialog_open(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_open_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_click_tab_driver_program(guint n_params,
+									gchar **param_strv,
+									GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
-  GtkWidget **widget;
   
   GList *list_start, *list;
+  
+  guint nth_machine;
+  guint nth_tab;
+
+  nth_machine = g_value_get_uint(param);
+  
+  nth_tab = g_value_get_uint(param + 1);
   
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -4509,14 +4709,6 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
   /* click tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
-  widget = &(machine_editor->notebook);
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_test_util_default_timeout,
-						      widget);
-
-  ags_functional_test_util_reaction_time_long();
-
   gtk_notebook_set_current_page(machine_editor->notebook,
 				nth_tab);
 
@@ -4524,7 +4716,46 @@ ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
+ags_functional_test_util_machine_editor_dialog_click_tab(guint nth_machine,
+							 guint nth_tab)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_click_tab_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_tab");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_tab);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_click_enable_driver_program(guint n_params,
+									   gchar **param_strv,
+									   GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
@@ -4533,21 +4764,19 @@ ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
   
   GList *list_start, *list;
 
+  guint nth_machine;
   guint nth_tab;
 
+  nth_machine = g_value_get_uint(param);
+  
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
   enable_button = NULL;
   
   list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  list = g_list_nth(list_start,
-		    nth_machine);
-  
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }
+  machine = g_list_nth_data(list_start,
+			    nth_machine);
 
   g_list_free(list_start);
 
@@ -4584,15 +4813,45 @@ ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
     break;
   }
   
-  ags_functional_test_util_check_button_click(enable_button);
+  ags_functional_test_util_fake_check_button_click(enable_button);
 
   ags_functional_test_util_reaction_time_long();
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
-							guint nth_pad, guint nth_audio_channel,
-							gchar *link_name, guint link_nth_line)
+ags_functional_test_util_machine_editor_dialog_click_enable(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_click_enable_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_params,
+								       gchar **param_strv,
+								       GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
@@ -4607,24 +4866,30 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
   GtkTreeIter iter;
   GList *list_start, *list;
 
+  gchar *link_name;
   gchar *value;
 
+  guint nth_machine;
+  guint nth_pad, nth_audio_channel;
+  guint link_nth_line;
   guint nth_tab;
   gboolean success;
-  
+
+  nth_machine = g_value_get_uint(param);
+
+  nth_pad = g_value_get_uint(param + 1);
+  nth_audio_channel = g_value_get_uint(param + 2);
+
+  link_name = g_value_get_string(param + 3);
+
+  link_nth_line = g_value_get_uint(param + 4);
+
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  machine = NULL;
-  
   list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  list = g_list_nth(list_start,
-		    nth_machine);
-  
-  if(list != NULL &&
-     AGS_IS_MACHINE(list->data)){
-    machine = list->data;
-  }
+  machine= g_list_nth_data(list_start,
+			   nth_machine);
 
   g_list_free(list_start);
 
@@ -4699,10 +4964,66 @@ ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
 }
 
 void
+ags_functional_test_util_machine_editor_dialog_link_set(guint nth_machine,
+							guint nth_pad, guint nth_audio_channel,
+							gchar *link_name, guint link_nth_line)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_link_set_driver_program;
+  
+  driver_program->n_params = 5;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(6 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_pad");
+  driver_program->param_strv[2] = g_strdup("nth_audio_channel");
+  driver_program->param_strv[3] = g_strdup("link_name");
+  driver_program->param_strv[4] = g_strdup("link_nth_line");
+  driver_program->param_strv[5] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 5);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_pad);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   nth_audio_channel);
+
+  g_value_init(driver_program->param + 3,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 3,
+		     link_name);
+
+  g_value_init(driver_program->param + 4,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 4,
+		   link_nth_line);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
 ags_functional_test_util_machine_editor_dialog_link_open(guint nth_machine,
 							 guint pad, guint audio_channel)
 {
-  //TODO:JK: 
+  //TODO:JK: implement me
 }
 
 void
@@ -5417,6 +5738,13 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect(guint nth_machine,
 }
 
 void
+ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program(guint n_params,
+								       gchar **param_strv,
+								       GValue *param)
+{
+}
+
+void
 ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
@@ -5757,14 +6085,22 @@ ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_resize_audio_channels(guint nth_machine,
-								     guint audio_channels)
+ags_functional_test_util_machine_editor_dialog_resize_audio_channels_driver_program(guint n_params,
+										    gchar **param_strv,
+										    GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
   GList *list_start, *list;
+
+  guint nth_machine;
+  guint audio_channels;
+
+  nth_machine = g_value_get_uint(param);
+  
+  audio_channels = g_value_get_uint(param + 1);
 
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -5786,14 +6122,59 @@ ags_functional_test_util_machine_editor_dialog_resize_audio_channels(guint nth_m
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_resize_inputs(guint nth_machine,
-							     guint inputs)
+ags_functional_test_util_machine_editor_dialog_resize_audio_channels(guint nth_machine,
+								     guint audio_channels)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_resize_audio_channels_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("audio_channels");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   audio_channels);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_resize_inputs_driver_program(guint n_params,
+									    gchar **param_strv,
+									    GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
   GList *list_start, *list;
+
+  guint nth_machine;
+  guint inputs;
+
+  nth_machine = g_value_get_uint(param);
+  
+  inputs = g_value_get_uint(param + 1);
 
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -5815,14 +6196,59 @@ ags_functional_test_util_machine_editor_dialog_resize_inputs(guint nth_machine,
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_resize_outputs(guint nth_machine,
-							      guint outputs)
+ags_functional_test_util_machine_editor_dialog_resize_inputs(guint nth_machine,
+							     guint inputs)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_resize_inputs_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("inputs");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   inputs);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_resize_outputs_driver_program(guint n_params,
+									     gchar **param_strv,
+									     GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
   GList *list_start, *list;
+
+  guint nth_machine;
+  guint outputs;
+  
+  nth_machine = g_value_get_uint(param);
+  
+  outputs = g_value_get_uint(param + 1);
 
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -5841,6 +6267,43 @@ ags_functional_test_util_machine_editor_dialog_resize_outputs(guint nth_machine,
 			    outputs);
 
   ags_functional_test_util_reaction_time_long();
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_resize_outputs(guint nth_machine,
+							      guint outputs)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_resize_outputs_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("outputs");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   outputs);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
 }
 
 void

@@ -132,6 +132,10 @@ void ags_functional_test_util_fake_mouse_button_release(gpointer display, guint 
 
 void ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button);
 
+void ags_functional_test_util_fake_button_click(GtkButton *button);
+void ags_functional_test_util_fake_toggle_button_click(GtkToggleButton *toggle_button);
+void ags_functional_test_util_fake_check_button_click(GtkCheckButton *check_button);
+
 /* common */
 void ags_functional_test_util_header_bar_menu_button_click(GtkMenuButton *menu_button,
 							   gchar **item_path,
