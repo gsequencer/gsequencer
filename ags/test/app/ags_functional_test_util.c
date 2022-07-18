@@ -234,6 +234,22 @@ void ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guin
 									    gchar **param_strv,
 									    GValue *param);
 
+void ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program(guint n_params,
+									    gchar **param_strv,
+									    GValue *param);
+void ags_functional_test_util_machine_editor_dialog_bulk_link_driver_program(guint n_params,
+									     gchar **param_strv,
+									     GValue *param);
+void ags_functional_test_util_machine_editor_dialog_bulk_first_line_driver_program(guint n_params,
+										   gchar **param_strv,
+										   GValue *param);
+void ags_functional_test_util_machine_editor_dialog_bulk_link_line_driver_program(guint n_params,
+										  gchar **param_strv,
+										  GValue *param);
+void ags_functional_test_util_machine_editor_dialog_bulk_count_driver_program(guint n_params,
+									      gchar **param_strv,
+									      GValue *param);
+
 void ags_functional_test_util_machine_editor_dialog_resize_audio_channels_driver_program(guint n_params,
 											 gchar **param_strv,
 											 GValue *param);
@@ -5742,11 +5758,6 @@ ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program(guint n_p
 								       gchar **param_strv,
 								       GValue *param)
 {
-}
-
-void
-ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
-{
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
@@ -5755,7 +5766,10 @@ ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
 
   GList *list_start, *list;
 
+  guint nth_machine;
   guint nth_tab;
+
+  nth_machine = g_value_get_uint(param);
   
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -5796,6 +5810,36 @@ ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
 }
 
 void
+ags_functional_test_util_machine_editor_dialog_bulk_add(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+  
+  ags_functional_test_util_add_driver_program(driver_program);    
+}
+
+void
 ags_functional_test_util_machine_editor_dialog_bulk_remove(guint nth_machine,
 							   guint nth_bulk)
 {
@@ -5803,9 +5847,9 @@ ags_functional_test_util_machine_editor_dialog_bulk_remove(guint nth_machine,
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
-							 guint nth_bulk,
-							 gchar *link)
+ags_functional_test_util_machine_editor_dialog_bulk_link_driver_program(guint n_params,
+									gchar **param_strv,
+									GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
@@ -5819,10 +5863,19 @@ ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
   
   GtkTreeIter iter;
 
+  gchar *link;
   gchar *value;
-
+  
+  guint nth_machine;
+  guint nth_bulk;
   guint nth_tab;
   gboolean success;
+
+  nth_machine = g_value_get_uint(param);
+
+  nth_bulk = g_value_get_uint(param + 1);
+
+  link = g_value_get_string(param + 2);
   
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -5890,9 +5943,53 @@ ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine,
-							       guint nth_bulk,
-							       guint first_line)
+ags_functional_test_util_machine_editor_dialog_bulk_link(guint nth_machine,
+							 guint nth_bulk,
+							 gchar *link)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_bulk_link_driver_program;
+  
+  driver_program->n_params = 3;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(4 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_bulk");
+  driver_program->param_strv[2] = g_strdup("link");
+  driver_program->param_strv[3] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 3);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_bulk);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 2,
+		     link);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_bulk_first_line_driver_program(guint n_params,
+									      gchar **param_strv,
+									      GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
@@ -5908,7 +6005,16 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine
 
   gchar *value;
 
+  guint nth_machine;
   guint nth_tab;
+  guint nth_bulk;
+  guint first_line;
+
+  nth_machine = g_value_get_uint(param);
+
+  nth_bulk = g_value_get_uint(param + 1);
+
+  first_line = g_value_get_uint(param + 2);
   
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -5955,9 +6061,53 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
-							      guint nth_bulk,
-							      guint first_link_line)
+ags_functional_test_util_machine_editor_dialog_bulk_first_line(guint nth_machine,
+							       guint nth_bulk,
+							       guint first_line)
+{  
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_bulk_first_line_driver_program;
+  
+  driver_program->n_params = 3;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(4 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_bulk");
+  driver_program->param_strv[2] = g_strdup("first_line");
+  driver_program->param_strv[3] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 3);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_bulk);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   first_line);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_bulk_link_line_driver_program(guint n_params,
+									     gchar **param_strv,
+									     GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
@@ -5973,7 +6123,16 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
 
   gchar *value;
 
+  guint nth_machine;
+  guint nth_bulk;
+  guint first_link_line;
   guint nth_tab;
+
+  nth_machine = g_value_get_uint(param);
+
+  nth_bulk = g_value_get_uint(param + 1);
+
+  first_link_line = g_value_get_uint(param + 2);
   
   gsequencer_application_context = ags_application_context_get_instance();
 
@@ -6020,9 +6179,53 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
 }
 
 void
-ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
-							  guint nth_bulk,
-							  guint count)
+ags_functional_test_util_machine_editor_dialog_bulk_link_line(guint nth_machine,
+							      guint nth_bulk,
+							      guint first_link_line)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_bulk_link_line_driver_program;
+  
+  driver_program->n_params = 3;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(4 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_bulk");
+  driver_program->param_strv[2] = g_strdup("first_link_line");
+  driver_program->param_strv[3] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 3);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_bulk);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   first_link_line);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_bulk_count_driver_program(guint n_params,
+									 gchar **param_strv,
+									 GValue *param)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
   AgsMachine *machine;
@@ -6038,8 +6241,17 @@ ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
 
   gchar *value;
 
+  guint nth_machine;
+  guint nth_bulk;
+  guint count;
   guint nth_tab;
   
+  nth_machine = g_value_get_uint(param);
+
+  nth_bulk = g_value_get_uint(param + 1);
+
+  count = g_value_get_uint(param + 2);
+
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
@@ -6082,6 +6294,50 @@ ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
 			    count);
 
   ags_functional_test_util_reaction_time_long();
+}
+
+void
+ags_functional_test_util_machine_editor_dialog_bulk_count(guint nth_machine,
+							  guint nth_bulk,
+							  guint count)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_bulk_count_driver_program;
+  
+  driver_program->n_params = 3;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(4 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_bulk");
+  driver_program->param_strv[2] = g_strdup("count");
+  driver_program->param_strv[3] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 3);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_bulk);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   count);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
 }
 
 void

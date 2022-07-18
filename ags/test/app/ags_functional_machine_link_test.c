@@ -1175,52 +1175,56 @@ ags_functional_machine_link_test_relink_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* set link */
   link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
+  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+							  7, 0,
+							  link_name, 0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    7, 0,
-								    link_name, 0);
+							  7, 1,
+							  link_name, 1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
-  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    7, 1,
-								    link_name, 1);
-
-  
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
-  
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 #endif
   
   /*
@@ -1234,23 +1238,26 @@ ags_functional_machine_link_test_relink_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* set link */
   link_name = g_strdup_printf("%s: %s",
@@ -1259,25 +1266,29 @@ ags_functional_machine_link_test_relink_all()
 
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    6, 0,
-								    link_name, 0);
+							  6, 0,
+							  link_name, 0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    6, 1,
-								    link_name, 1);
+							  6, 1,
+							  link_name, 1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
   
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
-
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /*
    * relink slave mixer with matrix
@@ -1290,23 +1301,26 @@ ags_functional_machine_link_test_relink_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* set link */
   link_name = g_strdup_printf("%s: %s",
@@ -1315,27 +1329,29 @@ ags_functional_machine_link_test_relink_all()
 
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    0, 0,
-								    link_name, 0);
+							  0, 0,
+							  link_name, 0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    0, 1,
-								    link_name, 1);
+							  0, 1,
+							  link_name, 1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
-  
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 }
 
 void
@@ -1365,52 +1381,56 @@ ags_functional_machine_link_test_reset_link_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* set link */
   link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
+  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+							  0, 0,
+							  link_name, 0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    0, 0,
-								    link_name, 0);
+							  0, 1,
+							  link_name, 1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
-  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    0, 1,
-								    link_name, 1);
-
-  
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
-  
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 #endif
   
   /*
@@ -1424,52 +1444,56 @@ ags_functional_machine_link_test_reset_link_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* set link */
   link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
+  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+							  1, 0,
+							  link_name, 0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    1, 0,
-								    link_name, 0);
+							  1, 1,
+							  link_name, 1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
-  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    1, 1,
-								    link_name, 1);
-
-  
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
-  
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /*
    * reset link slave mixer with matrix
@@ -1482,50 +1506,56 @@ ags_functional_machine_link_test_reset_link_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
   
   /* set link */
   link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
+  
+  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+							  1, 0,
+							  link_name, 0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    1, 0,
-								    link_name, 0);
-
+							  1, 1,
+							  link_name, 1);
+ 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
-  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    1, 1,
-								    link_name, 1);
-
-  
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* response ok */
   properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
   
-
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /*
    * reset link slave mixer with drum
@@ -1538,52 +1568,56 @@ ags_functional_machine_link_test_reset_link_all()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click tab */
   input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB;
   
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_parent_machine,
-								     input_tab);
+							   input_tab);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_parent_machine);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* set link */
   link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
+  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
+							  2, 0,
+							  link_name, 0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    2, 0,
-								    link_name, 0);
+							  2, 1,
+							  link_name, 1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
-  ags_functional_test_util_machine_editor_dialog_link_set(nth_parent_machine,
-								    2, 1,
-								    link_name, 1);
-
-  
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;
-  
+  properties = AGS_MACHINE(slave_mixer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 }
 
 void
@@ -1594,49 +1628,59 @@ ags_functional_machine_link_test_destroy_all()
   /* destroy master mixer */
   ags_functional_test_util_machine_destroy(1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* destroy master panel */
   ags_functional_test_util_machine_destroy(0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* destroy matrix */
   ags_functional_test_util_machine_destroy(2);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
+  ags_functional_test_util_sync();
+  
   /* destroy drum */
   ags_functional_test_util_machine_destroy(1);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
+  ags_functional_test_util_sync();
+  
   /* destroy slave mixer */
   ags_functional_test_util_machine_destroy(0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
   
 #ifdef AGS_WITH_LIBINSTPATCH
   /* destroy ffplayer #0 */
   ags_functional_test_util_machine_destroy(0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
-
+  ags_functional_test_util_sync();
+  
   /* destroy ffplayer #1 */
   ags_functional_test_util_machine_destroy(0);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
 #endif
 }
 
