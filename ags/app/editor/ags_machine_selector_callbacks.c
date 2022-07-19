@@ -117,17 +117,9 @@ ags_machine_selector_add_by_uuid_callback(GAction *action, GVariant *parameter,
   variant = g_action_get_state(action);
 
   if(g_variant_get_boolean(variant)){
-    g_object_set(action,
-		 "state", g_variant_new_boolean(FALSE),
-		 NULL);
-
     ags_machine_selector_remove_index(machine_selector,
 				      position);
   }else{
-    g_object_set(action,
-		 "state", g_variant_new_boolean(TRUE),
-		 NULL);
-
     ags_machine_selector_insert_index(machine_selector,
 				      position,
 				      selected_machine);

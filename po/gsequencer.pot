@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 4.2.11\n"
+"Project-Id-Version: gsequencer 4.2.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-07-07 18:16+0200\n"
+"POT-Creation-Date: 2022-07-18 17:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,15 +105,15 @@ msgstr ""
 msgid "position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:901
+#: ags/app/ags_machine_callbacks.c:902
 msgid "properties"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:979
+#: ags/app/ags_machine_callbacks.c:980
 msgid "envelope"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1017
+#: ags/app/ags_machine_callbacks.c:1018
 #: ags/app/editor/ags_pattern_envelope.c:243
 #: ags/app/editor/ags_envelope_editor.c:180
 #: ags/app/machine/ags_live_lv2_bridge.c:501
@@ -122,7 +122,7 @@ msgstr ""
 msgid "preset"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1101
+#: ags/app/ags_machine_callbacks.c:1103
 msgid "connections"
 msgstr ""
 

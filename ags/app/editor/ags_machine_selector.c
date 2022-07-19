@@ -784,10 +784,27 @@ ags_machine_selector_insert_index(AgsMachineSelector *machine_selector,
 {
   AgsMachineRadioButton *machine_radio_button;
 
+  GAction *action;
+    
   GList *start_list, *list;
 
-  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  gchar *action_name;
 
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  action_name = g_strdup_printf("add-%s",
+				machine->uid);
+
+  action = g_action_map_lookup_action(machine_selector->action_group,
+				      action_name);
+  g_object_set(action,
+	       "state", g_variant_new_boolean(TRUE),
+	       NULL);
+
+  g_free(action_name);
+
+  /* instantiate machine radio button */
   machine_radio_button = ags_machine_radio_button_new();
   
   ags_machine_selector_insert_machine_radio_button(machine_selector,
@@ -810,10 +827,14 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 {
   AgsMachineRadioButton *machine_radio_button;
   
+  GAction *action;
+    
   GList *start_list, *list;
 
-  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  gchar *action_name;
 
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
+  
   /* get machine radio button */
   machine_radio_button = NULL;
 
@@ -832,6 +853,17 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
   if(machine_radio_button == NULL){
     return;
   }  
+
+  action_name = g_strdup_printf("add-%s",
+				machine_radio_button->machine->uid);
+
+  action = g_action_map_lookup_action(machine_selector->action_group,
+				      action_name);
+  g_object_set(action,
+	       "state", g_variant_new_boolean(FALSE),
+	       NULL);
+
+  g_free(action_name);
   
   /*  */
   ags_machine_selector_remove_machine_radio_button(machine_selector,

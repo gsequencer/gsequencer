@@ -2,7 +2,10 @@ ags (4.2.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed hide machine
+	* fixed machine selector restore from XML
 	* functional UI tests work again!
+	* refactored ags_functional_machine_add_and_destroy_test.c
+	* refactored ags_functional_machine_link_test.c
 
 ags (4.2.11)
 
