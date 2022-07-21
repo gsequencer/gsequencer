@@ -40,7 +40,8 @@ installcheck_programs = \
 	ags_check_system_functional_fourier_transform_test \
 	ags_check_system_functional_osc_server_test \
 	ags_check_system_functional_osc_xmlrpc_server_test \
-	ags_check_system_functional_machine_add_and_destroy_test
+	ags_check_system_functional_machine_add_and_destroy_test \
+	ags_check_system_functional_machine_link_test
 
 noinst_PROGRAMS += $(installcheck_programs)
 
