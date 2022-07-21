@@ -599,7 +599,7 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -653,7 +653,7 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_SIGNED_8_BIT);
@@ -787,7 +787,7 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -841,7 +841,7 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_SIGNED_16_BIT);
@@ -975,7 +975,7 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1029,7 +1029,7 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_SIGNED_24_BIT);
@@ -1163,7 +1163,7 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1217,7 +1217,7 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -1351,7 +1351,7 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1405,7 +1405,7 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_SIGNED_64_BIT);
@@ -1539,7 +1539,7 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1593,7 +1593,7 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_FLOAT);
@@ -1727,7 +1727,7 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1781,7 +1781,7 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_DOUBLE);
@@ -1915,7 +1915,7 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+  low_freq = exp2((hq_pitch_util->base_key - 1.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1969,7 +1969,7 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
 					 source);
 
   ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
-						low_mix_buffer_length);
+						buffer_length);
 
   ags_linear_interpolate_util_set_format(linear_interpolate_util,
 					 AGS_SOUNDCARD_COMPLEX);

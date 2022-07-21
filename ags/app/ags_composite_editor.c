@@ -4185,7 +4185,7 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
     GList *start_notation, *notation;
 
     gint i;
-
+    
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);

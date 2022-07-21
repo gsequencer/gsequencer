@@ -31,6 +31,10 @@ ags_hybrid_fm_synth_synth_0_oscillator_callback(GtkComboBox *combo_box, AgsHybri
   GList *start_play, *start_recall, *recall;
 
   gint oscillator;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -82,6 +86,10 @@ ags_hybrid_fm_synth_synth_0_octave_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   GList *start_play, *start_recall, *recall;
 
   gdouble octave;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -133,6 +141,10 @@ ags_hybrid_fm_synth_synth_0_key_callback(AgsDial *dial, AgsHybridFMSynth *hybrid
   GList *start_play, *start_recall, *recall;
 
   gdouble key;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -185,6 +197,10 @@ ags_hybrid_fm_synth_synth_0_phase_callback(AgsDial *dial, AgsHybridFMSynth *hybr
 
   gdouble phase;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   phase = ags_dial_get_value(dial);
@@ -235,6 +251,10 @@ ags_hybrid_fm_synth_synth_0_volume_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   GList *start_play, *start_recall, *recall;
 
   gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -287,6 +307,10 @@ ags_hybrid_fm_synth_synth_0_lfo_oscillator_callback(GtkComboBox *combo_box, AgsH
 
   gint lfo_oscillator;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   lfo_oscillator = gtk_combo_box_get_active(combo_box);
@@ -337,6 +361,10 @@ ags_hybrid_fm_synth_synth_0_lfo_frequency_callback(GtkSpinButton *spin_button, A
   GList *start_play, *start_recall, *recall;
 
   gdouble lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -389,6 +417,10 @@ ags_hybrid_fm_synth_synth_0_lfo_depth_callback(AgsDial *dial, AgsHybridFMSynth *
 
   gdouble lfo_depth;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   lfo_depth = ags_dial_get_value(dial);
@@ -439,6 +471,10 @@ ags_hybrid_fm_synth_synth_0_lfo_tuning_callback(AgsDial *dial, AgsHybridFMSynth 
   GList *start_play, *start_recall, *recall;
 
   gdouble lfo_tuning;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -491,6 +527,10 @@ ags_hybrid_fm_synth_synth_1_oscillator_callback(GtkComboBox *combo_box, AgsHybri
 
   gint oscillator;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   oscillator = gtk_combo_box_get_active(combo_box);
@@ -541,6 +581,10 @@ ags_hybrid_fm_synth_synth_1_octave_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   GList *start_play, *start_recall, *recall;
 
   gdouble octave;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -593,6 +637,10 @@ ags_hybrid_fm_synth_synth_1_key_callback(AgsDial *dial, AgsHybridFMSynth *hybrid
 
   gdouble key;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   key = ags_dial_get_value(dial);
@@ -643,6 +691,10 @@ ags_hybrid_fm_synth_synth_1_phase_callback(AgsDial *dial, AgsHybridFMSynth *hybr
   GList *start_play, *start_recall, *recall;
 
   gdouble phase;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -695,6 +747,10 @@ ags_hybrid_fm_synth_synth_1_volume_callback(AgsDial *dial, AgsHybridFMSynth *hyb
 
   gdouble volume;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   volume = ags_dial_get_value(dial);
@@ -745,6 +801,10 @@ ags_hybrid_fm_synth_synth_1_lfo_oscillator_callback(GtkComboBox *combo_box, AgsH
   GList *start_play, *start_recall, *recall;
 
   gint lfo_oscillator;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -797,6 +857,10 @@ ags_hybrid_fm_synth_synth_1_lfo_frequency_callback(GtkSpinButton *spin_button, A
 
   gdouble lfo_frequency;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   lfo_frequency = gtk_spin_button_get_value(spin_button);
@@ -847,6 +911,10 @@ ags_hybrid_fm_synth_synth_1_lfo_depth_callback(AgsDial *dial, AgsHybridFMSynth *
   GList *start_play, *start_recall, *recall;
 
   gdouble lfo_depth;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -899,6 +967,10 @@ ags_hybrid_fm_synth_synth_1_lfo_tuning_callback(AgsDial *dial, AgsHybridFMSynth 
 
   gdouble lfo_tuning;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   lfo_tuning = ags_dial_get_value(dial);
@@ -949,6 +1021,10 @@ ags_hybrid_fm_synth_synth_2_oscillator_callback(GtkComboBox *combo_box, AgsHybri
   GList *start_play, *start_recall, *recall;
 
   gint oscillator;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1001,6 +1077,10 @@ ags_hybrid_fm_synth_synth_2_octave_callback(AgsDial *dial, AgsHybridFMSynth *hyb
 
   gdouble octave;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   octave = ags_dial_get_value(dial);
@@ -1051,6 +1131,10 @@ ags_hybrid_fm_synth_synth_2_key_callback(AgsDial *dial, AgsHybridFMSynth *hybrid
   GList *start_play, *start_recall, *recall;
 
   gdouble key;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1103,6 +1187,10 @@ ags_hybrid_fm_synth_synth_2_phase_callback(AgsDial *dial, AgsHybridFMSynth *hybr
 
   gdouble phase;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   phase = ags_dial_get_value(dial);
@@ -1153,6 +1241,10 @@ ags_hybrid_fm_synth_synth_2_volume_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   GList *start_play, *start_recall, *recall;
 
   gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1205,6 +1297,10 @@ ags_hybrid_fm_synth_synth_2_lfo_oscillator_callback(GtkComboBox *combo_box, AgsH
 
   gint lfo_oscillator;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   lfo_oscillator = gtk_combo_box_get_active(combo_box);
@@ -1255,6 +1351,10 @@ ags_hybrid_fm_synth_synth_2_lfo_frequency_callback(GtkSpinButton *spin_button, A
   GList *start_play, *start_recall, *recall;
 
   gdouble lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1307,6 +1407,10 @@ ags_hybrid_fm_synth_synth_2_lfo_depth_callback(AgsDial *dial, AgsHybridFMSynth *
 
   gdouble lfo_depth;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   lfo_depth = ags_dial_get_value(dial);
@@ -1357,6 +1461,10 @@ ags_hybrid_fm_synth_synth_2_lfo_tuning_callback(AgsDial *dial, AgsHybridFMSynth 
   GList *start_play, *start_recall, *recall;
 
   gdouble lfo_tuning;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1409,6 +1517,10 @@ ags_hybrid_fm_synth_sequencer_enabled_callback(GtkButton *button, AgsHybridFMSyn
 
   gdouble sequencer_enabled;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   sequencer_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
@@ -1459,6 +1571,10 @@ ags_hybrid_fm_synth_sequencer_sign_callback(GtkComboBox *combo_box, AgsHybridFMS
   GList *start_play, *start_recall, *recall;
 
   gint oscillator;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1511,6 +1627,10 @@ ags_hybrid_fm_synth_pitch_tuning_callback(AgsDial *dial, AgsHybridFMSynth *hybri
 
   gdouble pitch_tuning;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   pitch_tuning = ags_dial_get_value(dial);
@@ -1561,6 +1681,10 @@ ags_hybrid_fm_synth_noise_gain_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_
   GList *start_play, *start_recall, *recall;
 
   gdouble noise_gain;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1613,6 +1737,10 @@ ags_hybrid_fm_synth_low_pass_enabled_callback(GtkButton *button, AgsHybridFMSynt
 
   gdouble low_pass_enabled;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   low_pass_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
@@ -1663,6 +1791,10 @@ ags_hybrid_fm_synth_low_pass_q_lin_callback(AgsDial *dial, AgsHybridFMSynth *hyb
   GList *start_play, *start_recall, *recall;
 
   gdouble low_pass_q_lin;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1715,6 +1847,10 @@ ags_hybrid_fm_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsHybridFMSynt
 
   gdouble low_pass_filter_gain;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   low_pass_filter_gain = ags_dial_get_value(dial);
@@ -1765,6 +1901,10 @@ ags_hybrid_fm_synth_high_pass_enabled_callback(GtkButton *button, AgsHybridFMSyn
   GList *start_play, *start_recall, *recall;
 
   gdouble high_pass_enabled;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1817,6 +1957,10 @@ ags_hybrid_fm_synth_high_pass_q_lin_callback(AgsDial *dial, AgsHybridFMSynth *hy
 
   gdouble high_pass_q_lin;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   high_pass_q_lin = ags_dial_get_value(dial);
@@ -1867,6 +2011,10 @@ ags_hybrid_fm_synth_high_pass_filter_gain_callback(AgsDial *dial, AgsHybridFMSyn
   GList *start_play, *start_recall, *recall;
 
   gdouble high_pass_filter_gain;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -1919,6 +2067,10 @@ ags_hybrid_fm_synth_chorus_enabled_callback(GtkButton *button, AgsHybridFMSynth 
 
   gdouble chorus_enabled;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   chorus_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
@@ -1969,6 +2121,10 @@ ags_hybrid_fm_synth_chorus_input_volume_callback(AgsDial *dial, AgsHybridFMSynth
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_input_volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -2021,6 +2177,10 @@ ags_hybrid_fm_synth_chorus_output_volume_callback(AgsDial *dial, AgsHybridFMSynt
 
   gdouble chorus_output_volume;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   chorus_output_volume = ags_dial_get_value(dial);
@@ -2066,6 +2226,10 @@ ags_hybrid_fm_synth_chorus_output_volume_callback(AgsDial *dial, AgsHybridFMSynt
 void
 ags_hybrid_fm_synth_chorus_lfo_oscillator_callback(GtkComboBox *combo_box, AgsHybridFMSynth *hybrid_fm_synth)
 {
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -2077,6 +2241,10 @@ ags_hybrid_fm_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, Ag
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
@@ -2129,6 +2297,10 @@ ags_hybrid_fm_synth_chorus_depth_callback(AgsDial *dial, AgsHybridFMSynth *hybri
 
   gdouble chorus_depth;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   chorus_depth = ags_dial_get_value(dial);
@@ -2180,6 +2352,10 @@ ags_hybrid_fm_synth_chorus_mix_callback(AgsDial *dial, AgsHybridFMSynth *hybrid_
 
   gdouble chorus_mix;
 
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
+
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 
   chorus_mix = ags_dial_get_value(dial);
@@ -2230,6 +2406,10 @@ ags_hybrid_fm_synth_chorus_delay_callback(AgsDial *dial, AgsHybridFMSynth *hybri
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_delay;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(hybrid_fm_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(hybrid_fm_synth)->audio;
 

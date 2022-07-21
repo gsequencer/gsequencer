@@ -59,6 +59,7 @@ typedef enum{
   AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 <<  8,
   AGS_LINE_MEMBER_APPLY_INITIAL         = 1 <<  9,
   AGS_LINE_MEMBER_BLOCK_CHAINED         = 1 << 10,
+  AGS_LINE_MEMBER_NO_UPDATE             = 1 << 11,
 }Agslinememberflags;
 
 typedef enum{

@@ -101,19 +101,19 @@
  * You have in general one #AgsPlaybackDomain referring one #AgsAudio and
  * one #AgsPlayback referring one #AgsChannel.
  *
- * AGS_AUDIO_SYNC and AGS_AUDIO_ASYNC #AgsAudioFlags-enum affect channel
+ * %AGS_AUDIO_SYNC and %AGS_AUDIO_ASYNC #AgsAudioFlags-enum affect channel
  * alignment. There 3 possible combinations available.
  * 
- * AGS_AUDIO_SYNC means channels go straight from input line to matching
+ * %AGS_AUDIO_SYNC means channels go straight from input line to matching
  * output line.
  *
- * AGS_AUDIO_ASYNC means input channels are bundled in output i.e. many
+ * %AGS_AUDIO_ASYNC means input channels are bundled in output i.e. many
  * inputs of the same audio channel arrive at one output channel of the
  * same audio channel.
  *
- * AGS_AUDIO_SYNC and AGS_AUDIO_ASYNC combined is only available if
+ * %AGS_AUDIO_SYNC and %AGS_AUDIO_ASYNC combined is only available if
  * %AGS_AUDIO_OUTPUT_HAS_RECYCLING is set. It is actually the same behaviour
- * as AGS_AUDIO_ASYNC except you can have more than one output pad.
+ * as %AGS_AUDIO_ASYNC except you can have more than one output pad.
  * 
  * `output-soundcard` and `input-soundcard` properties are #AgsSoundcard
  * implementations to read or write to a soundcard backend.
@@ -123,13 +123,13 @@
  *
  * You may add #AgsNotation objects using ags_audio_add_notation(). Make sure
  * the #AgsNotation timestamp offset occurs only once per audio channel and is
- * correct padded using AGS_NOTATION_DEFAULT_OFFSET.
+ * correct padded using %AGS_NOTATION_DEFAULT_OFFSET.
  *
  * You may add #AgsWave objects using ags_audio_add_wave(). Make sure the
  * #AgsWave timestamp offset occurs only once per line and is correct padded
  * using relative offset. The relative offset is calculated as following:
  * 
- * relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+ * relative_offset = %AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
  * 
  * You may add #AgsAutomation objects using ags_audio_add_automation(). Make
  * sure #AgsAutomation timestamp offset occurs only once per channel type and

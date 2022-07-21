@@ -408,8 +408,8 @@ ags_apply_sf2_synth_launch(AgsTask *task)
   apply_sf2_synth = AGS_APPLY_SF2_SYNTH(task);
 
   g_return_if_fail(AGS_IS_CHANNEL(apply_sf2_synth->start_channel));
-  g_return_if_fail(AGS_IS_SF2_SYNTH_GENERATOR(apply_sf2_synth->sf2_synth_generator));
-  
+  g_return_if_fail(AGS_IS_SF2_SYNTH_GENERATOR(apply_sf2_synth->sf2_synth_generator));  
+
   channel = apply_sf2_synth->start_channel;
   
   sf2_synth_generator = apply_sf2_synth->sf2_synth_generator;
@@ -425,7 +425,7 @@ ags_apply_sf2_synth_launch(AgsTask *task)
   g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
-
+  
   /* compute */
   channel = apply_sf2_synth->start_channel;
 

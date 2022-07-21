@@ -2317,6 +2317,8 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
 {
   AgsLv2CacheTurtle *lv2_cache_turtle;
   
+  GFile *manifest_file;
+	
   FILE *file;
 
   struct stat *sb;
@@ -2324,6 +2326,7 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   gchar **see_also;
   
   gchar *buffer, *iter;
+  gchar *manifest_path;
   
   size_t n_read;
   gboolean is_available;
@@ -2413,6 +2416,10 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   g_free(buffer);
 
   /* see also */
+  manifest_file = g_file_new_for_path(manifest_filename);
+
+  manifest_path = g_file_get_path(manifest_file);
+  
   if(lv2_cache_turtle->see_also != NULL){
     for(see_also = lv2_cache_turtle->see_also; see_also[0] != NULL; see_also++){
       gchar *filename;
@@ -2426,14 +2433,37 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
 				 see_also[0] + 1);
 
       if(g_str_has_suffix(filename, ".ttl")){
-	ags_lv2_turtle_scanner_quick_scan_see_also(lv2_turtle_scanner,
-						   lv2_cache_turtle,
-						   filename);
+	GFile *current_file;
+
+	gchar *current_path;
+	
+	current_file = g_file_new_for_path(filename);
+
+	current_path = g_file_get_path(current_file);
+
+	if((!g_strcmp0(manifest_path,
+		       current_path)) == FALSE){
+	  ags_lv2_turtle_scanner_quick_scan_see_also(lv2_turtle_scanner,
+						     lv2_cache_turtle,
+						     filename);
+	}
+
+	g_free(current_path);
+
+	if(current_file != NULL){
+	  g_object_unref(current_file);
+	}
       }
       
       g_free(path);
       g_free(filename);
     }
+  }
+
+  g_free(manifest_path);
+
+  if(manifest_file != NULL){
+    g_object_unref(manifest_file);
   }
 }
 

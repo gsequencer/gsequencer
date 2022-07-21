@@ -70,6 +70,8 @@ typedef enum{
   AGS_MACHINE_BLOCK_STOP_CALLBACK     = 1 << 10,
   AGS_MACHINE_REVERSE_NOTATION        = 1 << 11,
   AGS_MACHINE_STICKY_CONTROLS         = 1 << 12,
+  AGS_MACHINE_REFRESH_PORTS           = 1 << 13,
+  AGS_MACHINE_NO_UPDATE               = 1 << 14,
 }AgsMachineFlags;
 
 typedef enum{
@@ -232,6 +234,8 @@ struct _AgsMachineClass
 
   void (*stop)(AgsMachine *machine,
 	       GList *recall_id, gint sound_scope);
+
+  void (*refresh_port)(AgsMachine *machine);
 };
 
 struct _AgsMachineAutomationPort
@@ -293,6 +297,8 @@ GList* ags_machine_find_port(AgsMachine *machine);
 
 void ags_machine_stop(AgsMachine *machine,
 		      GList *recall_id, gint sound_scope);
+
+void ags_machine_refresh_port(AgsMachine *machine);
 
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 

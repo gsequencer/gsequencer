@@ -479,6 +479,10 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
 
   sf2_synth_util->buffer_length = buffer_length;
 
+  ags_common_pitch_util_set_buffer_length(sf2_synth_util->pitch_util,
+					  sf2_synth_util->pitch_type,
+					  buffer_length);
+
   ags_resample_util_set_buffer_length(sf2_synth_util->resample_util,
 				      buffer_length);
   
@@ -525,6 +529,10 @@ ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
   }
 
   sf2_synth_util->format = format;
+
+  ags_common_pitch_util_set_format(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   format);
 
   ags_resample_util_set_format(sf2_synth_util->resample_util,
 			       format);
@@ -582,6 +590,10 @@ ags_sf2_synth_util_set_samplerate(AgsSF2SynthUtil *sf2_synth_util,
   }
 
   sf2_synth_util->samplerate = samplerate;
+
+  ags_common_pitch_util_set_samplerate(sf2_synth_util->pitch_util,
+				       sf2_synth_util->pitch_type,
+				       samplerate);
 
   ags_resample_util_set_target_samplerate(sf2_synth_util->resample_util,
 					  samplerate);
@@ -2149,28 +2161,34 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -2456,28 +2474,34 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -2642,7 +2666,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     
   /* volume */
   ags_volume_util_set_format(volume_util,
-			     AGS_SOUNDCARD_DOUBLE);
+  			     AGS_SOUNDCARD_DOUBLE);
 
   ags_volume_util_set_source(volume_util,
 			     im_buffer);
@@ -2763,28 +2787,34 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -3070,28 +3100,34 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -3377,28 +3413,34 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -3684,28 +3726,34 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -3991,28 +4039,34 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }
@@ -4298,28 +4352,34 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
     }else{
       if(sf2_synth_util->sf2_note_range[i][0] <= midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] >= midi_key){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
-	  
-	break;
+	  nth_sample = i;
+	
+	  break;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][1] < midi_key &&
 	 sf2_synth_util->sf2_note_range[i][0] > sf2_synth_util->sf2_note_range[nth_sample][0]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
 
-	nth_sample = i;
+	  nth_sample = i;
+	}
       }
 
       if(sf2_synth_util->sf2_note_range[nth_sample][0] > midi_key &&
 	 sf2_synth_util->sf2_note_range[i][1] < sf2_synth_util->sf2_note_range[nth_sample][1]){
-	current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
-	current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
-
-	nth_sample = i;
+	if(sf2_synth_util->sf2_sample_arr[i] != NULL){
+	  current_sf2_sample = sf2_synth_util->sf2_sample_arr[i];
+	  current_sf2_note_range = sf2_synth_util->sf2_note_range[i];
+	
+	  nth_sample = i;
+	}
       }
     }
   }

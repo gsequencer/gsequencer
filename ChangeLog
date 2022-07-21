@@ -1,3 +1,78 @@
+ags (4.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed hide machine
+	* fixed machine selector restore from XML
+	* functional UI tests work again!
+	* refactored ags_functional_machine_add_and_destroy_test.c
+	* refactored ags_functional_machine_link_test.c
+
+ags (4.2.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV with AgsEffectPad
+	* fixed missing pitch selection of AgsFFPlayer
+	* started to refactor functional tests
+
+ags (4.2.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (4.2.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsNotationEdit resize and reset scrollars
+	* improved AgsLv2Bridge and AgsLiveLv2Bridge hide/show preset and program
+
+ags (4.2.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed XML restore machine selector unitialized value
+
+ags (4.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSyncsynth and AgsFMSyncsynth check button type of auto-update
+	* fixed AgsSynth and AgsFMSynth control changed callback correct parent accessor
+
+ags (4.2.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFMSyncsynth missing synth generator
+
+ags (4.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsNotationEdit delete note
+
+ags (4.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed stop export soundcard
+
+ags (4.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented no-update UI while calling refresh-port() function
+
+ags (4.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsHybridFMSynth::refresh-port()
+	* implemented AgsSF2Synth::refresh-port()
+	* implemented AgsSFZSynth::refresh-port()
+	* implemented AgsMachine::refresh-port(), AgsPad::refresh-port() and AgsLine::refresh-port()
+	* implemented AgsEffectBridge::refresh-port(), AgsEffectPad::refresh-port() and AgsEffectLine::refresh-port()
+	* implemented AgsEffectBulk::refresh-port()
+
+ags (4.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed apply presets
+	* implemented AgsHybridSynth::refresh-port()
+	* rebuild gtk-doc sections
+
 ags (4.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

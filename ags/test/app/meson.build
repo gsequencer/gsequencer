@@ -28,7 +28,6 @@ endif
 
 libgsequencer_test_sources = [
   'ags_functional_test_util.c',
-  'gsequencer_setup_util.c',
 ]
 
 libgsequencer_test = static_library(
@@ -40,6 +39,8 @@ libgsequencer_test = static_library(
 )
 
 interactive_tests = [
+  'ags_functional_machine_add_and_destroy_test',
+  'ags_functional_machine_link_test',
 ]
 
 foreach interactive_test : interactive_tests

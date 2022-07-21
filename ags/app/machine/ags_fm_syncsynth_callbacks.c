@@ -71,9 +71,9 @@ ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 }
 
 void
-ags_fm_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsFMSyncsynth *fm_syncsynth)
+ags_fm_syncsynth_auto_update_callback(GtkCheckButton *check_button, AgsFMSyncsynth *fm_syncsynth)
 {
-  if(gtk_toggle_button_get_active(toggle)){
+  if(gtk_check_button_get_active(check_button)){
     fm_syncsynth->flags |= AGS_FM_SYNCSYNTH_AUTO_UPDATE;
   }else{
     fm_syncsynth->flags &= (~AGS_FM_SYNCSYNTH_AUTO_UPDATE);

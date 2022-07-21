@@ -110,8 +110,11 @@ struct _AgsLv2Bridge
   LV2UI_Handle *ui_handle;
 
   GtkBox *vbox;
-  
+
+  GtkBox *program_hbox;
   GtkComboBox *program;
+
+  GtkBox *preset_hbox;
   GtkComboBox *preset;
   
   GMenu *lv2_menu;

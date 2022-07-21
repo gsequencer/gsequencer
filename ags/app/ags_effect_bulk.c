@@ -121,6 +121,8 @@ void ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_real_map_recall(AgsEffectBulk *effect_bulk);
 GList* ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk);
 
+void ags_effect_bulk_real_refresh_port(AgsEffectBulk *effect_bulk);
+
 /**
  * SECTION:ags_effect_bulk
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -139,6 +141,7 @@ enum{
   RESIZE_PADS,
   MAP_RECALL,
   FIND_PORT,
+  REFRESH_PORT,
   LAST_SIGNAL,
 };
 
@@ -253,6 +256,8 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 
   effect_bulk->map_recall = ags_effect_bulk_real_map_recall;
   effect_bulk->find_port = ags_effect_bulk_real_find_port;
+
+  effect_bulk->refresh_port = ags_effect_bulk_real_refresh_port;
 
   /* signals */
   /**
@@ -382,6 +387,23 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsEffectBulk::refresh-port:
+   * @effect_bulk: the #AgsEffectBulk
+   *
+   * The ::refresh-port signal.
+   * 
+   * Since: 4.2.2
+   */
+  effect_bulk_signals[REFRESH_PORT] =
+    g_signal_new("refresh-port",
+                 G_TYPE_FROM_CLASS(effect_bulk),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, refresh_port),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 }
 
 void
@@ -1012,6 +1034,8 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
   
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(ladspa_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -1458,6 +1482,8 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
   
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(dssi_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -1981,6 +2007,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
 
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -2407,6 +2435,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
 
   /* load ports */
+  start_plugin_port = NULL;
+  
   g_object_get(vst3_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -3466,6 +3496,75 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
   g_object_unref((GObject *) effect_bulk);
 
   return(list);
+}
+
+void
+ags_effect_bulk_real_refresh_port(AgsEffectBulk *effect_bulk)
+{
+  GList *start_bulk_member, *bulk_member;
+
+  bulk_member =
+    start_bulk_member = ags_effect_bulk_get_bulk_member(effect_bulk);
+
+  while(bulk_member != NULL){
+    AgsPort *port;
+
+    if(AGS_BULK_MEMBER(bulk_member->data)->bulk_port != NULL){
+      port = AGS_BULK_PORT(AGS_BULK_MEMBER(bulk_member->data)->bulk_port->data)->port;
+    }
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+      
+      if(AGS_BULK_MEMBER(bulk_member->data)->widget_type == AGS_TYPE_DIAL){
+	ags_dial_set_value(ags_bulk_member_get_widget(bulk_member->data),
+			   (gdouble) g_value_get_float(&value));
+      }else if(AGS_BULK_MEMBER(bulk_member->data)->widget_type == GTK_TYPE_SCALE){
+	gtk_adjustment_set_value(gtk_range_get_adjustment(ags_bulk_member_get_widget(bulk_member->data)),
+				 (gdouble) g_value_get_float(&value));
+      }else if(AGS_BULK_MEMBER(bulk_member->data)->widget_type == GTK_TYPE_SPIN_BUTTON){
+	gtk_spin_button_set_value(ags_bulk_member_get_widget(bulk_member->data),
+				  (gdouble) g_value_get_float(&value));
+      }else if(AGS_BULK_MEMBER(bulk_member->data)->widget_type == GTK_TYPE_CHECK_BUTTON){
+	gtk_check_button_set_active(ags_bulk_member_get_widget(bulk_member->data),
+				    (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
+      }else if(AGS_BULK_MEMBER(bulk_member->data)->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+	gtk_toggle_button_set_active(ags_bulk_member_get_widget(bulk_member->data),
+				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
+      }
+      
+      AGS_BULK_MEMBER(bulk_member->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
+    }
+    
+    bulk_member = bulk_member->next;
+  }
+}
+
+/**
+ * ags_effect_bulk_refresh_port:
+ * @effect_bulk: the #AgsEffectBulk
+ *
+ * Notify about to refresh ports.
+ * 
+ * Since: 4.2.2
+ */
+void
+ags_effect_bulk_refresh_port(AgsEffectBulk *effect_bulk)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit((GObject *) effect_bulk,
+		effect_bulk_signals[REFRESH_PORT], 0);
+  g_object_unref((GObject *) effect_bulk);
 }
 
 /**

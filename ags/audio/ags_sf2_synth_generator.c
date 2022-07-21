@@ -453,7 +453,7 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
   sf2_synth_generator->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   sf2_synth_generator->format = ags_soundcard_helper_config_get_format(config);
 
-  sf2_synth_generator->pitch_type = g_strdup(AGS_SF2_SYNTH_GENERATOR_DEFAULT_PITCH_TYPE);;
+  sf2_synth_generator->pitch_type = g_strdup(AGS_SF2_SYNTH_GENERATOR_DEFAULT_PITCH_TYPE);
 
   /* more base init */
   sf2_synth_generator->frame_count = 0;
@@ -1468,9 +1468,12 @@ ags_sf2_synth_generator_get_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator
 void
 ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator, gchar *pitch_type)
 {
+  AgsSF2SynthUtil *sf2_synth_util;
+  
   GRecMutex *sf2_synth_generator_mutex;
 
-  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator) ||
+     sf2_synth_generator->pitch_type == pitch_type){
     return;
   }
 
@@ -1481,6 +1484,66 @@ ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator
 
   sf2_synth_generator->pitch_type = g_strdup(pitch_type);
 
+  sf2_synth_util = sf2_synth_generator->sf2_synth_util;
+
+  if(sf2_synth_util->pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    ags_fast_pitch_util_free(sf2_synth_util->pitch_util);
+  }else if(sf2_synth_util->pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    ags_hq_pitch_util_free(sf2_synth_util->pitch_util);
+  }else if(sf2_synth_util->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    ags_fluid_interpolate_none_util_free(sf2_synth_util->pitch_util);
+  }else if(sf2_synth_util->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    ags_fluid_interpolate_linear_util_free(sf2_synth_util->pitch_util);
+  }else if(sf2_synth_util->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    ags_fluid_interpolate_4th_order_util_free(sf2_synth_util->pitch_util);
+  }else if(sf2_synth_util->pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    ags_fluid_interpolate_7th_order_util_free(sf2_synth_util->pitch_util);
+  }
+
+  sf2_synth_util->pitch_type = G_TYPE_NONE;
+  
+  sf2_synth_util->pitch_util = NULL;
+  
+  if(!g_ascii_strncasecmp(pitch_type,
+			  "ags-fast-pitch",
+			  16)){
+    sf2_synth_util->pitch_type = AGS_TYPE_FAST_PITCH_UTIL;
+    
+    sf2_synth_util->pitch_util = ags_fast_pitch_util_alloc();
+  }else if(!g_ascii_strncasecmp(pitch_type,
+				"ags-hq-pitch",
+				13)){
+    sf2_synth_util->pitch_type = AGS_TYPE_HQ_PITCH_UTIL;
+    
+    sf2_synth_util->pitch_util = ags_hq_pitch_util_alloc();
+  }else if(!g_ascii_strncasecmp(pitch_type,
+				"ags-fluid-none",
+				15)){
+    sf2_synth_util->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_none_util_alloc();
+  }else if(!g_ascii_strncasecmp(pitch_type,
+				"ags-fluid-linear",
+				17)){
+    sf2_synth_util->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_linear_util_alloc();
+  }else if(!g_ascii_strncasecmp(pitch_type,
+				"ags-fluid-4th-order",
+				20)){
+    sf2_synth_util->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
+  }else if(!g_ascii_strncasecmp(pitch_type,
+				"ags-fluid-7th-order",
+				20)){
+    sf2_synth_util->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL;
+    
+    sf2_synth_util->pitch_util = ags_fluid_interpolate_7th_order_util_alloc();
+  }
+
+  
+  
   g_rec_mutex_unlock(sf2_synth_generator_mutex);
 }
 
@@ -1897,17 +1960,19 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   GObject *output_soundcard;
 
+  AgsSF2SynthUtil *sf2_synth_util;
+  
   GList *start_list, *list;
   GList *stream_start, *stream;
 
-  void *buffer;
+  gpointer buffer;
   
   gchar *filename;
 
   gint midi_key, matching_midi_key;
   gdouble delay;
   guint attack;
-  guint frame_count;
+  guint frame_count, allocated_frame_count;
   guint buffer_size;
   guint length;
   guint current_frame_count, requested_frame_count;
@@ -1925,7 +1990,9 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   GRecMutex *audio_container_manager_mutex;
 
   if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator) ||
-     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
+     !AGS_IS_AUDIO_SIGNAL(audio_signal) ||
+     preset == NULL ||
+     instrument == NULL){
     return;
   }
 
@@ -1994,6 +2061,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   while(list != NULL){
     gint current_midi_key;
     gint current_diff, diff;
+
+    current_midi_key = 60;
     
     g_object_get(AGS_IPATCH_SAMPLE(list->data)->sample,
 		 "root-note", &current_midi_key,
@@ -2039,17 +2108,19 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     }
 
     if(current_diff < diff){
+      if(ipatch_sample != NULL){
+	g_object_unref(ipatch_sample);
+      }
+      
       ipatch_sample = list->data;
+      g_object_ref(ipatch_sample);
       
       matching_midi_key = current_midi_key;	
     }
     
     list = list->next;
   }
-  
-  g_list_free_full(start_list,
-		   (GDestroyNotify) g_object_unref);
-  
+
   delay = 0.0;
   attack = 0;
 
@@ -2120,13 +2191,28 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-  buffer = ags_stream_alloc(frame_count,
+  if(frame_count > buffer_size){
+    allocated_frame_count = frame_count;
+  }else{
+    allocated_frame_count = buffer_size;
+  }
+
+  buffer = ags_stream_alloc(allocated_frame_count,
 			    format);
 
+  sf2_synth_util = sf2_synth_generator->sf2_synth_util;
+  
+  sf2_synth_util->sample_buffer = ags_stream_alloc(allocated_frame_count,
+						   AGS_SOUNDCARD_DOUBLE);
+  sf2_synth_util->im_buffer = ags_stream_alloc(allocated_frame_count,
+					       AGS_SOUNDCARD_DOUBLE);
+  
 #if 0
   {
     gint current_midi_key;
 
+    current_midi_key = 0;
+    
     g_object_get(AGS_IPATCH_SAMPLE(ipatch_sample)->sample,
 		 "root-note", &current_midi_key,
 		 NULL);
@@ -2137,50 +2223,94 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   g_rec_mutex_lock(sf2_synth_generator_mutex);
 
-  sf2_synth_generator->sf2_synth_util->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT;
+  sf2_synth_util->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_INSTRUMENT;
   
-  ags_sf2_synth_util_set_sf2_file(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_sf2_file(sf2_synth_util,
 				  audio_container);
 
-  ags_sf2_synth_util_set_source(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_source(sf2_synth_util,
 				buffer);
-  ags_sf2_synth_util_set_source_stride(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_source_stride(sf2_synth_util,
 				       1);
 
-  ags_sf2_synth_util_set_buffer_length(sf2_synth_generator->sf2_synth_util,
+  ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   sf2_synth_util->sample_buffer);
+
+  ags_common_pitch_util_set_destination(sf2_synth_util->pitch_util,
+					sf2_synth_util->pitch_type,
+					sf2_synth_util->im_buffer);
+    
+  ags_common_pitch_util_set_buffer_length(sf2_synth_util->pitch_util,
+					  sf2_synth_util->pitch_type,
+					  frame_count);
+  ags_common_pitch_util_set_format(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   AGS_SOUNDCARD_DOUBLE);
+  ags_common_pitch_util_set_samplerate(sf2_synth_util->pitch_util,
+				       sf2_synth_util->pitch_type,
+				       samplerate);
+  
+  sf2_synth_util->volume_util->source = sf2_synth_util->im_buffer;
+    
+  sf2_synth_util->volume_util->destination = sf2_synth_util->im_buffer;
+
+  sf2_synth_util->volume_util->buffer_length = frame_count;
+  sf2_synth_util->volume_util->format = AGS_SOUNDCARD_DOUBLE;
+
+  ags_sf2_synth_util_set_buffer_length(sf2_synth_util,
 				       frame_count);
 
-  ags_sf2_synth_util_set_format(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_format(sf2_synth_util,
 				format);
 
-  ags_sf2_synth_util_set_samplerate(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_samplerate(sf2_synth_util,
 				    samplerate);
   
-  ags_sf2_synth_util_set_preset(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_preset(sf2_synth_util,
 				preset);
 
-  ags_sf2_synth_util_set_instrument(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_instrument(sf2_synth_util,
 				    instrument);
 
-  ags_sf2_synth_util_set_note(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_note(sf2_synth_util,
 			      note);
 
-  ags_sf2_synth_util_set_volume(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_volume(sf2_synth_util,
 				volume);
 
-  ags_sf2_synth_util_set_frame_count(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_frame_count(sf2_synth_util,
 				     frame_count);
 
-  ags_sf2_synth_util_set_offset(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_offset(sf2_synth_util,
 				0);
   
-  ags_sf2_synth_util_set_loop_start(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_loop_start(sf2_synth_util,
 				    0);
 
-  ags_sf2_synth_util_set_loop_end(sf2_synth_generator->sf2_synth_util,
+  ags_sf2_synth_util_set_loop_end(sf2_synth_util,
 				  0);
 
-  ags_sf2_synth_util_compute(sf2_synth_generator->sf2_synth_util);
+  ags_sf2_synth_util_load_instrument(sf2_synth_util,
+				     preset,
+				     instrument);
+
+  /* SF2 synth util compute */
+  ags_sf2_synth_util_compute(sf2_synth_util);
+
+  /* reset */
+  ags_sf2_synth_util_set_source(sf2_synth_util,
+				NULL);
+
+  ags_common_pitch_util_set_source(sf2_synth_util->pitch_util,
+				   sf2_synth_util->pitch_type,
+				   NULL);
+
+  ags_common_pitch_util_set_destination(sf2_synth_util->pitch_util,
+					sf2_synth_util->pitch_type,
+					NULL);
+    
+  sf2_synth_util->volume_util->destination = NULL;
 
   g_rec_mutex_unlock(sf2_synth_generator_mutex);    
   
@@ -2194,7 +2324,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
     copy_count = buffer_size;
 
-    if(i + copy_count > frame_count){
+    if(frame_count < i + copy_count){
       copy_count = frame_count - i;
     }
 
@@ -2219,6 +2349,10 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   if(ipatch_sample != NULL){
     g_object_unref(ipatch_sample);
   }      
+  
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+  
 }
 
 /**

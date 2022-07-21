@@ -75,6 +75,8 @@ typedef enum{
   AGS_WAVE_EDIT_SHOW_RULER                  = 1 <<  1,
   AGS_WAVE_EDIT_SHOW_VSCROLLBAR             = 1 <<  2,
   AGS_WAVE_EDIT_SHOW_HSCROLLBAR             = 1 <<  3,
+  AGS_WAVE_EDIT_BLOCK_RESET_VSCROLLBAR      = 1 <<  4,
+  AGS_WAVE_EDIT_BLOCK_RESET_HSCROLLBAR      = 1 <<  5,
 }AgsWaveEditFlags;
 
 typedef enum{

@@ -107,6 +107,8 @@ struct _AgsPadClass
   void (*map_recall)(AgsPad *pad,
 		     guint output_pad_start);
   GList* (*find_port)(AgsPad *pad);
+
+  void (*refresh_port)(AgsPad *pad);
 };
 
 GType ags_pad_get_type(void);
@@ -135,6 +137,8 @@ void ags_pad_map_recall(AgsPad *pad,
 			guint output_pad_start);
 
 GList* ags_pad_find_port(AgsPad *pad);
+
+void ags_pad_refresh_port(AgsPad *pad);
 
 void ags_pad_play(AgsPad *pad);
 

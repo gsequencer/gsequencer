@@ -1432,11 +1432,11 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 
   if(!g_ascii_strncasecmp(str,
 			  "ags-fast-pitch",
-			  16)){
+			  15)){
     pitch_type = "ags-fast-pitch";
   }else if(!g_ascii_strncasecmp(str,
 				"ags-hq-pitch",
-				14)){
+				13)){
     pitch_type = "ags-hq-pitch";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-no-interpolate",
@@ -1444,15 +1444,15 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
     pitch_type = "ags-fluid-none";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-linear-interpolate",
-				26)){
+				25)){
     pitch_type = "ags-fluid-linear";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-4th-order-interpolate",
-				29)){
+				28)){
     pitch_type = "ags-fluid-4th-order";
   }else if(!g_ascii_strncasecmp(str,
 				"fluid-7th-order-interpolate",
-				29)){
+				28)){
     pitch_type = "ags-fluid-7th-order";
   }
   
@@ -1490,12 +1490,16 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 			      &requested_frame_count,
 			      NULL, NULL);
     }
+
+    if(start_sf2_synth_generator != NULL){      
+      ags_sf2_synth_util_load_instrument(AGS_SF2_SYNTH_GENERATOR(start_sf2_synth_generator->data)->sf2_synth_util,
+					 preset_str,
+					 instrument_str);
     
-    if(start_sf2_synth_generator != NULL){
       g_object_set(start_sf2_synth_generator->data,
 		   "filename", audio_container->filename,
-		   "preset", audio_container->preset,
-		   "instrument", audio_container->instrument,
+		   "preset", preset_str,
+		   "instrument", instrument_str,
 		   "frame-count", requested_frame_count,
 		   "pitch-type", pitch_type,
 		   NULL);

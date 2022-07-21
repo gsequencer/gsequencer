@@ -1000,6 +1000,8 @@ void
 ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 				   AgsFMOscillator *fm_oscillator)
 {
+  AgsAudio *audio;
+  
   g_return_if_fail(AGS_IS_FM_SYNCSYNTH(fm_syncsynth));
   g_return_if_fail(AGS_IS_FM_OSCILLATOR(fm_oscillator));
 
@@ -1009,6 +1011,10 @@ ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 
     gtk_box_append(fm_syncsynth->fm_oscillator_box,
 		   (GtkWidget *) fm_oscillator);
+
+    audio = AGS_MACHINE(fm_syncsynth)->audio;
+    ags_audio_add_synth_generator(audio,
+				  (GObject *) ags_synth_generator_new());
   }
 }
 

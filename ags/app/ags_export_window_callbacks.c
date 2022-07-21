@@ -25,9 +25,14 @@
 
 #include <glib/gstdio.h>
 
+gboolean initial_export = TRUE;
+
+volatile int do_stop;
+
 void ags_export_window_replace_files_response_callback(GtkDialog *dialog,
 						       gint response,
 						       AgsExportWindow *export_window);
+gboolean ags_export_window_stop_timeout(AgsExportWindow *export_window);
 
 void
 ags_export_window_add_export_soundcard_callback(GtkWidget *button,
@@ -130,6 +135,17 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   success = FALSE;
 
+  if(initial_export){
+    initial_export = FALSE;
+    
+    g_atomic_int_set(&do_stop,
+		     FALSE);
+
+    g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_DEFAULT_TIMEOUT),
+		  (GSourceFunc) ags_export_window_stop_timeout,
+		  (gpointer) export_window);
+  }
+  
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     GList *start_export_soundcard, *export_soundcard;
     GList *all_filename;
@@ -202,10 +218,25 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   }
 }
 
+gboolean
+ags_export_window_stop_timeout(AgsExportWindow *export_window)
+{
+  if(g_atomic_int_get(&do_stop)){
+    g_atomic_int_set(&do_stop,
+		     FALSE);
+    
+    ags_export_window_stop_export(export_window);
+    gtk_toggle_button_set_active(export_window->export,
+				 FALSE);
+  }
+
+  return(TRUE);
+}
+
 void
 ags_export_window_stop_callback(AgsThread *thread,
 				AgsExportWindow *export_window)
 {
-  gtk_toggle_button_set_active(export_window->export,
-			       FALSE);
+  g_atomic_int_set(&do_stop,
+		   TRUE);
 }

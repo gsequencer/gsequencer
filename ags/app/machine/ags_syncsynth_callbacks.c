@@ -71,9 +71,9 @@ ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 }
 
 void
-ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth)
+ags_syncsynth_auto_update_callback(GtkCheckButton *check_button, AgsSyncsynth *syncsynth)
 {
-  if(gtk_toggle_button_get_active(toggle)){
+  if(gtk_check_button_get_active(check_button)){
     syncsynth->flags |= AGS_SYNCSYNTH_AUTO_UPDATE;
   }else{
     syncsynth->flags &= (~AGS_SYNCSYNTH_AUTO_UPDATE);

@@ -1448,11 +1448,14 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
   double varea_height;
   gdouble upper, old_upper;
   
-  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+  if(!AGS_IS_WAVE_EDIT(wave_edit) ||
+     (AGS_WAVE_EDIT_BLOCK_RESET_VSCROLLBAR & (wave_edit->flags)) != 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
+
+  wave_edit->flags |= AGS_WAVE_EDIT_BLOCK_RESET_VSCROLLBAR;
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1480,6 +1483,8 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
   }
+
+  wave_edit->flags &= (~AGS_WAVE_EDIT_BLOCK_RESET_VSCROLLBAR);  
 }
 
 void
@@ -1499,11 +1504,14 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
   guint map_width;
   gdouble upper, old_upper;
   
-  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+  if(!AGS_IS_WAVE_EDIT(wave_edit) ||
+     (AGS_WAVE_EDIT_BLOCK_RESET_HSCROLLBAR & (wave_edit->flags)) != 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
+
+  wave_edit->flags |= AGS_WAVE_EDIT_BLOCK_RESET_HSCROLLBAR;
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1554,6 +1562,8 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
 #endif
   }
+
+  wave_edit->flags &= (~AGS_WAVE_EDIT_BLOCK_RESET_HSCROLLBAR);  
 }
 
 void

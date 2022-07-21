@@ -2349,11 +2349,14 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   double varea_height;
   gdouble upper, old_upper;
   
-  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit) ||
+     (AGS_AUTOMATION_EDIT_BLOCK_RESET_VSCROLLBAR & (automation_edit->flags)) != 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
+
+  automation_edit->flags |= AGS_AUTOMATION_EDIT_BLOCK_RESET_VSCROLLBAR;
 
   /* adjustment and allocation */
   adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
@@ -2379,6 +2382,8 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
   }
+
+  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_BLOCK_RESET_VSCROLLBAR);  
 }
 
 void
@@ -2398,11 +2403,14 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   guint map_width;
   gdouble upper, old_upper;
   
-  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit) ||
+     (AGS_AUTOMATION_EDIT_BLOCK_RESET_HSCROLLBAR & (automation_edit->flags)) != 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
+
+  automation_edit->flags |= AGS_AUTOMATION_EDIT_BLOCK_RESET_HSCROLLBAR;
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -2453,6 +2461,8 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
 #endif
   }
+
+  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_BLOCK_RESET_HSCROLLBAR);  
 }
 
 void

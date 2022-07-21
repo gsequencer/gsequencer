@@ -102,6 +102,10 @@ ags_sfz_synth_synth_octave_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble octave;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -153,6 +157,10 @@ ags_sfz_synth_synth_key_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble key;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -204,6 +212,10 @@ ags_sfz_synth_synth_volume_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble volume;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -255,6 +267,10 @@ ags_sfz_synth_chorus_enabled_callback(GtkButton *button, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_enabled;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -306,6 +322,10 @@ ags_sfz_synth_chorus_input_volume_callback(AgsDial *dial, AgsSFZSynth *sfz_synth
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_input_volume;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -357,6 +377,10 @@ ags_sfz_synth_chorus_output_volume_callback(AgsDial *dial, AgsSFZSynth *sfz_synt
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_output_volume;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -402,7 +426,11 @@ ags_sfz_synth_chorus_output_volume_callback(AgsDial *dial, AgsSFZSynth *sfz_synt
 
 void
 ags_sfz_synth_chorus_lfo_oscillator_callback(GtkComboBox *combo_box, AgsSFZSynth *sfz_synth)
-{
+{  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -414,6 +442,10 @@ ags_sfz_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, AgsSFZSy
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_lfo_frequency;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -465,6 +497,10 @@ ags_sfz_synth_chorus_depth_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_depth;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -516,6 +552,10 @@ ags_sfz_synth_chorus_mix_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_mix;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -567,6 +607,10 @@ ags_sfz_synth_chorus_delay_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gdouble chorus_delay;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -619,6 +663,10 @@ ags_sfz_synth_volume_callback(GtkRange *range, AgsSFZSynth *sfz_synth)
   GList *start_play, *start_recall, *recall;
 
   gfloat volume;
+  
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
 
   volume = (gfloat) gtk_range_get_value(range);
   

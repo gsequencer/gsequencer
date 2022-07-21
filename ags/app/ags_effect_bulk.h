@@ -122,6 +122,8 @@ struct _AgsEffectBulkClass
 
   void (*map_recall)(AgsEffectBulk *effect_bulk);
   GList* (*find_port)(AgsEffectBulk *effect_bulk);
+
+  void (*refresh_port)(AgsEffectBulk *effect_bulk);
 };
 
 struct _AgsEffectBulkPlugin
@@ -190,6 +192,8 @@ void ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
 
 void ags_effect_bulk_map_recall(AgsEffectBulk *effect_bulk);
 GList* ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk);
+
+void ags_effect_bulk_refresh_port(AgsEffectBulk *effect_bulk);
 
 gboolean ags_effect_bulk_indicator_refresh_timeout(GtkWidget *widget);
 

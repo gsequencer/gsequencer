@@ -47,6 +47,8 @@ void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 void ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge);
 GList* ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge);
 
+void ags_effect_bridge_real_refresh_port(AgsEffectBridge *effect_bridge);
+
 /**
  * SECTION:ags_effect_bridge
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -66,6 +68,7 @@ enum{
   RESIZE_PADS,
   MAP_RECALL,
   FIND_PORT,
+  REFRESH_PORT,
   LAST_SIGNAL,
 };
 
@@ -216,6 +219,8 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
   effect_bridge->map_recall = ags_effect_bridge_real_map_recall;
   effect_bridge->find_port = ags_effect_bridge_real_find_port;
 
+  effect_bridge->refresh_port = ags_effect_bridge_real_refresh_port;
+
   /* signals */
   /**
    * AgsEffectBridge::samplerate-changed:
@@ -362,6 +367,23 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsEffectBridge::refresh-port:
+   * @effect_bridge: the #AgsEffectBridge
+   *
+   * The ::refresh-port signal.
+   * 
+   * Since: 4.2.2
+   */
+  effect_bridge_signals[REFRESH_PORT] =
+    g_signal_new("refresh-port",
+                 G_TYPE_FROM_CLASS(effect_bridge),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, refresh_port),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 }
 
 void
@@ -1639,6 +1661,63 @@ ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
   g_object_unref((GObject *) effect_bridge);
 
   return(list);
+}
+
+void
+ags_effect_bridge_real_refresh_port(AgsEffectBridge *effect_bridge)
+{
+  GList *start_pad, *pad;
+
+  if(effect_bridge->bulk_output != NULL){
+    ags_effect_bulk_refresh_port(AGS_EFFECT_BULK(effect_bridge->bulk_output));
+  }
+
+  if(effect_bridge->bulk_input != NULL){
+    ags_effect_bulk_refresh_port(AGS_EFFECT_BULK(effect_bridge->bulk_input));
+  }
+  
+  /* output */
+  pad =
+    start_pad = ags_effect_bridge_get_output_effect_pad(effect_bridge);
+
+  while(pad != NULL){
+    ags_effect_pad_refresh_port(pad->data);
+
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
+
+  /* input */
+  pad =
+    start_pad = ags_effect_bridge_get_input_effect_pad(effect_bridge);
+
+  while(pad != NULL){
+    ags_effect_pad_refresh_port(pad->data);
+
+    pad = pad->next;
+  }
+
+  g_list_free(start_pad);
+}
+
+/**
+ * ags_effect_bridge_refresh_port:
+ * @effect_bridge: the #AgsEffectBridge
+ *
+ * Notify about to refresh ports.
+ * 
+ * Since: 4.2.2
+ */
+void
+ags_effect_bridge_refresh_port(AgsEffectBridge *effect_bridge)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit((GObject *) effect_bridge,
+		effect_bridge_signals[REFRESH_PORT], 0);
+  g_object_unref((GObject *) effect_bridge);
 }
 
 /**

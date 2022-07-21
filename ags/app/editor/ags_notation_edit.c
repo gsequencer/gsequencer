@@ -1348,7 +1348,7 @@ ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
 
   /* note */
   new_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  new_x = zoom_factor * floor(x / zoom_factor);
+  new_x = zoom_factor * floor(new_x / zoom_factor);
     
   new_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
@@ -1745,11 +1745,14 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   double varea_height;
   gdouble upper, old_upper;
   
-  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit) ||
+     (AGS_NOTATION_EDIT_BLOCK_RESET_VSCROLLBAR & (notation_edit->flags)) != 0){
     return;
   }
-
+  
   application_context = ags_application_context_get_instance();
+
+  notation_edit->flags |= AGS_NOTATION_EDIT_BLOCK_RESET_VSCROLLBAR;
 
   composite_edit = (AgsCompositeEdit *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								AGS_TYPE_COMPOSITE_EDIT);
@@ -1799,6 +1802,8 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
     gtk_adjustment_set_value(piano_adjustment,
 			     gtk_adjustment_get_value(adjustment));
   }
+
+  notation_edit->flags &= (~AGS_NOTATION_EDIT_BLOCK_RESET_VSCROLLBAR);  
 }
 
 void
@@ -1819,11 +1824,14 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   guint map_width;
   gdouble upper, old_upper;
   
-  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit) ||
+     (AGS_NOTATION_EDIT_BLOCK_RESET_HSCROLLBAR & (notation_edit->flags)) != 0){
     return;
   }
 
   application_context = ags_application_context_get_instance();
+
+  notation_edit->flags |= AGS_NOTATION_EDIT_BLOCK_RESET_HSCROLLBAR;
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1871,6 +1879,8 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
   }
+
+  notation_edit->flags &= (~AGS_NOTATION_EDIT_BLOCK_RESET_HSCROLLBAR);  
 }
 
 void

@@ -461,15 +461,15 @@ ags_export_thread_run(AgsThread *thread)
   guint format;
   
   export_thread = AGS_EXPORT_THREAD(thread);
-
-  if(export_thread->audio_file == NULL){
-    return;
-  }
   
   if(export_thread->counter == export_thread->tic){
     ags_thread_stop(thread);
   }else{
     export_thread->counter += 1;
+  }
+
+  if(export_thread->audio_file == NULL){
+    return;
   }
 
   /*  */

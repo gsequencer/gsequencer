@@ -1253,6 +1253,9 @@ ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,
   ags_sound_container_level_up(AGS_SOUND_CONTAINER(sound_container),
 			       5);
 
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sound_container),
+					    0);  
+  
   /* preset */
   if(preset != NULL){
     strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(sound_container));

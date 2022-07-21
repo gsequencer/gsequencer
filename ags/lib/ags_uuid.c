@@ -63,7 +63,7 @@ ags_uuid_alloc()
 {
   AgsUUID *ptr;
 
-  ptr = (AgsUUID *) malloc(sizeof(AgsUUID));
+  ptr = (AgsUUID *) g_malloc(sizeof(AgsUUID));
   memset(ptr, 0, sizeof(AgsUUID));
 
   return(ptr);
@@ -84,7 +84,7 @@ ags_uuid_copy(AgsUUID *ptr)
 {
   AgsUUID *new_ptr;
 
-  new_ptr = (AgsUUID *) malloc(sizeof(AgsUUID));
+  new_ptr = (AgsUUID *) g_malloc(sizeof(AgsUUID));
   memcpy(new_ptr->data, ptr->data, sizeof(AgsUUID));
 
   return(new_ptr);

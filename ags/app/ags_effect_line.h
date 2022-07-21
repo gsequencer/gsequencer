@@ -123,6 +123,8 @@ struct _AgsEffectLineClass
 
   void (*done)(AgsEffectLine *effect_line,
 	       GObject *recall_id);
+
+  void (*refresh_port)(AgsEffectLine *effect_line);
 };
 
 struct _AgsEffectLinePlugin
@@ -184,6 +186,8 @@ GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
 
 void ags_effect_line_done(AgsEffectLine *effect_line,
 			  GObject *recall_id);
+
+void ags_effect_line_refresh_port(AgsEffectLine *effect_line);
 
 GList* ags_effect_line_find_next_grouped(GList *effect_line);
 
