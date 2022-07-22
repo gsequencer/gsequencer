@@ -13860,6 +13860,7 @@ ags_audio_real_start(AgsAudio *audio,
   guint audio_channels;
   guint output_pads;
   gint i;
+  guint success_counter, current_success_counter;
 
   static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
 				      AGS_SOUND_STAGING_RUN_INIT_PRE |
@@ -13894,10 +13895,14 @@ ags_audio_real_start(AgsAudio *audio,
 
   /* initialize channel */
   start_recall_id = NULL;
+
+  success_counter = 0;
   
   if(sound_scope >= 0){
     output_playback = start_output_playback;
 
+    current_success_counter = success_counter;
+    
     while(output_playback != NULL){
       playback = AGS_PLAYBACK(output_playback->data);
 
@@ -13905,6 +13910,9 @@ ags_audio_real_start(AgsAudio *audio,
 						     sound_scope);
 
       if(current_recall_id == NULL){
+	success_counter++;
+	current_success_counter++;
+	
 	/* get some fields */
 	channel = NULL;
 	
@@ -13967,48 +13975,52 @@ ags_audio_real_start(AgsAudio *audio,
       output_playback = output_playback->next;
     }
 
-    /* play init */
-    ags_audio_recursive_run_stage(audio,
-				  sound_scope, staging_flags);
+    if(current_success_counter > success_counter){
+      /* play init */
+      ags_audio_recursive_run_stage(audio,
+				    sound_scope, staging_flags);
 
-    output_playback = start_output_playback;
+      output_playback = start_output_playback;
 
-    /* add to start queue */
-    if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  sound_scope);
+      /* add to start queue */
+      if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
+	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							    sound_scope);
 
-      if(audio_thread != NULL){
-	ags_audio_thread_set_processing(audio_thread,
-					TRUE);
+	if(audio_thread != NULL){
+	  ags_audio_thread_set_processing(audio_thread,
+					  TRUE);
 
-	g_object_unref(audio_thread);
+	  g_object_unref(audio_thread);
+	}
+      }
+    
+      while(output_playback != NULL){
+	playback = AGS_PLAYBACK(output_playback->data);
+
+	if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	  channel_thread = ags_playback_get_channel_thread(playback,
+							   sound_scope);
+      
+	  /* add to start queue */
+	  if(channel_thread != NULL){
+	    ags_channel_thread_set_processing(channel_thread,
+					      TRUE);
+
+	    g_object_unref(channel_thread);
+	  }
+	}      
+      
+	/* iterate */
+	output_playback = output_playback->next;
       }
     }
-    
-    while(output_playback != NULL){
-      playback = AGS_PLAYBACK(output_playback->data);
-
-      if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 sound_scope);
-      
-	/* add to start queue */
-	if(channel_thread != NULL){
-	  ags_channel_thread_set_processing(channel_thread,
-					    TRUE);
-
-	  g_object_unref(channel_thread);
-	}
-      }      
-      
-      /* iterate */
-      output_playback = output_playback->next;
-    }    
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       output_playback = start_output_playback;
 
+      current_success_counter = success_counter;
+      
       while(output_playback != NULL){
 	playback = AGS_PLAYBACK(output_playback->data);
 
@@ -14016,6 +14028,9 @@ ags_audio_real_start(AgsAudio *audio,
 						       i);
 
 	if(current_recall_id == NULL){
+	  success_counter++;
+	  current_success_counter++;
+	  
 	  /* get some fields */
 	  channel = NULL;
 	  
@@ -14080,42 +14095,44 @@ ags_audio_real_start(AgsAudio *audio,
 	output_playback = output_playback->next;
       }
 
-      /* play init */
-      ags_audio_recursive_run_stage(audio,
-				    i, staging_flags);
+      if(current_success_counter > success_counter){
+	/* play init */
+	ags_audio_recursive_run_stage(audio,
+				      i, staging_flags);
 
-      output_playback = start_output_playback;
+	output_playback = start_output_playback;
 
-      /* add to start queue */
-      if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
-	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							    i);
+	/* add to start queue */
+	if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      i);
 
-	if(audio_thread != NULL){
-	  ags_audio_thread_set_processing(audio_thread,
-					  TRUE);
+	  if(audio_thread != NULL){
+	    ags_audio_thread_set_processing(audio_thread,
+					    TRUE);
 
-	  g_object_unref(audio_thread);
-	}
-      }
-      
-      while(output_playback != NULL){
-	playback = AGS_PLAYBACK(output_playback->data);
-
-	if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-	  channel_thread = ags_playback_get_channel_thread(playback,
-							   i);
-
-	  if(channel_thread != NULL){
-	    ags_channel_thread_set_processing(channel_thread,
-					      TRUE);
-
-	    g_object_unref(channel_thread);
+	    g_object_unref(audio_thread);
 	  }
 	}
+      
+	while(output_playback != NULL){
+	  playback = AGS_PLAYBACK(output_playback->data);
+
+	  if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_processing(channel_thread,
+						TRUE);
+
+	      g_object_unref(channel_thread);
+	    }
+	  }
 	
-	/* iterate */
-	output_playback = output_playback->next;
+	  /* iterate */
+	  output_playback = output_playback->next;
+	}
       }
     }
   }
@@ -14132,68 +14149,70 @@ ags_audio_real_start(AgsAudio *audio,
   start_recall_id = g_list_reverse(start_recall_id);
   
   /* emit message */
-  message_delivery = ags_message_delivery_get_instance();
+  if(success_counter > 0){
+    message_delivery = ags_message_delivery_get_instance();
 
-  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
-								   "libags-audio");
+    start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								     "libags-audio");
 
-  if(start_message_queue != NULL){
-    AgsMessageEnvelope *message;
+    if(start_message_queue != NULL){
+      AgsMessageEnvelope *message;
 
-    xmlDoc *doc;
-    xmlNode *root_node;
+      xmlDoc *doc;
+      xmlNode *root_node;
 
-    /* specify message body */
-    doc = xmlNewDoc("1.0");
+      /* specify message body */
+      doc = xmlNewDoc("1.0");
 
-    root_node = xmlNewNode(NULL,
-			   "ags-command");
-    xmlDocSetRootElement(doc, root_node);    
+      root_node = xmlNewNode(NULL,
+			     "ags-command");
+      xmlDocSetRootElement(doc, root_node);    
 
-    xmlNewProp(root_node,
-	       "method",
-	       "AgsAudio::start");
+      xmlNewProp(root_node,
+		 "method",
+		 "AgsAudio::start");
 
-    /* add message */
-    message = ags_message_envelope_new((GObject *) audio,
-				       NULL,
-				       doc);
+      /* add message */
+      message = ags_message_envelope_new((GObject *) audio,
+					 NULL,
+					 doc);
 
-    /* set parameter */
-    message->n_params = 2;
+      /* set parameter */
+      message->n_params = 2;
 
-    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
-    message->value = g_new0(GValue,
-			    2);
+      message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+      message->value = g_new0(GValue,
+			      2);
 
-    /* sound scope */
-    message->parameter_name[0] = "sound-scope";
-    g_value_init(&(message->value[0]),
-		 G_TYPE_INT);
-    g_value_set_int(&(message->value[0]),
-		    sound_scope);
+      /* sound scope */
+      message->parameter_name[0] = "sound-scope";
+      g_value_init(&(message->value[0]),
+		   G_TYPE_INT);
+      g_value_set_int(&(message->value[0]),
+		      sound_scope);
 
-    /* recall id */
-    message->parameter_name[1] = "recall-id";
-    g_value_init(&(message->value[1]),
-		 G_TYPE_POINTER);
-    g_value_set_pointer(&(message->value[1]),
-			g_list_copy_deep(start_recall_id,
-					 (GCopyFunc) g_object_ref,
-					 NULL));
+      /* recall id */
+      message->parameter_name[1] = "recall-id";
+      g_value_init(&(message->value[1]),
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&(message->value[1]),
+			  g_list_copy_deep(start_recall_id,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
-    /* terminate string vector */
-    message->parameter_name[2] = NULL;
+      /* terminate string vector */
+      message->parameter_name[2] = NULL;
     
-    /* add message */
-    ags_message_delivery_add_message_envelope(message_delivery,
-					      "libags-audio",
-					      message);
+      /* add message */
+      ags_message_delivery_add_message_envelope(message_delivery,
+						"libags-audio",
+						message);
 
-    g_list_free_full(start_message_queue,
-		     (GDestroyNotify) g_object_unref);
+      g_list_free_full(start_message_queue,
+		       (GDestroyNotify) g_object_unref);
+    }
   }
-
+  
   return(start_recall_id);
 }
 
