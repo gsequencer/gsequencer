@@ -1,8 +1,8 @@
 ags (4.2.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved ags_audio_start() don't initialize twice
-	* improved ags_channel_start() don't initialize twice
+	* improved ags_audio_start() don't initialize recall twice
+	* improved ags_channel_start() don't initialize recall twice
 
 ags (4.2.12)
 

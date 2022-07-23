@@ -13910,7 +13910,6 @@ ags_audio_real_start(AgsAudio *audio,
 						     sound_scope);
 
       if(current_recall_id == NULL){
-	success_counter++;
 	current_success_counter++;
 	
 	/* get some fields */
@@ -14015,6 +14014,8 @@ ags_audio_real_start(AgsAudio *audio,
 	output_playback = output_playback->next;
       }
     }
+
+    success_counter = current_success_counter;
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       output_playback = start_output_playback;
@@ -14028,7 +14029,6 @@ ags_audio_real_start(AgsAudio *audio,
 						       i);
 
 	if(current_recall_id == NULL){
-	  success_counter++;
 	  current_success_counter++;
 	  
 	  /* get some fields */
@@ -14134,6 +14134,8 @@ ags_audio_real_start(AgsAudio *audio,
 	  output_playback = output_playback->next;
 	}
       }
+
+      success_counter = current_success_counter;
     }
   }
 

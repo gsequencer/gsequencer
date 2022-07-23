@@ -10620,7 +10620,6 @@ ags_channel_real_start(AgsChannel *channel,
     current_success_counter = success_counter;
 
     if(current_recall_id == NULL){
-      success_counter++;
       current_success_counter++;
 	
       /* recycling context */
@@ -10701,6 +10700,8 @@ ags_channel_real_start(AgsChannel *channel,
 	}
       }
     }
+
+    success_counter = current_success_counter;
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       current_recall_id = ags_playback_get_recall_id(playback,
@@ -10709,7 +10710,6 @@ ags_channel_real_start(AgsChannel *channel,
       current_success_counter = success_counter;
 
       if(current_recall_id == NULL){
-	success_counter++;
 	current_success_counter++;
 
 	/* recycling context */
@@ -10790,6 +10790,8 @@ ags_channel_real_start(AgsChannel *channel,
 	  }
 	}
       }
+
+      success_counter = current_success_counter;
     }
   }
 
