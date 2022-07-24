@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-07-23 13:04+0200\n"
+"POT-Creation-Date: 2022-07-24 21:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1130,7 +1130,7 @@ msgstr ""
 msgid "group"
 msgstr ""
 
-#: ags/app/ags_effect_line.c:1020 ags/app/ags_effect_line.c:1026
+#: ags/app/ags_effect_line.c:1021 ags/app/ags_effect_line.c:1027
 #: ags/app/ags_line.c:1108 ags/app/ags_line.c:1114
 msgid "channel"
 msgstr ""
