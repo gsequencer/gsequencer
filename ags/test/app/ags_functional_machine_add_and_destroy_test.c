@@ -34,8 +34,6 @@
 
 #include "ags_functional_test_util.h"
 
-#include "config.h"
-
 void ags_functional_machine_add_and_destroy_test_add_test();
 
 int ags_functional_machine_add_and_destroy_test_init_suite();

@@ -115,6 +115,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   plugin_browser = AGS_PLUGIN_BROWSER(line_member_editor->plugin_browser);
   
   switch(response){
+  case GTK_RESPONSE_OK:
   case GTK_RESPONSE_ACCEPT:
     {
       machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,

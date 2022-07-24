@@ -189,8 +189,6 @@ ags_functional_machine_link_test_master_mixer()
   guint nth_machine;
   gboolean success;
 
-  nth_machine = 0;
-  
   /* add panel */
   ags_functional_test_util_add_machine(NULL,
 				       "Panel");
@@ -213,6 +211,8 @@ ags_functional_machine_link_test_master_mixer()
   ags_functional_test_util_sync();
 
   /* retrieve panel */
+  nth_machine = 0;
+  
   AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_PANEL);
 
   ags_functional_test_util_sync();
