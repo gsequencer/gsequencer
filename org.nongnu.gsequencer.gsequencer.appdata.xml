@@ -40,6 +40,22 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.2.14" date="2022-07-24">
+      <description>
+	<p>
+	  Fixed potential SIGSEGV while removing plugin from effect line.
+	</p>
+      </description>
+    </release>
+
+    <release version="4.2.13" date="2022-07-23">
+      <description>
+	<p>
+	  Fixed start playback don't initialize recall twice.
+	</p>
+      </description>
+    </release>
+
     <release version="4.2.12" date="2022-07-19">
       <description>
 	<p>
