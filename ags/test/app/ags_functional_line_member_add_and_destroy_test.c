@@ -64,7 +64,7 @@ void ags_functional_line_member_add_and_destroy_test_ffplayer();
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY "Echo Delay Line (Maximum Delay 1s)"
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB "Freeverb (Version 3)"
 
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH "/usr/lib64/lv2/gverb-swh.lv2/plugin-linux.so"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH "/usr/lib64/lv2/gverb-swh.lv2/plugin-Linux.so"
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB "GVerb"
 #endif
 
@@ -261,21 +261,18 @@ ags_functional_line_member_add_and_destroy_test_panel()
     break;
   }
 
-  /* pad editor */
   start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
   machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
     
-  /* line editor */
   start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
 
   machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
 
-  /* line member editor */
   line_member_editor = machine_editor_line->line_member_editor;
-  
+
   widget = &(line_member_editor->plugin_browser);
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
@@ -402,6 +399,43 @@ ags_functional_line_member_add_and_destroy_test_panel()
 							    nth_pad, nth_audio_channel);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
+
+  machine_editor_listing = NULL;
+  
+  switch(AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_INPUT_TAB){
+  case 0:
+    {
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing);
+    }
+    break;
+  case 1:
+    {
+      machine_editor_listing = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing);
+    }
+    break;
+  }
+
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
+
+  machine_editor_pad = g_list_nth_data(start_list,
+				       nth_pad);
+    
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  machine_editor_line = g_list_nth_data(start_list,
+					nth_audio_channel);
+
+  line_member_editor = machine_editor_line->line_member_editor;
+
+  widget = &(line_member_editor->plugin_browser);
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_line_member_add_and_destroy_test_default_timeout,
+						      widget);
 
   ags_functional_test_util_sync();
 

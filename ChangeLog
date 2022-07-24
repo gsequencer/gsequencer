@@ -1,6 +1,7 @@
 ags (4.2.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_effect_line_remove_plugin()
 	* improved functional-system-tests.mk.am
 	* refactored ags_functional_line_member_add_and_destroy_test.c
 

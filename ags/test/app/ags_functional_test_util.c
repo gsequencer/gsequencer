@@ -4617,7 +4617,7 @@ ags_functional_test_util_get_machine_editor_dialog_line(GtkWidget *machine_edito
   AgsMachineEditorPad *machine_editor_pad;
   AgsMachineEditorLine *machine_editor_line;
   
-  GList *list;
+  GList *start_list, *list;
 
   if(machine_editor_dialog == NULL){
     return(NULL);
@@ -4629,7 +4629,9 @@ ags_functional_test_util_get_machine_editor_dialog_line(GtkWidget *machine_edito
     machine_editor_listing = AGS_MACHINE_EDITOR_DIALOG(machine_editor_dialog)->machine_editor->input_editor_listing;
   }
 
-  machine_editor_pad = g_list_nth_data(machine_editor_listing->pad,
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  
+  machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
 
   if(!AGS_IS_MACHINE_EDITOR_PAD(machine_editor_pad)){
@@ -4637,7 +4639,9 @@ ags_functional_test_util_get_machine_editor_dialog_line(GtkWidget *machine_edito
   }
   
   /* line editor */
-  machine_editor_line = g_list_nth_data(machine_editor_pad->line,
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
+
+  machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
 
   if(!AGS_IS_MACHINE_EDITOR_LINE(machine_editor_line)){
@@ -4959,14 +4963,10 @@ ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_p
   gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
 
-  ags_functional_test_util_reaction_time_long();
-
   /* line editor */
   list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
   machine_editor_line = g_list_nth_data(list_start,
 					nth_audio_channel);
-  
-  ags_functional_test_util_reaction_time_long();
   
   /* link editor */
   link_editor = machine_editor_line->link_editor;
@@ -4992,8 +4992,6 @@ ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_p
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
   }      
-  
-  ags_functional_test_util_reaction_time_long();
     
   /* set link line */
   gtk_spin_button_set_value(link_editor->spin_button,
@@ -5120,7 +5118,7 @@ ags_functional_test_util_machine_editor_dialog_effect_add_driver_program(guint n
     break;
   case 1:
     {
-      machine_editor_listing = machine_editor->output_editor_listing;
+      machine_editor_listing = machine_editor->input_editor_listing;
     }
     break;
   default:
@@ -5136,18 +5134,14 @@ ags_functional_test_util_machine_editor_dialog_effect_add_driver_program(guint n
   gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
 
-  ags_functional_test_util_reaction_time_long();
-
   /* line editor */
   start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
   machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
   
-  ags_functional_test_util_reaction_time_long();
-  
   /* line member editor */
   member_editor = machine_editor_line->line_member_editor;
-  
+
   /* add button */
   add_button = member_editor->add;
 
@@ -5217,8 +5211,6 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   GtkButton *remove_button;
   
   GtkTreeModel *model;
-
-  AgsFunctionalTestUtilListLengthCondition condition;
   
   GtkTreeIter iter;
   GList *list_start, *list;
@@ -5276,15 +5268,11 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   gtk_expander_set_expanded(machine_editor_pad->expander,
 			    TRUE);
 
-  ags_functional_test_util_reaction_time_long();
-
   /* line editor */
   list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
 
   machine_editor_line = g_list_nth_data(list_start,
 					nth_audio_channel);
-
-  ags_functional_test_util_reaction_time_long();
 
   /* line member editor */
   member_editor = machine_editor_line->line_member_editor;
@@ -5294,13 +5282,7 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   remove_button = member_editor->remove;
 
   /* check button */
-  check_button = NULL;
-
-  condition.start_list = &(member_editor->entry);
-
   list_start = ags_line_member_editor_get_entry(member_editor);
-
-  condition.length = g_list_length(list_start) - 1;
 
   member_editor_entry = g_list_nth_data(list_start,
 					nth_effect);
@@ -5309,13 +5291,7 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   ags_functional_test_util_check_button_click(member_editor_entry->check_button);
 
   /* click remove */
-  ags_functional_test_util_reaction_time_long();
-  
   ags_functional_test_util_button_click(remove_button);
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
-						      &ags_functional_test_util_default_timeout,
-						      &condition);
   
   ags_functional_test_util_reaction_time_long();
 }
@@ -6158,6 +6134,49 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect(guint nth_machine,
 							  guint nth_pad, guint nth_audio_channel,
 							  gchar *effect)
 {
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_editor_dialog_lv2_effect_driver_program;
+  
+  driver_program->n_params = 4;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(5 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[1] = g_strdup("nth_pad");
+  driver_program->param_strv[2] = g_strdup("nth_audio_channel");
+  driver_program->param_strv[3] = g_strdup("effect");
+  driver_program->param_strv[4] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 4);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   nth_pad);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   nth_audio_channel);
+  
+  g_value_init(driver_program->param + 3,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 3,
+		     effect);
+  
+  ags_functional_test_util_add_driver_program(driver_program);
 }
 
 void

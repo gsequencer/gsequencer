@@ -31,6 +31,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_line_member.h>
+#include <ags/app/ags_effect_separator.h>
 
 G_BEGIN_DECLS
 
@@ -83,6 +84,7 @@ struct _AgsEffectLine
   GtkToggleButton *group;
 
   GList *line_member;
+  GList *effect_separator;
   
   GtkGrid *line_member_grid;
 
@@ -166,6 +168,14 @@ void ags_effect_line_add_line_member(AgsEffectLine *effect_line,
 				     guint width, guint height);
 void ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
 					AgsLineMember *line_member);
+
+GList* ags_effect_line_get_effect_separator(AgsEffectLine *effect_line);
+void ags_effect_line_add_effect_separator(AgsEffectLine *effect_line,
+					  AgsEffectSeparator *effect_separator,
+					  guint x, guint y,
+					  guint width, guint height);
+void ags_effect_line_remove_effect_separator(AgsEffectLine *effect_line,
+					     AgsEffectSeparator *effect_separator);
 
 void ags_effect_line_add_plugin(AgsEffectLine *effect_line,
 				GList *control_type_name,

@@ -568,6 +568,7 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 		 (GtkWidget *) effect_line->group);
 
   effect_line->line_member = NULL;
+  effect_line->effect_separator = NULL;
   
   effect_line->line_member_grid = (GtkGrid *) gtk_grid_new();
   gtk_box_append((GtkBox *) effect_line,
@@ -1132,6 +1133,82 @@ ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
   }
 }
 
+/**
+ * ags_effect_line_get_effect_separator:
+ * @effect_line: the #AgsEffectLine
+ * 
+ * Get effect_line member of @effect_line.
+ * 
+ * Returns: the #GList-struct containing #AgsEffectSeparator
+ *
+ * Since: 4.2.14
+ */
+GList*
+ags_effect_line_get_effect_separator(AgsEffectLine *effect_line)
+{
+  g_return_val_if_fail(AGS_IS_EFFECT_LINE(effect_line), NULL);
+
+  return(g_list_reverse(g_list_copy(effect_line->effect_separator)));
+}
+
+/**
+ * ags_effect_line_add_effect_separator:
+ * @effect_line: the #AgsEffectLine
+ * @effect_separator: the #AgsEffectSeparator
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Add @effect_separator to @effect_line.
+ * 
+ * Since: 4.2.14
+ */
+void
+ags_effect_line_add_effect_separator(AgsEffectLine *effect_line,
+				     AgsEffectSeparator *effect_separator,
+				     guint x, guint y,
+				     guint width, guint height)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+  g_return_if_fail(AGS_IS_EFFECT_SEPARATOR(effect_separator));
+
+  if(g_list_find(effect_line->effect_separator, effect_separator) == NULL){
+    effect_line->effect_separator = g_list_prepend(effect_line->effect_separator,
+						   effect_separator);
+    
+    gtk_grid_attach(effect_line->line_member_grid,
+		     effect_separator,
+		     x, y,
+		     width, height);
+  }
+}
+
+/**
+ * ags_effect_line_remove_effect_separator:
+ * @effect_line: the #AgsEffectLine
+ * @effect_separator: the #AgsEffectSeparator
+ * 
+ * Remove @effect_separator from @effect_line.
+ * 
+ * Since: 4.2.14
+ */
+void
+ags_effect_line_remove_effect_separator(AgsEffectLine *effect_line,
+					AgsEffectSeparator *effect_separator)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+  g_return_if_fail(AGS_IS_EFFECT_SEPARATOR(effect_separator));
+
+  if(g_list_find(effect_line->effect_separator, effect_separator) != NULL){
+    effect_line->effect_separator = g_list_remove(effect_line->effect_separator,
+						  effect_separator);
+    
+    gtk_grid_remove(effect_line->line_member_grid,
+		    effect_separator);
+  }
+}
+
 void
 ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 				  GList *control_type_name,
@@ -1273,10 +1350,10 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   gtk_widget_set_halign(separator,
 			GTK_ALIGN_FILL);
 
-  gtk_grid_attach(effect_line->line_member_grid,
-		  (GtkWidget *) separator,
-		  0, y,
-		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
+  ags_effect_line_add_effect_separator(effect_line,
+				       separator,
+				       0, y,
+				       AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show(GTK_WIDGET(separator));
 
   y++;
@@ -2028,10 +2105,10 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   gtk_widget_set_halign(separator,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(effect_line->line_member_grid,
-		  (GtkWidget *) separator,
-		  0, y,
-		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
+  ags_effect_line_add_effect_separator(effect_line,
+				       separator,
+				       0, y,
+				       AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show(GTK_WIDGET(separator));
   
   y++;
@@ -2673,10 +2750,10 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
   gtk_widget_set_halign(separator,
 			GTK_ALIGN_FILL);
   
-  gtk_grid_attach(effect_line->line_member_grid,
-		  (GtkWidget *) separator,
-		  0, y,
-		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
+  ags_effect_line_add_effect_separator(effect_line,
+				       (GtkWidget *) separator,
+				       0, y,
+				       AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show(GTK_WIDGET(separator));
   
   y++;
@@ -3506,7 +3583,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
   ags_channel_remove_recall_container(effect_line->channel, (GObject *) effect_line_plugin->play_container);
   ags_channel_remove_recall_container(effect_line->channel, (GObject *) effect_line_plugin->recall_container);
 
-  /* destroy controls - expander table */
+  /* destroy controls - line member */
   start_list = ags_effect_line_get_line_member(effect_line);
 
   list = start_list;
@@ -3522,16 +3599,23 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 
       ags_effect_line_remove_line_member(effect_line,
 					 list->data);
+    }
+    
+    list = list->next;
+  }
+  
+  g_list_free(start_list);
 
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
-    }else if(AGS_IS_EFFECT_SEPARATOR(list->data) &&
-	     AGS_EFFECT_SEPARATOR(list->data)->play_container == effect_line_plugin->play_container){
-      ags_effect_line_remove_line_member(effect_line,
-					 list->data);
+  /* destroy controls - effect separator */
+  start_list = ags_effect_line_get_effect_separator(effect_line);
 
-      g_object_run_dispose(list->data);
-      g_object_unref(list->data);
+  list = start_list;
+  
+  while(list != NULL){
+    if(AGS_IS_EFFECT_SEPARATOR(list->data) &&
+       AGS_EFFECT_SEPARATOR(list->data)->play_container == effect_line_plugin->play_container){
+      ags_effect_line_remove_effect_separator(effect_line,
+					      list->data);
     }
     
     list = list->next;
