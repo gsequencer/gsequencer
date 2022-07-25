@@ -1,3 +1,8 @@
+ags (4.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags_functional_notation_editor_workflow_test.c
+
 ags (4.2.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -187,9 +187,21 @@ void ags_functional_test_util_composite_toolbar_zoom_driver_program(guint n_para
 								    gchar **param_strv,
 								    GValue *param);
 
+void ags_functional_test_util_machine_selector_add_driver_program(guint n_params,
+								  gchar **param_strv,
+								  GValue *param);
+
+void ags_functional_test_util_machine_selector_select_driver_program(guint n_params,
+								     gchar **param_strv,
+								     GValue *param);
+
 void ags_functional_test_util_preferences_click_tab_driver_program(guint n_params,
 								   gchar **param_strv,
 								   GValue *param);
+
+void ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
+								     gchar **param_strv,
+								     GValue *param);
 
 void ags_functional_test_util_audio_preferences_buffer_size_driver_program(guint n_params,
 									   gchar **param_strv,
@@ -3410,7 +3422,7 @@ ags_functional_test_util_composite_toolbar_cursor_click_driver_program(guint n_p
 
   position = composite_toolbar->position;
   
-  ags_functional_test_util_toggle_button_click(position);
+  ags_functional_test_util_fake_toggle_button_click(position);
 }
 
 void
@@ -3453,7 +3465,7 @@ ags_functional_test_util_composite_toolbar_edit_click_driver_program(guint n_par
 
   edit = composite_toolbar->edit;
   
-  ags_functional_test_util_toggle_button_click(edit);
+  ags_functional_test_util_fake_toggle_button_click(edit);
 }
 
 void
@@ -3496,7 +3508,7 @@ ags_functional_test_util_composite_toolbar_delete_click_driver_program(guint n_p
 
   clear = composite_toolbar->clear;
 
-  ags_functional_test_util_toggle_button_click(clear);
+  ags_functional_test_util_fake_toggle_button_click(clear);
 }
 
 void
@@ -3539,7 +3551,7 @@ ags_functional_test_util_composite_toolbar_select_click_driver_program(guint n_p
 
   select = composite_toolbar->select;
 
-  ags_functional_test_util_toggle_button_click(select);
+  ags_functional_test_util_fake_toggle_button_click(select);
 }
 
 void
@@ -3582,7 +3594,7 @@ ags_functional_test_util_composite_toolbar_invert_click_driver_program(guint n_p
 
   invert = composite_toolbar->invert;
 
-  ags_functional_test_util_button_click(invert);
+  ags_functional_test_util_fake_button_click(invert);
 }
 
 void
@@ -3639,7 +3651,7 @@ ags_functional_test_util_composite_toolbar_copy_click_driver_program(guint n_par
 
   copy = composite_toolbar->copy;
 
-  ags_functional_test_util_button_click(copy);
+  ags_functional_test_util_fake_button_click(copy);
 }
 
 void
@@ -3682,7 +3694,7 @@ ags_functional_test_util_composite_toolbar_cut_click_driver_program(guint n_para
 
   cut = composite_toolbar->cut;
 
-  ags_functional_test_util_button_click(cut);
+  ags_functional_test_util_fake_button_click(cut);
 }
 
 void
@@ -3729,8 +3741,8 @@ ags_functional_test_util_composite_toolbar_zoom_driver_program(guint n_params,
 
   zoom = composite_toolbar->zoom;
   
-  ags_functional_test_util_combo_box_click(zoom,
-					   nth_zoom);
+  gtk_combo_box_set_active(zoom,
+			   nth_zoom);
 }
 
 void
@@ -3741,7 +3753,7 @@ ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom)
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
-  driver_program->driver_program_func = ags_functional_test_util_composite_toolbar_zoom;
+  driver_program->driver_program_func = ags_functional_test_util_composite_toolbar_zoom_driver_program;
   
   driver_program->n_params = 1;
 
@@ -3764,9 +3776,140 @@ ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom)
 }
 
 void
-ags_functional_test_util_machine_selector_select(gchar *machine)
+ags_functional_test_util_machine_selector_add_driver_program(guint n_params,
+							     gchar **param_strv,
+							     GValue *param)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_list;
+
+  gchar *action;
+  
+  guint nth_machine;
+
+  nth_machine = g_value_get_uint(param);
+  
+  application_context = ags_application_context_get_instance();
+  
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  start_list = ags_window_get_machine(window);
+  
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
+
+  g_list_free(start_list);
+  
+  action = g_strdup_printf("machine_selector.add-%s",
+			   machine->uid);
+  
+  gtk_widget_activate_action_variant(composite_editor->machine_selector,
+				     action,
+				     NULL);
+
+  g_free(action);
+}
+
+void
+ags_functional_test_util_machine_selector_add(guint nth_machine)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_selector_add_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("nth_machine");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   nth_machine);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
+ags_functional_test_util_machine_selector_select_driver_program(guint n_params,
+								gchar **param_strv,
+								GValue *param)
+{
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+  
+  gchar *machine_str;
+
+  machine_str = g_value_get_string(param);
+  
+  application_context = ags_application_context_get_instance();
+  
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  list = 
+    start_list = ags_machine_selector_get_machine_radio_button(composite_editor->machine_selector);
+
+  while(list != NULL){
+    if(!g_strcmp0(gtk_check_button_get_label(list->data),
+		  machine_str)){
+      gtk_check_button_set_active(list->data,
+				  TRUE);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+}
+
+void
+ags_functional_test_util_machine_selector_select(gchar *machine_str)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_machine_selector_select_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("machine_str");
+  driver_program->param_strv[2] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param,
+		     machine_str);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
 }
 
 void
@@ -3789,10 +3932,123 @@ ags_functional_test_util_notation_edit_delete_point(guint x,
 }
 
 void
+ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
+								gchar **param_strv,
+								GValue *param)
+{
+  AgsWindow *window;
+  AgsMachine *selected_machine;
+  AgsCompositeEditor *composite_editor;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_list;
+
+  GtkAllocation allocation;
+
+  gchar *action;
+
+  gdouble zoom_factor;
+  guint channel_count;
+  gdouble viewport_x, viewport_y;
+  gdouble event_x, event_y;
+  guint x0;
+  guint x1;
+  guint y;
+
+  x0 = g_value_get_uint(param);
+  x1 = g_value_get_uint(param + 1);
+
+  y = g_value_get_uint(param + 2);
+  
+  application_context = ags_application_context_get_instance();
+  
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  selected_machine = composite_editor->selected_machine;
+
+  g_object_get(selected_machine->audio,
+	       "input-pads", &channel_count,
+	       NULL);
+  
+  gtk_widget_get_allocation(GTK_WIDGET(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->drawing_area),
+			    &allocation);
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_editor->toolbar->zoom));
+
+  if((AGS_NAVIGATION_MAX_POSITION_TICS * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) > allocation.width){
+    viewport_x = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar));
+  }else{
+    viewport_x = 0.0;
+  }
+  
+  if((channel_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) > allocation.height){
+    viewport_y = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar));
+  }else{
+    viewport_y = 0.0;
+  }
+  
+  event_x = (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) - viewport_x;
+  event_y = (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) - viewport_y;
+  
+  g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_controller,
+			"pressed",
+			1,
+			event_x,
+			event_y);
+
+  event_x = (x1 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) - viewport_x;
+
+  g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_controller,
+			"released",
+			1,
+			event_x,
+			event_y);
+}
+
+void
 ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
 						 guint y)
 {
-  //TODO:JK: implement me
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_notation_edit_add_point_driver_program;
+  
+  driver_program->n_params = 3;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(4 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("x0");
+  driver_program->param_strv[1] = g_strdup("x1");
+  driver_program->param_strv[2] = g_strdup("y");
+  driver_program->param_strv[3] = NULL;
+
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 3);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param,
+		   x0);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 1,
+		   x1);
+
+  g_value_init(driver_program->param + 2,
+	       G_TYPE_UINT);
+  g_value_set_uint(driver_program->param + 2,
+		   y);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
 }
 
 void

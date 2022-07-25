@@ -28,15 +28,10 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
-
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/app/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
 void ags_functional_notation_editor_workflow_test_add_test();
@@ -51,6 +46,8 @@ void ags_functional_notation_editor_workflow_test_ffplayer();
 #endif
 void ags_functional_notation_editor_workflow_test_edit_all();
 void ags_functional_notation_editor_workflow_test_fill_all();
+
+#define AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 #define AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"						\
@@ -106,7 +103,7 @@ void ags_functional_notation_editor_workflow_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  ags_test_quit();
+  ags_functional_test_util_quit();
   
   CU_cleanup_registry();
   
@@ -120,6 +117,14 @@ void ags_functional_notation_editor_workflow_test_add_test()
 int
 ags_functional_notation_editor_workflow_test_init_suite()
 { 
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &(gsequencer_application_context->window));
+
   return(0);
 }
 
@@ -141,11 +146,10 @@ ags_functional_notation_editor_workflow_test_drum()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
   
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *machine_str;
   
@@ -154,95 +158,69 @@ ags_functional_notation_editor_workflow_test_drum()
 
   gsequencer_application_context = ags_application_context;
 
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_notation_editor_workflow_test_default_timeout,
-						      &(gsequencer_application_context->window));
-
   /* window and editor size */
   ags_functional_test_util_file_default_window_resize();
 
-  ags_functional_test_util_file_default_editor_resize();
-
-  nth_machine = 0;
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* add drum */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Drum");
+  ags_functional_test_util_add_machine(NULL,
+				       "Drum");
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_sync();
 
-  /* get machine */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 1;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_notation_editor_workflow_test_default_timeout,
-						      &container_test);
+						      &condition);
 
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_DRUM(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_sync();
+
+  /* retrieve drum */
+  nth_machine = 0;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_DRUM);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
-
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsNotationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsNotationEditor");
-
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsNotationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -253,11 +231,10 @@ ags_functional_notation_editor_workflow_test_matrix()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *machine_str;
 
@@ -266,86 +243,61 @@ ags_functional_notation_editor_workflow_test_matrix()
 
   gsequencer_application_context = ags_application_context;
 
+  /* add matrix */
+  ags_functional_test_util_add_machine(NULL,
+				       "Matrix");
+  
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 2;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve matrix */
   nth_machine = 1;
   
-  /* add matrix */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Matrix");
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MATRIX);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 2;
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
-						      &ags_functional_notation_editor_workflow_test_default_timeout,
-						      &container_test);
-
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_MATRIX(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
-  
-  CU_ASSERT(machine != NULL);
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to editor
    */
-
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
-
-  /* add index set link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsNotationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsNotationEditor");
-
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  success = ags_functional_test_util_machine_selection_select("AgsNotationEditor",
-							      machine_str);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 }
 
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -359,9 +311,9 @@ ags_functional_notation_editor_workflow_test_ffplayer()
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
     
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *machine_str;
 
@@ -370,136 +322,140 @@ ags_functional_notation_editor_workflow_test_ffplayer()
 
   gsequencer_application_context = ags_application_context;
 
+  /* add ffplayer */
+  ags_functional_test_util_add_machine(NULL,
+				       "FPlayer");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 3;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_notation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve drum */
   nth_machine = 2;
   
-  /* add fplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FFPLAYER);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 3;
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
-						      &ags_functional_notation_editor_workflow_test_default_timeout,
-						      &container_test);
-
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_FFPLAYER(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
-  
-  CU_ASSERT(machine != NULL);
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
-
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsNotationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsNotationEditor");
-
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsNotationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 #endif
 
 void
 ags_functional_notation_editor_workflow_test_edit_all()
 {
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+  AgsMachine *current_machine;
+  
+  GList *start_list;
+  
+  gchar *machine_str;
+  
   guint nth_machine;
   guint i, j;
   gboolean success;
 
+  gsequencer_application_context = ags_application_context;
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  
   /*
    * edit drum
    */
 
   nth_machine = 0;
 
-  /* select index */
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
-  
-  CU_ASSERT(success == TRUE);
-  
-  /* set zoom */
-  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+  current_machine = g_list_nth_data(start_list,
+				    nth_machine);
 
-  CU_ASSERT(success == TRUE);
+  machine_str = g_strdup_printf("%s: %s",
+				G_OBJECT_TYPE_NAME(current_machine),
+				current_machine->machine_name);
+  
+  ags_functional_test_util_machine_selector_select(machine_str);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* set zoom */
+  ags_functional_test_util_composite_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* edit tool */
-  success = ags_functional_test_util_notation_toolbar_edit_click();
+  ags_functional_test_util_composite_toolbar_edit_click();
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* add drum kick pattern 2/4 */
   success = TRUE;
   
   for(i = 0; i < 64 && success;){
-    success = ags_functional_test_util_notation_edit_add_point(i, i,
-							       0);
+    ags_functional_test_util_notation_edit_add_point(i, i + 1,
+						     0);
+
+    ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+    ags_functional_test_util_sync();
 
     i += 8;
   }
 
   for(i = 4; i < 64 && success;){
-    success = ags_functional_test_util_notation_edit_add_point(i, i,
-							       1);
+    ags_functional_test_util_notation_edit_add_point(i, i + 1,
+						     1);
+
+    ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+    ags_functional_test_util_sync();
 
     i += 8;
   }
-
-  CU_ASSERT(success == TRUE);
 
   /*
    * edit matrix
@@ -507,28 +463,44 @@ ags_functional_notation_editor_workflow_test_edit_all()
 
   nth_machine = 1;
 
-  /* select index */
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
+  current_machine = g_list_nth_data(start_list,
+				    nth_machine);
+
+  machine_str = g_strdup_printf("%s: %s",
+				G_OBJECT_TYPE_NAME(current_machine),
+				current_machine->machine_name);
   
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_machine_selector_select(machine_str);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();  
 
   /* set zoom */
-  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
+  ags_functional_test_util_composite_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
-  success = ags_functional_test_util_notation_toolbar_edit_click();
+  /* edit tool */
+  ags_functional_test_util_composite_toolbar_edit_click();
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* add matrix baseline pattern 8/8 */
   success = TRUE;
   
   for(i = 0; i < 32 && success;){
     for(j = 0; j < 56 && success;){
-      success = ags_functional_test_util_notation_edit_add_point(i * 8 + j, i * 8 + j,
-								 15);
+      ags_functional_test_util_notation_edit_add_point(i * 8 + j, i * 8 + j,
+						       15);
+
+      ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+      ags_functional_test_util_sync();
 
       j += 8;
     }
@@ -537,13 +509,15 @@ ags_functional_notation_editor_workflow_test_edit_all()
       break;
     }
     
-    success = ags_functional_test_util_notation_edit_add_point(i * 8 + 56, i * 8 + 56,
-							       14);
+    ags_functional_test_util_notation_edit_add_point(i * 8 + 56, i * 8 + 56,
+						     14);
+
+    ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+    ags_functional_test_util_sync();
     
     i += 8;
   }
-
-  CU_ASSERT(success == TRUE);
 
 #ifdef AGS_WITH_LIBINSTPATCH
   /*
@@ -552,32 +526,46 @@ ags_functional_notation_editor_workflow_test_edit_all()
 
   nth_machine = 2;
 
-  /* select index */
-  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
-							     nth_machine);
+  current_machine = g_list_nth_data(start_list,
+				    nth_machine);
+
+  machine_str = g_strdup_printf("%s: %s",
+				G_OBJECT_TYPE_NAME(current_machine),
+				current_machine->machine_name);
   
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_machine_selector_select(machine_str);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();  
 
   /* set zoom */
-  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+  ags_functional_test_util_composite_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
-  success = ags_functional_test_util_notation_toolbar_edit_click();
+  /* edit tool */
+  ags_functional_test_util_composite_toolbar_edit_click();
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* add ffplayer note 4/4 */
   success = TRUE;
   
   for(i = 0; i < 64 && success;){
-    success = ags_functional_test_util_notation_edit_add_point(i, i + 1,
-							       rand() % 10);
+    ags_functional_test_util_notation_edit_add_point(i, i + 1,
+						     rand() % 10);
+
+    ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+    ags_functional_test_util_sync();
     
     i += 8;
   }
-
-  CU_ASSERT(success == TRUE);
 #endif
 }
 
@@ -611,18 +599,18 @@ main(int argc, char **argv)
 		   FALSE);
   
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &argv,
-		  str);
+    ags_functional_test_util_init(&argc, &argv,
+				  str);
   }else{
-    ags_test_init(&argc, &argv,
-		  AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &argv,
+				  AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG);
   }
 #endif
-    
+  
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_notation_editor_workflow_test_add_test, &is_available);
 
