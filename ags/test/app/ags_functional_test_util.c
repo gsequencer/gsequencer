@@ -1396,6 +1396,12 @@ ags_functional_test_util_header_bar_menu_button_click_driver_program(guint n_par
     ags_app_action_util_add_sfz_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_audiorec", 16)){
     ags_app_action_util_add_audiorec();
+  }else if(!g_ascii_strncasecmp(action, "app.edit_notation", 17)){
+    ags_app_action_util_edit_notation();
+  }else if(!g_ascii_strncasecmp(action, "app.edit_automation", 19)){
+    ags_app_action_util_edit_automation();
+  }else if(!g_ascii_strncasecmp(action, "app.edit_wave", 14)){
+    ags_app_action_util_edit_wave();
   }else{
     success = FALSE;
   }
@@ -3978,7 +3984,7 @@ ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
 
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_editor->toolbar->zoom));
 
-  if((x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) + ((x1 - x0) * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) < zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar)) ||
+  if((x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) < zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar)) ||
      (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) + ((x1 - x0) * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) > zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar)) + (zoom_factor * allocation.width)){
     gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar),
 			     (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) / zoom_factor);
@@ -3990,7 +3996,7 @@ ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
     viewport_x = 0.0;
   }
 
-  if((y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) + AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar)) ||
+  if((y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar)) ||
       (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) + AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height > gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar)) + allocation.height){
     gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar),
 			     (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height));

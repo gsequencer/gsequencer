@@ -28,15 +28,10 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
-
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/app/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
 void ags_functional_automation_editor_workflow_test_add_test();
@@ -53,6 +48,8 @@ void ags_functional_automation_editor_workflow_test_matrix();
 void ags_functional_automation_editor_workflow_test_ffplayer();
 #endif
 void ags_functional_automation_editor_workflow_test_syncsynth();
+
+#define AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 #define AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -111,7 +108,7 @@ void ags_functional_automation_editor_workflow_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  ags_test_quit();
+  ags_functional_test_util_quit();
   
   CU_cleanup_registry();
   
@@ -126,10 +123,6 @@ int
 ags_functional_automation_editor_workflow_test_init_suite()
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
-  AgsWindow *window;
-  GtkMenu *edit_menu;
-  
-  GdkEvent *delete_event;
 
   gsequencer_application_context = ags_application_context;
 
@@ -137,39 +130,14 @@ ags_functional_automation_editor_workflow_test_init_suite()
 						      &ags_functional_automation_editor_workflow_test_default_timeout,
 						      &(gsequencer_application_context->window));
 
-  ags_test_enter();
-    
-  window = AGS_WINDOW(gsequencer_application_context->window);
+  ags_functional_test_util_sync();
 
-  edit_menu = window->menu_bar->edit;
-
-  ags_test_leave();
-
-  /* window and editor size */
+  /* window size */
   ags_functional_test_util_file_default_window_resize();
 
-  ags_functional_test_util_file_default_editor_resize();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_functional_test_util_file_default_automation_window_resize();
-  ags_functional_test_util_file_default_automation_editor_resize();
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
-  
-  ags_test_leave();
-#endif
-  
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_sync();
   
   return(0);
 }
@@ -192,12 +160,10 @@ ags_functional_automation_editor_workflow_test_panel()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
   
-  GdkEvent *delete_event;
+  AgsFunctionalTestUtilListLengthCondition condition;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *machine_str;
   
@@ -209,93 +175,57 @@ ags_functional_automation_editor_workflow_test_panel()
   nth_machine = 0;
 
   /* add panel */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Panel");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  ags_functional_test_util_add_machine(NULL,
+				       "Panel");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /* retrieve panel */
+  nth_machine = 0;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_PANEL);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -306,12 +236,10 @@ ags_functional_automation_editor_workflow_test_mixer()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
-  
-  GdkEvent *delete_event;
-  
-  GList *list_start, *list;
+
+  GList *start_list, *list;
+
+  AgsFunctionalTestUtilListLengthCondition condition;
 
   gchar *machine_str;
   
@@ -320,97 +248,71 @@ ags_functional_automation_editor_workflow_test_mixer()
 
   gsequencer_application_context = ags_application_context;
 
-  nth_machine = 1;
-
   /* add mixer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Mixer");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_MIXER(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  ags_functional_test_util_add_machine(NULL,
+				       "Mixer");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 2;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve mixer */
+  nth_machine = 1;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MIXER);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -421,12 +323,10 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
-  
-  GdkEvent *delete_event;
-  
-  GList *list_start, *list;
+
+  GList *start_list, *list;
+
+  AgsFunctionalTestUtilListLengthCondition condition;
 
   gchar *machine_str;
   
@@ -435,96 +335,71 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 
   gsequencer_application_context = ags_application_context;
 
-  nth_machine = 2;
-
-  /* add equalizer10 */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Equalizer");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_EQUALIZER10(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  /* add mixer */
+  ags_functional_test_util_add_machine(NULL,
+				       "Equalizer");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 3;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve equalizer */
+  nth_machine = 2;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_EQUALIZER10);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -535,12 +410,10 @@ ags_functional_automation_editor_workflow_test_drum()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
 
-  GdkEvent *delete_event;
-  
-  GList *list_start, *list;
+  GList *start_list, *list;
+
+  AgsFunctionalTestUtilListLengthCondition condition;
 
   gchar *machine_str;
   
@@ -549,96 +422,71 @@ ags_functional_automation_editor_workflow_test_drum()
 
   gsequencer_application_context = ags_application_context;
 
-  nth_machine = 3;
-
-  /* add drum */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Drum");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_DRUM(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  /* add mixer */
+  ags_functional_test_util_add_machine(NULL,
+				       "Drum");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 4;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve drum */
+  nth_machine = 3;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_DRUM);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -649,12 +497,10 @@ ags_functional_automation_editor_workflow_test_matrix()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
 
-  GdkEvent *delete_event;
-  
-  GList *list_start, *list;
+  GList *start_list, *list;
+
+  AgsFunctionalTestUtilListLengthCondition condition;
 
   gchar *machine_str;
   
@@ -663,96 +509,71 @@ ags_functional_automation_editor_workflow_test_matrix()
 
   gsequencer_application_context = ags_application_context;
 
-  nth_machine = 4;
-
-  /* add matrix */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Matrix");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_MATRIX(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  /* add mixer */
+  ags_functional_test_util_add_machine(NULL,
+				       "Matrix");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 5;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve matrix */
+  nth_machine = 4;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MATRIX);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -763,12 +584,10 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
 
-  GdkEvent *delete_event;
-  
-  GList *list_start, *list;
+  GList *start_list, *list;
+
+  AgsFunctionalTestUtilListLengthCondition condition;
 
   gchar *machine_str;
   
@@ -777,99 +596,74 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 
   gsequencer_application_context = ags_application_context;
 
-  nth_machine = 5;
-
-  /* add syncsynth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Syncsynth");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_SYNCSYNTH(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  /* add mixer */
+  ags_functional_test_util_add_machine(NULL,
+				       "Syncsynth");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 6;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve syncsynth */
+  nth_machine = 5;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SYNCSYNTH);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
-#ifdef AGS_WITH_LIBINSTPATCH
+#if defined(AGS_WITH_LIBINSTPATCH)
 void
 ags_functional_automation_editor_workflow_test_ffplayer()
 {
@@ -878,12 +672,10 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
-  AgsMachineSelection *machine_selection;
-  GtkMenu *edit_menu;
 
-  GdkEvent *delete_event;
-  
-  GList *list_start, *list;
+  GList *start_list, *list;
+
+  AgsFunctionalTestUtilListLengthCondition condition;
 
   gchar *machine_str;
   
@@ -892,96 +684,71 @@ ags_functional_automation_editor_workflow_test_ffplayer()
 
   gsequencer_application_context = ags_application_context;
 
-  nth_machine = 6;
-
-  /* add ffplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* get machine */
-  ags_test_enter();
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_FFPLAYER(list->data)){
-    machine = list->data;
-  }else{
-    machine = NULL;
-  }
+  /* add mixer */
+  ags_functional_test_util_add_machine(NULL,
+				       "FPlayer");
   
-  CU_ASSERT(machine != NULL);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /*  */
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 7;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_automation_editor_workflow_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
+  /* retrieve ffplayer */
+  nth_machine = 6;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FFPLAYER);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
+			    nth_machine);
 
   /*
    *  add machine to automation editor
    */
 
-  ags_test_enter();
-
   window = AGS_WINDOW(gsequencer_application_context->window);
+
   composite_editor = window->composite_editor;
-  edit_menu = window->menu_bar->edit;
+
+  ags_functional_test_util_machine_selector_add(nth_machine);  
   
-  ags_test_leave();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  /* add index and link */
-  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_select("AgsAutomationEditor",
-							     nth_machine);
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
-
-  CU_ASSERT(success == TRUE);
-
   /* select machine */
-  ags_test_enter();
-
-  machine_selector = composite_editor->machine_selector;
-  machine_selection = machine_selector->machine_selection;
-
   machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  ags_test_leave();
-
-  success = ags_functional_test_util_machine_selection_select("AgsAutomationEditor",
-							      machine_str);
+  ags_functional_test_util_machine_selector_select(machine_str);
   
-  CU_ASSERT(success == TRUE);
-
-  success = ags_functional_test_util_dialog_ok(machine_selection);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
-#if 0
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_leave();
-#endif
+  ags_functional_test_util_sync();
+
+  /* automation edit */
+  ags_functional_test_util_header_bar_menu_button_click(window->edit_button,
+							NULL,
+							"app.edit_automation");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 #endif
 
@@ -1008,21 +775,21 @@ main(int argc, char **argv)
 		   FALSE);
   
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &argv,
-		  str);
+    ags_functional_test_util_init(&argc, &argv,
+				  str);
   }else{
-    ags_test_init(&argc, &argv,
-		  AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &argv,
+				  AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG);
   }
 #endif
-    
+  
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_automation_editor_workflow_test_add_test, &is_available);
-  
+
   g_thread_join(ags_functional_test_util_test_runner_thread());
 
   return(-1);

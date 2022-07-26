@@ -124,6 +124,15 @@ ags_functional_notation_editor_workflow_test_init_suite()
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_notation_editor_workflow_test_default_timeout,
 						      &(gsequencer_application_context->window));
+  
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   return(0);
 }
@@ -157,13 +166,6 @@ ags_functional_notation_editor_workflow_test_drum()
   gboolean success;
 
   gsequencer_application_context = ags_application_context;
-
-  /* window and editor size */
-  ags_functional_test_util_file_default_window_resize();
-
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
-  
-  ags_functional_test_util_sync();
 
   /* add drum */
   ags_functional_test_util_add_machine(NULL,
