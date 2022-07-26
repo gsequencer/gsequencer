@@ -3978,34 +3978,46 @@ ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
 
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_editor->toolbar->zoom));
 
-  if((AGS_NAVIGATION_MAX_POSITION_TICS * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) > allocation.width){
+  if((x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) + ((x1 - x0) * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) < zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar)) ||
+     (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) + ((x1 - x0) * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) > zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar)) + (zoom_factor * allocation.width)){
+    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar),
+			     (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) / zoom_factor);
+  }
+  
+  if((AGS_NAVIGATION_MAX_POSITION_TICS * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) > (zoom_factor * allocation.width)){
     viewport_x = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->hscrollbar));
   }else{
     viewport_x = 0.0;
   }
-  
+
+  if((y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) + AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar)) ||
+      (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) + AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height > gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar)) + allocation.height){
+    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar),
+			     (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height));
+  }
+
   if((channel_count * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) > allocation.height){
     viewport_y = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->vscrollbar));
   }else{
     viewport_y = 0.0;
   }
   
-  event_x = (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) - viewport_x;
-  event_y = (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height) - viewport_y;
-  
+  event_x = (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width);
+  event_y = (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
+
   g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_controller,
 			"pressed",
 			1,
-			event_x,
-			event_y);
+			(event_x - viewport_x) / zoom_factor,
+			event_y - viewport_y);
 
-  event_x = (x1 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width) - viewport_x;
+  event_x = (x1 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width);
 
   g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_controller,
 			"released",
 			1,
-			event_x,
-			event_y);
+			(event_x - viewport_x) / zoom_factor,
+			event_y - viewport_y);
 }
 
 void
