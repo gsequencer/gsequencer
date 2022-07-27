@@ -110,6 +110,9 @@ void ags_functional_test_util_file_chooser_select_filename_driver_program(guint 
 void ags_functional_test_util_file_chooser_select_filenames_driver_program(guint n_params,
 									   gchar **param_strv,
 									   GValue *param);
+void ags_functional_test_util_file_chooser_select_all_driver_program(guint n_params,
+								     gchar **param_strv,
+								     GValue *param);
 
 void ags_functional_test_util_file_default_window_resize_driver_program(guint n_params,
 									gchar **param_strv,
@@ -2028,7 +2031,7 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
 
-  driver_program->driver_program_func = ags_functional_test_util_file_chooser_select_filename_driver_program;
+  driver_program->driver_program_func = ags_functional_test_util_file_chooser_select_filenames_driver_program;
   
   driver_program->n_params = 2;
 
@@ -2052,6 +2055,54 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
 	       G_TYPE_OBJECT);
   g_value_set_object(driver_program->param + 1,
 		     filename);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
+ags_functional_test_util_file_chooser_select_all_driver_program(guint n_params,
+								gchar **param_strv,
+								GValue *param)
+{
+  GtkFileChooser *file_chooser;
+  
+  file_chooser = g_value_get_object(param);
+
+  //TODO:JK: didn't work yet
+  
+  ags_functional_test_util_reaction_time_long();
+}
+
+void
+ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!GTK_IS_FILE_CHOOSER(file_chooser)){
+    return;
+  }
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_test_util_file_chooser_select_all_driver_program;
+  
+  driver_program->n_params = 1;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("file_chooser");
+  driver_program->param_strv[1] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 1);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     file_chooser);
   
   ags_functional_test_util_add_driver_program(driver_program);  
 }

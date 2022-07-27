@@ -30,7 +30,8 @@ check_PROGRAMS += \
 	ags_functional_notation_editor_workflow_test \
 	ags_functional_automation_editor_workflow_test \
 	ags_functional_panel_test \
-	ags_functional_mixer_test
+	ags_functional_mixer_test \
+	ags_functional_drum_test
 
 # functional test util library
 libgsequencer_test_la_SOURCES = ags/test/app/ags_functional_test_util.c ags/test/app/ags_functional_test_util.h ags/test/app/libgsequencer.h
@@ -134,3 +135,10 @@ ags_functional_mixer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS
 ags_functional_mixer_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"gsequencer.share\"
 ags_functional_mixer_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_mixer_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional drum test
+ags_functional_drum_test_SOURCES = ags/test/app/machine/ags_functional_drum_test.c
+ags_functional_drum_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_functional_drum_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"gsequencer.share\"
+ags_functional_drum_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_drum_test_LDADD = $(gsequencer_functional_test_LDADD)

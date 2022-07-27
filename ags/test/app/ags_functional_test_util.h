@@ -163,6 +163,7 @@ void ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_
 							   gchar *filename);
 void ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
 							    GSList *filename);
+void ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser);
 
 /* UI control */
 void ags_functional_test_util_file_default_window_resize();
