@@ -230,8 +230,8 @@ ags_functional_panel_test_resize_pads()
   ags_functional_test_util_sync();
   
   /* resize output */
-  ags_functional_test_util_machine_editor_dialog_resize_inputs(nth_machine,
-							       AGS_FUNCTIONAL_PANEL_TEST_RESIZE_OUTPUT_PADS);
+  ags_functional_test_util_machine_editor_dialog_resize_outputs(nth_machine,
+								AGS_FUNCTIONAL_PANEL_TEST_RESIZE_OUTPUT_PADS);
 
   ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
 
