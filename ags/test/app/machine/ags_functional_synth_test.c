@@ -162,10 +162,6 @@ ags_functional_synth_test_resize_pads()
   
   gsequencer_application_context = ags_application_context;
 
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_synth_test_default_timeout,
-						      &(gsequencer_application_context->window));
-
   /* add synth */
   ags_functional_test_util_add_machine(NULL,
 				       "Synth");

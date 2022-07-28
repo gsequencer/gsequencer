@@ -276,9 +276,6 @@ ags_functional_drum_test_open_drum_kit()
   ags_functional_test_util_sync();
 
   /* open path */
-  CU_ASSERT(g_file_test(AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH,
-			G_FILE_TEST_EXISTS));
-  
   ags_functional_test_util_file_chooser_open_path(GTK_FILE_CHOOSER(drum->open_dialog),
 						  AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH);
 
@@ -308,9 +305,6 @@ ags_functional_drum_test_open_drum_kit()
   
   GError *error;
   
-  CU_ASSERT(g_file_test(AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH,
-			G_FILE_TEST_EXISTS));
-
   filename = NULL;
 
   error = NULL;
