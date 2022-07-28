@@ -6,6 +6,7 @@ ags (4.3.0)
 	* refactored ags_functional_panel_test.c
 	* refactored ags_functional_mixer_test.c
 	* refactored ags_functional_drum_test.c
+	* refactored ags_functional_matrix_test.c
 
 ags (4.2.14)
 

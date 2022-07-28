@@ -388,7 +388,7 @@ ags_functional_drum_test_resize_pads()
 
   start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
   drum = g_list_nth_data(start_list,
-			  nth_machine);
+			 nth_machine);
 
   /*
    * resize output and input pads

@@ -84,7 +84,8 @@ struct timespec ags_functional_notation_editor_workflow_test_default_timeout = {
   0,
 };
 
-void ags_functional_notation_editor_workflow_test_add_test()
+void
+ags_functional_notation_editor_workflow_test_add_test()
 {
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum", ags_functional_notation_editor_workflow_test_drum) == NULL) ||
