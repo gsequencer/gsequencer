@@ -2052,9 +2052,9 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
 		     file_chooser);
 
   g_value_init(driver_program->param + 1,
-	       G_TYPE_OBJECT);
-  g_value_set_object(driver_program->param + 1,
-		     filename);
+	       G_TYPE_POINTER);
+  g_value_set_pointer(driver_program->param + 1,
+		      filename);
   
   ags_functional_test_util_add_driver_program(driver_program);  
 }
@@ -2068,7 +2068,9 @@ ags_functional_test_util_file_chooser_select_all_driver_program(guint n_params,
   
   file_chooser = g_value_get_object(param);
 
-  //TODO:JK: didn't work yet
+#if 0
+  gtk_file_chooser_select_all(GTK_FILE_CHOOSER(file_chooser));
+#endif
   
   ags_functional_test_util_reaction_time_long();
 }

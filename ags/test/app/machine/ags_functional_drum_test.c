@@ -43,6 +43,12 @@ void ags_functional_drum_test_open_drum_kit();
 void ags_functional_drum_test_resize_pads();
 void ags_functional_drum_test_resize_audio_channels();
 
+void ags_functional_drum_test_drum_open_drum_kit(AgsDrum *drum,
+						 GSList *filename);
+void ags_functional_drum_test_drum_open_drum_kit_driver_program(guint n_params,
+								gchar **param_strv,
+								GValue *param);
+
 #define AGS_FUNCTIONAL_DRUM_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 #define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/HardElectro1/"
@@ -91,7 +97,7 @@ void
 ags_functional_drum_test_add_test()
 {
   /* add the tests to the suite */
-  if( // (CU_add_test(pSuite, "functional test of AgsDrum open drum kit", ags_functional_drum_test_open_drum_kit) == NULL) ||
+  if((CU_add_test(pSuite, "functional test of AgsDrum open drum kit", ags_functional_drum_test_open_drum_kit) == NULL) ||
      (CU_add_test(pSuite, "functional test of AgsDrum resize pads", ags_functional_drum_test_resize_pads) == NULL) ||
      (CU_add_test(pSuite, "functional test of AgsDrum resize audio channels", ags_functional_drum_test_resize_audio_channels) == NULL)){
     CU_cleanup_registry();
@@ -124,6 +130,15 @@ ags_functional_drum_test_init_suite()
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_drum_test_default_timeout,
 						      &(gsequencer_application_context->window));
+  
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_DRUM_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   return(0);
 }
@@ -139,6 +154,67 @@ ags_functional_drum_test_clean_suite()
 }
 
 void
+ags_functional_drum_test_drum_open_drum_kit_driver_program(guint n_params,
+							   gchar **param_strv,
+							   GValue *param)
+{
+  AgsDrum *drum;
+
+  GSList *filename;
+
+  drum = g_value_get_object(param);
+  
+  filename = g_value_get_pointer(param + 1);
+
+  ags_machine_open_files(drum,
+			 filename,
+			 TRUE,
+			 TRUE);
+}
+
+void
+ags_functional_drum_test_drum_open_drum_kit(AgsDrum *drum,
+					    GSList *filename)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!AGS_IS_DRUM(drum) ||
+     filename == NULL){
+    return;
+  }
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_drum_test_drum_open_drum_kit_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("drum");
+  driver_program->param_strv[1] = g_strdup("filename");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     drum);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_POINTER);
+  g_value_set_pointer(driver_program->param + 1,
+		      filename);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
 ags_functional_drum_test_open_drum_kit()
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
@@ -148,7 +224,7 @@ ags_functional_drum_test_open_drum_kit()
   AgsFunctionalTestUtilListLengthCondition condition;
 
   GList *start_list, *list;
-
+  
   guint nth_machine;
   gboolean success;
   
@@ -190,6 +266,8 @@ ags_functional_drum_test_open_drum_kit()
   drum = g_list_nth_data(start_list,
 			 nth_machine);
 
+  //TODO:JK: 
+#if 0
   /* open dialog */
   ags_functional_test_util_drum_open(0);
 
@@ -221,7 +299,38 @@ ags_functional_drum_test_open_drum_kit()
   ags_functional_test_util_idle(AGS_FUNCTIONAL_DRUM_TEST_DEFAULT_IDLE_TIME);
   
   ags_functional_test_util_sync();
+#else
+  GDir *dir;
 
+  GSList *filename;
+
+  gchar *str;
+  
+  GError *error;
+  
+  CU_ASSERT(g_file_test(AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH,
+			G_FILE_TEST_EXISTS));
+
+  filename = NULL;
+
+  error = NULL;
+  dir = g_dir_open(AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH,
+		   0,
+		   &error);
+
+  while((str = g_dir_read_name(dir)) != NULL){
+    filename = g_slist_append(filename,
+			      str);
+  }
+
+  ags_functional_drum_test_drum_open_drum_kit(drum,
+					      filename);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_DRUM_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+#endif
+  
   /* destroy drum */
   ags_functional_test_util_machine_destroy(0);
   
