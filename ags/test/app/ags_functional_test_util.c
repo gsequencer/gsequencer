@@ -5154,27 +5154,27 @@ ags_functional_test_util_machine_editor_dialog_click_enable_driver_program(guint
   switch(nth_tab){
   case 0:
     {
-      enable_button = AGS_MACHINE_EDITOR_LISTING(machine_editor->output_editor_listing)->enabled;
+      enable_button = machine_editor->output_editor_listing->enabled;
     }
     break;
   case 1:
     {
-      enable_button = AGS_MACHINE_EDITOR_LISTING(machine_editor->input_editor_listing)->enabled;
+      enable_button = machine_editor->input_editor_listing->enabled;
     }
     break;
   case 2:
     {
-      enable_button = AGS_MACHINE_EDITOR_COLLECTION(machine_editor->output_editor_collection)->enabled;
+      enable_button = machine_editor->output_editor_collection->enabled;
     }
     break;
   case 3:
     {
-      enable_button = AGS_MACHINE_EDITOR_COLLECTION(machine_editor->input_editor_collection)->enabled;
+      enable_button = machine_editor->input_editor_collection->enabled;
     }
     break;
   case 4:
     {
-      enable_button = AGS_RESIZE_EDITOR(machine_editor->resize_editor)->enabled;
+      enable_button = machine_editor->resize_editor->enabled;
     }
     break;
   }
