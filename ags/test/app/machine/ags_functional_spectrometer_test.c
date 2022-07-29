@@ -26,28 +26,30 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/app/libgsequencer.h>
 
 #include "../ags_functional_test_util.h"
 
-void ags_functional_panel_test_add_test();
+void ags_functional_spectrometer_test_add_test();
 
-int ags_functional_panel_test_init_suite();
-int ags_functional_panel_test_clean_suite();
+int ags_functional_spectrometer_test_init_suite();
+int ags_functional_spectrometer_test_clean_suite();
 
-void ags_functional_panel_test_resize_pads();
-void ags_functional_panel_test_resize_audio_channels();
+void ags_functional_spectrometer_test_resize_pads();
+void ags_functional_spectrometer_test_resize_audio_channels();
 
-#define AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
+#define AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
-#define AGS_FUNCTIONAL_PANEL_TEST_RESIZE_OUTPUT_PADS (5)
-#define AGS_FUNCTIONAL_PANEL_TEST_RESIZE_INPUT_PADS (15)
+#define AGS_FUNCTIONAL_SPECTROMETER_TEST_RESIZE_OUTPUT_PADS (5)
+#define AGS_FUNCTIONAL_SPECTROMETER_TEST_RESIZE_INPUT_PADS (15)
 
-#define AGS_FUNCTIONAL_PANEL_TEST_RESIZE_AUDIO_CHANNELS (7)
+#define AGS_FUNCTIONAL_SPECTROMETER_TEST_RESIZE_AUDIO_CHANNELS (0)
 
-#define AGS_FUNCTIONAL_PANEL_TEST_CONFIG "[generic]\n"	\
+#define AGS_FUNCTIONAL_SPECTROMETER_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"				\
   "simple-file=true\n"					\
   "disable-feature=experimental\n"			\
@@ -77,17 +79,17 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
-struct timespec ags_functional_panel_test_default_timeout = {
+struct timespec ags_functional_spectrometer_test_default_timeout = {
   300,
   0,
 };
 
 void
-ags_functional_panel_test_add_test()
+ags_functional_spectrometer_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of AgsPanel resize pads", ags_functional_panel_test_resize_pads) == NULL) ||
-     (CU_add_test(pSuite, "functional test of AgsPanel resize audio channels", ags_functional_panel_test_resize_audio_channels) == NULL)){
+  if((CU_add_test(pSuite, "functional test of AgsSpectrometer resize pads", ags_functional_spectrometer_test_resize_pads) == NULL) ||
+     (CU_add_test(pSuite, "functional test of AgsSpectrometer resize audio channels", ags_functional_spectrometer_test_resize_audio_channels) == NULL)){
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -96,10 +98,10 @@ ags_functional_panel_test_add_test()
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
-
-  ags_functional_test_util_quit();
   
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_quit();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   CU_cleanup_registry();
   
@@ -111,23 +113,23 @@ ags_functional_panel_test_add_test()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_panel_test_init_suite()
+ags_functional_spectrometer_test_init_suite()
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
   gsequencer_application_context = ags_application_context;
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_panel_test_default_timeout,
+						      &ags_functional_spectrometer_test_default_timeout,
 						      &(gsequencer_application_context->window));
-
+  
   ags_functional_test_util_sync();
 
   /* window size */
   ags_functional_test_util_file_default_window_resize();
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
-
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
+  
   ags_functional_test_util_sync();
 
   return(0);
@@ -138,22 +140,22 @@ ags_functional_panel_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_panel_test_clean_suite()
+ags_functional_spectrometer_test_clean_suite()
 {  
   return(0);
 }
 
 void
-ags_functional_panel_test_resize_pads()
+ags_functional_spectrometer_test_resize_pads()
 {
   GtkDialog *properties;
 
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
-  AgsPanel *panel;
+  AgsSpectrometer *spectrometer;
 
   AgsFunctionalTestUtilListLengthCondition condition;
-  
+
   GList *start_list, *list;
 
   guint nth_machine;
@@ -162,11 +164,11 @@ ags_functional_panel_test_resize_pads()
   
   gsequencer_application_context = ags_application_context;
 
-  /* add panel */
+  /* add spectrometer */
   ags_functional_test_util_add_machine(NULL,
-				       "Panel");
+				       "Spectrometer");
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
@@ -176,22 +178,22 @@ ags_functional_panel_test_resize_pads()
   condition.length = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
-						      &ags_functional_panel_test_default_timeout,
+						      &ags_functional_spectrometer_test_default_timeout,
 						      &condition);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
   
   ags_functional_test_util_sync();
 
-  /* retrieve panel */
+  /* retrieve spectrometer */
   nth_machine = 0;
   
-  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_PANEL);
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SPECTROMETER);
 
   ags_functional_test_util_sync();
 
   start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  panel = g_list_nth_data(start_list,
+  spectrometer = g_list_nth_data(start_list,
 			  nth_machine);
 
   /*
@@ -201,25 +203,25 @@ ags_functional_panel_test_resize_pads()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_machine);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_panel_test_default_timeout,
-						      &(AGS_MACHINE(panel)->machine_editor_dialog));
+						      &ags_functional_spectrometer_test_default_timeout,
+						      &(AGS_MACHINE(spectrometer)->machine_editor_dialog));
 
   ags_functional_test_util_sync();
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_panel_test_default_timeout,
-						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(panel)->machine_editor_dialog)->machine_editor));
+						      &ags_functional_spectrometer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(spectrometer)->machine_editor_dialog)->machine_editor));
 
   ags_functional_test_util_sync();
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_panel_test_default_timeout,
-						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(panel)->machine_editor_dialog)->machine_editor->resize_editor));
+						      &ags_functional_spectrometer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(spectrometer)->machine_editor_dialog)->machine_editor->resize_editor));
   
   ags_functional_test_util_sync();
 
@@ -229,58 +231,58 @@ ags_functional_panel_test_resize_pads()
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
 							   resize_tab);  
     
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
     
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
   
   /* resize output */
   ags_functional_test_util_machine_editor_dialog_resize_outputs(nth_machine,
-								AGS_FUNCTIONAL_PANEL_TEST_RESIZE_OUTPUT_PADS);
+								AGS_FUNCTIONAL_SPECTROMETER_TEST_RESIZE_OUTPUT_PADS);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
   
   /* resize input */
   ags_functional_test_util_machine_editor_dialog_resize_inputs(nth_machine,
-							       AGS_FUNCTIONAL_PANEL_TEST_RESIZE_INPUT_PADS);
+							       AGS_FUNCTIONAL_SPECTROMETER_TEST_RESIZE_INPUT_PADS);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(panel)->machine_editor_dialog;  
+  properties = AGS_MACHINE(spectrometer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
-  /* destroy panel */
+  /* destroy spectrometer */
   ags_functional_test_util_machine_destroy(0);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
   
   ags_functional_test_util_sync();
 }
 
 void
-ags_functional_panel_test_resize_audio_channels()
+ags_functional_spectrometer_test_resize_audio_channels()
 {
   GtkDialog *properties;
 
   AgsGSequencerApplicationContext *gsequencer_application_context;
   
-  AgsPanel *panel;
+  AgsSpectrometer *spectrometer;
 
   AgsFunctionalTestUtilListLengthCondition condition;
 
@@ -292,11 +294,11 @@ ags_functional_panel_test_resize_audio_channels()
   
   gsequencer_application_context = ags_application_context;
 
-  /* add panel */
+  /* add spectrometer */
   ags_functional_test_util_add_machine(NULL,
-				       "Panel");
+				       "Spectrometer");
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
@@ -306,22 +308,22 @@ ags_functional_panel_test_resize_audio_channels()
   condition.length = 1;
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
-						      &ags_functional_panel_test_default_timeout,
+						      &ags_functional_spectrometer_test_default_timeout,
 						      &condition);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
   
   ags_functional_test_util_sync();
 
-  /* retrieve panel */
+  /* retrieve spectrometer */
   nth_machine = 0;
   
-  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_PANEL);
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_SPECTROMETER);
 
   ags_functional_test_util_sync();
 
   start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  panel = g_list_nth_data(start_list,
+  spectrometer = g_list_nth_data(start_list,
 			  nth_machine);
 
   /*
@@ -331,25 +333,25 @@ ags_functional_panel_test_resize_audio_channels()
   /* open properties */
   ags_functional_test_util_machine_editor_dialog_open(nth_machine);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_panel_test_default_timeout,
-						      &(AGS_MACHINE(panel)->machine_editor_dialog));
+						      &ags_functional_spectrometer_test_default_timeout,
+						      &(AGS_MACHINE(spectrometer)->machine_editor_dialog));
 
   ags_functional_test_util_sync();
   
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_panel_test_default_timeout,
-						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(panel)->machine_editor_dialog)->machine_editor));
+						      &ags_functional_spectrometer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(spectrometer)->machine_editor_dialog)->machine_editor));
 
   ags_functional_test_util_sync();
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
-						      &ags_functional_panel_test_default_timeout,
-						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(panel)->machine_editor_dialog)->machine_editor->resize_editor));
+						      &ags_functional_spectrometer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(spectrometer)->machine_editor_dialog)->machine_editor->resize_editor));
   
   ags_functional_test_util_sync();
 
@@ -359,38 +361,38 @@ ags_functional_panel_test_resize_audio_channels()
   ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
 							   resize_tab);  
     
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
-  
+
   /* click enable */
   ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
     
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
-  
+
   /* resize audio channels */
   ags_functional_test_util_machine_editor_dialog_resize_audio_channels(nth_machine,
-								       AGS_FUNCTIONAL_PANEL_TEST_RESIZE_AUDIO_CHANNELS);
+								       AGS_FUNCTIONAL_SPECTROMETER_TEST_RESIZE_AUDIO_CHANNELS);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
   /* response ok */
-  properties = AGS_MACHINE(panel)->machine_editor_dialog;  
+  properties = AGS_MACHINE(spectrometer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
 
   ags_functional_test_util_sync();
 
-  /* destroy panel */
+  /* destroy spectrometer */
   ags_functional_test_util_machine_destroy(0);
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_PANEL_TEST_DEFAULT_IDLE_TIME);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_SPECTROMETER_TEST_DEFAULT_IDLE_TIME);
   
   ags_functional_test_util_sync();
 }
@@ -406,7 +408,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFunctionalPanelTest", ags_functional_panel_test_init_suite, ags_functional_panel_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalSpectrometerTest", ags_functional_spectrometer_test_init_suite, ags_functional_spectrometer_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -426,12 +428,12 @@ main(int argc, char **argv)
 				  str);
   }else{
     ags_functional_test_util_init(&argc, &argv,
-				  AGS_FUNCTIONAL_PANEL_TEST_CONFIG);
+				  AGS_FUNCTIONAL_SPECTROMETER_TEST_CONFIG);
   }
 #endif
   
   ags_functional_test_util_do_run(argc, argv,
-				  ags_functional_panel_test_add_test, &is_available);
+				  ags_functional_spectrometer_test_add_test, &is_available);
 
   g_thread_join(ags_functional_test_util_test_runner_thread());
 

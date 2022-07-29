@@ -1388,7 +1388,7 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 		     AGS_TYPE_OUTPUT)){
 	if(machine->output_pad != NULL){
 	  start_pad = ags_machine_get_output_pad(machine);
-	  pad = g_list_nth(pad,
+	  pad = g_list_nth(start_pad,
 			   pads_old);
       
 	  while(pad != NULL){

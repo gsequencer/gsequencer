@@ -2899,9 +2899,7 @@ ags_functional_test_util_quit_driver_program(guint n_params,
 
   gsequencer_application_context = ags_application_context_get_instance();
 
-  window = gsequencer_application_context->window;
-  
-  window->flags |= AGS_WINDOW_TERMINATING;
+  ags_application_context_quit(AGS_APPLICATION_CONTEXT(gsequencer_application_context));
 }
 
 void

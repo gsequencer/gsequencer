@@ -136,6 +136,8 @@ ags_functional_machine_link_test_add_test()
 
   ags_functional_test_util_quit();
   
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+
   CU_cleanup_registry();
   
   exit(CU_get_error());

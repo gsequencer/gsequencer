@@ -101,6 +101,8 @@ ags_functional_mixer_test_add_test()
   
   ags_functional_test_util_quit();
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MIXER_TEST_DEFAULT_IDLE_TIME);
+
   CU_cleanup_registry();
   
   exit(CU_get_error());
@@ -120,6 +122,15 @@ ags_functional_mixer_test_init_suite()
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_mixer_test_default_timeout,
 						      &(gsequencer_application_context->window));
+
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MIXER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   return(0);
 }
