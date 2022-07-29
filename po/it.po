@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-07-29 01:34+0200\n"
+"POT-Creation-Date: 2022-07-29 15:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -620,7 +620,7 @@ msgid "position tool"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:861
-#: ags/app/ags_gsequencer_application.c:675
+#: ags/app/ags_gsequencer_application.c:676
 msgid "Edit"
 msgstr ""
 
@@ -1065,60 +1065,60 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:620
+#: ags/app/ags_gsequencer_application.c:621
 msgid "Open"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:625
+#: ags/app/ags_gsequencer_application.c:626
 msgid "Save"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:630
+#: ags/app/ags_gsequencer_application.c:631
 msgid "Save as"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:635
+#: ags/app/ags_gsequencer_application.c:636
 msgid "Export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:640
+#: ags/app/ags_gsequencer_application.c:641
 msgid "Quit"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:647
+#: ags/app/ags_gsequencer_application.c:648
 msgid "File"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:660
+#: ags/app/ags_gsequencer_application.c:661
 msgid "Add"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:663
+#: ags/app/ags_gsequencer_application.c:664
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:668 ags/app/ags_preferences.c:159
+#: ags/app/ags_gsequencer_application.c:669 ags/app/ags_preferences.c:159
 msgid "Preferences"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:681
+#: ags/app/ags_gsequencer_application.c:682
 msgid "SMF import"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:686
+#: ags/app/ags_gsequencer_application.c:687
 msgid "SMF export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:693
+#: ags/app/ags_gsequencer_application.c:694
 msgid "MIDI"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:699
-#: ags/app/ags_gsequencer_application.c:711
+#: ags/app/ags_gsequencer_application.c:700
+#: ags/app/ags_gsequencer_application.c:712
 msgid "Help"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:704
+#: ags/app/ags_gsequencer_application.c:705
 msgid "About"
 msgstr ""
 
