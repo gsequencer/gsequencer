@@ -28,16 +28,10 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
-
 #include <ags/gsequencer_main.h>
 
-#include <ags/app/ags_gsequencer_application_context.h>
-#include <ags/app/ags_window.h>
+#include <ags/test/app/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
 void ags_functional_notation_edit_test_add_test();
@@ -45,9 +39,9 @@ void ags_functional_notation_edit_test_add_test();
 int ags_functional_notation_edit_test_init_suite();
 int ags_functional_notation_edit_test_clean_suite();
 
-void ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *application_context);
-
 void ags_functional_notation_edit_test_file_setup();
+
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 #define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags_functional_notation_edit_test.xml"
 #define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
@@ -83,6 +77,8 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
+AgsGSequencerApplicationContext *gsequencer_application_context;
+
 struct timespec ags_functional_notation_edit_test_default_timeout = {
   300,
   0,
@@ -102,7 +98,7 @@ ags_functional_notation_edit_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  ags_test_quit();
+  ags_functional_test_util_quit();
 
   CU_cleanup_registry();
   
@@ -116,6 +112,21 @@ ags_functional_notation_edit_test_add_test()
 int
 ags_functional_notation_edit_test_init_suite()
 {    
+  gsequencer_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_notation_edit_test_default_timeout,
+						      &(gsequencer_application_context->window));
+
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDIT_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
   return(0);
 }
 
@@ -130,12 +141,6 @@ ags_functional_notation_edit_test_clean_suite()
 }
 
 void
-ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *application_context)
-{
-  g_critical("quit stub");
-}
-
-void
 ags_functional_notation_edit_test_file_setup()
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
@@ -147,28 +152,11 @@ ags_functional_notation_edit_test_file_setup()
   
   guint i;
   gboolean expired;
-  gboolean success;
-  
-  while(!g_atomic_int_get(&(AGS_GSEQUENCER_APPLICATION_CONTEXT(ags_application_context)->file_ready))){
-    usleep(500000);
-  }
-
-  usleep(500000);  
-
-  gsequencer_application_context = ags_application_context;
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_notation_edit_test_default_timeout,
-						      &(gsequencer_application_context->window));
-
+  gboolean success;  
   
   /* get buttons */
-  ags_test_enter();
-
   play_button = AGS_WINDOW(AGS_GSEQUENCER_APPLICATION_CONTEXT(ags_application_context)->window)->navigation->play;
   stop_button = AGS_WINDOW(AGS_GSEQUENCER_APPLICATION_CONTEXT(ags_application_context)->window)->navigation->stop;
-
-  ags_test_leave();
 
   /* get initial time */
   success = TRUE;
@@ -179,7 +167,12 @@ ags_functional_notation_edit_test_file_setup()
     expired = FALSE;
     
     g_message("start playback");
+
     ags_functional_test_util_button_click(play_button);
+
+    ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDIT_TEST_DEFAULT_IDLE_TIME);
+  
+    ags_functional_test_util_sync();
 
     while(!expired){  
       /* check expired */
@@ -191,17 +184,20 @@ ags_functional_notation_edit_test_file_setup()
     }
 
     g_message("stop playback");
+
     ags_functional_test_util_button_click(stop_button);
 
+    ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDIT_TEST_DEFAULT_IDLE_TIME);
+  
+    ags_functional_test_util_sync();
+
     /* wait some time before next playback */
-    usleep(5000000);
+    g_usleep(5000000);
 
     if(!expired){
       success = FALSE;
     }
   }
-
-  CU_ASSERT(success == TRUE);
 }
 
 int
@@ -223,37 +219,28 @@ main(int argc, char **argv)
     
     return CU_get_error();
   }
-#if 0
-  g_log_set_fatal_mask("GLib-GObject",
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
-  g_log_set_fatal_mask("Gtk",
-  		       G_LOG_LEVEL_CRITICAL);
-
-  g_log_set_fatal_mask(NULL,
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-#endif  
   g_atomic_int_set(&is_available,
 		   FALSE);
-
-  new_argv = (char **) malloc((argc + 3) * sizeof(char *));
+  
+  new_argv = (char **) malloc((argc + 4) * sizeof(char *));
   memcpy(new_argv, argv, argc * sizeof(char **));
   new_argv[argc] = "--filename";
   new_argv[argc + 1] = AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME;
   new_argv[argc + 2] = "--no-config";
   new_argv[argc + 3] = NULL;
   argc += 3;
-  
+
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &new_argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &argv,
-		  str);
+    ags_functional_test_util_init(&argc, &new_argv,
+				  str);
   }else{
-    ags_test_init(&argc, &new_argv,
-		  AGS_FUNCTIONAL_NOTATION_EDIT_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &new_argv,
+				  AGS_FUNCTIONAL_NOTATION_EDIT_TEST_CONFIG);
   }
 #endif
   

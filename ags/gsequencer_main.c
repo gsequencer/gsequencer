@@ -337,7 +337,7 @@ main(int argc, char **argv)
       printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
-	     "--no-config         disable config from file"
+	     "--no-config         disable config from file",
 	     "--no-builtin-theme  disable built-in theme",
 	     "--non-unique        don't attach to any existing application ID",
 	     "--menu-bar          force traditional menu bar",

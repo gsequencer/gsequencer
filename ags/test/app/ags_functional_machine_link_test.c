@@ -28,10 +28,6 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
-
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/app/libgsequencer.h>
@@ -157,6 +153,15 @@ ags_functional_machine_link_test_init_suite()
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
 						      &ags_functional_machine_link_test_default_timeout,
 						      &(gsequencer_application_context->window));
+
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_LINK_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   return(0);
 }

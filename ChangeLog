@@ -1,6 +1,7 @@
 ags (4.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted missing pulseaudio server
 	* refactored ags_functional_notation_editor_workflow_test.c
 	* refactored ags_functional_automation_editor_workflow_test.c
 	* refactored ags_functional_panel_test.c
@@ -10,6 +11,7 @@ ags (4.3.0)
 	* refactored ags_functional_synth_test.c
 	* refactored ags_functional_hybrid_synth_test.c
 	* refactored ags_functional_ffplayer_test.c
+	* refactored ags_functional_notation_edit_test.c
 
 ags (4.2.14)
 
