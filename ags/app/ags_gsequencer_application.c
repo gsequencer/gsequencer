@@ -170,6 +170,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   
   /* check /etc/papersize */
   paper_conf = g_getenv("PAPERCONF");
+  paper_size = NULL;
 
   if(paper_conf != NULL){
     paper_conf = g_strdup(paper_conf);

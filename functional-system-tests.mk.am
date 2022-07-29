@@ -325,6 +325,7 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_sf2_synth_test
 	./ags_check_system_functional_pitch_sampler_test
 	./ags_check_system_functional_sfz_synth_test
+	./ags_check_system_functional_audiorec_test
 
 #./ags_check_system_functional_audio_config_test
 #./ags_check_system_functional_loop_000_xml_test
