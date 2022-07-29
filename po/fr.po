@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-07-29 01:34+0200\n"
+"POT-Creation-Date: 2022-07-29 15:18+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -635,7 +635,7 @@ msgid "position tool"
 msgstr "position x"
 
 #: ags/app/editor/ags_composite_toolbar.c:861
-#: ags/app/ags_gsequencer_application.c:675
+#: ags/app/ags_gsequencer_application.c:676
 #, fuzzy
 msgid "Edit"
 msgstr "_Édition"
@@ -1098,69 +1098,69 @@ msgstr "boucle D"
 msgid "exclude sequencers"
 msgstr "exclure séquencer"
 
-#: ags/app/ags_gsequencer_application.c:620
+#: ags/app/ags_gsequencer_application.c:621
 #, fuzzy
 msgid "Open"
 msgstr "_Ouvrir"
 
-#: ags/app/ags_gsequencer_application.c:625
+#: ags/app/ags_gsequencer_application.c:626
 #, fuzzy
 msgid "Save"
 msgstr "_Mémoriser"
 
-#: ags/app/ags_gsequencer_application.c:630
+#: ags/app/ags_gsequencer_application.c:631
 msgid "Save as"
 msgstr "Mémoriser comme"
 
-#: ags/app/ags_gsequencer_application.c:635
+#: ags/app/ags_gsequencer_application.c:636
 #, fuzzy
 msgid "Export"
 msgstr "exporter"
 
-#: ags/app/ags_gsequencer_application.c:640
+#: ags/app/ags_gsequencer_application.c:641
 #, fuzzy
 msgid "Quit"
 msgstr "_Quitter"
 
-#: ags/app/ags_gsequencer_application.c:647
+#: ags/app/ags_gsequencer_application.c:648
 #, fuzzy
 msgid "File"
 msgstr "_Fichier"
 
-#: ags/app/ags_gsequencer_application.c:660
+#: ags/app/ags_gsequencer_application.c:661
 msgid "Add"
 msgstr "Ajouter"
 
-#: ags/app/ags_gsequencer_application.c:663
+#: ags/app/ags_gsequencer_application.c:664
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:668 ags/app/ags_preferences.c:159
+#: ags/app/ags_gsequencer_application.c:669 ags/app/ags_preferences.c:159
 msgid "Preferences"
 msgstr "Préréglage"
 
-#: ags/app/ags_gsequencer_application.c:681
+#: ags/app/ags_gsequencer_application.c:682
 #, fuzzy
 msgid "SMF import"
 msgstr "MIDI importer"
 
-#: ags/app/ags_gsequencer_application.c:686
+#: ags/app/ags_gsequencer_application.c:687
 #, fuzzy
 msgid "SMF export"
 msgstr "MIDI exporter"
 
-#: ags/app/ags_gsequencer_application.c:693
+#: ags/app/ags_gsequencer_application.c:694
 #, fuzzy
 msgid "MIDI"
 msgstr "MIDI carte"
 
-#: ags/app/ags_gsequencer_application.c:699
-#: ags/app/ags_gsequencer_application.c:711
+#: ags/app/ags_gsequencer_application.c:700
+#: ags/app/ags_gsequencer_application.c:712
 #, fuzzy
 msgid "Help"
 msgstr "_Aide"
 
-#: ags/app/ags_gsequencer_application.c:704
+#: ags/app/ags_gsequencer_application.c:705
 msgid "About"
 msgstr "Briefer"
 
