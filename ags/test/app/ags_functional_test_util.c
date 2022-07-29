@@ -5930,8 +5930,8 @@ ags_functional_test_util_machine_editor_dialog_ladspa_filename_driver_program(gu
 			 0, &value,
 			 -1);
       
-      if(!g_strcmp0(filename,
-		    value)){
+      if(g_str_has_suffix(value,
+			  filename)){
 	gtk_tree_view_set_cursor(ladspa_browser->filename_tree_view,
 				 gtk_tree_model_get_path(model,
 							 &iter),
@@ -6268,8 +6268,8 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename_driver_program(guint
 			 0, &value,
 			 -1);
       
-      if(!g_strcmp0(filename,
-		    value)){
+      if(g_str_has_suffix(value,
+			  filename)){
 	gtk_tree_view_set_cursor(lv2_browser->filename_tree_view,
 				 gtk_tree_model_get_path(model,
 							 &iter),
