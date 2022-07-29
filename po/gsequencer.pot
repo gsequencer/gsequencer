@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 4.3.1\n"
+"Project-Id-Version: gsequencer 4.3.2\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2022-07-29 15:18+0200\n"
+"POT-Creation-Date: 2022-07-29 18:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1827,17 +1827,17 @@ msgstr ""
 msgid "LFO frequency"
 msgstr ""
 
-#: ags/app/ags_ladspa_browser.c:280 ags/app/ags_ladspa_browser.c:616
+#: ags/app/ags_ladspa_browser.c:280 ags/app/ags_ladspa_browser.c:617
 #: ags/app/ags_ladspa_browser_callbacks.c:185
 msgid "Label"
 msgstr ""
 
-#: ags/app/ags_ladspa_browser.c:294 ags/app/ags_ladspa_browser.c:624
+#: ags/app/ags_ladspa_browser.c:294 ags/app/ags_ladspa_browser.c:625
 #: ags/app/ags_ladspa_browser_callbacks.c:194
 msgid "Maker"
 msgstr ""
 
-#: ags/app/ags_ladspa_browser.c:308 ags/app/ags_ladspa_browser.c:632
+#: ags/app/ags_ladspa_browser.c:308 ags/app/ags_ladspa_browser.c:633
 #: ags/app/ags_ladspa_browser_callbacks.c:203
 msgid "Copyright"
 msgstr ""

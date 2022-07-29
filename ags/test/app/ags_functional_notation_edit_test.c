@@ -100,6 +100,8 @@ ags_functional_notation_edit_test_add_test()
   
   ags_functional_test_util_quit();
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDIT_TEST_DEFAULT_IDLE_TIME);  
+
   CU_cleanup_registry();
   
   exit(CU_get_error());
@@ -181,6 +183,8 @@ ags_functional_notation_edit_test_file_setup()
       if(start_time.tv_sec + AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
 	expired = TRUE;
       }
+
+      g_usleep(400000);
     }
 
     g_message("stop playback");
