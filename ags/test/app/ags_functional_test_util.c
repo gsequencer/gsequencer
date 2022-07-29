@@ -2574,7 +2574,7 @@ ags_functional_test_util_export_set_backend_driver_program(guint n_params,
 
   AgsApplicationContext *application_context;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *backend;
 
@@ -4544,9 +4544,11 @@ ags_functional_test_util_machine_move_up_driver_program(guint n_params,
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   /* retrieve machine */
-  start_list = window->machine;
+  start_list = ags_window_get_machine(window);
   machine = g_list_nth_data(start_list,
 			    nth_machine);
+
+  g_list_free(start_list);
 
   gtk_widget_activate_action_variant(machine,
 				     "machine.move_up",
@@ -4609,9 +4611,11 @@ ags_functional_test_util_machine_move_down_driver_program(guint n_params,
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   /* retrieve machine */
-  start_list = window->machine;
+  start_list = ags_window_get_machine(window);
   machine = g_list_nth_data(start_list,
 			    nth_machine);
+
+  g_list_free(start_list);
 
   /* activate move down */  
   gtk_widget_activate_action_variant(machine,
@@ -4675,10 +4679,12 @@ ags_functional_test_util_machine_hide_driver_program(guint n_params,
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   /* retrieve machine */
-  start_list = window->machine;
+  start_list = ags_window_get_machine(window);
   machine = g_list_nth_data(start_list,
 			    nth_machine);
 
+  g_list_free(start_list);
+  
   /* activate hide */
   gtk_widget_activate_action_variant(machine,
 				     "machine.hide",
@@ -4741,9 +4747,11 @@ ags_functional_test_util_machine_show_driver_program(guint n_params,
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   /* retrieve machine */
-  start_list = window->machine;
+  start_list = ags_window_get_machine(window);
   machine = g_list_nth_data(start_list,
 			    nth_machine);
+
+  g_list_free(start_list);
   
   /* activate show */  
   gtk_widget_activate_action_variant(machine,
@@ -4807,9 +4815,11 @@ ags_functional_test_util_machine_destroy_driver_program(guint n_params,
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   /* retrieve machine */
-  start_list = window->machine;
+  start_list = ags_window_get_machine(window);
   machine = g_list_nth_data(start_list,
 			    nth_machine);
+
+  g_list_free(start_list);
   
   /* activate hide */
 #if 0
@@ -4880,7 +4890,7 @@ ags_functional_test_util_machine_rename_open_driver_program(guint n_params,
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   /* retrieve machine */
-  start_list = window->machine;
+  start_list = ags_window_get_machine(window);
   machine = g_list_nth_data(start_list,
 			    nth_machine);
   
@@ -5054,7 +5064,7 @@ ags_functional_test_util_machine_editor_dialog_click_tab_driver_program(guint n_
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
   
   guint nth_machine;
   guint nth_tab;
@@ -5066,11 +5076,11 @@ ags_functional_test_util_machine_editor_dialog_click_tab_driver_program(guint n_
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  machine = g_list_nth_data(list_start,
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* click tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -5128,7 +5138,7 @@ ags_functional_test_util_machine_editor_dialog_click_enable_driver_program(guint
   AgsMachineEditor *machine_editor;
   GtkButton *enable_button;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint nth_tab;
@@ -5140,11 +5150,11 @@ ags_functional_test_util_machine_editor_dialog_click_enable_driver_program(guint
   /* retrieve machine */
   enable_button = NULL;
   
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  machine = g_list_nth_data(list_start,
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* click tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -5230,7 +5240,7 @@ ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_p
   GtkTreeModel *model;
   
   GtkTreeIter iter;
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *link_name;
   gchar *value;
@@ -5253,11 +5263,11 @@ ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_p
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  machine= g_list_nth_data(list_start,
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine= g_list_nth_data(start_list,
 			   nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* set link */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -5279,9 +5289,9 @@ ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_p
     return;
   }
 
-  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
   
-  machine_editor_pad = g_list_nth_data(list_start,
+  machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
   
   /* expander */
@@ -5289,8 +5299,8 @@ ags_functional_test_util_machine_editor_dialog_link_set_driver_program(guint n_p
 			    TRUE);
 
   /* line editor */
-  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
-  machine_editor_line = g_list_nth_data(list_start,
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
+  machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
   
   /* link editor */
@@ -5538,7 +5548,7 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   GtkTreeModel *model;
   
   GtkTreeIter iter;
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *value;
 
@@ -5558,11 +5568,11 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
-  machine = g_list_nth_data(list_start,
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* get tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -5584,9 +5594,9 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
     return;
   }
 
-  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
   
-  machine_editor_pad = g_list_nth_data(list_start,
+  machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
 
   /* expander */
@@ -5594,9 +5604,9 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
 			    TRUE);
 
   /* line editor */
-  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  machine_editor_line = g_list_nth_data(list_start,
+  machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
 
   /* line member editor */
@@ -5607,9 +5617,9 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
   remove_button = member_editor->remove;
 
   /* check button */
-  list_start = ags_line_member_editor_get_entry(member_editor);
+  start_list = ags_line_member_editor_get_entry(member_editor);
 
-  member_editor_entry = g_list_nth_data(list_start,
+  member_editor_entry = g_list_nth_data(start_list,
 					nth_effect);
   
   /* click check button */
@@ -6011,7 +6021,7 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect_driver_program(guin
   GtkTreeModel *model;
   
   GtkTreeIter iter;
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *effect;
   gchar *value;
@@ -6032,12 +6042,12 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect_driver_program(guin
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
@@ -6059,15 +6069,15 @@ ags_functional_test_util_machine_editor_dialog_ladspa_effect_driver_program(guin
   }
 
   /* pad editor */
-  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  machine_editor_pad = g_list_nth_data(list_start,
+  machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
     
   /* line editor */
-  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  machine_editor_line = g_list_nth_data(list_start,
+  machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
 
   /* line member editor */
@@ -6180,7 +6190,7 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename_driver_program(guint
   GtkTreeModel *model;
   
   GtkTreeIter iter;
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *filename;
   gchar *value;
@@ -6201,12 +6211,12 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename_driver_program(guint
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
   
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
@@ -6228,15 +6238,15 @@ ags_functional_test_util_machine_editor_dialog_lv2_filename_driver_program(guint
   }
 
   /* pad editor */
-  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  machine_editor_pad = g_list_nth_data(list_start,
+  machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
     
   /* line editor */
-  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  machine_editor_line = g_list_nth_data(list_start,
+  machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
 
   /* line member editor */
@@ -6349,7 +6359,7 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect_driver_program(guint n
   GtkTreeModel *model;
   
   GtkTreeIter iter;
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gchar *effect;
   gchar *value;
@@ -6370,12 +6380,12 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect_driver_program(guint n
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
 
@@ -6397,20 +6407,20 @@ ags_functional_test_util_machine_editor_dialog_lv2_effect_driver_program(guint n
   }
 
   /* pad editor */
-  list_start = ags_machine_editor_listing_get_pad(machine_editor_listing);
+  start_list = ags_machine_editor_listing_get_pad(machine_editor_listing);
 
-  machine_editor_pad = g_list_nth_data(list_start,
+  machine_editor_pad = g_list_nth_data(start_list,
 				       nth_pad);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
     
   /* line editor */
-  list_start = ags_machine_editor_pad_get_line(machine_editor_pad);
+  start_list = ags_machine_editor_pad_get_line(machine_editor_pad);
 
-  machine_editor_line = g_list_nth_data(list_start,
+  machine_editor_line = g_list_nth_data(start_list,
 					nth_audio_channel);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* line member editor */
   member_editor = machine_editor_line->line_member_editor;
@@ -6515,7 +6525,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program(guint n_p
   AgsMachineEditorCollection *machine_editor_collection;
   GtkButton *add_collection;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint nth_tab;
@@ -6525,12 +6535,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program(guint n_p
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* get tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -6608,7 +6618,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_driver_program(guint n_
   AgsMachineEditorCollection *machine_editor_collection;
   AgsMachineEditorBulk *machine_editor_bulk;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   GtkTreeModel *model;
   
@@ -6631,12 +6641,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_driver_program(guint n_
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
   
   /* get notebook tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -6659,12 +6669,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_driver_program(guint n_
   }
 
   /* get bulk editor */
-  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  machine_editor_bulk = g_list_nth_data(list_start,
+  machine_editor_bulk = g_list_nth_data(start_list,
 					nth_bulk);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
   
   /* set link */
   model = gtk_combo_box_get_model(machine_editor_bulk->link);
@@ -6748,7 +6758,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line_driver_program(gu
   AgsMachineEditorCollection *machine_editor_collection;
   AgsMachineEditorBulk *machine_editor_bulk;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   GtkTreeModel *model;
   
@@ -6770,12 +6780,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line_driver_program(gu
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
   
   /* get notebook tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -6798,12 +6808,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_first_line_driver_program(gu
   }
 
   /* get bulk editor */
-  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  machine_editor_bulk = g_list_nth_data(list_start,
+  machine_editor_bulk = g_list_nth_data(start_list,
 					nth_bulk);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   gtk_spin_button_set_value(machine_editor_bulk->first_line,
 			    first_line);
@@ -6866,7 +6876,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line_driver_program(gui
   AgsMachineEditorCollection *machine_editor_collection;
   AgsMachineEditorBulk *machine_editor_bulk;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   GtkTreeModel *model;
   
@@ -6888,12 +6898,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line_driver_program(gui
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* get notebook tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -6916,12 +6926,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_link_line_driver_program(gui
   }
 
   /* get bulk editor */
-  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  machine_editor_bulk = g_list_nth_data(list_start,
+  machine_editor_bulk = g_list_nth_data(start_list,
 					nth_bulk);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   gtk_spin_button_set_value(machine_editor_bulk->first_link_line,
 			    first_link_line);
@@ -6984,7 +6994,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_count_driver_program(guint n
   AgsMachineEditorCollection *machine_editor_collection;
   AgsMachineEditorBulk *machine_editor_bulk;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   GtkTreeModel *model;
   
@@ -7006,12 +7016,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_count_driver_program(guint n
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* get notebook tab */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -7034,12 +7044,12 @@ ags_functional_test_util_machine_editor_dialog_bulk_count_driver_program(guint n
   }
 
   /* get bulk editor */
-  list_start = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
-  machine_editor_bulk = g_list_nth_data(list_start,
+  machine_editor_bulk = g_list_nth_data(start_list,
 					nth_bulk);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   gtk_spin_button_set_value(machine_editor_bulk->count,
 			    count);
@@ -7100,7 +7110,7 @@ ags_functional_test_util_machine_editor_dialog_resize_audio_channels_driver_prog
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint audio_channels;
@@ -7112,12 +7122,12 @@ ags_functional_test_util_machine_editor_dialog_resize_audio_channels_driver_prog
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* resize audio channels */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -7174,7 +7184,7 @@ ags_functional_test_util_machine_editor_dialog_resize_inputs_driver_program(guin
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint inputs;
@@ -7186,12 +7196,12 @@ ags_functional_test_util_machine_editor_dialog_resize_inputs_driver_program(guin
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
   
   /* resize input pads */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -7248,7 +7258,7 @@ ags_functional_test_util_machine_editor_dialog_resize_outputs_driver_program(gui
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint outputs;
@@ -7260,12 +7270,12 @@ ags_functional_test_util_machine_editor_dialog_resize_outputs_driver_program(gui
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  machine = g_list_nth_data(list_start,
+  machine = g_list_nth_data(start_list,
 			    nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
   
   /* resize output pads */
   machine_editor = AGS_MACHINE_EDITOR_DIALOG(machine->machine_editor_dialog)->machine_editor;
@@ -7540,17 +7550,17 @@ ags_functional_test_util_drum_open(guint nth_machine)
   GtkButton *open_button;
   GtkWidget **open_dialog;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve drum */
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  drum = g_list_nth_data(list_start,
+  drum = g_list_nth_data(start_list,
 			 nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
     
   /* open dialog */
   open_button = drum->open;
@@ -7740,17 +7750,17 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   GtkButton *open_button;
   GtkWidget **open_dialog;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gsequencer_application_context = ags_application_context_get_instance();
 
   /* retrieve ffplayer */
-  list_start = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
 
-  ffplayer = g_list_nth_data(list_start,
+  ffplayer = g_list_nth_data(start_list,
 			     nth_machine);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
   
   /* open dialog */
   open_button = ffplayer->open;
