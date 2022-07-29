@@ -456,6 +456,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 
   filename_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(ladspa_browser->filename_tree_view));
 
+  path = NULL;
   gtk_tree_view_get_cursor(ladspa_browser->filename_tree_view,
 			   &path,
 			   NULL);
