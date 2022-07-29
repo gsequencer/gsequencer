@@ -28,16 +28,13 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
-
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/app/libgsequencer.h>
 
-#include "../gsequencer_setup_util.h"
 #include "../ags_functional_test_util.h"
+
+#define AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 void ags_functional_hybrid_synth_test_add_test();
 
@@ -102,7 +99,7 @@ ags_functional_hybrid_synth_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  ags_test_quit();
+  ags_functional_test_util_quit();
 
   CU_cleanup_registry();
   
@@ -116,6 +113,23 @@ ags_functional_hybrid_synth_test_add_test()
 int
 ags_functional_hybrid_synth_test_init_suite()
 {
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(gsequencer_application_context->window));
+  
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
   return(0);
 }
 
@@ -138,9 +152,9 @@ ags_functional_hybrid_synth_test_resize_pads()
   
   AgsHybridSynth *hybrid_synth;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint resize_tab;
@@ -148,79 +162,116 @@ ags_functional_hybrid_synth_test_resize_pads()
 
   gsequencer_application_context = ags_application_context;
 
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_hybrid_synth_test_default_timeout,
-						      &(gsequencer_application_context->window));
-
   /* add hybrid synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Hybrid Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "Hybrid Synth");
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
-						      &ags_functional_hybrid_synth_test_default_timeout,
-						      &container_test);
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
 
-  ags_test_enter();
+  condition.length = 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* retrieve hybrid synth */
   nth_machine = 0;
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_HYBRID_SYNTH(list->data)){
-    hybrid_synth = list->data;
-  }else{
-    hybrid_synth = NULL;
-  }
   
-  CU_ASSERT(hybrid_synth != NULL);
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_HYBRID_SYNTH);
 
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  hybrid_synth = g_list_nth_data(start_list,
+				 nth_machine);
+
+  
   /*
    * resize output and input pads
    */
   
   /* open properties */
-  ags_functional_test_util_machine_properties_open(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_open(nth_machine);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(AGS_MACHINE(hybrid_synth)->machine_editor_dialog));
+
+  ags_functional_test_util_sync();
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(hybrid_synth)->machine_editor_dialog)->machine_editor));
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(hybrid_synth)->machine_editor_dialog)->machine_editor->resize_editor));
+  
+  ags_functional_test_util_sync();
 
   /* click tab */
-  resize_tab = 4;
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_RESIZE_TAB;
   
-  ags_functional_test_util_machine_properties_click_tab(nth_machine,
-							resize_tab);
-  
+  ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+							   resize_tab);  
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
   /* click enable */
-  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
 
-  /* set output pads */
-  ags_functional_test_util_machine_properties_resize_outputs(nth_machine,
-							     AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_RESIZE_OUTPUT_PADS);
+  ags_functional_test_util_sync();
+  
+  /* resize output */
+  ags_functional_test_util_machine_editor_dialog_resize_outputs(nth_machine,
+								AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_RESIZE_OUTPUT_PADS);
 
-  /* set input pads */
-  ags_functional_test_util_machine_properties_resize_inputs(nth_machine,
-							    AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_RESIZE_INPUT_PADS);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  
+  /* resize input */
+  ags_functional_test_util_machine_editor_dialog_resize_inputs(nth_machine,
+							       AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_RESIZE_INPUT_PADS);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /* response ok */
-  ags_test_enter();
-
-  properties = AGS_MACHINE(hybrid_synth)->properties;
-  
-  ags_test_leave();
+  properties = AGS_MACHINE(hybrid_synth)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
-  /* destroy hybrid synth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /* destroy hybrid_synth */
+  ags_functional_test_util_machine_destroy(0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -232,9 +283,9 @@ ags_functional_hybrid_synth_test_resize_audio_channels()
   
   AgsHybridSynth *hybrid_synth;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint resize_tab;
@@ -243,69 +294,106 @@ ags_functional_hybrid_synth_test_resize_audio_channels()
   gsequencer_application_context = ags_application_context;
 
   /* add hybrid synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Hybrid Synth");
+  ags_functional_test_util_add_machine(NULL,
+				       "Hybrid Synth");
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 1;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_hybrid_synth_test_default_timeout,
-						      &container_test);
-  ags_test_enter();
+						      &condition);
 
-  /* retrieve hybrid synth */
-  nth_machine = 0;
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_HYBRID_SYNTH(list->data)){
-    hybrid_synth = list->data;
-  }else{
-    hybrid_synth = NULL;
-  }
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
   
-  CU_ASSERT(hybrid_synth != NULL);
+  ags_functional_test_util_sync();
+
+  /* retrieve hybrid_synth */
+  nth_machine = 0;
+  
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_HYBRID_SYNTH);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  hybrid_synth = g_list_nth_data(start_list,
+				 nth_machine);
 
   /*
    * resize audio channels
    */
   
   /* open properties */
-  ags_functional_test_util_machine_properties_open(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_open(nth_machine);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(AGS_MACHINE(hybrid_synth)->machine_editor_dialog));
+
+  ags_functional_test_util_sync();
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(hybrid_synth)->machine_editor_dialog)->machine_editor));
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_hybrid_synth_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(hybrid_synth)->machine_editor_dialog)->machine_editor->resize_editor));
+  
+  ags_functional_test_util_sync();
 
   /* click tab */
-  resize_tab = 4;
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_RESIZE_TAB;
   
-  ags_functional_test_util_machine_properties_click_tab(nth_machine,
-							resize_tab);
-  
-  /* click enable */
-  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+							   resize_tab);  
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
 
-  /* set output audio_channels */
-  ags_functional_test_util_machine_properties_resize_audio_channels(nth_machine,
-								    AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_RESIZE_AUDIO_CHANNELS);
+  ags_functional_test_util_sync();
+
+  /* click enable */
+  ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /* resize audio channels */
+  ags_functional_test_util_machine_editor_dialog_resize_audio_channels(nth_machine,
+								       AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_RESIZE_AUDIO_CHANNELS);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /* response ok */
-  ags_test_enter();
-
-  properties = AGS_MACHINE(hybrid_synth)->properties;
-  
-  ags_test_leave();
+  properties = AGS_MACHINE(hybrid_synth)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
-  /* destroy hybrid synth */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /* destroy hybrid_synth */
+  ags_functional_test_util_machine_destroy(0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 int
@@ -331,15 +419,15 @@ main(int argc, char **argv)
 		   FALSE);
   
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &argv,
-		  str);
+    ags_functional_test_util_init(&argc, &argv,
+				  str);
   }else{
-    ags_test_init(&argc, &argv,
-		  AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &argv,
+				  AGS_FUNCTIONAL_HYBRID_SYNTH_TEST_CONFIG);
   }
 #endif
   

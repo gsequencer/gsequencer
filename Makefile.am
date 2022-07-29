@@ -123,6 +123,7 @@ EXTRA_DIST = config.rpath \
 	ags_check_system_unit_programs \
 	ags_check_system_valgrind_unit_programs \
 	ags_check_system_functional_programs \
+	ags_check_system_functional_programs_ui \
 	ags_check_system_valgrind_functional_programs \
 	conf/ags-alsa.conf \
 	conf/ags-oss.conf \

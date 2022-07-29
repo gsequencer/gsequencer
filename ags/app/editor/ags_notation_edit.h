@@ -131,6 +131,10 @@ struct _AgsNotationEdit
 
   GtkScrollbar *vscrollbar;
   GtkScrollbar *hscrollbar;
+
+  GtkEventController *key_controller;
+  GtkEventController *gesture_controller;
+  GtkEventController *motion_controller;
 };
 
 struct _AgsNotationEditClass

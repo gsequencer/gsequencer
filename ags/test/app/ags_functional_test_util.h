@@ -163,6 +163,7 @@ void ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_
 							   gchar *filename);
 void ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
 							    GSList *filename);
+void ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser);
 
 /* UI control */
 void ags_functional_test_util_file_default_window_resize();
@@ -239,6 +240,8 @@ void ags_functional_test_util_composite_toolbar_cut_click();
 void ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom);
 
 /* machine selector */
+void ags_functional_test_util_machine_selector_add(guint nth_machine);
+
 void ags_functional_test_util_machine_selector_select(gchar *machine);
 
 void ags_functional_test_util_machine_selector_reverse_mapping();

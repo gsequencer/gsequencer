@@ -312,7 +312,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   gtk_widget_set_focusable((GtkWidget *) notation_edit->drawing_area,
 			   TRUE);
 
-  event_controller = gtk_event_controller_key_new();
+  event_controller =
+    notation_edit->key_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
@@ -325,7 +326,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_notation_edit_modifiers_callback), notation_edit);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller =
+    notation_edit->gesture_controller = gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
@@ -335,7 +337,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
 
-  event_controller = gtk_event_controller_motion_new();
+  event_controller =
+    notation_edit->motion_controller = gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 

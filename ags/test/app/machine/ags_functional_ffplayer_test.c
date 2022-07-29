@@ -32,7 +32,6 @@
 
 #include <ags/test/app/libgsequencer.h>
 
-#include "../gsequencer_setup_util.h"
 #include "../ags_functional_test_util.h"
 
 #include <unistd.h>
@@ -46,7 +45,15 @@ int ags_functional_ffplayer_test_clean_suite();
 void ags_functional_ffplayer_test_open_sf2();
 void ags_functional_ffplayer_test_resize_pads();
 void ags_functional_ffplayer_test_resize_audio_channels();
+
+void ags_functional_ffplayer_test_ffplayer_open_filename(AgsFFPlayer *ffplayer,
+							 gchar *filename);
+void ags_functional_ffplayer_test_ffplayer_open_filename_driver_program(guint n_params,
+									gchar **param_strv,
+									GValue *param);
 #endif
+
+#define AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH "/usr/share/sounds/sf2"
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_FILENAME "/usr/share/sounds/sf2/FluidR3_GM.sf2"
@@ -106,8 +113,8 @@ void ags_functional_ffplayer_test_add_test()
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
-
-  ags_test_quit();
+  
+  ags_functional_test_util_quit();
   
   CU_cleanup_registry();
   
@@ -121,6 +128,23 @@ void ags_functional_ffplayer_test_add_test()
 int
 ags_functional_ffplayer_test_init_suite()
 {
+  AgsGSequencerApplicationContext *gsequencer_application_context;
+
+  gsequencer_application_context = ags_application_context;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(gsequencer_application_context->window));
+  
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+
   return(0);
 }
 
@@ -135,95 +159,158 @@ ags_functional_ffplayer_test_clean_suite()
 }
 
 void
+ags_functional_ffplayer_test_ffplayer_open_filename_driver_program(guint n_params,
+								   gchar **param_strv,
+								   GValue *param)
+{
+  AgsFFPlayer *ffplayer;
+
+  gchar *filename;
+
+  ffplayer = g_value_get_object(param);
+  
+  filename = g_value_get_string(param + 1);
+
+  ags_ffplayer_open_filename(ffplayer,
+			     filename);
+}
+
+void
+ags_functional_ffplayer_test_ffplayer_open_filename(AgsFFPlayer *ffplayer,
+						    gchar *filename)
+{
+  AgsFunctionalTestUtilDriverProgram *driver_program;
+
+  if(!AGS_IS_FFPLAYER(ffplayer) ||
+     filename == NULL){
+    return;
+  }
+
+  driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
+			  1);
+
+  driver_program->driver_program_func = ags_functional_ffplayer_test_ffplayer_open_filename_driver_program;
+  
+  driver_program->n_params = 2;
+
+  /* param string vector */
+  driver_program->param_strv = g_malloc(3 * sizeof(gchar *));
+
+  driver_program->param_strv[0] = g_strdup("ffplayer");
+  driver_program->param_strv[1] = g_strdup("filename");
+  driver_program->param_strv[2] = NULL;
+  
+  /* param value array */
+  driver_program->param = g_new0(GValue,
+				 2);
+
+  g_value_init(driver_program->param,
+	       G_TYPE_OBJECT);
+  g_value_set_object(driver_program->param,
+		     ffplayer);
+
+  g_value_init(driver_program->param + 1,
+	       G_TYPE_STRING);
+  g_value_set_string(driver_program->param + 1,
+		     filename);
+  
+  ags_functional_test_util_add_driver_program(driver_program);  
+}
+
+void
 ags_functional_ffplayer_test_open_sf2()
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
   AgsFFPlayer *ffplayer;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   gboolean success;
   
   gsequencer_application_context = ags_application_context;
 
-  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(gsequencer_application_context))){
-    usleep(500000);
-  }
-
-  usleep(500000);  
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_ffplayer_test_default_timeout,
-						      &(gsequencer_application_context->window));
-
   /* add ffplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
+  ags_functional_test_util_add_machine(NULL,
+				       "FPlayer");
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
-						      &ags_functional_ffplayer_test_default_timeout,
-						      &container_test);
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
 
-  ags_test_enter();
+  condition.length = 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* retrieve ffplayer */
   nth_machine = 0;
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_FFPLAYER(list->data)){
-    ffplayer = list->data;
-  }else{
-    ffplayer = NULL;
-  }
   
-  CU_ASSERT(ffplayer != NULL);
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FFPLAYER);
 
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  ffplayer = g_list_nth_data(start_list,
+			     nth_machine);
+
+  //TODO:JK: 
+#if 0
   /* open dialog */
-  success = ags_functional_test_util_ffplayer_open(0);
+  ags_functional_test_util_ffplayer_open(0);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* open path */
-  CU_ASSERT(g_file_test(AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH,
-			G_FILE_TEST_EXISTS));
+  ags_functional_test_util_file_chooser_open_path(GTK_FILE_CHOOSER(ffplayer->open_dialog),
+						  AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
   
-  success = ags_functional_test_util_file_chooser_open_path(GTK_FILE_CHOOSER(ffplayer->open_dialog),
-							    AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH);
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
-  /* select sf2 */
-  success = ags_functional_test_util_file_chooser_select_filename(GTK_FILE_CHOOSER(ffplayer->open_dialog),
-								  AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_FILENAME);
+  /* select all */
+  ags_functional_test_util_file_chooser_select_filename(GTK_FILE_CHOOSER(ffplayer->open_dialog),
+							AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_FILENAME);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* response ok */
-  success = ags_functional_test_util_dialog_ok(GTK_DIALOG(ffplayer->open_dialog));
+  ags_functional_test_util_dialog_ok(GTK_DIALOG(ffplayer->open_dialog));
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+#else
+  ags_functional_ffplayer_test_ffplayer_open_filename(ffplayer,
+						      AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_FILENAME);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
+#endif  
 
   /* destroy ffplayer */
-  sleep(AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_DELAY);
+  ags_functional_test_util_machine_destroy(0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
   
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 }
 
 void
@@ -235,9 +322,9 @@ ags_functional_ffplayer_test_resize_pads()
   
   AgsFFPlayer *ffplayer;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint resize_tab;
@@ -246,74 +333,114 @@ ags_functional_ffplayer_test_resize_pads()
   gsequencer_application_context = ags_application_context;
 
   /* add ffplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
+  ags_functional_test_util_add_machine(NULL,
+				       "FPlayer");
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
+
+  condition.length = 1;
   
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_ffplayer_test_default_timeout,
-						      &container_test);
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
   
-  ags_test_enter();
-  
+  ags_functional_test_util_sync();
+
   /* retrieve ffplayer */
   nth_machine = 0;
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_FFPLAYER(list->data)){
-    ffplayer = list->data;
-  }else{
-    ffplayer = NULL;
-  }
   
-  CU_ASSERT(ffplayer != NULL);
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FFPLAYER);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  ffplayer = g_list_nth_data(start_list,
+			     nth_machine);
 
   /*
    * resize output and input pads
    */
   
   /* open properties */
-  ags_functional_test_util_machine_properties_open(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_open(nth_machine);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(AGS_MACHINE(ffplayer)->machine_editor_dialog));
+
+  ags_functional_test_util_sync();
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(ffplayer)->machine_editor_dialog)->machine_editor));
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(ffplayer)->machine_editor_dialog)->machine_editor->resize_editor));
+  
+  ags_functional_test_util_sync();
 
   /* click tab */
-  resize_tab = 4;
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_RESIZE_TAB;
   
-  ags_functional_test_util_machine_properties_click_tab(nth_machine,
-							resize_tab);
-  
+  ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+							   resize_tab);  
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
   /* click enable */
-  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
 
-  /* set output pads */
-  ags_functional_test_util_machine_properties_resize_outputs(nth_machine,
-							     AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_OUTPUT_PADS);
+  ags_functional_test_util_sync();
+  
+  /* resize output */
+  ags_functional_test_util_machine_editor_dialog_resize_outputs(nth_machine,
+								AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_OUTPUT_PADS);
 
-  /* set input pads */
-  ags_functional_test_util_machine_properties_resize_inputs(nth_machine,
-							    AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_INPUT_PADS);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  
+  /* resize input */
+  ags_functional_test_util_machine_editor_dialog_resize_inputs(nth_machine,
+							       AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_INPUT_PADS);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /* response ok */
-  ags_test_enter();
-
-  properties = AGS_MACHINE(ffplayer)->properties;
-  
-  ags_test_leave();
+  properties = AGS_MACHINE(ffplayer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
   /* destroy ffplayer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 void
@@ -325,9 +452,9 @@ ags_functional_ffplayer_test_resize_audio_channels()
   
   AgsFFPlayer *ffplayer;
 
-  AgsFunctionalTestUtilContainerTest container_test;
+  AgsFunctionalTestUtilListLengthCondition condition;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint nth_machine;
   guint resize_tab;
@@ -336,70 +463,106 @@ ags_functional_ffplayer_test_resize_audio_channels()
   gsequencer_application_context = ags_application_context;
 
   /* add ffplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
+  ags_functional_test_util_add_machine(NULL,
+				       "FPlayer");
+  
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
 
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_sync();
 
   /*  */
-  container_test.container = &(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  container_test.count = 1;
-  
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
-						      &ags_functional_ffplayer_test_default_timeout,
-						      &container_test);
+  condition.start_list = &(AGS_WINDOW(gsequencer_application_context->window)->machine);
 
-  ags_test_enter();
+  condition.length = 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &condition);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   /* retrieve ffplayer */
   nth_machine = 0;
-
-  list_start = gtk_container_get_children(AGS_WINDOW(gsequencer_application_context->window)->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  ags_test_leave();
-
-  if(list != NULL &&
-     AGS_IS_FFPLAYER(list->data)){
-    ffplayer = list->data;
-  }else{
-    ffplayer = NULL;
-  }
   
-  CU_ASSERT(ffplayer != NULL);
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_FFPLAYER);
+
+  ags_functional_test_util_sync();
+
+  start_list = ags_window_get_machine(AGS_WINDOW(gsequencer_application_context->window));
+  ffplayer = g_list_nth_data(start_list,
+			     nth_machine);
 
   /*
    * resize audio channels
    */
   
   /* open properties */
-  ags_functional_test_util_machine_properties_open(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_open(nth_machine);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(AGS_MACHINE(ffplayer)->machine_editor_dialog));
+
+  ags_functional_test_util_sync();
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(ffplayer)->machine_editor_dialog)->machine_editor));
+
+  ags_functional_test_util_sync();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_ffplayer_test_default_timeout,
+						      &(AGS_MACHINE_EDITOR_DIALOG(AGS_MACHINE(ffplayer)->machine_editor_dialog)->machine_editor->resize_editor));
+  
+  ags_functional_test_util_sync();
 
   /* click tab */
-  resize_tab = 4;
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_EDITOR_DIALOG_RESIZE_TAB;
   
-  ags_functional_test_util_machine_properties_click_tab(nth_machine,
-							resize_tab);
-  
-  /* click enable */
-  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+  ags_functional_test_util_machine_editor_dialog_click_tab(nth_machine,
+							   resize_tab);  
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
 
-  /* set output audio_channels */
-  ags_functional_test_util_machine_properties_resize_audio_channels(nth_machine,
-								    AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_AUDIO_CHANNELS);
+  ags_functional_test_util_sync();
+
+  /* click enable */
+  ags_functional_test_util_machine_editor_dialog_click_enable(nth_machine);
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /* resize audio channels */
+  ags_functional_test_util_machine_editor_dialog_resize_audio_channels(nth_machine,
+								       AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_AUDIO_CHANNELS);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
 
   /* response ok */
-  ags_test_enter();
-
-  properties = AGS_MACHINE(ffplayer)->properties;
-  
-  ags_test_leave();
+  properties = AGS_MACHINE(ffplayer)->machine_editor_dialog;  
 
   ags_functional_test_util_dialog_ok(properties);
 
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
   /* destroy ffplayer */
-  success = ags_functional_test_util_machine_destroy(0);
+  ags_functional_test_util_machine_destroy(0);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_FFPLAYER_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 }
 
 int
@@ -426,15 +589,15 @@ main(int argc, char **argv)
 		   FALSE);
   
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &argv,
-		  str);
+    ags_functional_test_util_init(&argc, &argv,
+				  str);
   }else{
-    ags_test_init(&argc, &argv,
-		  AGS_FUNCTIONAL_FFPLAYER_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &argv,
+				  AGS_FUNCTIONAL_FFPLAYER_TEST_CONFIG);
   }
 #endif
   
