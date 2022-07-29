@@ -105,7 +105,9 @@ ags_functional_notation_editor_workflow_test_add_test()
   CU_basic_run_tests();
   
   ags_functional_test_util_quit();
-  
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
+    
   CU_cleanup_registry();
   
   exit(CU_get_error());

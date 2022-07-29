@@ -798,6 +798,8 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
   /* channel selector - remove tabs */
   tab =
     start_tab = ags_notebook_get_tab(composite_edit->channel_selector);
+
+  length = g_list_length(start_tab);
   
   for(i = 0; i < length; i++){
     ags_notebook_remove_tab(composite_edit->channel_selector,

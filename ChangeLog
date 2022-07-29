@@ -1,3 +1,17 @@
+ags (4.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes
+	* added ags_functional_spectrometer_test.c
+	* added ags_functional_equalizer10_test.c
+	* added ags_functional_fm_synth_test.c
+	* added ags_functional_syncsynth_test.c
+	* added ags_functional_fm_syncsynth_test.c
+	* added ags_functional_hybrid_fm_synth_test.c
+	* added ags_functional_sf2_synth_test.c
+	* added ags_functional_pitch_sampler_test.c
+	* added ags_functional_sfz_synth_test.c
+
 ags (4.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
