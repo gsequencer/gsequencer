@@ -1,3 +1,8 @@
+ags (4.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed executables in ags_check_system_functional_programs_ui
+
 ags (4.3.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
