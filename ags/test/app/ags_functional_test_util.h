@@ -104,6 +104,9 @@ struct timespec* ags_functional_test_util_get_default_timeout();
 void ags_functional_test_util_assert(gboolean value, gchar *filename, guint line, gchar *function_str, gchar *condition_str);
 
 /* synchronization */
+void ags_functional_test_util_driver_yield();
+void ags_functional_test_util_driver_program_glue();
+
 void ags_functional_test_util_reaction_time();
 void ags_functional_test_util_reaction_time_long();
 

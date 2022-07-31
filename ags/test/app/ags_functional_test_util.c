@@ -982,6 +982,18 @@ ags_functional_test_util_clear_application_context()
 }
 
 void
+ags_functional_test_util_driver_yield()
+{
+  test_driver_yield = TRUE;
+}
+
+void
+ags_functional_test_util_driver_program_glue()
+{
+  test_driver_program_glue = TRUE;
+}
+
+void
 ags_functional_test_util_reaction_time()
 {
   reaction_time_stamp = g_get_monotonic_time();
@@ -1013,9 +1025,9 @@ ags_functional_test_util_idle_driver_program(guint n_params,
   idle_time = g_value_get_int64(param + 1);
 
   if(time_stamp + idle_time > current_stamp){
-    test_driver_program_glue = TRUE;
+    ags_functional_test_util_driver_program_glue();
 
-    test_driver_yield = TRUE;
+    ags_functional_test_util_driver_yield();
   }else{
     g_usleep(4);
   }
@@ -1086,9 +1098,9 @@ ags_functional_test_util_idle_condition_and_timeout_driver_program(guint n_param
       g_usleep(4);
   }else{
     if(idle_condition_start_time.tv_sec + timeout->tv_sec > current_time.tv_sec){
-      test_driver_program_glue = TRUE;
+      ags_functional_test_util_driver_program_glue();
 
-      test_driver_yield = TRUE;
+      ags_functional_test_util_driver_yield();
     }else{
       g_warning("test condition timeout");
     }
@@ -2900,6 +2912,8 @@ ags_functional_test_util_quit_driver_program(guint n_params,
   gsequencer_application_context = ags_application_context_get_instance();
 
   ags_application_context_quit(AGS_APPLICATION_CONTEXT(gsequencer_application_context));
+
+  ags_functional_test_util_driver_yield();
 }
 
 void

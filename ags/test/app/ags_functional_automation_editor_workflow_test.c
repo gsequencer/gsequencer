@@ -110,8 +110,8 @@ void ags_functional_automation_editor_workflow_test_add_test()
   
   ags_functional_test_util_quit();
 
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_DEFAULT_IDLE_TIME);
-    
+  g_usleep(3 * G_USEC_PER_SEC);
+  
   CU_cleanup_registry();
   
   exit(CU_get_error());
