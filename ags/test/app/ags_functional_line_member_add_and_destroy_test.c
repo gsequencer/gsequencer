@@ -116,7 +116,7 @@ ags_functional_line_member_add_and_destroy_test_add_test()
 
   ags_functional_test_util_quit();
   
-  ags_functional_test_util_idle(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+  g_usleep(3 * G_USEC_PER_SEC);
 
   CU_cleanup_registry();
   
