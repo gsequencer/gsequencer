@@ -74,6 +74,7 @@ void ags_functional_panel_test_resize_audio_channels();
 
 CU_pSuite pSuite = NULL;  
 volatile gboolean is_available;
+volatile gboolean is_terminated;
 
 extern AgsApplicationContext *ags_application_context;
 
@@ -98,8 +99,10 @@ ags_functional_panel_test_add_test()
   CU_basic_run_tests();
 
   ags_functional_test_util_quit();
-  
-  g_usleep(3 * G_USEC_PER_SEC);
+
+  while(!g_atomic_int_get(&is_terminated)){
+    g_usleep(G_USEC_PER_SEC / 60);
+  }
 
   CU_cleanup_registry();
   
@@ -416,6 +419,8 @@ main(int argc, char **argv)
 
   g_atomic_int_set(&is_available,
 		   FALSE);
+  g_atomic_int_set(&is_terminated,
+		   FALSE);
   
 #if defined(AGS_TEST_CONFIG)
   ags_functional_test_util_init(&argc, &argv,
@@ -432,6 +437,9 @@ main(int argc, char **argv)
   
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_panel_test_add_test, &is_available);
+
+  g_atomic_int_set(&is_terminated,
+		   TRUE);
 
   g_thread_join(ags_functional_test_util_test_runner_thread());
 
