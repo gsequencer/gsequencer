@@ -1,3 +1,8 @@
+ags (4.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved functional test termination
+
 ags (4.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
