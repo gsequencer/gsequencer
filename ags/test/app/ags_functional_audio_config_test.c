@@ -30,11 +30,8 @@
 
 #include <ags/gsequencer_main.h>
 
-#include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_gsequencer_application_context.h>
-#include <ags/app/ags_window.h>
+#include <ags/test/app/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
 void ags_functional_audio_config_test_add_test();
@@ -43,6 +40,8 @@ int ags_functional_audio_config_test_init_suite();
 int ags_functional_audio_config_test_clean_suite();
 
 void ags_functional_audio_config_test_file_setup();
+
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
 
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_BUFFER_SIZE (512)
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_BUFFER_SIZE (1024)
@@ -78,8 +77,9 @@ void ags_functional_audio_config_test_file_setup();
 
 CU_pSuite pSuite = NULL;
 volatile gboolean is_available;
+volatile gboolean is_terminated;
 
-AgsApplicationContext *application_context;
+AgsGSequencerApplicationContext *gsequencer_application_context;
 
 struct timespec ags_functional_audio_config_test_default_timeout = {
   300,
@@ -100,7 +100,11 @@ ags_functional_audio_config_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  ags_test_quit();
+  ags_functional_test_util_quit();
+  
+  while(!g_atomic_int_get(&is_terminated)){
+    g_usleep(G_USEC_PER_SEC / 60);
+  }
 
   CU_cleanup_registry();
   
@@ -114,7 +118,20 @@ ags_functional_audio_config_test_add_test()
 int
 ags_functional_audio_config_test_init_suite()
 {
-  application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_audio_config_test_default_timeout,
+						      &(gsequencer_application_context->window));
+
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
   
   return(0);
 }
@@ -132,100 +149,101 @@ ags_functional_audio_config_test_clean_suite()
 void
 ags_functional_audio_config_test_file_setup()
 {
-  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkWidget *preferences;
 
   gboolean success;
+
+  /* preferences */
+  ags_functional_test_util_preferences_open();
   
-  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
-    usleep(500000);
-  }
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  gsequencer_application_context = application_context;
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_audio_config_test_default_timeout,
-						      &(gsequencer_application_context->window));
+  ags_functional_test_util_sync();
+  
+  preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(gsequencer_application_context));
 
   /* shrink buffer size */
-  success = ags_functional_test_util_preferences_open();
+  ags_functional_test_util_audio_preferences_buffer_size(0,
+							 AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_BUFFER_SIZE);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_dialog_ok(preferences);
   
-  ags_test_enter();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
+  ags_functional_test_util_sync();
 
-  ags_test_leave();
-
-  success = ags_functional_test_util_audio_preferences_buffer_size(0,
-								   AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_BUFFER_SIZE);
-
-  CU_ASSERT(success == TRUE);
+  /* preferences */
+  ags_functional_test_util_preferences_open();
   
-  success = ags_functional_test_util_dialog_ok(preferences);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  CU_ASSERT(success == TRUE);  
+  ags_functional_test_util_sync();
   
+  preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(gsequencer_application_context));
+
   /* grow buffer size */
-  success = ags_functional_test_util_preferences_open();
+  ags_functional_test_util_audio_preferences_buffer_size(0,
+							 AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_BUFFER_SIZE);
   
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
   
-  ags_test_enter();
+  ags_functional_test_util_dialog_ok(preferences);
 
-  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  ags_test_leave();
+  ags_functional_test_util_sync();
 
-  success = ags_functional_test_util_audio_preferences_buffer_size(0,
-								   AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_BUFFER_SIZE);
+  /* preferences */
+  ags_functional_test_util_preferences_open();
+    
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  CU_ASSERT(success == TRUE);
-  
-  success = ags_functional_test_util_dialog_ok(preferences);
+  ags_functional_test_util_sync();
 
-  CU_ASSERT(success == TRUE);  
+  preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(gsequencer_application_context));
 
   /* grow samplerate */
-  success = ags_functional_test_util_preferences_open();
+  ags_functional_test_util_audio_preferences_samplerate(0,
+							AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_SAMPLERATE);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
+  ags_functional_test_util_dialog_ok(preferences);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+
+  /* preferences */
+  ags_functional_test_util_preferences_open();
   
-  ags_test_enter();
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
+  ags_functional_test_util_sync();  
 
-  ags_test_leave();
-
-  success = ags_functional_test_util_audio_preferences_samplerate(0,
-								  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_SAMPLERATE);
-
-  CU_ASSERT(success == TRUE);
-  
-  success = ags_functional_test_util_dialog_ok(preferences);
-
-  CU_ASSERT(success == TRUE);  
+  preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(gsequencer_application_context));
 
   /* shrink samplerate */
-  success = ags_functional_test_util_preferences_open();
+  ags_functional_test_util_audio_preferences_samplerate(0,
+							AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_SAMPLERATE);
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
   
-  CU_ASSERT(success == TRUE);
-  
-  ags_test_enter();
+  ags_functional_test_util_dialog_ok(preferences);
 
-  preferences = AGS_WINDOW(gsequencer_application_context->window)->preferences;
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_DEFAULT_IDLE_TIME);
 
-  ags_test_leave();
-
-  success = ags_functional_test_util_audio_preferences_samplerate(0,
-								  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_SAMPLERATE);
-
-  CU_ASSERT(success == TRUE);
-  
-  success = ags_functional_test_util_dialog_ok(preferences);
-
-  CU_ASSERT(success == TRUE);  
+  ags_functional_test_util_sync();
 }
 
 int
@@ -250,7 +268,9 @@ main(int argc, char **argv)
 
   g_atomic_int_set(&is_available,
 		   FALSE);
-
+  g_atomic_int_set(&is_terminated,
+		   FALSE);
+  
   new_argv = (char **) malloc((argc + 3) * sizeof(char *));
   memcpy(new_argv, argv, argc * sizeof(char **));
   new_argv[argc] = "--filename";
@@ -259,22 +279,25 @@ main(int argc, char **argv)
   argc += 2;
   
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &new_argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &new_argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &new_argv,
-		  str);
+    ags_functional_test_util_init(&argc, &new_argv,
+				  str);
   }else{
-    ags_test_init(&argc, &new_argv,
-		  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &new_argv,
+				  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG);
   }
 #endif
   
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_audio_config_test_add_test, &is_available);
 
+  g_atomic_int_set(&is_terminated,
+		   TRUE);
+
   g_thread_join(ags_functional_test_util_test_runner_thread());
-  
+    
   return(-1);
 }

@@ -1,3 +1,19 @@
+ags (4.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved functional test termination
+	* refactored ags_functional_audio_config_test.c
+	* refactored ags_functional_loop_000_xml_test.c
+	* refactored ags_functional_loop_001_xml_test.c
+	* refactored ags_functional_loop_002_xml_test.c
+	* refactored ags_functional_loop_003_xml_test.c
+	* refactored ags_functional_loop_004_xml_test.c
+	* refactored ags_functional_loop_005_xml_test.c
+	* refactored ags_functional_loop_006_xml_test.c
+	* refactored ags_functional_loop_007_xml_test.c
+	* refactored ags_functional_loop_008_xml_test.c
+	* refactored ags_functional_loop_010_xml_test.c
+
 ags (4.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

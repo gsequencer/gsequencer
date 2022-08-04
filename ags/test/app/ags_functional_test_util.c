@@ -2410,7 +2410,7 @@ ags_functional_test_util_export_add_driver_program(guint n_params,
 
   condition.length = g_list_length(export_window->export_soundcard) + 1;
     
-  ags_functional_test_util_button_click(add_button);
+  ags_functional_test_util_fake_button_click(add_button);
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 						      &ags_functional_test_util_default_timeout,
@@ -2540,7 +2540,7 @@ ags_functional_test_util_export_remove_driver_program(guint n_params,
   
     g_list_free(list);
   
-    ags_functional_test_util_button_click(remove_button);
+    ags_functional_test_util_fake_button_click(remove_button);
     ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_list_length),
 							&ags_functional_test_util_default_timeout,
 							&condition);
@@ -4242,9 +4242,13 @@ ags_functional_test_util_audio_preferences_buffer_size_driver_program(guint n_pa
 
   preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  ags_functional_test_util_preferences_click_tab(1);
+  /* click tab */
+  gtk_notebook_set_current_page(preferences->notebook,
+				1);
 
-  start_list = preferences->audio_preferences->soundcard_editor;
+  ags_functional_test_util_reaction_time_long();
+
+  start_list = ags_audio_preferences_get_soundcard_editor(preferences->audio_preferences);
   soundcard_editor = g_list_nth_data(start_list,
 				     nth_backend);
   
@@ -4316,9 +4320,13 @@ ags_functional_test_util_audio_preferences_samplerate_driver_program(guint n_par
 
   preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  ags_functional_test_util_preferences_click_tab(1);
+  /* click tab */
+  gtk_notebook_set_current_page(preferences->notebook,
+				1);
 
-  start_list = preferences->audio_preferences->soundcard_editor;
+  ags_functional_test_util_reaction_time_long();
+
+  start_list = ags_audio_preferences_get_soundcard_editor(preferences->audio_preferences);
   soundcard_editor = g_list_nth_data(start_list,
 				     nth_backend);
   
@@ -5637,10 +5645,10 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
 					nth_effect);
   
   /* click check button */
-  ags_functional_test_util_check_button_click(member_editor_entry->check_button);
+  ags_functional_test_util_fake_check_button_click(member_editor_entry->check_button);
 
   /* click remove */
-  ags_functional_test_util_button_click(remove_button);
+  ags_functional_test_util_fake_button_click(remove_button);
   
   ags_functional_test_util_reaction_time_long();
 }
@@ -6579,7 +6587,7 @@ ags_functional_test_util_machine_editor_dialog_bulk_add_driver_program(guint n_p
   add_collection = machine_editor_collection->add_bulk;
   
   /* add collection */
-  ags_functional_test_util_button_click(add_collection);
+  ags_functional_test_util_fake_button_click(add_collection);
 
   ags_functional_test_util_reaction_time_long();
 }

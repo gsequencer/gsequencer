@@ -459,19 +459,19 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
   path = NULL;
   gtk_tree_view_get_cursor(ladspa_browser->filename_tree_view,
 			   &path,
-			   NULL);
-  
-  gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path);
-
-  gtk_tree_path_free(path);
+			   NULL);  
 
   filename = NULL;
-  
-  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
-		     &iter,
-		     0, &filename,
-		     -1);
-  
+
+  if(gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path)){
+    gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		       &iter,
+		       0, &filename,
+		       -1);
+  }
+
+  gtk_tree_path_free(path);
+    
   return(filename);
 }
 
@@ -505,17 +505,17 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   gtk_tree_view_get_cursor(ladspa_browser->effect_tree_view,
 			   &path,
 			   NULL);
-  
-  gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path);
-
-  gtk_tree_path_free(path);
 
   effect = NULL;
   
-  gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
-		     &iter,
-		     0, &effect,
-		     -1);
+  if(gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path)){
+    gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
+		       &iter,
+		       0, &effect,
+		       -1);
+  }
+  
+  gtk_tree_path_free(path);
   
   return(effect);
 }

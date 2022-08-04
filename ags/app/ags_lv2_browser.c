@@ -473,17 +473,17 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
   gtk_tree_view_get_cursor(lv2_browser->filename_tree_view,
 			   &path,
 			   NULL);
+
+  filename = NULL;  
   
-  gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path);
+  if(gtk_tree_model_get_iter(GTK_TREE_MODEL(filename_list_store), &iter, path)){
+    gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
+		       &iter,
+		       0, &filename,
+		       -1);
+  }
 
   gtk_tree_path_free(path);
-
-  filename = NULL;
-  
-  gtk_tree_model_get(GTK_TREE_MODEL(filename_list_store),
-		     &iter,
-		     0, &filename,
-		     -1);
   
   return(filename);
 }
@@ -519,16 +519,16 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 			   &path,
 			   NULL);
   
-  gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path);
-
-  gtk_tree_path_free(path);
-
   effect = NULL;
   
-  gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
-		     &iter,
-		     0, &effect,
-		     -1);
+  if(gtk_tree_model_get_iter(GTK_TREE_MODEL(effect_list_store), &iter, path)){
+    gtk_tree_model_get(GTK_TREE_MODEL(effect_list_store),
+		       &iter,
+		       0, &effect,
+		       -1);
+  }
+  
+  gtk_tree_path_free(path);
   
   return(effect);
 }
