@@ -30,11 +30,8 @@
 
 #include <ags/gsequencer_main.h>
 
-#include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_gsequencer_application_context.h>
-#include <ags/app/ags_window.h>
+#include <ags/test/app/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
 void ags_functional_loop_001_xml_test_add_test();
@@ -44,10 +41,12 @@ int ags_functional_loop_001_xml_test_clean_suite();
 
 void ags_functional_loop_001_xml_test_file_setup();
 
+#define AGS_FUNCTIONAL_LOOP_001_XML_TEST_DEFAULT_IDLE_TIME (3.0 * G_USEC_PER_SEC)
+
 #define AGS_FUNCTIONAL_LOOP_001_XML_TEST_FILE_SETUP_PLAYBACK_COUNT (1)
 #define AGS_FUNCTIONAL_LOOP_001_XML_TEST_FILE_SETUP_PLAYBACK_DURATION (120)
 
-#define AGS_FUNCTIONAL_LOOP_001_XML_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags/test/X/examples/ags-loop-001.xml"
+#define AGS_FUNCTIONAL_LOOP_001_XML_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags/test/app/examples/ags-loop-001.xml"
 
 #define AGS_FUNCTIONAL_LOOP_001_XML_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -76,8 +75,9 @@ void ags_functional_loop_001_xml_test_file_setup();
 
 CU_pSuite pSuite = NULL;
 volatile gboolean is_available;
+volatile gboolean is_terminated;
 
-AgsApplicationContext *application_context;
+AgsGSequencerApplicationContext *gsequencer_application_context;
 
 struct timespec ags_functional_loop_001_xml_test_default_timeout = {
   300,
@@ -98,7 +98,11 @@ ags_functional_loop_001_xml_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  ags_test_quit();
+  ags_functional_test_util_quit();
+  
+  while(!g_atomic_int_get(&is_terminated)){
+    g_usleep(G_USEC_PER_SEC / 60);
+  }
 
   CU_cleanup_registry();
   
@@ -112,7 +116,20 @@ ags_functional_loop_001_xml_test_add_test()
 int
 ags_functional_loop_001_xml_test_init_suite()
 {
-  application_context = ags_application_context_get_instance();
+  gsequencer_application_context = ags_application_context_get_instance();
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_loop_001_xml_test_default_timeout,
+						      &(gsequencer_application_context->window));
+
+  ags_functional_test_util_sync();
+
+  /* window size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_LOOP_001_XML_TEST_DEFAULT_IDLE_TIME);
+  
+  ags_functional_test_util_sync();
 
   return(0);
 }
@@ -139,29 +156,10 @@ ags_functional_loop_001_xml_test_file_setup()
   guint i;
   gboolean expired;
   gboolean success;
-  
-  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
-    usleep(500000);
-  }
 
-  usleep(500000);  
-
-
-  gsequencer_application_context = application_context;
-
-  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
-						      &ags_functional_loop_001_xml_test_default_timeout,
-						      &(gsequencer_application_context->window));
-
-  ags_functional_test_util_file_default_window_resize();  
-  
   /* get buttons */
-  ags_test_enter();
-
   play_button = AGS_WINDOW(gsequencer_application_context->window)->navigation->play;
   stop_button = AGS_WINDOW(gsequencer_application_context->window)->navigation->stop;
-
-  ags_test_leave();
 
   /* get initial time */
   success = TRUE;
@@ -172,6 +170,7 @@ ags_functional_loop_001_xml_test_file_setup()
     expired = FALSE;
     
     g_message("start playback");
+
     ags_functional_test_util_button_click(play_button);
 
     while(!expired){  
@@ -184,17 +183,16 @@ ags_functional_loop_001_xml_test_file_setup()
     }
 
     g_message("stop playback");
+    
     ags_functional_test_util_button_click(stop_button);
 
     /* wait some time before next playback */
-    usleep(5000000);
+    g_usleep(5000000);
 
     if(!expired){
       success = FALSE;
     }
   }
-
-  CU_ASSERT(success == TRUE);
 }
 
 int
@@ -219,30 +217,35 @@ main(int argc, char **argv)
 
   g_atomic_int_set(&is_available,
 		   FALSE);
+  g_atomic_int_set(&is_terminated,
+		   FALSE);
 
-  new_argv = (char **) malloc((argc + 3) * sizeof(char *));
+  new_argv = (char **) malloc((argc + 4) * sizeof(char *));
   memcpy(new_argv, argv, argc * sizeof(char **));
   new_argv[argc] = "--filename";
   new_argv[argc + 1] = AGS_FUNCTIONAL_LOOP_001_XML_TEST_FILE_SETUP_FILENAME;
   new_argv[argc + 2] = "--no-config";
   new_argv[argc + 3] = NULL;
   argc += 3;
-  
+
 #if defined(AGS_TEST_CONFIG)
-  ags_test_init(&argc, &new_argv,
-		AGS_TEST_CONFIG);
+  ags_functional_test_util_init(&argc, &new_argv,
+				AGS_TEST_CONFIG);
 #else
   if((str = getenv("AGS_TEST_CONFIG")) != NULL){
-    ags_test_init(&argc, &new_argv,
-		  str);
+    ags_functional_test_util_init(&argc, &new_argv,
+				  str);
   }else{
-    ags_test_init(&argc, &new_argv,
-		  AGS_FUNCTIONAL_LOOP_001_XML_TEST_CONFIG);
+    ags_functional_test_util_init(&argc, &new_argv,
+				  AGS_FUNCTIONAL_LOOP_001_XML_TEST_CONFIG);
   }
 #endif
   
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_loop_001_xml_test_add_test, &is_available);
+
+  g_atomic_int_set(&is_terminated,
+		   TRUE);
 
   g_thread_join(ags_functional_test_util_test_runner_thread());
   

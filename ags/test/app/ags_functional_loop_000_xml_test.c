@@ -30,9 +30,7 @@
 
 #include <ags/gsequencer_main.h>
 
-#include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_gsequencer_application_context.h>
-#include <ags/app/ags_window.h>
+#include <ags/test/app/libgsequencer.h>
 
 #include "ags_functional_test_util.h"
 
@@ -171,6 +169,7 @@ ags_functional_loop_000_xml_test_file_setup()
     expired = FALSE;
     
     g_message("start playback");
+
     ags_functional_test_util_button_click(play_button);
 
     while(!expired){  
@@ -183,6 +182,7 @@ ags_functional_loop_000_xml_test_file_setup()
     }
 
     g_message("stop playback");
+
     ags_functional_test_util_button_click(stop_button);
 
     /* wait some time before next playback */

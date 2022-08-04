@@ -64,7 +64,16 @@ installcheck_programs = \
 	ags_check_system_functional_sfz_synth_test \
 	ags_check_system_functional_audiorec_test \
 	ags_check_system_functional_audio_config_test \
-	ags_check_system_functional_loop_000_xml_test
+	ags_check_system_functional_loop_000_xml_test \
+	ags_check_system_functional_loop_001_xml_test \
+	ags_check_system_functional_loop_002_xml_test \
+	ags_check_system_functional_loop_003_xml_test \
+	ags_check_system_functional_loop_004_xml_test \
+	ags_check_system_functional_loop_005_xml_test \
+	ags_check_system_functional_loop_006_xml_test \
+	ags_check_system_functional_loop_007_xml_test \
+	ags_check_system_functional_loop_008_xml_test \
+	ags_check_system_functional_loop_010_xml_test
 
 noinst_PROGRAMS += $(installcheck_programs)
 
@@ -298,6 +307,69 @@ ags_check_system_functional_loop_000_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdi
 ags_check_system_functional_loop_000_xml_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_loop_000_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
+# functional loop 001 XML test
+ags_check_system_functional_loop_001_xml_test_SOURCES = ags/test/app/ags_functional_loop_001_xml_test.c
+ags_check_system_functional_loop_001_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_001_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_001_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_001_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 002 XML test
+ags_check_system_functional_loop_002_xml_test_SOURCES = ags/test/app/ags_functional_loop_002_xml_test.c
+ags_check_system_functional_loop_002_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_002_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_002_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_002_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 003 XML test
+ags_check_system_functional_loop_003_xml_test_SOURCES = ags/test/app/ags_functional_loop_003_xml_test.c
+ags_check_system_functional_loop_003_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_003_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_003_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_003_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 004 XML test
+ags_check_system_functional_loop_004_xml_test_SOURCES = ags/test/app/ags_functional_loop_004_xml_test.c
+ags_check_system_functional_loop_004_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_004_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_004_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_004_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 005 XML test
+ags_check_system_functional_loop_005_xml_test_SOURCES = ags/test/app/ags_functional_loop_005_xml_test.c
+ags_check_system_functional_loop_005_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_005_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_005_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_005_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 006 XML test
+ags_check_system_functional_loop_006_xml_test_SOURCES = ags/test/app/ags_functional_loop_006_xml_test.c
+ags_check_system_functional_loop_006_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_006_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_006_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_006_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 007 XML test
+ags_check_system_functional_loop_007_xml_test_SOURCES = ags/test/app/ags_functional_loop_007_xml_test.c
+ags_check_system_functional_loop_007_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_007_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_007_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_007_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 008 XML test
+ags_check_system_functional_loop_008_xml_test_SOURCES = ags/test/app/ags_functional_loop_008_xml_test.c
+ags_check_system_functional_loop_008_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_008_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_008_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_008_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 010 XML test
+ags_check_system_functional_loop_010_xml_test_SOURCES = ags/test/app/ags_functional_loop_010_xml_test.c
+ags_check_system_functional_loop_010_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_check_system_functional_loop_010_xml_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_010_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_010_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
 ags-parallel-check-system-valgrind-functional-test: $(installcheck_programs)
 	xvfb-run --server-args="-screen 0 1920x1080x24" -a libtool --mode=execute valgrind -v ./ags_check_system_functional_server_test
 	xvfb-run --server-args="-screen 0 1920x1080x24" -a libtool --mode=execute valgrind -v ./ags_check_system_functional_osc_server_test
@@ -344,16 +416,15 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_audiorec_test
 	./ags_check_system_functional_audio_config_test
 	./ags_check_system_functional_loop_000_xml_test
-
-#./ags_check_system_functional_loop_001_xml_test
-#./ags_check_system_functional_loop_002_xml_test
-#./ags_check_system_functional_loop_003_xml_test
-#./ags_check_system_functional_loop_004_xml_test
-#./ags_check_system_functional_loop_005_xml_test
-#./ags_check_system_functional_loop_006_xml_test
-#./ags_check_system_functional_loop_007_xml_test
-#./ags_check_system_functional_loop_008_xml_test
-#./ags_check_system_functional_loop_010_xml_test
+	./ags_check_system_functional_loop_001_xml_test
+	./ags_check_system_functional_loop_002_xml_test
+	./ags_check_system_functional_loop_003_xml_test
+	./ags_check_system_functional_loop_004_xml_test
+	./ags_check_system_functional_loop_005_xml_test
+	./ags_check_system_functional_loop_006_xml_test
+	./ags_check_system_functional_loop_007_xml_test
+	./ags_check_system_functional_loop_008_xml_test
+	./ags_check_system_functional_loop_010_xml_test
 
 # WITH_SYSTEM_TESTS
 endif
