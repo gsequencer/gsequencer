@@ -133,7 +133,7 @@ ags_functional_pitch_test_add_thread(gpointer data)
   }
   
   /* add the tests to the suite */
-  if( // (CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch up", ags_functional_pitch_test_pitch_up) == NULL) ||
+  if((CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch up", ags_functional_pitch_test_pitch_up) == NULL) ||
      (CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch down", ags_functional_pitch_test_pitch_down) == NULL)){
       CU_cleanup_registry();
       
