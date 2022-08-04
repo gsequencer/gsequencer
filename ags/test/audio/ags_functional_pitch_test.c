@@ -47,7 +47,7 @@ struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *templa
 #define AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS (2)
 
 #define AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE (44100)
-#define AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE (1024)
+#define AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE (512)
 #define AGS_FUNCTIONAL_PITCH_TEST_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 
 #define AGS_FUNCTIONAL_PITCH_TEST_VOLUME (1.0)
@@ -83,7 +83,7 @@ struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *templa
   "backend=pulse\n"					\
   "device=ags-pulse-devout-0\n"				\
   "samplerate=44100\n"					\
-  "buffer-size=1024\n"					\
+  "buffer-size=512\n"					\
   "pcm-channels=2\n"					\
   "dsp-channels=2\n"					\
   "format=16\n"						\
@@ -133,7 +133,7 @@ ags_functional_pitch_test_add_thread(gpointer data)
   }
   
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch up", ags_functional_pitch_test_pitch_up) == NULL) ||
+  if( // (CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch up", ags_functional_pitch_test_pitch_up) == NULL) ||
      (CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch down", ags_functional_pitch_test_pitch_down) == NULL)){
       CU_cleanup_registry();
       

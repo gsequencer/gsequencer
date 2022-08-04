@@ -590,7 +590,6 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -615,21 +614,13 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
-  }
-
-  if(im_key == 0.0){
-    im_key = 1.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
   
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -902,7 +893,6 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -927,21 +917,13 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -1214,7 +1196,6 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -1239,21 +1220,13 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -1526,7 +1499,6 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -1551,21 +1523,13 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -1838,7 +1802,6 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -1863,21 +1826,13 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -2150,7 +2105,6 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -2175,21 +2129,13 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -2462,7 +2408,6 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -2487,21 +2432,13 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
@@ -2774,7 +2711,6 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
-  gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
@@ -2799,21 +2735,13 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
   /* frequency */
   base_freq = exp2((fast_pitch_util->base_key) / 12.0) * 440.0;
 
-  im_key = (gdouble) ((gint) floor(fast_pitch_util->tuning / 100.0) % 12);
-  
-  if(im_key < 0.0){
-    im_key += 12.0;
+  if(fast_pitch_util->tuning <= 0.0){
+    im_freq = (1.25 * ((double) samplerate / base_freq)) * (double) samplerate;
+  }else{
+    im_freq = (0.75 * ((double) samplerate / base_freq)) * (double) samplerate;
   }
 
-  if(im_key == 0.0){
-    im_key = 1.0;
-  }
-  
-  im_freq = exp2((fast_pitch_util->base_key + im_key) / 12.0) * 440.0;
-
-  low_key = fast_pitch_util->base_key - 12.0;
-  
-  low_freq = exp2((low_key) / 12.0) * 440.0;
+  low_freq = exp2((fast_pitch_util->base_key - 12.0) / 12.0) * 440.0;
 
   new_freq = exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
