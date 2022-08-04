@@ -147,7 +147,6 @@ ags_functional_loop_006_xml_test_clean_suite()
 void
 ags_functional_loop_006_xml_test_file_setup()
 {
-  AgsGSequencerApplicationContext *gsequencer_application_context;
   GtkButton *play_button;
   GtkButton *stop_button;
   

@@ -9,13 +9,13 @@ rt-safe=true
 gui-scale=1.0
 
 [soundcard-0]
-backend=alsa
+backend=pulse
 capability=playback
-buffer-size=1024
+buffer-size=512
 pcm-channels=2
 format=16
 samplerate=44100
-device=default
+device=ags-pulse-devout-0
 
 [recall]
 auto-sense=true
@@ -40,18 +40,18 @@ monitor-timeout=0.033333
 ]]></ags-sf-config>
   <ags-sf-window filename="/home/joelkraehemann/ags-loop-002.xml" bpm="145.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
     <ags-sf-machine-list>
-      <ags-sf-machine id="a3c3edf6-75c7-11ea-babe-e36d3b0fb27a" type="AgsPanel" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
+      <ags-sf-machine id="a3c3edf6-75c7-11ea-babe-e36d3b0fb27a" type="AgsPanel" name="Default 0" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="a3c3edf7-75c7-11ea-babe-e36d3b0fb27a" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3edf8-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee00-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3edf8-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee00-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3edf9-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee01-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3edf9-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee01-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
@@ -62,18 +62,18 @@ monitor-timeout=0.033333
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="a3c3edfc-75c7-11ea-babe-e36d3b0fb27a" type="AgsMixer" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
+      <ags-sf-machine id="a3c3edfc-75c7-11ea-babe-e36d3b0fb27a" type="AgsMixer" name="Default 0" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="a3c3edfd-75c7-11ea-babe-e36d3b0fb27a" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3edfe-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee1b-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3edfe-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee1b-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.425000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3edff-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee1c-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3edff-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee1c-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.425000" specifier="./volume[0]"/>
@@ -86,24 +86,24 @@ monitor-timeout=0.033333
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee00-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3edf8-75c7-11ea-babe-e36d3b0fb27a']"/>
-              <ags-sf-line id="a3c3ee01-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3edf9-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee00-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3edf8-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee01-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3edf9-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="a3c3ee02-75c7-11ea-babe-e36d3b0fb27a" type="AgsMixer" name="Default 1" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
+      <ags-sf-machine id="a3c3ee02-75c7-11ea-babe-e36d3b0fb27a" type="AgsMixer" name="Default 1" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="a3c3ee03-75c7-11ea-babe-e36d3b0fb27a" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee04-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee52-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee04-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee52-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee05-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee53-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee05-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee53-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -114,14 +114,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee06-75c7-11ea-babe-e36d3b0fb27a" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee07-75c7-11ea-babe-e36d3b0fb27a" nth-line="2" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee65-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee07-75c7-11ea-babe-e36d3b0fb27a" nth-line="2" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee65-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.775000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee08-75c7-11ea-babe-e36d3b0fb27a" nth-line="3" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee66-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee08-75c7-11ea-babe-e36d3b0fb27a" nth-line="3" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee66-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.775000" specifier="./volume[0]"/>
@@ -132,14 +132,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee09-75c7-11ea-babe-e36d3b0fb27a" nth-pad="2" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee0a-75c7-11ea-babe-e36d3b0fb27a" nth-line="4" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee78-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee0a-75c7-11ea-babe-e36d3b0fb27a" nth-line="4" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee78-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.300000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee0b-75c7-11ea-babe-e36d3b0fb27a" nth-line="5" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee79-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee0b-75c7-11ea-babe-e36d3b0fb27a" nth-line="5" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee79-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.300000" specifier="./volume[0]"/>
@@ -150,14 +150,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee0c-75c7-11ea-babe-e36d3b0fb27a" nth-pad="3" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee0d-75c7-11ea-babe-e36d3b0fb27a" nth-line="6" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee9b-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee0d-75c7-11ea-babe-e36d3b0fb27a" nth-line="6" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee9b-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee0e-75c7-11ea-babe-e36d3b0fb27a" nth-line="7" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee9c-75c7-11ea-babe-e36d3b0fb27a']">
+              <ags-sf-line id="a3c3ee0e-75c7-11ea-babe-e36d3b0fb27a" nth-line="7" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee9c-75c7-11ea-babe-e36d3b0fb27a']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -168,14 +168,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee0f-75c7-11ea-babe-e36d3b0fb27a" nth-pad="4" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee10-75c7-11ea-babe-e36d3b0fb27a" nth-line="8" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee10-75c7-11ea-babe-e36d3b0fb27a" nth-line="8" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee11-75c7-11ea-babe-e36d3b0fb27a" nth-line="9" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee11-75c7-11ea-babe-e36d3b0fb27a" nth-line="9" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -186,14 +186,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee12-75c7-11ea-babe-e36d3b0fb27a" nth-pad="5" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee13-75c7-11ea-babe-e36d3b0fb27a" nth-line="10" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee13-75c7-11ea-babe-e36d3b0fb27a" nth-line="10" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee14-75c7-11ea-babe-e36d3b0fb27a" nth-line="11" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee14-75c7-11ea-babe-e36d3b0fb27a" nth-line="11" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -204,14 +204,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee15-75c7-11ea-babe-e36d3b0fb27a" nth-pad="6" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee16-75c7-11ea-babe-e36d3b0fb27a" nth-line="12" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee16-75c7-11ea-babe-e36d3b0fb27a" nth-line="12" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee17-75c7-11ea-babe-e36d3b0fb27a" nth-line="13" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee17-75c7-11ea-babe-e36d3b0fb27a" nth-line="13" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -222,14 +222,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee18-75c7-11ea-babe-e36d3b0fb27a" nth-pad="7" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee19-75c7-11ea-babe-e36d3b0fb27a" nth-line="14" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee19-75c7-11ea-babe-e36d3b0fb27a" nth-line="14" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee1a-75c7-11ea-babe-e36d3b0fb27a" nth-line="15" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="a3c3ee1a-75c7-11ea-babe-e36d3b0fb27a" nth-line="15" soundcard-device="ags-pulse-devout-0" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -242,24 +242,24 @@ monitor-timeout=0.033333
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee1b-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3edfe-75c7-11ea-babe-e36d3b0fb27a']"/>
-              <ags-sf-line id="a3c3ee1c-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3edff-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee1b-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3edfe-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee1c-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3edff-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="a3c3ee1d-75c7-11ea-babe-e36d3b0fb27a" type="AgsDrum" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="17" length="16">
+      <ags-sf-machine id="a3c3ee1d-75c7-11ea-babe-e36d3b0fb27a" type="AgsDrum" name="Default 0" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="17" length="16">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="a3c3ee1e-75c7-11ea-babe-e36d3b0fb27a" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee1f-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Amp_Clap_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee1f-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Amp_Clap_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee20-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Amp_Clap_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee20-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Amp_Clap_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -270,14 +270,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee21-75c7-11ea-babe-e36d3b0fb27a" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee22-75c7-11ea-babe-e36d3b0fb27a" nth-line="2" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/CHH_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee22-75c7-11ea-babe-e36d3b0fb27a" nth-line="2" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/CHH_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee23-75c7-11ea-babe-e36d3b0fb27a" nth-line="3" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/CHH_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee23-75c7-11ea-babe-e36d3b0fb27a" nth-line="3" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/CHH_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -288,14 +288,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee24-75c7-11ea-babe-e36d3b0fb27a" nth-pad="2" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee25-75c7-11ea-babe-e36d3b0fb27a" nth-line="4" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Clap_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee25-75c7-11ea-babe-e36d3b0fb27a" nth-line="4" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Clap_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee26-75c7-11ea-babe-e36d3b0fb27a" nth-line="5" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Clap_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee26-75c7-11ea-babe-e36d3b0fb27a" nth-line="5" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Clap_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -306,14 +306,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee27-75c7-11ea-babe-e36d3b0fb27a" nth-pad="3" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee28-75c7-11ea-babe-e36d3b0fb27a" nth-line="6" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/FX_Chh_01.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee28-75c7-11ea-babe-e36d3b0fb27a" nth-line="6" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/FX_Chh_01.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee29-75c7-11ea-babe-e36d3b0fb27a" nth-line="7" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/FX_Chh_01.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee29-75c7-11ea-babe-e36d3b0fb27a" nth-line="7" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/FX_Chh_01.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -324,14 +324,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee2a-75c7-11ea-babe-e36d3b0fb27a" nth-pad="4" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee2b-75c7-11ea-babe-e36d3b0fb27a" nth-line="8" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_02.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee2b-75c7-11ea-babe-e36d3b0fb27a" nth-line="8" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_02.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.800000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee2c-75c7-11ea-babe-e36d3b0fb27a" nth-line="9" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_02.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee2c-75c7-11ea-babe-e36d3b0fb27a" nth-line="9" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_02.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.800000" specifier="./volume[0]"/>
@@ -342,14 +342,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee2d-75c7-11ea-babe-e36d3b0fb27a" nth-pad="5" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee2e-75c7-11ea-babe-e36d3b0fb27a" nth-line="10" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_03_B.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee2e-75c7-11ea-babe-e36d3b0fb27a" nth-line="10" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_03_B.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.750000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee2f-75c7-11ea-babe-e36d3b0fb27a" nth-line="11" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_03_B.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee2f-75c7-11ea-babe-e36d3b0fb27a" nth-line="11" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_03_B.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="0.750000" specifier="./volume[0]"/>
@@ -360,14 +360,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee30-75c7-11ea-babe-e36d3b0fb27a" nth-pad="6" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee31-75c7-11ea-babe-e36d3b0fb27a" nth-line="12" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_01.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee31-75c7-11ea-babe-e36d3b0fb27a" nth-line="12" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_01.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee32-75c7-11ea-babe-e36d3b0fb27a" nth-line="13" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_01.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee32-75c7-11ea-babe-e36d3b0fb27a" nth-line="13" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_01.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -378,14 +378,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee33-75c7-11ea-babe-e36d3b0fb27a" nth-pad="7" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee34-75c7-11ea-babe-e36d3b0fb27a" nth-line="14" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_02.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee34-75c7-11ea-babe-e36d3b0fb27a" nth-line="14" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_02.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee35-75c7-11ea-babe-e36d3b0fb27a" nth-line="15" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_02.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee35-75c7-11ea-babe-e36d3b0fb27a" nth-line="15" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_02.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -396,14 +396,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee36-75c7-11ea-babe-e36d3b0fb27a" nth-pad="8" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee37-75c7-11ea-babe-e36d3b0fb27a" nth-line="16" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_Hse_OHH_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee37-75c7-11ea-babe-e36d3b0fb27a" nth-line="16" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_Hse_OHH_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee38-75c7-11ea-babe-e36d3b0fb27a" nth-line="17" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_Hse_OHH_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee38-75c7-11ea-babe-e36d3b0fb27a" nth-line="17" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_Hse_OHH_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -414,14 +414,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee39-75c7-11ea-babe-e36d3b0fb27a" nth-pad="9" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee3a-75c7-11ea-babe-e36d3b0fb27a" nth-line="18" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_BD_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee3a-75c7-11ea-babe-e36d3b0fb27a" nth-line="18" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_BD_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee3b-75c7-11ea-babe-e36d3b0fb27a" nth-line="19" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_BD_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee3b-75c7-11ea-babe-e36d3b0fb27a" nth-line="19" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_BD_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -432,14 +432,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee3c-75c7-11ea-babe-e36d3b0fb27a" nth-pad="10" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee3d-75c7-11ea-babe-e36d3b0fb27a" nth-line="20" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee3d-75c7-11ea-babe-e36d3b0fb27a" nth-line="20" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee3e-75c7-11ea-babe-e36d3b0fb27a" nth-line="21" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee3e-75c7-11ea-babe-e36d3b0fb27a" nth-line="21" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -450,14 +450,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee3f-75c7-11ea-babe-e36d3b0fb27a" nth-pad="11" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee40-75c7-11ea-babe-e36d3b0fb27a" nth-line="22" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_2.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee40-75c7-11ea-babe-e36d3b0fb27a" nth-line="22" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_2.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee41-75c7-11ea-babe-e36d3b0fb27a" nth-line="23" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_2.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee41-75c7-11ea-babe-e36d3b0fb27a" nth-line="23" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_2.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -468,14 +468,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee42-75c7-11ea-babe-e36d3b0fb27a" nth-pad="12" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee43-75c7-11ea-babe-e36d3b0fb27a" nth-line="24" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_SN_1.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee43-75c7-11ea-babe-e36d3b0fb27a" nth-line="24" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_SN_1.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee44-75c7-11ea-babe-e36d3b0fb27a" nth-line="25" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_SN_1.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee44-75c7-11ea-babe-e36d3b0fb27a" nth-line="25" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_SN_1.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -486,14 +486,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee45-75c7-11ea-babe-e36d3b0fb27a" nth-pad="13" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee46-75c7-11ea-babe-e36d3b0fb27a" nth-line="26" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/emptySample.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee46-75c7-11ea-babe-e36d3b0fb27a" nth-line="26" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/emptySample.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee47-75c7-11ea-babe-e36d3b0fb27a" nth-line="27" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/emptySample.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee47-75c7-11ea-babe-e36d3b0fb27a" nth-line="27" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/emptySample.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -504,14 +504,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee48-75c7-11ea-babe-e36d3b0fb27a" nth-pad="14" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee49-75c7-11ea-babe-e36d3b0fb27a" nth-line="28" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/xFX_6.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee49-75c7-11ea-babe-e36d3b0fb27a" nth-line="28" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/xFX_6.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee4a-75c7-11ea-babe-e36d3b0fb27a" nth-line="29" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/xFX_6.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee4a-75c7-11ea-babe-e36d3b0fb27a" nth-line="29" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/xFX_6.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -522,14 +522,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee4b-75c7-11ea-babe-e36d3b0fb27a" nth-pad="15" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee4c-75c7-11ea-babe-e36d3b0fb27a" nth-line="30" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_3.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee4c-75c7-11ea-babe-e36d3b0fb27a" nth-line="30" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_3.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee4d-75c7-11ea-babe-e36d3b0fb27a" nth-line="31" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_3.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee4d-75c7-11ea-babe-e36d3b0fb27a" nth-line="31" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_3.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -540,14 +540,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
           <ags-sf-pad id="a3c3ee4e-75c7-11ea-babe-e36d3b0fb27a" nth-pad="16" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee4f-75c7-11ea-babe-e36d3b0fb27a" nth-line="32" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_8.flac" file-channel="0">
+              <ags-sf-line id="a3c3ee4f-75c7-11ea-babe-e36d3b0fb27a" nth-line="32" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_8.flac" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="a3c3ee50-75c7-11ea-babe-e36d3b0fb27a" nth-line="33" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_8.flac" file-channel="1">
+              <ags-sf-line id="a3c3ee50-75c7-11ea-babe-e36d3b0fb27a" nth-line="33" soundcard-device="ags-pulse-devout-0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_8.flac" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
@@ -560,8 +560,8 @@ monitor-timeout=0.033333
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad id="a3c3ee51-75c7-11ea-babe-e36d3b0fb27a" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee52-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee04-75c7-11ea-babe-e36d3b0fb27a']"/>
-              <ags-sf-line id="a3c3ee53-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee05-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee52-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee04-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee53-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" is-grouped="true" link="xpath=//ags-sf-line[@id='a3c3ee05-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -606,16 +606,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="a3c3ee54-75c7-11ea-babe-e36d3b0fb27a" type="AgsSyncsynth" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604">
+      <ags-sf-machine id="a3c3ee54-75c7-11ea-babe-e36d3b0fb27a" type="AgsSyncsynth" name="Default 0" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee65-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3ee07-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee65-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3ee07-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee66-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3ee08-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee66-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3ee08-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -664,16 +664,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="a3c3ee67-75c7-11ea-babe-e36d3b0fb27a" type="AgsFMSyncsynth" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604">
+      <ags-sf-machine id="a3c3ee67-75c7-11ea-babe-e36d3b0fb27a" type="AgsFMSyncsynth" name="Default 0" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee78-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3ee0a-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee78-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3ee0a-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee79-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3ee0b-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee79-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3ee0b-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -720,16 +720,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="a3c3ee7a-75c7-11ea-babe-e36d3b0fb27a" type="AgsFFPlayer" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Piccolo" instrument="Piccolo">
+      <ags-sf-machine id="a3c3ee7a-75c7-11ea-babe-e36d3b0fb27a" type="AgsFFPlayer" name="Default 0" soundcard-device="ags-pulse-devout-0" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Piccolo" instrument="Piccolo">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee9b-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3ee0d-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee9b-75c7-11ea-babe-e36d3b0fb27a" nth-line="0" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3ee0d-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="a3c3ee9c-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='a3c3ee0e-75c7-11ea-babe-e36d3b0fb27a']"/>
+              <ags-sf-line id="a3c3ee9c-75c7-11ea-babe-e36d3b0fb27a" nth-line="1" soundcard-device="ags-pulse-devout-0" link="xpath=//ags-sf-line[@id='a3c3ee0e-75c7-11ea-babe-e36d3b0fb27a']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
