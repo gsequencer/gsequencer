@@ -4242,9 +4242,13 @@ ags_functional_test_util_audio_preferences_buffer_size_driver_program(guint n_pa
 
   preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  ags_functional_test_util_preferences_click_tab(1);
+  /* click tab */
+  gtk_notebook_set_current_page(preferences->notebook,
+				1);
 
-  start_list = preferences->audio_preferences->soundcard_editor;
+  ags_functional_test_util_reaction_time_long();
+
+  start_list = ags_audio_preferences_get_soundcard_editor(preferences->audio_preferences);
   soundcard_editor = g_list_nth_data(start_list,
 				     nth_backend);
   
@@ -4316,9 +4320,13 @@ ags_functional_test_util_audio_preferences_samplerate_driver_program(guint n_par
 
   preferences = ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
-  ags_functional_test_util_preferences_click_tab(1);
+  /* click tab */
+  gtk_notebook_set_current_page(preferences->notebook,
+				1);
 
-  start_list = preferences->audio_preferences->soundcard_editor;
+  ags_functional_test_util_reaction_time_long();
+
+  start_list = ags_audio_preferences_get_soundcard_editor(preferences->audio_preferences);
   soundcard_editor = g_list_nth_data(start_list,
 				     nth_backend);
   

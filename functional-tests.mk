@@ -46,7 +46,8 @@ check_PROGRAMS += \
 	ags_functional_sf2_synth_test \
 	ags_functional_pitch_sampler_test \
 	ags_functional_sfz_synth_test \
-	ags_functional_audiorec_test
+	ags_functional_audiorec_test \
+	ags_functional_audio_config_test
 
 # functional test util library
 libgsequencer_test_la_SOURCES = ags/test/app/ags_functional_test_util.c ags/test/app/ags_functional_test_util.h ags/test/app/libgsequencer.h
@@ -249,6 +250,13 @@ ags_functional_sfz_synth_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_
 ags_functional_sfz_synth_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_sfz_synth_test_LDADD = $(gsequencer_functional_test_LDADD)
 
+# functional audiorec test
+ags_functional_audiorec_test_SOURCES = ags/test/app/machine/ags_functional_audiorec_test.c
+ags_functional_audiorec_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_functional_audiorec_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"gsequencer.share\"
+ags_functional_audiorec_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_audiorec_test_LDADD = $(gsequencer_functional_test_LDADD)
+
 # functional notation edit test
 ags_functional_notation_edit_test_SOURCES = ags/test/app/ags_functional_notation_edit_test.c
 ags_functional_notation_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
@@ -256,9 +264,9 @@ ags_functional_notation_edit_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_D
 ags_functional_notation_edit_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_notation_edit_test_LDADD = $(gsequencer_functional_test_LDADD)
 
-# functional audiorec test
-ags_functional_audiorec_test_SOURCES = ags/test/app/machine/ags_functional_audiorec_test.c
-ags_functional_audiorec_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
-ags_functional_audiorec_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"gsequencer.share\"
-ags_functional_audiorec_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_audiorec_test_LDADD = $(gsequencer_functional_test_LDADD)
+# functional audio config test
+ags_functional_audio_config_test_SOURCES = ags/test/app/ags_functional_audio_config_test.c
+ags_functional_audio_config_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+ags_functional_audio_config_test_CPPFLAGS = -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"gsequencer.share\"
+ags_functional_audio_config_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_audio_config_test_LDADD = $(gsequencer_functional_test_LDADD)

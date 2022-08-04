@@ -2,6 +2,7 @@ ags (4.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved functional test termination
+	* refactored ags_functional_audio_config_test.c
 
 ags (4.3.3)
 

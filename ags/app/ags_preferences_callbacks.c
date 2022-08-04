@@ -41,6 +41,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
     {
       apply = TRUE;
     }
+  case GTK_RESPONSE_OK:
   case GTK_RESPONSE_ACCEPT:
     {
       ags_applicable_apply(AGS_APPLICABLE(dialog));
