@@ -46,6 +46,10 @@ G_BEGIN_DECLS
 
 #define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
 
+#define AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING (24)
+#define AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE (18)
+#define AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE (12)
+
 #define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT (18)
 #define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT (12)
 #define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP (24)
@@ -83,6 +87,11 @@ typedef enum{
   AGS_SHEET_EDIT_KEY_L_SHIFT         = 1 <<  2,
   AGS_SHEET_EDIT_KEY_R_SHIFT         = 1 <<  3,
 }AgsSheetEditKeyMask;
+
+typedef enum{
+  AGS_SHEET_EDIT_G_CLEF,
+  AGS_SHEET_EDIT_F_CLEF,
+}AgsSheetEditClef;
 
 struct _AgsSheetEdit
 {
@@ -134,6 +143,9 @@ struct _AgsSheetEditClass
 GType ags_sheet_edit_get_type(void);
 
 void ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
+				   guint clef,
+				   guint sharp_flats,
+				   gboolean is_minor,
 				   gint position,
 				   gdouble x0, gdouble y0,
 				   gdouble width, gdouble height);

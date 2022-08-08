@@ -1471,9 +1471,9 @@ ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator
   AgsSF2SynthUtil *sf2_synth_util;
   
   GRecMutex *sf2_synth_generator_mutex;
-
+  
   if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator) ||
-     sf2_synth_generator->pitch_type == pitch_type){
+     !g_strcmp0(sf2_synth_generator->pitch_type, pitch_type)){
     return;
   }
 
