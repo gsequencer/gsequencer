@@ -46,6 +46,13 @@ G_BEGIN_DECLS
 
 #define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
 
+#define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT (18)
+#define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT (12)
+#define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP (24)
+#define AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_BOTTOM (8)
+
+#define AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT (6.0)
+
 #define AGS_SHEET_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_SHEET_EDIT_DEFAULT_CURSOR_POSITION_Y (0)
 
@@ -100,6 +107,8 @@ struct _AgsSheetEdit
   guint selection_y1;
 
   gchar *paper_name;
+  
+  guint page_orientation;  
 
   gchar *sheet_title;
   
@@ -123,6 +132,14 @@ struct _AgsSheetEditClass
 };
 
 GType ags_sheet_edit_get_type(void);
+
+void ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
+				   gint position,
+				   gdouble x0, gdouble y0,
+				   gdouble width, gdouble height);
+void ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr);
+
+void ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr);
 
 AgsSheetEdit* ags_sheet_edit_new();
 

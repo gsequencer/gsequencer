@@ -262,7 +262,59 @@ ags_add_sheet_page_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_add_sheet_page_dialog_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
+  AgsAddSheetPageDialog *add_sheet_page_dialog;
+  
+  AgsApplicationContext *application_context;
+
+  xmlNode *root_node;
+  xmlNode *node;
+
+  gchar *str;
+  
+  add_sheet_page_dialog = AGS_ADD_SHEET_PAGE_DIALOG(applicable);
+
+  /* application context */
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    
+  composite_editor = window->composite_editor;
+    
+  machine = composite_editor->selected_machine;
+
+  /* editor model */
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-sheet-edit-page");
+
+  str = gtk_editable_get_text(GTK_EDITABLE(add_sheet_page_dialog->sheet_title));
+  
+  xmlNewProp(node,
+	     "title",
+	     str);
+  
+  str = g_strdup_printf("%d",
+			gtk_spin_button_get_value_as_int(add_sheet_page_dialog->notation_x0));
+  
+  xmlNewProp(node,
+	     "x0",
+	     str);
+
+  g_free(str);
+
+  str = g_strdup_printf("%d",
+			gtk_spin_button_get_value_as_int(add_sheet_page_dialog->notation_x1));
+    
+  xmlNewProp(node,
+	     "x1",
+	     str);
+
+  g_free(str);
+  
+  ags_machine_add_editor_model(machine,
+			       node);
 }
 
 void

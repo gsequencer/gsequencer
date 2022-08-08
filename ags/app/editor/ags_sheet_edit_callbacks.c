@@ -20,3 +20,20 @@
 #include <ags/app/editor/ags_sheet_edit_callbacks.h>
 
 #include <ags/app/ags_composite_editor.h>
+
+void
+ags_sheet_edit_draw_callback(GtkWidget *drawing_area,
+			     cairo_t *cr,
+			     gint width, gint height,
+			     AgsSheetEdit *sheet_edit)
+{
+  ags_sheet_edit_draw(sheet_edit, cr);
+}
+
+void
+ags_sheet_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+					    gint width, gint height,
+					    AgsSheetEdit *sheet_edit)
+{  
+  gtk_widget_queue_draw(sheet_edit);
+}

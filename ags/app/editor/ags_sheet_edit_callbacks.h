@@ -33,6 +33,14 @@
 
 G_BEGIN_DECLS
 
+void ags_sheet_edit_draw_callback(GtkWidget *drawing_area,
+				  cairo_t *cr,
+				  gint width, gint height,
+				  AgsSheetEdit *sheet_edit);
+
+void ags_sheet_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
+						 gint width, gint height,
+						 AgsSheetEdit *sheet_edit);
 
 G_END_DECLS
 

@@ -26,6 +26,7 @@
 #include <ags/app/editor/ags_notation_edit.h>
 #include <ags/app/editor/ags_scrolled_automation_edit_box.h>
 #include <ags/app/editor/ags_scrolled_wave_edit_box.h>
+#include <ags/app/editor/ags_sheet_edit.h>
 
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -517,6 +518,10 @@ ags_composite_edit_connect(AgsConnectable *connectable)
     g_signal_connect_after(composite_adjustment, "changed",
 			   G_CALLBACK(ags_composite_edit_hscrollbar_changed), composite_edit);
   }
+
+  if(AGS_IS_SHEET_EDIT(composite_edit->edit)){
+    ags_connectable_connect(AGS_CONNECTABLE(composite_edit->edit));
+  }
 }
 
 void
@@ -532,7 +537,9 @@ ags_composite_edit_disconnect(AgsConnectable *connectable)
 
   composite_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(composite_edit->edit));
+  if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
+    ags_connectable_disconnect(AGS_CONNECTABLE(composite_edit->edit));
+  }
 
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
     GtkAdjustment *vadjustment, *hadjustment;
@@ -602,6 +609,10 @@ ags_composite_edit_disconnect(AgsConnectable *connectable)
 			G_CALLBACK(ags_composite_edit_hscrollbar_changed),
 			composite_edit,
 			NULL);
+  }
+
+  if(AGS_IS_SHEET_EDIT(composite_edit->edit)){
+    ags_connectable_disconnect(AGS_CONNECTABLE(composite_edit->edit));
   }
 }
 

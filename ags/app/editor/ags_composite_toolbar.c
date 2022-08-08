@@ -269,6 +269,33 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
 
+  /* position sheet cursor */
+  action = g_simple_action_new_stateful("position_sheet_cursor",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* sheet add page */
+  action = g_simple_action_new_stateful("add_page",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_add_page_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
+  /* sheet add page */
+  action = g_simple_action_new_stateful("remove_page",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_remove_page_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
   /* select accelerations */
   action = g_simple_action_new_stateful("select_accelerations",
 					NULL,
@@ -1427,6 +1454,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     
     gtk_box_append(box,
 		   (GtkWidget *) composite_toolbar->beats);
+
+    gtk_combo_box_set_active(composite_toolbar->beats,
+			     3);
     
     sibling = box;
   }else if(composite_toolbar->beats != NULL){
@@ -1462,6 +1492,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 				   "4");
     gtk_combo_box_text_append_text((GtkComboBoxText *) composite_toolbar->beats_type,
 				   "8");
+    
+    gtk_combo_box_set_active(composite_toolbar->beats_type,
+			     2);
     
     sibling = box;
   }else if(composite_toolbar->beats_type != NULL){

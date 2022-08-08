@@ -185,6 +185,7 @@ struct _AgsMachine
   GtkMenuButton *context_menu_button;
   GMenu *context_menu;
 
+  GList *editor_model;
   GList *dialog_model;
   
   GtkDialog *machine_editor_dialog;
@@ -313,6 +314,12 @@ void ags_machine_set_run(AgsMachine *machine,
 void ags_machine_set_run_extended(AgsMachine *machine,
 				  gboolean run,
 				  gboolean sequencer, gboolean notation, gboolean wave, gboolean midi);
+
+GList* ags_machine_get_editor_model(AgsMachine *machine);
+void ags_machine_add_editor_model(AgsMachine *machine,
+				  xmlNode *node);
+void ags_machine_remove_editor_model(AgsMachine *machine,
+				     xmlNode *node);
 
 GList* ags_machine_get_dialog_model(AgsMachine *machine);
 void ags_machine_add_dialog_model(AgsMachine *machine,

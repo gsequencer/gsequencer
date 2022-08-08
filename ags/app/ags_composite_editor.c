@@ -465,9 +465,38 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 
   /* edit - sheet edit */
   composite_editor->sheet_edit = ags_composite_edit_new();
+  
+  gtk_widget_set_valign((GtkWidget *) composite_editor->sheet_edit,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_editor->sheet_edit,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->sheet_edit,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) composite_editor->sheet_edit,
+			 TRUE);
 
   gtk_widget_set_visible(composite_editor->sheet_edit,
 			 FALSE);
+
+  gtk_box_append(vbox,
+		 composite_editor->sheet_edit);
+
+  /* sheet edit */
+  composite_editor->sheet_edit->edit = ags_sheet_edit_new();
+
+  gtk_widget_set_valign((GtkWidget *) composite_editor->sheet_edit->edit,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_editor->sheet_edit->edit,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->sheet_edit->edit,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) composite_editor->sheet_edit->edit,
+			 TRUE);
+
+  gtk_box_append(composite_editor->sheet_edit->edit_box,
+		 composite_editor->sheet_edit->edit);
   
   /* edit - automation edit */
   composite_editor->automation_edit = ags_composite_edit_new();

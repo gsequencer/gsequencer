@@ -40,8 +40,6 @@ void ags_sheet_edit_finalize(GObject *gobject);
 void ags_sheet_edit_connect(AgsConnectable *connectable);
 void ags_sheet_edit_disconnect(AgsConnectable *connectable);
 
-void ags_sheet_edit_show(GtkWidget *widget);
-
 gboolean ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget);
 
 /**
@@ -118,8 +116,6 @@ ags_sheet_edit_class_init(AgsSheetEditClass *sheet_edit)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) sheet_edit;
-
-  widget->show = ags_sheet_edit_show;
 }
 
 void
@@ -156,8 +152,10 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 
   sheet_edit->paper_name = g_strdup(AGS_SHEET_EDIT_DEFAULT_PAPER_NAME);
 
+  sheet_edit->page_orientation = GTK_PAGE_ORIENTATION_PORTRAIT;
+  
   sheet_edit->notation_x0 = 0;
-  sheet_edit->notation_x1 = 0;
+  sheet_edit->notation_x1 = 64;
 
   sheet_edit->utf8_tablature_line = NULL;
   sheet_edit->utf8_tablature_note = NULL;
@@ -168,6 +166,19 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   sheet_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_can_focus((GtkWidget *) sheet_edit->drawing_area,
 			   TRUE);
+  gtk_widget_set_focusable((GtkWidget *) sheet_edit->drawing_area,
+			   TRUE);
+
+  gtk_widget_set_halign(sheet_edit->drawing_area,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign(sheet_edit->drawing_area,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand((GtkWidget *) sheet_edit->drawing_area,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) sheet_edit->drawing_area,
+			 TRUE);
+
   gtk_grid_attach(GTK_GRID(sheet_edit),
 		  (GtkWidget *) sheet_edit->drawing_area,
 		  0, 0,
@@ -176,8 +187,8 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
     ags_sheet_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							  NULL,
-							  NULL);
+						       NULL,
+						       NULL);
   }
 
   g_hash_table_insert(ags_sheet_edit_auto_scroll,
@@ -217,6 +228,15 @@ ags_sheet_edit_connect(AgsConnectable *connectable)
   }
 
   sheet_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;  
+  
+  /* drawing area */
+  gtk_drawing_area_set_draw_func(sheet_edit->drawing_area,
+				 ags_sheet_edit_draw_callback,
+				 sheet_edit,
+				 NULL);
+
+  g_signal_connect_after((GObject *) sheet_edit->drawing_area, "resize",
+			 G_CALLBACK(ags_sheet_edit_drawing_area_resize_callback), (gpointer) sheet_edit);
 
   //TODO:JK: implement me
 }
@@ -234,18 +254,19 @@ ags_sheet_edit_disconnect(AgsConnectable *connectable)
 
   sheet_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
+  /* drawing area */
+  gtk_drawing_area_set_draw_func(sheet_edit->drawing_area,
+				 NULL,
+				 NULL,
+				 NULL);
+  
+  g_object_disconnect((GObject *) sheet_edit->drawing_area,
+		      "any_signal::resize",
+		      G_CALLBACK(ags_sheet_edit_drawing_area_resize_callback),
+		      (gpointer) sheet_edit,
+		      NULL);
+
   //TODO:JK: implement me
-}
-
-void
-ags_sheet_edit_show(GtkWidget *widget)
-{
-  AgsSheetEdit *sheet_edit;
-
-  sheet_edit = AGS_SHEET_EDIT(widget);
-
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_sheet_edit_parent_class)->show(widget);
 }
 
 gboolean
@@ -279,6 +300,91 @@ ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget)
   }else{
     return(FALSE);
   }
+}
+
+void
+ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			      gint position,
+			      gdouble x0, gdouble y0,
+			      gdouble width, gdouble height)
+{
+  guint i;
+  
+  cairo_set_source_rgba(cr,
+			0.0,
+			0.0,
+			0.0,
+			1.0);
+
+  cairo_set_line_width(cr, 0.67);
+
+  for(i = 0; i < 5; i++){
+    cairo_move_to(cr,
+		  (double) x0, y0 + (gdouble) (i * (height / 4)));
+    cairo_line_to(cr,
+		  (double) x0 + width, y0 + (gdouble) (i * (height / 4)));
+    cairo_stroke(cr);
+  }
+}
+
+void
+ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
+{
+  gdouble page_width, page_height;
+
+  if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
+    page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+    page_height = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+  }else{
+    page_width = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+    page_height = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+  }  
+
+  /* clear with white color */
+  cairo_set_source_rgba(cr,
+			1.0,
+			1.0,
+			1.0,
+			1.0);
+  cairo_rectangle(cr,
+		  (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING, (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING,
+		  (double) page_width, (double) page_height);
+  cairo_fill(cr);
+
+  ags_sheet_edit_draw_tablature(sheet_edit, cr,
+				0,
+				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
+				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+
+}
+
+void
+ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
+{
+  GtkStyleContext *style_context;
+  
+  gint width, height;
+  gdouble page_width, page_height;
+
+  style_context = gtk_widget_get_style_context((GtkWidget *) sheet_edit);
+
+  width = gtk_widget_get_width(sheet_edit);
+  height = gtk_widget_get_height(sheet_edit);
+
+  if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
+    page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+    page_height = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+  }else{
+    page_width = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+    page_height = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+  }
+
+  gtk_render_background(style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) width, (gdouble) height);
+  
+  ags_sheet_edit_draw_notation(sheet_edit, cr);
 }
 
 /**

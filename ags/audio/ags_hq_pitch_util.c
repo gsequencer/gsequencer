@@ -600,11 +600,7 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
   
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -789,11 +785,7 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -978,11 +970,7 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1167,11 +1155,7 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1356,11 +1340,7 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1545,11 +1525,7 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1734,11 +1710,7 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning <= 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1923,11 +1895,7 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
   base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
   new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
 
-  if(hq_pitch_util->tuning < 0.0){
-    low_freq = (1.25  * (1.0 + (-1.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }else{
-    low_freq = ((0.75 * (100.0 / hq_pitch_util->tuning)) * ((double) samplerate / base_freq)) * (double) samplerate;
-  }
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
   
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
