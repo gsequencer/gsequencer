@@ -761,6 +761,7 @@ ags_machine_init(AgsMachine *machine)
   gtk_menu_button_set_menu_model(machine->context_menu_button,
 				 machine->context_menu);
   
+  machine->editor_model = NULL;
   machine->dialog_model = NULL;
 
   machine->machine_editor_dialog = NULL;
@@ -3163,6 +3164,68 @@ ags_machine_set_run_extended(AgsMachine *machine,
       ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				    (AgsTask *) cancel_audio);
     }
+  }
+}
+
+/**
+ * ags_machine_get_editor_model:
+ * @machine: the #AgsMachine
+ * 
+ * Get editor model.
+ * 
+ * Returns: the #GList-struct containing #xmlNode-struct
+ * 
+ * Since: 4.4.0
+ */
+GList*
+ags_machine_get_editor_model(AgsMachine *machine)
+{  
+  g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
+
+  return(g_list_reverse(g_list_copy(machine->editor_model)));
+}
+
+/**
+ * ags_machine_add_editor_model:
+ * @machine: the #AgsMachine
+ * @node: the #xmlNode-struct
+ * 
+ * Add @node to @machine.
+ * 
+ * Since: 4.4.0
+ */
+void
+ags_machine_add_editor_model(AgsMachine *machine,
+			     xmlNode *node)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+  g_return_if_fail(node != NULL);
+
+  if(g_list_find(machine->editor_model, node) == NULL){
+    machine->editor_model = g_list_prepend(machine->editor_model,
+					   node);
+  }
+}
+
+/**
+ * ags_machine_remove_editor_model:
+ * @machine: the #AgsMachine
+ * @node: the #xmlNode-struct
+ * 
+ * Get @node from @machine.
+ * 
+ * Since: 4.4.0
+ */
+void
+ags_machine_remove_editor_model(AgsMachine *machine,
+				xmlNode *node)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+  g_return_if_fail(node != NULL);
+
+  if(g_list_find(machine->editor_model, node) != NULL){
+    machine->editor_model = g_list_remove(machine->editor_model,
+					  node);
   }
 }
 

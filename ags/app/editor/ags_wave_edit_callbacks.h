@@ -35,7 +35,7 @@ G_BEGIN_DECLS
 
 void ags_wave_edit_draw_callback(GtkWidget *drawing_area,
 				 cairo_t *cr,
-				 int width, int height,
+				 gint width, gint height,
 				 AgsWaveEdit *wave_edit);
 
 void ags_wave_edit_drawing_area_resize_callback(GtkWidget *drawing_area,

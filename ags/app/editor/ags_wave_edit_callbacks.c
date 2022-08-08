@@ -29,7 +29,7 @@
 void
 ags_wave_edit_draw_callback(GtkWidget *drawing_area,
 			    cairo_t *cr,
-			    int width, int height,
+			    gint width, gint height,
 			    AgsWaveEdit *wave_edit)
 {
   ags_wave_edit_draw(wave_edit, cr);

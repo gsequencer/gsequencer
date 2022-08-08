@@ -716,7 +716,7 @@ ags_dial_snapshot(GtkWidget *widget,
 
   graphene_rect_t rect;
   
-  int width, height;
+  gint width, height;
   
   style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 

@@ -34,6 +34,7 @@
 #include <ags/app/editor/ags_scrolled_wave_edit_box.h>
 #include <ags/app/editor/ags_wave_edit_box.h>
 #include <ags/app/editor/ags_wave_edit.h>
+#include <ags/app/editor/ags_sheet_edit.h>
 
 #include <ags/app/import/ags_midi_import_wizard.h>
 
@@ -1688,9 +1689,8 @@ ags_app_action_util_edit_notation()
     gtk_widget_hide(composite_editor->wave_edit);
       
     /* shift piano */
-    composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
-      
-    gtk_widget_show(composite_editor->machine_selector->shift_piano);
+    ags_machine_selector_set_flags(composite_editor->machine_selector,
+				   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
   }
 }
 
@@ -1725,9 +1725,8 @@ ags_app_action_util_edit_automation()
   gtk_widget_hide(composite_editor->wave_edit);
     
   /* shift piano */
-  composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
-
-  gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+  ags_machine_selector_unset_flags(composite_editor->machine_selector,
+				   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
 }
 
 void
@@ -1772,9 +1771,8 @@ ags_app_action_util_edit_wave()
     gtk_widget_show(composite_editor->wave_edit);
 
     /* shift piano */
-    composite_editor->machine_selector->flags &= (~AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
-      
-    gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+    ags_machine_selector_unset_flags(composite_editor->machine_selector,
+				     AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
 
     start_wave_edit = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
       
@@ -1842,23 +1840,24 @@ ags_app_action_util_edit_sheet()
 #endif
     ){
     AgsCompositeEdit *composite_edit, *prev_composite_edit;
-      
+    
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET);
 
     prev_composite_edit = composite_editor->selected_edit;
       
     composite_edit = 
-      composite_editor->selected_edit = composite_editor->notation_edit;
+      composite_editor->selected_edit = composite_editor->sheet_edit;
       
     gtk_widget_hide(composite_editor->notation_edit);
     gtk_widget_show(composite_editor->sheet_edit);
     gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_hide(composite_editor->wave_edit);
+
+    gtk_widget_queue_draw(AGS_SHEET_EDIT(composite_editor->sheet_edit->edit)->drawing_area);
       
     /* shift piano */
-    composite_editor->machine_selector->flags |= AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO;
-      
-    gtk_widget_show(composite_editor->machine_selector->shift_piano);
+    ags_machine_selector_set_flags(composite_editor->machine_selector,
+				   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
   }
 }
