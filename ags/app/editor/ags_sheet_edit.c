@@ -384,10 +384,17 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			      &ink_rect,
 			      &logical_rect);
 
-    cairo_move_to(cr,
-		  x0 + ((logical_rect.width / PANGO_SCALE) / 2.0),
-		  y0 + ((height - (logical_rect.height / PANGO_SCALE)) / 2.0));
-
+    //TODO:JK: improve me
+    if(clef == AGS_SHEET_EDIT_G_CLEF){
+      cairo_move_to(cr,
+		    x0 + ((logical_rect.width / PANGO_SCALE) / 2.0),
+		    y0 + ((height - (logical_rect.height / PANGO_SCALE)) / 2.0));
+    }else{
+      cairo_move_to(cr,
+		    x0 + ((logical_rect.width / PANGO_SCALE) / 2.0),
+		    y0 + ((height - (logical_rect.height / PANGO_SCALE)) / 2.0));
+    }
+    
     offset += logical_rect.width / PANGO_SCALE;
 
     pango_cairo_show_layout(cr,
