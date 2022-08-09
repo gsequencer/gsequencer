@@ -338,7 +338,7 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			0.0,
 			1.0);
 
-  cairo_set_line_width(cr, 0.67);
+  cairo_set_line_width(cr, 0.866);
 
   for(i = 0; i < 5; i++){
     cairo_move_to(cr,
@@ -433,49 +433,49 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	case 7:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (6.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 6:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (5.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 5:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (4.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 4:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (3.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 3:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (2.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (-0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (-0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 2:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (1.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 1:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (0.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (0.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
@@ -500,49 +500,49 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	case 7:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (6.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (3.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (3.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 6:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (5.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 5:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (4.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (3.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (3.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 4:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (3.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 3:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (2.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 2:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (1.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 1:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING +((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
@@ -569,49 +569,49 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	case 7:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (6.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (3.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (3.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 6:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (5.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 5:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (4.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (3.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (3.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 4:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (3.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 3:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (2.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (0.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 2:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (1.0 * (logical_rect.width / PANGO_SCALE * 0.5)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 1:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
@@ -636,49 +636,49 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	case 7:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (6.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (4.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (4.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 6:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (5.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 5:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (4.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (4.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (4.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 4:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (3.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (2.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 3:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (2.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (3.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (3.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 2:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING + (1.0 * (logical_rect.width / PANGO_SCALE * 1.0)) + ((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (1.5 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
 	case 1:
 	  cairo_move_to(cr,
 			x0 + offset + AGS_SHEET_EDIT_DEFAULT_SPACING +((logical_rect.width / PANGO_SCALE) / 2.0),
-			y0 + ((gdouble) (3.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0));
+			y0 + ((gdouble) (3.0 * (height / 4.0))) - ((logical_rect.height / PANGO_SCALE) / 2.0) - ((gdouble) height / 8.0) - 1.0);
 
 	  pango_cairo_show_layout(cr,
 				  layout);
@@ -693,7 +693,53 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
 void
 ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 {
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *toolbar;
+  AgsMachine *selected_machine;
+
+  AgsNotebook *notebook;
+
+  GtkSettings *settings;
+  
+  AgsTimestamp *timestamp;
+  AgsTimestamp *current_timestamp;    
+
+  AgsApplicationContext *application_context;
+
+  GList *start_list_notation, *list_notation;
+
+  gchar *font_name;
+  
   gdouble page_width, page_height;
+  gdouble offset;
+  guint x0, x1;
+  guint prev_note_x0, prev_note_x1;
+  guint audio_channels;
+  guint input_pads;
+  guint midi_start_mapping;
+  guint audio_channel;
+  guint i;
+  guint offset_counter;
+  
+  application_context = ags_application_context_get_instance();
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  /*  */
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) sheet_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+    
+  notebook = composite_editor->sheet_edit->channel_selector;
+    
+  toolbar = composite_editor->toolbar;
+
+  selected_machine = composite_editor->selected_machine;
 
   if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
     page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;
@@ -702,6 +748,8 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
     page_width = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
     page_height = AGS_SHEET_EDIT_DEFAULT_WIDTH;
   }  
+
+  offset = 0.0;  
 
   /* clear with white color */
   cairo_set_source_rgba(cr,
@@ -720,15 +768,15 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				TRUE,
 				0,
 				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
   ags_sheet_edit_draw_tablature(sheet_edit, cr,
 				AGS_SHEET_EDIT_G_CLEF,
 				7,
 				FALSE,
 				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING,
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING,
+				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
 
   ags_sheet_edit_draw_tablature(sheet_edit, cr,
@@ -736,16 +784,324 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				7,
 				TRUE,
 				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 2.0 * (5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 2.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
+				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
   ags_sheet_edit_draw_tablature(sheet_edit, cr,
 				AGS_SHEET_EDIT_F_CLEF,
 				7,
 				FALSE,
 				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 3.0 * (5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 3.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
+				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+
+  /* test */
+  x0 = 0;
+
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  start_list_notation = ags_audio_get_notation(selected_machine->audio);
+
+  audio_channels = ags_audio_get_audio_channels(selected_machine->audio);
+
+  input_pads = ags_audio_get_input_pads(selected_machine->audio);
+
+  midi_start_mapping = ags_audio_get_midi_start_mapping(selected_machine->audio);
+  
+  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+
+  offset = 100.0;
+
+  offset_counter = 0;
+
+  prev_note_x0 = 0;
+  prev_note_x1 = 0;
+  
+  for(i = 0; i < audio_channels; i++){
+    list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
+						     timestamp);
+    
+    while(list_notation != NULL){
+      AgsNotation *notation;
+
+      GList *start_list_note, *list_note;
+
+      notation = AGS_NOTATION(list_notation->data);
+
+      g_object_get(notation,
+		   "audio-channel", &audio_channel,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) > AGS_NOTATION_DEFAULT_OFFSET * floor((double) x1 / (double) AGS_NOTATION_DEFAULT_OFFSET) + AGS_NOTATION_DEFAULT_OFFSET){
+	break;
+      }
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_NOTATION_DEFAULT_OFFSET < x0){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+      
+      if(i != audio_channel){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+
+      start_list_note = NULL;
+
+      g_object_get(notation,
+		   "note", &start_list_note,
+		   NULL);
+      
+      list_note = start_list_note;
+
+      while(list_note != NULL){
+	AgsNote *note, *note_next;
+
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+	
+	PangoRectangle ink_rect, logical_rect;
+
+	gchar *note_str;
+	gchar *rest_str;
+	
+	guint note_x0, note_x1;
+	guint note_y;
+	guint note_next_x0, note_next_x1;
+	gboolean success;
+	
+	note = AGS_NOTE(list_note->data);
+
+	note_next = NULL;
+
+	if(list_note->next != NULL){
+	  note_next = AGS_NOTE(list_note->next->data);
+	}
+	
+	note_x0 = 0;
+	note_x1 = 0;
+
+	note_y = 0;
+	
+	g_object_get(note,
+		     "x0", &note_x0,
+		     "x1", &note_x1,
+		     "y", &note_y,
+		     NULL);
+	
+	note_next_x0 = 0;
+	note_next_x1 = 0;
+
+	if(note_next != NULL){
+	  g_object_get(note_next,
+		       "x0", &note_next_x0,
+		       "x1", &note_next_x1,
+		       NULL);
+	}
+	
+	note_str = NULL;
+	rest_str = NULL;
+
+	success = FALSE;
+
+	if(note_x0 == offset_counter){
+	  if(note_x0 < note_x1){
+	    if(note_x1 - note_x0 == 1){
+	      success = TRUE;
+	    
+	      note_str = "𝅘𝅥𝅯";
+
+	      prev_note_x0 = note_x0;
+	      prev_note_x1 = note_x1;
+	      
+	      if(note_x0 != note_next_x0 ||
+		 note_next_x0 == note_next_x1){
+		offset_counter += 1;
+	      }
+	    }else if(note_x1 - note_x0 <= 2){
+	      if(note_x0 % 2 == 0){
+		success = TRUE;
+	    
+		note_str = "𝅘𝅥𝅮";
+
+		prev_note_x0 = note_x0;
+		prev_note_x1 = note_x1;
+
+		if(note_x0 != note_next_x0 ||
+		   note_next_x0 == note_next_x1){
+		  offset_counter += 2;
+		}
+	      }
+	    }else if(note_x1 - note_x0 <= 4){
+	      if(note_x0 % 4 == 0){
+		success = TRUE;
+	    
+		note_str = "𝅘𝅥";
+
+		prev_note_x0 = note_x0;
+		prev_note_x1 = note_x1;
+
+		if(note_x0 != note_next_x0 ||
+		   note_next_x0 == note_next_x1){
+		  offset_counter += 4;
+		}
+	      }
+	    }else if(note_x1 - note_x0 <= 8){
+	      if(note_x0 % 8 == 0){
+		success = TRUE;
+	    
+		note_str = "𝅗𝅥";
+
+		prev_note_x0 = note_x0;
+		prev_note_x1 = note_x1;
+
+		if(note_x0 != note_next_x0 ||
+		   note_next_x0 == note_next_x1){
+		  offset_counter += 8;
+		}
+	      }
+	    }else if(note_x1 - note_x0 <= 16){
+	      if(note_x0 % 16 == 0){
+		success = TRUE;
+		
+		note_str = "𝅝";
+		
+		prev_note_x0 = note_x0;
+		prev_note_x1 = note_x1;
+
+		if(note_x0 != note_next_x0 ||
+		   note_next_x0 == note_next_x1){
+		  offset_counter += 16;
+		}
+	      }
+	    }
+	  }
+	}else{
+	  if(prev_note_x0 != prev_note_x1){
+	    if(offset_counter % 16 == 0 && offset_counter + 16 <= note_x0){
+	      rest_str = "𝄻";
+
+	      offset_counter += 16;
+	    }else if(offset_counter % 8 == 0 && offset_counter + 8 <= note_x0 && prev_note_x0 + 8 <= offset_counter){
+	      rest_str = "𝄼";
+
+	      offset_counter += 8;
+	    }else if(offset_counter % 4 == 0 && offset_counter + 4 <= note_x0 && prev_note_x0 + 4 <= offset_counter){
+	      rest_str = "𝄽";
+
+	      offset_counter += 4;
+	    }else if(offset_counter % 2 == 0 && offset_counter + 2 <= note_x0 && prev_note_x0 + 2 <= offset_counter){
+	      rest_str = "𝄾";
+
+	      offset_counter += 2;
+	    }else if(offset_counter + 1 == note_x0 && prev_note_x0 + 1 == offset_counter){
+	      rest_str = "𝄿";
+
+	      offset_counter += 1;
+	    }
+	  }else{
+	    if(offset_counter % 16 == 0 && offset_counter + 16 <= note_x0){
+	      rest_str = "𝄻";
+
+	      offset_counter += 16;
+	    }else if(offset_counter % 8 == 0 && offset_counter + 8 <= note_x0){
+	      rest_str = "𝄼";
+
+	      offset_counter += 8;
+	    }else if(offset_counter % 4 == 0 && offset_counter + 4 <= note_x0){
+	      rest_str = "𝄽";
+
+	      offset_counter += 4;
+	    }else if(offset_counter % 2 == 0 && offset_counter + 2 <= note_x0){
+	      rest_str = "𝄾";
+
+	      offset_counter += 2;
+	    }else if(offset_counter + 1 == note_x0){
+	      rest_str = "𝄿";
+
+	      offset_counter += 1;
+	    }
+	  }
+	}
+
+	if(note_str != NULL){
+	  layout = pango_cairo_create_layout(cr);
+	  pango_layout_set_text(layout,
+				note_str,
+				-1);
+	  desc = pango_font_description_from_string(font_name);
+	  pango_font_description_set_size(desc,
+					  AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE * PANGO_SCALE);
+	  pango_layout_set_font_description(layout,
+					    desc);
+	  pango_font_description_free(desc);    
+
+	  pango_layout_get_extents(layout,
+				   &ink_rect,
+				   &logical_rect);
+
+	  //TODO:JK: improve me
+	  cairo_move_to(cr,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + (((gdouble) note_y - 62.0) * ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT / 2.0)) - (((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0) / 8.0) - 1.0);
+    
+	  if(note_x0 < note_next_x0 ||
+	     note_next_x0 == note_next_x1){
+	    offset += 2.5 * (logical_rect.width / PANGO_SCALE);
+	  }
+	  
+	  pango_cairo_show_layout(cr,
+				  layout);
+	    
+	  g_object_unref(layout);
+	}
+
+	if(rest_str != NULL){
+	  layout = pango_cairo_create_layout(cr);
+	  pango_layout_set_text(layout,
+				rest_str,
+				-1);
+	  desc = pango_font_description_from_string(font_name);
+	  pango_font_description_set_size(desc,
+					  AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE * PANGO_SCALE);
+	  pango_layout_set_font_description(layout,
+					    desc);
+	  pango_font_description_free(desc);    
+
+	  pango_layout_get_extents(layout,
+				   &ink_rect,
+				   &logical_rect);
+
+	  //TODO:JK: improve me
+	  cairo_move_to(cr,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + (2.0 * ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT / 2.0)) - (((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0) / 8.0) - 1.0);
+    
+	  offset += 2.5 * (logical_rect.width / PANGO_SCALE);
+	  
+	  pango_cairo_show_layout(cr,
+				  layout);
+	    
+	  g_object_unref(layout);
+	}
+	
+	if(success){
+	  list_note = list_note->next;
+	}
+      }
+
+      g_list_free_full(start_list_note,
+		       g_object_unref);
+      
+      list_notation = list_notation->next;
+    }
+  }
 }
 
 void

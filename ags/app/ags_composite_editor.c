@@ -1066,6 +1066,11 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   level_shown = FALSE;
 
   machine_selector = composite_editor->machine_selector;
+
+  gtk_widget_hide(composite_editor->notation_edit);
+  gtk_widget_hide(composite_editor->sheet_edit);
+  gtk_widget_hide(composite_editor->automation_edit);
+  gtk_widget_hide(composite_editor->wave_edit);
     
   if(AGS_IS_DRUM(machine) ||
      AGS_IS_MATRIX(machine) ||
@@ -1099,9 +1104,6 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 						    AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
     
     gtk_widget_show(composite_editor->notation_edit);
-    gtk_widget_hide(composite_editor->sheet_edit);
-    gtk_widget_hide(composite_editor->automation_edit);
-    gtk_widget_hide(composite_editor->wave_edit);
 
     ags_machine_selector_set_flags(composite_editor->machine_selector,
 				   (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
@@ -1156,9 +1158,6 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     composite_editor->wave_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
 						AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
 
-    gtk_widget_hide(composite_editor->notation_edit);
-    gtk_widget_hide(composite_editor->sheet_edit);
-    gtk_widget_hide(composite_editor->automation_edit);
     gtk_widget_show(composite_editor->wave_edit);
 
     gtk_widget_show(composite_editor->wave_edit->edit_control);
@@ -1226,10 +1225,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
     if(!piano_shown &&
        !level_shown){
-      gtk_widget_hide(composite_editor->notation_edit);
-      gtk_widget_hide(composite_editor->sheet_edit);
       gtk_widget_show(composite_editor->automation_edit);
-      gtk_widget_hide(composite_editor->wave_edit);
     }
   }
   
@@ -1240,9 +1236,6 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     composite_editor->selected_edit = composite_editor->notation_edit;
 
     gtk_widget_show(composite_editor->notation_edit);
-    gtk_widget_hide(composite_editor->sheet_edit);
-    gtk_widget_hide(composite_editor->automation_edit);
-    gtk_widget_hide(composite_editor->wave_edit);
     
     ags_machine_selector_set_flags(composite_editor->machine_selector,
 				   (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
