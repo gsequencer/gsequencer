@@ -868,12 +868,15 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 	
 	PangoRectangle ink_rect, logical_rect;
 
+	GList *list;
+
 	gchar *note_str;
 	gchar *rest_str;
 	
 	guint note_x0, note_x1;
 	guint note_y;
 	guint note_next_x0, note_next_x1;
+	guint note_next_pos_x0, note_next_pos_x1;
 	gboolean success;
 	
 	note = AGS_NOTE(list_note->data);
@@ -904,6 +907,32 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		       "x1", &note_next_x1,
 		       NULL);
 	}
+
+	note_next_pos_x0 = 0;
+	note_next_pos_x1 = 0;
+
+	list = list_note->next;
+		    
+	while(list != NULL){
+	  note_next_pos_x0 = 0;
+	  note_next_pos_x1 = 0;
+		      
+	  g_object_get(list->data,
+		       "x0", &note_next_pos_x0,
+		       "x1", &note_next_pos_x1,
+		       NULL);
+
+	  if(note_next_pos_x0 > note_x0){
+	    break;
+	  }
+		      
+	  list = list->next;
+	}
+
+	if(list == NULL){
+	  note_next_pos_x0 = 0;
+	  note_next_pos_x1 = 0;
+	}
 	
 	note_str = NULL;
 	rest_str = NULL;
@@ -925,7 +954,9 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		offset_counter += 1;
 	      }
 	    }else if(note_x1 - note_x0 <= 2){
-	      if(note_x0 % 2 == 0){
+	      if(note_x0 % 2 == 0 &&
+		 (note_x1 - note_x0 == 2 ||
+		  note_x0 + 2 <= note_next_pos_x0)){
 		success = TRUE;
 	    
 		note_str = "𝅘𝅥𝅮";
@@ -937,9 +968,34 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		   note_next_x0 == note_next_x1){
 		  offset_counter += 2;
 		}
+	      }else if(note_x0 % 2 != 0){
+		if(note_x0 + 2 <= note_next_pos_x0 &&
+		   note_x0 + 2 <= (guint) (16.0 * floor((double) note_x0 / 16.0)) + 16){
+		  success = TRUE;
+	    
+		  note_str = "𝅘𝅥𝅮";
+
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  offset_counter += 2;
+		}else{
+		  success = TRUE;
+	    
+		  note_str = "𝅘𝅥𝅯";
+		  
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  if(note_x0 < note_next_x0){
+		    offset_counter += 1;
+		  }
+		}
 	      }
 	    }else if(note_x1 - note_x0 <= 4){
-	      if(note_x0 % 4 == 0){
+	      if(note_x0 % 4 == 0 &&
+		 (note_x1 - note_x0 == 4 ||
+		  note_x0 + 4 <= note_next_pos_x0)){
 		success = TRUE;
 	    
 		note_str = "𝅘𝅥";
@@ -951,9 +1007,47 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		   note_next_x0 == note_next_x1){
 		  offset_counter += 4;
 		}
+	      }else if(note_x0 % 4 != 0){
+		if(note_x0 + 4 <= note_next_pos_x0 &&
+		   note_x0 + 4 <= (guint) (16.0 * floor((double) note_x0 / 16.0)) + 16){
+		  success = TRUE;
+	    
+		  note_str = "𝅘𝅥";
+
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  offset_counter += 4;
+		}else{
+		  success = TRUE;
+
+		  if(note_next_pos_x0 - note_x0 == 0){		    
+		    if(note_next_pos_x0 - note_x0 == 1){
+		      note_str = "𝅘𝅥𝅯";
+		    }else if(note_next_pos_x0 - note_x0 == 2){
+		      note_str = "𝅘𝅥𝅮";
+		    }
+		    
+		    prev_note_x0 = note_x0;
+		    prev_note_x1 = note_x1;
+		  }else if(note_next_pos_x0 - note_x0 == 1){
+		    note_str = "𝅘𝅥𝅯";
+		  }else if(note_next_pos_x0 - note_x0 == 2){
+		    note_str = "𝅘𝅥𝅮";
+		  }
+		  
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  if(note_x0 < note_next_x0){
+		    offset_counter += (note_next_x0 - note_x0);
+		  }
+		}
 	      }
 	    }else if(note_x1 - note_x0 <= 8){
-	      if(note_x0 % 8 == 0){
+	      if(note_x0 % 8 == 0 &&
+		 (note_x1 - note_x0 == 8 ||
+		  note_x0 + 8 <= note_next_pos_x0)){
 		success = TRUE;
 	    
 		note_str = "𝅗𝅥";
@@ -965,9 +1059,51 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		   note_next_x0 == note_next_x1){
 		  offset_counter += 8;
 		}
+	      }else if(note_x0 % 8 != 0){
+		if(note_x0 + 8 <= note_next_pos_x0 &&
+		   note_x0 + 8 <= (guint) (16.0 * floor((double) note_x0 / 16.0)) + 16){
+		  success = TRUE;
+	    
+		  note_str = "𝅗𝅥";
+
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  offset_counter += 8;
+		}else{
+		  success = TRUE;
+
+		  if(note_next_pos_x0 - note_x0 == 0){
+		    if(note_next_pos_x0 - note_x0 == 1){
+		      note_str = "𝅘𝅥𝅯";
+		    }else if(note_next_pos_x0 - note_x0 == 2){
+		      note_str = "𝅘𝅥𝅮";
+		    }else if(note_next_pos_x0 - note_x0 <= 4){
+		      note_str = "𝅘𝅥";
+		    }
+		    
+		    prev_note_x0 = note_x0;
+		    prev_note_x1 = note_x1;
+		  }else if(note_next_pos_x0 - note_x0 == 1){
+		    note_str = "𝅘𝅥𝅯";
+		  }else if(note_next_pos_x0 - note_x0 == 2){
+		    note_str = "𝅘𝅥𝅮";
+		  }else if(note_next_pos_x0 - note_x0 <= 4){
+		    note_str = "𝅘𝅥";
+		  }
+		  
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  if(note_x0 < note_next_x0){
+		    offset_counter += (note_next_x0 - note_x0);
+		  }
+		}
 	      }
 	    }else if(note_x1 - note_x0 <= 16){
-	      if(note_x0 % 16 == 0){
+	      if(note_x0 % 16 == 0 &&
+		 (note_x1 - note_x0 == 16 ||
+		  note_x0 + 16 <= note_next_pos_x0)){
 		success = TRUE;
 		
 		note_str = "𝅝";
@@ -978,6 +1114,50 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		if(note_x0 != note_next_x0 ||
 		   note_next_x0 == note_next_x1){
 		  offset_counter += 16;
+		}
+	      }else if(note_x0 % 16 != 0){
+		if(note_x0 + 16 <= note_next_pos_x0 &&
+		   note_x0 + 16 <= (guint) (16.0 * floor((double) note_x0 / 16.0)) + 16){
+		  success = TRUE;
+	    
+		  note_str = "𝅝";
+
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  offset_counter += 8;
+		}else{
+		  success = TRUE;
+
+		  if(note_next_pos_x0 - note_x0 == 0){		    
+		    if(note_next_pos_x0 - note_x0 == 1){
+		      note_str = "𝅘𝅥𝅯";
+		    }else if(note_next_pos_x0 - note_x0 == 2){
+		      note_str = "𝅘𝅥𝅮";
+		    }else if(note_next_pos_x0 - note_x0 <= 4){
+		      note_str = "𝅘𝅥";
+		    }else if(note_next_pos_x0 - note_x0 <= 8){
+		      note_str = "𝅗𝅥";
+		    }
+		    
+		    prev_note_x0 = note_x0;
+		    prev_note_x1 = note_x1;
+		  }else if(note_next_pos_x0 - note_x0 == 1){
+		    note_str = "𝅘𝅥𝅯";
+		  }else if(note_next_pos_x0 - note_x0 == 2){
+		    note_str = "𝅘𝅥𝅮";
+		  }else if(note_next_pos_x0 - note_x0 <= 4){
+		    note_str = "𝅘𝅥";
+		  }else if(note_next_pos_x0 - note_x0 <= 8){
+		    note_str = "𝅗𝅥";
+		  }
+		  
+		  prev_note_x0 = note_x0;
+		  prev_note_x1 = note_x1;
+
+		  if(note_x0 < note_next_x0){
+		    offset_counter += (note_next_x0 - note_x0);
+		  }
 		}
 	      }
 	    }
@@ -1037,7 +1217,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				-1);
 	  desc = pango_font_description_from_string(font_name);
 	  pango_font_description_set_size(desc,
-					  AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE * PANGO_SCALE);
+					  AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE * PANGO_SCALE);
 	  pango_layout_set_font_description(layout,
 					    desc);
 	  pango_font_description_free(desc);    
@@ -1069,7 +1249,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				-1);
 	  desc = pango_font_description_from_string(font_name);
 	  pango_font_description_set_size(desc,
-					  AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE * PANGO_SCALE);
+					  AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE * PANGO_SCALE);
 	  pango_layout_set_font_description(layout,
 					    desc);
 	  pango_font_description_free(desc);    
@@ -1081,7 +1261,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 	  //TODO:JK: improve me
 	  cairo_move_to(cr,
 			(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset,
-			(gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + (2.0 * ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT / 2.0)) - (((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0) / 8.0) - 1.0);
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + (1.0 * ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT / 2.0)) - (((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0) / 8.0) - 1.0);
     
 	  offset += 2.5 * (logical_rect.width / PANGO_SCALE);
 	  
