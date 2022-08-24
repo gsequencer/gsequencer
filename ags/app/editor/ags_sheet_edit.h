@@ -44,6 +44,14 @@ G_BEGIN_DECLS
 #define AGS_SHEET_EDIT_DEFAULT_WIDTH (612)
 #define AGS_SHEET_EDIT_DEFAULT_HEIGHT (792)
 
+#define AGS_SHEET_EDIT_DEFAULT_FONT_SIZE (12.5)
+
+#define AGS_SHEET_EDIT_LETTER_WIDTH (612)
+#define AGS_SHEET_EDIT_LETTER_HEIGHT (792)
+
+#define AGS_SHEET_EDIT_A4_WIDTH (595)
+#define AGS_SHEET_EDIT_A4_HEIGHT (842)
+
 #define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
 
 #define AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING (24)
@@ -66,6 +74,7 @@ G_BEGIN_DECLS
 
 typedef struct _AgsSheetEdit AgsSheetEdit;
 typedef struct _AgsSheetEditClass AgsSheetEditClass;
+typedef struct _AgsSheetEditTablatur AgsSheetEditTablatur;
 
 typedef enum{
   AGS_SHEET_EDIT_AUTO_SCROLL           = 1,
@@ -135,6 +144,8 @@ struct _AgsSheetEdit
   
   GtkScrollbar *vscrollbar;
   GtkScrollbar *hscrollbar;
+
+  GList *tablatur;
 };
 
 struct _AgsSheetEditClass
@@ -142,16 +153,112 @@ struct _AgsSheetEditClass
   GtkGridClass grid;
 };
 
+struct _AgsSheetEditTablatur
+{
+  gboolean is_primary;
+  
+  guint notation_x_start;
+  guint notation_x_end;
+
+  gdouble font_size;
+  
+  gdouble margin_top;
+  gdouble margin_bottom;
+
+  gdouble margin_left;
+  gdouble margin_right;
+  
+  guint clef;
+
+  gdouble clef_translate_x;
+  gdouble clef_translate_y;
+  gdouble clef_translate_z;
+
+  gdouble clef_font_size;
+
+  gint tablatur_extends_top;
+  gint tablatur_extends_bottom;
+  
+  gdouble tablatur_x0;
+  gdouble tablatur_y0;
+  
+  gdouble tablatur_width;
+  gdouble tablatur_height;
+
+  gdouble sharp_translate_x;
+  gdouble sharp_translate_y;
+  gdouble sharp_translate_z;
+
+  gdouble flat_translate_x;
+  gdouble flat_translate_y;
+  gdouble flat_translate_z;
+  
+  gdouble sharp_flat_font_size;
+
+  gdouble key_translate_x;
+  gdouble key_translate_y;
+  gdouble key_translate_z;
+  
+  gdouble key_font_size;
+
+  gdouble rest_translate_x;
+  gdouble rest_translate_y;
+  gdouble rest_translate_z;
+
+  gdouble rest_font_size;
+
+  AgsSheetEditTablatur *companion_tablatur;
+};
+  
 GType ags_sheet_edit_get_type(void);
 
+AgsSheetEditTablatur* ags_sheet_edit_tablatur_alloc();
+void ags_sheet_edit_tablatur_free(AgsSheetEditTablatur *sheet_edit_tablatur);
+
+GList* ags_sheet_edit_get_tablatur(AgsSheetEdit *sheet_edit);
+void ags_sheet_edit_add_tablatur(AgsSheetEdit *sheet_edit,
+				 AgsSheetEditTablatur *sheet_edit_tablatur);
+void ags_sheet_edit_remove_tablatur(AgsSheetEdit *sheet_edit,
+				    AgsSheetEditTablatur *sheet_edit_tablatur);
+
 void ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
-				   guint clef,
-				   guint sharp_flats,
-				   gboolean is_minor,
-				   gint position,
+				   AgsSheetEditTablatur *sheet_edit_tablatur,
 				   gdouble x0, gdouble y0,
-				   gdouble width, gdouble height);
-void ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr);
+				   gdouble width, gdouble height,
+				   gdouble font_size);
+
+void ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			      AgsSheetEditTablatur *sheet_edit_tablatur,
+			      guint clef,
+			      gdouble x0, gdouble y0,
+			      gdouble clef_font_size);
+
+void ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
+				    AgsSheetEditTablatur *sheet_edit_tablatur,
+				    guint sharp_flat,
+				    gboolean is_minor,
+				    gdouble x0, gdouble y0,
+				    gdouble sharp_flat_font_size);
+
+void ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			      AgsSheetEditTablatur *sheet_edit_tablatur,
+			      AgsNotation *notation,
+			      AgsNote *note,
+			      gdouble x0, gdouble y0,
+			      gdouble key_font_size);
+
+void ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			      AgsSheetEditTablatur *sheet_edit_tablatur,
+			      guint rest_x0, guint rest_x1,
+			      gdouble x0, gdouble y0,
+			      gdouble rest_font_size);
+
+void ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
+				  AgsSheetEditTablatur *sheet_edit_tablatur,
+				  AgsNotation *notation,
+				  guint notation_x0, guint notation_x1,
+				  gdouble x0, gdouble y0,
+				  gdouble key_font_size);
 
 void ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr);
 
