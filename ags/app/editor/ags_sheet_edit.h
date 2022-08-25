@@ -57,8 +57,12 @@ G_BEGIN_DECLS
 #define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
 
 #define AGS_SHEET_EDIT_DEFAULT_TABLATURE_SPACING (24)
+
 #define AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE (20.0)
+
 #define AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE (12.5)
+#define AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 (25.0)
+
 #define AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE (12.5)
 #define AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE (12.5)
 
@@ -187,6 +191,9 @@ struct _AgsSheetEditTablature
   gdouble staff_width;
   gdouble staff_height;
 
+  gboolean is_minor;
+  guint sharp_flat;
+
   gdouble sharp_translate_x;
   gdouble sharp_translate_y;
   gdouble sharp_translate_z;
@@ -236,8 +243,6 @@ void ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
 
 void ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
 				    AgsSheetEditTablature *sheet_edit_tablature,
-				    guint sharp_flat,
-				    gboolean is_minor,
 				    gdouble x0, gdouble y0,
 				    gdouble sharp_flat_font_size);
 
