@@ -133,6 +133,8 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 {
   GtkAdjustment *adjustment;
 
+  AgsSheetEditTablature *g_clef_tablature, *f_clef_tablature;
+  
   sheet_edit->flags = 0;
   sheet_edit->connectable_flags = 0;
   sheet_edit->mode = AGS_SHEET_EDIT_NO_EDIT_MODE;
@@ -188,7 +190,29 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   sheet_edit->vscrollbar = NULL;
   sheet_edit->hscrollbar = NULL;
 
-  sheet_edit->tablatur = NULL;
+  sheet_edit->tablature = NULL;
+
+  /* g clef */
+  g_clef_tablature = ags_sheet_edit_tablature_alloc();
+
+  g_clef_tablature->is_primary = TRUE;
+
+  g_clef_tablature->clef = AGS_SHEET_EDIT_G_CLEF;
+  
+  ags_sheet_edit_add_tablature(sheet_edit,
+			       g_clef_tablature);
+
+  /* f clef */
+  f_clef_tablature = ags_sheet_edit_tablature_alloc();
+
+  f_clef_tablature->clef = AGS_SHEET_EDIT_F_CLEF;
+
+  f_clef_tablature->clef_translate_y = -14.0;
+
+  g_clef_tablature->companion_tablature = f_clef_tablature;
+  
+  ags_sheet_edit_add_tablature(sheet_edit,
+			       f_clef_tablature);
   
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
@@ -387,8 +411,8 @@ ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
     pango_font_description_free(desc);    
 
     pango_layout_get_extents(layout,
-			      &ink_rect,
-			      &logical_rect);
+			     &ink_rect,
+			     &logical_rect);
     
     //TODO:JK: improve me
     if(clef == AGS_SHEET_EDIT_G_CLEF){
@@ -1180,189 +1204,292 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 }
 #endif
 
-AgsSheetEditTablatur*
-ags_sheet_edit_tablatur_alloc()
+AgsSheetEditTablature*
+ags_sheet_edit_tablature_alloc()
 {
-  AgsSheetEditTablatur *sheet_edit_tablatur;
+  AgsSheetEditTablature *sheet_edit_tablature;
 
-  sheet_edit_tablatur = (AgsSheetEditTablatur *) g_new0(AgsSheetEditTablatur,
-							1);
+  sheet_edit_tablature = (AgsSheetEditTablature *) g_new0(AgsSheetEditTablature,
+							  1);
 
-  sheet_edit_tablatur->is_primary = FALSE;
+  sheet_edit_tablature->is_primary = FALSE;
 
-  sheet_edit_tablatur->notation_x_start = 0;
-  sheet_edit_tablatur->notation_x_end = 16;
+  sheet_edit_tablature->notation_x_start = 0;
+  sheet_edit_tablature->notation_x_end = 16;
   
-  sheet_edit_tablatur->font_size = AGS_SHEET_EDIT_DEFAULT_FONT_SIZE;
+  sheet_edit_tablature->font_size = AGS_SHEET_EDIT_DEFAULT_FONT_SIZE;
 
-  sheet_edit_tablatur->margin_top = 0.0;
-  sheet_edit_tablatur->margin_bottom = 0.0;
-  sheet_edit_tablatur->margin_left = 0.0;
-  sheet_edit_tablatur->margin_right = 0.0;
+  sheet_edit_tablature->margin_top = 15.0;
+  sheet_edit_tablature->margin_bottom = 25.0;
+  sheet_edit_tablature->margin_left = 12.5;
+  sheet_edit_tablature->margin_right = 10.0;
 
-  sheet_edit_tablatur->clef = AGS_SHEET_EDIT_G_CLEF;
+  sheet_edit_tablature->clef = AGS_SHEET_EDIT_G_CLEF;
 
-  sheet_edit_tablatur->clef_translate_x = 0.0;
-  sheet_edit_tablatur->clef_translate_y = 0.0;
-  sheet_edit_tablatur->clef_translate_z = 0.0;
+  sheet_edit_tablature->clef_translate_x = 0.0;
+  sheet_edit_tablature->clef_translate_y = -12.0;
+  sheet_edit_tablature->clef_translate_z = 0.0;
 
-  sheet_edit_tablatur->clef_font_size = AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE;
+  sheet_edit_tablature->clef_font_size = AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE;
   
-  sheet_edit_tablatur->tablatur_extends_top = 0;
-  sheet_edit_tablatur->tablatur_extends_bottom = 0;
+  sheet_edit_tablature->staff_extends_top = 0;
+  sheet_edit_tablature->staff_extends_bottom = 0;
 
-  sheet_edit_tablatur->tablatur_x0 = 0.0;
-  sheet_edit_tablatur->tablatur_y0 = 0.0;
+  sheet_edit_tablature->staff_x0 = 0.0;
+  sheet_edit_tablature->staff_y0 = 0.0;
 
-  sheet_edit_tablatur->tablatur_width = AGS_SHEET_EDIT_DEFAULT_WIDTH - (sheet_edit_tablatur->margin_left + sheet_edit_tablatur->margin_right);
-  sheet_edit_tablatur->tablatur_height = ((4.0 + (gdouble) sheet_edit_tablatur->tablatur_extends_top + (gdouble) sheet_edit_tablatur->tablatur_extends_bottom) * sheet_edit_tablatur->font_size);
+  sheet_edit_tablature->staff_width = AGS_SHEET_EDIT_DEFAULT_WIDTH - (sheet_edit_tablature->margin_left + sheet_edit_tablature->margin_right);
+  sheet_edit_tablature->staff_height = ((4.0 + (gdouble) sheet_edit_tablature->staff_extends_top + (gdouble) sheet_edit_tablature->staff_extends_bottom) * sheet_edit_tablature->font_size);
 
-  sheet_edit_tablatur->sharp_translate_x = 0.0;
-  sheet_edit_tablatur->sharp_translate_y = 0.0;
-  sheet_edit_tablatur->sharp_translate_z = 0.0;
+  sheet_edit_tablature->sharp_translate_x = 0.0;
+  sheet_edit_tablature->sharp_translate_y = 0.0;
+  sheet_edit_tablature->sharp_translate_z = 0.0;
 
-  sheet_edit_tablatur->flat_translate_x = 0.0;
-  sheet_edit_tablatur->flat_translate_y = 0.0;
-  sheet_edit_tablatur->flat_translate_z = 0.0;
+  sheet_edit_tablature->flat_translate_x = 0.0;
+  sheet_edit_tablature->flat_translate_y = 0.0;
+  sheet_edit_tablature->flat_translate_z = 0.0;
 
-  sheet_edit_tablatur->sharp_flat_font_size = AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE;
+  sheet_edit_tablature->sharp_flat_font_size = AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE;
 
-  sheet_edit_tablatur->key_translate_x = 0.0;
-  sheet_edit_tablatur->key_translate_y = 0.0;
-  sheet_edit_tablatur->key_translate_z = 0.0;
+  sheet_edit_tablature->key_translate_x = 0.0;
+  sheet_edit_tablature->key_translate_y = 0.0;
+  sheet_edit_tablature->key_translate_z = 0.0;
 
-  sheet_edit_tablatur->key_font_size = AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE;
+  sheet_edit_tablature->key_font_size = AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE;
 
-  sheet_edit_tablatur->rest_translate_x = 0.0;
-  sheet_edit_tablatur->rest_translate_y = 0.0;
-  sheet_edit_tablatur->rest_translate_z = 0.0;
+  sheet_edit_tablature->rest_translate_x = 0.0;
+  sheet_edit_tablature->rest_translate_y = 0.0;
+  sheet_edit_tablature->rest_translate_z = 0.0;
 
-  sheet_edit_tablatur->rest_font_size = AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE;
+  sheet_edit_tablature->rest_font_size = AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE;
   
-  sheet_edit_tablatur->companion_tablatur = NULL;
+  sheet_edit_tablature->companion_tablature = NULL;
   
-  return(sheet_edit_tablatur);
+  return(sheet_edit_tablature);
 }
 
 void
-ags_sheet_edit_tablatur_free(AgsSheetEditTablatur *sheet_edit_tablatur)
+ags_sheet_edit_tablature_free(AgsSheetEditTablature *sheet_edit_tablature)
 {
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
-  g_free(sheet_edit_tablatur);
+  g_free(sheet_edit_tablature);
 }
 
 GList*
-ags_sheet_edit_get_tablatur(AgsSheetEdit *sheet_edit)
+ags_sheet_edit_get_tablature(AgsSheetEdit *sheet_edit)
 {
   g_return_val_if_fail(AGS_IS_SHEET_EDIT(sheet_edit), NULL);
 
-  return(g_list_reverse(g_list_copy(sheet_edit->tablatur)));
+  return(g_list_reverse(g_list_copy(sheet_edit->tablature)));
 }
 
 void
-ags_sheet_edit_add_tablatur(AgsSheetEdit *sheet_edit,
-			    AgsSheetEditTablatur *sheet_edit_tablatur)
+ags_sheet_edit_add_tablature(AgsSheetEdit *sheet_edit,
+			     AgsSheetEditTablature *sheet_edit_tablature)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
-  if(g_list_find(sheet_edit->tablatur, sheet_edit_tablatur) == NULL){
-    sheet_edit->tablatur = g_list_prepend(sheet_edit->tablatur,
-					  sheet_edit_tablatur);
+  if(g_list_find(sheet_edit->tablature, sheet_edit_tablature) == NULL){
+    sheet_edit->tablature = g_list_prepend(sheet_edit->tablature,
+					   sheet_edit_tablature);
   }
 }
 
 void
-ags_sheet_edit_remove_tablatur(AgsSheetEdit *sheet_edit,
-			       AgsSheetEditTablatur *sheet_edit_tablatur)
+ags_sheet_edit_remove_tablature(AgsSheetEdit *sheet_edit,
+				AgsSheetEditTablature *sheet_edit_tablature)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
-  if(g_list_find(sheet_edit->tablatur, sheet_edit_tablatur) != NULL){
-    sheet_edit->tablatur = g_list_remove(sheet_edit->tablatur,
-					 sheet_edit_tablatur);
+  if(g_list_find(sheet_edit->tablature, sheet_edit_tablature) != NULL){
+    sheet_edit->tablature = g_list_remove(sheet_edit->tablature,
+					  sheet_edit_tablature);
   }
 }
 
 void
-ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			      AgsSheetEditTablatur *sheet_edit_tablatur,
-			      gdouble x0, gdouble y0,
-			      gdouble width, gdouble height,
-			      gdouble font_size)
+ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			  AgsSheetEditTablature *sheet_edit_tablature,
+			  gdouble x0, gdouble y0,
+			  gdouble width, gdouble height,
+			  gdouble font_size)
 {
+  AgsSheetEditTablature *current;
+  
+  gdouble first_line_x0, first_line_y0;
+  gdouble current_y0;
+  guint i;
+  
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
-  //TODO:JK: implement me
+  first_line_x0 = x0 + sheet_edit_tablature->margin_left;
+  first_line_y0 = y0;
+
+  current = sheet_edit_tablature;
+
+  current_y0 = first_line_y0;
+  
+  cairo_set_line_width(cr, 0.866);
+
+  do{
+    current_y0 += current->margin_top + (current->staff_extends_top * (current->font_size / 2.0));
+  
+    for(i = 0; i < 5; i++){
+      cairo_move_to(cr,
+		    first_line_x0, current_y0 + ((gdouble) i * (current->font_size / 2.0)));
+      cairo_line_to(cr,
+		    width - (current->margin_left + current->margin_right), current_y0 + ((gdouble) i * (current->font_size / 2.0)));
+      cairo_stroke(cr);
+    }
+    
+    current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
+  }while((current = current->companion_tablature) != NULL);
 }
 
 void
 ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			 AgsSheetEditTablatur *sheet_edit_tablatur,
-			 guint clef,
+			 AgsSheetEditTablature *sheet_edit_tablature,
 			 gdouble x0, gdouble y0,
 			 gdouble clef_font_size)
 {
-  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  GtkSettings *settings;
 
-  //TODO:JK: implement me
+  AgsSheetEditTablature *current;
+
+  gchar *font_name;
+  
+  gdouble first_line_x0, first_line_y0;
+  gdouble current_y0;
+  guint i;
+
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_tablature != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  first_line_x0 = x0 + sheet_edit_tablature->margin_left;
+  first_line_y0 = y0;
+
+  current = sheet_edit_tablature;
+
+  current_y0 = first_line_y0;
+  
+  cairo_set_line_width(cr, 1.0);
+
+  do{
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+
+    gchar *clef_str;
+
+    const gchar *g_clef_str = "𝄞";
+    const gchar *f_clef_str = "𝄢";
+    
+    current_y0 += current->margin_top + (current->staff_extends_top * (current->font_size / 2.0));
+
+    clef_str = NULL;
+
+    switch(current->clef){
+    case AGS_SHEET_EDIT_G_CLEF:
+      {
+	clef_str = g_clef_str;
+      }
+      break;
+    case AGS_SHEET_EDIT_F_CLEF:
+      {
+	clef_str = f_clef_str;
+      }
+      break;
+    }
+    
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  clef_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    current->clef_font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+
+    cairo_move_to(cr,
+		  first_line_x0 + current->clef_translate_x, current_y0 + ((gdouble) i * (current->font_size / 2.0)) + current->clef_translate_y);
+
+    pango_cairo_show_layout(cr,
+    			    layout);
+    
+    current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
+  }while((current = current->companion_tablature) != NULL);
 }
 
 void
 ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			       AgsSheetEditTablatur *sheet_edit_tablatur,
+			       AgsSheetEditTablature *sheet_edit_tablature,
 			       guint sharp_flat,
 			       gboolean is_minor,
 			       gdouble x0, gdouble y0,
 			       gdouble sharp_flat_font_size)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
   //TODO:JK: implement me
 }
 
 void
 ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			 AgsSheetEditTablatur *sheet_edit_tablatur,
+			 AgsSheetEditTablature *sheet_edit_tablature,
 			 AgsNotation *notation,
 			 AgsNote *note,
 			 gdouble x0, gdouble y0,
 			 gdouble key_font_size)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
   //TODO:JK: implement me
 }
 
 void
 ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			 AgsSheetEditTablatur *sheet_edit_tablatur,
+			 AgsSheetEditTablature *sheet_edit_tablature,
 			 guint rest_x0, guint rest_x1,
 			 gdouble x0, gdouble y0,
 			 gdouble rest_font_size)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
   //TODO:JK: implement me
 }
 
 void
 ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			     AgsSheetEditTablatur *sheet_edit_tablatur,
+			     AgsSheetEditTablature *sheet_edit_tablature,
 			     AgsNotation *notation,
 			     guint notation_x0, guint notation_x1,
 			     gdouble x0, gdouble y0,
 			     gdouble key_font_size)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablatur != NULL);
+  g_return_if_fail(sheet_edit_tablature != NULL);
 
   //TODO:JK: implement me
 }
@@ -1372,11 +1499,12 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 {
   GtkStyleContext *style_context;
 
-  GList *tablatur;
+  GList *start_tablature, *tablature;
   
   gint width, height;
   gdouble page_width, page_height;
-
+  gdouble y0;
+  
   style_context = gtk_widget_get_style_context((GtkWidget *) sheet_edit);
 
   width = gtk_widget_get_width(sheet_edit);
@@ -1394,6 +1522,35 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 			cr,
 			0.0, 0.0,
 			(gdouble) width, (gdouble) height);
+
+  tablature =
+    start_tablature = ags_sheet_edit_get_tablature(sheet_edit);
+
+  y0 = 0.0;
+  
+  while(tablature != NULL){
+    if(AGS_SHEET_EDIT_TABLATURE(tablature->data)->is_primary){
+      AgsSheetEditTablature *current;
+      
+      ags_sheet_edit_draw_staff(sheet_edit, cr,
+				tablature->data,
+				0.0, y0,
+				page_width, page_height - y0,
+				AGS_SHEET_EDIT_DEFAULT_FONT_SIZE);
+      ags_sheet_edit_draw_clef(sheet_edit, cr,
+			       tablature->data,
+			       0.0, y0,
+			       AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE);
+
+      current = tablature->data;
+
+      do{
+	y0 += (4.0 * (current->font_size / 2.0) + current->staff_extends_top * (current->font_size / 2.0) + current->staff_extends_bottom * (current->font_size / 2.0) + current->margin_top + current->margin_bottom);
+      }while((current = current->companion_tablature) != NULL);
+    }
+
+    tablature = tablature->next;
+  }
   
   //  ags_sheet_edit_draw_notation(sheet_edit, cr);
 }
