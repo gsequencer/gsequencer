@@ -197,6 +197,8 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 
   g_clef_tablature->is_primary = TRUE;
 
+  g_clef_tablature->is_grand_staff = TRUE;
+
   g_clef_tablature->clef = AGS_SHEET_EDIT_G_CLEF;
   
   ags_sheet_edit_add_tablature(sheet_edit,
@@ -804,8 +806,16 @@ ags_sheet_edit_tablature_alloc()
 
   sheet_edit_tablature->margin_top = 15.0;
   sheet_edit_tablature->margin_bottom = 25.0;
-  sheet_edit_tablature->margin_left = 12.5;
+  sheet_edit_tablature->margin_left = 36.5;
   sheet_edit_tablature->margin_right = 10.0;
+
+  sheet_edit_tablature->is_grand_staff = FALSE;
+
+  sheet_edit_tablature->grand_staff_brace_translate_x = -24.0;
+  sheet_edit_tablature->grand_staff_brace_translate_y = -22.0;
+  sheet_edit_tablature->grand_staff_brace_translate_z = 0.0;
+
+  sheet_edit_tablature->grand_staff_brace_font_size = AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE;
 
   sheet_edit_tablature->clef = AGS_SHEET_EDIT_G_CLEF;
 
@@ -903,14 +913,28 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			  gdouble width, gdouble height,
 			  gdouble font_size)
 {
+  GtkSettings *settings;
+
   AgsSheetEditTablature *current;
   
+  gchar *font_name;
+
   gdouble first_line_x0, first_line_y0;
   gdouble current_y0;
   guint i;
+
+  const gchar *grand_staff_brace_str = "𝄔";
   
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
   g_return_if_fail(sheet_edit_tablature != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
 
   first_line_x0 = x0 + sheet_edit_tablature->margin_left;
   first_line_y0 = y0;
@@ -934,6 +958,34 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
     
     current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
   }while((current = current->companion_tablature) != NULL);
+
+  if(sheet_edit_tablature->is_grand_staff){
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+ 
+    PangoRectangle ink_rect, logical_rect;
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  grand_staff_brace_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    (current_y0 - first_line_y0) * (12.5 / AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE) * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+    
+    cairo_move_to(cr,
+		  first_line_x0 + sheet_edit_tablature->grand_staff_brace_translate_x, first_line_y0 + sheet_edit_tablature->grand_staff_brace_translate_y);
+    
+    pango_cairo_show_layout(cr,
+    			    layout);
+  }
 }
 
 void

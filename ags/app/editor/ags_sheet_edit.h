@@ -58,6 +58,8 @@ G_BEGIN_DECLS
 
 #define AGS_SHEET_EDIT_DEFAULT_TABLATURE_SPACING (24)
 
+#define AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE (24)
+
 #define AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE (20.0)
 
 #define AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE (12.5)
@@ -173,7 +175,15 @@ struct _AgsSheetEditTablature
 
   gdouble margin_left;
   gdouble margin_right;
+
+  gboolean is_grand_staff;
   
+  gdouble grand_staff_brace_translate_x;
+  gdouble grand_staff_brace_translate_y;
+  gdouble grand_staff_brace_translate_z;
+
+  gdouble grand_staff_brace_font_size;
+
   guint clef;
 
   gdouble clef_translate_x;
