@@ -133,7 +133,7 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 {
   GtkAdjustment *adjustment;
 
-  AgsSheetEditTablature *g_clef_tablature, *f_clef_tablature;
+  AgsSheetEditScript *g_clef_script, *f_clef_script;
   
   sheet_edit->flags = 0;
   sheet_edit->connectable_flags = 0;
@@ -160,8 +160,8 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   sheet_edit->notation_x0 = 0;
   sheet_edit->notation_x1 = 64;
 
-  sheet_edit->utf8_tablature_line = NULL;
-  sheet_edit->utf8_tablature_note = NULL;
+  sheet_edit->utf8_script_line = NULL;
+  sheet_edit->utf8_script_note = NULL;
 
   sheet_edit->ps_surface = cairo_ps_surface_create(NULL,
 						   AGS_SHEET_EDIT_DEFAULT_WIDTH, AGS_SHEET_EDIT_DEFAULT_HEIGHT);
@@ -190,31 +190,31 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   sheet_edit->vscrollbar = NULL;
   sheet_edit->hscrollbar = NULL;
 
-  sheet_edit->tablature = NULL;
+  sheet_edit->script = NULL;
 
   /* g clef */
-  g_clef_tablature = ags_sheet_edit_tablature_alloc();
+  g_clef_script = ags_sheet_edit_script_alloc();
 
-  g_clef_tablature->is_primary = TRUE;
+  g_clef_script->is_primary = TRUE;
 
-  g_clef_tablature->is_grand_staff = TRUE;
+  g_clef_script->is_grand_staff = TRUE;
 
-  g_clef_tablature->clef = AGS_SHEET_EDIT_G_CLEF;
+  g_clef_script->clef = AGS_SHEET_EDIT_G_CLEF;
   
-  ags_sheet_edit_add_tablature(sheet_edit,
-			       g_clef_tablature);
+  ags_sheet_edit_add_script(sheet_edit,
+			       g_clef_script);
 
   /* f clef */
-  f_clef_tablature = ags_sheet_edit_tablature_alloc();
+  f_clef_script = ags_sheet_edit_script_alloc();
 
-  f_clef_tablature->clef = AGS_SHEET_EDIT_F_CLEF;
+  f_clef_script->clef = AGS_SHEET_EDIT_F_CLEF;
 
-  f_clef_tablature->clef_translate_y = -14.0;
+  f_clef_script->clef_translate_y = -14.0;
 
-  g_clef_tablature->companion_tablature = f_clef_tablature;
+  g_clef_script->companion_script = f_clef_script;
   
-  ags_sheet_edit_add_tablature(sheet_edit,
-			       f_clef_tablature);
+  ags_sheet_edit_add_script(sheet_edit,
+			       f_clef_script);
   
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
@@ -235,8 +235,8 @@ ags_sheet_edit_finalize(GObject *gobject)
   
   sheet_edit = AGS_SHEET_EDIT(gobject);
 
-  g_free(sheet_edit->utf8_tablature_line);
-  g_free(sheet_edit->utf8_tablature_note);
+  g_free(sheet_edit->utf8_script_line);
+  g_free(sheet_edit->utf8_script_note);
 
   cairo_surface_destroy(sheet_edit->ps_surface);
   
@@ -417,7 +417,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		  (double) page_width, (double) page_height);
   cairo_fill(cr);
 
-  ags_sheet_edit_draw_tablature(sheet_edit, cr,
+  ags_sheet_edit_draw_script(sheet_edit, cr,
 				AGS_SHEET_EDIT_G_CLEF,
 				7,
 				TRUE,
@@ -425,7 +425,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
 				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
-  ags_sheet_edit_draw_tablature(sheet_edit, cr,
+  ags_sheet_edit_draw_script(sheet_edit, cr,
 				AGS_SHEET_EDIT_G_CLEF,
 				7,
 				FALSE,
@@ -434,7 +434,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
 
-  ags_sheet_edit_draw_tablature(sheet_edit, cr,
+  ags_sheet_edit_draw_script(sheet_edit, cr,
 				AGS_SHEET_EDIT_F_CLEF,
 				7,
 				TRUE,
@@ -442,7 +442,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 2.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
 				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
-  ags_sheet_edit_draw_tablature(sheet_edit, cr,
+  ags_sheet_edit_draw_script(sheet_edit, cr,
 				AGS_SHEET_EDIT_F_CLEF,
 				7,
 				FALSE,
@@ -789,133 +789,133 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 }
 #endif
 
-AgsSheetEditTablature*
-ags_sheet_edit_tablature_alloc()
+AgsSheetEditScript*
+ags_sheet_edit_script_alloc()
 {
-  AgsSheetEditTablature *sheet_edit_tablature;
+  AgsSheetEditScript *sheet_edit_script;
 
-  sheet_edit_tablature = (AgsSheetEditTablature *) g_new0(AgsSheetEditTablature,
+  sheet_edit_script = (AgsSheetEditScript *) g_new0(AgsSheetEditScript,
 							  1);
 
-  sheet_edit_tablature->is_primary = FALSE;
+  sheet_edit_script->is_primary = FALSE;
 
-  sheet_edit_tablature->notation_x_start = 0;
-  sheet_edit_tablature->notation_x_end = 16;
+  sheet_edit_script->notation_x_start = 0;
+  sheet_edit_script->notation_x_end = 16;
   
-  sheet_edit_tablature->font_size = AGS_SHEET_EDIT_DEFAULT_FONT_SIZE;
+  sheet_edit_script->font_size = AGS_SHEET_EDIT_DEFAULT_FONT_SIZE;
 
-  sheet_edit_tablature->margin_top = 15.0;
-  sheet_edit_tablature->margin_bottom = 25.0;
-  sheet_edit_tablature->margin_left = 36.5;
-  sheet_edit_tablature->margin_right = 10.0;
+  sheet_edit_script->margin_top = 15.0;
+  sheet_edit_script->margin_bottom = 25.0;
+  sheet_edit_script->margin_left = 36.5;
+  sheet_edit_script->margin_right = 10.0;
 
-  sheet_edit_tablature->is_grand_staff = FALSE;
+  sheet_edit_script->is_grand_staff = FALSE;
 
-  sheet_edit_tablature->grand_staff_brace_translate_x = -24.0;
-  sheet_edit_tablature->grand_staff_brace_translate_y = -22.0;
-  sheet_edit_tablature->grand_staff_brace_translate_z = 0.0;
+  sheet_edit_script->grand_staff_brace_translate_x = -24.0;
+  sheet_edit_script->grand_staff_brace_translate_y = -22.0;
+  sheet_edit_script->grand_staff_brace_translate_z = 0.0;
 
-  sheet_edit_tablature->grand_staff_brace_font_size = AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE;
+  sheet_edit_script->grand_staff_brace_font_size = AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE;
 
-  sheet_edit_tablature->clef = AGS_SHEET_EDIT_G_CLEF;
+  sheet_edit_script->clef = AGS_SHEET_EDIT_G_CLEF;
 
-  sheet_edit_tablature->clef_translate_x = 0.0;
-  sheet_edit_tablature->clef_translate_y = -12.0;
-  sheet_edit_tablature->clef_translate_z = 0.0;
+  sheet_edit_script->clef_translate_x = 0.0;
+  sheet_edit_script->clef_translate_y = -12.0;
+  sheet_edit_script->clef_translate_z = 0.0;
 
-  sheet_edit_tablature->clef_font_size = AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE;
+  sheet_edit_script->clef_font_size = AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE;
   
-  sheet_edit_tablature->staff_extends_top = 0;
-  sheet_edit_tablature->staff_extends_bottom = 0;
+  sheet_edit_script->staff_extends_top = 0;
+  sheet_edit_script->staff_extends_bottom = 0;
 
-  sheet_edit_tablature->staff_x0 = 0.0;
-  sheet_edit_tablature->staff_y0 = 0.0;
+  sheet_edit_script->staff_x0 = 0.0;
+  sheet_edit_script->staff_y0 = 0.0;
 
-  sheet_edit_tablature->staff_width = AGS_SHEET_EDIT_DEFAULT_WIDTH - (sheet_edit_tablature->margin_left + sheet_edit_tablature->margin_right);
-  sheet_edit_tablature->staff_height = ((4.0 + (gdouble) sheet_edit_tablature->staff_extends_top + (gdouble) sheet_edit_tablature->staff_extends_bottom) * sheet_edit_tablature->font_size);
+  sheet_edit_script->staff_width = AGS_SHEET_EDIT_DEFAULT_WIDTH - (sheet_edit_script->margin_left + sheet_edit_script->margin_right);
+  sheet_edit_script->staff_height = ((4.0 + (gdouble) sheet_edit_script->staff_extends_top + (gdouble) sheet_edit_script->staff_extends_bottom) * sheet_edit_script->font_size);
 
-  sheet_edit_tablature->is_minor = FALSE;
-  sheet_edit_tablature->sharp_flat = 0;
+  sheet_edit_script->is_minor = FALSE;
+  sheet_edit_script->sharp_flat = 0;
 
-  sheet_edit_tablature->sharp_translate_x = 0.0;
-  sheet_edit_tablature->sharp_translate_y = 0.0;
-  sheet_edit_tablature->sharp_translate_z = 0.0;
+  sheet_edit_script->sharp_translate_x = 0.0;
+  sheet_edit_script->sharp_translate_y = 0.0;
+  sheet_edit_script->sharp_translate_z = 0.0;
 
-  sheet_edit_tablature->flat_translate_x = 0.0;
-  sheet_edit_tablature->flat_translate_y = -4.0;
-  sheet_edit_tablature->flat_translate_z = 0.0;
+  sheet_edit_script->flat_translate_x = 0.0;
+  sheet_edit_script->flat_translate_y = -4.0;
+  sheet_edit_script->flat_translate_z = 0.0;
 
-  sheet_edit_tablature->sharp_flat_font_size = AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE;
+  sheet_edit_script->sharp_flat_font_size = AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE;
 
-  sheet_edit_tablature->key_translate_x = 0.0;
-  sheet_edit_tablature->key_translate_y = 6.0;
-  sheet_edit_tablature->key_translate_z = 0.0;
+  sheet_edit_script->key_translate_x = 0.0;
+  sheet_edit_script->key_translate_y = 6.0;
+  sheet_edit_script->key_translate_z = 0.0;
 
-  sheet_edit_tablature->key_font_size = AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE;
+  sheet_edit_script->key_font_size = AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE;
 
-  sheet_edit_tablature->rest_translate_x = 0.0;
-  sheet_edit_tablature->rest_translate_y = 0.0;
-  sheet_edit_tablature->rest_translate_z = 0.0;
+  sheet_edit_script->rest_translate_x = 0.0;
+  sheet_edit_script->rest_translate_y = 0.0;
+  sheet_edit_script->rest_translate_z = 0.0;
 
-  sheet_edit_tablature->rest_font_size = AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE;
+  sheet_edit_script->rest_font_size = AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE;
   
-  sheet_edit_tablature->companion_tablature = NULL;
+  sheet_edit_script->companion_script = NULL;
   
-  return(sheet_edit_tablature);
+  return(sheet_edit_script);
 }
 
 void
-ags_sheet_edit_tablature_free(AgsSheetEditTablature *sheet_edit_tablature)
+ags_sheet_edit_script_free(AgsSheetEditScript *sheet_edit_script)
 {
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
-  g_free(sheet_edit_tablature);
+  g_free(sheet_edit_script);
 }
 
 GList*
-ags_sheet_edit_get_tablature(AgsSheetEdit *sheet_edit)
+ags_sheet_edit_get_script(AgsSheetEdit *sheet_edit)
 {
   g_return_val_if_fail(AGS_IS_SHEET_EDIT(sheet_edit), NULL);
 
-  return(g_list_reverse(g_list_copy(sheet_edit->tablature)));
+  return(g_list_reverse(g_list_copy(sheet_edit->script)));
 }
 
 void
-ags_sheet_edit_add_tablature(AgsSheetEdit *sheet_edit,
-			     AgsSheetEditTablature *sheet_edit_tablature)
+ags_sheet_edit_add_script(AgsSheetEdit *sheet_edit,
+			     AgsSheetEditScript *sheet_edit_script)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
-  if(g_list_find(sheet_edit->tablature, sheet_edit_tablature) == NULL){
-    sheet_edit->tablature = g_list_prepend(sheet_edit->tablature,
-					   sheet_edit_tablature);
+  if(g_list_find(sheet_edit->script, sheet_edit_script) == NULL){
+    sheet_edit->script = g_list_prepend(sheet_edit->script,
+					   sheet_edit_script);
   }
 }
 
 void
-ags_sheet_edit_remove_tablature(AgsSheetEdit *sheet_edit,
-				AgsSheetEditTablature *sheet_edit_tablature)
+ags_sheet_edit_remove_script(AgsSheetEdit *sheet_edit,
+				AgsSheetEditScript *sheet_edit_script)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
-  if(g_list_find(sheet_edit->tablature, sheet_edit_tablature) != NULL){
-    sheet_edit->tablature = g_list_remove(sheet_edit->tablature,
-					  sheet_edit_tablature);
+  if(g_list_find(sheet_edit->script, sheet_edit_script) != NULL){
+    sheet_edit->script = g_list_remove(sheet_edit->script,
+					  sheet_edit_script);
   }
 }
 
 void
 ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			  AgsSheetEditTablature *sheet_edit_tablature,
+			  AgsSheetEditScript *sheet_edit_script,
 			  gdouble x0, gdouble y0,
 			  gdouble width, gdouble height,
 			  gdouble font_size)
 {
   GtkSettings *settings;
 
-  AgsSheetEditTablature *current;
+  AgsSheetEditScript *current;
   
   gchar *font_name;
 
@@ -926,7 +926,7 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
   const gchar *grand_staff_brace_str = "𝄔";
   
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
   settings = gtk_settings_get_default();
 
@@ -936,10 +936,10 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	       "gtk-font-name", &font_name,
 	       NULL);
 
-  first_line_x0 = x0 + sheet_edit_tablature->margin_left;
+  first_line_x0 = x0 + sheet_edit_script->margin_left;
   first_line_y0 = y0;
 
-  current = sheet_edit_tablature;
+  current = sheet_edit_script;
 
   current_y0 = first_line_y0;
   
@@ -957,9 +957,9 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
     }
     
     current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
-  }while((current = current->companion_tablature) != NULL);
+  }while((current = current->companion_script) != NULL);
 
-  if(sheet_edit_tablature->is_grand_staff){
+  if(sheet_edit_script->is_grand_staff){
     PangoLayout *layout;
     PangoFontDescription *desc;
  
@@ -981,7 +981,7 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			     &logical_rect);
     
     cairo_move_to(cr,
-		  first_line_x0 + sheet_edit_tablature->grand_staff_brace_translate_x, first_line_y0 + sheet_edit_tablature->grand_staff_brace_translate_y);
+		  first_line_x0 + sheet_edit_script->grand_staff_brace_translate_x, first_line_y0 + sheet_edit_script->grand_staff_brace_translate_y);
     
     pango_cairo_show_layout(cr,
     			    layout);
@@ -990,13 +990,13 @@ ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
 
 void
 ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			 AgsSheetEditTablature *sheet_edit_tablature,
+			 AgsSheetEditScript *sheet_edit_script,
 			 gdouble x0, gdouble y0,
 			 gdouble clef_font_size)
 {
   GtkSettings *settings;
 
-  AgsSheetEditTablature *current;
+  AgsSheetEditScript *current;
 
   gchar *font_name;
   
@@ -1005,7 +1005,7 @@ ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
   guint i;
 
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
   settings = gtk_settings_get_default();
 
@@ -1015,10 +1015,10 @@ ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	       "gtk-font-name", &font_name,
 	       NULL);
 
-  first_line_x0 = x0 + sheet_edit_tablature->margin_left;
+  first_line_x0 = x0 + sheet_edit_script->margin_left;
   first_line_y0 = y0;
 
-  current = sheet_edit_tablature;
+  current = sheet_edit_script;
 
   current_y0 = first_line_y0;
   
@@ -1074,18 +1074,18 @@ ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
     			    layout);
     
     current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
-  }while((current = current->companion_tablature) != NULL);
+  }while((current = current->companion_script) != NULL);
 }
 
 void
 ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			       AgsSheetEditTablature *sheet_edit_tablature,
+			       AgsSheetEditScript *sheet_edit_script,
 			       gdouble x0, gdouble y0,
 			       gdouble sharp_flat_font_size)
 {
   GtkSettings *settings;
 
-  AgsSheetEditTablature *current;
+  AgsSheetEditScript *current;
 
   gchar *font_name;
   
@@ -1094,7 +1094,7 @@ ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
   guint i;
 
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
   settings = gtk_settings_get_default();
 
@@ -1104,10 +1104,10 @@ ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
 	       "gtk-font-name", &font_name,
 	       NULL);
 
-  first_line_x0 = x0 + sheet_edit_tablature->margin_left;
+  first_line_x0 = x0 + sheet_edit_script->margin_left;
   first_line_y0 = y0;
 
-  current = sheet_edit_tablature;
+  current = sheet_edit_script;
 
   current_y0 = first_line_y0;
   
@@ -1399,12 +1399,12 @@ ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
     }
     
     current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
-  }while((current = current->companion_tablature) != NULL);
+  }while((current = current->companion_script) != NULL);
 }
 
 void
 ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			 AgsSheetEditTablature *sheet_edit_tablature,
+			 AgsSheetEditScript *sheet_edit_script,
 			 AgsNotation *notation,
 			 AgsNote *note,
 			 gdouble x0, gdouble y0,
@@ -1440,7 +1440,7 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
   };
 
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
   settings = gtk_settings_get_default();
 
@@ -1526,7 +1526,7 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
 
   key_center = 60;
 
-  if(sheet_edit_tablature->clef == AGS_SHEET_EDIT_G_CLEF){
+  if(sheet_edit_script->clef == AGS_SHEET_EDIT_G_CLEF){
     key_center = 62;
   }
   
@@ -1547,8 +1547,8 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			     &logical_rect);
 
     cairo_move_to(cr,
-		  x0 + sheet_edit_tablature->key_translate_x,
-		  y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_tablature->font_size / 4.0)) + sheet_edit_tablature->key_translate_y);
+		  x0 + sheet_edit_script->key_translate_x,
+		  y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_script->font_size / 4.0)) + sheet_edit_script->key_translate_y);
 	  
     pango_cairo_show_layout(cr,
 			    layout);
@@ -1562,7 +1562,7 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
 
 void
 ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			 AgsSheetEditTablature *sheet_edit_tablature,
+			 AgsSheetEditScript *sheet_edit_script,
 			 guint rest_x0, guint rest_x1,
 			 gdouble x0, gdouble y0,
 			 gdouble rest_font_size)
@@ -1579,14 +1579,14 @@ ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
   };
 
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
   //TODO:JK: implement me
 }
 
 void
 ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			     AgsSheetEditTablature *sheet_edit_tablature,
+			     AgsSheetEditScript *sheet_edit_script,
 			     AgsNotation *notation,
 			     guint notation_x0, guint notation_x1,
 			     gdouble x0, gdouble y0,
@@ -1602,7 +1602,7 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
   guint offset;
 
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
-  g_return_if_fail(sheet_edit_tablature != NULL);
+  g_return_if_fail(sheet_edit_script != NULL);
 
   start_list = ags_notation_get_note(notation);
 
@@ -1627,10 +1627,10 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
 
     if(note_x0 >= notation_x0){
       ags_sheet_edit_draw_note(sheet_edit, cr,
-			       sheet_edit_tablature,
+			       sheet_edit_script,
 			       notation,
 			       note,
-			       x0 + sheet_edit_tablature->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
+			       x0 + sheet_edit_script->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
 			       key_font_size);
 
       if(start_list->prev == NULL ||
@@ -1659,7 +1659,7 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 
   AgsApplicationContext *application_context;
 
-  GList *start_tablature, *tablature;
+  GList *start_script, *script;
   GList *start_notation, *notation;
   
   gint width, height;
@@ -1697,49 +1697,49 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
   notation = 
     start_notation = ags_audio_get_notation(selected_machine->audio);
 
-  tablature =
-    start_tablature = ags_sheet_edit_get_tablature(sheet_edit);
+  script =
+    start_script = ags_sheet_edit_get_script(sheet_edit);
 
   y0 = 0.0;
   
-  while(tablature != NULL){
-    if(AGS_SHEET_EDIT_TABLATURE(tablature->data)->is_primary){
-      AgsSheetEditTablature *current;
+  while(script != NULL){
+    if(AGS_SHEET_EDIT_SCRIPT(script->data)->is_primary){
+      AgsSheetEditScript *current;
       
       ags_sheet_edit_draw_staff(sheet_edit, cr,
-				tablature->data,
+				script->data,
 				0.0, y0,
 				page_width, page_height - y0,
 				AGS_SHEET_EDIT_DEFAULT_FONT_SIZE);
       ags_sheet_edit_draw_clef(sheet_edit, cr,
-			       tablature->data,
+			       script->data,
 			       0.0, y0,
 			       AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE);
       ags_sheet_edit_draw_sharp_flat(sheet_edit, cr,
-				     tablature->data,
+				     script->data,
 				     0.0, y0,
 				     AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE);
 
       if(notation != NULL){
 	ags_sheet_edit_draw_notation(sheet_edit, cr,
-				     tablature->data,
+				     script->data,
 				     notation->data,
 				     0, 16,
 				     0.0, y0,
 				     AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE);
       }
       
-      current = tablature->data;
+      current = script->data;
 
       do{
 	y0 += (4.0 * (current->font_size / 2.0) + current->staff_extends_top * (current->font_size / 2.0) + current->staff_extends_bottom * (current->font_size / 2.0) + current->margin_top + current->margin_bottom);
-      }while((current = current->companion_tablature) != NULL);
+      }while((current = current->companion_script) != NULL);
     }
 
-    tablature = tablature->next;
+    script = script->next;
   }
 
-  g_list_free(start_tablature);
+  g_list_free(start_script);
   
   g_list_free_full(start_notation,
 		   (GDestroyNotify) g_object_unref);

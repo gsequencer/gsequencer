@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 #define AGS_IS_SHEET_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SHEET_EDIT))
 #define AGS_SHEET_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_SHEET_EDIT, AgsSheetEditClass))
 
-#define AGS_SHEET_EDIT_TABLATURE(ptr) ((AgsSheetEditTablature *)(ptr))
+#define AGS_SHEET_EDIT_SCRIPT(ptr) ((AgsSheetEditScript *)(ptr))
 
 #define AGS_SHEET_EDIT_DEFAULT_PAPER_NAME (GTK_PAPER_NAME_LETTER)
 #define AGS_SHEET_EDIT_DEFAULT_WIDTH (612)
@@ -56,7 +56,7 @@ G_BEGIN_DECLS
 
 #define AGS_SHEET_EDIT_DEFAULT_SPACING (6)
 
-#define AGS_SHEET_EDIT_DEFAULT_TABLATURE_SPACING (24)
+#define AGS_SHEET_EDIT_DEFAULT_SCRIPT_SPACING (24)
 
 #define AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE (24)
 
@@ -84,7 +84,7 @@ G_BEGIN_DECLS
 
 typedef struct _AgsSheetEdit AgsSheetEdit;
 typedef struct _AgsSheetEditClass AgsSheetEditClass;
-typedef struct _AgsSheetEditTablature AgsSheetEditTablature;
+typedef struct _AgsSheetEditScript AgsSheetEditScript;
 
 typedef enum{
   AGS_SHEET_EDIT_AUTO_SCROLL           = 1,
@@ -145,8 +145,8 @@ struct _AgsSheetEdit
   guint notation_x0;
   guint notation_x1;
 
-  gchar *utf8_tablature_line;
-  gchar *utf8_tablature_note;
+  gchar *utf8_script_line;
+  gchar *utf8_script_note;
   
   cairo_surface_t *ps_surface;  
   
@@ -155,7 +155,7 @@ struct _AgsSheetEdit
   GtkScrollbar *vscrollbar;
   GtkScrollbar *hscrollbar;
 
-  GList *tablature;
+  GList *script;
 };
 
 struct _AgsSheetEditClass
@@ -163,7 +163,7 @@ struct _AgsSheetEditClass
   GtkGridClass grid;
 };
 
-struct _AgsSheetEditTablature
+struct _AgsSheetEditScript
 {
   gboolean is_primary;
   
@@ -228,51 +228,51 @@ struct _AgsSheetEditTablature
 
   gdouble rest_font_size;
 
-  AgsSheetEditTablature *companion_tablature;
+  AgsSheetEditScript *companion_script;
 };
   
 GType ags_sheet_edit_get_type(void);
 
-AgsSheetEditTablature* ags_sheet_edit_tablature_alloc();
-void ags_sheet_edit_tablature_free(AgsSheetEditTablature *sheet_edit_tablature);
+AgsSheetEditScript* ags_sheet_edit_script_alloc();
+void ags_sheet_edit_script_free(AgsSheetEditScript *sheet_edit_script);
 
-GList* ags_sheet_edit_get_tablature(AgsSheetEdit *sheet_edit);
-void ags_sheet_edit_add_tablature(AgsSheetEdit *sheet_edit,
-				  AgsSheetEditTablature *sheet_edit_tablature);
-void ags_sheet_edit_remove_tablature(AgsSheetEdit *sheet_edit,
-				     AgsSheetEditTablature *sheet_edit_tablature);
+GList* ags_sheet_edit_get_script(AgsSheetEdit *sheet_edit);
+void ags_sheet_edit_add_script(AgsSheetEdit *sheet_edit,
+				  AgsSheetEditScript *sheet_edit_script);
+void ags_sheet_edit_remove_script(AgsSheetEdit *sheet_edit,
+				     AgsSheetEditScript *sheet_edit_script);
 
 void ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			       AgsSheetEditTablature *sheet_edit_tablature,
+			       AgsSheetEditScript *sheet_edit_script,
 			       gdouble x0, gdouble y0,
 			       gdouble width, gdouble height,
 			       gdouble font_size);
 
 void ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			      AgsSheetEditTablature *sheet_edit_tablature,
+			      AgsSheetEditScript *sheet_edit_script,
 			      gdouble x0, gdouble y0,
 			      gdouble clef_font_size);
 
 void ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
-				    AgsSheetEditTablature *sheet_edit_tablature,
+				    AgsSheetEditScript *sheet_edit_script,
 				    gdouble x0, gdouble y0,
 				    gdouble sharp_flat_font_size);
 
 void ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			      AgsSheetEditTablature *sheet_edit_tablature,
+			      AgsSheetEditScript *sheet_edit_script,
 			      AgsNotation *notation,
 			      AgsNote *note,
 			      gdouble x0, gdouble y0,
 			      gdouble key_font_size);
 
 void ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			      AgsSheetEditTablature *sheet_edit_tablature,
+			      AgsSheetEditScript *sheet_edit_script,
 			      guint rest_x0, guint rest_x1,
 			      gdouble x0, gdouble y0,
 			      gdouble rest_font_size);
 
 void ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
-				  AgsSheetEditTablature *sheet_edit_tablature,
+				  AgsSheetEditScript *sheet_edit_script,
 				  AgsNotation *notation,
 				  guint notation_x0, guint notation_x1,
 				  gdouble x0, gdouble y0,
