@@ -851,6 +851,10 @@ ags_sheet_edit_script_alloc()
   sheet_edit_script->key_translate_y = 6.0;
   sheet_edit_script->key_translate_z = 0.0;
 
+  sheet_edit_script->reverse_key_translate_x = 0.0;
+  sheet_edit_script->reverse_key_translate_y = -3.0;
+  sheet_edit_script->reverse_key_translate_z = 0.0;
+
   sheet_edit_script->key_font_size = AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE;
 
   sheet_edit_script->rest_translate_x = 0.0;
@@ -1418,12 +1422,13 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
   PangoFontDescription *desc;
 	
   PangoRectangle ink_rect, logical_rect;
-
+  
   GList *start_list, *list;
 
   gchar *font_name;
   gchar *note_str;
 
+  gdouble page_width, page_height;
   guint key_center;
   guint note_x0, note_x1;
   guint note_y;
@@ -1524,6 +1529,14 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
     }
   }
 
+  if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
+    page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+    page_height = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+  }else{
+    page_width = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+    page_height = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+  }
+
   key_center = 60;
 
   if(sheet_edit_script->clef == AGS_SHEET_EDIT_G_CLEF){
@@ -1546,12 +1559,33 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			     &ink_rect,
 			     &logical_rect);
 
-    cairo_move_to(cr,
-		  x0 + sheet_edit_script->key_translate_x,
-		  y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_script->font_size / 4.0)) + sheet_edit_script->key_translate_y);
-	  
+    //TODO:jk: check + 2 f clef
+    if(note_y + 2 < key_center){
+      cairo_save(cr);
+
+      cairo_translate(cr,
+		      (page_width / 2.0) + (logical_rect.width / PANGO_SCALE), (page_height / 2.0) + (logical_rect.height / PANGO_SCALE));
+      cairo_rotate(cr,
+		   2.0 * M_PI * 0.5);
+      
+      cairo_move_to(cr,
+		    (page_width / 2.0) - (x0 + sheet_edit_script->reverse_key_translate_x),
+		    (page_height / 2.0) + y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_script->font_size / 4.0)) + sheet_edit_script->reverse_key_translate_y);
+
+      pango_cairo_update_layout(cr,
+				layout);
+    }else{
+      cairo_move_to(cr,
+		    x0 + sheet_edit_script->key_translate_x,
+		    y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_script->font_size / 4.0)) + sheet_edit_script->key_translate_y);
+    }
+        
     pango_cairo_show_layout(cr,
 			    layout);
+
+    if(note_y + 2 < key_center){
+      cairo_restore(cr);
+    }
 	    
     g_object_unref(layout);
   }

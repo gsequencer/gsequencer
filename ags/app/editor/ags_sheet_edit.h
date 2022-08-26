@@ -219,6 +219,10 @@ struct _AgsSheetEditScript
   gdouble key_translate_x;
   gdouble key_translate_y;
   gdouble key_translate_z;
+
+  gdouble reverse_key_translate_x;
+  gdouble reverse_key_translate_y;
+  gdouble reverse_key_translate_z;
   
   gdouble key_font_size;
 
