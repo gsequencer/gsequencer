@@ -202,7 +202,7 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   g_clef_script->clef = AGS_SHEET_EDIT_G_CLEF;
   
   ags_sheet_edit_add_script(sheet_edit,
-			       g_clef_script);
+			    g_clef_script);
 
   /* f clef */
   f_clef_script = ags_sheet_edit_script_alloc();
@@ -214,7 +214,7 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   g_clef_script->companion_script = f_clef_script;
   
   ags_sheet_edit_add_script(sheet_edit,
-			       f_clef_script);
+			    f_clef_script);
   
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
@@ -418,37 +418,37 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
   cairo_fill(cr);
 
   ags_sheet_edit_draw_script(sheet_edit, cr,
-				AGS_SHEET_EDIT_G_CLEF,
-				7,
-				TRUE,
-				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+			     AGS_SHEET_EDIT_G_CLEF,
+			     7,
+			     TRUE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
   ags_sheet_edit_draw_script(sheet_edit, cr,
-				AGS_SHEET_EDIT_G_CLEF,
-				7,
-				FALSE,
-				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING,
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+			     AGS_SHEET_EDIT_G_CLEF,
+			     7,
+			     FALSE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING,
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
 
   ags_sheet_edit_draw_script(sheet_edit, cr,
-				AGS_SHEET_EDIT_F_CLEF,
-				7,
-				TRUE,
-				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 2.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+			     AGS_SHEET_EDIT_F_CLEF,
+			     7,
+			     TRUE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 2.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
   ags_sheet_edit_draw_script(sheet_edit, cr,
-				AGS_SHEET_EDIT_F_CLEF,
-				7,
-				FALSE,
-				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 3.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+			     AGS_SHEET_EDIT_F_CLEF,
+			     7,
+			     FALSE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 3.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
   /* test */
   x0 = 0;
@@ -795,9 +795,12 @@ ags_sheet_edit_script_alloc()
   AgsSheetEditScript *sheet_edit_script;
 
   sheet_edit_script = (AgsSheetEditScript *) g_new0(AgsSheetEditScript,
-							  1);
+						    1);
 
   sheet_edit_script->is_primary = FALSE;
+
+  sheet_edit_script->beats = 4;
+  sheet_edit_script->beats_type = 4;
 
   sheet_edit_script->notation_x_start = 0;
   sheet_edit_script->notation_x_end = 16;
@@ -886,27 +889,27 @@ ags_sheet_edit_get_script(AgsSheetEdit *sheet_edit)
 
 void
 ags_sheet_edit_add_script(AgsSheetEdit *sheet_edit,
-			     AgsSheetEditScript *sheet_edit_script)
+			  AgsSheetEditScript *sheet_edit_script)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
   g_return_if_fail(sheet_edit_script != NULL);
 
   if(g_list_find(sheet_edit->script, sheet_edit_script) == NULL){
     sheet_edit->script = g_list_prepend(sheet_edit->script,
-					   sheet_edit_script);
+					sheet_edit_script);
   }
 }
 
 void
 ags_sheet_edit_remove_script(AgsSheetEdit *sheet_edit,
-				AgsSheetEditScript *sheet_edit_script)
+			     AgsSheetEditScript *sheet_edit_script)
 {
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
   g_return_if_fail(sheet_edit_script != NULL);
 
   if(g_list_find(sheet_edit->script, sheet_edit_script) != NULL){
     sheet_edit->script = g_list_remove(sheet_edit->script,
-					  sheet_edit_script);
+				       sheet_edit_script);
   }
 }
 
@@ -1518,14 +1521,14 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
        (gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) < 5){
       note_str = note_strv[4 - (gint) log2((gdouble) (note_next_pos_x0 - note_x0))];
     }else{
-      g_message("out of index");
+      g_warning("index excess");
     }
   }else{
     if((gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) >= 0 &&
        (gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) < 5){
       note_str = note_strv[4 - (gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0))];
     }else{
-      g_message("out of index");
+      g_warning("index excess");
     }
   }
 
@@ -1550,7 +1553,7 @@ ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			  -1);
     desc = pango_font_description_from_string(font_name);
     pango_font_description_set_size(desc,
-				    AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE * PANGO_SCALE);
+				    key_font_size * PANGO_SCALE);
     pango_layout_set_font_description(layout,
 				      desc);
     pango_font_description_free(desc);    
@@ -1601,6 +1604,14 @@ ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			 gdouble x0, gdouble y0,
 			 gdouble rest_font_size)
 {
+  GtkSettings *settings;
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+	
+  PangoRectangle ink_rect, logical_rect;
+
+  gchar *font_name;
   gchar *rest_str;
 
   const gchar* rest_strv[] = {
@@ -1615,7 +1626,57 @@ ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
   g_return_if_fail(sheet_edit_script != NULL);
 
-  //TODO:JK: implement me
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  rest_str = NULL;
+
+  if(16 * (guint) floor(rest_x0 / 16.0) + 16 >= rest_x1){
+    if((gint) log2((gdouble) (rest_x1 - rest_x0)) >= 0 &&
+       (gint) log2((gdouble) (rest_x1 - rest_x0)) < 5){
+      rest_str = rest_strv[4 - (gint) log2((gdouble) (rest_x1 - rest_x0))];
+    }else{
+      g_warning("index excess");
+    }
+  }else{
+    if((gint) log2((gdouble) ((16 * (guint) floor(rest_x0 / 16.0) + 16) - rest_x0)) >= 0 &&
+       (gint) log2((gdouble) ((16 * (guint) floor(rest_x0 / 16.0) + 16) - rest_x0)) < 5){
+      rest_str = rest_strv[4 - (gint) log2((gdouble) ((16 * (guint) floor(rest_x0 / 16.0) + 16) - rest_x0))];
+    }else{
+      g_warning("index excess");
+    }
+  }
+  
+  if(rest_str != NULL){
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  rest_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    rest_font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+
+    cairo_move_to(cr,
+		  x0 + sheet_edit_script->rest_translate_x,
+		  y0 + sheet_edit_script->rest_translate_y);
+        
+    pango_cairo_show_layout(cr,
+			    layout);
+	    
+    g_object_unref(layout);
+  }
 }
 
 void
@@ -1624,17 +1685,18 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
 			     AgsNotation *notation,
 			     guint notation_x0, guint notation_x1,
 			     gdouble x0, gdouble y0,
-			     gdouble key_font_size)
+			     gdouble key_font_size, gdouble rest_font_size)
 {
   AgsNote *note;
 
   GList *start_list, *list;
 
-  guint note_x0;    
+  guint beats, beats_type;
+  guint note_x0, note_x1;
   guint prev_note_x0;
-  guint i;
+  guint iter_rest;
   guint offset;
-
+  
   g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
   g_return_if_fail(sheet_edit_script != NULL);
 
@@ -1642,40 +1704,97 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
 
   list = start_list;
 
+  beats = sheet_edit_script->beats;
+  beats_type = sheet_edit_script->beats_type;
+  
   prev_note_x0 = 0;
   
   offset = 0;
+
+  iter_rest = 0;
   
   while(list != NULL){
+    gboolean has_rest;
+    gboolean do_iterate;
+    
     note = AGS_NOTE(list->data);
     
     note_x0 = 0;
+    note_x1 = 0;
 	
     g_object_get(note,
 		 "x0", &note_x0,
+		 "x1", &note_x1,
 		 NULL);
 
-    if(note_x0 > notation_x1){
+    has_rest = FALSE;
+
+    if(iter_rest < note_x0 &&
+       iter_rest < notation_x0){
+      if(note_x0 % beats_type != 0){
+	guint rest_x0, rest_x1;	
+	
+	has_rest = TRUE;
+	do_iterate = FALSE;
+
+	if(iter_rest + beats_type < note_x0){
+	  rest_x0 = iter_rest;
+	  rest_x1 = iter_rest + (note_x0 % beats_type);
+
+	  iter_rest = rest_x1;
+	}else{
+	  guint i;
+
+	  for(i = iter_rest % beats_type; i < beats_type; i++){
+	    if(iter_rest + (i * beats_type) >= note_x0){
+	      break;
+	    }
+	  }
+
+	  rest_x0 = iter_rest;
+	  rest_x1 = iter_rest + (i * beats_type);
+
+	  iter_rest = rest_x1;	  
+	}
+
+	offset += AGS_SHEET_EDIT_DEFAULT_KEY_PADDING;
+	
+	ags_sheet_edit_draw_rest(sheet_edit, cr,
+				 sheet_edit_script,
+				 rest_x0, rest_x1,
+				 x0 + sheet_edit_script->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
+				 rest_font_size);
+      }
+    }
+    
+    if(note_x0 >= notation_x1){
       break;
     }
 
+    do_iterate = TRUE;
+    
     if(note_x0 >= notation_x0){
-      ags_sheet_edit_draw_note(sheet_edit, cr,
-			       sheet_edit_script,
-			       notation,
-			       note,
-			       x0 + sheet_edit_script->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
-			       key_font_size);
-
-      if(start_list->prev == NULL ||
-	 prev_note_x0 != note_x0){
+      if(!has_rest &&
+	 do_iterate &&
+	 ((list->prev == NULL && note_x0 == 0) ||
+	  (list->prev != NULL && (gint64) (note_x0 - prev_note_x0) < (gint64) beats_type))){
 	offset += AGS_SHEET_EDIT_DEFAULT_KEY_PADDING;
-      }
 
-      prev_note_x0 = note_x0;
+	ags_sheet_edit_draw_note(sheet_edit, cr,
+				 sheet_edit_script,
+				 notation,
+				 note,
+				 x0 + sheet_edit_script->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
+				 key_font_size);
+
+	prev_note_x0 = note_x0;
+	iter_rest = note_x0;
+      }
     }
 
-    list = list->next;
+    if(do_iterate){
+      list = list->next;
+    }
   }
 
   g_list_free_full(start_list,
@@ -1760,7 +1879,7 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 				     notation->data,
 				     0, 16,
 				     0.0, y0,
-				     AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE);
+				     AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE, AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE);
       }
       
       current = script->data;

@@ -166,6 +166,9 @@ struct _AgsSheetEditClass
 struct _AgsSheetEditScript
 {
   gboolean is_primary;
+
+  guint beats;
+  guint beats_type;
   
   guint notation_x_start;
   guint notation_x_end;
@@ -280,7 +283,7 @@ void ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
 				  AgsNotation *notation,
 				  guint notation_x0, guint notation_x1,
 				  gdouble x0, gdouble y0,
-				  gdouble key_font_size);
+				  gdouble key_font_size, gdouble rest_font_size);
 
 void ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr);
 
