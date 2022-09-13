@@ -5,9 +5,9 @@ The gsequencer binary provides you a user interface. It allows you to play, capt
 automation and wave form editor. It has machines for playing drum samples, Soundfont2 sound containers and synthesizers. They
 usually can be connected to a MIDI input source (instrument). All sources need to be connected to the sink provided by AgsPanel,
 thus the properties dialog from machine's context menu is responsible. The engine is extensible by following plugin formats:
-LADSPA, DSSI and LV2. It has support for various audio backends like ALSA, Pulseaudio, JACK, OSSv4 and CoreAudio.
+LADSPA, DSSI, LV2 and VST3. It has support for various audio backends like ALSA, Pulseaudio, JACK, OSSv4 and CoreAudio.
 
-Copyright (C) 2005-2020 Joël Krähemann
+Copyright (C) 2005-2022 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

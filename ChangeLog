@@ -1,7 +1,7 @@
 ags (4.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsSheetEdit
+	* implemented ags_sound_resource_read_audio_signal_at_once() giving more accurate resampling
 
 ags (4.3.4)
 

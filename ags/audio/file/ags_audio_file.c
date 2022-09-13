@@ -2242,9 +2242,15 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   g_rec_mutex_unlock(audio_file_mutex);
 
   /* read audio signal */
-  list = ags_sound_resource_read_audio_signal(AGS_SOUND_RESOURCE(sound_resource),
-					      soundcard,
-					      audio_channel);
+  if(ags_audio_file_test_flags(audio_file, AGS_AUDIO_FILE_READ_SAMPLE_AT_ONCE)){
+    list = ags_sound_resource_read_audio_signal_at_once(AGS_SOUND_RESOURCE(sound_resource),
+							soundcard,
+							audio_channel);
+  }else{
+    list = ags_sound_resource_read_audio_signal(AGS_SOUND_RESOURCE(sound_resource),
+						soundcard,
+						audio_channel);
+  }
  
   /* set audio signal */
   g_rec_mutex_lock(audio_file_mutex);
