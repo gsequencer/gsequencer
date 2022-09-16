@@ -135,6 +135,10 @@ void ags_sound_resource_seek(AgsSoundResource *sound_resource,
 GList* ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					    GObject *soundcard,
 					    gint audio_channel);
+GList* ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
+						    GObject *soundcard,
+						    gint audio_channel);
+
 GList* ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 				    GObject *soundcard,
 				    gint audio_channel,

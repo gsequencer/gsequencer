@@ -29,6 +29,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <cairo.h>
 #include <cairo-ps.h>
+#include <pango/pango.h>
 
 #include <math.h>
 
@@ -132,6 +133,8 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 {
   GtkAdjustment *adjustment;
 
+  AgsSheetEditScript *g_clef_script, *f_clef_script;
+  
   sheet_edit->flags = 0;
   sheet_edit->connectable_flags = 0;
   sheet_edit->mode = AGS_SHEET_EDIT_NO_EDIT_MODE;
@@ -157,8 +160,8 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   sheet_edit->notation_x0 = 0;
   sheet_edit->notation_x1 = 64;
 
-  sheet_edit->utf8_tablature_line = NULL;
-  sheet_edit->utf8_tablature_note = NULL;
+  sheet_edit->utf8_script_line = NULL;
+  sheet_edit->utf8_script_note = NULL;
 
   sheet_edit->ps_surface = cairo_ps_surface_create(NULL,
 						   AGS_SHEET_EDIT_DEFAULT_WIDTH, AGS_SHEET_EDIT_DEFAULT_HEIGHT);
@@ -183,7 +186,36 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 		  (GtkWidget *) sheet_edit->drawing_area,
 		  0, 0,
 		  1, 1);
-    
+
+  sheet_edit->vscrollbar = NULL;
+  sheet_edit->hscrollbar = NULL;
+
+  sheet_edit->script = NULL;
+
+  /* g clef */
+  g_clef_script = ags_sheet_edit_script_alloc();
+
+  g_clef_script->is_primary = TRUE;
+
+  g_clef_script->is_grand_staff = TRUE;
+
+  g_clef_script->clef = AGS_SHEET_EDIT_G_CLEF;
+  
+  ags_sheet_edit_add_script(sheet_edit,
+			    g_clef_script);
+
+  /* f clef */
+  f_clef_script = ags_sheet_edit_script_alloc();
+
+  f_clef_script->clef = AGS_SHEET_EDIT_F_CLEF;
+
+  f_clef_script->clef_translate_y = -14.0;
+
+  g_clef_script->companion_script = f_clef_script;
+  
+  ags_sheet_edit_add_script(sheet_edit,
+			    f_clef_script);
+  
   /* auto-scroll */
   if(ags_sheet_edit_auto_scroll == NULL){
     ags_sheet_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -203,8 +235,8 @@ ags_sheet_edit_finalize(GObject *gobject)
   
   sheet_edit = AGS_SHEET_EDIT(gobject);
 
-  g_free(sheet_edit->utf8_tablature_line);
-  g_free(sheet_edit->utf8_tablature_note);
+  g_free(sheet_edit->utf8_script_line);
+  g_free(sheet_edit->utf8_script_note);
 
   cairo_surface_destroy(sheet_edit->ps_surface);
   
@@ -302,35 +334,67 @@ ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget)
   }
 }
 
-void
-ags_sheet_edit_draw_tablature(AgsSheetEdit *sheet_edit, cairo_t *cr,
-			      gint position,
-			      gdouble x0, gdouble y0,
-			      gdouble width, gdouble height)
-{
-  guint i;
-  
-  cairo_set_source_rgba(cr,
-			0.0,
-			0.0,
-			0.0,
-			1.0);
-
-  cairo_set_line_width(cr, 0.67);
-
-  for(i = 0; i < 5; i++){
-    cairo_move_to(cr,
-		  (double) x0, y0 + (gdouble) (i * (height / 4)));
-    cairo_line_to(cr,
-		  (double) x0 + width, y0 + (gdouble) (i * (height / 4)));
-    cairo_stroke(cr);
-  }
-}
-
+#if 0
 void
 ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 {
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *toolbar;
+  AgsMachine *selected_machine;
+
+  AgsNotebook *notebook;
+
+  GtkSettings *settings;
+  
+  AgsTimestamp *timestamp;
+  AgsTimestamp *current_timestamp;    
+
+  AgsApplicationContext *application_context;
+
+  GList *start_list_notation, *list_notation;
+
+  gchar *font_name;
+  
   gdouble page_width, page_height;
+  gdouble offset;
+  guint x0, x1;
+  guint prev_note_x0, prev_note_x1;
+  guint audio_channels;
+  guint input_pads;
+  guint midi_start_mapping;
+  guint audio_channel;
+  guint i;
+  guint offset_counter;
+  gboolean is_next_rest;
+  
+  const gchar* note_strv[] = {
+    "𝅝",
+    "𝅗𝅥",
+    "𝅘𝅥",
+    "𝅘𝅥𝅮",
+    "𝅘𝅥𝅯",
+    NULL,
+  };
+  
+  application_context = ags_application_context_get_instance();
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  /*  */
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) sheet_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+    
+  notebook = composite_editor->sheet_edit->channel_selector;
+    
+  toolbar = composite_editor->toolbar;
+
+  selected_machine = composite_editor->selected_machine;
 
   if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
     page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;
@@ -339,6 +403,8 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
     page_width = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
     page_height = AGS_SHEET_EDIT_DEFAULT_WIDTH;
   }  
+
+  offset = 0.0;  
 
   /* clear with white color */
   cairo_set_source_rgba(cr,
@@ -351,22 +417,1419 @@ ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr)
 		  (double) page_width, (double) page_height);
   cairo_fill(cr);
 
-  ags_sheet_edit_draw_tablature(sheet_edit, cr,
-				0,
-				(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
-				page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 5.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+  ags_sheet_edit_draw_script(sheet_edit, cr,
+			     AGS_SHEET_EDIT_G_CLEF,
+			     7,
+			     TRUE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP,
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
 
+  ags_sheet_edit_draw_script(sheet_edit, cr,
+			     AGS_SHEET_EDIT_G_CLEF,
+			     7,
+			     FALSE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING,
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+
+
+  ags_sheet_edit_draw_script(sheet_edit, cr,
+			     AGS_SHEET_EDIT_F_CLEF,
+			     7,
+			     TRUE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 2.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+
+  ags_sheet_edit_draw_script(sheet_edit, cr,
+			     AGS_SHEET_EDIT_F_CLEF,
+			     7,
+			     FALSE,
+			     0,
+			     (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + 3.0 * (4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT + AGS_SHEET_EDIT_DEFAULT_TABLATUR_SPACING),
+			     page_width - (AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_RIGHT), 4.0 * AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT);
+
+  /* test */
+  x0 = 0;
+
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  start_list_notation = ags_audio_get_notation(selected_machine->audio);
+
+  audio_channels = ags_audio_get_audio_channels(selected_machine->audio);
+
+  input_pads = ags_audio_get_input_pads(selected_machine->audio);
+
+  midi_start_mapping = ags_audio_get_midi_start_mapping(selected_machine->audio);
+  
+  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+
+  offset = 100.0;
+
+  offset_counter = 0;
+
+  prev_note_x0 = 0;
+  prev_note_x1 = 0;
+
+  is_next_rest = FALSE;
+  
+  for(i = 0; i < audio_channels; i++){
+    list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
+						     timestamp);
+    
+    while(list_notation != NULL){
+      AgsNotation *notation;
+
+      GList *start_list_note, *list_note;
+
+      notation = AGS_NOTATION(list_notation->data);
+
+      g_object_get(notation,
+		   "audio-channel", &audio_channel,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) > AGS_NOTATION_DEFAULT_OFFSET * floor((double) x1 / (double) AGS_NOTATION_DEFAULT_OFFSET) + AGS_NOTATION_DEFAULT_OFFSET){
+	break;
+      }
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_NOTATION_DEFAULT_OFFSET < x0){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+      
+      if(i != audio_channel){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+
+      start_list_note = NULL;
+
+      g_object_get(notation,
+		   "note", &start_list_note,
+		   NULL);
+      
+      list_note = start_list_note;
+
+      while(list_note != NULL){
+	AgsNote *note, *note_next;
+
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+	
+	PangoRectangle ink_rect, logical_rect;
+
+	GList *list;
+
+	gchar *note_str;
+	gchar *rest_str;
+	
+	guint note_x0, note_x1;
+	guint note_y;
+	guint note_next_x0, note_next_x1;
+	guint note_next_pos_x0, note_next_pos_x1;
+	gboolean success;
+	
+	note = AGS_NOTE(list_note->data);
+
+	note_next = NULL;
+
+	if(list_note->next != NULL){
+	  note_next = AGS_NOTE(list_note->next->data);
+	}
+	
+	note_x0 = 0;
+	note_x1 = 0;
+
+	note_y = 0;
+	
+	g_object_get(note,
+		     "x0", &note_x0,
+		     "x1", &note_x1,
+		     "y", &note_y,
+		     NULL);
+	
+	note_next_x0 = 0;
+	note_next_x1 = 0;
+
+	if(note_next != NULL){
+	  g_object_get(note_next,
+		       "x0", &note_next_x0,
+		       "x1", &note_next_x1,
+		       NULL);
+	}
+
+	note_next_pos_x0 = 0;
+	note_next_pos_x1 = 0;
+
+	list = list_note->next;
+		    
+	while(list != NULL){
+	  note_next_pos_x0 = 0;
+	  note_next_pos_x1 = 0;
+		      
+	  g_object_get(list->data,
+		       "x0", &note_next_pos_x0,
+		       "x1", &note_next_pos_x1,
+		       NULL);
+
+	  if(note_next_pos_x0 > note_x0){
+	    break;
+	  }
+		      
+	  list = list->next;
+	}
+
+	if(list == NULL){
+	  note_next_pos_x0 = 0;
+	  note_next_pos_x1 = 0;
+	}
+	
+	note_str = NULL;
+	rest_str = NULL;
+
+	success = FALSE;
+
+	if(!is_next_rest){
+	  if((note_next_pos_x0 != note_next_pos_x1 &&
+	      note_next_pos_x0 - note_x0 <= 16)){
+	    if(note_x1 <= (guint) (16.0 * floor(note_x0 / 16.0) + 16.0)){
+	      if((gint) log2((gdouble) (note_next_pos_x0 - note_x0)) >= 0 &&
+		 (gint) log2((gdouble) (note_next_pos_x0 - note_x0)) < 5){
+		success = TRUE;
+	  
+		note_str = note_strv[4 - (gint) log2((gdouble) (note_next_pos_x0 - note_x0))];
+
+		if(note_x0 != note_next_x0){
+		  offset_counter += (note_next_pos_x0 - note_x0);
+		}
+	      }
+	    }else{
+	    }
+	  }else if((note_next_pos_x0 != note_next_pos_x1 &&
+		    note_next_pos_x0 - note_x0 > 16)){
+	    if(note_x1 <= (guint) (16.0 * floor(note_x0 / 16.0) + 16.0)){
+	      if((gint) log2((gdouble) ((guint) (16.0 * floor(note_x0 / 16.0) + 16.0) - note_x0)) >= 0 &&
+		 (gint) log2((gdouble) ((guint) (16.0 * floor(note_x0 / 16.0) + 16.0) - note_x0)) < 5){
+		success = TRUE;
+		is_next_rest = TRUE;
+	  
+		note_str = note_strv[4 - (gint) log2((gdouble) ((guint) (16.0 * floor(note_x0 / 16.0) + 16.0) - note_x0))];
+
+		if(note_x0 != note_next_x0){
+		  offset_counter += ((guint) (16.0 * floor(note_x0 / 16.0) + 16.0) - note_x0);
+		}
+	      }
+	    }else{
+	    }	  
+	  }else if(note_next_pos_x0 == note_next_pos_x1 &&
+		   note_x1 - note_x0 <= 16){
+	    if(note_x1 <= (guint) (16.0 * floor(note_x0 / 16.0) + 16.0)){
+	      if((gint) log2((gdouble) (note_x1 - note_x0)) >= 0 &&
+		 (gint) log2((gdouble) (note_x1 - note_x0)) < 5){
+		success = TRUE;
+	  
+		note_str = note_strv[4 - (gint) log2((gdouble) (note_x1 - note_x0))];
+
+		offset_counter += (note_x1 - note_x0);
+	      }
+	    }else{
+	    }
+	  }
+	}else{
+	  is_next_rest = FALSE;
+	}
+	
+	if(!success){
+	  if(prev_note_x0 != prev_note_x1){
+	    if(offset_counter % 16 == 0 && offset_counter + 16 <= note_x0){
+	      rest_str = "𝄻";
+
+	      offset_counter += 16;
+	    }else if(offset_counter % 8 == 0 && offset_counter + 8 <= note_x0 && prev_note_x0 + 8 <= offset_counter){
+	      rest_str = "𝄼";
+
+	      offset_counter += 8;
+	    }else if(offset_counter % 4 == 0 && offset_counter + 4 <= note_x0 && prev_note_x0 + 4 <= offset_counter){
+	      rest_str = "𝄽";
+
+	      offset_counter += 4;
+	    }else if(offset_counter % 2 == 0 && offset_counter + 2 <= note_x0 && prev_note_x0 + 2 <= offset_counter){
+	      rest_str = "𝄾";
+
+	      offset_counter += 2;
+	    }else if(offset_counter + 1 == note_x0 && prev_note_x0 + 1 == offset_counter){
+	      rest_str = "𝄿";
+
+	      offset_counter += 1;
+	    }
+	  }else{
+	    if(offset_counter % 16 == 0 && offset_counter + 16 <= note_x0){
+	      rest_str = "𝄻";
+
+	      offset_counter += 16;
+	    }else if(offset_counter % 8 == 0 && offset_counter + 8 <= note_x0){
+	      rest_str = "𝄼";
+
+	      offset_counter += 8;
+	    }else if(offset_counter % 4 == 0 && offset_counter + 4 <= note_x0){
+	      rest_str = "𝄽";
+
+	      offset_counter += 4;
+	    }else if(offset_counter % 2 == 0 && offset_counter + 2 <= note_x0){
+	      rest_str = "𝄾";
+
+	      offset_counter += 2;
+	    }else if(offset_counter + 1 == note_x0){
+	      rest_str = "𝄿";
+
+	      offset_counter += 1;
+	    }
+	  }
+	}
+	
+	if(note_str != NULL){
+	  layout = pango_cairo_create_layout(cr);
+	  pango_layout_set_text(layout,
+				note_str,
+				-1);
+	  desc = pango_font_description_from_string(font_name);
+	  pango_font_description_set_size(desc,
+					  AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE * PANGO_SCALE);
+	  pango_layout_set_font_description(layout,
+					    desc);
+	  pango_font_description_free(desc);    
+
+	  pango_layout_get_extents(layout,
+				   &ink_rect,
+				   &logical_rect);
+
+	  //TODO:JK: improve me
+	  cairo_move_to(cr,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + (((gdouble) note_y - 62.0) * ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT / 2.0)) - (((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0) / 8.0) - 1.0);
+	  
+	  pango_cairo_show_layout(cr,
+				  layout);
+    
+	  if(note_x0 < note_next_x0 ||
+	     note_next_x0 == note_next_x1){
+	    offset += 2.5 * (logical_rect.width / PANGO_SCALE);
+
+	    if(offset_counter % 16 == 0){
+	      cairo_move_to(cr,
+			    (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP);
+	      cairo_line_to(cr,
+			    (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0));
+	      cairo_stroke(cr);	      
+
+	      offset += 2.5 * (logical_rect.width / PANGO_SCALE);
+	    }
+	  }
+	    
+	  g_object_unref(layout);
+	}
+
+	if(rest_str != NULL){
+	  layout = pango_cairo_create_layout(cr);
+	  pango_layout_set_text(layout,
+				rest_str,
+				-1);
+	  desc = pango_font_description_from_string(font_name);
+	  pango_font_description_set_size(desc,
+					  AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE * PANGO_SCALE);
+	  pango_layout_set_font_description(layout,
+					    desc);
+	  pango_font_description_free(desc);    
+
+	  pango_layout_get_extents(layout,
+				   &ink_rect,
+				   &logical_rect);
+
+	  //TODO:JK: improve me
+	  cairo_move_to(cr,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset,
+			(gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + (1.0 * ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT / 2.0)) - (((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0) / 8.0) - 1.0);
+	  
+	  pango_cairo_show_layout(cr,
+				  layout);
+    
+	  offset += 2.5 * (logical_rect.width / PANGO_SCALE);
+
+	  if(offset_counter % 16 == 0){	      
+	    cairo_move_to(cr,
+			  (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP);
+	    cairo_line_to(cr,
+			  (gdouble) AGS_SHEET_EDIT_DEFAULT_SPACING + AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_LEFT + offset, (gdouble) AGS_SHEET_EDIT_DEFAULT_PAGE_MARGIN_TOP + ((gdouble) AGS_SHEET_EDIT_DEFAULT_NOTE_HEIGHT * 4.0));
+	    cairo_stroke(cr);	      
+
+	    offset += 2.5 * (logical_rect.width / PANGO_SCALE);
+	  }
+	    
+	  g_object_unref(layout);
+	}
+	
+	if(success){
+	  list_note = list_note->next;
+	}
+      }
+
+      g_list_free_full(start_list_note,
+		       g_object_unref);
+      
+      list_notation = list_notation->next;
+    }
+  }
+}
+#endif
+
+AgsSheetEditScript*
+ags_sheet_edit_script_alloc()
+{
+  AgsSheetEditScript *sheet_edit_script;
+
+  sheet_edit_script = (AgsSheetEditScript *) g_new0(AgsSheetEditScript,
+						    1);
+
+  sheet_edit_script->is_primary = FALSE;
+
+  sheet_edit_script->beats = 4;
+  sheet_edit_script->beats_type = 4;
+
+  sheet_edit_script->notation_x_start = 0;
+  sheet_edit_script->notation_x_end = 16;
+  
+  sheet_edit_script->font_size = AGS_SHEET_EDIT_DEFAULT_FONT_SIZE;
+
+  sheet_edit_script->margin_top = 15.0;
+  sheet_edit_script->margin_bottom = 25.0;
+  sheet_edit_script->margin_left = 36.5;
+  sheet_edit_script->margin_right = 10.0;
+
+  sheet_edit_script->is_grand_staff = FALSE;
+
+  sheet_edit_script->grand_staff_brace_translate_x = -24.0;
+  sheet_edit_script->grand_staff_brace_translate_y = -22.0;
+  sheet_edit_script->grand_staff_brace_translate_z = 0.0;
+
+  sheet_edit_script->grand_staff_brace_font_size = AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE;
+
+  sheet_edit_script->clef = AGS_SHEET_EDIT_G_CLEF;
+
+  sheet_edit_script->clef_translate_x = 0.0;
+  sheet_edit_script->clef_translate_y = -12.0;
+  sheet_edit_script->clef_translate_z = 0.0;
+
+  sheet_edit_script->clef_font_size = AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE;
+  
+  sheet_edit_script->staff_extends_top = 0;
+  sheet_edit_script->staff_extends_bottom = 0;
+
+  sheet_edit_script->staff_x0 = 0.0;
+  sheet_edit_script->staff_y0 = 0.0;
+
+  sheet_edit_script->staff_width = AGS_SHEET_EDIT_DEFAULT_WIDTH - (sheet_edit_script->margin_left + sheet_edit_script->margin_right);
+  sheet_edit_script->staff_height = ((4.0 + (gdouble) sheet_edit_script->staff_extends_top + (gdouble) sheet_edit_script->staff_extends_bottom) * sheet_edit_script->font_size);
+
+  sheet_edit_script->is_minor = FALSE;
+  sheet_edit_script->sharp_flat = 0;
+
+  sheet_edit_script->sharp_translate_x = 0.0;
+  sheet_edit_script->sharp_translate_y = 0.0;
+  sheet_edit_script->sharp_translate_z = 0.0;
+
+  sheet_edit_script->flat_translate_x = 0.0;
+  sheet_edit_script->flat_translate_y = -4.0;
+  sheet_edit_script->flat_translate_z = 0.0;
+
+  sheet_edit_script->sharp_flat_font_size = AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE;
+
+  sheet_edit_script->key_translate_x = 0.0;
+  sheet_edit_script->key_translate_y = 6.0;
+  sheet_edit_script->key_translate_z = 0.0;
+
+  sheet_edit_script->reverse_key_translate_x = 0.0;
+  sheet_edit_script->reverse_key_translate_y = -3.0;
+  sheet_edit_script->reverse_key_translate_z = 0.0;
+
+  sheet_edit_script->key_font_size = AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE;
+
+  sheet_edit_script->rest_translate_x = 0.0;
+  sheet_edit_script->rest_translate_y = 0.0;
+  sheet_edit_script->rest_translate_z = 0.0;
+
+  sheet_edit_script->rest_font_size = AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE;
+  
+  sheet_edit_script->companion_script = NULL;
+  
+  return(sheet_edit_script);
+}
+
+void
+ags_sheet_edit_script_free(AgsSheetEditScript *sheet_edit_script)
+{
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  g_free(sheet_edit_script);
+}
+
+GList*
+ags_sheet_edit_get_script(AgsSheetEdit *sheet_edit)
+{
+  g_return_val_if_fail(AGS_IS_SHEET_EDIT(sheet_edit), NULL);
+
+  return(g_list_reverse(g_list_copy(sheet_edit->script)));
+}
+
+void
+ags_sheet_edit_add_script(AgsSheetEdit *sheet_edit,
+			  AgsSheetEditScript *sheet_edit_script)
+{
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  if(g_list_find(sheet_edit->script, sheet_edit_script) == NULL){
+    sheet_edit->script = g_list_prepend(sheet_edit->script,
+					sheet_edit_script);
+  }
+}
+
+void
+ags_sheet_edit_remove_script(AgsSheetEdit *sheet_edit,
+			     AgsSheetEditScript *sheet_edit_script)
+{
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  if(g_list_find(sheet_edit->script, sheet_edit_script) != NULL){
+    sheet_edit->script = g_list_remove(sheet_edit->script,
+				       sheet_edit_script);
+  }
+}
+
+void
+ags_sheet_edit_draw_staff(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			  AgsSheetEditScript *sheet_edit_script,
+			  gdouble x0, gdouble y0,
+			  gdouble width, gdouble height,
+			  gdouble font_size)
+{
+  GtkSettings *settings;
+
+  AgsSheetEditScript *current;
+  
+  gchar *font_name;
+
+  gdouble first_line_x0, first_line_y0;
+  gdouble current_y0;
+  guint i;
+
+  const gchar *grand_staff_brace_str = "𝄔";
+  
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  first_line_x0 = x0 + sheet_edit_script->margin_left;
+  first_line_y0 = y0;
+
+  current = sheet_edit_script;
+
+  current_y0 = first_line_y0;
+  
+  cairo_set_line_width(cr, 0.866);
+
+  do{
+    current_y0 += current->margin_top + (current->staff_extends_top * (current->font_size / 2.0));
+  
+    for(i = 0; i < 5; i++){
+      cairo_move_to(cr,
+		    first_line_x0, current_y0 + ((gdouble) i * (current->font_size / 2.0)));
+      cairo_line_to(cr,
+		    width - (current->margin_left + current->margin_right), current_y0 + ((gdouble) i * (current->font_size / 2.0)));
+      cairo_stroke(cr);
+    }
+    
+    current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
+  }while((current = current->companion_script) != NULL);
+
+  if(sheet_edit_script->is_grand_staff){
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+ 
+    PangoRectangle ink_rect, logical_rect;
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  grand_staff_brace_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    (current_y0 - first_line_y0) * (12.5 / AGS_SHEET_EDIT_DEFAULT_GRAND_BRACE_STAFF_FONT_SIZE) * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+    
+    cairo_move_to(cr,
+		  first_line_x0 + sheet_edit_script->grand_staff_brace_translate_x, first_line_y0 + sheet_edit_script->grand_staff_brace_translate_y);
+    
+    pango_cairo_show_layout(cr,
+    			    layout);
+  }
+}
+
+void
+ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			 AgsSheetEditScript *sheet_edit_script,
+			 gdouble x0, gdouble y0,
+			 gdouble clef_font_size)
+{
+  GtkSettings *settings;
+
+  AgsSheetEditScript *current;
+
+  gchar *font_name;
+  
+  gdouble first_line_x0, first_line_y0;
+  gdouble current_y0;
+  guint i;
+
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  first_line_x0 = x0 + sheet_edit_script->margin_left;
+  first_line_y0 = y0;
+
+  current = sheet_edit_script;
+
+  current_y0 = first_line_y0;
+  
+  cairo_set_line_width(cr, 1.0);
+
+  do{
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+
+    gchar *clef_str;
+
+    const gchar *g_clef_str = "𝄞";
+    const gchar *f_clef_str = "𝄢";
+    
+    current_y0 += current->margin_top + (current->staff_extends_top * (current->font_size / 2.0));
+
+    clef_str = NULL;
+
+    switch(current->clef){
+    case AGS_SHEET_EDIT_G_CLEF:
+      {
+	clef_str = g_clef_str;
+      }
+      break;
+    case AGS_SHEET_EDIT_F_CLEF:
+      {
+	clef_str = f_clef_str;
+      }
+      break;
+    }
+    
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  clef_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    current->clef_font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+
+    cairo_move_to(cr,
+		  first_line_x0 + current->clef_translate_x, current_y0 + ((gdouble) i * (current->font_size / 2.0)) + current->clef_translate_y);
+
+    pango_cairo_show_layout(cr,
+    			    layout);
+    
+    current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
+  }while((current = current->companion_script) != NULL);
+}
+
+void
+ags_sheet_edit_draw_sharp_flat(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			       AgsSheetEditScript *sheet_edit_script,
+			       gdouble x0, gdouble y0,
+			       gdouble sharp_flat_font_size)
+{
+  GtkSettings *settings;
+
+  AgsSheetEditScript *current;
+
+  gchar *font_name;
+  
+  gdouble first_line_x0, first_line_y0;
+  gdouble current_y0;
+  guint i;
+
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  first_line_x0 = x0 + sheet_edit_script->margin_left;
+  first_line_y0 = y0;
+
+  current = sheet_edit_script;
+
+  current_y0 = first_line_y0;
+  
+  cairo_set_line_width(cr, 1.0);
+
+  do{
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+
+    const gchar *sharp_str = "♯";
+    const gchar *flat_str = "♭";
+    
+    current_y0 += current->margin_top + (current->staff_extends_top * (current->font_size / 2.0));
+    
+    if(current->clef == AGS_SHEET_EDIT_G_CLEF){
+      if(!(current->is_minor)){
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      sharp_str,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					current->sharp_flat_font_size * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);
+	
+	switch(current->sharp_flat){
+	case 7:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (7.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (0.5 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 6:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (6.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (-1.0 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 5:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (5.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (1.0 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 4:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (4.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (-0.5 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 3:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (3.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (-2.0 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 2:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (2.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 1:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (logical_rect.width / PANGO_SCALE * 0.75) + current->sharp_translate_x,
+			current_y0 + (-1.5 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	}
+      }else{
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      flat_str,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);
+
+	switch(current->sharp_flat){
+	case 7:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (7.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (2.0 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 6:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (6.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 5:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (5.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (1.5 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 4:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (4.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (-0.5 * (current->font_size / 2.0)) + current->flat_translate_y);
+	  
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 3:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (3.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (1.0 * (current->font_size / 2.0)) + current->flat_translate_y);
+	
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 2:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (2.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (-1.0 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 1:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (logical_rect.width / PANGO_SCALE * 0.9) + current->flat_translate_x,
+			current_y0 + (0.5 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	}
+      }    
+    }else if(current->clef == AGS_SHEET_EDIT_F_CLEF){
+      if(!current->is_minor){
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      sharp_str,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					current->sharp_flat_font_size * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);
+	
+	switch(current->sharp_flat){
+	case 7:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (7.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (1.5 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 6:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (6.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 5:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (5.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (2.0 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 4:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (4.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (0.5 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 3:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (3.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (-1.0 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 2:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (2.0 * (logical_rect.width / PANGO_SCALE * 0.75)) + current->sharp_translate_x,
+			current_y0 + (1.0 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 1:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (logical_rect.width / PANGO_SCALE * 0.75) + current->sharp_translate_x,
+			current_y0 + (-0.5 * (current->font_size / 2.0)) + current->sharp_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	}
+      }else{
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      flat_str,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);
+
+	switch(current->sharp_flat){
+	case 7:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (7.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (3.0 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 6:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (6.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (1.0 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 5:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (5.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (2.5 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 4:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (4.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (0.5 * (current->font_size / 2.0)) + current->flat_translate_y);
+	  
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 3:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (3.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + (2.0 * (current->font_size / 2.0)) + current->flat_translate_y);
+	
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 2:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (2.0 * (logical_rect.width / PANGO_SCALE * 0.9)) + current->flat_translate_x,
+			current_y0 + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	case 1:
+	  cairo_move_to(cr,
+			first_line_x0 + AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_X0 + (logical_rect.width / PANGO_SCALE * 0.9) + current->flat_translate_x,
+			current_y0 + (1.5 * (current->font_size / 2.0)) + current->flat_translate_y);
+
+	  pango_cairo_show_layout(cr,
+				  layout);
+	}  
+      }
+    }
+    
+    current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
+  }while((current = current->companion_script) != NULL);
+}
+
+void
+ags_sheet_edit_draw_note(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			 AgsSheetEditScript *sheet_edit_script,
+			 AgsNotation *notation,
+			 AgsNote *note,
+			 gdouble x0, gdouble y0,
+			 gdouble key_font_size)
+{
+  AgsNote *note_next;
+
+  GtkSettings *settings;
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+	
+  PangoRectangle ink_rect, logical_rect;
+  
+  GList *start_list, *list;
+
+  gchar *font_name;
+  gchar *note_str;
+
+  gdouble page_width, page_height;
+  guint key_center;
+  guint note_x0, note_x1;
+  guint note_y;
+  guint note_next_x0, note_next_x1;
+  guint note_next_pos_x0, note_next_pos_x1;
+
+  const gchar* note_strv[] = {
+    "𝅝",
+    "𝅗𝅥",
+    "𝅘𝅥",
+    "𝅘𝅥𝅮",
+    "𝅘𝅥𝅯",
+    NULL,
+  };
+
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  start_list = ags_notation_get_note(notation);
+
+  list = g_list_find(start_list,
+		     note);
+  
+  note_next = NULL;
+
+  if(list != NULL && list->next != NULL){
+    note_next = AGS_NOTE(list->next->data);
+  }
+  
+  note_x0 = 0;
+  note_x1 = 0;
+
+  note_y = 0;
+	
+  g_object_get(note,
+	       "x0", &note_x0,
+	       "x1", &note_x1,
+	       "y", &note_y,
+	       NULL);
+
+  note_next_x0 = 0;
+  note_next_x1 = 0;
+
+  if(note_next != NULL){
+    g_object_get(note_next,
+		 "x0", &note_next_x0,
+		 "x1", &note_next_x1,
+		 NULL);
+  }
+
+  note_next_pos_x0 = 0;
+  note_next_pos_x1 = 0;
+
+  while(list != NULL){
+    note_next_pos_x0 = 0;
+    note_next_pos_x1 = 0;
+		      
+    g_object_get(list->data,
+		 "x0", &note_next_pos_x0,
+		 "x1", &note_next_pos_x1,
+		 NULL);
+
+    if(note_next_pos_x0 > note_x0){
+      break;
+    }
+		      
+    list = list->next;
+  }
+  
+  if(list == NULL){
+    note_next_pos_x0 = (16 * (guint) floor(note_x0 / 16.0) + 16);
+    note_next_pos_x1 = (16 * (guint) floor(note_x0 / 16.0) + 16);
+  }
+
+  note_str = NULL;
+
+  if(16 * (guint) floor(note_x0 / 16.0) + 16 >= note_next_pos_x0){
+    if((gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) >= 0 &&
+       (gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) < 5){
+      note_str = note_strv[4 - (gint) log2((gdouble) (note_next_pos_x0 - note_x0))];
+    }else{
+      g_warning("index excess");
+    }
+  }else{
+    if((gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) >= 0 &&
+       (gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0)) < 5){
+      note_str = note_strv[4 - (gint) log2((gdouble) ((16 * (guint) floor(note_x0 / 16.0) + 16) - note_x0))];
+    }else{
+      g_warning("index excess");
+    }
+  }
+
+  if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
+    page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+    page_height = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+  }else{
+    page_width = AGS_SHEET_EDIT_DEFAULT_HEIGHT;
+    page_height = AGS_SHEET_EDIT_DEFAULT_WIDTH;
+  }
+
+  key_center = 60;
+
+  if(sheet_edit_script->clef == AGS_SHEET_EDIT_G_CLEF){
+    key_center = 62;
+  }
+  
+  if(note_str != NULL){
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  note_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    key_font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+
+    //TODO:jk: check + 2 f clef
+    if(note_y + 2 < key_center){
+      cairo_save(cr);
+
+      cairo_translate(cr,
+		      (page_width / 2.0) + (logical_rect.width / PANGO_SCALE), (page_height / 2.0) + (logical_rect.height / PANGO_SCALE));
+      cairo_rotate(cr,
+		   2.0 * M_PI * 0.5);
+      
+      cairo_move_to(cr,
+		    (page_width / 2.0) - (x0 + sheet_edit_script->reverse_key_translate_x),
+		    (page_height / 2.0) + y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_script->font_size / 4.0)) + sheet_edit_script->reverse_key_translate_y);
+
+      pango_cairo_update_layout(cr,
+				layout);
+    }else{
+      cairo_move_to(cr,
+		    x0 + sheet_edit_script->key_translate_x,
+		    y0 + (((gdouble) note_y - (gdouble) key_center) * (sheet_edit_script->font_size / 4.0)) + sheet_edit_script->key_translate_y);
+    }
+        
+    pango_cairo_show_layout(cr,
+			    layout);
+
+    if(note_y + 2 < key_center){
+      cairo_restore(cr);
+    }
+	    
+    g_object_unref(layout);
+  }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_sheet_edit_draw_rest(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			 AgsSheetEditScript *sheet_edit_script,
+			 guint rest_x0, guint rest_x1,
+			 gdouble x0, gdouble y0,
+			 gdouble rest_font_size)
+{
+  GtkSettings *settings;
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+	
+  PangoRectangle ink_rect, logical_rect;
+
+  gchar *font_name;
+  gchar *rest_str;
+
+  const gchar* rest_strv[] = {
+    "𝄻",
+    "𝄼",
+    "𝄽",
+    "𝄾",
+    "𝄿",
+    NULL,
+  };
+
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  rest_str = NULL;
+
+  if(16 * (guint) floor(rest_x0 / 16.0) + 16 >= rest_x1){
+    if((gint) log2((gdouble) (rest_x1 - rest_x0)) >= 0 &&
+       (gint) log2((gdouble) (rest_x1 - rest_x0)) < 5){
+      rest_str = rest_strv[4 - (gint) log2((gdouble) (rest_x1 - rest_x0))];
+    }else{
+      g_warning("index excess");
+    }
+  }else{
+    if((gint) log2((gdouble) ((16 * (guint) floor(rest_x0 / 16.0) + 16) - rest_x0)) >= 0 &&
+       (gint) log2((gdouble) ((16 * (guint) floor(rest_x0 / 16.0) + 16) - rest_x0)) < 5){
+      rest_str = rest_strv[4 - (gint) log2((gdouble) ((16 * (guint) floor(rest_x0 / 16.0) + 16) - rest_x0))];
+    }else{
+      g_warning("index excess");
+    }
+  }
+  
+  if(rest_str != NULL){
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  rest_str,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    rest_font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+
+    cairo_move_to(cr,
+		  x0 + sheet_edit_script->rest_translate_x,
+		  y0 + sheet_edit_script->rest_translate_y);
+        
+    pango_cairo_show_layout(cr,
+			    layout);
+	    
+    g_object_unref(layout);
+  }
+}
+
+void
+ags_sheet_edit_draw_notation(AgsSheetEdit *sheet_edit, cairo_t *cr,
+			     AgsSheetEditScript *sheet_edit_script,
+			     AgsNotation *notation,
+			     guint notation_x0, guint notation_x1,
+			     gdouble x0, gdouble y0,
+			     gdouble key_font_size, gdouble rest_font_size)
+{
+  AgsNote *note;
+
+  GList *start_list, *list;
+
+  guint beats, beats_type;
+  guint note_x0, note_x1;
+  guint prev_note_x0;
+  guint iter_rest;
+  guint offset;
+  
+  g_return_if_fail(AGS_IS_SHEET_EDIT(sheet_edit));
+  g_return_if_fail(sheet_edit_script != NULL);
+
+  start_list = ags_notation_get_note(notation);
+
+  list = start_list;
+
+  beats = sheet_edit_script->beats;
+  beats_type = sheet_edit_script->beats_type;
+  
+  prev_note_x0 = 0;
+  
+  offset = 0;
+
+  iter_rest = 0;
+  
+  while(list != NULL){
+    gboolean has_rest;
+    gboolean do_iterate;
+    
+    note = AGS_NOTE(list->data);
+    
+    note_x0 = 0;
+    note_x1 = 0;
+	
+    g_object_get(note,
+		 "x0", &note_x0,
+		 "x1", &note_x1,
+		 NULL);
+
+    has_rest = FALSE;
+
+    if(iter_rest < note_x0 &&
+       iter_rest < notation_x0){
+      if(note_x0 % beats_type != 0){
+	guint rest_x0, rest_x1;	
+	
+	has_rest = TRUE;
+	do_iterate = FALSE;
+
+	if(iter_rest + beats_type < note_x0){
+	  rest_x0 = iter_rest;
+	  rest_x1 = iter_rest + (note_x0 % beats_type);
+
+	  iter_rest = rest_x1;
+	}else{
+	  guint i;
+
+	  for(i = iter_rest % beats_type; i < beats_type; i++){
+	    if(iter_rest + (i * beats_type) >= note_x0){
+	      break;
+	    }
+	  }
+
+	  rest_x0 = iter_rest;
+	  rest_x1 = iter_rest + (i * beats_type);
+
+	  iter_rest = rest_x1;	  
+	}
+
+	offset += AGS_SHEET_EDIT_DEFAULT_KEY_PADDING;
+	
+	ags_sheet_edit_draw_rest(sheet_edit, cr,
+				 sheet_edit_script,
+				 rest_x0, rest_x1,
+				 x0 + sheet_edit_script->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
+				 rest_font_size);
+      }
+    }
+    
+    if(note_x0 >= notation_x1){
+      break;
+    }
+
+    do_iterate = TRUE;
+    
+    if(note_x0 >= notation_x0){
+      if(!has_rest &&
+	 do_iterate &&
+	 ((list->prev == NULL && note_x0 == 0) ||
+	  (list->prev != NULL && (gint64) (note_x0 - prev_note_x0) < (gint64) beats_type))){
+	offset += AGS_SHEET_EDIT_DEFAULT_KEY_PADDING;
+
+	ags_sheet_edit_draw_note(sheet_edit, cr,
+				 sheet_edit_script,
+				 notation,
+				 note,
+				 x0 + sheet_edit_script->margin_left + AGS_SHEET_EDIT_DEFAULT_KEY_X0 + offset, y0,
+				 key_font_size);
+
+	prev_note_x0 = note_x0;
+	iter_rest = note_x0;
+      }
+    }
+
+    if(do_iterate){
+      list = list->next;
+    }
+  }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 {
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *toolbar;
+  AgsMachine *selected_machine;
+
   GtkStyleContext *style_context;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_script, *script;
+  GList *start_notation, *notation;
   
   gint width, height;
   gdouble page_width, page_height;
+  gdouble y0;
+  
+  application_context = ags_application_context_get_instance();
 
   style_context = gtk_widget_get_style_context((GtkWidget *) sheet_edit);
+
+  /*  */
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) sheet_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+    
+  toolbar = composite_editor->toolbar;
+
+  selected_machine = composite_editor->selected_machine;
 
   width = gtk_widget_get_width(sheet_edit);
   height = gtk_widget_get_height(sheet_edit);
@@ -383,8 +1846,56 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 			cr,
 			0.0, 0.0,
 			(gdouble) width, (gdouble) height);
+
+  notation = 
+    start_notation = ags_audio_get_notation(selected_machine->audio);
+
+  script =
+    start_script = ags_sheet_edit_get_script(sheet_edit);
+
+  y0 = 0.0;
   
-  ags_sheet_edit_draw_notation(sheet_edit, cr);
+  while(script != NULL){
+    if(AGS_SHEET_EDIT_SCRIPT(script->data)->is_primary){
+      AgsSheetEditScript *current;
+      
+      ags_sheet_edit_draw_staff(sheet_edit, cr,
+				script->data,
+				0.0, y0,
+				page_width, page_height - y0,
+				AGS_SHEET_EDIT_DEFAULT_FONT_SIZE);
+      ags_sheet_edit_draw_clef(sheet_edit, cr,
+			       script->data,
+			       0.0, y0,
+			       AGS_SHEET_EDIT_DEFAULT_CLEF_FONT_SIZE);
+      ags_sheet_edit_draw_sharp_flat(sheet_edit, cr,
+				     script->data,
+				     0.0, y0,
+				     AGS_SHEET_EDIT_DEFAULT_SHARP_FLAT_FONT_SIZE);
+
+      if(notation != NULL){
+	ags_sheet_edit_draw_notation(sheet_edit, cr,
+				     script->data,
+				     notation->data,
+				     0, 16,
+				     0.0, y0,
+				     AGS_SHEET_EDIT_DEFAULT_KEY_FONT_SIZE, AGS_SHEET_EDIT_DEFAULT_REST_FONT_SIZE);
+      }
+      
+      current = script->data;
+
+      do{
+	y0 += (4.0 * (current->font_size / 2.0) + current->staff_extends_top * (current->font_size / 2.0) + current->staff_extends_bottom * (current->font_size / 2.0) + current->margin_top + current->margin_bottom);
+      }while((current = current->companion_script) != NULL);
+    }
+
+    script = script->next;
+  }
+
+  g_list_free(start_script);
+  
+  g_list_free_full(start_notation,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

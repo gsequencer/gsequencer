@@ -39,6 +39,17 @@ G_BEGIN_DECLS
 typedef struct _AgsAudioFile AgsAudioFile;
 typedef struct _AgsAudioFileClass AgsAudioFileClass;
 
+/**
+ * AgsAudioFileFlags:
+ * @AGS_AUDIO_FILE_READ_SAMPLE_AT_ONCE: read all audio sample data at once
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsAudioFile by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_AUDIO_FILE_READ_SAMPLE_AT_ONCE      = 1,
+}AgsAudioFileFlags;
+
 struct _AgsAudioFile
 {
   GObject gobject;

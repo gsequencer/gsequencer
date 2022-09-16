@@ -467,6 +467,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     
     data = ags_stream_alloc(buffer_size,
 			    format);
+
     target_data = ags_stream_alloc(target_buffer_size,
 				   format);
   }
@@ -587,6 +588,238 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     free(target_data);
   }
   
+  start_list = g_list_reverse(start_list);
+
+  g_list_foreach(start_list,
+		 (GFunc) g_object_ref,
+		 NULL);
+  
+  return(start_list);
+}
+
+/**
+ * ags_sound_resource_read_audio_signal_at_once:
+ * @sound_resource: the #AgsSoundResource
+ * @soundcard: the #AgsSoundcard
+ * @audio_channel: the audio channel or -1 for all
+ * 
+ * Read audio signal from @sound_resource.
+ * 
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer full): a #GList-struct containing #AgsAudioSignal
+ * 
+ * Since: 4.4.0
+ */
+GList*
+ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
+					     GObject *soundcard,
+					     gint audio_channel)
+{
+  GList *start_list;
+
+  void *target_data, *data;
+
+  guint frame_count;
+  guint target_frame_count;
+  guint loop_start, loop_end;
+  guint audio_channels;
+  guint target_samplerate, samplerate;
+  guint target_buffer_size, buffer_size;
+  guint target_format, format;
+  guint copy_mode;
+  guint i, i_start, i_stop;
+  guint j;
+
+  if(!AGS_SOUND_RESOURCE(sound_resource)){
+    return(NULL);
+  }
+
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
+			  &frame_count,
+			  &loop_start, &loop_end);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
+				 &audio_channels,
+				 &samplerate,
+				 &buffer_size,
+				 &format);
+  
+  g_object_get(G_OBJECT(sound_resource),
+	       "format", &format,
+	       NULL);
+
+  if(AGS_IS_SOUNDCARD(soundcard)){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      NULL,
+			      &target_samplerate,
+			      &target_buffer_size,
+			      &target_format);
+  }else{
+    AgsConfig *config;
+
+    config = ags_config_get_instance();
+
+    target_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+    target_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+    target_format = ags_soundcard_helper_config_get_format(config);
+  }
+
+  target_frame_count = (guint) floor(((double) target_samplerate / (double) samplerate) * (double) frame_count);
+  
+  start_list = NULL;
+
+  if(audio_channel == -1){
+    i_start = 0;
+    i_stop = audio_channels;
+  }else{
+    i_start = audio_channel;
+    i_stop = i_start + 1;
+  }
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+
+  data = NULL;
+  target_data = NULL;
+
+  if(frame_count < buffer_size){
+    data = ags_stream_alloc(buffer_size,
+			    format);
+  }else{
+    data = ags_stream_alloc(buffer_size * ((guint) floor((double) frame_count / (double) buffer_size) + 1),
+			    format);
+  }
+  
+  if(samplerate != target_samplerate){
+    buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
+    
+    ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(sound_resource),
+				   audio_channels,
+				   samplerate,
+				   buffer_size,
+				   format);
+    
+    if(target_frame_count < target_buffer_size){
+      target_data = ags_stream_alloc(target_buffer_size,
+				     format);
+    }else{
+      target_data = ags_stream_alloc(target_buffer_size * ((guint) floor((double) target_frame_count / (double) target_buffer_size) + 1),
+				     format);
+    }
+  }
+    
+  for(i = i_start; i < i_stop; i++){
+    AgsAudioSignal *audio_signal;
+
+    GList *stream;
+
+    ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
+    			    0, G_SEEK_SET);
+    
+    audio_signal = ags_audio_signal_new(soundcard,
+					NULL,
+					NULL);
+    g_object_set(audio_signal,
+		 "frame-count", frame_count,
+		 "samplerate", target_samplerate,
+		 "buffer-size", target_buffer_size,
+		 "format", target_format,
+		 "loop-start", target_samplerate * (loop_start / samplerate),
+		 "loop-end", target_samplerate * (loop_end / samplerate),
+		 NULL);
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil(frame_count / target_buffer_size) + 1);
+    audio_signal->length = (guint) ceil(frame_count / target_buffer_size) + 1;
+    audio_signal->stream_current = audio_signal->stream;
+    
+    start_list = g_list_prepend(start_list,
+				audio_signal);
+
+    stream = audio_signal->stream;
+
+    g_object_set(audio_signal,
+		 "last-frame", frame_count,
+		 NULL);
+
+    ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
+			    data, 1,
+			    i,
+			    frame_count, format);
+
+    if(samplerate != target_samplerate){
+      AgsResampleUtil resample_util;
+
+      guint allocated_frame_count;
+
+      allocated_frame_count = frame_count;
+
+      if(allocated_frame_count < target_frame_count){
+	allocated_frame_count = target_frame_count;
+      }
+
+      ags_audio_buffer_util_clear_buffer(data, 1,
+					 frame_count, ags_audio_buffer_util_format_from_soundcard(format));
+	
+      ags_audio_buffer_util_clear_buffer(target_data, 1,
+					 target_frame_count, ags_audio_buffer_util_format_from_soundcard(format));
+
+      resample_util.secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+      resample_util.secret_rabbit.input_frames = frame_count;
+      resample_util.secret_rabbit.data_in = ags_stream_alloc(allocated_frame_count,
+							     AGS_SOUNDCARD_FLOAT);
+
+      resample_util.secret_rabbit.output_frames = target_frame_count;
+      resample_util.secret_rabbit.data_out = ags_stream_alloc(allocated_frame_count,
+							      AGS_SOUNDCARD_FLOAT);
+
+      resample_util.secret_rabbit.end_of_input = 0;
+	
+      resample_util.destination = target_data;
+      resample_util.destination_stride = 1;
+
+      resample_util.source = data;
+      resample_util.source_stride = 1;
+
+      resample_util.buffer_length = allocated_frame_count;
+      resample_util.format = format;
+      resample_util.samplerate = samplerate;
+
+      resample_util.target_samplerate = target_samplerate;
+
+      ags_resample_util_compute(&resample_util);  
+
+      ags_stream_free(resample_util.secret_rabbit.data_out);
+      ags_stream_free(resample_util.secret_rabbit.data_in);
+    }
+    
+    for(j = 0; stream != NULL;){
+      if(samplerate != target_samplerate){
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						    target_data, 1, j,
+						    target_buffer_size, copy_mode);
+
+	j += target_buffer_size;
+      }else{
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						    data, 1, j,
+						    buffer_size, copy_mode);
+
+	j += buffer_size;
+      }
+      
+      /* iterate */
+      stream = stream->next;
+    }
+  }
+
+  if(data != NULL){
+    free(data);
+  }
+
+  if(target_data != NULL){
+    free(target_data);
+  }
+
   start_list = g_list_reverse(start_list);
 
   g_list_foreach(start_list,

@@ -791,13 +791,10 @@ void
 ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
 				  gchar *filename)
 {
-  GtkEntryBuffer *entry_buffer;
-
-  entry_buffer = gtk_entry_get_buffer(export_soundcard->filename);
+  g_return_if_fail(AGS_IS_EXPORT_SOUNDCARD(export_soundcard));
   
-  gtk_entry_buffer_set_text(entry_buffer,
-			    filename,
-			    -1);
+  gtk_editable_set_text(GTK_EDITABLE(export_soundcard->filename),
+			filename);
 }
 
 /**

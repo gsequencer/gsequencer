@@ -50,6 +50,7 @@ typedef struct _AgsExportThreadClass AgsExportThreadClass;
  */
 typedef enum{
   AGS_EXPORT_THREAD_LIVE_PERFORMANCE       = 1,
+  AGS_EXPORT_THREAD_IS_EXPORTING           = 1 <<  1,
 }AgsExportThreadFlags;
 
 struct _AgsExportThread
@@ -71,6 +72,11 @@ struct _AgsExportThreadClass
 };
 
 GType ags_export_thread_get_type();
+
+/* flags */
+gboolean ags_export_thread_test_flags(AgsExportThread *export_thread, guint flags);
+void ags_export_thread_set_flags(AgsExportThread *export_thread, guint flags);
+void ags_export_thread_unset_flags(AgsExportThread *export_thread, guint flags);
 
 AgsExportThread* ags_export_thread_find_soundcard(AgsExportThread *export_thread,
 						  GObject *soundcard);

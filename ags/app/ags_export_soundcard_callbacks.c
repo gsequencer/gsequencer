@@ -404,12 +404,12 @@ ags_export_soundcard_open_response_callback(GtkFileChooserDialog *file_chooser,
     
     char *filename;
 
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser));;
+    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser));
 
     filename = g_file_get_path(file);
 
-    gtk_editable_set_text(export_soundcard->filename,
-			  filename);
+    ags_export_soundcard_set_filename(export_soundcard,
+				      filename);
 
     g_object_unref(file);
     

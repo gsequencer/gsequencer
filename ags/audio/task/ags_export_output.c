@@ -455,6 +455,10 @@ ags_export_output_launch(AgsTask *task)
   tic = export_output->tic;
 
   /* get presets */
+  pcm_channels = 0;
+  samplerate = 0;
+  format = 0;
+  
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &pcm_channels,
 			    &samplerate,
@@ -475,10 +479,14 @@ ags_export_output_launch(AgsTask *task)
   
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
+
   //TODO:JK: more formats
 
-  g_message("export output");
+  ags_export_thread_set_flags(export_thread,
+			      AGS_EXPORT_THREAD_IS_EXPORTING);
+
 #ifdef AGS_DEBUG
+  g_message("export output");
 #endif
 
   /* start export thread */

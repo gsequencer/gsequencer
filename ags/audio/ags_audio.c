@@ -15096,6 +15096,8 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       audio_file = ags_audio_file_new((gchar *) filename->data,
 				      soundcard,
 				      -1);
+      ags_audio_file_set_flags(audio_file,
+			       AGS_AUDIO_FILE_READ_SAMPLE_AT_ONCE);
       
       if(!ags_audio_file_open(audio_file)){
 	filename = filename->next;

@@ -56,6 +56,9 @@ void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 				   guint audio_channel_start,
 				   guint input_pad_start);
 
+void ags_ffplayer_apply_sf2_synth_launch_callback(AgsTask *task,
+						  AgsFFPlayer *ffplayer);
+
 /**
  * SECTION:ags_ffplayer
  * @short_description: ffplayer notation
@@ -401,6 +404,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_box_append(filename_hbox,
 		 (GtkWidget *) ffplayer->open);
 
+  g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+		   TRUE);
+  
   ffplayer->sf2_loader = NULL;
 
   ffplayer->load_preset = NULL;
@@ -1274,6 +1280,14 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer,
 }
 
 void
+ags_ffplayer_apply_sf2_synth_launch_callback(AgsTask *task,
+					     AgsFFPlayer *ffplayer)
+{
+  g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+		   TRUE);
+}
+
+void
 ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			   gchar *filename)
 {
@@ -1507,6 +1521,12 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
       apply_sf2_synth = ags_apply_sf2_synth_new(start_sf2_synth_generator->data,
 						start_input,
 						lower, (guint) key_count);
+
+      g_atomic_int_set(&(ffplayer->apply_sf2_synth_completed),
+		       FALSE);
+
+      g_signal_connect_after(apply_sf2_synth, "launch",
+			     G_CALLBACK(ags_ffplayer_apply_sf2_synth_launch_callback), ffplayer);
       
       g_object_set(apply_sf2_synth,
 		   "requested-frame-count", requested_frame_count,
@@ -1625,7 +1645,7 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 					  &iter));
 	}
       }
-	
+      
       g_free(load_preset);
 
       ffplayer->load_preset = NULL;
@@ -1669,6 +1689,54 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
     
       return(TRUE);
     }    
+
+    if(g_atomic_int_get(&(ffplayer->apply_sf2_synth_completed))){
+      if(ffplayer->position == 0){
+	ffplayer->position = -1;
+
+	gtk_spinner_stop(ffplayer->sf2_loader_spinner);
+	gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
+
+#if 0
+	gtk_widget_set_sensitive(ffplayer->filename,
+				 TRUE);
+#endif
+	
+	gtk_widget_set_sensitive(ffplayer->preset,
+				 TRUE);
+	gtk_widget_set_sensitive(ffplayer->instrument,
+				 TRUE);
+
+	gtk_widget_set_sensitive(ffplayer->open,
+				 TRUE);
+
+	gtk_widget_set_sensitive(ffplayer->update,
+				 TRUE);
+      }
+    }else{
+      if(ffplayer->position == -1){
+	ffplayer->position = 0;
+	    
+	gtk_widget_show((GtkWidget *) ffplayer->sf2_loader_spinner);
+	gtk_spinner_start(ffplayer->sf2_loader_spinner);
+
+#if 0
+	gtk_widget_set_sensitive(ffplayer->filename,
+				 FALSE);
+#endif
+	
+	gtk_widget_set_sensitive(ffplayer->preset,
+				 FALSE);
+	gtk_widget_set_sensitive(ffplayer->instrument,
+				 FALSE);
+	
+	gtk_widget_set_sensitive(ffplayer->open,
+				 FALSE);
+
+	gtk_widget_set_sensitive(ffplayer->update,
+				 FALSE);
+      }
+    }
     
     return(TRUE);
   }else{
