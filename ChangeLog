@@ -1,3 +1,9 @@
+ags (4.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV with AgsResampleUtil set buffer length
+	* minor improvements
+
 ags (4.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -461,6 +461,11 @@ ags_export_thread_run(AgsThread *thread)
   guint format;
   
   export_thread = AGS_EXPORT_THREAD(thread);
+
+  if(!ags_export_thread_test_flags(export_thread,
+				   AGS_EXPORT_THREAD_IS_EXPORTING)){
+    return;
+  }
   
   if(export_thread->counter == export_thread->tic){
     ags_thread_stop(thread);
@@ -503,7 +508,7 @@ ags_export_thread_run(AgsThread *thread)
 		       format);
 
   ags_soundcard_unlock_buffer(soundcard,
-			    soundcard_buffer);
+			      soundcard_buffer);
 }
 
 void
@@ -519,6 +524,105 @@ ags_export_thread_stop(AgsThread *thread)
   ags_audio_file_close(export_thread->audio_file);
 
   export_thread->audio_file = NULL;
+
+  export_thread->tic = 0;
+  export_thread->counter = 0;
+
+  ags_export_thread_unset_flags(export_thread,
+				AGS_EXPORT_THREAD_IS_EXPORTING);
+}
+
+/**
+ * ags_export_thread_test_flags:
+ * @export_thread: the #AgsExportThread
+ * @flags: the flags
+ *
+ * Test @flags to be set on @export_thread.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 4.4.1
+ */
+gboolean
+ags_export_thread_test_flags(AgsExportThread *export_thread, guint flags)
+{
+  gboolean retval;  
+  
+  GRecMutex *export_thread_mutex;
+
+  if(!AGS_IS_EXPORT_THREAD(export_thread)){
+    return(FALSE);
+  }
+
+  /* get export_thread mutex */
+  export_thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(export_thread);
+
+  /* test */
+  g_rec_mutex_lock(export_thread_mutex);
+
+  retval = (flags & (export_thread->flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(export_thread_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_export_thread_set_flags:
+ * @export_thread: the #AgsExportThread
+ * @flags: see #AgsExportThreadFlags-enum
+ *
+ * Enable a feature of @export_thread.
+ *
+ * Since: 4.4.1
+ */
+void
+ags_export_thread_set_flags(AgsExportThread *export_thread, guint flags)
+{
+  GRecMutex *export_thread_mutex;
+
+  if(!AGS_IS_EXPORT_THREAD(export_thread)){
+    return;
+  }
+
+  /* get export_thread mutex */
+  export_thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(export_thread);
+
+  /* set flags */
+  g_rec_mutex_lock(export_thread_mutex);
+
+  export_thread->flags |= flags;
+  
+  g_rec_mutex_unlock(export_thread_mutex);
+}
+    
+/**
+ * ags_export_thread_unset_flags:
+ * @export_thread: the #AgsExportThread
+ * @flags: see #AgsExportThreadFlags-enum
+ *
+ * Disable a feature of @export_thread.
+ *
+ * Since: 4.4.1
+ */
+void
+ags_export_thread_unset_flags(AgsExportThread *export_thread, guint flags)
+{  
+  GRecMutex *export_thread_mutex;
+
+  if(!AGS_IS_EXPORT_THREAD(export_thread)){
+    return;
+  }
+
+  /* get export_thread mutex */
+  export_thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(export_thread);
+
+  /* unset flags */
+  g_rec_mutex_lock(export_thread_mutex);
+
+  export_thread->flags &= (~flags);
+  
+  g_rec_mutex_unlock(export_thread_mutex);
 }
 
 /**

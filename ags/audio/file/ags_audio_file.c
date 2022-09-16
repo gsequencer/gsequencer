@@ -1750,6 +1750,8 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 
   sound_resource = NULL;
 
+  filename = NULL;
+  
   g_object_get(audio_file,
 	       "filename", &filename,
 	       NULL);

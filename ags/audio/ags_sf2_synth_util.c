@@ -1565,7 +1565,15 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 		  
 	resample_util->source = sf2_synth_util->sf2_orig_buffer[i];
 	resample_util->source_stride = 1;
-		
+
+	if(resample_util->secret_rabbit.data_in != NULL){
+	  g_free(resample_util->secret_rabbit.data_in);
+	}
+
+	if(resample_util->secret_rabbit.data_out != NULL){
+	  g_free(resample_util->secret_rabbit.data_out);
+	}
+	
 	resample_util->secret_rabbit.src_ratio = sf2_synth_util->samplerate / orig_samplerate;
 		
 	resample_util->secret_rabbit.input_frames = sample_frame_count;
@@ -2048,6 +2056,18 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		resample_util->destination = NULL;
 		  
 		resample_util->source = NULL;
+
+		if(resample_util->secret_rabbit.data_in != NULL){
+		  g_free(resample_util->secret_rabbit.data_in);
+
+		  resample_util->secret_rabbit.data_in = NULL;
+		}
+
+		if(resample_util->secret_rabbit.data_out != NULL){
+		  g_free(resample_util->secret_rabbit.data_out);
+
+		  resample_util->secret_rabbit.data_out = NULL;
+		}
 	      }
 
 	      i++;	      

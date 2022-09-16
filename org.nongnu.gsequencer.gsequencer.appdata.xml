@@ -40,6 +40,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.4.1" date="2022-09-16">
+      <description>
+	<p>
+	  Fixed SIGSEGV while adjusting buffer length.
+	</p>
+      </description>
+    </release>
+
     <release version="4.4.0" date="2022-09-14">
       <description>
 	<p>
