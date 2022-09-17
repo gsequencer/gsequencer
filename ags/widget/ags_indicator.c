@@ -444,23 +444,32 @@ ags_indicator_measure(GtkWidget *widget,
 {
   AgsIndicator *indicator;
 
+  gint margin_top, margin_bottom;
+  gint margin_start, margin_end;
+  
   indicator = (AgsIndicator *) widget;
   
   if(orientation == GTK_ORIENTATION_VERTICAL){
+    margin_top = gtk_widget_get_margin_top(widget);
+    margin_bottom = gtk_widget_get_margin_bottom(widget);
+  
     if(gtk_orientable_get_orientation(GTK_ORIENTABLE(indicator)) == GTK_ORIENTATION_VERTICAL){
       minimum[0] =
-	natural[0] = indicator->segment_count * indicator->segment_height + (indicator->segment_count - 1) * indicator->segment_padding;
+	natural[0] = indicator->segment_count * indicator->segment_height + (indicator->segment_count - 1) * indicator->segment_padding + margin_top + margin_bottom;
     }else{
       minimum[0] = 
-	natural[0] = indicator->segment_height;
+	natural[0] = indicator->segment_height + margin_top + margin_bottom;
     }
   }else{
+    margin_start = gtk_widget_get_margin_start(widget);
+    margin_end = gtk_widget_get_margin_end(widget);
+    
     if(gtk_orientable_get_orientation(GTK_ORIENTABLE(indicator)) == GTK_ORIENTATION_VERTICAL){
       minimum[0] = 
-	natural[0] = indicator->segment_width;
+	natural[0] = indicator->segment_width + margin_start + margin_end;
     }else{
       minimum[0] = 
-	natural[0] = indicator->segment_count * indicator->segment_width + (indicator->segment_count - 1) * indicator->segment_padding;
+	natural[0] = indicator->segment_count * indicator->segment_width + (indicator->segment_count - 1) * indicator->segment_padding + margin_start + margin_end;
     }
   }
 }

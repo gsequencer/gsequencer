@@ -90,7 +90,7 @@ struct _AgsSynthGenerator
   gdouble tuning;
   
   gboolean sync_relative;
-  AgsComplex **sync_point;
+  AgsComplex *sync_point;
   guint sync_point_count;
 
   gboolean do_fm_synth;
@@ -158,6 +158,15 @@ void ags_synth_generator_set_lfo_depth(AgsSynthGenerator *synth_generator, gdoub
 
 gdouble ags_synth_generator_get_tuning(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_tuning(AgsSynthGenerator *synth_generator, gdouble tuning);
+
+AgsComplex* ags_synth_generator_get_sync_point(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_sync_point(AgsSynthGenerator *synth_generator,
+					gint position,
+					AgsComplex *value);
+
+guint ags_synth_generator_get_sync_point_count(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_sync_point_count(AgsSynthGenerator *synth_generator,
+					      guint sync_point_count);
 
 gboolean ags_synth_generator_get_do_fm_synth(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_do_fm_synth(AgsSynthGenerator *synth_generator, gboolean do_fm_synth);

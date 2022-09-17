@@ -472,6 +472,8 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   gdouble fm_tuning;
   
   guint sync_point_count;
+
+  GRecMutex *synth_generator_mutex;
   
   if(!AGS_IS_FM_SYNTH(fm_synth)){
     return;
@@ -590,6 +592,9 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
     
     synth_generator = start_synth_generator;
 
+    /* get synth generator mutex */
+    synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator->data);
+
     /* do it so */    
     attack = (guint) gtk_spin_button_get_value_as_int(fm_oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(fm_oscillator->frame_count);
@@ -619,22 +624,19 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
 		 NULL);
 
     do_sync = gtk_check_button_get_active(fm_oscillator->do_sync);
+
+    /* sync point */
+    g_rec_mutex_lock(synth_generator_mutex);
     
     if(do_sync){
       sync_point_count = fm_oscillator->sync_point_count;
 
       /* free previous sync point */
-      if(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point != NULL){
-	for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
-	  ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
-	}
-
-	free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
-      }
+      g_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
 
       /* set new sync point */
       if(sync_point_count > 0){
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = (AgsComplex *) g_malloc(sync_point_count * sizeof(AgsComplex));
       }else{
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
       }
@@ -642,21 +644,17 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
       AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = sync_point_count;
 
       for(i = 0; i < sync_point_count; i++){
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i] = ags_complex_alloc();
-	
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0].real = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i]);
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0].imag = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i + 1]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i].real = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i].imag = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i + 1]);
       }
     }else{
-      for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
-	ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
-      }
-
-      free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
+      g_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
       
       AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
       AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = 0;
     }
+    
+    g_rec_mutex_unlock(synth_generator_mutex);
   
     apply_synth = ags_apply_synth_new(synth_generator->data,
 				      start_output,

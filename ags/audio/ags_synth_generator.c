@@ -1110,8 +1110,8 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
   synth_generator->phase = samplerate * (synth_generator->phase / old_samplerate);
 
   for(i = 0; i < synth_generator->sync_point_count; i++){
-    synth_generator->sync_point[i][0].real = samplerate * (synth_generator->sync_point[i][0].real / old_samplerate);
-    synth_generator->sync_point[i][0].imag = samplerate * (synth_generator->sync_point[i][0].imag / old_samplerate);
+    synth_generator->sync_point[i].real = samplerate * (synth_generator->sync_point[i].real / old_samplerate);
+    synth_generator->sync_point[i].imag = samplerate * (synth_generator->sync_point[i].imag / old_samplerate);
   }
   
   g_rec_mutex_unlock(synth_generator_mutex);
@@ -1743,6 +1743,152 @@ ags_synth_generator_set_tuning(AgsSynthGenerator *synth_generator, gdouble tunin
 }
 
 /**
+ * ags_synth_generator_get_sync_point:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Get sync points of @synth_generator.
+ *
+ * Returns: (transfer full): the sync point as a #AgsComplex array
+ * 
+ * Since: 4.4.2
+ */
+AgsComplex*
+ags_synth_generator_get_sync_point(AgsSynthGenerator *synth_generator)
+{
+  AgsComplex *sync_point;
+
+  guint sync_point_count;
+
+  GRecMutex *synth_generator_mutex;
+
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+
+  sync_point = NULL;
+  sync_point_count = synth_generator->sync_point_count;
+
+  if(sync_point_count > 0){
+    sync_point = (AgsComplex *) g_malloc(sync_point_count * sizeof(AgsComplex));
+    memcpy(sync_point, synth_generator->sync_point, sync_point_count * sizeof(AgsComplex));
+  }
+
+  g_rec_mutex_unlock(synth_generator_mutex);
+
+  return(sync_point);
+}
+
+/**
+ * ags_synth_generator_set_sync_point:
+ * @synth_generator: the #AgsSynthGenerator
+ * @position: the position to set
+ * @value: the #AgsComplex value to set
+ *
+ * Set @value as sync point at @position of @synth_generator.
+ * 
+ * Since: 4.4.2
+ */
+void
+ags_synth_generator_set_sync_point(AgsSynthGenerator *synth_generator,
+				   gint position,
+				   AgsComplex *value)
+{
+  GRecMutex *synth_generator_mutex;
+
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator) ||
+     position >= synth_generator->sync_point_count){
+    return;
+  }
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+
+  if(position < 0){
+    ags_complex_set(synth_generator->sync_point + (synth_generator->sync_point_count - 1),
+		    ags_complex_get(value));
+  }else{
+    ags_complex_set(synth_generator->sync_point + position,
+		    ags_complex_get(value));
+  }
+  
+  g_rec_mutex_unlock(synth_generator_mutex);
+}
+
+/**
+ * ags_synth_generator_get_sync_point_count:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Get sync point count of @synth_generator.
+ * 
+ * Since: 4.4.2
+ */
+guint
+ags_synth_generator_get_sync_point_count(AgsSynthGenerator *synth_generator)
+{
+  guint sync_point_count;
+
+  GRecMutex *synth_generator_mutex;
+
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+
+  sync_point_count = synth_generator->sync_point_count;
+
+  g_rec_mutex_unlock(synth_generator_mutex);
+
+  return(sync_point_count);
+}
+
+/**
+ * ags_synth_generator_set_sync_point_count:
+ * @synth_generator: the #AgsSynthGenerator
+ * @sync_point_count: the sync point count
+ * 
+ * Set sync point count and realloc sync points of @synth_generator.
+ * 
+ * Since: 4.4.2
+ */
+void
+ags_synth_generator_set_sync_point_count(AgsSynthGenerator *synth_generator,
+					 guint sync_point_count)
+{
+  GRecMutex *synth_generator_mutex;
+
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+
+  synth_generator->sync_point_count = sync_point_count;
+
+  if(synth_generator->sync_point == NULL){
+    synth_generator->sync_point = g_malloc(sync_point_count * sizeof(AgsComplex));
+  }else{
+    synth_generator->sync_point = g_realloc(synth_generator->sync_point,
+					    sync_point_count * sizeof(AgsComplex));
+  }
+  
+  g_rec_mutex_unlock(synth_generator_mutex);
+}
+
+/**
  * ags_synth_generator_get_do_fm_synth:
  * @synth_generator: the #AgsSynthGenerator
  *
@@ -2044,6 +2190,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   
   GList *stream_start, *stream;
 
+  AgsComplex *sync_point;
+
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -2066,7 +2214,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   guint offset;
   guint last_sync;
   guint i, j;
-  AgsComplex **sync_point;
   guint sync_point_count;
   gboolean do_fm_synth;
   guint fm_lfo_osc_mode;
@@ -2153,8 +2300,13 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   
   g_rec_mutex_lock(synth_generator_mutex);
 
-  sync_point = synth_generator->sync_point;
+  sync_point = NULL;
   sync_point_count = synth_generator->sync_point_count;
+
+  if(sync_point_count > 0){
+    sync_point = (AgsComplex *) g_malloc(sync_point_count * sizeof(AgsComplex));
+    memcpy(sync_point, synth_generator->sync_point, sync_point_count * sizeof(AgsComplex));
+  }
 
   g_rec_mutex_unlock(synth_generator_mutex);
 
@@ -2202,14 +2354,14 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
   if(sync_point != NULL){
     if(sync_point_count > 1 &&
-       floor(sync_point[1][0].real) > 0.0){
-      if(sync_point[1][0].real < current_count){
-	current_count = sync_point[1][0].real;
+       floor(sync_point[1].real) > 0.0){
+      if(sync_point[1].real < current_count){
+	current_count = sync_point[1].real;
       }
     }else{
-      if(sync_point[0][0].real < current_count &&
-	 floor(sync_point[0][0].real) > 0.0){
-	current_count = sync_point[0][0].real;
+      if(sync_point[0].real < current_count &&
+	 floor(sync_point[0].real) > 0.0){
+	current_count = sync_point[0].real;
       }
     }
   }
@@ -2341,9 +2493,9 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     g_rec_mutex_lock(synth_generator_mutex);
     
     if(sync_point != NULL){
-      if(floor(sync_point[j][0].real) > 0.0 &&
-	 (gdouble) last_sync + sync_point[j][0].real < (gdouble) offset + (gdouble) current_count){
-	current_phase = sync_point[j][0].imag;
+      if(floor(sync_point[j].real) > 0.0 &&
+	 (gdouble) last_sync + sync_point[j].real < (gdouble) offset + (gdouble) current_count){
+	current_phase = sync_point[j].imag;
 
 	synced = TRUE;
       }
@@ -2366,25 +2518,25 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     
     if(sync_point != NULL){
       if(j + 1 < sync_point_count &&
-	 floor(sync_point[j + 1][0].real) > 0.0){
-	if(sync_point[j + 1][0].real < (gdouble) current_count){
-	  current_count = sync_point[j + 1][0].real;
+	 floor(sync_point[j + 1].real) > 0.0){
+	if(sync_point[j + 1].real < (gdouble) current_count){
+	  current_count = sync_point[j + 1].real;
 	}
       }else{
-	if(floor(sync_point[0][0].real) > 0.0 &&
-	   sync_point[0][0].real < (gdouble) current_count){
-	  current_count = sync_point[0][0].real;
+	if(floor(sync_point[0].real) > 0.0 &&
+	   sync_point[0].real < (gdouble) current_count){
+	  current_count = sync_point[0].real;
 	}
       }
     }
     
     if(sync_point != NULL){
       if(synced){
-	last_sync = last_sync + sync_point[j][0].real;
+	last_sync = last_sync + sync_point[j].real;
 	j++;
 
 	if(j >= sync_point_count ||
-	   floor(sync_point[j][0].real) == 0.0){
+	   floor(sync_point[j].real) == 0.0){
 	  j = 0;
 	}
 
@@ -2399,6 +2551,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       stream = stream->next;
     }
   }  
+  
+  g_free(sync_point);
 }
 
 /**

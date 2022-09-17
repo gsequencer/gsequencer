@@ -1,3 +1,8 @@
+ags (4.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* better thread-safety of AgsSynthGenerator and machines using it like AgsSynth, AgsFMSynth, AgsSyncsynth and AgsFMSyncsynth
+
 ags (4.4.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
