@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,9 +62,9 @@ ags_service_provider_is_operating(AgsServiceProvider *service_provider)
 {
   AgsServiceProviderInterface *service_provider_interface;
 
-  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
+  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), FALSE);
   service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_val_if_fail(service_provider_interface->is_operating, NULL);
+  g_return_val_if_fail(service_provider_interface->is_operating, FALSE);
 
   return(service_provider_interface->is_operating(service_provider));
 }

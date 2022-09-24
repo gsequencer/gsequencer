@@ -63,10 +63,15 @@ ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
     file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(widget));
     
     filename = g_file_get_path(file);
+
     gtk_editable_set_text(GTK_EDITABLE(audiorec->filename),
 			  filename);
     ags_audiorec_open_filename(audiorec,
 			       filename);
+
+    g_object_unref(file);
+    
+    g_free(filename);
   }
 
   audiorec->open_dialog = NULL;

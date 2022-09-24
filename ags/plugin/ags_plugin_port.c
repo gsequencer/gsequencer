@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -798,7 +798,7 @@ ags_plugin_port_get_port_index(AgsPluginPort *plugin_port)
   guint port_index;
 
   if(!AGS_IS_PLUGIN_PORT(plugin_port)){
-    return(NULL);
+    return(0);
   }
 
   g_object_get(plugin_port,
@@ -943,7 +943,7 @@ ags_plugin_port_get_scale_steps(AgsPluginPort *plugin_port)
   guint scale_steps;
 
   if(!AGS_IS_PLUGIN_PORT(plugin_port)){
-    return(NULL);
+    return(0);
   }
 
   g_object_get(plugin_port,

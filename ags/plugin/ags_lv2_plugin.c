@@ -1164,71 +1164,81 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* samplerate */
     options[0].context = LV2_OPTIONS_INSTANCE;
     options[0].subject = 0;
-    options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_PARAMETERS__sampleRate);
+    //FIXME:JK: bad cast
+    options[0].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(), 
+							    LV2_PARAMETERS__sampleRate);
 
     ptr_samplerate = (float *) malloc(sizeof(float));
     ptr_samplerate[0] = conf_samplerate;
   
     options[0].size = sizeof(float);
-    options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Float);
+    //FIXME:JK: bad cast
+    options[0].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_ATOM__Float);
     options[0].value = ptr_samplerate;
   
     /* min-block-length */
     options[1].context = LV2_OPTIONS_INSTANCE;
     options[1].subject = 0;
-    options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__minBlockLength);
+    //FIXME:JK: bad cast
+    options[1].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							    LV2_BUF_SIZE__minBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
   
     options[1].size = sizeof(float);
-    options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
+    //FIXME:JK: bad cast
+    options[1].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_ATOM__Int);
     options[1].value = ptr_buffer_size;
 
     /* max-block-length */
     options[2].context = LV2_OPTIONS_INSTANCE;
     options[2].subject = 0;
-    options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__maxBlockLength);
+    //FIXME:JK: bad cast
+    options[2].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							    LV2_BUF_SIZE__maxBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[2].size = sizeof(float);
-    options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
+    //FIXME:JK: bad cast
+    options[2].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_ATOM__Int);
     options[2].value = ptr_buffer_size;
 
     /* bounded-block-length */
     options[3].context = LV2_OPTIONS_INSTANCE;
     options[3].subject = 0;
-    options[3].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__boundedBlockLength);
+    //FIXME:JK: bad cast
+    options[3].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							    LV2_BUF_SIZE__boundedBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[3].size = sizeof(float);
-    options[3].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
+    //FIXME:JK: bad cast
+    options[3].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_ATOM__Int);
     options[3].value = ptr_buffer_size;
 
     /* fixed-block-length */
     options[4].context = LV2_OPTIONS_INSTANCE;
     options[4].subject = 0;
-    options[4].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__fixedBlockLength);
+    //FIXME:JK: bad cast
+    options[4].key = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							    LV2_BUF_SIZE__fixedBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
     ptr_buffer_size[0] = conf_buffer_size;
 
     options[4].size = sizeof(float);
-    options[4].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
+    //FIXME:JK: bad cast
+    options[4].type = (uint32_t) ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_ATOM__Int);
     options[4].value = ptr_buffer_size;
     
     /* instance */

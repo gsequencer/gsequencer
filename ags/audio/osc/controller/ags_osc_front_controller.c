@@ -246,8 +246,6 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 
   osc_front_controller->flags = 0;
 
-  osc_front_controller->delegate_timeout = (struct timespec *) malloc(sizeof(struct timespec));
-
   osc_front_controller->delegate_timeout = 0;
 
   g_atomic_int_set(&(osc_front_controller->do_reset),

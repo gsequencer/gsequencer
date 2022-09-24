@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -500,7 +500,7 @@ ags_ladspa_manager_find_ladspa_plugin_with_fallback(AgsLadspaManager *ladspa_man
   if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
      filename == NULL ||
      strlen(filename) <= 0 ||
-     strrchr(filename, "/") == NULL ||
+     strrchr(filename, '/') == NULL ||
      effect == NULL ||
      strlen(effect) <= 0){
     return(NULL);
@@ -513,7 +513,7 @@ ags_ladspa_manager_find_ladspa_plugin_with_fallback(AgsLadspaManager *ladspa_man
 							filename, effect);
 
   if(ladspa_plugin == NULL){
-    filename_suffix = strrchr(filename, "/");
+    filename_suffix = strrchr(filename, '/');
     
     /* collect */
     g_rec_mutex_lock(ladspa_manager_mutex);

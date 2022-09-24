@@ -1,3 +1,9 @@
+ags (4.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed type safety with recent clang
+	* minor improvements
+
 ags (4.4.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

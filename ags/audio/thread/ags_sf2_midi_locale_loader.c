@@ -905,7 +905,7 @@ ags_sf2_midi_locale_loader_get_bank(AgsSF2MidiLocaleLoader *sf2_midi_locale_load
   gint bank;
   
   if(!AGS_IS_SF2_MIDI_LOCALE_LOADER(sf2_midi_locale_loader)){
-    return(NULL);
+    return(0);
   }
 
   g_object_get(sf2_midi_locale_loader,
@@ -953,7 +953,7 @@ ags_sf2_midi_locale_loader_get_program(AgsSF2MidiLocaleLoader *sf2_midi_locale_l
   gint program;
   
   if(!AGS_IS_SF2_MIDI_LOCALE_LOADER(sf2_midi_locale_loader)){
-    return(NULL);
+    return(0);
   }
 
   g_object_get(sf2_midi_locale_loader,
