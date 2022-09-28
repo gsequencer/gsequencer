@@ -184,10 +184,11 @@ ags_dial_class_init(AgsDialClass *dial)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_dial_parent_class = g_type_class_peek_parent(dial);
-
+  
   /* GObjectClass */
   gobject = (GObjectClass *) dial;
 
@@ -521,13 +522,26 @@ ags_dial_set_property(GObject *gobject,
       }
 
       if(dial->adjustment != NULL){
+	g_object_disconnect(dial->adjustment,
+			    "any_signal::changed",
+			    G_CALLBACK(ags_dial_adjustment_changed_callback),
+			    dial,
+			    NULL);
+	
 	g_object_unref(G_OBJECT(dial->adjustment));
       }
 
       if(adjustment != NULL){
 	g_object_ref(G_OBJECT(adjustment));
-	g_signal_connect(adjustment, "value-changed",
+
+	g_signal_connect(adjustment, "changed",
 			 G_CALLBACK(ags_dial_adjustment_changed_callback), dial);
+
+	gtk_accessible_update_property(GTK_ACCESSIBLE(dial),
+				       GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(adjustment),
+				       GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(adjustment),
+				       GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, gtk_adjustment_get_upper(adjustment),
+				       -1);
       }
 
       dial->adjustment = adjustment;

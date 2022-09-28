@@ -57,6 +57,9 @@ void ags_indicator_draw(AgsIndicator *indicator,
 			cairo_t *cr,
 			gboolean is_animation);
 
+void ags_indicator_adjustment_changed_callback(GtkAdjustment *adjustment,
+					       AgsIndicator *indicator);
+
 /**
  * SECTION:ags_indicator
  * @short_description: A indicator widget
@@ -244,6 +247,9 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   widget->size_allocate = ags_indicator_size_allocate;
   
   widget->snapshot = ags_indicator_snapshot;
+
+  gtk_widget_class_set_accessible_role(indicator,
+				       GTK_ACCESSIBLE_ROLE_METER);
 }
 
 void
@@ -268,6 +274,15 @@ ags_indicator_init(AgsIndicator *indicator)
   /* adjustment */
   indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 0.01, 0.01, 0.01);
   g_object_ref(indicator->adjustment);
+
+  g_signal_connect(indicator->adjustment, "changed",
+		   G_CALLBACK(ags_indicator_adjustment_changed_callback), indicator);
+
+  gtk_accessible_update_property(GTK_ACCESSIBLE(indicator),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(indicator->adjustment),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(indicator->adjustment),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, gtk_adjustment_get_upper(indicator->adjustment),
+				 -1);
 }
 
 void
@@ -328,11 +343,26 @@ ags_indicator_set_property(GObject *gobject,
       }
 
       if(indicator->adjustment != NULL){
+	g_object_disconnect(indicator->adjustment,
+			    "any_signal::changed",
+			    G_CALLBACK(ags_indicator_adjustment_changed_callback),
+			    indicator,
+			    NULL);
+
 	g_object_unref(G_OBJECT(indicator->adjustment));
       }
 
       if(adjustment != NULL){
 	g_object_ref(G_OBJECT(adjustment));
+
+	g_signal_connect(adjustment, "changed",
+			 G_CALLBACK(ags_indicator_adjustment_changed_callback), indicator);
+
+	gtk_accessible_update_property(GTK_ACCESSIBLE(indicator),
+				       GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(adjustment),
+				       GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(adjustment),
+				       GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, gtk_adjustment_get_upper(adjustment),
+				       -1);
       }
 
       indicator->adjustment = adjustment;
@@ -971,6 +1001,17 @@ ags_indicator_set_adjustment(AgsIndicator *indicator,
   g_object_set(indicator,
 	       "adjustment", adjustment,
 	       NULL);
+}
+
+void
+ags_indicator_adjustment_changed_callback(GtkAdjustment *adjustment,
+					  AgsIndicator *indicator)
+{
+  gtk_accessible_update_property(GTK_ACCESSIBLE(indicator),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, gtk_adjustment_get_upper(adjustment),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, gtk_adjustment_get_lower(adjustment),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(adjustment),
+				 -1);
 }
 
 /**
