@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,11 +40,29 @@ G_BEGIN_DECLS
 typedef struct _AgsFxAlsaMixerAudio AgsFxAlsaMixerAudio;
 typedef struct _AgsFxAlsaMixerAudioClass AgsFxAlsaMixerAudioClass;
 
+typedef struct _AgsFxAlsaMixerAudioHDAControl AgsFxAlsaMixerAudioHDAControl;
+
 struct _AgsFxAlsaMixerAudio
 {
   AgsRecallAudio recall_audio;
 
-  AgsPort *muted;
+  gchar *alsa_device;
+
+  gboolean with_hda_control;
+  
+  AgsPort *master_volume;
+  AgsPort *master_muted;
+
+  AgsPort *pcm_volume;
+  AgsPort *pcm_muted;
+  
+  AgsPort *headphone_volume;
+  AgsPort *headphone_muted;
+  
+  AgsPort *mic_volume;
+  AgsPort *mic_muted;
+  
+  GList *hda_control;
 };
 
 struct _AgsFxAlsaMixerAudioClass
@@ -52,10 +70,27 @@ struct _AgsFxAlsaMixerAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+struct _AgsFxAlsaMixerAudioHDAControl
+{
+  GRecMutex strct_mutex;
+
+  gpointer parent;
+  
+  AgsPort *port;
+};
+
 GType ags_fx_alsa_mixer_audio_get_type();
 
+AgsFxAlsaMixerAudioHDAControl* ags_fx_alsa_mixer_audio_hda_control_alloc();
+void ags_fx_alsa_mixer_audio_hda_control_free(AgsFxAlsaMixerAudioHDAControl *hda_control);
+
+/* load/unload */
+void ags_fx_alsa_mixer_channel_load_mixer(AgsFxAlsaMixerChannel *fx_alsa_mixer_channel);
+void ags_fx_alsa_mixer_channel_load_port(AgsFxAlsaMixerChannel *fx_alsa_mixer_channel);
+
 /* instantiate */
-AgsFxAlsaMixerAudio* ags_fx_alsa_mixer_audio_new(AgsAudio *audio);
+AgsFxAlsaMixerAudio* ags_fx_alsa_mixer_audio_new(AgsAudio *audio,
+						 gchar *alsa_device, gboolean with_hda_control);
 
 G_END_DECLS
 
