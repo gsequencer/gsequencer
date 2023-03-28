@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,9 +196,9 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
-  gtk_grid_set_column_spacing(connection_editor,
+  gtk_grid_set_column_spacing((GtkGrid *) connection_editor,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
-  gtk_grid_set_row_spacing(connection_editor,
+  gtk_grid_set_row_spacing((GtkGrid *) connection_editor,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   connection_editor->flags = 0;
@@ -212,14 +212,14 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   notebook = 
     connection_editor->notebook = (GtkNotebook *) gtk_notebook_new();
 
-  gtk_widget_set_hexpand(connection_editor->notebook,
+  gtk_widget_set_hexpand((GtkWidget *) connection_editor->notebook,
 			 TRUE);
-  gtk_widget_set_vexpand(connection_editor->notebook,
+  gtk_widget_set_vexpand((GtkWidget *) connection_editor->notebook,
 			 TRUE);
 
-  gtk_widget_set_halign(connection_editor->notebook,
+  gtk_widget_set_halign((GtkWidget *) connection_editor->notebook,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(connection_editor->notebook,
+  gtk_widget_set_valign((GtkWidget *) connection_editor->notebook,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) connection_editor,
@@ -231,100 +231,100 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   scrolled_window =
     connection_editor->output_listing_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
   connection_editor->output_editor_listing = ags_connection_editor_listing_new(AGS_TYPE_OUTPUT);  
 
-  connection_editor->output_editor_listing->parent_connection_editor = connection_editor;
+  connection_editor->output_editor_listing->parent_connection_editor = (GtkWidget *) connection_editor;
   
-  gtk_widget_set_halign(connection_editor->output_editor_listing,
+  gtk_widget_set_halign((GtkWidget *) connection_editor->output_editor_listing,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(connection_editor->output_editor_listing,
+  gtk_widget_set_valign((GtkWidget *) connection_editor->output_editor_listing,
 			GTK_ALIGN_START);
 
   gtk_scrolled_window_set_child(scrolled_window,
-				connection_editor->output_editor_listing);
+				(GtkWidget *) connection_editor->output_editor_listing);
   
   /* AgsOutput bulk editor */
   scrolled_window =
     connection_editor->output_collection_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
   connection_editor->output_editor_collection = ags_connection_editor_collection_new(AGS_TYPE_OUTPUT);  
 
-  connection_editor->output_editor_collection->parent_connection_editor = connection_editor;
+  connection_editor->output_editor_collection->parent_connection_editor = (GtkWidget *) connection_editor;
 
   gtk_scrolled_window_set_child(scrolled_window,
-				connection_editor->output_editor_collection);
+				(GtkWidget *) connection_editor->output_editor_collection);
 
   /* AgsInput */
   scrolled_window =
     connection_editor->input_listing_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
   connection_editor->input_editor_listing = ags_connection_editor_listing_new(AGS_TYPE_INPUT);  
 
-  connection_editor->input_editor_listing->parent_connection_editor = connection_editor;
+  connection_editor->input_editor_listing->parent_connection_editor = (GtkWidget *) connection_editor;
 
-  gtk_widget_set_halign(connection_editor->input_editor_listing,
+  gtk_widget_set_halign((GtkWidget *) connection_editor->input_editor_listing,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(connection_editor->input_editor_listing,
+  gtk_widget_set_valign((GtkWidget *) connection_editor->input_editor_listing,
 			GTK_ALIGN_START);
 
   gtk_scrolled_window_set_child(scrolled_window,
-				connection_editor->input_editor_listing);
+				(GtkWidget *) connection_editor->input_editor_listing);
 
   /* AgsInput bulk editor */
   scrolled_window =
     connection_editor->input_collection_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
   connection_editor->input_editor_collection = ags_connection_editor_collection_new(AGS_TYPE_INPUT);  
 
-  connection_editor->input_editor_collection->parent_connection_editor = connection_editor;
+  connection_editor->input_editor_collection->parent_connection_editor = (GtkWidget *) connection_editor;
 
-  gtk_widget_set_halign(connection_editor->output_editor_listing,
+  gtk_widget_set_halign((GtkWidget *) connection_editor->output_editor_listing,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(connection_editor->output_editor_listing,
+  gtk_widget_set_valign((GtkWidget *) connection_editor->output_editor_listing,
 			GTK_ALIGN_START);
 
   gtk_scrolled_window_set_child(scrolled_window,
-				connection_editor->input_editor_collection);
+				(GtkWidget *) connection_editor->input_editor_collection);
 }
 
 void
@@ -480,26 +480,32 @@ ags_connection_editor_reset(AgsApplicable *applicable)
 void
 ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
 {
+  GtkLabel *label;
+  
   connection_editor->machine = machine;
 
   if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    label = (GtkLabel *) gtk_label_new(i18n("output"));    
     gtk_notebook_append_page(connection_editor->notebook,
 			     (GtkWidget *) connection_editor->output_listing_scrolled_window,
-			     (GtkWidget *) gtk_label_new(i18n("output")));
+			     (GtkWidget *) label);
 
+    label = (GtkLabel *) gtk_label_new(i18n("bulk output"));
     gtk_notebook_append_page(connection_editor->notebook,
 			     (GtkWidget *) connection_editor->output_collection_scrolled_window,
-			     (GtkWidget *) gtk_label_new(i18n("bulk output")));
+			     (GtkWidget *) label);
   }
   
   if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    label = (GtkLabel *) gtk_label_new(i18n("input"));
     gtk_notebook_append_page(connection_editor->notebook,
 			     (GtkWidget *) connection_editor->input_listing_scrolled_window,
-			     (GtkWidget *) gtk_label_new(i18n("input")));
+			     (GtkWidget *) label);
 
+    label = (GtkLabel *) gtk_label_new(i18n("bulk input"));
     gtk_notebook_append_page(connection_editor->notebook,
 			     (GtkWidget *) connection_editor->input_collection_scrolled_window,
-			     (GtkWidget *) gtk_label_new(i18n("bulk input")));
+			     (GtkWidget *) label);
   }
 }
 
