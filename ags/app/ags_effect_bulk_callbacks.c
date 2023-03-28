@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,7 @@
 
 #include <ags/app/ags_effect_bulk_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_bulk_member.h>
@@ -31,9 +32,16 @@ void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
 {
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
   if(effect_bulk->plugin_browser == NULL){
-    effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new(gtk_widget_get_ancestor(effect_bulk,
-											       AGS_TYPE_WINDOW));
+    effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) window);
 
     ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
 

@@ -1162,10 +1162,10 @@ ags_effect_line_add_line_member(AgsEffectLine *effect_line,
     effect_line->line_member = g_list_prepend(effect_line->line_member,
 					      line_member);
 
-    line_member->parent_line = effect_line;
+    line_member->parent_line = (GtkWidget *) effect_line;
     
     gtk_grid_attach(effect_line->line_member_grid,
-		    line_member,
+		    (GtkWidget *) line_member,
 		    x, y,
 		    width, height);
   }
@@ -1194,7 +1194,7 @@ ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
     line_member->parent_line = NULL;
     
     gtk_grid_remove(effect_line->line_member_grid,
-		    line_member);
+		    (GtkWidget *) line_member);
   }
 }
 
@@ -1243,7 +1243,7 @@ ags_effect_line_add_effect_separator(AgsEffectLine *effect_line,
 						   effect_separator);
     
     gtk_grid_attach(effect_line->line_member_grid,
-		     effect_separator,
+		     (GtkWidget *) effect_separator,
 		     x, y,
 		     width, height);
   }
@@ -1270,7 +1270,7 @@ ags_effect_line_remove_effect_separator(AgsEffectLine *effect_line,
 						  effect_separator);
     
     gtk_grid_remove(effect_line->line_member_grid,
-		    effect_separator);
+		    (GtkWidget *) effect_separator);
   }
 }
 
@@ -1410,16 +1410,16 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	       "effect", effect,
 	       NULL);
 
-  gtk_widget_set_valign(separator,
+  gtk_widget_set_valign((GtkWidget *) separator,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(separator,
+  gtk_widget_set_halign((GtkWidget *) separator,
 			GTK_ALIGN_FILL);
 
   ags_effect_line_add_effect_separator(effect_line,
 				       separator,
 				       0, y,
 				       AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show(GTK_WIDGET(separator));
+  gtk_widget_show((GtkWidget *) separator);
 
   y++;
 
@@ -1898,13 +1898,13 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
       g_message("ladspa bounds: %f %f", lower, upper);
 #endif
       
-      gtk_widget_set_valign(line_member,
+      gtk_widget_set_valign((GtkWidget *) line_member,
 			    GTK_ALIGN_FILL);
-      gtk_widget_set_halign(line_member,
+      gtk_widget_set_halign((GtkWidget *) line_member,
 			    GTK_ALIGN_FILL);
 	  
       ags_effect_line_add_line_member(effect_line,
-				      (GtkWidget *) line_member,
+				      line_member,
 				      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
 				      1, 1);
 
@@ -2165,16 +2165,16 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	       "effect", effect,
 	       NULL);
 
-  gtk_widget_set_valign(separator,
+  gtk_widget_set_valign((GtkWidget *) separator,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(separator,
+  gtk_widget_set_halign((GtkWidget *) separator,
 			GTK_ALIGN_FILL);
   
   ags_effect_line_add_effect_separator(effect_line,
 				       separator,
 				       0, y,
 				       AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show(GTK_WIDGET(separator));
+  gtk_widget_show((GtkWidget *) separator);
   
   y++;
 
@@ -2621,9 +2621,9 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
       g_message("lv2 bounds: %f %f", lower, upper);
 #endif
 	  
-      gtk_widget_set_valign(line_member,
+      gtk_widget_set_valign((GtkWidget *) line_member,
 			    GTK_ALIGN_FILL);
-      gtk_widget_set_halign(line_member,
+      gtk_widget_set_halign((GtkWidget *) line_member,
 			    GTK_ALIGN_FILL);
 
       ags_effect_line_add_line_member(effect_line,
@@ -2810,16 +2810,16 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 	       "effect", effect,
 	       NULL);
 
-  gtk_widget_set_valign(separator,
+  gtk_widget_set_valign((GtkWidget *) separator,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(separator,
+  gtk_widget_set_halign((GtkWidget *) separator,
 			GTK_ALIGN_FILL);
   
   ags_effect_line_add_effect_separator(effect_line,
 				       (GtkWidget *) separator,
 				       0, y,
 				       AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show(GTK_WIDGET(separator));
+  gtk_widget_show((GtkWidget *) separator);
   
   y++;
 
@@ -3271,9 +3271,9 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
       g_message("vst3 bounds: %f %f", lower, upper);
 #endif
 	  
-      gtk_widget_set_valign(line_member,
+      gtk_widget_set_valign((GtkWidget *) line_member,
 			    GTK_ALIGN_FILL);
-      gtk_widget_set_halign(line_member,
+      gtk_widget_set_halign((GtkWidget *) line_member,
 			    GTK_ALIGN_FILL);
 
       ags_effect_line_add_line_member(effect_line,
@@ -3865,19 +3865,19 @@ ags_effect_line_real_refresh_port(AgsEffectLine *effect_line)
 			 &value);
 
       if(AGS_LINE_MEMBER(line_member->data)->widget_type == AGS_TYPE_DIAL){
-	ags_dial_set_value(ags_line_member_get_widget(line_member->data),
+	ags_dial_set_value((AgsDial *) ags_line_member_get_widget((AgsLineMember *) line_member->data),
 			   (gdouble) g_value_get_float(&value));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_SCALE){
-	gtk_adjustment_set_value(gtk_range_get_adjustment(ags_line_member_get_widget(line_member->data)),
+	gtk_adjustment_set_value(gtk_range_get_adjustment((GtkRange *) ags_line_member_get_widget((AgsLineMember *) line_member->data)),
 				 (gdouble) g_value_get_float(&value));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_SPIN_BUTTON){
-	gtk_spin_button_set_value(ags_line_member_get_widget(line_member->data),
+	gtk_spin_button_set_value((GtkSpinButton *) ags_line_member_get_widget((AgsLineMember *) line_member->data),
 				  (gdouble) g_value_get_float(&value));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_CHECK_BUTTON){
-	gtk_check_button_set_active(ags_line_member_get_widget(line_member->data),
+	gtk_check_button_set_active((GtkCheckButton *) ags_line_member_get_widget((AgsLineMember *) line_member->data),
 				    (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-	gtk_toggle_button_set_active(ags_line_member_get_widget(line_member->data),
+	gtk_toggle_button_set_active((GtkToggleButton *) ags_line_member_get_widget((AgsLineMember *) line_member->data),
 				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }
     }
