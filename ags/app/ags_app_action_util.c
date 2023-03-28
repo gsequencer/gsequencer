@@ -379,7 +379,6 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
 #endif
     
     gchar *filename;
-    gchar *str;
     gchar *window_title;
     
     GError *error;
@@ -446,7 +445,7 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
     
     g_free(window_title);    
 
-    label = gtk_header_bar_get_title_widget(window->header_bar);
+    label = GTK_LABEL(gtk_header_bar_get_title_widget(window->header_bar));
 
     window_title = g_strdup_printf("GSequencer\n<small>%s</small>", window->name);
 
@@ -470,13 +469,8 @@ ags_app_action_util_save_as()
   GtkFileChooserDialog *file_chooser;
   
   AgsApplicationContext *application_context;
-  AgsConfig *config;
-  
-  gint response;
         
   application_context = ags_application_context_get_instance();
-
-  config = ags_config_get_instance();
   
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
@@ -539,7 +533,7 @@ ags_app_action_util_smf_import()
 
   midi_import_wizard = ags_midi_import_wizard_new();
   ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
-					 midi_import_wizard);
+					 (GtkWidget *) midi_import_wizard);
 
   ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
   ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
@@ -564,7 +558,7 @@ ags_app_action_util_smf_export()
 
   midi_export_wizard = ags_midi_export_wizard_new();
   ags_ui_provider_set_midi_export_wizard(AGS_UI_PROVIDER(application_context),
-					 midi_export_wizard);
+					 (GtkWidget *) midi_export_wizard);
 
   ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
   ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
@@ -589,7 +583,7 @@ ags_app_action_util_preferences()
 
   preferences = ags_preferences_new();
   ags_ui_provider_set_preferences(AGS_UI_PROVIDER(application_context),
-				  preferences);
+				  (GtkWidget *) preferences);
 
   ags_connectable_connect(AGS_CONNECTABLE(preferences));
   
@@ -619,8 +613,6 @@ ags_app_action_util_about()
   
   int n_read;
   
-  GError *error;
-
   gchar *authors[] = { "Joël Krähemann", "Daniel Maksymow", NULL }; 
 
   license_filename = NULL;
@@ -758,10 +750,10 @@ ags_app_action_util_help()
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  online_help_window = ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context));
+  online_help_window = (AgsOnlineHelpWindow *) ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context));
 
   if(online_help_window == NULL){
-    online_help_window = ags_online_help_window_new(window);
+    online_help_window = ags_online_help_window_new((GtkWindow *) window);
     
     ags_connectable_connect(AGS_CONNECTABLE(online_help_window));
     
@@ -784,7 +776,7 @@ ags_app_action_util_quit()
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  quit_dialog = ags_quit_dialog_new(window);
+  quit_dialog = ags_quit_dialog_new((GtkWindow *) window);
 
   gtk_widget_show((GtkWidget *) quit_dialog);
   
@@ -1679,20 +1671,15 @@ ags_app_action_util_edit_notation()
      AGS_IS_LIVE_VST3_BRIDGE(machine)
 #endif
     ){
-    AgsCompositeEdit *composite_edit, *prev_composite_edit;
-      
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION);
 
-    prev_composite_edit = composite_editor->selected_edit;
+    composite_editor->selected_edit = composite_editor->notation_edit;
       
-    composite_edit = 
-      composite_editor->selected_edit = composite_editor->notation_edit;
-      
-    gtk_widget_show(composite_editor->notation_edit);
-    gtk_widget_hide(composite_editor->sheet_edit);
-    gtk_widget_hide(composite_editor->automation_edit);
-    gtk_widget_hide(composite_editor->wave_edit);
+    gtk_widget_show((GtkWidget *) composite_editor->notation_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->sheet_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->automation_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->wave_edit);
       
     /* shift piano */
     ags_machine_selector_set_flags(composite_editor->machine_selector,
@@ -1706,29 +1693,22 @@ ags_app_action_util_edit_automation()
   AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
-  AgsCompositeEdit *composite_edit, *prev_composite_edit;
-  AgsMachine *machine;
 
   application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   composite_editor = window->composite_editor;
-
-  machine = composite_editor->selected_machine;
     
   ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						 AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
 
-  prev_composite_edit = composite_editor->selected_edit;      
+  composite_editor->selected_edit = composite_editor->automation_edit;
     
-  composite_edit = 
-    composite_editor->selected_edit = composite_editor->automation_edit;
-    
-  gtk_widget_hide(composite_editor->notation_edit);
-  gtk_widget_hide(composite_editor->sheet_edit);
-  gtk_widget_show(composite_editor->automation_edit);
-  gtk_widget_hide(composite_editor->wave_edit);
+  gtk_widget_hide((GtkWidget *) composite_editor->notation_edit);
+  gtk_widget_hide((GtkWidget *) composite_editor->sheet_edit);
+  gtk_widget_show((GtkWidget *) composite_editor->automation_edit);
+  gtk_widget_hide((GtkWidget *) composite_editor->wave_edit);
     
   /* shift piano */
   ags_machine_selector_unset_flags(composite_editor->machine_selector,
@@ -1741,7 +1721,6 @@ ags_app_action_util_edit_wave()
   AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
-  AgsCompositeEdit *composite_edit, *prev_composite_edit;
   AgsMachine *machine;
   
   application_context = ags_application_context_get_instance();
@@ -1749,10 +1728,6 @@ ags_app_action_util_edit_wave()
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));  
 
   composite_editor = window->composite_editor;
-
-  prev_composite_edit = composite_editor->selected_edit;      
-    
-  composite_edit = composite_editor->wave_edit;
 
   machine = composite_editor->selected_machine;
 
@@ -1771,19 +1746,19 @@ ags_app_action_util_edit_wave()
 
     composite_editor->selected_edit = composite_editor->wave_edit;
       
-    gtk_widget_hide(composite_editor->notation_edit);
-    gtk_widget_hide(composite_editor->sheet_edit);
-    gtk_widget_hide(composite_editor->automation_edit);
-    gtk_widget_show(composite_editor->wave_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->notation_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->sheet_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->automation_edit);
+    gtk_widget_show((GtkWidget *) composite_editor->wave_edit);
 
     /* shift piano */
     ags_machine_selector_unset_flags(composite_editor->machine_selector,
 				     AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
 
-    start_wave_edit = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+    start_wave_edit = ags_wave_edit_box_get_wave_edit(AGS_WAVE_EDIT_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
       
     if(start_wave_edit != NULL){
-      adjustment = gtk_range_get_adjustment(AGS_WAVE_EDIT(start_wave_edit->data)->hscrollbar);
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_WAVE_EDIT(start_wave_edit->data)->hscrollbar));
 	
       g_object_get(adjustment,
 		   "lower", &lower,
@@ -1845,22 +1820,17 @@ ags_app_action_util_edit_sheet()
      AGS_IS_LIVE_VST3_BRIDGE(machine)
 #endif
     ){
-    AgsCompositeEdit *composite_edit, *prev_composite_edit;
-    
     ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET);
 
-    prev_composite_edit = composite_editor->selected_edit;
+    composite_editor->selected_edit = composite_editor->sheet_edit;
       
-    composite_edit = 
-      composite_editor->selected_edit = composite_editor->sheet_edit;
-      
-    gtk_widget_hide(composite_editor->notation_edit);
-    gtk_widget_show(composite_editor->sheet_edit);
-    gtk_widget_hide(composite_editor->automation_edit);
-    gtk_widget_hide(composite_editor->wave_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->notation_edit);
+    gtk_widget_show((GtkWidget *) composite_editor->sheet_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->automation_edit);
+    gtk_widget_hide((GtkWidget *) composite_editor->wave_edit);
 
-    gtk_widget_queue_draw(AGS_SHEET_EDIT(composite_editor->sheet_edit->edit)->drawing_area);
+    gtk_widget_queue_draw(GTK_WIDGET(AGS_SHEET_EDIT(composite_editor->sheet_edit->edit)->drawing_area));
       
     /* shift piano */
     ags_machine_selector_set_flags(composite_editor->machine_selector,

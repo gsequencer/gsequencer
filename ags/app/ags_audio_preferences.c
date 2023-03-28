@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -141,12 +141,16 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GtkBox *hbox;
   GtkLabel *label;
 
+  AgsConfig *config;
+  
   gchar *str;  
 
+  config = ags_config_get_instance();
+  
   gtk_orientable_set_orientation(GTK_ORIENTABLE(audio_preferences),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(audio_preferences,
+  gtk_box_set_spacing((GtkBox *) audio_preferences,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);  
   
   g_signal_connect((GObject *) audio_preferences, "notify::parent",
@@ -157,14 +161,14 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
   gtk_box_append((GtkBox *) audio_preferences,
@@ -175,7 +179,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   audio_preferences->soundcard_editor_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 								   0);
 
-  gtk_box_set_spacing(audio_preferences->soundcard_editor_box,
+  gtk_box_set_spacing((GtkBox *) audio_preferences->soundcard_editor_box,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_scrolled_window_set_child(scrolled_window,
@@ -197,10 +201,10 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_box_append((GtkWidget *) audio_preferences,
+  gtk_box_append((GtkBox *) audio_preferences,
 		 (GtkWidget *) grid);
   
-  str = ags_config_get_value(ags_config_get_instance(),
+  str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature");
   
@@ -417,18 +421,17 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   /* clear */
-  list = audio_preferences->soundcard_editor;
+  list =
+    start_list = g_list_copy(audio_preferences->soundcard_editor);
 
   while(list != NULL){
-    gtk_box_remove(audio_preferences->soundcard_editor,
-		   GTK_WIDGET(list->data));
+    ags_audio_preferences_remove_soundcard_editor(audio_preferences,
+						  AGS_SOUNDCARD_EDITOR(list->data));
 
     list = list->next;
   }
 
-  g_list_free(audio_preferences->soundcard_editor);
-
-  audio_preferences->soundcard_editor = NULL;
+  g_list_free(start_list);
 
   /* reset */
   list =
@@ -512,7 +515,7 @@ ags_audio_preferences_add_soundcard_editor(AgsAudioPreferences *audio_preference
 							 soundcard_editor);
     
     gtk_box_append(audio_preferences->soundcard_editor_box,
-		   soundcard_editor);
+		   (GtkWidget *) soundcard_editor);
   }
 }
 
@@ -536,8 +539,8 @@ ags_audio_preferences_remove_soundcard_editor(AgsAudioPreferences *audio_prefere
     audio_preferences->soundcard_editor = g_list_remove(audio_preferences->soundcard_editor,
 							soundcard_editor);
     
-    gtk_box_remove(audio_preferences->soundcard_editor_box,
-		   soundcard_editor);
+    gtk_box_remove(GTK_BOX(audio_preferences->soundcard_editor_box),
+		   GTK_WIDGET(soundcard_editor));
   }
 }
 
