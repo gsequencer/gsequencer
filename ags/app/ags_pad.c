@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -701,6 +701,70 @@ ags_pad_disconnect(AgsConnectable *connectable)
 
   g_signal_handlers_disconnect_by_data(pad->channel,
 				       pad);
+}
+
+/**
+ * ags_pad_test_flags:
+ * @pad: the #AgsPad
+ * @flags: the flags
+ *
+ * Test @flags of @pad.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 4.5.0
+ */
+gboolean
+ags_pad_test_flags(AgsPad *pad,
+		   guint flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_PAD(pad), FALSE);
+
+  retval = (((flags &(pad->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_pad_set_flags:
+ * @pad: the #AgsPad
+ * @flags: the flags
+ *
+ * Set @flags of @pad.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_pad_set_flags(AgsPad *pad,
+		  guint flags)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  //TODO:JK: implement me
+  
+  pad->flags |= flags;
+}
+
+/**
+ * ags_pad_unset_flags:
+ * @pad: the #AgsPad
+ * @flags: the flags
+ *
+ * Unset @flags of @pad.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_pad_unset_flags(AgsPad *pad,
+		    guint flags)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  //TODO:JK: implement me
+  
+  pad->flags &= (~flags);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -907,6 +907,70 @@ ags_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(start_list);
+}
+
+/**
+ * ags_line_test_flags:
+ * @line: the #AgsLine
+ * @flags: the flags
+ *
+ * Test @flags of @line.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 4.5.0
+ */
+gboolean
+ags_line_test_flags(AgsLine *line,
+		    guint flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_LINE(line), FALSE);
+
+  retval = (((flags &(line->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_line_set_flags:
+ * @line: the #AgsLine
+ * @flags: the flags
+ *
+ * Set @flags of @line.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_line_set_flags(AgsLine *line,
+		   guint flags)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  //TODO:JK: implement me
+  
+  line->flags |= flags;
+}
+
+/**
+ * ags_line_unset_flags:
+ * @line: the #AgsLine
+ * @flags: the flags
+ *
+ * Unset @flags of @line.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_line_unset_flags(AgsLine *line,
+		     guint flags)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  //TODO:JK: implement me
+  
+  line->flags &= (~flags);
 }
 
 /**

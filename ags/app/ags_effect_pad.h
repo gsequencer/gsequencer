@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,8 +41,8 @@ G_BEGIN_DECLS
 #define AGS_IS_EFFECT_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_PAD))
 #define AGS_EFFECT_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_PAD, AgsEffectPadClass))
 
-#define AGS_EFFECT_PAD_DEFAULT_VERSION "0.7.8"
-#define AGS_EFFECT_PAD_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
+#define AGS_EFFECT_PAD_DEFAULT_VERSION "4.5.0"
+#define AGS_EFFECT_PAD_DEFAULT_BUILD_ID "Tue Mar 28 06:49:41 UTC 2023"
 
 #define AGS_EFFECT_PAD_COLUMNS_COUNT (2)
 
@@ -52,10 +52,9 @@ typedef struct _AgsEffectPadClass AgsEffectPadClass;
 typedef enum{
   AGS_EFFECT_PAD_MAPPED_RECALL       = 1,
   AGS_EFFECT_PAD_PREMAPPED_RECALL    = 1 <<  1,
-  AGS_EFFECT_PAD_CONNECTED           = 1 <<  2,
-  AGS_EFFECT_PAD_SHOW_GROUPING       = 1 <<  3,
-  AGS_EFFECT_PAD_GROUP_ALL           = 1 <<  4,
-  AGS_EFFECT_PAD_GROUP_LINE          = 1 <<  5,
+  AGS_EFFECT_PAD_SHOW_GROUPING       = 1 <<  2,
+  AGS_EFFECT_PAD_GROUP_ALL           = 1 <<  3,
+  AGS_EFFECT_PAD_GROUP_LINE          = 1 <<  4,
 }AgsEffectPadFlags;
 
 struct _AgsEffectPad
@@ -63,7 +62,8 @@ struct _AgsEffectPad
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;
@@ -107,6 +107,13 @@ struct _AgsEffectPadClass
 };
 
 GType ags_effect_pad_get_type(void);
+
+gboolean ags_effect_pad_test_flags(AgsEffectPad *effect_pad,
+				   guint flags);
+void ags_effect_pad_set_flags(AgsEffectPad *effect_pad,
+			      guint flags);
+void ags_effect_pad_unset_flags(AgsEffectPad *effect_pad,
+				guint flags);
 
 void ags_effect_pad_samplerate_changed(AgsEffectPad *effect_pad,
 				       guint samplerate, guint old_samplerate);

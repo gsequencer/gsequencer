@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -542,7 +542,8 @@ ags_effect_line_init(AgsEffectLine *effect_line)
   }
   
   effect_line->flags = 0;
-
+  effect_line->connectable_flags = 0;
+  
   effect_line->name = NULL;
   
   effect_line->version = AGS_EFFECT_LINE_DEFAULT_VERSION;
@@ -761,11 +762,11 @@ ags_effect_line_connect(AgsConnectable *connectable)
 
   effect_line = AGS_EFFECT_LINE(connectable);
 
-  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_line->connectable_flags)) == 0){
     return;
   }
 
-  effect_line->flags &= (~AGS_EFFECT_LINE_CONNECTED);
+  effect_line->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   if((AGS_EFFECT_LINE_PREMAPPED_RECALL & (effect_line->flags)) == 0){
     if((AGS_EFFECT_LINE_MAPPED_RECALL & (effect_line->flags)) == 0){
@@ -800,12 +801,12 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
 
   effect_line = AGS_EFFECT_LINE(connectable);
 
-  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_line->connectable_flags)) == 0){
     return;
   }
 
   /* unset connected flag */
-  effect_line->flags &= (~AGS_EFFECT_LINE_CONNECTED);
+  effect_line->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* disconnect line members */
   list =
@@ -820,6 +821,70 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(start_list);
+}
+
+/**
+ * ags_effect_line_test_flags:
+ * @effect_line: the #AgsEffectLine
+ * @flags: the flags
+ *
+ * Test @flags of @effect_line.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 4.5.0
+ */
+gboolean
+ags_effect_line_test_flags(AgsEffectLine *effect_line,
+			   guint flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_EFFECT_LINE(effect_line), FALSE);
+
+  retval = (((flags &(effect_line->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_effect_line_set_flags:
+ * @effect_line: the #AgsEffectLine
+ * @flags: the flags
+ *
+ * Set @flags of @effect_line.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_effect_line_set_flags(AgsEffectLine *effect_line,
+			  guint flags)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  //TODO:JK: implement me
+  
+  effect_line->flags |= flags;
+}
+
+/**
+ * ags_effect_line_unset_flags:
+ * @effect_line: the #AgsEffectLine
+ * @flags: the flags
+ *
+ * Unset @flags of @effect_line.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_effect_line_unset_flags(AgsEffectLine *effect_line,
+			    guint flags)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  //TODO:JK: implement me
+  
+  effect_line->flags &= (~flags);
 }
 
 /**

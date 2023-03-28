@@ -477,6 +477,70 @@ ags_connection_editor_reset(AgsApplicable *applicable)
   }
 }
 
+/**
+ * ags_connection_editor_test_flags:
+ * @connection_editor: the #AgsConnectionEditor
+ * @flags: the flags
+ *
+ * Test @flags of @connection_editor.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 4.5.0
+ */
+gboolean
+ags_connection_editor_test_flags(AgsConnectionEditor *connection_editor,
+				 guint flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_CONNECTION_EDITOR(connection_editor), FALSE);
+
+  retval = (((flags &(connection_editor->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_connection_editor_set_flags:
+ * @connection_editor: the #AgsConnectionEditor
+ * @flags: the flags
+ *
+ * Set @flags of @connection_editor.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_connection_editor_set_flags(AgsConnectionEditor *connection_editor,
+				guint flags)
+{
+  g_return_if_fail(AGS_IS_CONNECTION_EDITOR(connection_editor));
+
+  //TODO:JK: implement me
+  
+  connection_editor->flags |= flags;
+}
+
+/**
+ * ags_connection_editor_unset_flags:
+ * @connection_editor: the #AgsConnectionEditor
+ * @flags: the flags
+ *
+ * Unset @flags of @connection_editor.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_connection_editor_unset_flags(AgsConnectionEditor *connection_editor,
+				  guint flags)
+{
+  g_return_if_fail(AGS_IS_CONNECTION_EDITOR(connection_editor));
+
+  //TODO:JK: implement me
+  
+  connection_editor->flags &= (~flags);
+}
+
 void
 ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
 {
@@ -511,7 +575,7 @@ ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, A
 
 /**
  * ags_connection_editor_set_machine:
- * @connection_editor: an #AgsConnectionEditor
+ * @connection_editor: the #AgsConnectionEditor
  * @machine: the new #AgsMachine
  *
  * Is emitted as machine gets modified.

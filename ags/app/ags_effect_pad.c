@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -401,7 +401,8 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
 				 GTK_ORIENTATION_VERTICAL);
 
   effect_pad->flags = 0;
-
+  effect_pad->connectable_flags = 0;
+  
   effect_pad->name = NULL;
   
   effect_pad->version = AGS_EFFECT_PAD_DEFAULT_VERSION;
@@ -605,11 +606,11 @@ ags_effect_pad_connect(AgsConnectable *connectable)
   /* AgsEffect_Pad */
   effect_pad = AGS_EFFECT_PAD(connectable);
 
-  if((AGS_EFFECT_PAD_CONNECTED & (effect_pad->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_pad->connectable_flags)) != 0){
     return;
   }
   
-  effect_pad->flags |= AGS_EFFECT_PAD_CONNECTED;
+  effect_pad->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   if((AGS_EFFECT_PAD_PREMAPPED_RECALL & (effect_pad->flags)) == 0){
     if((AGS_EFFECT_PAD_MAPPED_RECALL & (effect_pad->flags)) == 0){
@@ -642,11 +643,11 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   /* AgsEffect_Pad */
   effect_pad = AGS_EFFECT_PAD(connectable);
 
-  if((AGS_EFFECT_PAD_CONNECTED & (effect_pad->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (effect_pad->connectable_flags)) == 0){
     return;
   }
   
-  effect_pad->flags &= (~AGS_EFFECT_PAD_CONNECTED);
+  effect_pad->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* AgsEffectLine */
   effect_line =
@@ -659,6 +660,70 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(start_effect_line);
+}
+
+/**
+ * ags_effect_pad_test_flags:
+ * @effect_pad: the #AgsEffectPad
+ * @flags: the flags
+ *
+ * Test @flags of @effect_pad.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 4.5.0
+ */
+gboolean
+ags_effect_pad_test_flags(AgsEffectPad *effect_pad,
+			  guint flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_EFFECT_PAD(effect_pad), FALSE);
+
+  retval = (((flags &(effect_pad->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_effect_pad_set_flags:
+ * @effect_pad: the #AgsEffectPad
+ * @flags: the flags
+ *
+ * Set @flags of @effect_pad.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_effect_pad_set_flags(AgsEffectPad *effect_pad,
+			 guint flags)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  //TODO:JK: implement me
+  
+  effect_pad->flags |= flags;
+}
+
+/**
+ * ags_effect_pad_unset_flags:
+ * @effect_pad: the #AgsEffectPad
+ * @flags: the flags
+ *
+ * Unset @flags of @effect_pad.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_effect_pad_unset_flags(AgsEffectPad *effect_pad,
+			   guint flags)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  //TODO:JK: implement me
+  
+  effect_pad->flags &= (~flags);
 }
 
 /**
