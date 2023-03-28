@@ -2,6 +2,7 @@ ags (4.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: fixed type safety with recent clang
+	* fixed ags_connection_editor_line_new() prototype declaration
 	* TODO:JK: implemented ags-fx-alsa-mixer
 	* TODO:JK: implemented ags-fx-oss-mixer
 	* WONT-DO:JK: because needs a proper w32 driver, MIDI support of WASAPI

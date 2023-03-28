@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,7 +71,7 @@ struct _AgsConnectionEditorLineClass
 
 GType ags_connection_editor_line_get_type(void);
 
-AgsConnectionEditorLine* ags_connection_editor_line_new();
+AgsConnectionEditorLine* ags_connection_editor_line_new(AgsChannel *channel);
 
 G_END_DECLS
 
