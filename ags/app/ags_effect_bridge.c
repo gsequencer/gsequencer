@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -398,9 +398,9 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
-  gtk_grid_set_column_spacing(effect_bridge,
+  gtk_grid_set_column_spacing((GtkGrid *) effect_bridge,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
-  gtk_grid_set_row_spacing(effect_bridge,
+  gtk_grid_set_row_spacing((GtkGrid *) effect_bridge,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   effect_bridge->flags = 0;
@@ -780,15 +780,18 @@ ags_effect_bridge_set_property(GObject *gobject,
 	  i = 0;
 
 	  while(effect_pad != NULL && input != NULL){
+	    guint effect_line_count;
+	    
 	    effect_line =
-	      start_effect_line = ags_effect_bridge_get_input_effect_pad(AGS_EFFECT_PAD(effect_pad->data));
+	      start_effect_line = ags_effect_pad_get_effect_line(AGS_EFFECT_PAD(effect_pad->data));
 
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", input,
 			 NULL);
-	    
+
+	    effect_line_count = g_list_length(start_effect_line);
 	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->input_line_type,
-					audio_channels, g_list_length(effect_line));
+					audio_channels, effect_line_count);
 	    
 	    g_list_free(start_effect_line);
 
@@ -1153,10 +1156,10 @@ ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
     effect_bridge->output_effect_pad = g_list_prepend(effect_bridge->output_effect_pad,
 						      effect_pad);
 
-    effect_pad->parent_effect_bridge = effect_bridge;
+    effect_pad->parent_effect_bridge = (GtkWidget *) effect_bridge;
     
     gtk_box_append(effect_bridge->output,
-		   effect_pad);
+		   (GtkWidget *) effect_pad);
   }
 }
 
@@ -1183,7 +1186,7 @@ ags_effect_bridge_remove_output_effect_pad(AgsEffectBridge *effect_bridge,
     effect_pad->parent_effect_bridge = NULL;
     
     gtk_box_remove(effect_bridge->output,
-		   effect_pad);
+		   (GtkWidget *) effect_pad);
   }
 }
 
@@ -1225,10 +1228,10 @@ ags_effect_bridge_add_input_effect_pad(AgsEffectBridge *effect_bridge,
     effect_bridge->input_effect_pad = g_list_prepend(effect_bridge->input_effect_pad,
 						     effect_pad);
 
-    effect_pad->parent_effect_bridge = effect_bridge;
+    effect_pad->parent_effect_bridge = (GtkWidget *) effect_bridge;
     
     gtk_box_append(effect_bridge->input,
-		   effect_pad);
+		   (GtkWidget *) effect_pad);
   }
 }
 
@@ -1255,7 +1258,7 @@ ags_effect_bridge_remove_input_effect_pad(AgsEffectBridge *effect_bridge,
     effect_pad->parent_effect_bridge = NULL;
     
     gtk_box_remove(effect_bridge->input,
-		   effect_pad);
+		   (GtkWidget *) effect_pad);
   }
 }
 
