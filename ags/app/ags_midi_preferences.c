@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -279,14 +279,13 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   while(list != NULL){
     ags_midi_preferences_remove_sequencer_editor(midi_preferences,
 						 list->data);
-
     g_object_run_dispose(list->data);
-    g_object_unref(list->data);
     
     list = list->next;
   }
   
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
 
   /* reset */
   list =
@@ -314,7 +313,7 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   }
 
   g_list_free_full(start_list,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   /* unref */
   g_object_unref(main_loop);

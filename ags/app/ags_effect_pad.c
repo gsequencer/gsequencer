@@ -1005,10 +1005,10 @@ ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
     effect_pad->effect_line = g_list_prepend(effect_pad->effect_line,
 					     effect_line);
 
-    effect_line->parent_effect_pad = effect_pad;
+    effect_line->parent_effect_pad = (GtkWidget *) effect_pad;
     
     gtk_grid_attach(effect_pad->effect_line_grid,
-		    effect_line,
+		    (GtkWidget *) effect_line,
 		    x, y,
 		    width, height);
   }
@@ -1037,7 +1037,7 @@ ags_effect_pad_remove_effect_line(AgsEffectPad *effect_pad,
     effect_line->parent_effect_pad = NULL;
         
     gtk_grid_remove(effect_pad->effect_line_grid,
-		    effect_line);
+		    (GtkWidget *) effect_line);
   }
 }
 

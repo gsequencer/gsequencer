@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,8 +45,7 @@ typedef struct _AgsExportWindow AgsExportWindow;
 typedef struct _AgsExportWindowClass AgsExportWindowClass;
 
 typedef enum{
-  AGS_EXPORT_WINDOW_CONNECTED     = 1,
-  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1 <<  1,
+  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1,
 }AgsExportWindowFlags;
 
 struct _AgsExportWindow
@@ -54,6 +53,7 @@ struct _AgsExportWindow
   GtkWindow window;
 
   guint flags;
+  guint connectable_flags;
   
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;
@@ -78,6 +78,13 @@ struct _AgsExportWindowClass
 };
 
 GType ags_export_window_get_type(void);
+
+gboolean ags_export_window_test_flags(AgsExportWindow *export_window,
+				      guint flags);
+void ags_export_window_set_flags(AgsExportWindow *export_window,
+				 guint flags);
+void ags_export_window_unset_flags(AgsExportWindow *export_window,
+				   guint flags);
 
 GList* ags_export_window_get_export_soundcard(AgsExportWindow *export_window);
 void ags_export_window_add_export_soundcard(AgsExportWindow *export_window,
