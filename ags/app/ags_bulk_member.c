@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -718,7 +718,7 @@ ags_bulk_member_set_property(GObject *gobject,
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
       }else if(GTK_IS_CHECK_BUTTON(new_child)){
-	gtk_check_button_set_active((GtkToggleButton *) new_child,
+	gtk_check_button_set_active((GtkCheckButton *) new_child,
 				    active);
       }			
 
@@ -794,7 +794,7 @@ ags_bulk_member_set_property(GObject *gobject,
       }
       
       bulk_member->widget_label = g_strdup(label);
-      gtk_frame_set_label(bulk_member,
+      gtk_frame_set_label(GTK_FRAME(bulk_member),
 			  label);
     }
     break;

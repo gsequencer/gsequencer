@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -148,7 +148,9 @@ main(int argc, char **argv)
 			strlen(argv[0]) - strlen("\\gsequencer.exe"));
   }
 
-  putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s\\lib\\gio\\modules", app_dir));
+  putenv(g_strdup_printf("GIO_MODULE_DIR=%s\\lib\\gio\\modules", app_dir));
+
+  putenv(g_strdup_printf("GSETTINGS_SCHEMA_DIR=%s\\share\\glib-2.0\\schemas", app_dir));  
 
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s\\share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_HOME=%s\\etc", app_dir));
@@ -176,7 +178,9 @@ main(int argc, char **argv)
 
   app_dir = [[NSBundle mainBundle] bundlePath].UTF8String;
   
-  putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s/Contents/Resources/lib/gio/modules", app_dir));
+  putenv(g_strdup_printf("GIO_MODULE_DIR=%s/Contents/Resources/lib/gio/modules", app_dir));
+
+  putenv(g_strdup_printf("GSETTINGS_SCHEMA_DIR=%s/Contents/Resources/glib-2.0/schemas", app_dir));  
 
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Contents/Resources/etc", app_dir));

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,8 +115,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 						       AgsAudioPreferences *audio_preferences)
 {
   AgsSoundcardEditor *soundcard_editor;
-
-  GList *start_list, *list;
 
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);

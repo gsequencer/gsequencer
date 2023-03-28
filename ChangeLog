@@ -1,6 +1,7 @@
 ags (4.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: fixed type safety with recent clang
 	* TODO:JK: implemented ags-fx-alsa-mixer
 	* TODO:JK: implemented ags-fx-oss-mixer
 	* WONT-DO:JK: because needs a proper w32 driver, MIDI support of WASAPI
@@ -8,7 +9,8 @@ ags (4.5.0)
 ags (4.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed type safety with recent clang
+	* added missing putenv GIO_MODULE_DIR and GSETTINGS_SCHEMA_DIR
+	* TODO:JK: fixed type safety with recent clang
 	* minor improvements
 
 ags (4.4.2)
