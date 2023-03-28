@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -264,6 +264,8 @@ ags_app_action_util_save()
 {
   AgsApplicationContext *application_context;
   AgsWindow *window;
+
+  gchar *str;
   
   GError *error;
 
@@ -271,10 +273,12 @@ ags_app_action_util_save()
   
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  if(!g_strcmp0(ags_config_get_value(AGS_APPLICATION_CONTEXT(application_context)->config,
-				     AGS_CONFIG_GENERIC,
-				     "simple-file"),
-		"false") == FALSE){
+  str = ags_config_get_value(AGS_APPLICATION_CONTEXT(application_context)->config,
+			     AGS_CONFIG_GENERIC,
+			     "simple-file");
+  
+  if((!g_strcmp0(str,
+		 "false")) == FALSE){
     AgsSimpleFile *simple_file;
 
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
@@ -350,6 +354,8 @@ ags_app_action_util_save()
 
     g_object_unref(G_OBJECT(file));
   }
+
+  g_free(str);
 }
 
 void
@@ -435,7 +441,7 @@ ags_app_action_util_save_as_response_callback(GtkFileChooserDialog *file_chooser
     window->name = g_strdup(filename);
 
     window_title = g_strdup_printf("GSequencer - %s", window->name);
-    gtk_window_set_title(window,
+    gtk_window_set_title((GtkWindow *) window,
 			 window_title);
     
     g_free(window_title);    

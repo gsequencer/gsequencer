@@ -1,6 +1,7 @@
 ags (4.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing putenv GIO_MODULE_DIR and GSETTINGS_SCHEMA_DIR
 	* fixed type safety with recent clang
 	* minor improvements
 
