@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -228,9 +228,6 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 {
   AgsMachineEditorLine *machine_editor_line;
   AgsLineMemberEditor *line_member_editor;
-  GtkBox *hbox;
-  GtkCheckButton *check_button;
-  GtkLabel *label;
 
   GList *start_list, *list;
   GList *start_recall, *recall;
@@ -250,7 +247,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
     list = list->next;
   }
 
-  g_list_free((GDestroyNotify) start_list);
+  g_list_free(start_list);
   
   machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 									 AGS_TYPE_MACHINE_EDITOR_LINE);
@@ -305,7 +302,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   }
 
   g_list_free_full(start_recall,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -347,7 +344,7 @@ ags_line_member_editor_add_entry(AgsLineMemberEditor *line_member_editor,
 					       entry);
     
     gtk_box_append(line_member_editor->entry_box,
-		   entry);
+		   (GtkWidget *) entry);
   }
 }
 
@@ -372,7 +369,7 @@ ags_line_member_editor_remove_entry(AgsLineMemberEditor *line_member_editor,
 					      entry);
     
     gtk_box_remove(line_member_editor->entry_box,
-		   entry);
+		   (GtkWidget *) entry);
   }
 }
 
