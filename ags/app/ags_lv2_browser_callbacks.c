@@ -346,6 +346,8 @@ ags_lv2_browser_plugin_uri_callback(GtkTreeView *tree_view,
       gtk_label_set_text(port_editor->port_name,
 			 str);
 
+      flags = 0;
+      
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	flags |= AGS_PORT_EDITOR_IS_OUTPUT;
       }else{

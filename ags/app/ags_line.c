@@ -1267,7 +1267,7 @@ ags_line_add_line_member(AgsLine *line,
     line->line_member = g_list_prepend(line->line_member,
 				       line_member);
 
-    line_member->parent_line = line;
+    line_member->parent_line = (GtkWidget *) line;
     
     gtk_widget_set_vexpand((GtkWidget *) line_member,
 			   FALSE);
@@ -1276,7 +1276,7 @@ ags_line_add_line_member(AgsLine *line,
 			  GTK_ALIGN_START);
     
     ags_expander_add(line->line_member_expander,
-		     line_member,
+		     (GtkWidget *) line_member,
 		     x, y,
 		     width, height);
   }
@@ -1305,7 +1305,7 @@ ags_line_remove_line_member(AgsLine *line,
     line_member->parent_line = NULL;
     
     ags_expander_remove(line->line_member_expander,
-			line_member);
+			(GtkWidget *) line_member);
   }
 }
 
@@ -1354,7 +1354,7 @@ ags_line_add_effect_separator(AgsLine *line,
 					    effect_separator);
     
     ags_expander_add(line->line_member_expander,
-		     effect_separator,
+		     (GtkWidget *) effect_separator,
 		     x, y,
 		     width, height);
   }
@@ -1381,7 +1381,7 @@ ags_line_remove_effect_separator(AgsLine *line,
 					   effect_separator);
     
     ags_expander_remove(line->line_member_expander,
-			effect_separator);
+			(GtkWidget *) effect_separator);
   }
 }
 
@@ -1400,7 +1400,6 @@ ags_line_add_ladspa_plugin(AgsLine *line,
   AgsLineMember *line_member;
   AgsEffectSeparator *separator;
 
-  GtkAdjustment *adjustment;
   AgsLinePlugin *line_plugin;
 
   AgsAudio *audio;
@@ -1470,7 +1469,8 @@ ags_line_add_ladspa_plugin(AgsLine *line,
   x = 0;
   y = 0;
 
-  list = line->line_member_expander->children;
+  list =
+    start_list = line->line_member_expander->children;
 
   while(list != NULL){
     if(y <= AGS_EXPANDER_CHILD(list->data)->y){
@@ -1812,9 +1812,7 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 	  upper = upper_bound;
 	}
 
-	g_object_get(range,
-		     "adjustment", &adjustment,
-		     NULL);
+	adjustment = gtk_range_get_adjustment(range);
 
 	if(upper >= 0.0 && lower >= 0.0){
 	  step = (upper - lower) / step_count;
@@ -3809,19 +3807,19 @@ ags_line_real_refresh_port(AgsLine *line)
       AGS_LINE_MEMBER(line_member->data)->flags |= AGS_LINE_MEMBER_NO_UPDATE;
       
       if(AGS_LINE_MEMBER(line_member->data)->widget_type == AGS_TYPE_DIAL){
-	ags_dial_set_value(ags_line_member_get_widget(line_member->data),
+	ags_dial_set_value(AGS_DIAL(ags_line_member_get_widget(line_member->data)),
 			   (gdouble) g_value_get_float(&value));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_SCALE){
-	gtk_adjustment_set_value(gtk_range_get_adjustment(ags_line_member_get_widget(line_member->data)),
+	gtk_adjustment_set_value(gtk_range_get_adjustment(GTK_RANGE(ags_line_member_get_widget(line_member->data))),
 				 (gdouble) g_value_get_float(&value));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_SPIN_BUTTON){
-	gtk_spin_button_set_value(ags_line_member_get_widget(line_member->data),
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(ags_line_member_get_widget(line_member->data)),
 				  (gdouble) g_value_get_float(&value));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_CHECK_BUTTON){
-	gtk_check_button_set_active(ags_line_member_get_widget(line_member->data),
+	gtk_check_button_set_active(GTK_CHECK_BUTTON(ags_line_member_get_widget(line_member->data)),
 				    (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }else if(AGS_LINE_MEMBER(line_member->data)->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-	gtk_toggle_button_set_active(ags_line_member_get_widget(line_member->data),
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ags_line_member_get_widget(line_member->data)),
 				     (g_value_get_float(&value) != 0.0 ? TRUE: FALSE));
       }
 
