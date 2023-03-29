@@ -146,6 +146,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 	       "hide-on-close", TRUE,
 	       NULL);
 
+  g_atomic_int_set(&(export_window->do_stop),
+		   FALSE);
+  
   /* pack */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
@@ -377,6 +380,8 @@ ags_export_window_connect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
 
+  AgsApplicationContext *application_context;
+
   GList *start_list, *list;
 
   export_window = AGS_EXPORT_WINDOW(connectable);
@@ -385,7 +390,10 @@ ags_export_window_connect(AgsConnectable *connectable)
     return;
   }
 
-  export_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  application_context = ags_application_context_get_instance();  
+
+  g_signal_connect_after(application_context, "update-ui",
+			 G_CALLBACK(ags_export_window_update_ui_callback), export_window);
 
   g_signal_connect(G_OBJECT(export_window->add), "clicked",
 		   G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
@@ -395,6 +403,8 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(export_window->export), "clicked",
 			 G_CALLBACK(ags_export_window_export_callback), export_window);
+
+  export_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
   /* export soundcard */
   list =
@@ -415,6 +425,8 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
 
+  AgsApplicationContext *application_context;
+
   GList *start_list, *list;
 
   export_window = AGS_EXPORT_WINDOW(connectable);
@@ -423,7 +435,13 @@ ags_export_window_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  export_window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  application_context = ags_application_context_get_instance();  
+
+  g_object_disconnect(G_OBJECT(application_context),
+		      "any_signal::update-ui",
+		      G_CALLBACK(ags_export_window_update_ui_callback),
+		      export_window,
+		      NULL);
 
   g_object_disconnect(G_OBJECT(export_window->add),
 		      "any_signal::clicked",
@@ -442,6 +460,8 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_export_window_export_callback),
 		      export_window,
 		      NULL);
+  
+  export_window->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
   /* export soundcard */
   list =
@@ -860,6 +880,9 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 			    export_output);
 	
       if(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard == default_soundcard){
+	ags_export_window_set_flags(export_window,
+				    AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT);
+
 	g_signal_connect(current_export_thread, "stop",
 			 G_CALLBACK(ags_export_window_stop_callback), export_window);
       }

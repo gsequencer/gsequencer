@@ -45,7 +45,8 @@ typedef struct _AgsExportWindow AgsExportWindow;
 typedef struct _AgsExportWindowClass AgsExportWindowClass;
 
 typedef enum{
-  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1,
+  AGS_EXPORT_WINDOW_LIVE_EXPORT        = 1,
+  AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT   = 1 <<  1,
 }AgsExportWindowFlags;
 
 struct _AgsExportWindow
@@ -54,6 +55,8 @@ struct _AgsExportWindow
 
   guint flags;
   guint connectable_flags;
+
+  volatile gboolean do_stop;
   
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;
