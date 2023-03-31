@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -186,12 +186,20 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   memset(buffer, 0, 256 * sizeof(char));
   
   if(paper_size_file != NULL){
-    fgets(buffer, 255, paper_size_file);
-    buffer[255]= '\0';
+    char *paper_size_buffer;
 
-    fclose(paper_size_file);
+    paper_size_buffer = fgets(buffer, 255, paper_size_file);
+    buffer[255]= '\0';
     
-    paper_size = NULL;
+    if(paper_size_buffer == NULL){
+      buffer[0]= '\0';
+      
+      g_warning("fgets() returns NULL");
+    }else{
+      paper_size = NULL;
+    }
+    
+    fclose(paper_size_file);
   }
   
   if(!g_strcmp0(buffer, "a3")){
@@ -232,7 +240,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   }
   
   ags_ui_provider_set_app(AGS_UI_PROVIDER(application_context),
-			  gsequencer_app);
+			  GTK_APPLICATION(gsequencer_app));
   
   /* open */
   open_action = g_simple_action_new("open",
@@ -242,7 +250,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(open_action));
 
-  gtk_application_set_accels_for_action(gsequencer_app,
+  gtk_application_set_accels_for_action((GtkApplication *) gsequencer_app,
 					"app.open",
 					open_accel);
   
@@ -254,7 +262,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(save_action));
 
-  gtk_application_set_accels_for_action(gsequencer_app,
+  gtk_application_set_accels_for_action((GtkApplication *) gsequencer_app,
 					"app.save",
 					save_accel);
 
@@ -266,7 +274,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(save_as_action));
 
-  gtk_application_set_accels_for_action(gsequencer_app,
+  gtk_application_set_accels_for_action((GtkApplication *) gsequencer_app,
 					"app.save_as",
 					save_as_accel);
 
@@ -326,7 +334,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(help_action));
 
-  gtk_application_set_accels_for_action(gsequencer_app,
+  gtk_application_set_accels_for_action((GtkApplication *) gsequencer_app,
 					"app.help",
 					help_accel);
 
@@ -338,7 +346,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(quit_action));
 
-  gtk_application_set_accels_for_action(gsequencer_app,
+  gtk_application_set_accels_for_action((GtkApplication *) gsequencer_app,
 					"app.quit",
 					quit_accel);
 
@@ -604,7 +612,7 @@ ags_gsequencer_application_startup(GApplication *app)
   AgsApplicationContext *application_context;
   AgsLog *log;
 
-  gsequencer_app = app;
+  gsequencer_app = (AgsGSequencerApplication *) app;
 
   G_APPLICATION_CLASS(ags_gsequencer_application_parent_class)->startup(app);
 
@@ -649,7 +657,7 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_insert_submenu(gsequencer_app->menubar,
 			-1,
 			i18n("File"),
-			gsequencer_app->file_menu);
+			G_MENU_MODEL(gsequencer_app->file_menu));
   
   /* edit menu */
   gsequencer_app->edit_menu = (GMenu *) g_menu_new();
@@ -662,7 +670,7 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_insert_submenu(gsequencer_app->edit_menu,
 			0,
 			i18n("Add"),
-			gsequencer_app->add_menu);
+			G_MENU_MODEL(gsequencer_app->add_menu));
   
   item = g_menu_item_new(i18n("Meta-data"),
 			 "app.meta_data");
@@ -677,7 +685,7 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_insert_submenu(gsequencer_app->menubar,
 			-1,
 			i18n("Edit"),
-			gsequencer_app->edit_menu);
+			G_MENU_MODEL(gsequencer_app->edit_menu));
 
   /* MIDI menu */
   gsequencer_app->midi_menu = (GMenu *) g_menu_new();
@@ -695,7 +703,7 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_insert_submenu(gsequencer_app->menubar,
 			-1,
 			i18n("MIDI"),
-			gsequencer_app->midi_menu);
+			G_MENU_MODEL(gsequencer_app->midi_menu));
 
   /* Help menu */
   gsequencer_app->help_menu = (GMenu *) g_menu_new();
@@ -713,7 +721,7 @@ ags_gsequencer_application_startup(GApplication *app)
   g_menu_insert_submenu(gsequencer_app->menubar,
 			-1,
 			i18n("Help"),
-			gsequencer_app->help_menu);
+			G_MENU_MODEL(gsequencer_app->help_menu));
 }
 
 void
@@ -739,8 +747,6 @@ ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
 					      gchar ***arguments,
 					      int *exit_status)
 {
-  AgsApplicationContext *application_context;
-  
   gchar *filename;
 
   gboolean handles_command_line;
@@ -751,9 +757,6 @@ ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
 											    exit_status);
 
   g_message("local command line");
-
-  /* application context */
-  application_context = ags_application_context_get_instance();  
 
   filename = NULL;
 
@@ -829,8 +832,8 @@ ags_gsequencer_application_open(GApplication *application,
 	g_object_ref(audio);
 
 	ags_connectable_disconnect(AGS_CONNECTABLE(machine->data));
-	ags_window_remove_machine(window,
-				  machine->data);
+	ags_window_remove_machine((AgsWindow *) window,
+				  (AgsMachine *) machine->data);
 
 	/* get task thread */
 	remove_audio = ags_remove_audio_new(audio);

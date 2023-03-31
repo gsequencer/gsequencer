@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,25 +44,25 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 
   GMenu *menu;
 
-  gsequencer_app = AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
+  gsequencer_app = (AgsGSequencerApplication *) AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->app;
 
   /* menu */
   builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_add_menu.ui");
 
-  menu = gtk_builder_get_object(builder,
-				"ags-add-menu");
+  menu = (GMenu *) gtk_builder_get_object(builder,
+					  "ags-add-menu");
 
 #if defined(AGS_WITH_MAC_INTEGRATION)
   app = gtkosx_application_get();
 
-  gtk_widget_show(window->menu_bar);
+  gtk_widget_show((GtkWidget *) window->menu_bar);
   gtkosx_application_sync_menubar(app);
 
   gtk_widget_hide((GtkWidget *) window->menu_bar);
 #endif
 
   gtk_menu_button_set_menu_model(window->add_button,
-				 menu);
+				 G_MENU_MODEL(menu));
 
   ags_window_load_add_menu_ladspa(window,
 				  menu);
