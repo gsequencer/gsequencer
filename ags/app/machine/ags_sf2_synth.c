@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -153,7 +153,6 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkBox *effect_vbox;
   GtkGrid *synth_grid;
   GtkGrid *chorus_grid;
-  GtkBox *hbox;
   GtkTreeView *sf2_bank_tree_view;
   GtkTreeView *sf2_program_tree_view;
   GtkTreeViewColumn *sf2_bank_column;
@@ -206,15 +205,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   g_free(machine_name);
   
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    sf2_synth);
+					    (AgsMachine *) sf2_synth);
     
   audio = AGS_MACHINE(sf2_synth)->audio;
 
@@ -282,15 +281,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				    0);
 
-  gtk_widget_set_valign(sf2_hbox,
+  gtk_widget_set_valign((GtkWidget *) sf2_hbox,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(sf2_hbox,
+  gtk_widget_set_halign((GtkWidget *) sf2_hbox,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(sf2_hbox,
+  gtk_widget_set_hexpand((GtkWidget *) sf2_hbox,
 			 FALSE);
 
-  gtk_box_set_spacing(sf2_hbox,
+  gtk_box_set_spacing((GtkWidget *) sf2_hbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_frame_set_child(AGS_MACHINE(sf2_synth)->frame,
@@ -357,8 +356,8 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_box_append(sf2_preset_hbox,
 		 (GtkWidget *) scrolled_window);
   
-  sf2_synth->bank_tree_view = 
-    sf2_bank_tree_view = gtk_tree_view_new();
+  sf2_bank_tree_view =
+    sf2_synth->bank_tree_view = gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sf2_bank_tree_view,
 					     TRUE);
   gtk_scrolled_window_set_child(scrolled_window,
@@ -447,12 +446,12 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_grid_set_row_spacing(synth_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(synth_grid,
+  gtk_widget_set_valign((GtkWidget *) synth_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(synth_grid,
+  gtk_widget_set_halign((GtkWidget *) synth_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(synth_grid,
+  gtk_widget_set_hexpand((GtkWidget *) synth_grid,
 			 FALSE);
 
   gtk_box_append(effect_vbox,
@@ -571,12 +570,12 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_grid_set_row_spacing(chorus_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(chorus_grid,
+  gtk_widget_set_valign((GtkWidget *) chorus_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(chorus_grid,
+  gtk_widget_set_halign((GtkWidget *) chorus_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(chorus_grid,
+  gtk_widget_set_hexpand((GtkWidget *) chorus_grid,
 			 FALSE);
 
   gtk_box_append(effect_vbox,
@@ -661,15 +660,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   
   sf2_synth->chorus_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(sf2_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->chorus_lfo_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(sf2_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->chorus_lfo_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(sf2_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->chorus_lfo_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(sf2_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->chorus_lfo_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(sf2_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->chorus_lfo_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(sf2_synth->chorus_lfo_oscillator,
@@ -1749,7 +1748,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 
   if(sf2_synth->audio_container != NULL &&
      sf2_preset != NULL){
-    fx_sf2_synth_audio = ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
+    fx_sf2_synth_audio = (AgsFxSF2SynthAudio *) ags_recall_container_get_recall_audio(sf2_synth->sf2_synth_recall_container);
     
     sf2_synth->bank = bank;
     sf2_synth->program = program;

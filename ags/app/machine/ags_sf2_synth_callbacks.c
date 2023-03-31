@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,24 +32,27 @@ void
 ags_sf2_synth_destroy_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 {
   if(sf2_synth->open_dialog != NULL){
-    gtk_window_destroy(sf2_synth->open_dialog);
+    gtk_window_destroy((GtkWindow *) sf2_synth->open_dialog);
   }
 }
 
 void
 ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
 {
+  AgsWindow *window;
   GtkFileChooserDialog *file_chooser;
 
   GFile *file;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) sf2_synth,
+						 AGS_TYPE_WINDOW);
   
-  file_chooser = gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
-					     gtk_widget_get_ancestor(sf2_synth,
-								     AGS_TYPE_WINDOW),
-					     GTK_FILE_CHOOSER_ACTION_OPEN,
-					     i18n("_OK"), GTK_RESPONSE_ACCEPT,
-					     i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-					     NULL);
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
+								      (GtkWindow *) window,
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
+								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 
@@ -91,7 +94,7 @@ ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
   }
 
   sf2_synth->open_dialog = NULL;
-  gtk_window_destroy(widget);
+  gtk_window_destroy((GtkWindow *) widget);
 }
 
 void
@@ -125,7 +128,6 @@ ags_sf2_synth_program_tree_view_callback(GtkTreeView *tree_view,
 					 AgsSF2Synth *sf2_synth)
 {
   GtkTreeModel *program_model;
-  GtkTreeModel *bank_model;
   GtkTreeIter iter;
 
   gint bank;
