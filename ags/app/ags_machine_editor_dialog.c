@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,25 +80,25 @@ ags_machine_editor_dialog_init(AgsMachineEditorDialog *machine_editor_dialog)
   machine_editor_dialog->machine_editor = ags_machine_editor_new(NULL);
 
   /* set parent */
-  machine_editor_dialog->machine_editor->parent_dialog = machine_editor_dialog;
+  machine_editor_dialog->machine_editor->parent_dialog = (GtkWidget *) machine_editor_dialog;
   
-  gtk_widget_set_hexpand(machine_editor_dialog->machine_editor,
+  gtk_widget_set_hexpand((GtkWidget *) machine_editor_dialog->machine_editor,
 			 TRUE);
-  gtk_widget_set_vexpand(machine_editor_dialog->machine_editor,
+  gtk_widget_set_vexpand((GtkWidget *) machine_editor_dialog->machine_editor,
 			 TRUE);
 
-  gtk_widget_set_halign(machine_editor_dialog->machine_editor,
+  gtk_widget_set_halign((GtkWidget *) machine_editor_dialog->machine_editor,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(machine_editor_dialog->machine_editor,
+  gtk_widget_set_valign((GtkWidget *) machine_editor_dialog->machine_editor,
 			GTK_ALIGN_FILL);
   
-  gtk_box_append(gtk_dialog_get_content_area(machine_editor_dialog),
-		 machine_editor_dialog->machine_editor);
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_editor_dialog),
+		 (GtkWidget *) machine_editor_dialog->machine_editor);
 
-  gtk_window_set_default_size(machine_editor_dialog,
+  gtk_window_set_default_size((GtkWindow *) machine_editor_dialog,
 			      800, 600);
   
-  gtk_dialog_add_buttons(machine_editor_dialog,
+  gtk_dialog_add_buttons((GtkDialog *) machine_editor_dialog,
 			 i18n("_OK"),
 			 GTK_RESPONSE_ACCEPT,
 			 i18n("_Cancel"),
