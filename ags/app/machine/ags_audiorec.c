@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -176,7 +176,6 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   GtkLabel *label;
 
   AgsAudio *audio;
-  AgsPlaybackDomain *playback_domain;
 
   AgsMachineCounterManager *machine_counter_manager;
   AgsMachineCounter *machine_counter;
@@ -216,19 +215,17 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    audiorec);
+					    (AgsMachine *) audiorec);
   
   audio = AGS_MACHINE(audiorec)->audio;
-
-  playback_domain = NULL;
 
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
@@ -338,10 +335,10 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   /* frame - hindicator */
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
 
-  gtk_widget_set_halign(frame,
+  gtk_widget_set_halign((GtkWidget *) frame,
 			GTK_ALIGN_START);
   
-  gtk_widget_set_hexpand(frame,
+  gtk_widget_set_hexpand((GtkWidget *) frame,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -596,7 +593,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 void
 ags_audiorec_map_recall(AgsMachine *machine)
 {
-  AgsNavigation *navigation;
   AgsAudiorec *audiorec;
   
   AgsAudio *audio;
@@ -613,8 +609,6 @@ ags_audiorec_map_recall(AgsMachine *machine)
   }
 
   application_context = ags_application_context_get_instance();
-
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   audiorec = AGS_AUDIOREC(machine);
   
@@ -686,13 +680,9 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec,
 			       guint audio_channel_start,
 			       guint output_pad_start)
 {  
-  AgsAudio *audio;
-
   guint output_pads;
   guint audio_channels;
 
-  audio = AGS_MACHINE(audiorec)->audio;
-  
   /* get some fields */
   output_pads = AGS_MACHINE(audiorec)->output_pads;
   audio_channels = AGS_MACHINE(audiorec)->audio_channels;    
@@ -707,7 +697,7 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 			      guint input_pad_start)
 {
   AgsAudio *audio;
-
+  
   GList *start_recall;
 
   guint input_pads;
@@ -717,7 +707,7 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
   guint j;
   
   audio = AGS_MACHINE(audiorec)->audio;
-
+  
   /* get some fields */
   input_pads = AGS_MACHINE(audiorec)->input_pads;
   audio_channels = AGS_MACHINE(audiorec)->audio_channels;    
@@ -830,7 +820,7 @@ ags_audiorec_add_indicator(AgsAudiorec *audiorec,
 					 indicator);
     
     gtk_box_append(audiorec->indicator_vbox,
-		   indicator);
+		   (GtkWidget *) indicator);
   }  
 }
 
@@ -855,7 +845,7 @@ ags_audiorec_remove_indicator(AgsAudiorec *audiorec,
 					indicator);
     
     gtk_box_remove(audiorec->indicator_vbox,
-		   indicator);
+		   (GtkWidget *) indicator);
   }  
 }
 
@@ -899,7 +889,7 @@ ags_audiorec_fast_export_run(void *ptr)
 
   struct _AgsAudiorecFastExport *fast_export;
 
-  GList *start_wave, *end_wave, *wave;
+  GList *start_wave, *wave;
   
   void *data;
   
@@ -1158,8 +1148,6 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
     
     GList *start_list, *list;
 
-    guint i;
-
     audio = AGS_MACHINE(audiorec)->audio;
     g_object_get(audio,
 		 "input", &start_channel,
@@ -1177,7 +1165,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 
     next_channel = NULL;
     
-    for(i = 0; list != NULL; i++){
+    while(list != NULL){
       GtkAdjustment *adjustment;
       GtkWidget *child;
 
