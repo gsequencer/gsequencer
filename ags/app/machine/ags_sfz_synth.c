@@ -198,15 +198,15 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   g_free(machine_name);
   
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    sfz_synth);
+					    (AgsMachine *) sfz_synth);
   
   audio = AGS_MACHINE(sfz_synth)->audio;
 
@@ -274,12 +274,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   sfz_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				    0);
 
-  gtk_widget_set_valign(sfz_hbox,
+  gtk_widget_set_valign((GtkWidget *) sfz_hbox,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(sfz_hbox,
+  gtk_widget_set_halign((GtkWidget *) sfz_hbox,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(sfz_hbox,
+  gtk_widget_set_hexpand((GtkWidget *) sfz_hbox,
 			 FALSE);
 
   gtk_box_set_spacing(sfz_hbox,
@@ -343,8 +343,8 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_box_append(sfz_opcode_hbox,
 		 (GtkWidget *) scrolled_window);
   
-  sfz_synth->opcode_tree_view = 
-    sfz_opcode_tree_view = gtk_tree_view_new();
+  sfz_opcode_tree_view =
+    sfz_synth->opcode_tree_view = (GtkTreeView *) gtk_tree_view_new();
   gtk_tree_view_set_activate_on_single_click(sfz_opcode_tree_view,
 					     TRUE);
   gtk_scrolled_window_set_child(scrolled_window,
@@ -397,12 +397,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_grid_set_row_spacing(synth_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(synth_grid,
+  gtk_widget_set_valign((GtkWidget *) synth_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(synth_grid,
+  gtk_widget_set_halign((GtkWidget *) synth_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(synth_grid,
+  gtk_widget_set_hexpand((GtkWidget *) synth_grid,
 			 FALSE);
 
   gtk_box_append(effect_vbox,
@@ -521,12 +521,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_grid_set_row_spacing(chorus_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(chorus_grid,
+  gtk_widget_set_valign((GtkWidget *) chorus_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(chorus_grid,
+  gtk_widget_set_halign((GtkWidget *) chorus_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(chorus_grid,
+  gtk_widget_set_hexpand((GtkWidget *) chorus_grid,
 			 FALSE);
 
   gtk_box_append(effect_vbox,
@@ -611,15 +611,15 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   
   sfz_synth->chorus_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sfz_synth->chorus_lfo_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sfz_synth->chorus_lfo_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sfz_synth->chorus_lfo_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sfz_synth->chorus_lfo_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(sfz_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sfz_synth->chorus_lfo_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(sfz_synth->chorus_lfo_oscillator,
@@ -1177,16 +1177,12 @@ ags_sfz_synth_output_map_recall(AgsSFZSynth *sfz_synth,
 				guint audio_channel_start,
 				guint output_pad_start)
 {
-  AgsAudio *audio;
-
   guint output_pads;
   guint audio_channels;
 
   if(sfz_synth->mapped_output_pad > output_pad_start){
     return;
   }
-
-  audio = AGS_MACHINE(sfz_synth)->audio;
   
   /* get some fields */
   output_pads = AGS_MACHINE(sfz_synth)->output_pads;
@@ -1678,7 +1674,7 @@ ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth)
 	
 	ags_sfz_synth_load_opcode(sfz_synth);
 	
-	fx_sfz_synth_audio = ags_recall_container_get_recall_audio(sfz_synth->sfz_synth_recall_container);
+	fx_sfz_synth_audio = (AgsFxSFZSynthAudio *) ags_recall_container_get_recall_audio(sfz_synth->sfz_synth_recall_container);
 
 	for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
 	  AgsFxSFZSynthAudioScopeData *scope_data;
