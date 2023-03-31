@@ -8,6 +8,7 @@ ags (4.5.0)
 	* added ags_effect_line_test_flags(), ags_effect_line_set_flags() and ags_effect_line_unset_flags()
 	* added ags_connection_editor_test_flags(), ags_connection_editor_set_flags() and ags_connection_editor_unset_flags()
 	* refactored AgsExportWindow with AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT
+	* fixed ags_ladspa_plugin_preferences_alloc() prototype declaration
 	* fixed ags_connection_editor_line_new() prototype declaration
 	* fixed memory-leak in ags_export_window.c
 	* TODO:JK: implemented ags-fx-alsa-mixer
