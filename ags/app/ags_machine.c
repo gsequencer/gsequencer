@@ -473,7 +473,7 @@ ags_machine_init(AgsMachine *machine)
   action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) machine,
 				 "machine",
-				 action_group);
+				 G_ACTION_GROUP(action_group));
 
   /* move up */
   action = g_simple_action_new("move_up",
@@ -755,11 +755,11 @@ ags_machine_init(AgsMachine *machine)
 
   builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_machine_menu.ui");
 
-  machine->context_menu = gtk_builder_get_object(builder,
-						 "ags-machine-menu");
+  machine->context_menu = (GMenu *) gtk_builder_get_object(builder,
+							   "ags-machine-menu");
 
   gtk_menu_button_set_menu_model(machine->context_menu_button,
-				 machine->context_menu);
+				 G_MENU_MODEL(machine->context_menu));
   
   machine->editor_model = NULL;
   machine->dialog_model = NULL;

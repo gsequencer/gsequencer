@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -360,7 +360,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
   link_editor = AGS_LINK_EDITOR(applicable);
 
-  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor(link_editor,
+  machine_editor_line = (AgsMachineEditorLine *) gtk_widget_get_ancestor((GtkWidget *) link_editor,
 									 AGS_TYPE_MACHINE_EDITOR_LINE);
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_line->parent_machine_editor_pad,

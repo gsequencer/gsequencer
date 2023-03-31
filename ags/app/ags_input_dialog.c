@@ -82,7 +82,7 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
   input_dialog->string_input = NULL;
   input_dialog->spin_button_input = NULL;
 
-  gtk_dialog_add_buttons(input_dialog,
+  gtk_dialog_add_buttons((GtkDialog *) input_dialog,
 			 i18n("_OK"),
 			 GTK_RESPONSE_ACCEPT,
 			 i18n("_Cancel"),
@@ -132,31 +132,31 @@ ags_input_dialog_set_flags(AgsInputDialog *input_dialog,
 
   if((AGS_INPUT_DIALOG_SHOW_STRING_INPUT & (flags)) != 0 &&
      input_dialog->string_input == NULL){
-    input_dialog->string_input = gtk_entry_new();
-    gtk_box_append(gtk_dialog_get_content_area(input_dialog),
-		   input_dialog->string_input);
+    input_dialog->string_input = (GtkEntry *) gtk_entry_new();
+    gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) input_dialog),
+		   (GtkWidget *) input_dialog->string_input);
 
-    gtk_widget_show(input_dialog->string_input);
+    gtk_widget_show((GtkWidget *) input_dialog->string_input);
   }else if((AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT & (flags)) != 0 &&
 	   input_dialog->spin_button_input == NULL){
     GtkBox *hbox;
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		       AGS_UI_PROVIDER_DEFAULT_PADDING);
-    gtk_box_append(gtk_dialog_get_content_area(input_dialog),
-		   hbox);
+    hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				  AGS_UI_PROVIDER_DEFAULT_PADDING);
+    gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) input_dialog),
+		   (GtkWidget *) hbox);
 
-    input_dialog->spin_button_label = gtk_label_new(NULL);
+    input_dialog->spin_button_label = (GtkLabel *) gtk_label_new(NULL);
     gtk_box_append(hbox,
-		   input_dialog->spin_button_label);
+		   (GtkWidget *) input_dialog->spin_button_label);
     
-    input_dialog->spin_button_input = gtk_spin_button_new(NULL,
-							  1.0,
-							  0);
+    input_dialog->spin_button_input = (GtkSpinButton *) gtk_spin_button_new(NULL,
+									    1.0,
+									    0);
     gtk_box_append(hbox,
-		   input_dialog->spin_button_input);
+		   (GtkWidget *) input_dialog->spin_button_input);
 
-    gtk_widget_show(hbox);
+    gtk_widget_show((GtkWidget *) hbox);
   }
   
   input_dialog->flags |= flags;
@@ -179,11 +179,11 @@ ags_input_dialog_unset_flags(AgsInputDialog *input_dialog,
 
   if((AGS_INPUT_DIALOG_SHOW_STRING_INPUT & (flags)) != 0 &&
      input_dialog->string_input != NULL){
-    gtk_box_remove(gtk_dialog_get_content_area(input_dialog),
-		   input_dialog->string_input);
+    gtk_box_remove((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) input_dialog),
+		   (GtkWidget *) input_dialog->string_input);
 
-    g_object_run_dispose(input_dialog->string_input);
-    g_object_unref(input_dialog->string_input);
+    g_object_run_dispose(G_OBJECT(input_dialog->string_input));
+    g_object_unref(G_OBJECT(input_dialog->string_input));
     
     input_dialog->string_input = NULL;
   }
