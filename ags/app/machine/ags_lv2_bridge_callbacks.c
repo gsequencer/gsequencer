@@ -96,7 +96,7 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
       child_widget = ags_bulk_member_get_widget(AGS_BULK_MEMBER(list_bulk_member->data));
 
       if((block_scope = g_hash_table_lookup(lv2_bridge->block_control, child_widget)) == NULL ||
-	 !g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_LV2UI) == FALSE){
+	 (!g_strcmp0(block_scope, AGS_LV2_BRIDGE_BLOCK_CONTROL_LV2UI)) == FALSE){
 	if(block_scope == NULL){
 	  g_hash_table_insert(lv2_bridge->block_control,
 			      child_widget,
