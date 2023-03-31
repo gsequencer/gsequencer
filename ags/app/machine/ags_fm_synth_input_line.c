@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,10 +145,10 @@ ags_fm_synth_input_line_init(AgsFMSynthInputLine *fm_synth_input_line)
   g_signal_connect((GObject *) fm_synth_input_line, "samplerate-changed",
 		   G_CALLBACK(ags_fm_synth_input_line_samplerate_changed_callback), NULL);
 
-  gtk_widget_set_visible(AGS_LINE(fm_synth_input_line)->group,
+  gtk_widget_set_visible((GtkWidget *) AGS_LINE(fm_synth_input_line)->group,
 			 FALSE);
 
-  gtk_widget_set_visible(fm_synth_input_line->fm_oscillator->selector,
+  gtk_widget_set_visible((GtkWidget *) fm_synth_input_line->fm_oscillator->selector,
 			 FALSE);
 }
 

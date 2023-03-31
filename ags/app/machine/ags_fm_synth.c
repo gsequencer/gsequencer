@@ -173,15 +173,15 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    fm_synth);
+					    (AgsMachine *) fm_synth);
 
   audio = AGS_MACHINE(fm_synth)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_ASYNC |
@@ -218,14 +218,14 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_valign(hbox,
+  gtk_widget_set_valign((GtkWidget *) hbox,
 			GTK_ALIGN_START);
-  gtk_widget_set_halign(hbox,
+  gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_vexpand(hbox,
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
 			 FALSE);
-  gtk_widget_set_hexpand(hbox,
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
 			 FALSE);
   
   gtk_frame_set_child(AGS_MACHINE(fm_synth)->frame,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -190,15 +190,15 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    fm_syncsynth);
+					    (AgsMachine *) fm_syncsynth);
 
   application_context = ags_application_context_get_instance();
 
@@ -464,7 +464,7 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 							       2.0,
 							       0.025);
 
-  gtk_widget_set_size_request(fm_syncsynth->volume,
+  gtk_widget_set_size_request((GtkWidget *) fm_syncsynth->volume,
 			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
 
   gtk_widget_set_valign((GtkWidget *) fm_syncsynth->volume,
@@ -1039,7 +1039,7 @@ ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 						fm_oscillator);
     
     gtk_box_remove(fm_syncsynth->fm_oscillator_box,
-		   fm_oscillator);
+		   (GtkWidget *) fm_oscillator);
   }
 }
 
