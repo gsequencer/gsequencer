@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,7 +63,7 @@ struct _AgsLadspaPluginPreferences
 
 GType ags_plugin_preferences_get_type(void);
 
-AgsLadspaPluginPreferences* ags_ladspa_plugin_preferences_alloc();
+AgsLadspaPluginPreferences* ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path);
 
 AgsPluginPreferences* ags_plugin_preferences_new();
 

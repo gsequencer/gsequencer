@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -87,23 +87,23 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 
   pcm_file_chooser_dialog->flags = AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_AUDIO_CHANNEL;
   
-  content_area = gtk_dialog_get_content_area((GtkDialog *) pcm_file_chooser_dialog);
+  content_area = (GtkBox *) gtk_dialog_get_content_area((GtkDialog *) pcm_file_chooser_dialog);
 
-  pcm_file_chooser_dialog->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+  pcm_file_chooser_dialog->file_chooser = (GtkFileChooserWidget *) gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
 
-  gtk_widget_set_vexpand(pcm_file_chooser_dialog->file_chooser,
+  gtk_widget_set_vexpand((GtkWidget *) pcm_file_chooser_dialog->file_chooser,
 			 TRUE);
-  gtk_widget_set_hexpand(pcm_file_chooser_dialog->file_chooser,
+  gtk_widget_set_hexpand((GtkWidget *) pcm_file_chooser_dialog->file_chooser,
 			 TRUE);
   
   gtk_box_append(content_area,
 		 (GtkWidget *) pcm_file_chooser_dialog->file_chooser);
 
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_vexpand(grid,
+  gtk_widget_set_vexpand((GtkWidget *) grid,
 			 FALSE);
-  gtk_widget_set_hexpand(grid,
+  gtk_widget_set_hexpand((GtkWidget *) grid,
 			 FALSE);
 
   gtk_grid_set_column_spacing(grid,
@@ -118,7 +118,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
   str = g_strdup_printf("%s: ",
 			i18n("audio channel"));
   
-  pcm_file_chooser_dialog->audio_channel_label = gtk_label_new(str);
+  pcm_file_chooser_dialog->audio_channel_label = (GtkLabel *) gtk_label_new(str);
 
   gtk_widget_set_halign((GtkWidget *) pcm_file_chooser_dialog->audio_channel_label,
 			GTK_ALIGN_START);
@@ -141,7 +141,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
   /* new channel */
   pcm_file_chooser_dialog->new_channel = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("open in new channel"));
 
-  gtk_check_button_set_active((GtkToggleButton *) pcm_file_chooser_dialog->new_channel,
+  gtk_check_button_set_active(pcm_file_chooser_dialog->new_channel,
 			      TRUE);
 
   gtk_grid_attach(grid,
@@ -152,7 +152,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
   /* existing channel */
   pcm_file_chooser_dialog->existing_channel = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("override existing links"));
 
-  gtk_check_button_set_active((GtkToggleButton *) pcm_file_chooser_dialog->existing_channel,
+  gtk_check_button_set_active(pcm_file_chooser_dialog->existing_channel,
 			      TRUE);
 
   gtk_grid_attach(grid,
@@ -160,7 +160,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 		  0, 2,
 		  1, 1);
 
-  gtk_window_set_default_size(pcm_file_chooser_dialog,
+  gtk_window_set_default_size((GtkWindow *) pcm_file_chooser_dialog,
 			      800, 600);
 
   /* file chooser */  
@@ -182,16 +182,16 @@ ags_pcm_file_chooser_dialog_show(GtkWidget *widget)
 
   /* hide unneeded */
   if((AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_AUDIO_CHANNEL & (pcm_file_chooser_dialog->flags)) == 0){
-    gtk_widget_hide(pcm_file_chooser_dialog->audio_channel_label);
-    gtk_widget_hide(pcm_file_chooser_dialog->audio_channel);
+    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->audio_channel_label);
+    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->audio_channel);
   }
 
   if((AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_NEW_CHANNEL & (pcm_file_chooser_dialog->flags)) == 0){
-    gtk_widget_hide(pcm_file_chooser_dialog->new_channel);
+    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->new_channel);
   }
   
   if((AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_EXISTING_CHANNEL & (pcm_file_chooser_dialog->flags)) == 0){
-    gtk_widget_hide(pcm_file_chooser_dialog->existing_channel);
+    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->existing_channel);
   }
 }
 

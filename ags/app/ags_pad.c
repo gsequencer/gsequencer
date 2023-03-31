@@ -424,9 +424,9 @@ ags_pad_init(AgsPad *pad)
   
   pad->line_expander_set = ags_expander_set_new();
 
-  gtk_grid_set_column_spacing(pad->line_expander_set,
+  gtk_grid_set_column_spacing((GtkGrid *) pad->line_expander_set,
 			      AGS_UI_PROVIDER_DEFAULT_PADDING);
-  gtk_grid_set_row_spacing(pad->line_expander_set,
+  gtk_grid_set_row_spacing((GtkGrid *) pad->line_expander_set,
 			   AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   gtk_box_append((GtkBox *) pad,
@@ -967,7 +967,7 @@ ags_pad_add_line(AgsPad *pad,
     pad->line = g_list_prepend(pad->line,
 			       line);
 
-    line->parent_pad = pad;
+    line->parent_pad = (GtkWidget *) pad;
     
     gtk_widget_set_vexpand((GtkWidget *) line,
 			   FALSE);
@@ -976,7 +976,7 @@ ags_pad_add_line(AgsPad *pad,
 			  GTK_ALIGN_START);
 
     ags_expander_set_add(pad->line_expander_set,
-			 line,
+			 (GtkWidget *) line,
 			 x, y,
 			 width, height);
   }
@@ -1005,7 +1005,7 @@ ags_pad_remove_line(AgsPad *pad,
     line->parent_pad = NULL;
     
     ags_expander_set_remove(pad->line_expander_set,
-			    line);
+			    (GtkWidget *) line);
   }
 }
 
