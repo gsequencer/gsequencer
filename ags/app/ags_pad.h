@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,8 +40,8 @@ G_BEGIN_DECLS
 #define AGS_IS_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PAD))
 #define AGS_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PAD, AgsPadClass))
 
-#define AGS_PAD_DEFAULT_VERSION "0.4.2"
-#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36"
+#define AGS_PAD_DEFAULT_VERSION "4.5.0"
+#define AGS_PAD_DEFAULT_BUILD_ID "Tue Mar 28 06:49:41 UTC 2023"
 
 typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
@@ -112,6 +112,13 @@ struct _AgsPadClass
 };
 
 GType ags_pad_get_type(void);
+
+gboolean ags_pad_test_flags(AgsPad *pad,
+			    guint flags);
+void ags_pad_set_flags(AgsPad *pad,
+		       guint flags);
+void ags_pad_unset_flags(AgsPad *pad,
+			 guint flags);
 
 void ags_pad_samplerate_changed(AgsPad *pad,
 				guint samplerate, guint old_samplerate);

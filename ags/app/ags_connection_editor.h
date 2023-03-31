@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,8 +42,8 @@ G_BEGIN_DECLS
 #define AGS_IS_CONNECTION_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONNECTION_EDITOR))
 #define AGS_CONNECTION_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONNECTION_EDITOR, AgsConnectionEditorClass))
 
-#define AGS_CONNECTION_EDITOR_DEFAULT_VERSION "4.0.0"
-#define AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID "Mon Feb 28 04:39:43 UTC 2022"
+#define AGS_CONNECTION_EDITOR_DEFAULT_VERSION "4.5.0"
+#define AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID "Tue Mar 28 06:49:41 UTC 2023"
 
 typedef struct _AgsConnectionEditor AgsConnectionEditor;
 typedef struct _AgsConnectionEditorClass AgsConnectionEditorClass;
@@ -91,6 +91,13 @@ struct _AgsConnectionEditorClass
 };
 
 GType ags_connection_editor_get_type(void);
+
+gboolean ags_connection_editor_test_flags(AgsConnectionEditor *connection_editor,
+					  guint flags);
+void ags_connection_editor_set_flags(AgsConnectionEditor *connection_editor,
+				     guint flags);
+void ags_connection_editor_unset_flags(AgsConnectionEditor *connection_editor,
+				       guint flags);
 
 void ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor,
 				       AgsMachine *machine);

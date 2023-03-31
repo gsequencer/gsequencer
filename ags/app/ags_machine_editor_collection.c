@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -174,9 +174,9 @@ ags_machine_editor_collection_init(AgsMachineEditorCollection *machine_editor_co
 
   machine_editor_collection->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
 
-  gtk_widget_set_halign(machine_editor_collection->enabled,
+  gtk_widget_set_halign((GtkWidget *) machine_editor_collection->enabled,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(machine_editor_collection->enabled,
+  gtk_widget_set_valign((GtkWidget *) machine_editor_collection->enabled,
 			GTK_ALIGN_START);
   
   gtk_box_append((GtkBox *) machine_editor_collection,
@@ -185,7 +185,7 @@ ags_machine_editor_collection_init(AgsMachineEditorCollection *machine_editor_co
   machine_editor_collection->bulk = NULL;
 
   machine_editor_collection->bulk_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							      AGS_UI_PROVIDER_DEFAULT_SPACING);
+							       AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) machine_editor_collection,
 		 (GtkWidget *) machine_editor_collection->bulk_box);
 
@@ -193,9 +193,9 @@ ags_machine_editor_collection_init(AgsMachineEditorCollection *machine_editor_co
   gtk_button_set_icon_name(machine_editor_collection->add_bulk,
 			   "list-add-symbolic");
 
-  gtk_widget_set_halign(machine_editor_collection->add_bulk,
+  gtk_widget_set_halign((GtkWidget *) machine_editor_collection->add_bulk,
 			GTK_ALIGN_END);
-  gtk_widget_set_valign(machine_editor_collection->add_bulk,
+  gtk_widget_set_valign((GtkWidget *) machine_editor_collection->add_bulk,
 			GTK_ALIGN_START);
 
   gtk_box_append((GtkBox *) machine_editor_collection,
@@ -372,7 +372,7 @@ ags_machine_editor_collection_reset(AgsApplicable *applicable)
 
   machine_editor_collection = AGS_MACHINE_EDITOR_COLLECTION(applicable);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_collection,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_collection,
 								AGS_TYPE_MACHINE_EDITOR);
 
   if(machine_editor == NULL){
@@ -485,7 +485,7 @@ ags_machine_editor_collection_add_bulk(AgsMachineEditorCollection *machine_edito
 						     bulk);
     
     gtk_box_append(machine_editor_collection->bulk_box,
-		   bulk);
+		   (GtkWidget *) bulk);
   }
 }
 
@@ -510,7 +510,7 @@ ags_machine_editor_collection_remove_bulk(AgsMachineEditorCollection *machine_ed
 						    bulk);
     
     gtk_box_remove(machine_editor_collection->bulk_box,
-		   bulk);
+		   (GtkWidget *) bulk);
   }
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,9 +96,9 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
 			       FALSE);
 
-      link_editor->pcm_file_chooser_dialog = (GtkFileChooserDialog *) ags_pcm_file_chooser_dialog_new(i18n("Select audio file"),
-												      (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) link_editor,
-																	    GTK_TYPE_WINDOW));
+      link_editor->pcm_file_chooser_dialog = ags_pcm_file_chooser_dialog_new(i18n("Select audio file"),
+									     gtk_widget_get_ancestor((GtkWidget *) link_editor,
+												     GTK_TYPE_WINDOW));
       gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(link_editor->pcm_file_chooser_dialog->file_chooser),
 					   FALSE);
 
@@ -113,7 +113,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       if(str != NULL){
 	tmp = g_strdup(str + 7);
 
-	if(!g_strcmp0(tmp, "") == FALSE){
+	if((!g_strcmp0(tmp, "")) == FALSE){
 	  GFile *file;
 
 	  GError *error;

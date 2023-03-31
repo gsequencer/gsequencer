@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -136,9 +136,9 @@ ags_port_editor_init(AgsPortEditor *port_editor)
 
   gchar *str;
 
-  gtk_grid_set_column_spacing(port_editor,
+  gtk_grid_set_column_spacing((GtkGrid *) port_editor,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
-  gtk_grid_set_row_spacing(port_editor,
+  gtk_grid_set_row_spacing((GtkGrid *) port_editor,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
   port_editor->flags = 0;
@@ -148,22 +148,22 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   str = g_strdup_printf("%s: ",
 			i18n("Port name"));
   
-  label = gtk_label_new(str);
+  label = (GtkLabel *) gtk_label_new(str);
   
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   
-  gtk_grid_attach(port_editor,
+  gtk_grid_attach((GtkGrid *) port_editor,
 		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
 
   g_free(str);
   
-  port_editor->port_name = gtk_label_new(NULL);  
+  port_editor->port_name = (GtkLabel *) gtk_label_new(NULL);  
   gtk_widget_set_halign((GtkWidget *) port_editor->port_name,
 			GTK_ALIGN_START);
-  gtk_grid_attach(port_editor,
+  gtk_grid_attach((GtkGrid *) port_editor,
 		  (GtkWidget *) port_editor->port_name,
 		  1, 0,
 		  1, 1);
@@ -172,17 +172,17 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   str = g_strdup_printf("%s: ",
 			i18n("Port control"));
   
-  label = gtk_label_new(str);
+  label = (GtkLabel *) gtk_label_new(str);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(port_editor,
+  gtk_grid_attach((GtkGrid *) port_editor,
 		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
 
   g_free(str);
   
-  port_editor->port_control = gtk_combo_box_new();
+  port_editor->port_control = (GtkComboBox *) gtk_combo_box_new();
   
   port_control_cell_renderer_text = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(port_editor->port_control),
@@ -203,7 +203,7 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   gtk_widget_set_halign((GtkWidget *) port_editor->port_control,
 			GTK_ALIGN_START);
 
-  gtk_grid_attach(port_editor,
+  gtk_grid_attach((GtkGrid *) port_editor,
 		  (GtkWidget *) port_editor->port_control,
 		  1, 1,
 		  1, 1);  
@@ -212,17 +212,17 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   str = g_strdup_printf("%s: ",
 			i18n("Port control orientation"));
 
-  label = gtk_label_new(str);
+  label = (GtkLabel *) gtk_label_new(str);
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(port_editor,
+  gtk_grid_attach((GtkGrid *) port_editor,
 		  (GtkWidget *) label,
 		  0, 2,
 		  1, 1);
 
   g_free(str);
   
-  port_editor->port_control_orientation = gtk_combo_box_new();
+  port_editor->port_control_orientation = (GtkComboBox *) gtk_combo_box_new();
   
   port_control_orientation_cell_renderer_text = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(port_editor->port_control_orientation),
@@ -266,7 +266,7 @@ ags_port_editor_init(AgsPortEditor *port_editor)
   gtk_widget_set_halign((GtkWidget *) port_editor->port_control_orientation,
 			GTK_ALIGN_START);
 
-  gtk_grid_attach(port_editor,
+  gtk_grid_attach((GtkGrid *) port_editor,
 		  (GtkWidget *) port_editor->port_control_orientation,
 		  1, 2,
 		  1, 1);  

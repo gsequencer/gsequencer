@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -424,9 +424,9 @@ ags_pad_init(AgsPad *pad)
   
   pad->line_expander_set = ags_expander_set_new();
 
-  gtk_grid_set_column_spacing(pad->line_expander_set,
+  gtk_grid_set_column_spacing((GtkGrid *) pad->line_expander_set,
 			      AGS_UI_PROVIDER_DEFAULT_PADDING);
-  gtk_grid_set_row_spacing(pad->line_expander_set,
+  gtk_grid_set_row_spacing((GtkGrid *) pad->line_expander_set,
 			   AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   gtk_box_append((GtkBox *) pad,
@@ -704,6 +704,70 @@ ags_pad_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_pad_test_flags:
+ * @pad: the #AgsPad
+ * @flags: the flags
+ *
+ * Test @flags of @pad.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 4.5.0
+ */
+gboolean
+ags_pad_test_flags(AgsPad *pad,
+		   guint flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_PAD(pad), FALSE);
+
+  retval = (((flags &(pad->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_pad_set_flags:
+ * @pad: the #AgsPad
+ * @flags: the flags
+ *
+ * Set @flags of @pad.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_pad_set_flags(AgsPad *pad,
+		  guint flags)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  //TODO:JK: implement me
+  
+  pad->flags |= flags;
+}
+
+/**
+ * ags_pad_unset_flags:
+ * @pad: the #AgsPad
+ * @flags: the flags
+ *
+ * Unset @flags of @pad.
+ * 
+ * Since: 4.5.0
+ */
+void
+ags_pad_unset_flags(AgsPad *pad,
+		    guint flags)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  //TODO:JK: implement me
+  
+  pad->flags &= (~flags);
+}
+
+/**
  * ags_pad_samplerate_changed:
  * @pad: the #AgsPad
  * @samplerate: the samplerate
@@ -903,7 +967,7 @@ ags_pad_add_line(AgsPad *pad,
     pad->line = g_list_prepend(pad->line,
 			       line);
 
-    line->parent_pad = pad;
+    line->parent_pad = (GtkWidget *) pad;
     
     gtk_widget_set_vexpand((GtkWidget *) line,
 			   FALSE);
@@ -912,7 +976,7 @@ ags_pad_add_line(AgsPad *pad,
 			  GTK_ALIGN_START);
 
     ags_expander_set_add(pad->line_expander_set,
-			 line,
+			 (GtkWidget *) line,
 			 x, y,
 			 width, height);
   }
@@ -941,7 +1005,7 @@ ags_pad_remove_line(AgsPad *pad,
     line->parent_pad = NULL;
     
     ags_expander_set_remove(pad->line_expander_set,
-			    line);
+			    (GtkWidget *) line);
   }
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,7 +59,7 @@ ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_butt
 								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
 								      NULL);
 
-  gtk_widget_show(file_chooser);
+  gtk_widget_show((GtkWidget *) file_chooser);
 }
 
 void

@@ -3315,6 +3315,14 @@ pdf:
 	$(shell) PAGESIZE="A4" fop -c fop-a4.xml -fo $(top_builddir)/osc-book-a4.fo -pdf $(top_builddir)/pdf/osc-manual-a4.pdf
 	$(shell) PAGESIZE="letter" xsltproc --output $(top_builddir)/osc-book-letter.fo --xinclude --stringparam paper.type Letter --stringparam body.start.indent "0pt" --stringparam keep.relative.image.uris "0" $(FO_XSL) $(top_builddir)/docs/oscBook.xml 
 	$(shell) PAGESIZE="letter" fop -c fop-letter.xml -fo $(top_builddir)/osc-book-letter.fo -pdf $(top_builddir)/pdf/osc-manual-letter.pdf
+	$(MAKE) -C $(top_builddir)/docs/reference/libags pdf-build.stamp
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libags-audio pdf-build.stamp
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libags-gui pdf-build.stamp
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libgsequencer pdf-build.stamp
+	cd $(top_builddir)
 
 sphinx:
 	mkdir -p $(top_builddir)/xml/

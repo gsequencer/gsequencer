@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -458,9 +458,12 @@ ags_solver_polynomial_finalize(GObject *gobject)
   g_free(solver_polynomial->polynomial);
 
   g_free(solver_polynomial->coefficient);
-  g_free(solver_polynomial->symbol);
-  g_free(solver_polynomial->exponent);
+  g_strfreev(solver_polynomial->symbol);
+  g_strfreev(solver_polynomial->exponent);
   
+  g_free(solver_polynomial->coefficient_value);
+  g_free(solver_polynomial->exponent_value);
+
   /* call parent */
   G_OBJECT_CLASS(ags_solver_polynomial_parent_class)->finalize(gobject);
 }

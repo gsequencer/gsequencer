@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,8 +43,8 @@ G_BEGIN_DECLS
 
 #define AGS_LINE_PLUGIN(ptr) ((AgsLinePlugin *)(ptr))
 
-#define AGS_LINE_DEFAULT_VERSION "4.0.0"
-#define AGS_LINE_DEFAULT_BUILD_ID "Mon Feb 28 01:22:56 UTC 2022"
+#define AGS_LINE_DEFAULT_VERSION "4.5.0"
+#define AGS_LINE_DEFAULT_BUILD_ID "Tue Mar 28 06:49:41 UTC 2023"
 
 #define AGS_LINE_COLUMNS_COUNT (2)
 #define AGS_LINE_SEPARATOR_FILENAME "ags-line-separator-filename"
@@ -149,6 +149,13 @@ struct _AgsLinePlugin
 };
 
 GType ags_line_get_type(void);
+
+gboolean ags_line_test_flags(AgsLine *line,
+			     guint flags);
+void ags_line_set_flags(AgsLine *line,
+			guint flags);
+void ags_line_unset_flags(AgsLine *line,
+			  guint flags);
 
 AgsLinePlugin* ags_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 				     gchar *plugin_name,

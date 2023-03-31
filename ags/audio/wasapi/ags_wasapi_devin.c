@@ -1740,6 +1740,7 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
   g_rec_mutex_lock(wasapi_devin_mutex);
 
 #ifdef AGS_WITH_WASAPI
+  //NOTE:JK: empty
 #endif
   
   wasapi_devin->tact_counter = 0.0;

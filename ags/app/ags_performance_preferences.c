@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -132,7 +132,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_orientable_set_orientation(GTK_ORIENTABLE(performance_preferences),
 				 GTK_ORIENTATION_VERTICAL);  
 
-  gtk_box_set_spacing(performance_preferences,
+  gtk_box_set_spacing((GtkBox *) performance_preferences,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   performance_preferences->flags = 0;

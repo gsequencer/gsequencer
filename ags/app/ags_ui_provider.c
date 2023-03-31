@@ -119,7 +119,7 @@ ags_ui_provider_class_init(AgsUiProviderInterface *ginterface)
 		 G_TYPE_NONE, 0);
 
   /**
-   * AgsUiProvider::update-uid:
+   * AgsUiProvider::update-ui:
    * @ui_provider: the #AgsUiProvider object
    *
    * The ::update-ui signal is emitted every %AGS_UI_PROVIDER_DEFAULT_TIMEOUT

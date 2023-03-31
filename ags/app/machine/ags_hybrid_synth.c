@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -157,7 +157,6 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   GtkGrid *low_pass_grid;
   GtkGrid *high_pass_grid;
   GtkGrid *chorus_grid;
-  GtkFrame *frame;
   GtkLabel *label;
 
   GtkAdjustment *adjustment;
@@ -198,15 +197,15 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    hybrid_synth);
+					    (AgsMachine *) hybrid_synth);
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -279,12 +278,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
 
-  gtk_widget_set_valign(vbox,
+  gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(vbox,
+  gtk_widget_set_halign((GtkWidget *) vbox,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(vbox,
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
 
   gtk_box_set_spacing(vbox,
@@ -334,15 +333,15 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   hybrid_synth->synth_0_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(hybrid_synth->synth_0_oscillator,
@@ -748,15 +747,15 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   hybrid_synth->synth_0_sync_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_sync_lfo_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_sync_lfo_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_sync_lfo_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_sync_lfo_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_0_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_0_sync_lfo_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(hybrid_synth->synth_0_sync_lfo_oscillator,
@@ -804,15 +803,15 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   hybrid_synth->synth_1_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(hybrid_synth->synth_1_oscillator,
@@ -1217,15 +1216,15 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   hybrid_synth->synth_1_sync_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_sync_lfo_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_sync_lfo_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_sync_lfo_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_sync_lfo_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(hybrid_synth->synth_1_sync_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->synth_1_sync_lfo_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(hybrid_synth->synth_1_sync_lfo_oscillator,
@@ -1259,12 +1258,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_grid_set_row_spacing(misc_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(misc_grid,
+  gtk_widget_set_valign((GtkWidget *) misc_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(misc_grid,
+  gtk_widget_set_halign((GtkWidget *) misc_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(misc_grid,
+  gtk_widget_set_hexpand((GtkWidget *) misc_grid,
 			 FALSE);
 
   gtk_box_append(vbox,
@@ -1287,29 +1286,29 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   hybrid_synth->sequencer_sign = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "A");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "A#");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "H");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "C");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "C#");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "D");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "D#");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "E");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "F");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "F#");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "G");
-  gtk_combo_box_text_append_text(hybrid_synth->sequencer_sign,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->sequencer_sign,
 				 "G#");
 
   gtk_combo_box_set_active(hybrid_synth->sequencer_sign,
@@ -1406,12 +1405,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_grid_set_row_spacing(low_pass_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(low_pass_grid,
+  gtk_widget_set_valign((GtkWidget *) low_pass_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(low_pass_grid,
+  gtk_widget_set_halign((GtkWidget *) low_pass_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(low_pass_grid,
+  gtk_widget_set_hexpand((GtkWidget *) low_pass_grid,
 			 FALSE);
 
   gtk_box_append(band_hbox,
@@ -1499,12 +1498,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_grid_set_row_spacing(high_pass_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(high_pass_grid,
+  gtk_widget_set_valign((GtkWidget *) high_pass_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(high_pass_grid,
+  gtk_widget_set_halign((GtkWidget *) high_pass_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(high_pass_grid,
+  gtk_widget_set_hexpand((GtkWidget *) high_pass_grid,
 			 FALSE);
 
   gtk_box_append(band_hbox,
@@ -1592,12 +1591,12 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   gtk_grid_set_row_spacing(chorus_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_valign(chorus_grid,
+  gtk_widget_set_valign((GtkWidget *) chorus_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(chorus_grid,
+  gtk_widget_set_halign((GtkWidget *) chorus_grid,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(chorus_grid,
+  gtk_widget_set_hexpand((GtkWidget *) chorus_grid,
 			 FALSE);
 
   gtk_box_append(vbox,
@@ -1684,15 +1683,15 @@ ags_hybrid_synth_init(AgsHybridSynth *hybrid_synth)
   
   hybrid_synth->chorus_lfo_oscillator = (GtkComboBox *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->chorus_lfo_oscillator,
 				 "sine");
-  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->chorus_lfo_oscillator,
 				 "sawtooth");
-  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->chorus_lfo_oscillator,
 				 "triangle");
-  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->chorus_lfo_oscillator,
 				 "square");
-  gtk_combo_box_text_append_text(hybrid_synth->chorus_lfo_oscillator,
+  gtk_combo_box_text_append_text((GtkComboBoxText *) hybrid_synth->chorus_lfo_oscillator,
 				 "impulse");
 
   gtk_combo_box_set_active(hybrid_synth->chorus_lfo_oscillator,
@@ -2001,7 +2000,293 @@ ags_hybrid_synth_disconnect(AgsConnectable *connectable)
   /* AgsHybridSynth */
   hybrid_synth = AGS_HYBRID_SYNTH(connectable);
 
-  //TODO:JK: implement me
+  g_object_disconnect(hybrid_synth->synth_0_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_oscillator_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_octave,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_octave_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_key,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_key_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_phase_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_volume_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_enabled_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_relative_attack_factor,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_relative_attack_factor_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_attack_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_0_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_phase_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_phase_0_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_attack_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_1_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_phase_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_phase_1_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_attack_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_attack_2_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_phase_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_phase_2_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_lfo_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_lfo_oscillator_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_0_sync_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_0_sync_lfo_frequency_callback),
+		      hybrid_synth,
+		      NULL);
+
+  g_object_disconnect(hybrid_synth->synth_1_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_oscillator_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_octave,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_octave_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_key,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_key_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_phase_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_volume_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_enabled_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_relative_attack_factor,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_relative_attack_factor_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_attack_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_0_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_phase_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_phase_0_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_attack_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_1_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_phase_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_phase_1_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_attack_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_attack_2_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_phase_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_phase_2_callback),
+		      hybrid_synth,
+		      NULL);
+
+  g_object_disconnect(hybrid_synth->synth_1_sync_lfo_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_lfo_oscillator_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->synth_1_sync_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_synth_1_sync_lfo_frequency_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->sequencer_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_hybrid_synth_sequencer_enabled_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->sequencer_sign,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_hybrid_synth_sequencer_sign_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->pitch_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_pitch_tuning_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->noise_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_noise_gain_callback),
+		      hybrid_synth,
+		      NULL);
+    
+  //  g_object_disconnect(hybrid_synth->chorus_enabled,
+  "any_signal::toggled",
+    //			 G_CALLBACK(ags_hybrid_synth_chorus_enabled_callback),
+    //  hybrid_synth,
+    //    NULL);
+  
+    g_object_disconnect(hybrid_synth->chorus_input_volume,
+			"any_signal::value-changed",
+			G_CALLBACK(ags_hybrid_synth_chorus_input_volume_callback),
+			hybrid_synth,
+			NULL);
+  
+  g_object_disconnect(hybrid_synth->chorus_output_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_chorus_output_volume_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->chorus_lfo_oscillator,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_hybrid_synth_chorus_lfo_oscillator_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->chorus_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_chorus_lfo_frequency_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->chorus_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_chorus_depth_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->chorus_mix,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_chorus_mix_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->chorus_delay,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_chorus_delay_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->low_pass_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_hybrid_synth_low_pass_enabled_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->low_pass_q_lin,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_low_pass_q_lin_callback),
+		      hybrid_synth,
+		      NULL);
+    
+  g_object_disconnect(hybrid_synth->low_pass_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_low_pass_filter_gain_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->high_pass_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_hybrid_synth_high_pass_enabled_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->high_pass_q_lin,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_high_pass_q_lin_callback),
+		      hybrid_synth,
+		      NULL);
+  
+  g_object_disconnect(hybrid_synth->high_pass_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_hybrid_synth_high_pass_filter_gain_callback),
+		      hybrid_synth,
+		      NULL);
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,20 +33,19 @@ ags_machine_editor_bulk_remove_bulk_callback(GtkButton *button,
   xmlNode *node;
   
   GList *start_dialog_model, *dialog_model;
-  GList *start_list, *list;
+  GList *start_list;
   
   gint i, i_stop;
 
-  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *)machine_editor_bulk,
 								AGS_TYPE_MACHINE_EDITOR);
 
   machine = machine_editor->machine;
 
-  list = 
-    start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
   i_stop = g_list_index(start_list,
 			machine_editor_bulk);
@@ -106,10 +105,10 @@ ags_machine_editor_bulk_link_callback(GtkComboBox *combo_box, AgsMachineEditorBu
   guint output_lines, input_lines;  
   guint max_count;
 
-  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 								AGS_TYPE_MACHINE_EDITOR);
 
   machine = machine_editor->machine;

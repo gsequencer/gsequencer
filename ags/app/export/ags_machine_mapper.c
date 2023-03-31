@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -167,9 +167,9 @@ ags_machine_mapper_init(AgsMachineMapper *machine_mapper)
 {
   GtkLabel *label;
 
-  gtk_grid_set_column_spacing(machine_mapper,
+  gtk_grid_set_column_spacing((GtkGrid *) machine_mapper,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
-  gtk_grid_set_row_spacing(machine_mapper,
+  gtk_grid_set_row_spacing((GtkGrid *) machine_mapper,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   machine_mapper->flags = 0;
@@ -230,7 +230,7 @@ ags_machine_mapper_init(AgsMachineMapper *machine_mapper)
 
   machine_mapper->sequence = (GtkEntry *) gtk_entry_new();
 
-  gtk_widget_set_size_request(machine_mapper->sequence,
+  gtk_widget_set_size_request((GtkWidget *) machine_mapper->sequence,
 			      400, -1);
 
   gtk_widget_set_valign((GtkWidget *) machine_mapper->sequence,

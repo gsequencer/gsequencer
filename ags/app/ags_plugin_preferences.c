@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,9 +125,10 @@ AgsLadspaPluginPreferences*
 ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
 {
   AgsLadspaPluginPreferences *ladspa_plugin_preferences;
+
   GtkListStore *list_store;
-  GtkTreePath *path;
   GtkTreeIter iter;
+
   gchar **filenames, **filenames_start;
     
   static const gchar *default_ladspa_path = "/usr/lib/ladspa";

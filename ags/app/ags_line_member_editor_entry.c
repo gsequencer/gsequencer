@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,11 +76,11 @@ ags_line_member_editor_entry_init(AgsLineMemberEditorEntry *line_member_editor_e
 				 GTK_ORIENTATION_HORIZONTAL);  
 
   line_member_editor_entry->check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_append(line_member_editor_entry,
+  gtk_box_append((GtkBox *) line_member_editor_entry,
 		 (GtkWidget *) line_member_editor_entry->check_button);
 
   line_member_editor_entry->label = (GtkLabel *) gtk_label_new(NULL);
-  gtk_box_append(line_member_editor_entry,
+  gtk_box_append((GtkBox *) line_member_editor_entry,
 		 (GtkWidget *) line_member_editor_entry->label);
 }
 

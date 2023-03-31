@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -365,7 +365,7 @@ ags_connection_editor_pad_reset(AgsApplicable *applicable)
   
   connection_editor_pad = AGS_CONNECTION_EDITOR_PAD(applicable);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_pad,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_pad,
 								      AGS_TYPE_CONNECTION_EDITOR);
   
   line =
@@ -412,12 +412,12 @@ ags_connection_editor_pad_reset(AgsApplicable *applicable)
       line = ags_connection_editor_line_new(current_channel);
 
       if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
-	gtk_widget_set_visible(line->output_box,
+	gtk_widget_set_visible((GtkWidget *) line->output_box,
 			       TRUE);
       }
 
       if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
-	gtk_widget_set_visible(line->input_box,
+	gtk_widget_set_visible((GtkWidget *) line->input_box,
 			       TRUE);
       }
       
@@ -440,12 +440,12 @@ ags_connection_editor_pad_reset(AgsApplicable *applicable)
       line = ags_connection_editor_line_new(current_channel);
 
       if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
-	gtk_widget_set_visible(line->output_box,
+	gtk_widget_set_visible((GtkWidget *) line->output_box,
 			       TRUE);
       }
 
       if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
-	gtk_widget_set_visible(line->input_box,
+	gtk_widget_set_visible((GtkWidget *) line->input_box,
 			       TRUE);
       }
 
@@ -518,10 +518,10 @@ ags_connection_editor_pad_add_line(AgsConnectionEditorPad *connection_editor_pad
     connection_editor_pad->line = g_list_prepend(connection_editor_pad->line,
 						 line);
 
-    line->parent_connection_editor_pad = connection_editor_pad;
+    line->parent_connection_editor_pad = (GtkWidget *) connection_editor_pad;
     
     gtk_box_append(connection_editor_pad->line_box,
-		   line);
+		   (GtkWidget *) line);
   }
 }
 
@@ -548,7 +548,7 @@ ags_connection_editor_pad_remove_line(AgsConnectionEditorPad *connection_editor_
     line->parent_connection_editor_pad = NULL;
     
     gtk_box_remove(connection_editor_pad->line_box,
-		   line);
+		   (GtkWidget *) line);
   }
 }
 

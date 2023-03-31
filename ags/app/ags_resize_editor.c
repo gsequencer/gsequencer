@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -132,7 +132,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   GtkGrid *grid;
   GtkLabel *label;
 
-  resize_editor->enabled = gtk_check_button_new_with_label(i18n("enabled"));
+  resize_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_grid_attach((GtkGrid *) resize_editor,
 		  (GtkWidget *) resize_editor->enabled,
 		  0, 0,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 #include <ags/app/ags_machine.h>
 #include <ags/app/ags_navigation.h>
 
-#include <ags/app/import/ags_midi_import_wizard.h>
 #include <ags/app/import/ags_track_collection.h>
 
 #include <ags/app/editor/ags_notation_edit.h>
@@ -217,9 +216,9 @@ ags_track_mapper_init(AgsTrackMapper *track_mapper)
 {
   gchar *str;
 
-  gtk_grid_set_column_spacing(track_mapper,
+  gtk_grid_set_column_spacing((GtkGrid *) track_mapper,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
-  gtk_grid_set_row_spacing(track_mapper,
+  gtk_grid_set_row_spacing((GtkGrid *) track_mapper,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
   track_mapper->instrument = NULL;
@@ -489,7 +488,6 @@ ags_track_mapper_apply(AgsApplicable *applicable)
 {
   AgsWindow *window;
   AgsMachine *machine;
-  AgsMidiImportWizard *midi_import_wizard;
   AgsTrackMapper *track_mapper;
 
   AgsAddAudio *add_audio;
@@ -512,9 +510,6 @@ ags_track_mapper_apply(AgsApplicable *applicable)
 
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  midi_import_wizard = (AgsMidiImportWizard *) gtk_widget_get_ancestor((GtkWidget *) track_mapper,
-								       AGS_TYPE_MIDI_IMPORT_WIZARD);
-
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create machine */

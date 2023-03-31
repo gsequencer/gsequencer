@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,14 +25,9 @@
 
 #include <glib/gstdio.h>
 
-gboolean initial_export = TRUE;
-
-volatile int do_stop;
-
 void ags_export_window_replace_files_response_callback(GtkDialog *dialog,
 						       gint response,
 						       AgsExportWindow *export_window);
-gboolean ags_export_window_stop_timeout(AgsExportWindow *export_window);
 
 void
 ags_export_window_add_export_soundcard_callback(GtkWidget *button,
@@ -77,7 +72,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   /* retrieve window */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
@@ -110,8 +105,6 @@ ags_export_window_replace_files_response_callback(GtkDialog *dialog,
   if(response == GTK_RESPONSE_ACCEPT ||
      response == GTK_RESPONSE_OK){
     /* remove files */
-    remove_filename = remove_filename;
-      
     while(remove_filename != NULL){
       g_remove(remove_filename->data);
 
@@ -124,28 +117,13 @@ ags_export_window_replace_files_response_callback(GtkDialog *dialog,
   g_list_free_full(start_remove_filename,
 		   (GDestroyNotify) g_free);
   
-  gtk_window_destroy((GtkWidget *) dialog);
+  gtk_window_destroy((GtkWindow *) dialog);
 }
 
 void
 ags_export_window_export_callback(GtkWidget *toggle_button,
 				  AgsExportWindow *export_window)
 {
-  gboolean success;
-
-  success = FALSE;
-
-  if(initial_export){
-    initial_export = FALSE;
-    
-    g_atomic_int_set(&do_stop,
-		     FALSE);
-
-    g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_DEFAULT_TIMEOUT),
-		  (GSourceFunc) ags_export_window_stop_timeout,
-		  (gpointer) export_window);
-  }
-  
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     GList *start_export_soundcard, *export_soundcard;
     GList *all_filename;
@@ -218,25 +196,27 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   }
 }
 
-gboolean
-ags_export_window_stop_timeout(AgsExportWindow *export_window)
+void
+ags_export_window_update_ui_callback(AgsApplicationContext *application_context,
+				     AgsExportWindow *export_window)
 {
-  if(g_atomic_int_get(&do_stop)){
-    g_atomic_int_set(&do_stop,
-		     FALSE);
+  if(ags_export_window_test_flags(export_window,
+				  AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT)){
+    if(g_atomic_int_get(&(export_window->do_stop))){
+      g_atomic_int_set(&(export_window->do_stop),
+		       FALSE);
     
-    ags_export_window_stop_export(export_window);
-    gtk_toggle_button_set_active(export_window->export,
-				 FALSE);
+      ags_export_window_stop_export(export_window);
+      gtk_toggle_button_set_active(export_window->export,
+				   FALSE);
+    }
   }
-
-  return(TRUE);
 }
 
 void
 ags_export_window_stop_callback(AgsThread *thread,
 				AgsExportWindow *export_window)
 {
-  g_atomic_int_set(&do_stop,
+  g_atomic_int_set(&(export_window->do_stop),
 		   TRUE);
 }

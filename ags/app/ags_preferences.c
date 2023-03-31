@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -232,7 +232,7 @@ ags_preferences_init(AgsPreferences *preferences)
 			     gtk_label_new(i18n("server")));
   }
 
-  gtk_window_set_default_size(preferences,
+  gtk_window_set_default_size((GtkWindow *) preferences,
 			      800, 600);
   
   gtk_dialog_add_buttons((GtkDialog *) preferences,

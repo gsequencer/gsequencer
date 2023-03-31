@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -601,10 +601,11 @@ ags_line_member_set_property(GObject *gobject,
 
       /* preserver previous range */
       adjustment = NULL;
+      
       active = FALSE;
     
       if(GTK_IS_SCALE(child)){
-	adjustment = gtk_range_get_adjustment(GTK_SCALE(child));
+	adjustment = gtk_range_get_adjustment(GTK_RANGE(child));
       }else if(GTK_IS_SPIN_BUTTON(child)){
 	adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(child));
       }else if(AGS_IS_DIAL(child)){
@@ -689,7 +690,7 @@ ags_line_member_set_property(GObject *gobject,
       if(GTK_IS_SCALE(new_child)){
 	GtkAdjustment *new_adjustment;
 
-	new_adjustment = gtk_range_get_adjustment(GTK_SCALE(new_child));
+	new_adjustment = gtk_range_get_adjustment(GTK_RANGE(new_child));
 	
 	gtk_adjustment_set_lower(new_adjustment,
 				 lower_value);
@@ -1258,7 +1259,7 @@ ags_line_member_connect(AgsConnectable *connectable)
     if(AGS_IS_DIAL(control)){
       adjustment = AGS_DIAL(control)->adjustment;
     }else if(GTK_IS_SCALE(control)){
-      adjustment = gtk_range_get_adjustment(GTK_SCALE(control));
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(control));
     }else if(GTK_IS_SPIN_BUTTON(control)){
       adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(control));
     }else if(GTK_IS_TOGGLE_BUTTON(control)){
@@ -1703,9 +1704,9 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 						   AGS_TYPE_MACHINE);
 
   if(AGS_IS_LINE(line_member->parent_line)){
-    machine = AGS_PAD(AGS_LINE(line_member->parent_line)->parent_pad)->parent_machine;
+    machine = (AgsMachine *) AGS_PAD(AGS_LINE(line_member->parent_line)->parent_pad)->parent_machine;
   }else if(AGS_IS_EFFECT_LINE(line_member->parent_line)){
-    machine = AGS_EFFECT_BRIDGE(AGS_EFFECT_PAD(AGS_EFFECT_LINE(line_member->parent_line)->parent_effect_pad)->parent_effect_bridge)->parent_machine;
+    machine = (AgsMachine *) AGS_EFFECT_BRIDGE(AGS_EFFECT_PAD(AGS_EFFECT_LINE(line_member->parent_line)->parent_effect_pad)->parent_effect_bridge)->parent_machine;
   }else{
     return(NULL);
   }
@@ -1876,11 +1877,11 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 
   machine = NULL;
     
-  line = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-						AGS_TYPE_LINE);
+  line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+					     AGS_TYPE_LINE);
 
-  effect_line = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-						       AGS_TYPE_EFFECT_LINE);
+  effect_line = (AgsEffectLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+							  AGS_TYPE_EFFECT_LINE);
 
   if(line != NULL){  
     machine = (AgsMachine *) gtk_widget_get_ancestor(line->parent_pad,
@@ -1912,12 +1913,12 @@ ags_line_member_chained_event(AgsLineMember *line_member)
     
     if(line_member->parent_line != NULL &&
        AGS_IS_LINE(line_member->parent_line)){
-      pad = AGS_LINE(line_member->parent_line)->parent_pad;
+      pad = (AgsPad *) AGS_LINE(line_member->parent_line)->parent_pad;
     }
 
     if(line_member->parent_line != NULL &&
        AGS_IS_EFFECT_LINE(line_member->parent_line)){
-      effect_pad = AGS_EFFECT_LINE(line_member->parent_line)->parent_effect_pad;
+      effect_pad = (AgsEffectPad *) AGS_EFFECT_LINE(line_member->parent_line)->parent_effect_pad;
     }
 
     is_active = FALSE;

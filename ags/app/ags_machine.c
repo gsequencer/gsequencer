@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -473,7 +473,7 @@ ags_machine_init(AgsMachine *machine)
   action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) machine,
 				 "machine",
-				 action_group);
+				 G_ACTION_GROUP(action_group));
 
   /* move up */
   action = g_simple_action_new("move_up",
@@ -755,11 +755,11 @@ ags_machine_init(AgsMachine *machine)
 
   builder = gtk_builder_new_from_resource("/org/nongnu/gsequencer/ags/app/ui/ags_machine_menu.ui");
 
-  machine->context_menu = gtk_builder_get_object(builder,
-						 "ags-machine-menu");
+  machine->context_menu = (GMenu *) gtk_builder_get_object(builder,
+							   "ags-machine-menu");
 
   gtk_menu_button_set_menu_model(machine->context_menu_button,
-				 machine->context_menu);
+				 G_MENU_MODEL(machine->context_menu));
   
   machine->editor_model = NULL;
   machine->dialog_model = NULL;
@@ -786,12 +786,9 @@ ags_machine_set_property(GObject *gobject,
 			 const GValue *value,
 			 GParamSpec *param_spec)
 {
-  AgsWindow *window;
   AgsMachine *machine;
 
   machine = AGS_MACHINE(gobject);
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
 
   switch(prop_id){
   case PROP_SAMPLERATE:
@@ -995,7 +992,7 @@ ags_machine_set_property(GObject *gobject,
 
       gtk_label_set_text(machine->context_label,
 			 str);
-      gtk_widget_show(machine->context_label);
+      gtk_widget_show((GtkWidget *) machine->context_label);
       
       g_free(str);
     }
@@ -1770,10 +1767,10 @@ ags_machine_add_output_pad(AgsMachine *machine,
     machine->output_pad = g_list_prepend(machine->output_pad,
 					 output_pad);
 
-    output_pad->parent_machine = machine;
+    output_pad->parent_machine = (GtkWidget *) machine;
     
     gtk_grid_attach(machine->output_pad_grid,
-		    output_pad,
+		    (GtkWidget *) output_pad,
 		    x, y,
 		    width, height);
   }
@@ -1802,7 +1799,7 @@ ags_machine_remove_output_pad(AgsMachine *machine,
     output_pad->parent_machine = NULL;
     
     gtk_grid_remove(machine->output_pad_grid,
-		    output_pad);
+		    (GtkWidget *) output_pad);
   }
 }
 
@@ -1850,10 +1847,10 @@ ags_machine_add_input_pad(AgsMachine *machine,
     machine->input_pad = g_list_prepend(machine->input_pad,
 					input_pad);
 
-    input_pad->parent_machine = machine;
+    input_pad->parent_machine = (GtkWidget *) machine;
     
     gtk_grid_attach(machine->input_pad_grid,
-		    input_pad,
+		    (GtkWidget *) input_pad,
 		    x, y,
 		    width, height);
   }
@@ -1882,7 +1879,7 @@ ags_machine_remove_input_pad(AgsMachine *machine,
     input_pad->parent_machine = NULL;
     
     gtk_grid_remove(machine->input_pad_grid,
-		    input_pad);
+		    (GtkWidget *) input_pad);
   }
 }
 
@@ -2105,22 +2102,24 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	  if(machine->input_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
 	    ags_machine_add_input_pad(machine,
-				      (GtkWidget *) pad,
+				      pad,
 				      i, 0,
 				      1, 1);
 	  }else{
 	    ags_machine_add_input_pad(machine,
-				      (GtkWidget *) pad,
+				      pad,
 				      0, i,
 				      1, 1);
 	  }
 
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
+	  ags_pad_resize_lines((AgsPad *) pad,
+			       machine->input_line_type,
 			       audio_channels, 0);
 	}else{
 	  pad = AGS_PAD(list_input_pad->data);
 
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
+	  ags_pad_resize_lines((AgsPad *) pad,
+			       machine->input_line_type,
 			       audio_channels, audio_channels_old);
 	}
 
@@ -2164,22 +2163,24 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	  if(machine->output_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
 	    ags_machine_add_output_pad(machine,
-				       (GtkWidget *) pad,
+				       pad,
 				       i, 0,
 				       1, 1);
 	  }else{
 	    ags_machine_add_output_pad(machine,
-				       (GtkWidget *) pad,
+				       pad,
 				       0, i,
 				       1, 1);
 	  }
 	  
-	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
+	  ags_pad_resize_lines(pad,
+			       machine->output_line_type,
 			       audio_channels, 0);
 	}else{
 	  pad = AGS_PAD(list_output_pad->data);
 
-	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
+	  ags_pad_resize_lines(pad,
+			       machine->output_line_type,
 			       audio_channels, audio_channels_old);
 	}
 
@@ -2488,7 +2489,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	  }
 	  
 	  /* resize lines */
-	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
+	  ags_pad_resize_lines(pad,
+			       machine->input_line_type,
 			       audio_channels, 0);	  
 
 	  if(input != NULL){
@@ -2535,18 +2537,19 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 
 	  if(machine->output_pad_orientation == GTK_ORIENTATION_HORIZONTAL){
 	    ags_machine_add_output_pad(machine,
-				       (GtkWidget *) pad,
+				       pad,
 				       i, 0,
 				       1, 1);
 	  }else{
 	    ags_machine_add_output_pad(machine,
-				       (GtkWidget *) pad,
+				       pad,
 				       0, i,
 				       1, 1);
 	  }
 
 	  /* resize lines */
-	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
+	  ags_pad_resize_lines(pad,
+			       machine->output_line_type,
 			       audio_channels, 0);
 
 	  if(output != NULL){
@@ -2735,7 +2738,7 @@ ags_machine_real_find_port(AgsMachine *machine)
 
   /* find bridge ports */
   if(machine->bridge != NULL){
-    tmp_port = ags_effect_bridge_find_port((AgsEffectBridge *) machine->bridge);
+    tmp_port = ags_effect_bridge_find_port(AGS_EFFECT_BRIDGE(machine->bridge));
 
     if(port != NULL){
       port = g_list_concat(port,
@@ -2803,7 +2806,7 @@ ags_machine_real_refresh_port(AgsMachine *machine)
   GList *start_pad, *pad;
 
   if(machine->bridge != NULL){
-    ags_effect_bridge_refresh_port(machine->bridge);
+    ags_effect_bridge_refresh_port(AGS_EFFECT_BRIDGE(machine->bridge));
   }
   
   /* output */
@@ -3491,10 +3494,12 @@ ags_machine_get_possible_links(AgsMachine *machine)
   GList *start_list, *list;
   GtkTreeIter iter;
   
-  window = gtk_widget_get_ancestor(machine,
+  window = gtk_widget_get_ancestor((GtkWidget *) machine,
 				   AGS_TYPE_WINDOW);
 
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  model = gtk_list_store_new(2,
+			     G_TYPE_STRING,
+			     G_TYPE_POINTER);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -77,25 +77,28 @@ ags_connection_editor_dialog_class_init(AgsConnectionEditorDialogClass *connecti
 void
 ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_dialog)
 {
+  GtkBox *content_area;
+  
   connection_editor_dialog->connection_editor = ags_connection_editor_new(NULL);
 
-  gtk_widget_set_hexpand(connection_editor_dialog->connection_editor,
+  gtk_widget_set_hexpand((GtkWidget *) connection_editor_dialog->connection_editor,
 			 TRUE);
-  gtk_widget_set_vexpand(connection_editor_dialog->connection_editor,
+  gtk_widget_set_vexpand((GtkWidget *) connection_editor_dialog->connection_editor,
 			 TRUE);
 
-  gtk_widget_set_halign(connection_editor_dialog->connection_editor,
+  gtk_widget_set_halign((GtkWidget *) connection_editor_dialog->connection_editor,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(connection_editor_dialog->connection_editor,
+  gtk_widget_set_valign((GtkWidget *) connection_editor_dialog->connection_editor,
 			GTK_ALIGN_FILL);
-  
-  gtk_box_append(gtk_dialog_get_content_area(connection_editor_dialog),
-		 connection_editor_dialog->connection_editor);
 
-  gtk_window_set_default_size(connection_editor_dialog,
+  content_area = (GtkBox *) gtk_dialog_get_content_area((GtkDialog *) connection_editor_dialog);
+  gtk_box_append(content_area,
+		 (GtkWidget *) connection_editor_dialog->connection_editor);
+
+  gtk_window_set_default_size((GtkWindow *) connection_editor_dialog,
 			      800, 600);
   
-  gtk_dialog_add_buttons(connection_editor_dialog,
+  gtk_dialog_add_buttons((GtkDialog *) connection_editor_dialog,
 			 i18n("_OK"),
 			 GTK_RESPONSE_ACCEPT,
 			 i18n("_Cancel"),

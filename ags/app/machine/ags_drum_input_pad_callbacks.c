@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,7 +65,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     g_error_free(error);
   }
 
-  drum_input_pad->file_chooser = pcm_file_chooser_dialog;
+  drum_input_pad->file_chooser = (GtkFileChooserDialog *) pcm_file_chooser_dialog;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser),
 				       FALSE);
 
@@ -85,25 +85,25 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 {
   AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
-  AgsAudioFile *audio_file;
-
   AgsOpenSingleFile *open_single_file;
 
   AgsApplicationContext *application_context;
 
-  GFile *file;
-  
+  GFile *file;  
+
   GList *task;
   
   gchar *filename;
 
   application_context = ags_application_context_get_instance();
 
-  pcm_file_chooser_dialog = drum_input_pad->file_chooser;
+  pcm_file_chooser_dialog = (AgsPCMFileChooserDialog *) drum_input_pad->file_chooser;
 
   if(response == GTK_RESPONSE_ACCEPT){
     file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(pcm_file_chooser_dialog->file_chooser));
 
+    filename = g_file_get_path(file);
+    
     /* task */
     task = NULL;
     
@@ -167,6 +167,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       g_list_free(start_list);
     }
 
+    g_free(filename);
+    
     ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
 				      task);
   }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,5 +29,5 @@ ags_machine_editor_collection_add_bulk_callback(GtkButton *button, AgsMachineEdi
 					 bulk);
 
   ags_applicable_reset(AGS_APPLICABLE(bulk));
-  ags_connectable_connect(AGS_APPLICABLE(bulk));
+  ags_connectable_connect(AGS_CONNECTABLE(bulk));
 }
