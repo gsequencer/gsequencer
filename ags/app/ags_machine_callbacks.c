@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,7 +71,7 @@ ags_machine_recall_set_loop(AgsMachine *machine,
 
   application_context = ags_application_context_get_instance();
 
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   /* loop */
   port = NULL;
@@ -216,8 +216,8 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
   gboolean has_machine_radio_button;
   gboolean move_radio_button;
   
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   machine_selector = window->composite_editor->machine_selector;
 
@@ -324,7 +324,7 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
     action_name = g_strdup_printf("add-%s",
 				  machine->uid);
     
-    action = g_action_map_lookup_action(machine_selector->action_group,
+    action = g_action_map_lookup_action(G_ACTION_MAP(machine_selector->action_group),
 					action_name);
     g_object_set(action,
 		 "state", g_variant_new_boolean(has_machine_radio_button),
@@ -343,7 +343,7 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
 
   if(list->prev != NULL && list->prev->prev != NULL){
     gtk_box_reorder_child_after(window->machine_box,
-				machine,
+				(GtkWidget *) machine,
 				list->prev->prev->data);
 
     prev = list->prev;
@@ -360,7 +360,7 @@ ags_machine_move_up_callback(GAction *action, GVariant *parameter,
     window->machine = g_list_reverse(start_list);
   }else if(list->prev != NULL){    
     gtk_box_reorder_child_after(window->machine_box,
-				machine,
+				(GtkWidget *) machine,
 				NULL);
 
     start_list = g_list_remove(start_list,
@@ -392,8 +392,8 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
   gboolean has_machine_radio_button;
   gboolean move_radio_button;
   
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   machine_selector = window->composite_editor->machine_selector;
 
@@ -500,7 +500,7 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
     action_name = g_strdup_printf("add-%s",
 				  machine->uid);
     
-    action = g_action_map_lookup_action(machine_selector->action_group,
+    action = g_action_map_lookup_action(G_ACTION_MAP(machine_selector->action_group),
 					action_name);
     g_object_set(action,
 		 "state", g_variant_new_boolean(has_machine_radio_button),
@@ -519,7 +519,7 @@ ags_machine_move_down_callback(GAction *action, GVariant *parameter,
 
   if(list->next != NULL){
     gtk_box_reorder_child_after(window->machine_box,
-				machine,
+				(GtkWidget *) machine,
 				list->next->data);
 
     next_next = list->next->next;
@@ -574,8 +574,8 @@ ags_machine_destroy_callback(GAction *action, GVariant *parameter,
   
   application_context = ags_application_context_get_instance();
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   ags_machine_set_run(machine,
 		      FALSE);
@@ -639,7 +639,7 @@ ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachin
     
     application_context = ags_application_context_get_instance();
 
-    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
     /* get name */
     text = gtk_editable_get_chars(GTK_EDITABLE(AGS_INPUT_DIALOG(widget)->string_input),
@@ -704,7 +704,7 @@ ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachin
       action_name = g_strdup_printf("add-%s",
 				    machine->uid);
     
-      action = g_action_map_lookup_action(window->composite_editor->machine_selector->action_group,
+      action = g_action_map_lookup_action(G_ACTION_MAP(window->composite_editor->machine_selector->action_group),
 					  action_name);
       g_object_set(action,
 		   "state", g_variant_new_boolean(has_machine_radio_button),
@@ -718,7 +718,7 @@ ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachin
 
   machine->rename = NULL;
   
-  gtk_window_destroy(widget);
+  gtk_window_destroy(GTK_WINDOW(widget));
 }
 
 void
@@ -730,7 +730,7 @@ ags_machine_rename_callback(GAction *action, GVariant *parameter,
   dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename machine"),
 					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
 										    AGS_TYPE_WINDOW));
-  ags_input_dialog_set_flags(dialog,
+  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
 
   if(machine->machine_name != NULL){
@@ -761,7 +761,7 @@ ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, Ags
 
   machine->rename_audio = NULL;
   
-  gtk_window_destroy(widget);
+  gtk_window_destroy(GTK_WINDOW(widget));
 }
 
 void
@@ -775,7 +775,7 @@ ags_machine_rename_audio_callback(GAction *action, GVariant *parameter,
   dialog = (GtkDialog *) ags_input_dialog_new(i18n("rename audio"),
 					      (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
 										    AGS_TYPE_WINDOW));
-  ags_input_dialog_set_flags(dialog,
+  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
 
   str = ags_audio_get_audio_name(machine->audio);
@@ -829,7 +829,7 @@ ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response,
 
   machine->reposition_audio = NULL;
   
-  gtk_window_destroy(widget);
+  gtk_window_destroy(GTK_WINDOW(widget));
 }
 
 void
@@ -843,17 +843,15 @@ ags_machine_reposition_audio_callback(GAction *action, GVariant *parameter,
 
   GList *start_list;
   
-  gint position;
-  
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
   
   dialog = (GtkDialog *) ags_input_dialog_new(i18n("reposition audio"),
 					      (GtkWindow *) window);
-  ags_input_dialog_set_flags(dialog,
+  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_SPIN_BUTTON_INPUT);
 
   gtk_label_set_text(AGS_INPUT_DIALOG(dialog)->spin_button_label,
@@ -885,7 +883,7 @@ ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, Ag
 
   machine->machine_editor_dialog = NULL;
   
-  gtk_window_destroy(widget);
+  gtk_window_destroy(GTK_WINDOW(widget));
 }
 
 void
@@ -901,11 +899,11 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
 			machine->machine_name,
 			i18n("properties"));
   
-  machine_editor_dialog =
-    machine->machine_editor_dialog = ags_machine_editor_dialog_new(str,
-								   (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
-													 AGS_TYPE_WINDOW));
-  
+  machine_editor_dialog = ags_machine_editor_dialog_new(str,
+							(GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
+											      AGS_TYPE_WINDOW));
+  machine->machine_editor_dialog = (GtkDialog *) machine_editor_dialog;
+
   ags_machine_editor_set_machine(machine_editor_dialog->machine_editor,
 				 machine);
   
@@ -913,7 +911,7 @@ ags_machine_properties_callback(GAction *action, GVariant *parameter,
 
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor_dialog->machine_editor));
     
-  gtk_widget_show(machine_editor_dialog);
+  gtk_widget_show((GtkWidget *) machine_editor_dialog);
 
   g_signal_connect(machine_editor_dialog, "response",
 		   G_CALLBACK(ags_machine_editor_dialog_response_callback), machine);
@@ -971,19 +969,19 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
     return;
   }
   
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   title = g_strdup_printf("%s:%s %s",
 			  G_OBJECT_TYPE_NAME(machine),
 			  machine->machine_name,
 			  i18n("envelope"));
   
-  envelope_dialog =
-    machine->envelope_dialog = ags_envelope_dialog_new(title,
-						       window,
-						       machine);
-
+  envelope_dialog = ags_envelope_dialog_new(title,
+					    (GtkWindow *) window,
+					    machine);
+  machine->envelope_dialog = (GtkWindow *) envelope_dialog;
+  
   if(AGS_IS_DRUM(machine) ||
      AGS_IS_MATRIX(machine)){
     ags_envelope_dialog_add_pattern_tab(envelope_dialog);
@@ -1009,18 +1007,18 @@ ags_machine_preset_callback(GAction *action, GVariant *parameter,
     return;
   }
   
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   title = g_strdup_printf("%s:%s %s",
 			  G_OBJECT_TYPE_NAME(machine),
 			  machine->machine_name,
 			  i18n("preset"));
   
-  preset_dialog =
-    machine->preset_dialog = ags_preset_dialog_new(title,
-						     window,
-						     machine);
+  preset_dialog = ags_preset_dialog_new(title,
+					(GtkWindow *) window,
+					machine);
+  machine->preset_dialog = (GtkDialog *) preset_dialog;
 
   ags_connectable_connect(AGS_CONNECTABLE(machine->preset_dialog));
   
@@ -1081,7 +1079,7 @@ ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response,
     ags_applicable_apply(AGS_APPLICABLE(AGS_CONNECTION_EDITOR_DIALOG(widget)->connection_editor));    
   }
 
-  gtk_window_destroy(widget);
+  gtk_window_destroy(GTK_WINDOW(widget));
 }
 
 void
@@ -1102,11 +1100,11 @@ ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
 			machine->machine_name,
 			i18n("connections"));
   
-  connection_editor_dialog =
-    machine->connection_editor_dialog = ags_connection_editor_dialog_new(str,
-									 (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(machine),
-													       AGS_TYPE_WINDOW));
-
+  connection_editor_dialog = ags_connection_editor_dialog_new(str,
+							      (GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+												    AGS_TYPE_WINDOW));
+  machine->connection_editor_dialog = (GtkDialog *) connection_editor_dialog;
+  
   if(AGS_IS_PANEL(machine)){
     connection_editor_dialog->connection_editor->flags |= (AGS_CONNECTION_EDITOR_SHOW_OUTPUT |
 							   AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT);
@@ -1124,7 +1122,7 @@ ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
 
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor_dialog->connection_editor));
   
-  gtk_widget_show(connection_editor_dialog);
+  gtk_widget_show((GtkWidget *) connection_editor_dialog);
 
   g_signal_connect(connection_editor_dialog, "response",
 		   G_CALLBACK(ags_connection_editor_dialog_response_callback), machine);
@@ -1284,18 +1282,10 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 					   guint audio_channels, guint audio_channels_old,
 					   gpointer data)
 {
-  AgsAudio *audio;
-  AgsPlayback *playback;
-  AgsChannel *start_output;
-  AgsChannel *start_input;
-  AgsChannel *channel, *next_pad, *next_channel;
-
   GList *start_pad, *pad;
   GList *start_line, *line;
-  
-  guint i;
 
-  audio = machine->audio;
+  guint i;
   
   /* resize */
   if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
@@ -1355,16 +1345,7 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 				 guint pads, guint pads_old,
 				 gpointer data)
 {
-  AgsAudio *audio;
-  AgsPlayback *playback;
-  AgsChannel *start_output;
-  AgsChannel *start_input;
-  AgsChannel *channel, *next_channel;
-
   GList *start_pad, *pad;
-
-  guint audio_channels;
-  guint i;
   
   /* resize */
   if((AGS_CONNECTABLE_CONNECTED & (machine->connectable_flags)) != 0){
