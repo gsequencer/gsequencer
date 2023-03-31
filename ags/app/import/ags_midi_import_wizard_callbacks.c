@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,7 +96,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
       ags_ui_provider_set_midi_import_wizard(AGS_UI_PROVIDER(application_context),
 					     NULL);
       
-      gtk_window_destroy(wizard);
+      gtk_window_destroy((GtkWindow *) wizard);
     }
     break;
   default:
