@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,7 +39,6 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
 					AgsEnvelopeEditor *envelope_editor)
 {
   GtkDialog *dialog;
-  GtkEntry *entry;
 
   if(envelope_editor->rename != NULL){
     return;
@@ -49,7 +48,7 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
     dialog = (GtkDialog *) ags_input_dialog_new(i18n("preset name"),
 						(GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(envelope_editor),
 										      AGS_TYPE_ENVELOPE_DIALOG));
-  ags_input_dialog_set_flags(dialog,
+  ags_input_dialog_set_flags((AgsInputDialog *) dialog,
 			     AGS_INPUT_DIALOG_SHOW_STRING_INPUT);
   
   gtk_widget_show((GtkWidget *) dialog);
@@ -102,7 +101,7 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
   
   envelope_editor->rename = NULL;
 
-  gtk_window_destroy(widget);
+  gtk_window_destroy((GtkWindow *) widget);
 }
 
 void

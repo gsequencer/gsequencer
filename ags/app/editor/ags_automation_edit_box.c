@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,7 +88,6 @@ void
 ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_automation_edit_box_parent_class = g_type_class_peek_parent(automation_edit_box);
 
@@ -97,11 +96,6 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
 
   gobject->dispose = ags_automation_edit_box_dispose;
   gobject->finalize = ags_automation_edit_box_finalize;
-
-  /* properties */
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) automation_edit_box;
 
   /* AgsAutomationEditBox */
   automation_edit_box->child_width_request = NULL;
@@ -151,7 +145,7 @@ ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box)
 	       "homogeneous", FALSE,
 	       NULL);
 
-  gtk_box_set_spacing(automation_edit_box,
+  gtk_box_set_spacing((GtkBox *) automation_edit_box,
 		      AGS_AUTOMATION_EDIT_BOX_DEFAULT_SPACING);
 
   automation_edit_box->automation_edit = NULL;
@@ -199,7 +193,7 @@ ags_automation_edit_box_notify_width_request_callback(GObject *gobject,
 	       NULL);
   
   ags_automation_edit_box_child_width_request(automation_edit_box,
-					      AGS_AUTOMATION_EDIT(gobject),
+					      (GtkWidget *) gobject,
 					      width_request);
 }
 
@@ -217,7 +211,7 @@ ags_automation_edit_box_notify_height_request_callback(GObject *gobject,
 	       NULL);
   
   ags_automation_edit_box_child_height_request(automation_edit_box,
-					       AGS_AUTOMATION_EDIT(gobject),
+					       (GtkWidget *) gobject,
 					       height_request);
 }
 
@@ -265,8 +259,8 @@ ags_automation_edit_box_add_automation_edit(AgsAutomationEditBox *automation_edi
     g_signal_connect(automation_edit, "notify::height-request",
 		     G_CALLBACK(ags_automation_edit_box_notify_height_request_callback), automation_edit_box);
     
-    gtk_box_append(automation_edit_box,
-		   automation_edit);
+    gtk_box_append((GtkBox *) automation_edit_box,
+		   (GtkWidget *) automation_edit);
   }
 }
 
@@ -299,8 +293,8 @@ ags_automation_edit_box_remove_automation_edit(AgsAutomationEditBox *automation_
     automation_edit_box->automation_edit = g_list_remove(automation_edit_box->automation_edit,
 							 automation_edit);
 
-    gtk_box_remove(automation_edit_box,
-		   automation_edit);
+    gtk_box_remove((GtkBox *) automation_edit_box,
+		   (GtkWidget *) automation_edit);
   }
 }
 

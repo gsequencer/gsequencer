@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -133,8 +133,6 @@ ags_composite_edit_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 {
-  GtkViewport *viewport;
-
   GtkAdjustment *adjustment;
 
   AgsApplicationContext *application_context;
@@ -325,7 +323,7 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   gtk_paned_set_end_child(composite_edit->composite_paned,
 			  (GtkWidget *) composite_edit->scrolled_edit_meta);
 
-  gtk_widget_set_visible(composite_edit->scrolled_edit_meta,
+  gtk_widget_set_visible((GtkWidget *) composite_edit->scrolled_edit_meta,
 			 FALSE);
   
   composite_edit->edit_meta = NULL;
@@ -725,18 +723,18 @@ ags_composite_edit_set_scrollbar(AgsCompositeEdit *composite_edit, guint scrollb
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
-    gtk_widget_show(composite_edit->hscrollbar);
+    gtk_widget_show((GtkWidget *) composite_edit->hscrollbar);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) == 0){
-      gtk_widget_hide(composite_edit->hscrollbar);
+      gtk_widget_hide((GtkWidget *) composite_edit->hscrollbar);
     }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
-    gtk_widget_show(composite_edit->vscrollbar);
+    gtk_widget_show((GtkWidget *) composite_edit->vscrollbar);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) == 0){
-      gtk_widget_hide(composite_edit->vscrollbar);
+      gtk_widget_hide((GtkWidget *) composite_edit->vscrollbar);
     }
   }
   
@@ -761,18 +759,18 @@ ags_composite_edit_unset_scrollbar(AgsCompositeEdit *composite_edit, guint scrol
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
-    gtk_widget_hide(composite_edit->hscrollbar);
+    gtk_widget_hide((GtkWidget *) composite_edit->hscrollbar);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) != 0){
-      gtk_widget_show(composite_edit->hscrollbar);
+      gtk_widget_show((GtkWidget *) composite_edit->hscrollbar);
     }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
-    gtk_widget_hide(composite_edit->vscrollbar);
+    gtk_widget_hide((GtkWidget *) composite_edit->vscrollbar);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) != 0){
-      gtk_widget_show(composite_edit->vscrollbar);
+      gtk_widget_show((GtkWidget *) composite_edit->vscrollbar);
     }
   }
 
@@ -803,8 +801,8 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
     return;
   }
 
-  composite_editor = gtk_widget_get_ancestor(composite_edit,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
   
   /* channel selector - remove tabs */
   tab =
@@ -831,13 +829,16 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < audio_channels; i++){
+	GtkToggleButton *toggle_button;
+
 	gchar *str;
 
 	str = g_strdup_printf("channel %d",
 			      i);
 
+	toggle_button = (GtkToggleButton *) gtk_toggle_button_new_with_label(str);
 	ags_notebook_add_tab(composite_edit->channel_selector,
-			     gtk_toggle_button_new_with_label(str));
+			     (GtkWidget *) toggle_button);
 
 	g_free(str);
       }
@@ -852,13 +853,16 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < output_lines; i++){
+	GtkToggleButton *toggle_button;
+
 	gchar *str;
 
 	str = g_strdup_printf("line %d",
 			      i);
 
+	toggle_button = (GtkToggleButton *) gtk_toggle_button_new_with_label(str);
 	ags_notebook_add_tab(composite_edit->channel_selector,
-			     gtk_toggle_button_new_with_label(str));
+			     toggle_button);
 
 	g_free(str);
       }
@@ -873,13 +877,16 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 		   NULL);
     
       for(i = 0; i < input_lines; i++){
+	GtkToggleButton *toggle_button;
+
 	gchar *str;
 
 	str = g_strdup_printf("line %d",
 			      i);
 
+	toggle_button = (GtkToggleButton *) gtk_toggle_button_new_with_label(str);
 	ags_notebook_add_tab(composite_edit->channel_selector,
-			     gtk_toggle_button_new_with_label(str));
+			     toggle_button);
 
 	g_free(str);
       }
