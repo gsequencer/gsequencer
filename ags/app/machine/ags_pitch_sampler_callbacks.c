@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,7 +72,7 @@ ags_pitch_sampler_open_response_callback(GtkWidget *widget, gint response,
   }
 
   pitch_sampler->open_dialog = NULL;
-  gtk_window_destroy(widget);
+  gtk_window_destroy((GtkWindow *) widget);
 }
 
 void
@@ -506,7 +506,7 @@ ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSample
 }
 
 void
-ags_pitch_sampler_enable_aliase_callback(GtkWidget *widget, AgsPitchSampler *pitch_sampler)
+ags_pitch_sampler_enable_aliase_callback(GtkToggleButton *toggle, AgsPitchSampler *pitch_sampler)
 {
   AgsChannel *start_input;
   AgsChannel *channel;
@@ -515,7 +515,7 @@ ags_pitch_sampler_enable_aliase_callback(GtkWidget *widget, AgsPitchSampler *pit
 
   gfloat enabled;
 
-  enabled = gtk_toggle_button_get_active(widget) ? 1.0: 0.0;
+  enabled = gtk_toggle_button_get_active(toggle) ? 1.0: 0.0;
   
   start_input = NULL;
   

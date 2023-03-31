@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,12 +146,12 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 									 "control-port", "1/2",
 									 NULL);
 
-  check_button = ags_line_member_get_widget(line_member);
+  check_button = (GtkCheckButton *) ags_line_member_get_widget(line_member);
   gtk_check_button_set_label(check_button,
 			     i18n("mute"));
   
   ags_line_add_line_member(AGS_LINE(panel_input_line),
-			   GTK_WIDGET(line_member),
+			   line_member,
 			   1, 0,
 			   1, 1);
 }

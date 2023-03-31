@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,15 +196,15 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    pitch_sampler);
+					    (AgsMachine *) pitch_sampler);
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -308,9 +308,9 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		 (GtkWidget *) hbox);
 
   /* file */
-  expander = gtk_expander_new(i18n("file"));
+  expander = (GtkExpander *) gtk_expander_new(i18n("file"));
 
-  gtk_widget_set_hexpand(expander,
+  gtk_widget_set_hexpand((GtkWidget *) expander,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -339,7 +339,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_box_set_spacing(control_vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_hexpand(control_vbox,
+  gtk_widget_set_hexpand((GtkWidget *) control_vbox,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -375,7 +375,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   /* synth generator */
   frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
 
-  gtk_widget_set_hexpand(frame,
+  gtk_widget_set_hexpand((GtkWidget *) frame,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -492,7 +492,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_widget_set_valign((GtkWidget *) pitch_sampler->update,
 			GTK_ALIGN_END);
 
-  gtk_widget_set_hexpand(pitch_sampler->update,
+  gtk_widget_set_hexpand((GtkWidget *) pitch_sampler->update,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -507,7 +507,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_widget_set_halign((GtkWidget *) frame,
 			GTK_ALIGN_FILL);  
 
-  gtk_widget_set_hexpand(frame,
+  gtk_widget_set_hexpand((GtkWidget *) frame,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -516,7 +516,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
 
-  gtk_widget_set_hexpand(aliase_hbox,
+  gtk_widget_set_hexpand((GtkWidget *) aliase_hbox,
 			 FALSE);
 
   gtk_box_set_spacing(aliase_hbox,
@@ -610,7 +610,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_widget_set_halign((GtkWidget *) frame,
 			GTK_ALIGN_START);
   
-  gtk_widget_set_hexpand(frame,
+  gtk_widget_set_hexpand((GtkWidget *) frame,
 			 FALSE);
 
   gtk_box_append(hbox,
@@ -630,7 +630,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 							   2.0,
 							   0.025);
   
-  gtk_widget_set_size_request(pitch_sampler->volume,
+  gtk_widget_set_size_request((GtkWidget *) pitch_sampler->volume,
 			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
   gtk_box_append(volume_hbox,
@@ -654,13 +654,13 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_grid_set_row_spacing(lfo_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_widget_set_hexpand(lfo_grid,
+  gtk_widget_set_hexpand((GtkWidget *) lfo_grid,
 			 FALSE);
 
   gtk_box_append(hbox,
 		 (GtkWidget *) lfo_grid);
 
-  pitch_sampler->enable_lfo = gtk_check_button_new_with_label(i18n("enable LFO"));
+  pitch_sampler->enable_lfo = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enable LFO"));
 
   gtk_widget_set_valign((GtkWidget *) pitch_sampler->enable_lfo,
 			GTK_ALIGN_FILL);
@@ -672,7 +672,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		  0, 0,
 		  1, 1); 
 
-  label = gtk_label_new(i18n("LFO freq"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO freq"));
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
@@ -701,7 +701,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   2, 0,
 		   1, 1);
   
-  label = gtk_label_new(i18n("LFO phase"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO phase"));
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
@@ -728,7 +728,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   2, 1,
 		   1, 1);
 
-  label = gtk_label_new(i18n("LFO depth"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO depth"));
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
@@ -757,7 +757,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   2, 2,
 		   1, 1);
 
-  label = gtk_label_new(i18n("LFO tuning"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO tuning"));
 
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
@@ -1058,7 +1058,6 @@ ags_pitch_sampler_resize_pads(AgsMachine *machine, GType channel_type,
 void
 ags_pitch_sampler_map_recall(AgsMachine *machine)
 {
-  AgsNavigation *navigation;
   AgsPitchSampler *pitch_sampler;
   
   AgsAudio *audio;
@@ -1075,8 +1074,6 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
   }
 
   application_context = ags_application_context_get_instance();
-
-  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   pitch_sampler = AGS_PITCH_SAMPLER(machine);
 
@@ -1409,7 +1406,7 @@ ags_pitch_sampler_add_file(AgsPitchSampler *pitch_sampler,
 						       pitch_sampler_file);
 
     gtk_box_append(pitch_sampler->pitch_sampler_file_box,
-		   pitch_sampler_file);
+		   (GtkWidget *) pitch_sampler_file);
   }
 }
 
@@ -1434,7 +1431,7 @@ ags_pitch_sampler_remove_file(AgsPitchSampler *pitch_sampler,
 						      pitch_sampler_file);
 
     gtk_box_remove(pitch_sampler->pitch_sampler_file_box,
-		   pitch_sampler_file);
+		   (GtkWidget *) pitch_sampler_file);
   }
 }
 
@@ -1529,7 +1526,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   /* pitch type */
   pitch_type = "ags-fluid-4th-order";
 
-  str = gtk_combo_box_text_get_active_text(pitch_sampler->pitch_function);
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(pitch_sampler->pitch_function));
 
   if(!g_ascii_strncasecmp(str,
 			  "ags-fast-pitch",
