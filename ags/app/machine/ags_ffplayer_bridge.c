@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -131,11 +131,11 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
 									      NULL);
   
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input)->parent_bridge = AGS_EFFECT_BRIDGE(ffplayer_bridge);
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input)->parent_bridge = (GtkWidget *) ffplayer_bridge;
   
-  gtk_widget_set_valign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
+  gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
+  gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
   gtk_grid_attach(grid,
@@ -146,14 +146,14 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 								     0);
 
-  gtk_widget_set_valign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+  gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+  gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_vexpand(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+  gtk_widget_set_vexpand((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 			 TRUE);
-  gtk_widget_set_hexpand(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+  gtk_widget_set_hexpand((GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 			 TRUE);
   
   gtk_grid_attach(grid,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,7 +50,7 @@ void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlaye
 
 void ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
-void ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
+void ags_ffplayer_enable_aliase_callback(GtkToggleButton *toggle, AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_aliase_a_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
 void ags_ffplayer_aliase_a_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
