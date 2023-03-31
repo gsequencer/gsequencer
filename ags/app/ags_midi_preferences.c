@@ -141,7 +141,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(midi_preferences),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(midi_preferences,
+  gtk_box_set_spacing((GtkBox *) midi_preferences,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);  
   
   g_signal_connect((GObject *) midi_preferences, "notify::parent",
@@ -152,14 +152,14 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			 TRUE);
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
   
   gtk_box_append((GtkBox *) midi_preferences,
@@ -362,7 +362,7 @@ ags_midi_preferences_add_sequencer_editor(AgsMidiPreferences *midi_preferences,
 							sequencer_editor);
     
     gtk_box_append(midi_preferences->sequencer_editor_box,
-		   sequencer_editor);
+		   (GtkWidget *) sequencer_editor);
   }
 }
 
@@ -387,7 +387,7 @@ ags_midi_preferences_remove_sequencer_editor(AgsMidiPreferences *midi_preference
 						       sequencer_editor);
     
     gtk_box_remove(midi_preferences->sequencer_editor_box,
-		   sequencer_editor);
+		   (GtkWidget *) sequencer_editor);
   }
 }
 

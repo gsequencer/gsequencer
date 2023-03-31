@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -127,8 +127,6 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   AgsApplicationContext *application_context;
 
-  cairo_t *cr;
-
   gchar *data;
   gchar *pdf_filename;
 
@@ -161,7 +159,7 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_window_set_child(online_help_window,
+  gtk_window_set_child((GtkWindow *) online_help_window,
 		       (GtkWidget *) vbox);
   
   online_help_window->pdf_controls = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -204,7 +202,7 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gtk_box_append(online_help_window->pdf_controls,
 		 (GtkWidget *) online_help_window->zoom);
   
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
 
   gtk_grid_set_column_spacing(grid,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
@@ -214,21 +212,21 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gtk_box_append(vbox,
 		 (GtkWidget *) grid);
   
-  online_help_window->pdf_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  online_help_window->pdf_drawing_area = gtk_drawing_area_new();
   gtk_widget_set_vexpand(online_help_window->pdf_drawing_area,
 			 TRUE);
   gtk_widget_set_hexpand(online_help_window->pdf_drawing_area,
 			 TRUE);
   
   gtk_grid_attach(grid,
-		  (GtkWidget *) online_help_window->pdf_drawing_area,
+		  online_help_window->pdf_drawing_area,
 		  0, 0,
 		  1, 1);
 
   vadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
 
-  online_help_window->pdf_vscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
-							 vadjustment);
+  online_help_window->pdf_vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+									  vadjustment);
   gtk_grid_attach(grid,
 		  (GtkWidget *) online_help_window->pdf_vscrollbar,
 		  1, 0,
@@ -236,8 +234,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   
   hadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
   
-  online_help_window->pdf_hscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
-							 hadjustment);
+  online_help_window->pdf_hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+									  hadjustment);
   gtk_grid_attach(grid,
 		  (GtkWidget *) online_help_window->pdf_hscrollbar,
 		  0, 1,
@@ -406,7 +404,7 @@ ags_online_help_window_connect(AgsConnectable *connectable)
   online_help_window->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
 #if defined(AGS_WITH_POPPLER)
-  gtk_drawing_area_set_draw_func(online_help_window->pdf_drawing_area,
+  gtk_drawing_area_set_draw_func((GtkDrawingArea *) online_help_window->pdf_drawing_area,
 				 ags_online_help_window_pdf_drawing_area_draw_callback,
 				 online_help_window,
 				 NULL);
