@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,7 @@ ags_envelope_dialog_ok_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_d
   ags_applicable_apply(AGS_APPLICABLE(envelope_dialog));
  
   envelope_dialog->machine->envelope_dialog = NULL;
-  gtk_window_destroy(envelope_dialog);
+  gtk_window_destroy((GtkWindow *) envelope_dialog);
 
   return(0);
 }
@@ -50,7 +50,7 @@ int
 ags_envelope_dialog_cancel_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog)
 {
   envelope_dialog->machine->envelope_dialog = NULL;
-  gtk_window_destroy(envelope_dialog);
+  gtk_window_destroy((GtkWindow *) envelope_dialog);
 
   return(0);
 }

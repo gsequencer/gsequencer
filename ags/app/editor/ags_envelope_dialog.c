@@ -187,7 +187,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(envelope_dialog),
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) envelope_dialog),
 		 (GtkWidget *) notebook);
 
   /* envelope editor */
@@ -215,7 +215,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->pattern_envelope_scrolled_window = NULL;
   envelope_dialog->pattern_envelope = NULL;
 
-  gtk_window_set_default_size(envelope_dialog,
+  gtk_window_set_default_size((GtkWindow *) envelope_dialog,
 			      800, 600);
   
   /* GtkButton's in GtkDialog->action_area  */

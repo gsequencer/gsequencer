@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -153,14 +153,14 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   GSimpleActionGroup *action_group;
   GSimpleAction *action;
 
-  gtk_box_set_spacing(composite_toolbar,
+  gtk_box_set_spacing((GtkBox *) composite_toolbar,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   /* action group */
   action_group = g_simple_action_group_new();
   gtk_widget_insert_action_group((GtkWidget *) composite_toolbar,
 				 "composite_toolbar",
-				 action_group);
+				 G_ACTION_GROUP(action_group));
 
   /* match audio channel */
   action = g_simple_action_new_stateful("paste_match_audio_channel",
@@ -614,52 +614,52 @@ ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
   
   composite_toolbar = AGS_COMPOSITE_TOOLBAR(connectable);
 
-  if(composite_toolbar->position == connection){
+  if((GObject *) composite_toolbar->position == connection){
     g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_position_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->edit == connection){
+  if((GObject *) composite_toolbar->edit == connection){
     g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_edit_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->clear == connection){
+  if((GObject *) composite_toolbar->clear == connection){
     g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_position_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->select == connection){
+  if((GObject *) composite_toolbar->select == connection){
     g_signal_connect_after(connection, "toggled",
 			   G_CALLBACK(ags_composite_toolbar_select_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->invert == connection){
+  if((GObject *) composite_toolbar->invert == connection){
     g_signal_connect_after(connection, "clicked",
 			   G_CALLBACK(ags_composite_toolbar_invert_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->copy == connection){
+  if((GObject *) composite_toolbar->copy == connection){
     g_signal_connect_after(connection, "clicked",
 			   G_CALLBACK(ags_composite_toolbar_copy_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->cut == connection){
+  if((GObject *) composite_toolbar->cut == connection){
     g_signal_connect_after(connection, "clicked",
 			   G_CALLBACK(ags_composite_toolbar_cut_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->port == connection){
+  if((GObject *) composite_toolbar->port == connection){
     g_signal_connect_after(connection, "changed",
 			   G_CALLBACK(ags_composite_toolbar_port_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->zoom == connection){
+  if((GObject *) composite_toolbar->zoom == connection){
     g_signal_connect_after(connection, "changed",
 			   G_CALLBACK(ags_composite_toolbar_zoom_callback), composite_toolbar);
   }
 
-  if(composite_toolbar->opacity == connection){
+  if((GObject *) composite_toolbar->opacity == connection){
     g_signal_connect_after(connection, "value-changed",
 			   G_CALLBACK(ags_composite_toolbar_opacity_callback), composite_toolbar);
   }
@@ -677,7 +677,7 @@ ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
   
   composite_toolbar = AGS_COMPOSITE_TOOLBAR(connectable);
 
-  if(composite_toolbar->position == connection){
+  if((GObject *) composite_toolbar->position == connection){
     g_object_disconnect(connection,
 			"any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_position_callback),
@@ -685,63 +685,63 @@ ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
 			NULL);
   }
 
-  if(composite_toolbar->edit == connection){
+  if((GObject *) composite_toolbar->edit == connection){
     g_object_disconnect(connection, "any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_edit_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->clear == connection){
+  if((GObject *) composite_toolbar->clear == connection){
     g_object_disconnect(connection, "any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_position_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->select == connection){
+  if((GObject *) composite_toolbar->select == connection){
     g_object_disconnect(connection, "any_signal::toggled",
 			G_CALLBACK(ags_composite_toolbar_select_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->invert == connection){
+  if((GObject *) composite_toolbar->invert == connection){
     g_object_disconnect(connection, "any_signal::clicked",
 			G_CALLBACK(ags_composite_toolbar_invert_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->copy == connection){
+  if((GObject *) composite_toolbar->copy == connection){
     g_object_disconnect(connection, "any_signal::clicked",
 			G_CALLBACK(ags_composite_toolbar_copy_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->cut == connection){
+  if((GObject *) composite_toolbar->cut == connection){
     g_object_disconnect(connection, "any_signal::clicked",
 			G_CALLBACK(ags_composite_toolbar_cut_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->port == connection){
+  if((GObject *) composite_toolbar->port == connection){
     g_object_disconnect(connection, "any_signal::changed",
 			G_CALLBACK(ags_composite_toolbar_port_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->zoom == connection){
+  if((GObject *) composite_toolbar->zoom == connection){
     g_object_disconnect(connection, "any_signal::changed",
 			G_CALLBACK(ags_composite_toolbar_zoom_callback),
 			composite_toolbar,
 			NULL);
   }
 
-  if(composite_toolbar->opacity == connection){
+  if((GObject *) composite_toolbar->opacity == connection){
     g_object_disconnect(connection, "any_signal::value-changed",
 			G_CALLBACK(ags_composite_toolbar_opacity_callback),
 			composite_toolbar,
@@ -871,13 +871,13 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("position tool"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->position,
 			       sibling);
 
-    sibling = composite_toolbar->position;
+    sibling = (GtkWidget *) composite_toolbar->position;
   }else if(composite_toolbar->position != NULL){
-    sibling = composite_toolbar->position;
+    sibling = (GtkWidget *) composite_toolbar->position;
   }
 
   /* edit tool */
@@ -890,13 +890,13 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("edit tool"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->edit,
 			       sibling);
     
-    sibling = composite_toolbar->edit;
+    sibling = (GtkWidget *) composite_toolbar->edit;
   }else if(composite_toolbar->edit != NULL){
-    sibling = composite_toolbar->edit;
+    sibling = (GtkWidget *) composite_toolbar->edit;
   }
 
   /* clear tool */
@@ -909,13 +909,13 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("clear tool"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->clear,
 			       sibling);
     
-    sibling = composite_toolbar->clear;
+    sibling = (GtkWidget *) composite_toolbar->clear;
   }else if(composite_toolbar->clear != NULL){
-    sibling = composite_toolbar->clear;
+    sibling = (GtkWidget *) composite_toolbar->clear;
   }
 
   /* select tool */
@@ -928,13 +928,13 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("selection tool"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->select,
 			       sibling);
     
-    sibling = composite_toolbar->select;
+    sibling = (GtkWidget *) composite_toolbar->select;
   }else if(composite_toolbar->select != NULL){
-    sibling = composite_toolbar->select;
+    sibling = (GtkWidget *) composite_toolbar->select;
   }
   
   /* set tool */
@@ -953,15 +953,13 @@ ags_composite_toolbar_set_tool(AgsCompositeToolbar *composite_toolbar, guint too
 void
 ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint tool)
 {  
-  gint position;
-
   if(!AGS_IS_COMPOSITE_TOOLBAR(composite_toolbar)){
     return;
   }
 
   if((AGS_COMPOSITE_TOOLBAR_TOOL_POSITION & tool) != 0 &&
      composite_toolbar->position != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->position);
     
     composite_toolbar->position = NULL;
@@ -969,7 +967,7 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
 
   if((AGS_COMPOSITE_TOOLBAR_TOOL_EDIT & tool) != 0 &&
      composite_toolbar->edit != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->edit);
 
     composite_toolbar->edit = NULL;
@@ -977,7 +975,7 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
 
   if((AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR & tool) != 0 &&
      composite_toolbar->clear != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->clear);
 
     composite_toolbar->clear = NULL;
@@ -985,7 +983,7 @@ ags_composite_toolbar_unset_tool(AgsCompositeToolbar *composite_toolbar, guint t
 
   if((AGS_COMPOSITE_TOOLBAR_TOOL_SELECT & tool) != 0 &&
      composite_toolbar->select != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->select);
 
     composite_toolbar->select = NULL;
@@ -1042,19 +1040,19 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
   sibling = NULL;
   
   if(composite_toolbar->position != NULL){
-    sibling = composite_toolbar->position;
+    sibling = (GtkWidget *) composite_toolbar->position;
   }
 
   if(composite_toolbar->edit != NULL){
-    sibling = composite_toolbar->edit;
+    sibling = (GtkWidget *) composite_toolbar->edit;
   }
 
   if(composite_toolbar->clear != NULL){
-    sibling = composite_toolbar->clear;
+    sibling = (GtkWidget *) composite_toolbar->clear;
   }
 
   if(composite_toolbar->select != NULL){
-    sibling = composite_toolbar->select;
+    sibling = (GtkWidget *) composite_toolbar->select;
   }
 
   /* invert action */
@@ -1068,13 +1066,13 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("invert action"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->invert,
 			       sibling);
 
-    sibling = composite_toolbar->invert;
+    sibling = (GtkWidget *) composite_toolbar->invert;
   }else if(composite_toolbar->invert != NULL){
-    sibling = composite_toolbar->invert;
+    sibling = (GtkWidget *) composite_toolbar->invert;
   }
 
   /* copy action */
@@ -1088,13 +1086,13 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("copy action"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->copy,
 			       sibling);
     
-    sibling = composite_toolbar->copy;
+    sibling = (GtkWidget *) composite_toolbar->copy;
   }else if(composite_toolbar->copy != NULL){
-    sibling = composite_toolbar->copy;
+    sibling = (GtkWidget *) composite_toolbar->copy;
   }
 
   /* cut action */
@@ -1108,13 +1106,13 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("cut action"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->cut,
 			       sibling);
     
-    sibling = composite_toolbar->cut;
+    sibling = (GtkWidget *) composite_toolbar->cut;
   }else if(composite_toolbar->cut != NULL){
-    sibling = composite_toolbar->cut;
+    sibling = (GtkWidget *) composite_toolbar->cut;
   }
 
   /* paste action */
@@ -1128,7 +1126,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("paste menu action"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->paste,
 			       sibling);
 
@@ -1137,9 +1135,9 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     gtk_menu_button_set_menu_model(composite_toolbar->paste,
 				   composite_toolbar->paste_popup);
 
-    sibling = composite_toolbar->paste;
+    sibling = (GtkWidget *) composite_toolbar->paste;
   }else if(composite_toolbar->paste != NULL){
-    sibling = composite_toolbar->paste;
+    sibling = (GtkWidget *) composite_toolbar->paste;
   }
   
   /* set action */
@@ -1164,7 +1162,7 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_ACTION_INVERT & action) != 0 &&
      composite_toolbar->invert != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->invert);
     
     composite_toolbar->invert = NULL;
@@ -1172,7 +1170,7 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_ACTION_COPY & action) != 0 &&
      composite_toolbar->copy != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->copy);
 
     composite_toolbar->copy = NULL;
@@ -1180,7 +1178,7 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_ACTION_CUT & action) != 0 &&
      composite_toolbar->cut != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->cut);
 
     composite_toolbar->cut = NULL;
@@ -1188,7 +1186,7 @@ ags_composite_toolbar_unset_action(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_ACTION_PASTE & action) != 0 &&
      composite_toolbar->paste != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->paste);
 
     //TODO:JK: check if needed
@@ -1249,35 +1247,35 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
   sibling = NULL;
   
   if(composite_toolbar->position != NULL){
-    sibling = composite_toolbar->position;
+    sibling = (GtkWidget *) composite_toolbar->position;
   }
 
   if(composite_toolbar->edit != NULL){
-    sibling = composite_toolbar->edit;
+    sibling = (GtkWidget *) composite_toolbar->edit;
   }
 
   if(composite_toolbar->clear != NULL){
-    sibling = composite_toolbar->clear;
+    sibling = (GtkWidget *) composite_toolbar->clear;
   }
 
   if(composite_toolbar->select != NULL){
-    sibling = composite_toolbar->select;
+    sibling = (GtkWidget *) composite_toolbar->select;
   }
 
   if(composite_toolbar->invert != NULL){
-    sibling = composite_toolbar->invert;
+    sibling = (GtkWidget *) composite_toolbar->invert;
   }
   
   if(composite_toolbar->copy != NULL){
-    sibling = composite_toolbar->copy;
+    sibling = (GtkWidget *) composite_toolbar->copy;
   }
   
   if(composite_toolbar->cut != NULL){
-    sibling = composite_toolbar->cut;
+    sibling = (GtkWidget *) composite_toolbar->cut;
   }
 
   if(composite_toolbar->paste != NULL){
-    sibling = composite_toolbar->paste;
+    sibling = (GtkWidget *) composite_toolbar->paste;
   }
 
   /* menu tool */
@@ -1290,7 +1288,7 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 		 "has-tooltip", TRUE,
 		 "tooltip-text", i18n("tool dialog option"),
 		 NULL);
-    gtk_box_insert_child_after(composite_toolbar,
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) composite_toolbar->menu_tool,
 			       sibling);
 
@@ -1300,9 +1298,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_menu_button_set_menu_model(composite_toolbar->menu_tool,
 				   composite_toolbar->menu_tool_popup);
 
-    sibling = composite_toolbar->menu_tool;
+    sibling = (GtkWidget *) composite_toolbar->menu_tool;
   }else if(composite_toolbar->menu_tool != NULL){
-    sibling = composite_toolbar->menu_tool;
+    sibling = (GtkWidget *) composite_toolbar->menu_tool;
   }
   
   /* zoom */
@@ -1311,9 +1309,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     GtkBox *box;
     GtkLabel *label;
     
-    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		      0);
-    gtk_box_insert_child_after(composite_toolbar,
+    box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) box,
 			       sibling);
 
@@ -1328,9 +1326,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_append(box,
 		   (GtkWidget *) composite_toolbar->zoom);
 
-    sibling = box;
+    sibling = (GtkWidget *) box;
   }else if(composite_toolbar->zoom != NULL){
-    sibling = gtk_widget_get_parent(composite_toolbar->zoom);
+    sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->zoom);
   }
   
   /* opacity */
@@ -1339,9 +1337,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     GtkBox *box;
     GtkLabel *label;
 
-    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		      0);
-    gtk_box_insert_child_after(composite_toolbar,
+    box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) box,
 			       sibling);
 
@@ -1355,9 +1353,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_append(box,
 		   (GtkWidget *) composite_toolbar->opacity);
 
-    sibling = box;
+    sibling = (GtkWidget *) box;
   }else if(composite_toolbar->opacity != NULL){
-    sibling = gtk_widget_get_parent(composite_toolbar->opacity);
+    sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->opacity);
   }
   
   /* port */
@@ -1370,10 +1368,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     GtkCellRenderer *scope_cell_renderer_text;
     GtkCellRenderer *port_cell_renderer_text;
 
-
-    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		      0);
-    gtk_box_insert_child_after(composite_toolbar,
+    box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) box,
 			       sibling);
     
@@ -1412,9 +1409,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_box_append(box,
 		   (GtkWidget *) composite_toolbar->port);
     
-    sibling = box;
+    sibling = (GtkWidget *) box;
   }else if(composite_toolbar->port != NULL){
-    sibling = gtk_widget_get_parent(composite_toolbar->port);
+    sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->port);
   }
   
   /* beats */
@@ -1423,9 +1420,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     GtkBox *box;
     GtkLabel *label;
 
-    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		      0);
-    gtk_box_insert_child_after(composite_toolbar,
+    box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) box,
 			       sibling);
     
@@ -1458,9 +1455,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_combo_box_set_active(composite_toolbar->beats,
 			     3);
     
-    sibling = box;
+    sibling = (GtkWidget *) box;
   }else if(composite_toolbar->beats != NULL){
-    sibling = gtk_widget_get_parent(composite_toolbar->beats);
+    sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->beats);
   }
   
   /* beats type */
@@ -1469,9 +1466,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     GtkBox *box;
     GtkLabel *label;
     
-    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		      0);
-    gtk_box_insert_child_after(composite_toolbar,
+    box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+    gtk_box_insert_child_after((GtkBox *) composite_toolbar,
 			       (GtkWidget *) box,
 			       sibling);
     
@@ -1496,9 +1493,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
     gtk_combo_box_set_active(composite_toolbar->beats_type,
 			     2);
     
-    sibling = box;
+    sibling = (GtkWidget *) box;
   }else if(composite_toolbar->beats_type != NULL){
-    sibling = gtk_widget_get_parent(composite_toolbar->beats_type);
+    sibling = gtk_widget_get_parent((GtkWidget *) composite_toolbar->beats_type);
   }
   
   /* set option */
@@ -1523,7 +1520,7 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_MENU_TOOL & option) != 0 &&
      composite_toolbar->menu_tool != NULL){
-    gtk_box_remove(composite_toolbar,
+    gtk_box_remove((GtkBox *) composite_toolbar,
 		   (GtkWidget *) composite_toolbar->menu_tool);
 
     composite_toolbar->menu_tool = NULL;
@@ -1532,32 +1529,32 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_OPACITY & option) != 0 &&
      composite_toolbar->opacity != NULL){
-    gtk_box_remove(composite_toolbar,
-		   gtk_widget_get_parent(composite_toolbar->opacity));
+    gtk_box_remove((GtkBox *) composite_toolbar,
+		   gtk_widget_get_parent((GtkWidget *) composite_toolbar->opacity));
     
     composite_toolbar->opacity = NULL;
   }
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_PORT & option) != 0 &&
      composite_toolbar->port != NULL){
-    gtk_box_remove(composite_toolbar,
-		   gtk_widget_get_parent(composite_toolbar->port));
+    gtk_box_remove((GtkBox *) composite_toolbar,
+		   gtk_widget_get_parent((GtkWidget *) composite_toolbar->port));
 
     composite_toolbar->port = NULL;
   }
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_BEATS & option) != 0 &&
      composite_toolbar->beats != NULL){
-    gtk_box_remove(composite_toolbar,
-		   gtk_widget_get_parent(composite_toolbar->beats));
+    gtk_box_remove((GtkBox *) composite_toolbar,
+		   gtk_widget_get_parent((GtkWidget *) composite_toolbar->beats));
 
     composite_toolbar->beats = NULL;
   }
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_BEATS_TYPE & option) != 0 &&
      composite_toolbar->beats_type != NULL){
-    gtk_box_remove(composite_toolbar,
-		   gtk_widget_get_parent(composite_toolbar->beats_type));
+    gtk_box_remove((GtkBox *) composite_toolbar,
+		   gtk_widget_get_parent((GtkWidget *) composite_toolbar->beats_type));
 
     composite_toolbar->beats_type = NULL;
   }
@@ -1611,7 +1608,7 @@ ags_composite_toolbar_paste_popup_new(AgsCompositeToolbar *composite_toolbar,
   g_menu_append_item(menu,
 		     item);
 
-  return(menu);
+  return(G_MENU_MODEL(menu));
 }
 
 /**
@@ -1842,7 +1839,7 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
     }
   }
   
-  return(menu);
+  return(G_MENU_MODEL(menu));
 }
 
 /**
@@ -2101,7 +2098,6 @@ ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
       start_port = ags_channel_collect_all_channel_ports(channel);
 
     while(port != NULL){
-      AgsChannel *next;
       AgsPluginPort *plugin_port;
 
       gchar *specifier;
@@ -2207,21 +2203,21 @@ ags_composite_toolbar_set_selected_tool(AgsCompositeToolbar *composite_toolbar,
 {
   g_return_if_fail(AGS_IS_COMPOSITE_TOOLBAR(composite_toolbar));
   
-  if(composite_toolbar->selected_tool != selected_tool){
-    GtkToggleButton *old_selected_tool;
+  if(composite_toolbar->selected_tool != (GtkButton *) selected_tool){
+    GtkButton *old_selected_tool;
 
     old_selected_tool = composite_toolbar->selected_tool;
     
-    composite_toolbar->selected_tool = selected_tool;
+    composite_toolbar->selected_tool = (GtkButton *) selected_tool;
     
     if(old_selected_tool != NULL){
-      gtk_toggle_button_set_active(old_selected_tool,
+      gtk_toggle_button_set_active((GtkToggleButton *) old_selected_tool,
 				   FALSE);
     }
   }else{
     if(selected_tool != NULL &&
-       !gtk_toggle_button_get_active(selected_tool)){
-      gtk_toggle_button_set_active(selected_tool,
+       !gtk_toggle_button_get_active((GtkToggleButton *) selected_tool)){
+      gtk_toggle_button_set_active((GtkToggleButton *) selected_tool,
 				   TRUE);
     }
   }
@@ -2330,31 +2326,31 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 
       /* connect */
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->position);
+					 (GObject *) composite_toolbar->position);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->edit);
+					 (GObject *) composite_toolbar->edit);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->clear);
+					 (GObject *) composite_toolbar->clear);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->select);
+					 (GObject *) composite_toolbar->select);
       
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->invert);
+					 (GObject *) composite_toolbar->invert);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->copy);
+					 (GObject *) composite_toolbar->copy);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->cut);
+					 (GObject *) composite_toolbar->cut);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->paste);
+					 (GObject *) composite_toolbar->paste);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->menu_tool);
+					 (GObject *) composite_toolbar->menu_tool);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->zoom);
+					 (GObject *) composite_toolbar->zoom);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->opacity);
+					 (GObject *) composite_toolbar->opacity);
       
       gtk_toggle_button_set_active(composite_toolbar->position,
 				   TRUE);
@@ -2420,31 +2416,31 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 
       /* connect */
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->position);
+					 (GObject *) composite_toolbar->position);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->edit);
+					 (GObject *) composite_toolbar->edit);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->clear);
+					 (GObject *) composite_toolbar->clear);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->select);
+					 (GObject *) composite_toolbar->select);
       
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->invert);
+					 (GObject *) composite_toolbar->invert);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->copy);
+					 (GObject *) composite_toolbar->copy);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->cut);
+					 (GObject *) composite_toolbar->cut);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->paste);
+					 (GObject *) composite_toolbar->paste);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->menu_tool);
+					 (GObject *) composite_toolbar->menu_tool);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->zoom);
+					 (GObject *) composite_toolbar->zoom);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->opacity);
+					 (GObject *) composite_toolbar->opacity);
       
       gtk_toggle_button_set_active(composite_toolbar->position,
 				   TRUE);
@@ -2509,32 +2505,32 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       
       /* connect */
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->position);
+					 (GObject *) composite_toolbar->position);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->edit);
+					 (GObject *) composite_toolbar->edit);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->clear);
+					 (GObject *) composite_toolbar->clear);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->select);
+					 (GObject *) composite_toolbar->select);
       
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->copy);
+					 (GObject *) composite_toolbar->copy);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->cut);
+					 (GObject *) composite_toolbar->cut);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->paste);
+					 (GObject *) composite_toolbar->paste);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->menu_tool);
+					 (GObject *) composite_toolbar->menu_tool);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->port);
+					 (GObject *) composite_toolbar->port);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->zoom);
+					 (GObject *) composite_toolbar->zoom);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->opacity);
+					 (GObject *) composite_toolbar->opacity);
 
       gtk_toggle_button_set_active(composite_toolbar->position,
 				   TRUE);
@@ -2594,25 +2590,25 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 
       /* connect */
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->position);
+					 (GObject *) composite_toolbar->position);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->select);
+					 (GObject *) composite_toolbar->select);
       
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->copy);
+					 (GObject *) composite_toolbar->copy);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->cut);
+					 (GObject *) composite_toolbar->cut);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->paste);
+					 (GObject *) composite_toolbar->paste);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->menu_tool);
+					 (GObject *) composite_toolbar->menu_tool);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->zoom);
+					 (GObject *) composite_toolbar->zoom);
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 composite_toolbar->opacity);
+					 (GObject *) composite_toolbar->opacity);
 
       gtk_toggle_button_set_active(composite_toolbar->position,
 				   TRUE);
@@ -2621,7 +2617,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
     }
   }
 
-  gtk_widget_show(composite_toolbar);
+  gtk_widget_show((GtkWidget *) composite_toolbar);
 }
 
 /**
