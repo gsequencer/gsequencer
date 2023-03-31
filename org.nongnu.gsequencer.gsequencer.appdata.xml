@@ -40,6 +40,22 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="4.4.3" date="2022-09-27">
+      <description>
+	<p>
+	  Improved type-safety reported by recent clang.
+	</p>
+      </description>
+    </release>
+
+    <release version="4.4.2" date="2022-09-17">
+      <description>
+	<p>
+	  Improved thread-safety of AgsSynth, AgsFMSynth, AgsSyncsynth and AgsFMSyncsynth.
+	</p>
+      </description>
+    </release>
+
     <release version="4.4.1" date="2022-09-16">
       <description>
 	<p>

@@ -1145,7 +1145,7 @@ ags_base_plugin_get_effect_index(AgsBasePlugin *base_plugin)
   guint effect_index;
 
   if(!AGS_IS_BASE_PLUGIN(base_plugin)){
-    return(NULL);
+    return(0);
   }
 
   g_object_get(base_plugin,
@@ -1398,7 +1398,7 @@ ags_base_plugin_get_ui_effect_index(AgsBasePlugin *base_plugin)
   guint ui_effect_index;
 
   if(!AGS_IS_BASE_PLUGIN(base_plugin)){
-    return(NULL);
+    return(0);
   }
 
   g_object_get(base_plugin,

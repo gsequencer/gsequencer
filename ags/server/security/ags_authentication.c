@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -108,9 +108,9 @@ ags_authentication_login(AgsAuthentication *authentication,
 {
   AgsAuthenticationInterface *authentication_interface;
 
-  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
+  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), FALSE);
   authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
-  g_return_val_if_fail(authentication_interface->login, NULL);
+  g_return_val_if_fail(authentication_interface->login, FALSE);
 
   return(authentication_interface->login(authentication,
 					 login,

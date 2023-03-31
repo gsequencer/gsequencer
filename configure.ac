@@ -1,5 +1,5 @@
 #                                               -*- Autoconf -*-
-# Copyright (C) 2005-2022 Joel Kraehemann
+# Copyright (C) 2005-2023 Joel Kraehemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[4.4.1],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[4.4.2],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -500,10 +500,6 @@ AC_SUBST(CAIRO_LIBS)
 PKG_CHECK_MODULES([GTK], [gtk4 >= 4.0.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
-
-PKG_CHECK_MODULES([GTK_UNIX_PRINT], [gtk4-unix-print >= 4.0.0])
-AC_SUBST(GTK_UNIX_PRINT_CFLAGS)
-AC_SUBST(GTK_UNIX_PRINT_LIBS)
 
 AS_IF([test "x$with_gtk_unix_print" != xno],
       [PKG_CHECK_MODULES([GTK_UNIX_PRINT], [gtk4-unix-print >= 4.0.0])

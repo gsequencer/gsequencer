@@ -3880,7 +3880,7 @@ ags_machine_check_message(AgsMachine *machine)
 
 	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
 				  "channel-type");
-	channel_type = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	channel_type = (GType) g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
 	  
 	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
 				  "pads");

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -496,7 +496,7 @@ ags_dssi_manager_find_dssi_plugin_with_fallback(AgsDssiManager *dssi_manager,
   if(!AGS_DSSI_MANAGER(dssi_manager) ||
      filename == NULL ||
      strlen(filename) <= 0 ||
-     strrchr(filename, "/") == NULL ||
+     strrchr(filename, '/') == NULL ||
      effect == NULL ||
      strlen(effect) <= 0){
     return(NULL);
@@ -509,7 +509,7 @@ ags_dssi_manager_find_dssi_plugin_with_fallback(AgsDssiManager *dssi_manager,
 						  filename, effect);
 
   if(dssi_plugin == NULL){
-    filename_suffix = strrchr(filename, "/");
+    filename_suffix = strrchr(filename, '/');
     
     /* collect */
     g_rec_mutex_lock(dssi_manager_mutex);

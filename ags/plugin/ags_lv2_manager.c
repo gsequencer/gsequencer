@@ -665,7 +665,7 @@ ags_lv2_manager_find_lv2_plugin_with_fallback(AgsLv2Manager *lv2_manager,
   if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
      filename == NULL ||
      strlen(filename) <= 0 ||
-     strrchr(filename, "/") == NULL ||
+     strrchr(filename, '/') == NULL ||
      effect == NULL ||
      strlen(effect) <= 0){
     return(NULL);
@@ -682,13 +682,13 @@ ags_lv2_manager_find_lv2_plugin_with_fallback(AgsLv2Manager *lv2_manager,
 
     filename = g_strdup(filename);
     
-    tmp = strrchr(filename, "/");
+    tmp = strrchr(filename, '/');
 
     if(tmp != NULL){
       tmp[0] = '\0';
     }
     
-    filename_suffix = strrchr(tmp, "/");
+    filename_suffix = strrchr(tmp, '/');
 
     if(tmp != NULL){
       tmp[0] = '/';

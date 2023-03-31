@@ -1,3 +1,16 @@
+ags (4.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing putenv GIO_MODULE_DIR and GSETTINGS_SCHEMA_DIR
+	* TODO:JK: fixed type safety with recent clang
+	* minor improvements
+
+ags (4.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved thread-safety of AgsSynthGenerator and machines using it like AgsSynth, AgsFMSynth, AgsSyncsynth and AgsFMSyncsynth
+	* improved AgsIndicator applying margin of GtkWidget
+
 ags (4.4.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

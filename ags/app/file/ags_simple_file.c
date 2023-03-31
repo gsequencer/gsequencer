@@ -3162,7 +3162,8 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
   xmlChar *str;
     
   guint bank_0, bank_1;
-
+  guint i;
+  
   /* bank 0 */
   bank_0 = 0;
   str = xmlGetProp(node,
@@ -3226,6 +3227,42 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsD
 			      (gdouble) length);
       
     xmlFree(str);
+  }
+
+  /*  */
+  if(drum->pattern_box != NULL){
+    AgsChannel *start_input;
+    
+    GList *start_list;
+    GList *start_pattern;
+    
+    drum->pattern_box->flags |= AGS_PATTERN_BOX_BLOCK_PATTERN;
+
+    start_list = ags_pattern_box_get_pad(drum->pattern_box);
+
+    start_input = ags_audio_get_input(AGS_MACHINE(drum)->audio);
+
+    start_pattern = ags_channel_get_pattern(start_input);
+
+    if(start_pattern != NULL){
+      for(i = 0; i < 16; i++){
+	if(ags_pattern_get_bit(start_pattern->data, bank_0, bank_1, i)){
+	  gtk_toggle_button_set_active(g_list_nth_data(start_list, i),
+				       TRUE);
+	}
+      }
+    }
+        
+    g_list_free(start_list);
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+    
+    g_list_free_full(start_pattern,
+		     (GDestroyNotify) g_object_unref);
+    
+    drum->pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
   }
 }
   
