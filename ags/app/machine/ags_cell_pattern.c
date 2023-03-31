@@ -98,7 +98,6 @@ void
 ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_cell_pattern_parent_class = g_type_class_peek_parent(cell_pattern);
 
@@ -106,9 +105,6 @@ ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern)
   gobject = (GObjectClass *) cell_pattern;
 
   gobject->finalize = ags_cell_pattern_finalize;
-
-  /* GtkWidget */
-  widget = (GtkWidgetClass *) cell_pattern;
 }
 
 void
@@ -173,7 +169,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_cell_pattern_modifiers_callback), cell_pattern);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) cell_pattern,
 			    event_controller);
 
@@ -184,7 +180,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 		   G_CALLBACK(ags_cell_pattern_gesture_click_released_callback), cell_pattern);
 
   gtk_drawing_area_set_draw_func(cell_pattern->drawing_area,
-				 ags_cell_pattern_draw_func,
+				 (GtkDrawingAreaDrawFunc) ags_cell_pattern_draw_func,
 				 cell_pattern,
 				 NULL);
   
@@ -335,7 +331,7 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
   gboolean fg_success;
   gboolean bg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
@@ -705,7 +701,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     AgsAudio *audio;
     AgsRecallID *recall_id;
-    AgsRecyclingContext *recycling_context;
     
     AgsFxPatternAudio *play_fx_pattern_audio;
     AgsFxPatternAudioProcessor *play_fx_pattern_audio_processor;
@@ -727,12 +722,10 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     audio = machine->audio;
   
     /* get some recalls */
-    recall_id = NULL;
-    g_object_get(audio,
-		 "recall-id", &start_list,
-		 NULL);
+    list =
+      start_list = ags_audio_get_recall_id(audio);
 
-    list = start_list;
+    recall_id = NULL;
     
     while(list != NULL){
       AgsRecyclingContext *current;

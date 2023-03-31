@@ -198,7 +198,7 @@ ags_pcm_file_chooser_dialog_show(GtkWidget *widget)
 /**
  * ags_pcm_file_chooser_dialog_new:
  * @title: the title
- * @transient_for: the transient for widget
+ * @transient_for: the transient for window
  * 
  * Create a new instance of #AgsPCMFileChooserDialog
  * 
@@ -208,7 +208,7 @@ ags_pcm_file_chooser_dialog_show(GtkWidget *widget)
  */
 AgsPCMFileChooserDialog*
 ags_pcm_file_chooser_dialog_new(gchar *title,
-				GtkWidget *transient_for)
+				GtkWindow *transient_for)
 {
   AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
