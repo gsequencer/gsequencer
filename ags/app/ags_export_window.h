@@ -100,7 +100,7 @@ void ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window);
 void ags_export_window_start_export(AgsExportWindow *export_window);
 void ags_export_window_stop_export(AgsExportWindow *export_window);
 
-AgsExportWindow* ags_export_window_new();
+AgsExportWindow* ags_export_window_new(GtkWindow *transient_for);
 
 G_END_DECLS
 
