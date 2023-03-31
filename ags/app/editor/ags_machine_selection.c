@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,7 +147,7 @@ ags_machine_selection_init(AgsMachineSelection *machine_selection)
 	       "title", i18n("select machines"),
 	       NULL);
 
-  gtk_box_set_spacing(gtk_dialog_get_content_area((GtkDialog *) machine_selection),
+  gtk_box_set_spacing((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_selection),
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   machine_selection->radio_button = NULL;
@@ -239,8 +239,8 @@ ags_machine_selection_add_radio_button(AgsMachineSelection *machine_selection,
 		   NULL);
     }
     
-    gtk_box_append((GtkBox *) gtk_dialog_get_content_area(machine_selection),
-		   radio_button);
+    gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_selection),
+		   (GtkWidget *) radio_button);
 
     g_list_free(start_list);
   }
@@ -266,8 +266,8 @@ ags_machine_selection_remove_radio_button(AgsMachineSelection *machine_selection
     machine_selection->radio_button = g_list_remove(machine_selection->radio_button,
 						    radio_button);
     
-    gtk_box_remove((GtkBox *) gtk_dialog_get_content_area(machine_selection),
-		   radio_button);
+    gtk_box_remove((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_selection),
+		   (GtkWidget *) radio_button);
   }
 }
 
@@ -275,23 +275,16 @@ void
 ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 {
   AgsWindow *window;
-  AgsMachine *machine;
-  AgsMachineRadioButton *radio_button;
 
   GList *start_list, *list;
-  GList *start_index, *index;
 
   gchar *str;
 
-  gint response;
-
-  window = gtk_window_get_transient_for(machine_selection);
+  window = (AgsWindow *) gtk_window_get_transient_for((GtkWindow *) machine_selection);
   
   list =
     start_list = ags_window_get_machine(window);
   
-  machine = NULL;
-
   while(list != NULL){
     GtkCheckButton *radio_button;
 
