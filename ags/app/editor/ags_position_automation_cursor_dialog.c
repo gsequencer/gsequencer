@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -144,7 +144,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 
   position_automation_cursor_dialog->connectable_flags = 0;
 
-  gtk_window_set_hide_on_close(position_automation_cursor_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) position_automation_cursor_dialog,
 			       TRUE);
   
   g_object_set(position_automation_cursor_dialog,
@@ -153,26 +153,26 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_automation_cursor_dialog),
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) position_automation_cursor_dialog),
 		 GTK_WIDGET(vbox));  
 
   /* set focus */
   position_automation_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_check_button_set_active(position_automation_cursor_dialog->set_focus,
+  gtk_check_button_set_active((GtkCheckButton *) position_automation_cursor_dialog->set_focus,
 			      TRUE);
   gtk_box_append(vbox,
-		 GTK_WIDGET(position_automation_cursor_dialog->set_focus));  
+		 (GtkWidget *) position_automation_cursor_dialog->set_focus);
 
   /* position x - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* position x - label */
   label = (GtkLabel *) gtk_label_new(i18n("position x"));
   gtk_box_append((GtkBox *) hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* position x - spin button */
   position_automation_cursor_dialog->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -181,7 +181,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
   gtk_spin_button_set_value(position_automation_cursor_dialog->position_x,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(position_automation_cursor_dialog->position_x));
+		 (GtkWidget *) position_automation_cursor_dialog->position_x);
   
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) position_automation_cursor_dialog,
@@ -204,8 +204,8 @@ ags_position_automation_cursor_dialog_connect(AgsConnectable *connectable)
 
   position_automation_cursor_dialog->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  g_signal_connect(position_automation_cursor_dialog, "response",
-		   G_CALLBACK(ags_position_automation_cursor_dialog_response_callback), position_automation_cursor_dialog);
+  g_signal_connect((GObject *) position_automation_cursor_dialog, "response",
+		   G_CALLBACK(ags_position_automation_cursor_dialog_response_callback), (gpointer) position_automation_cursor_dialog);
 }
 
 void
@@ -250,7 +250,6 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
   AgsWindow *window;
   AgsMachine *machine;
-  GtkWidget *editor;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
   AgsAutomationEdit *focused_automation_edit;
@@ -269,13 +268,13 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   composite_editor = window->composite_editor;
 
   composite_toolbar = composite_editor->toolbar;
 
-  focused_automation_edit = composite_editor->automation_edit->focused_edit;
+  focused_automation_edit = (AgsAutomationEdit *) composite_editor->automation_edit->focused_edit;
 
   machine = composite_editor->selected_machine;
 

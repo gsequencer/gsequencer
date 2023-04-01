@@ -146,7 +146,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 	       "title", i18n("ramp accelerations"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(ramp_acceleration_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) ramp_acceleration_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,

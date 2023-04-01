@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -163,7 +163,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(pattern_envelope),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(pattern_envelope,
+  gtk_box_set_spacing((GtkBox *) pattern_envelope,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   pattern_envelope->flags = 0;
@@ -291,22 +291,22 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		 (GtkWidget *) pattern_envelope->tree_view);
 
   g_signal_connect(G_OBJECT(edit_renderer), "toggled",
-		   G_CALLBACK(ags_pattern_envelope_edit_callback), pattern_envelope);
+		   G_CALLBACK(ags_pattern_envelope_edit_callback), (gpointer) pattern_envelope);
 
   g_signal_connect(G_OBJECT(plot_renderer), "toggled",
-		   G_CALLBACK(ags_pattern_envelope_plot_callback), pattern_envelope);
+		   G_CALLBACK(ags_pattern_envelope_plot_callback), (gpointer) pattern_envelope);
 
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_vexpand(grid,
+  gtk_widget_set_vexpand((GtkWidget *) grid,
 			 FALSE);
-  gtk_widget_set_hexpand(grid,
+  gtk_widget_set_hexpand((GtkWidget *) grid,
 			 TRUE);
 
-  gtk_widget_set_halign(grid,
+  gtk_widget_set_halign((GtkWidget *) grid,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(grid,
+  gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_START);
 
   gtk_grid_set_column_spacing(grid,
@@ -315,7 +315,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
   gtk_box_append((GtkBox *) pattern_envelope,
-		 GTK_WIDGET(grid));
+		 (GtkWidget *) grid);
 
   i = 0;
   
@@ -894,13 +894,6 @@ ags_pattern_envelope_apply(AgsApplicable *applicable)
   AgsPatternEnvelope *pattern_envelope;
   
   AgsMachine *machine;
-
-  AgsAudio *audio;
-  AgsChannel *start_input, *input, *next_input;
-  
-  GList *start_preset, *preset;
-
-  guint audio_channels;
   
   pattern_envelope = AGS_PATTERN_ENVELOPE(applicable);
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -87,7 +87,6 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 
     gchar *specifier;
 
-    gboolean is_enabled;
     gboolean contains_control_name;
 
     specifier = NULL;
@@ -227,7 +226,6 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 
       gchar *specifier;
 
-      gboolean is_enabled;
       gboolean contains_control_name;
 
       GValue port_value = G_VALUE_INIT;
@@ -352,7 +350,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
   
   while(channel != NULL){
     AgsChannel *next;
-    
+
     guint line;
     
     line = ags_channel_get_line(channel);
@@ -364,12 +362,10 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
       start_port = ags_channel_collect_all_channel_ports(channel);
 
     while(port != NULL){
-      AgsChannel *next;
       AgsPluginPort *plugin_port;
 
       gchar *specifier;
 
-      gboolean is_enabled;
       gboolean contains_control_name;
 
       GValue port_value = G_VALUE_INIT;
@@ -493,7 +489,7 @@ ags_preset_editor_save_response_callback(GtkDialog *dialog, gint response, AgsPr
       
       gchar *filename;
 
-      file = gtk_file_chooser_get_file(dialog);
+      file = gtk_file_chooser_get_file((GtkFileChooser *) dialog);
 
       filename = g_file_get_path(file);
   
@@ -508,7 +504,7 @@ ags_preset_editor_save_response_callback(GtkDialog *dialog, gint response, AgsPr
     }
   }
 
-  gtk_window_destroy(dialog);
+  gtk_window_destroy((GtkWindow *) dialog);
 }
 
 void
@@ -558,19 +554,19 @@ ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *prese
 
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  file_chooser = gtk_file_chooser_dialog_new(i18n("open preset files"),
-					     window,
-					     GTK_FILE_CHOOSER_ACTION_OPEN,
-					     i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-					     i18n("_Open"), GTK_RESPONSE_ACCEPT,
-					     NULL);
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("open preset files"),
+								      window,
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+								      i18n("_Open"), GTK_RESPONSE_ACCEPT,
+								      NULL);
   
   g_signal_connect(file_chooser, "response",
 		   G_CALLBACK(ags_preset_editor_open_response_callback), preset_editor);
 
-  gtk_widget_show(file_chooser);
+  gtk_widget_show((GtkWidget *) file_chooser);
 }
 
 void
