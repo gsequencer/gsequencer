@@ -660,7 +660,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 					AgsNotationEdit *notation_edit)
 {  
   AgsMachine *machine;
-  GtkWidget *editor;
+  AgsCompositeEditor *composite_editor;
   AgsNotebook *channel_selector;
   
   GtkAllocation allocation;
@@ -689,16 +689,16 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
     key_handled = TRUE;
   }
   
-  editor = gtk_widget_get_ancestor((GtkWidget *) notation_edit,
-				   AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  channel_selector = AGS_COMPOSITE_EDITOR(editor)->notation_edit->channel_selector;
+  channel_selector = composite_editor->notation_edit->channel_selector;
     
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
-    
-  pattern_mode = (AGS_COMPOSITE_EDIT_PATTERN_MODE == AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_mode) ? TRUE: FALSE;    
+  machine = composite_editor->selected_machine;
   
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(AGS_COMPOSITE_EDITOR(editor)->toolbar)->zoom));
+  pattern_mode = (AGS_COMPOSITE_EDIT_PATTERN_MODE == composite_editor->notation_edit->edit_mode) ? TRUE: FALSE;    
+  
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -965,7 +965,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
     /* do feedback */
     if(do_feedback){
-      ags_composite_editor_do_feedback((AgsCompositeEditor *) editor);
+      ags_composite_editor_do_feedback(composite_editor);
     }
   }
   
@@ -1102,9 +1102,9 @@ ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
 
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+  machine = composite_editor->selected_machine;
 
-  composite_toolbar = (AgsCompositeToolbar *) toolbar;
+  composite_toolbar = composite_editor->toolbar;
 
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
   selected_edit = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->edit) ? TRUE: FALSE;
@@ -1376,9 +1376,9 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
   
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+  machine = composite_editor->selected_machine;
 
-  composite_toolbar = (AgsCompositeToolbar *) toolbar;
+  composite_toolbar = composite_editor->toolbar;
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
   selected_edit = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->edit) ? TRUE: FALSE;
@@ -1450,9 +1450,9 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
   
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+  machine = composite_editor->selected_machine;
 
-  composite_toolbar = (AgsCompositeToolbar *) toolbar;
+  composite_toolbar = composite_editor->toolbar;
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->position) ? TRUE: FALSE;
   selected_edit = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->edit) ? TRUE: FALSE;

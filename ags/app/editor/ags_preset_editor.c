@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -150,7 +150,7 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(preset_editor),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(preset_editor,
+  gtk_box_set_spacing((GtkBox *) preset_editor,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   preset_editor->flags = 0;
@@ -171,9 +171,9 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
 
   preset_editor->load = (GtkButton *) gtk_button_new_from_icon_name("system-run");
 
-  gtk_widget_set_has_tooltip(preset_editor->load,
+  gtk_widget_set_has_tooltip((GtkWidget *) preset_editor->load,
 			     TRUE);
-  gtk_widget_set_tooltip_text(preset_editor->load,
+  gtk_widget_set_tooltip_text((GtkWidget *) preset_editor->load,
 			      i18n("load controls from current"));
   
   gtk_box_append(hbox,
@@ -181,9 +181,9 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
 
   preset_editor->open_preset = (GtkButton *) gtk_button_new_from_icon_name("document-open");
 
-  gtk_widget_set_has_tooltip(preset_editor->open_preset,
+  gtk_widget_set_has_tooltip((GtkWidget *) preset_editor->open_preset,
 			     TRUE);
-  gtk_widget_set_tooltip_text(preset_editor->open_preset,
+  gtk_widget_set_tooltip_text((GtkWidget *) preset_editor->open_preset,
 			      i18n("open preset"));
 
   gtk_box_append(hbox,
@@ -191,9 +191,9 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
 
   preset_editor->save_preset = (GtkButton *) gtk_button_new_from_icon_name("document-save");
 
-  gtk_widget_set_has_tooltip(preset_editor->save_preset,
+  gtk_widget_set_has_tooltip((GtkWidget *) preset_editor->save_preset,
 			     TRUE);
-  gtk_widget_set_tooltip_text(preset_editor->save_preset,
+  gtk_widget_set_tooltip_text((GtkWidget *) preset_editor->save_preset,
 			      i18n("save preset"));
 
   gtk_box_append(hbox,
@@ -201,9 +201,9 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
 
   preset_editor->apply_preset = (GtkButton *) gtk_button_new_from_icon_name("task-due");
 
-  gtk_widget_set_has_tooltip(preset_editor->apply_preset,
+  gtk_widget_set_has_tooltip((GtkWidget *) preset_editor->apply_preset,
 			     TRUE);
-  gtk_widget_set_tooltip_text(preset_editor->apply_preset,
+  gtk_widget_set_tooltip_text((GtkWidget *) preset_editor->apply_preset,
 			      i18n("apply preset"));
 
   gtk_box_append(hbox,
