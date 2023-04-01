@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -144,13 +144,13 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 	       "title", i18n("move notes"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(move_note_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) move_note_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(move_note_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) move_note_dialog),
+		 (GtkWidget *) vbox);  
 
   /* radio - relative */
   move_note_dialog->relative = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("relative"));
@@ -313,7 +313,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   composite_editor = window->composite_editor;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -298,7 +298,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 				       AGS_RULER_DEFAULT_PRECISION,
 				       AGS_RULER_DEFAULT_SCALE_PRECISION);
 
-  gtk_widget_set_visible(notation_edit->ruler,
+  gtk_widget_set_visible((GtkWidget *) notation_edit->ruler,
 			 FALSE);
   
   gtk_grid_attach(GTK_GRID(notation_edit),
@@ -327,7 +327,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   G_CALLBACK(ags_notation_edit_modifiers_callback), notation_edit);
 
   event_controller =
-    notation_edit->gesture_controller = gtk_gesture_click_new();
+    notation_edit->gesture_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
@@ -345,9 +345,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   g_signal_connect(event_controller, "motion",
 		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
   
-  gtk_widget_set_halign(notation_edit->drawing_area,
+  gtk_widget_set_halign((GtkWidget *) notation_edit->drawing_area,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(notation_edit->drawing_area,
+  gtk_widget_set_valign((GtkWidget *) notation_edit->drawing_area,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_hexpand((GtkWidget *) notation_edit->drawing_area,
@@ -355,7 +355,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   gtk_widget_set_vexpand((GtkWidget *) notation_edit->drawing_area,
 			 TRUE);
 
-  gtk_grid_attach(GTK_GRID(notation_edit),
+  gtk_grid_attach((GtkGrid *) notation_edit,
 		  (GtkWidget *) notation_edit->drawing_area,
 		  0, 1,
 		  1, 1);
@@ -371,10 +371,10 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   gtk_widget_set_vexpand((GtkWidget *) notation_edit->vscrollbar,
 			 TRUE);
 
-  gtk_widget_set_visible(notation_edit->vscrollbar,
+  gtk_widget_set_visible((GtkWidget *) notation_edit->vscrollbar,
 			 FALSE);
 
-  gtk_grid_attach(GTK_GRID(notation_edit),
+  gtk_grid_attach((GtkGrid *) notation_edit,
 		  (GtkWidget *) notation_edit->vscrollbar,
 		  1, 1,
 		  1, 1);
@@ -390,10 +390,10 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   gtk_widget_set_hexpand((GtkWidget *) notation_edit->hscrollbar,
 			 TRUE);
 
-  gtk_widget_set_visible(notation_edit->hscrollbar,
+  gtk_widget_set_visible((GtkWidget *) notation_edit->hscrollbar,
 			 FALSE);
 
-  gtk_grid_attach(GTK_GRID(notation_edit),
+  gtk_grid_attach((GtkGrid *) notation_edit,
 		  (GtkWidget *) notation_edit->hscrollbar,
 		  0, 2,
 		  1, 1);
@@ -451,7 +451,7 @@ ags_notation_edit_connect(AgsConnectable *connectable)
 
   /* drawing area */
   gtk_drawing_area_set_draw_func(notation_edit->drawing_area,
-				 ags_notation_edit_draw_callback,
+				 (GtkDrawingAreaDrawFunc) ags_notation_edit_draw_callback,
 				 notation_edit,
 				 NULL);
 
@@ -515,8 +515,6 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
   GtkWidget *editor;
   AgsMachine *machine;
 
-  AgsApplicationContext *application_context;
-
   guint l_control_key, r_control_key;  
   gboolean key_handled;
 
@@ -534,8 +532,6 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
   }else{
     key_handled = TRUE;
   }
-
-  application_context = ags_application_context_get_instance();
 
   machine = NULL;
   
@@ -588,7 +584,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     {
       /* select all notes */
       if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
-	ags_composite_editor_select_all(editor);
+	ags_composite_editor_select_all((AgsCompositeEditor *) editor);
       }
     }
     break;
@@ -596,7 +592,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     {
       /* copy notes */
       if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
-	ags_composite_editor_copy(editor);
+	ags_composite_editor_copy((AgsCompositeEditor *) editor);
       }
     }
     break;
@@ -604,7 +600,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     {
       /* paste notes */
       if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
-	ags_composite_editor_paste(editor);
+	ags_composite_editor_paste((AgsCompositeEditor *) editor);
       }
     }
     break;
@@ -612,7 +608,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     {
       /* cut notes */
       if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
-	ags_composite_editor_cut(editor);
+	ags_composite_editor_cut((AgsCompositeEditor *) editor);
       }
     }
     break;
@@ -620,7 +616,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     {
       /* invert notes */
       if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
-	ags_composite_editor_invert(editor);
+	ags_composite_editor_invert((AgsCompositeEditor *) editor);
       }
     }
     break;
@@ -632,15 +628,16 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
       notation_meta = NULL;
       
       if((l_control_key & (notation_edit->key_mask)) != 0 || (r_control_key & (notation_edit->key_mask)) != 0){
-	notation_meta = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_meta;
+	notation_meta = (AgsNotationMeta *) AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_meta;
+	
 	if((AGS_NOTATION_META_ENABLED & (notation_meta->flags)) != 0){
 	  notation_meta->flags &= (~AGS_NOTATION_META_ENABLED);
 
-	  gtk_widget_hide(notation_meta);
+	  gtk_widget_hide((GtkWidget *) notation_meta);
 	}else{
 	  notation_meta->flags |= AGS_NOTATION_META_ENABLED;
 
-	  gtk_widget_show(notation_meta);
+	  gtk_widget_show((GtkWidget *) notation_meta);
 
 	  ags_notation_meta_refresh(notation_meta);
 	}
@@ -650,7 +647,7 @@ ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
     }
   }
 
-  gtk_widget_queue_draw(notation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
 
   return(key_handled);
 }
@@ -665,8 +662,6 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
   AgsMachine *machine;
   GtkWidget *editor;
   AgsNotebook *channel_selector;
-  
-  AgsApplicationContext *application_context;
   
   GtkAllocation allocation;
 
@@ -693,10 +688,8 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
   }else{
     key_handled = TRUE;
   }
-
-  application_context = ags_application_context_get_instance();
   
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
+  editor = gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 				   AGS_TYPE_COMPOSITE_EDITOR);
 
   channel_selector = AGS_COMPOSITE_EDITOR(editor)->notation_edit->channel_selector;
@@ -955,14 +948,14 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	note->y = notation_edit->cursor_position_y;
 
 	/* add note */
-	ags_composite_editor_add_note(editor,
+	ags_composite_editor_add_note(composite_editor,
 				      note);
       }
       break;
     case GDK_KEY_Delete:
       {
 	/* delete note */
-	ags_composite_editor_delete_note(editor,
+	ags_composite_editor_delete_note(composite_editor,
 					 notation_edit->cursor_position_x, notation_edit->cursor_position_y);
       }
       break;
@@ -972,11 +965,11 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
     /* do feedback */
     if(do_feedback){
-      ags_composite_editor_do_feedback(editor);
+      ags_composite_editor_do_feedback((AgsCompositeEditor *) editor);
     }
   }
   
-  gtk_widget_queue_draw(notation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
   
   return(key_handled);
 }
@@ -1096,62 +1089,55 @@ ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 				  AgsNotationEdit *notation_edit)
 {
   AgsCompositeToolbar *composite_toolbar;
-  GtkWidget *editor;
-  GtkWidget *toolbar;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
-
-  AgsApplicationContext *application_context;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
-
-  application_context = ags_application_context_get_instance();
 
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
   selected_select = FALSE;
     
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
-    
-  toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
 
   composite_toolbar = (AgsCompositeToolbar *) toolbar;
 
-  selected_position_cursor = (composite_toolbar->selected_tool == composite_toolbar->position) ? TRUE: FALSE;
-  selected_edit = (composite_toolbar->selected_tool == composite_toolbar->edit) ? TRUE: FALSE;
-  selected_clear = (composite_toolbar->selected_tool == composite_toolbar->clear) ? TRUE: FALSE;
-  selected_select = (composite_toolbar->selected_tool == composite_toolbar->select) ? TRUE: FALSE;
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
+  selected_edit = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->edit) ? TRUE: FALSE;
+  selected_clear = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->clear) ? TRUE: FALSE;
+  selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
 
   gtk_widget_grab_focus((GtkWidget *) notation_edit->drawing_area);
 
   if(machine != NULL &&
      (AGS_NOTATION_EDIT_BUTTON_1 & (notation_edit->button_mask)) != 0){
     if(selected_position_cursor){
-      ags_notation_edit_drawing_area_motion_notify_position_cursor(editor,
-								   toolbar,
+      ags_notation_edit_drawing_area_motion_notify_position_cursor((GtkWidget *) composite_editor,
+								   (GtkWidget *) composite_toolbar,
 								   notation_edit,
 								   machine,
 								   x, y);
     }else if(selected_edit){
-      ags_notation_edit_drawing_area_motion_notify_add_note(editor,
-							    toolbar,
+      ags_notation_edit_drawing_area_motion_notify_add_note((GtkWidget *) composite_editor,
+							    (GtkWidget *) composite_toolbar,
 							    notation_edit,
 							    machine,
 							    x, y);
     }else if(selected_clear){
       //NOTE:JK: only takes action on release
     }else if(selected_select){
-      ags_notation_edit_drawing_area_motion_notify_select_note(editor,
-							       toolbar,
+      ags_notation_edit_drawing_area_motion_notify_select_note((GtkWidget *) composite_editor,
+							       (GtkWidget *) composite_toolbar,
 							       notation_edit,
 							       machine,
 							       x, y);
     }
 
-    gtk_widget_queue_draw(notation_edit->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
   }
 
   return(FALSE);
@@ -1165,11 +1151,7 @@ ags_notation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
 							    gint n_press,
 							    gdouble x, gdouble y)
 {
-  AgsApplicationContext *application_context;
-  
   double zoom_factor;
-
-  application_context = ags_application_context_get_instance();
 
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
@@ -1193,13 +1175,9 @@ ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
 						     gdouble x, gdouble y)
 {
   AgsNote *note;
-
-  AgsApplicationContext *application_context;
   
   gboolean pattern_mode;
   double zoom_factor;
-
-  application_context = ags_application_context_get_instance();
     
   note = ags_note_new();
 
@@ -1258,12 +1236,8 @@ ags_notation_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
 							      AgsMachine *machine,
 							      gint n_press,
 							      gdouble x, gdouble y)
-{
-  AgsApplicationContext *application_context;
-  
+{  
   double zoom_factor;
-
-  application_context = ags_application_context_get_instance();
   
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
@@ -1287,9 +1261,7 @@ ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
 						       gdouble x, gdouble y)
 {
   AgsNote *note;
-    
-  AgsApplicationContext *application_context;
-
+  
   gboolean pattern_mode;
   double zoom_factor;
   guint new_x;
@@ -1299,8 +1271,6 @@ ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
   if(note == NULL){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
   
   /* zoom */
   pattern_mode = (AGS_COMPOSITE_EDIT_PATTERN_MODE == AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_mode) ? TRUE: FALSE;
@@ -1339,12 +1309,8 @@ ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
 							  gint n_press,
 							  gdouble x, gdouble y)
 {
-  AgsApplicationContext *application_context;
-
   double zoom_factor;
   guint new_x, new_y;
-
-  application_context = ags_application_context_get_instance();
   
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
@@ -1368,12 +1334,8 @@ ags_notation_edit_drawing_area_button_release_select_note(GtkWidget *editor,
 							  gint n_press,
 							  gdouble x, gdouble y)
 {
-  AgsApplicationContext *application_context;
-
   double zoom_factor;
   guint x0, x1, y0, y1;
-    
-  application_context = ags_application_context_get_instance();
 
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
@@ -1388,7 +1350,7 @@ ags_notation_edit_drawing_area_button_release_select_note(GtkWidget *editor,
   y1 = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
   /* select region */
-  ags_composite_editor_select_region(editor,
+  ags_composite_editor_select_region((AgsCompositeEditor *) editor,
 				     x0, y0,
 				     x1, y1);
 }
@@ -1401,34 +1363,27 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
 						 AgsNotationEdit *notation_edit)
 {
   AgsCompositeToolbar *composite_toolbar;
-  GtkWidget *editor;
-  GtkWidget *toolbar;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
-
-  AgsApplicationContext *application_context;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
-
-  application_context = ags_application_context_get_instance();
 
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
   selected_select = FALSE;
       
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
-    
-  toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
-
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+  
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
 
   composite_toolbar = (AgsCompositeToolbar *) toolbar;
     
-  selected_position_cursor = (composite_toolbar->selected_tool == composite_toolbar->position) ? TRUE: FALSE;
-  selected_edit = (composite_toolbar->selected_tool == composite_toolbar->edit) ? TRUE: FALSE;
-  selected_clear = (composite_toolbar->selected_tool == composite_toolbar->clear) ? TRUE: FALSE;
-  selected_select = (composite_toolbar->selected_tool == composite_toolbar->select) ? TRUE: FALSE;
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
+  selected_edit = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->edit) ? TRUE: FALSE;
+  selected_clear = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->clear) ? TRUE: FALSE;
+  selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
   
   gtk_widget_grab_focus((GtkWidget *) notation_edit->drawing_area);
   
@@ -1438,8 +1393,8 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
     if(selected_position_cursor){
       notation_edit->mode = AGS_NOTATION_EDIT_POSITION_CURSOR;
       
-      ags_notation_edit_drawing_area_button_press_position_cursor(editor,
-								  toolbar,
+      ags_notation_edit_drawing_area_button_press_position_cursor((GtkWidget *) composite_editor,
+								  (GtkWidget *) composite_toolbar,
 								  notation_edit,
 								  machine,
 								  n_press,
@@ -1447,8 +1402,8 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
     }else if(selected_edit){
       notation_edit->mode = AGS_NOTATION_EDIT_ADD_NOTE;
 
-      ags_notation_edit_drawing_area_button_press_add_note(editor,
-							   toolbar,
+      ags_notation_edit_drawing_area_button_press_add_note((GtkWidget *) composite_editor,
+							   (GtkWidget *) composite_toolbar,
 							   notation_edit,
 							   machine,
 							   n_press,
@@ -1460,15 +1415,15 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
     }else if(selected_select){
       notation_edit->mode = AGS_NOTATION_EDIT_SELECT_NOTE;
 
-      ags_notation_edit_drawing_area_button_press_select_note(editor,
-							      toolbar,
+      ags_notation_edit_drawing_area_button_press_select_note((GtkWidget *) composite_editor,
+							      (GtkWidget *) composite_toolbar,
 							      notation_edit,
 							      machine,
 							      n_press,
 							      x, y);
     }
 
-    gtk_widget_queue_draw(notation_edit->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
   }
   
   return(FALSE);
@@ -1482,41 +1437,34 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
 						  AgsNotationEdit *notation_edit)
 {
   AgsCompositeToolbar *composite_toolbar;
-  GtkWidget *editor;
-  GtkWidget *toolbar;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
-
-  AgsApplicationContext *application_context;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
-
-  application_context = ags_application_context_get_instance();
   
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
   selected_select = FALSE;
     
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
-    
-  toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
-
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+  
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
 
   composite_toolbar = (AgsCompositeToolbar *) toolbar;
     
-  selected_position_cursor = (composite_toolbar->selected_tool == composite_toolbar->position) ? TRUE: FALSE;
-  selected_edit = (composite_toolbar->selected_tool == composite_toolbar->edit) ? TRUE: FALSE;
-  selected_clear = (composite_toolbar->selected_tool == composite_toolbar->clear) ? TRUE: FALSE;
-  selected_select = (composite_toolbar->selected_tool == composite_toolbar->select) ? TRUE: FALSE;
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->position) ? TRUE: FALSE;
+  selected_edit = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->edit) ? TRUE: FALSE;
+  selected_clear = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->clear) ? TRUE: FALSE;
+  selected_select = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->select) ? TRUE: FALSE;
 
   if(machine != NULL){    
     notation_edit->button_mask &= (~AGS_NOTATION_EDIT_BUTTON_1);
     
     if(selected_position_cursor){
-      ags_notation_edit_drawing_area_button_release_position_cursor(editor,
-								    toolbar,
+      ags_notation_edit_drawing_area_button_release_position_cursor((GtkWidget *) composite_editor,
+								    (GtkWidget *) composite_toolbar,
 								    notation_edit,
 								    machine,
 								    n_press,
@@ -1524,8 +1472,8 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
       
       //      notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }else if(selected_edit){
-      ags_notation_edit_drawing_area_button_release_add_note(editor,
-							     toolbar,
+      ags_notation_edit_drawing_area_button_release_add_note((GtkWidget *) composite_editor,
+							     (GtkWidget *) composite_toolbar,
 							     notation_edit,
 							     machine,
 							     n_press,
@@ -1533,8 +1481,8 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
 
       notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }else if(selected_clear){
-      ags_notation_edit_drawing_area_button_release_delete_note(editor,
-								toolbar,
+      ags_notation_edit_drawing_area_button_release_delete_note((GtkWidget *) composite_editor,
+								(GtkWidget *) composite_toolbar,
 								notation_edit,
 								machine,
 								n_press,
@@ -1542,8 +1490,8 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
 
       notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }else if(selected_select){
-      ags_notation_edit_drawing_area_button_release_select_note(editor,
-								toolbar,
+      ags_notation_edit_drawing_area_button_release_select_note((GtkWidget *) composite_editor,
+								(GtkWidget *) composite_toolbar,
 								notation_edit,
 								machine,
 								n_press,
@@ -1552,7 +1500,7 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
       notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }
 
-    gtk_widget_queue_draw(notation_edit->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
   }
 
   return(FALSE);
@@ -1606,15 +1554,11 @@ ags_notation_edit_measure(GtkWidget *widget,
 			  int *minimum_baseline,
 			  int *natural_baseline)
 {
-  AgsNotationEdit *notation_edit;
-
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
 
   application_context = ags_application_context_get_instance();
-
-  notation_edit = (AgsNotationEdit *) widget;
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1634,13 +1578,11 @@ ags_notation_edit_size_allocate(GtkWidget *widget,
 				int height,
 				int baseline)
 {
-  AgsNotationEdit *notation_edit;
-
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
 
-  notation_edit = (AgsNotationEdit *) widget;
+  application_context = ags_application_context_get_instance();
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1687,8 +1629,6 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
 
     AgsAudio *audio;
     
-    AgsApplicationContext *application_context;
-
     GObject *output_soundcard;
       
     double x;
@@ -1698,8 +1638,6 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
     if((AGS_NOTATION_EDIT_AUTO_SCROLL & (notation_edit->flags)) == 0){
       return(TRUE);
     }
-
-    application_context = ags_application_context_get_instance();
 
     composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								      AGS_TYPE_COMPOSITE_EDITOR);
@@ -1742,8 +1680,6 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 
   GtkAllocation allocation;
   
-  AgsApplicationContext *application_context;
-  
   guint key_count;
   double varea_height;
   gdouble upper, old_upper;
@@ -1752,8 +1688,6 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
      (AGS_NOTATION_EDIT_BLOCK_RESET_VSCROLLBAR & (notation_edit->flags)) != 0){
     return;
   }
-  
-  application_context = ags_application_context_get_instance();
 
   notation_edit->flags |= AGS_NOTATION_EDIT_BLOCK_RESET_VSCROLLBAR;
 
@@ -1898,8 +1832,6 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkAdjustment *vscrollbar_adjustment;
   GtkAdjustment *hscrollbar_adjustment;
 
-  AgsApplicationContext *application_context;
-
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
@@ -1919,7 +1851,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   gboolean bg_success;
   gboolean shadow_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   const static double segment_dashes = {
     0.5,
@@ -1928,8 +1860,6 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
   
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -2134,8 +2064,6 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkStyleContext *style_context;
   GtkSettings *settings;
 
-  AgsApplicationContext *application_context;
-
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
@@ -2148,13 +2076,11 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
   gboolean dark_theme;
   gboolean fg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -2237,8 +2163,6 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
   GtkStyleContext *style_context;
   GtkSettings *settings;
 
-  AgsApplicationContext *application_context;
-
   GtkAllocation allocation;
   
   GdkRGBA fg_color;
@@ -2249,13 +2173,11 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
   gboolean dark_theme;
   gboolean fg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -2361,7 +2283,7 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
   gboolean dark_theme;
   gboolean fg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
@@ -2380,15 +2302,15 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
 	       "gtk-application-prefer-dark-theme", &dark_theme,
 	       NULL);
 
-  if(!fg_success){
-    gdk_rgba_parse(&fg_color,
-		   "#101010");
-  }
-
   /* colors */
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
 					      &fg_color);
+
+  if(!fg_success){
+    gdk_rgba_parse(&fg_color,
+		   "#101010");
+  }
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -2470,8 +2392,6 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   GtkStyleContext *style_context;
   GtkSettings *settings;
 
-  AgsApplicationContext *application_context;
-
   GtkAllocation allocation;
 
   GdkRGBA fg_color;
@@ -2486,14 +2406,12 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   gboolean fg_success;
   gboolean highlight_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
   
   if(!AGS_IS_NOTATION_EDIT(notation_edit) ||
      !AGS_IS_NOTE(note)){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
   
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
@@ -2688,8 +2606,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
   
   AgsTimestamp *timestamp;
   AgsTimestamp *current_timestamp;    
-  
-  AgsApplicationContext *application_context;
 
   GList *start_list_notation, *list_notation;
 
@@ -2703,8 +2619,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
-
-  application_context = ags_application_context_get_instance();
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
