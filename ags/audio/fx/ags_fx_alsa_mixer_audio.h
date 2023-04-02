@@ -46,10 +46,11 @@ struct _AgsFxAlsaMixerAudio
 {
   AgsRecallAudio recall_audio;
 
+  gchar *hwdep;
   gchar *alsa_device;
-
-  gboolean with_hda_control;
   
+  gboolean with_hda_control;
+
   AgsPort *master_volume;
   AgsPort *master_muted;
 
@@ -83,6 +84,11 @@ GType ags_fx_alsa_mixer_audio_get_type();
 
 AgsFxAlsaMixerAudioHDAControl* ags_fx_alsa_mixer_audio_hda_control_alloc();
 void ags_fx_alsa_mixer_audio_hda_control_free(AgsFxAlsaMixerAudioHDAControl *hda_control);
+
+void ags_fx_alsa_mixer_audio_hda_send_verb(AgsFxAlsaMixerAudioHDAControl *hda_control,
+					   gint nid, gint verb,
+					   GValue *parameter,
+					   GError **error);
 
 /* load/unload */
 void ags_fx_alsa_mixer_channel_load_mixer(AgsFxAlsaMixerChannel *fx_alsa_mixer_channel);
