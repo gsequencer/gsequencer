@@ -1,6 +1,8 @@
 ags (4.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* modified ags_vst_types.h AgsVstSpeakerArrangement typedef
+	* removed updatehandler.h and updatehandler.cpp
 	* fixed type safety with recent clang
 	* added ags_pad_test_flags(), ags_pad_set_flags() and ags_pad_unset_flags()
 	* added ags_line_test_flags(), ags_line_set_flags() and ags_line_unset_flags()

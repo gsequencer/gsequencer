@@ -17,6 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <ags/audio/fx/ags_fx_alsa_mixer_audio.h>
+
+#include <ags/plugin/ags_plugin_port.h>
+
+#include <ags/i18n.h>
+
 void ags_fx_alsa_mixer_audio_class_init(AgsFxAlsa_MixerAudioClass *fx_alsa_mixer_audio);
 void ags_fx_alsa_mixer_audio_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_fx_alsa_mixer_audio_init(AgsFxAlsa_MixerAudio *fx_alsa_mixer_audio);

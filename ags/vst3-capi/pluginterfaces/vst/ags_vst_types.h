@@ -62,7 +62,7 @@ extern "C" {
   typedef gdouble AgsVstSample64;
   typedef gdouble AgsVstSampleRate;
 
-  typedef long long unsigned int AgsVstSpeakerArrangement;
+  typedef long unsigned int AgsVstSpeakerArrangement;
   typedef guint64 AgsVstSpeaker;
   
 #ifdef __cplusplus

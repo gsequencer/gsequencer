@@ -3156,10 +3156,8 @@ libags_vst_c_sources = \
 	ags/vst3-capi/host/ags_vst_host_context.cpp \
 	ags/vst3-capi/host/componenthandler.h \
 	ags/vst3-capi/host/hostcontext.h \
-	ags/vst3-capi/host/updatehandler.h \
 	ags/vst3-capi/host/componenthandler.cpp \
 	ags/vst3-capi/host/hostcontext.cpp \
-	ags/vst3-capi/host/updatehandler.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
