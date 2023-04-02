@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,13 +146,13 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 	       "title", i18n("select buffers"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(select_buffer_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) select_buffer_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_buffer_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) select_buffer_dialog),
+		 (GtkWidget *) vbox);
 
   /* copy selection */
   select_buffer_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
@@ -165,7 +165,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append((GtkBox *) vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* select x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x0"));
@@ -181,18 +181,18 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
   gtk_spin_button_set_value(select_buffer_dialog->select_x0,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_buffer_dialog->select_x0));
+		 (GtkWidget *) select_buffer_dialog->select_x0);
   
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* select x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x1"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* select x1 - spin button */
   select_buffer_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -203,7 +203,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
   gtk_spin_button_set_value(select_buffer_dialog->select_x1,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_buffer_dialog->select_x1));
+		 (GtkWidget *) select_buffer_dialog->select_x1);
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_buffer_dialog,
@@ -307,13 +307,13 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   composite_editor = window->composite_editor;
 
   machine = composite_editor->selected_machine;
 
-  focused_wave_edit = composite_editor->wave_edit->focused_edit;
+  focused_wave_edit = (AgsWaveEdit *) composite_editor->wave_edit->focused_edit;
     
   notebook = composite_editor->wave_edit->channel_selector;
   

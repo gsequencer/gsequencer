@@ -97,13 +97,13 @@ ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_aut
   				 GTK_POLICY_EXTERNAL,
   				 GTK_POLICY_EXTERNAL);
 
-  gtk_widget_set_vexpand(scrolled_automation_edit_box->scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_automation_edit_box->scrolled_window,
 			 TRUE);
 
   /* automation_edit box */
-  scrolled_automation_edit_box->automation_edit_box = ags_automation_edit_box_new(GTK_ORIENTATION_VERTICAL);
+  scrolled_automation_edit_box->automation_edit_box = (GtkBox *) ags_automation_edit_box_new(GTK_ORIENTATION_VERTICAL);
   gtk_scrolled_window_set_child(scrolled_automation_edit_box->scrolled_window,
-				scrolled_automation_edit_box->automation_edit_box);
+				(GtkWidget *) scrolled_automation_edit_box->automation_edit_box);
 }
 
 void
@@ -150,7 +150,7 @@ ags_scrolled_automation_edit_box_get_automation_edit_box(AgsScrolledAutomationEd
     return(NULL);
   }
   
-  return(scrolled_automation_edit_box->automation_edit_box);
+  return((AgsAutomationEditBox *) scrolled_automation_edit_box->automation_edit_box);
 }
 
 /**
