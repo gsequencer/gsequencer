@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -128,8 +128,6 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   AgsApplicationContext *application_context;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
   guint i;
 
@@ -225,41 +223,41 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		  1, 0,
 		  1, 2);
 
-  pattern_box->page_0_15 = gtk_check_button_new_with_label("0 - 15");
+  pattern_box->page_0_15 = (GtkCheckButton *) gtk_check_button_new_with_label("0 - 15");
   gtk_check_button_set_active(pattern_box->page_0_15,
 			      TRUE);
 
-  gtk_widget_set_halign(pattern_box->page_0_15,
+  gtk_widget_set_halign((GtkWidget *) pattern_box->page_0_15,
 			GTK_ALIGN_START);
   
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_0_15);
 
-  pattern_box->page_16_31 = gtk_check_button_new_with_label("16 - 31");
+  pattern_box->page_16_31 = (GtkCheckButton *) gtk_check_button_new_with_label("16 - 31");
   gtk_check_button_set_group(pattern_box->page_16_31,
 			     pattern_box->page_0_15);
 
-  gtk_widget_set_halign(pattern_box->page_16_31,
+  gtk_widget_set_halign((GtkWidget *) pattern_box->page_16_31,
 			GTK_ALIGN_START);
 
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_16_31);
 
-  pattern_box->page_32_47 = gtk_check_button_new_with_label("32 - 47");
+  pattern_box->page_32_47 = (GtkCheckButton *) gtk_check_button_new_with_label("32 - 47");
   gtk_check_button_set_group(pattern_box->page_32_47,
 			     pattern_box->page_0_15);
 
-  gtk_widget_set_halign(pattern_box->page_32_47,
+  gtk_widget_set_halign((GtkWidget *) pattern_box->page_32_47,
 			GTK_ALIGN_START);
 
   gtk_box_append(offset,
 		 (GtkWidget *) pattern_box->page_32_47);
 
-  pattern_box->page_48_63 = gtk_check_button_new_with_label("48 - 63");
+  pattern_box->page_48_63 = (GtkCheckButton *) gtk_check_button_new_with_label("48 - 63");
   gtk_check_button_set_group(pattern_box->page_48_63,
 			     pattern_box->page_0_15);
 
-  gtk_widget_set_halign(pattern_box->page_48_63,
+  gtk_widget_set_halign((GtkWidget *) pattern_box->page_48_63,
 			GTK_ALIGN_START);
 
   gtk_box_append(offset,
@@ -430,7 +428,7 @@ ags_pattern_box_add_pad(AgsPatternBox *pattern_box,
 				      pad);
     
     gtk_box_append(pattern_box->pad_box,
-		   pad);
+		   (GtkWidget *) pad);
   }
 }
 
@@ -455,7 +453,7 @@ ags_pattern_box_remove_pad(AgsPatternBox *pattern_box,
 				     pad);
     
     gtk_box_remove(pattern_box->pad_box,
-		   pad);
+		   (GtkWidget *) pad);
   }
 }
 
@@ -492,6 +490,8 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   index1 = machine->bank_1;
 
   /* calculate offset / page */
+  i = 0;
+  
   if(gtk_check_button_get_active(pattern_box->page_0_15)){
     i = 0;
   }else if(gtk_check_button_get_active(pattern_box->page_16_31)){

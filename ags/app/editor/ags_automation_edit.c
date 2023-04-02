@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -432,7 +432,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_automation_edit_modifiers_callback), automation_edit);
 
-  event_controller = gtk_gesture_click_new();
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) automation_edit,
 			    event_controller);
 
@@ -490,13 +490,13 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 					 AGS_RULER_DEFAULT_PRECISION,
 					 AGS_RULER_DEFAULT_SCALE_PRECISION);
 
-  gtk_widget_set_visible(automation_edit->ruler,
+  gtk_widget_set_visible((GtkWidget *) automation_edit->ruler,
 			 FALSE);
   
   gtk_grid_attach(GTK_GRID(automation_edit),
-		   (GtkWidget *) automation_edit->ruler,
-		   0, 0,
-		   1, 1);
+		  (GtkWidget *) automation_edit->ruler,
+		  0, 0,
+		  1, 1);
 
   automation_edit->channel_type = G_TYPE_NONE;
   
@@ -517,9 +517,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   gtk_widget_set_focusable((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
 
-  gtk_widget_set_halign(automation_edit->drawing_area,
+  gtk_widget_set_halign((GtkWidget *) automation_edit->drawing_area,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(automation_edit->drawing_area,
+  gtk_widget_set_valign((GtkWidget *) automation_edit->drawing_area,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_hexpand((GtkWidget *) automation_edit->drawing_area,
@@ -527,23 +527,23 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   gtk_widget_set_vexpand((GtkWidget *) automation_edit->drawing_area,
 			 FALSE);
 
-  gtk_widget_set_size_request(automation_edit->drawing_area,
+  gtk_widget_set_size_request((GtkWidget *) automation_edit->drawing_area,
 			      -1, AGS_SCALE_DEFAULT_HEIGHT_REQUEST);
   
-  gtk_grid_attach(GTK_GRID(automation_edit),
-		   (GtkWidget *) automation_edit->drawing_area,
-		   0, 1,
-		   1, 1);
+  gtk_grid_attach((GtkGrid *) automation_edit,
+		  (GtkWidget *) automation_edit->drawing_area,
+		  0, 1,
+		  1, 1);
 
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, automation_edit->control_height, 1.0);
   automation_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
 								   adjustment);
-  gtk_widget_set_visible(automation_edit->vscrollbar,
+  gtk_widget_set_visible((GtkWidget *) automation_edit->vscrollbar,
 			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) automation_edit->vscrollbar,
 			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_HEIGHT_REQUEST));
-  gtk_grid_attach(GTK_GRID(automation_edit),
+  gtk_grid_attach((GtkGrid *) automation_edit,
 		  (GtkWidget *) automation_edit->vscrollbar,
 		  1, 1,
 		  1, 1);
@@ -552,7 +552,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) automation_edit->control_width, 1.0);
   automation_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
 								   adjustment);
-  gtk_widget_set_visible(automation_edit->hscrollbar,
+  gtk_widget_set_visible((GtkWidget *) automation_edit->hscrollbar,
 			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) automation_edit->hscrollbar,
 			      -1, -1);
@@ -769,7 +769,7 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 
   /* drawing area */
   gtk_drawing_area_set_draw_func(automation_edit->drawing_area,
-				 ags_automation_edit_draw_callback,
+				 (GtkDrawingAreaDrawFunc) ags_automation_edit_draw_callback,
 				 automation_edit,
 				 NULL);
 
@@ -830,7 +830,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 					 GdkModifierType state,
 					 AgsAutomationEdit *automation_edit)
 {
-  GtkWidget *editor;
+  AgsCompositeEditor *editor;
   AgsMachine *machine;
 
   AgsApplicationContext *application_context;
@@ -857,10 +857,10 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 
   machine = NULL;
   
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
+  editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+							  AGS_TYPE_COMPOSITE_EDITOR);
     
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+  machine = editor->selected_machine;
 
 #if defined(AGS_OSXAPI)
   l_control_key = AGS_AUTOMATION_EDIT_KEY_L_META;
@@ -950,16 +950,16 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 
 	  automation_meta = NULL;
 	  
-	  automation_meta = AGS_COMPOSITE_EDITOR(editor)->automation_edit->edit_meta;
+	  automation_meta = (AgsAutomationMeta *) editor->automation_edit->edit_meta;
 
 	  if((AGS_AUTOMATION_META_ENABLED & (automation_meta->flags)) != 0){
 	    automation_meta->flags &= (~AGS_AUTOMATION_META_ENABLED);
 
-	    gtk_widget_hide(automation_meta);
+	    gtk_widget_hide((GtkWidget *) automation_meta);
 	  }else{
 	    automation_meta->flags |= AGS_AUTOMATION_META_ENABLED;
 
-	    gtk_widget_show(automation_meta);
+	    gtk_widget_show((GtkWidget *) automation_meta);
 
 	    ags_automation_meta_refresh(automation_meta);
 	  }
@@ -979,10 +979,8 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 					  GdkModifierType state,
 					  AgsAutomationEdit *automation_edit)
 {  
-  GtkWidget *editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
-
-  AgsNotebook *notebook;	  
 
   AgsApplicationContext *application_context;
   
@@ -995,12 +993,10 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 
   application_context = ags_application_context_get_instance();
   
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
-
-  notebook = AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector;
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
     
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+  machine = composite_editor->selected_machine;
   
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -1199,14 +1195,14 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	acceleration->y = automation_edit->cursor_position_y;
 
 	/* add acceleration */
-	ags_composite_editor_add_acceleration(editor,
+	ags_composite_editor_add_acceleration((GtkWidget *) composite_editor,
 					      acceleration);
       }
       break;
     case GDK_KEY_Delete:
       {
 	/* delete acceleration */
-	ags_composite_editor_delete_acceleration(editor,
+	ags_composite_editor_delete_acceleration((GtkWidget *) composite_editor,
 						 automation_edit->cursor_position_x, automation_edit->cursor_position_y);
       }
       break;
@@ -1294,7 +1290,7 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
 #endif
     
   /* queue draw */
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -1374,7 +1370,7 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
 #endif
     
   /* queue draw */
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -1384,11 +1380,7 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
 								   AgsMachine *machine,
 								   gdouble x, gdouble y)
 {
-  AgsApplicationContext *application_context;
-  
   double zoom_factor;
-
-  application_context = ags_application_context_get_instance();
 
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
@@ -1405,7 +1397,7 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
     automation_edit->selection_y1 = 0.0;
   }
     
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 gboolean
@@ -1414,8 +1406,8 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 				    gdouble y,
 				    AgsAutomationEdit *automation_edit)
 {
-  GtkWidget *editor;
-  GtkWidget *toolbar;
+  AgsCompositeEditor *editor;
+  AgsCompositeToolbar *toolbar;
   AgsMachine *machine;
 
   AgsApplicationContext *application_context;
@@ -1425,31 +1417,31 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
   editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 				   AGS_TYPE_COMPOSITE_EDITOR);
     
-  toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
+  toolbar = editor->toolbar;
 
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
+  machine = editor->selected_machine;
   
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
 
   if(machine != NULL &&
      (AGS_AUTOMATION_EDIT_BUTTON_1 & (automation_edit->button_mask)) != 0){
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
-      ags_automation_edit_drawing_area_motion_notify_position_cursor(editor,
-								     toolbar,
+      ags_automation_edit_drawing_area_motion_notify_position_cursor((GtkWidget *) editor,
+								     (GtkWidget *) toolbar,
 								     automation_edit,
 								     machine,
 								     x, y);
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_ADD_ACCELERATION){
-      ags_automation_edit_drawing_area_motion_notify_add_acceleration(editor,
-								      toolbar,
+      ags_automation_edit_drawing_area_motion_notify_add_acceleration((GtkWidget *) editor,
+								      (GtkWidget *) toolbar,
 								      automation_edit,
 								      machine,
 								      x, y);
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_DELETE_ACCELERATION){
       //ACCELERATION:JK: only takes action on release
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_SELECT_ACCELERATION){
-      ags_automation_edit_drawing_area_motion_notify_select_acceleration(editor,
-									 toolbar,
+      ags_automation_edit_drawing_area_motion_notify_select_acceleration((GtkWidget *) editor,
+									 (GtkWidget *) toolbar,
 									 automation_edit,
 									 machine,
 									 x, y);
@@ -1638,10 +1630,9 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
 						   gdouble y,
 						   AgsAutomationEdit *automation_edit)
 {
-  GtkWidget *editor;
-  GtkWidget *toolbar;
-  AgsMachine *machine;
+  AgsCompositeEditor *editor;
   AgsCompositeToolbar *composite_toolbar;
+  AgsMachine *machine;
 
   AgsApplicationContext *application_context;
 
@@ -1659,21 +1650,19 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   selected_edit = FALSE;
   selected_select = FALSE;
       
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
+  editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+							  AGS_TYPE_COMPOSITE_EDITOR);
     
-  toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
+  composite_toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
 
   machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
-
-  composite_toolbar = (AgsCompositeToolbar *) toolbar;
     
-  selected_position_cursor = (composite_toolbar->selected_tool == composite_toolbar->position) ? TRUE: FALSE;
-  selected_edit = (composite_toolbar->selected_tool == composite_toolbar->edit) ? TRUE: FALSE;
-  selected_clear = (composite_toolbar->selected_tool == composite_toolbar->clear) ? TRUE: FALSE;
-  selected_select = (composite_toolbar->selected_tool == composite_toolbar->select) ? TRUE: FALSE;
+  selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
+  selected_edit = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->edit) ? TRUE: FALSE;
+  selected_clear = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->clear) ? TRUE: FALSE;
+  selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
 
-  AGS_COMPOSITE_EDITOR(editor)->automation_edit->focused_edit = automation_edit;
+  AGS_COMPOSITE_EDITOR(editor)->automation_edit->focused_edit = (GtkWidget *) automation_edit;
   
   /* automation edit notebook - remove tabs */
   tab =
@@ -1716,7 +1705,7 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
 			  i + 1);
     
     ags_notebook_add_tab(AGS_COMPOSITE_EDITOR(editor)->automation_edit->channel_selector,
-			 gtk_toggle_button_new_with_label(str));
+			 (GtkToggleButton *) gtk_toggle_button_new_with_label(str));
 
     g_free(str);
   }
@@ -1729,8 +1718,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
     if(selected_position_cursor){
       automation_edit->mode = AGS_AUTOMATION_EDIT_POSITION_CURSOR;
 
-      ags_automation_edit_drawing_area_button_press_position_cursor(editor,
-								    toolbar,
+      ags_automation_edit_drawing_area_button_press_position_cursor((GtkWidget *) editor,
+								    (GtkWidget *) composite_toolbar,
 								    automation_edit,
 								    machine,
 								    n_press,
@@ -1738,8 +1727,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
     }else if(selected_edit){
       automation_edit->mode = AGS_AUTOMATION_EDIT_ADD_ACCELERATION;
 
-      ags_automation_edit_drawing_area_button_press_add_acceleration(editor,
-								     toolbar,
+      ags_automation_edit_drawing_area_button_press_add_acceleration((GtkWidget *) editor,
+								     (GtkWidget *) composite_toolbar,
 								     automation_edit,
 								     machine,
 								     n_press,
@@ -1751,8 +1740,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
     }else if(selected_select){
       automation_edit->mode = AGS_AUTOMATION_EDIT_SELECT_ACCELERATION;
 
-      ags_automation_edit_drawing_area_button_press_select_acceleration(editor,
-									toolbar,
+      ags_automation_edit_drawing_area_button_press_select_acceleration((GtkWidget *) editor,
+									(GtkWidget *) composite_toolbar,
 									automation_edit,
 									machine,
 									n_press,
@@ -1916,7 +1905,7 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   automation_edit->current_acceleration = NULL;
   g_object_unref(acceleration);
 
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
   
 void
@@ -1987,7 +1976,7 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
   ags_composite_editor_delete_acceleration(editor,
 					   x, y);
 
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
   
 void
@@ -2075,11 +2064,11 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   }
     
   /* select region */
-  ags_composite_editor_select_region(editor,
+  ags_composite_editor_select_region((AgsCompositeEditor *) editor,
 				     x0, y0,
 				     x1, y1);
 
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 gboolean
@@ -2089,35 +2078,29 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
 						    gdouble y,
 						    AgsAutomationEdit *automation_edit)
 {
-  GtkWidget *editor;
-  GtkWidget *toolbar;
-  AgsMachine *machine;
+  AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
+  AgsMachine *machine;
 
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
-
-  editor = NULL;
-  toolbar = NULL;
   
   machine = NULL;  
     
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
     
-  toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
+  composite_toolbar = composite_editor->toolbar;
 
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
-
-  composite_toolbar = (AgsCompositeToolbar *) toolbar;
+  machine = composite_editor->selected_machine;
   
   if(machine != NULL){
     automation_edit->button_mask &= (~AGS_AUTOMATION_EDIT_BUTTON_1);
     
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
-      ags_automation_edit_drawing_area_button_release_position_cursor(editor,
-								      toolbar,
+      ags_automation_edit_drawing_area_button_release_position_cursor((GtkWidget *) composite_editor,
+								      (GtkWidget *) composite_toolbar,
 								      automation_edit,
 								      machine,
 								      n_press,
@@ -2125,8 +2108,8 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
 
       automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_ADD_ACCELERATION){
-      ags_automation_edit_drawing_area_button_release_add_acceleration(editor,
-								       toolbar,
+      ags_automation_edit_drawing_area_button_release_add_acceleration((GtkWidget *) composite_editor,
+								       (GtkWidget *) composite_toolbar,
 								       automation_edit,
 								       machine,
 								       n_press,
@@ -2134,8 +2117,8 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
 
       automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_DELETE_ACCELERATION){
-      ags_automation_edit_drawing_area_button_release_delete_acceleration(editor,
-									  toolbar,
+      ags_automation_edit_drawing_area_button_release_delete_acceleration((GtkWidget *) composite_editor,
+									  (GtkWidget *) composite_toolbar,
 									  automation_edit,
 									  machine,
 									  n_press,
@@ -2143,8 +2126,8 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
 
       automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_SELECT_ACCELERATION){
-      ags_automation_edit_drawing_area_button_release_select_acceleration(editor,
-									  toolbar,
+      ags_automation_edit_drawing_area_button_release_select_acceleration((GtkWidget *) composite_editor,
+									  (GtkWidget *) composite_toolbar,
 									  automation_edit,
 									  machine,
 									  n_press,
@@ -2238,6 +2221,8 @@ ags_automation_edit_size_allocate(GtkWidget *widget,
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
+
+  application_context = ags_application_context_get_instance();
 
   automation_edit = (AgsAutomationEdit *) widget;
   
@@ -2501,7 +2486,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   gboolean text_success;
   gboolean shadow_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   const static double quarter_dashes = {
     0.25,
@@ -2734,7 +2719,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   gboolean dark_theme;
   gboolean fg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -2831,7 +2816,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   gboolean dark_theme;
   gboolean fg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -2978,7 +2963,7 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   gboolean dark_theme;
   gboolean fg_success;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -3387,7 +3372,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -3406,7 +3391,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     
   selected_machine = composite_editor->selected_machine;
 
-  if(composite_editor->automation_edit->focused_edit == automation_edit){
+  if(composite_editor->automation_edit->focused_edit == (GtkWidget *) automation_edit){
     notebook = composite_editor->automation_edit->channel_selector;
   }else{
     notebook = NULL;

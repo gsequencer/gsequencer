@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -110,9 +110,9 @@ ags_automation_meta_init(AgsAutomationMeta *automation_meta)
   automation_meta->flags = 0;
   automation_meta->connectable_flags = 0;
   
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_valign(grid,
+  gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_FILL);
   
   gtk_box_append((GtkBox *) automation_meta,
@@ -430,8 +430,8 @@ ags_automation_meta_connect(AgsConnectable *connectable)
 
   automation_meta->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  composite_editor = gtk_widget_get_ancestor(automation_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor != NULL){
     g_signal_connect_after(composite_editor, "machine-changed",
@@ -453,8 +453,8 @@ ags_automation_meta_disconnect(AgsConnectable *connectable)
 
   automation_meta->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  composite_editor = gtk_widget_get_ancestor(automation_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
   
   if(composite_editor != NULL){
     g_object_disconnect(composite_editor,
@@ -482,8 +482,8 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     return;
   }
   
-  composite_editor = gtk_widget_get_ancestor(automation_meta,
-					    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor == NULL){
     return;
@@ -589,13 +589,13 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 
     str = NULL;
 
-    if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
+    if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->position){
       str = i18n("position");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->edit){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->edit){
       str = i18n("edit");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->clear){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->clear){
       str = i18n("clear");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->select){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->select){
       str = i18n("select");
     }
 

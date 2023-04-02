@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -155,7 +155,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(lv2_browser),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(lv2_browser,
+  gtk_box_set_spacing((GtkBox *) lv2_browser,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   lv2_browser->connectable_flags = 0;
@@ -458,7 +458,6 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 {
   GtkListStore *filename_list_store;
   GtkTreePath *path;
-  GtkTreeViewColumn *focus_column;
   
   GtkTreeIter iter;
 
@@ -503,7 +502,6 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 {
   GtkListStore *effect_list_store;
   GtkTreePath *path;
-  GtkTreeViewColumn *focus_column;
   
   GtkTreeIter iter;
 
@@ -578,7 +576,7 @@ ags_lv2_browser_add_port_editor(AgsLv2Browser *lv2_browser,
 					      port_editor);
     
     gtk_grid_attach(lv2_browser->port_editor_grid,
-		    port_editor,
+		    (GtkWidget *) port_editor,
 		    x, y,
 		    width, height);
   }

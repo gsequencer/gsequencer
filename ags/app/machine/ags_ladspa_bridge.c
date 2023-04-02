@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -243,15 +243,15 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    ladspa_bridge);
+					    (AgsMachine *) ladspa_bridge);
 
   audio = AGS_MACHINE(ladspa_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
@@ -286,9 +286,9 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->effect = NULL;
   ladspa_bridge->effect_index = 0;
 
-  AGS_MACHINE(ladspa_bridge)->bridge = ags_effect_bridge_new(audio);
+  AGS_MACHINE(ladspa_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->parent_machine = ladspa_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->parent_machine = (GtkWidget *) ladspa_bridge;
 
   gtk_frame_set_child(AGS_MACHINE(ladspa_bridge)->frame,
 		      (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);

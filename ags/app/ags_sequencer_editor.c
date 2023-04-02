@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,7 +134,7 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(sequencer_editor),
 				 GTK_ORIENTATION_VERTICAL);  
 
-  gtk_box_set_spacing(sequencer_editor,
+  gtk_box_set_spacing((GtkBox *) sequencer_editor,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   sequencer_editor->flags = 0;
@@ -144,14 +144,14 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   
   grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_vexpand(grid,
+  gtk_widget_set_vexpand((GtkWidget *) grid,
 			 FALSE);
-  gtk_widget_set_hexpand(grid,
+  gtk_widget_set_hexpand((GtkWidget *) grid,
 			 FALSE);
 
-  gtk_widget_set_halign(grid,
+  gtk_widget_set_halign((GtkWidget *) grid,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(grid,
+  gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_START);
 
   gtk_grid_set_column_spacing(grid,
@@ -159,36 +159,36 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_box_append(GTK_BOX(sequencer_editor),
-		 GTK_WIDGET(grid));
+  gtk_box_append((GtkBox *) sequencer_editor,
+		 (GtkWidget *) grid);
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("backend"),
 				    NULL);
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(label),
+		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
 
   sequencer_editor->backend = (GtkComboBoxText *) gtk_combo_box_text_new();
 
-  gtk_widget_set_valign(sequencer_editor->backend,
+  gtk_widget_set_valign((GtkWidget *) sequencer_editor->backend,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(sequencer_editor->backend,
+  gtk_widget_set_halign((GtkWidget *) sequencer_editor->backend,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(sequencer_editor->backend),
+		  (GtkWidget *) sequencer_editor->backend,
 		  1, 0,
 		  1, 1);
 
@@ -213,28 +213,28 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 				    "label", i18n("MIDI card"),
 				    NULL);
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(label),
+		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
 
   sequencer_editor->card = (GtkComboBoxText *) gtk_combo_box_text_new();
 
-  gtk_widget_set_valign(sequencer_editor->card,
+  gtk_widget_set_valign((GtkWidget *) sequencer_editor->card,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(sequencer_editor->card,
+  gtk_widget_set_halign((GtkWidget *) sequencer_editor->card,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(sequencer_editor->card),
+		  (GtkWidget *) sequencer_editor->card,
 		  1, 1,
 		  1, 1);
 
@@ -246,13 +246,13 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   sequencer_editor->jack_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						       AGS_UI_PROVIDER_DEFAULT_SPACING);
   
-  gtk_widget_set_valign(sequencer_editor->jack_hbox,
+  gtk_widget_set_valign((GtkWidget *) sequencer_editor->jack_hbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(sequencer_editor->jack_hbox,
+  gtk_widget_set_halign((GtkWidget *) sequencer_editor->jack_hbox,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(sequencer_editor->jack_hbox),
+		  (GtkWidget *) sequencer_editor->jack_hbox,
 		  2, 1,
 		  1, 1);
 
@@ -267,15 +267,15 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   /*  */
   sequencer_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
 
-  gtk_widget_set_valign(sequencer_editor->remove,
+  gtk_widget_set_valign((GtkWidget *) sequencer_editor->remove,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(sequencer_editor->remove,
+  gtk_widget_set_halign((GtkWidget *) sequencer_editor->remove,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(sequencer_editor->remove),
-		   2, 7,
-		   1, 1);
+		  (GtkWidget *) sequencer_editor->remove,
+		  2, 7,
+		  1, 1);
 }
 
 void
@@ -862,13 +862,9 @@ void
 ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 				      GObject *sequencer)
 {
-  AgsApplicationContext *application_context;
-
   if(AGS_IS_JACK_MIDIIN(sequencer)){
     return;
   }
-  
-  application_context = ags_application_context_get_instance();
     
   if(sequencer == sequencer_editor->sequencer){
     sequencer_editor->sequencer = NULL;

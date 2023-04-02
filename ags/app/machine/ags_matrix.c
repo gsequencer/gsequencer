@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -126,8 +126,6 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
 void
 ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_matrix_connectable_parent_interface;
-
   ags_matrix_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_matrix_connect;
@@ -184,15 +182,15 @@ ags_matrix_init(AgsMatrix *matrix)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    matrix);
+					    (AgsMachine *) matrix);
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -271,14 +269,14 @@ ags_matrix_init(AgsMatrix *matrix)
   /* create widgets */
   matrix->grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_vexpand(matrix->grid,
+  gtk_widget_set_vexpand((GtkWidget *) matrix->grid,
 			 FALSE);
-  gtk_widget_set_hexpand(matrix->grid,
+  gtk_widget_set_hexpand((GtkWidget *) matrix->grid,
 			 FALSE);
 
-  gtk_widget_set_halign(matrix->grid,
+  gtk_widget_set_halign((GtkWidget *) matrix->grid,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(matrix->grid,
+  gtk_widget_set_valign((GtkWidget *) matrix->grid,
 			GTK_ALIGN_START);
 
   gtk_grid_set_column_spacing(matrix->grid,
@@ -421,7 +419,7 @@ ags_matrix_init(AgsMatrix *matrix)
 							 2.0,
 							 0.025);
 
-  gtk_widget_set_size_request(matrix->volume,
+  gtk_widget_set_size_request((GtkWidget *) matrix->volume,
 			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
   gtk_box_append(volume_hbox,
@@ -600,7 +598,6 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 void
 ags_matrix_map_recall(AgsMachine *machine)
 {
-  AgsNavigation *navigation;
   AgsMatrix *matrix;
   
   AgsAudio *audio;
@@ -617,8 +614,6 @@ ags_matrix_map_recall(AgsMachine *machine)
   }
   
   application_context = ags_application_context_get_instance();
-
-  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   matrix = AGS_MATRIX(machine);
   

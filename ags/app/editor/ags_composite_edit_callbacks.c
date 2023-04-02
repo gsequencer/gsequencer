@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,7 +137,7 @@ ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
     gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
     
     list =
-      start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->automation_edit_box);
+      start_list = ags_automation_edit_box_get_automation_edit((AgsAutomationEditBox *) AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->automation_edit_box);
 
     while(list != NULL){
       gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_AUTOMATION_EDIT(list->data)->hscrollbar),
@@ -167,7 +167,7 @@ ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
     gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
     list =
-      start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->wave_edit_box);
+      start_list = ags_wave_edit_box_get_wave_edit((AgsWaveEditBox *) AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->wave_edit_box);
 
     while(list != NULL){
       gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_WAVE_EDIT(list->data)->hscrollbar),

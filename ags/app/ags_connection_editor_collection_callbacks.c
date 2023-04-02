@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,18 +27,18 @@ ags_connection_editor_collection_add_bulk_callback(GtkButton *button, AgsConnect
   AgsConnectionEditor *connection_editor;
   AgsConnectionEditorBulk *bulk;
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_collection,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_collection,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   bulk = ags_connection_editor_bulk_new();
 
   if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
-    gtk_widget_set_visible(bulk->output_grid,
+    gtk_widget_set_visible((GtkWidget *) bulk->output_grid,
 			   TRUE);
   }
 
   if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
-    gtk_widget_set_visible(bulk->input_grid,
+    gtk_widget_set_visible((GtkWidget *) bulk->input_grid,
 			   TRUE);
   }
   
@@ -47,5 +47,5 @@ ags_connection_editor_collection_add_bulk_callback(GtkButton *button, AgsConnect
 
   ags_applicable_reset(AGS_APPLICABLE(bulk));
 
-  ags_connectable_connect(AGS_APPLICABLE(bulk));
+  ags_connectable_connect(AGS_CONNECTABLE(bulk));
 }

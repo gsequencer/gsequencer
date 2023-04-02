@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -340,15 +340,15 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   g_free(machine_name);
   
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    live_lv2_bridge);
+					    (AgsMachine *) live_lv2_bridge);
 
   if(ags_live_lv2_bridge_lv2ui_handle == NULL){
     ags_live_lv2_bridge_lv2ui_handle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -451,7 +451,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   live_lv2_bridge->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						 AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_hexpand(live_lv2_bridge->vbox,
+  gtk_widget_set_hexpand((GtkWidget *) live_lv2_bridge->vbox,
 			 FALSE);
   
   gtk_frame_set_child(AGS_MACHINE(live_lv2_bridge)->frame,
@@ -464,8 +464,10 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   hbox =
     live_lv2_bridge->program_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							  AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_widget_set_visible(live_lv2_bridge->program_hbox,
+
+  gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->program_hbox,
 			 FALSE);
+
   gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
 		  (GtkWidget *) hbox,
 		  0, 0,
@@ -475,7 +477,8 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  live_lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  live_lv2_bridge->program = (GtkComboBox *) gtk_combo_box_text_new();
+
   gtk_box_append(hbox,
 		 (GtkWidget *) live_lv2_bridge->program);
       
@@ -484,15 +487,17 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 			     G_TYPE_ULONG,
 			     G_TYPE_ULONG);
       
-  gtk_combo_box_set_model(GTK_COMBO_BOX(live_lv2_bridge->program),
+  gtk_combo_box_set_model(live_lv2_bridge->program,
 			  GTK_TREE_MODEL(model));
   
   /* preset */
   hbox =
     live_lv2_bridge->preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							  AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_widget_set_visible(live_lv2_bridge->preset_hbox,
+
+  gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->preset_hbox,
 			 FALSE);
+
   gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
 		  (GtkWidget *) hbox,
 		  0, 1,
@@ -507,11 +512,11 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 		 (GtkWidget *) live_lv2_bridge->preset);
   
   /* effect bridge */  
-  AGS_MACHINE(live_lv2_bridge)->bridge = ags_effect_bridge_new(audio);
+  AGS_MACHINE(live_lv2_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->parent_machine = live_lv2_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->parent_machine = (AgsMachine *) live_lv2_bridge;
 
-  gtk_widget_set_hexpand(AGS_MACHINE(live_lv2_bridge)->bridge,
+  gtk_widget_set_hexpand((GtkWidget *) AGS_MACHINE(live_lv2_bridge)->bridge,
 			 FALSE);
 
   gtk_box_append(live_lv2_bridge->vbox,
@@ -792,8 +797,9 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
   }
 
   if(live_lv2_bridge->lv2_window != NULL){
-    g_object_run_dispose(live_lv2_bridge->lv2_window);
-    g_object_unref(live_lv2_bridge->lv2_window);
+    g_object_run_dispose(G_OBJECT(live_lv2_bridge->lv2_window));
+    
+    g_object_unref(G_OBJECT(live_lv2_bridge->lv2_window));
   }
   
   /* call parent */
@@ -1226,7 +1232,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
   }
   
   if(lv2_plugin == NULL){
-    gtk_widget_set_visible(live_lv2_bridge->program_hbox,
+    gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->program_hbox,
 			   FALSE);
     
     return;
@@ -1321,10 +1327,10 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   if(success){
-    gtk_widget_set_visible(live_lv2_bridge->program_hbox,
+    gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->program_hbox,
 			   TRUE);
   }else{
-    gtk_widget_set_visible(live_lv2_bridge->program_hbox,
+    gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->program_hbox,
 			   FALSE);
   }
 }
@@ -1352,7 +1358,7 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
   }
   
   if(lv2_plugin == NULL){
-    gtk_widget_set_visible(live_lv2_bridge->preset_hbox,
+    gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->preset_hbox,
 			   FALSE);
 
     return;
@@ -1377,10 +1383,10 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   if(success){
-    gtk_widget_set_visible(live_lv2_bridge->preset_hbox,
+    gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->preset_hbox,
 			   TRUE);
   }else{
-    gtk_widget_set_visible(live_lv2_bridge->preset_hbox,
+    gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->preset_hbox,
 			   FALSE);
   }
 

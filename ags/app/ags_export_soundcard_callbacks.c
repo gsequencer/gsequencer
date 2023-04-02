@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -438,5 +438,5 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_export_soundcard_open_response_callback), export_soundcard);
 
-  gtk_widget_show(file_chooser);
+  gtk_widget_show((GtkWidget *) file_chooser);
 }

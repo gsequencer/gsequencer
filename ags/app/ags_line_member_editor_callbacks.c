@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,7 +146,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	has_bridge = FALSE;
       }
 
-      active_plugin_type = gtk_combo_box_get_active(plugin_browser->plugin_type);
+      active_plugin_type = gtk_combo_box_get_active(GTK_COMBO_BOX(plugin_browser->plugin_type));
+      
       plugin_name = NULL;
 
       if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
@@ -167,18 +168,19 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	GList *start_port_editor, *port_editor;
 
 	/* get port editor */
-	start_port_editor = NULL;
+	port_editor = 
+	  start_port_editor = NULL;
 		
 	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	  port_editor =
-	    start_port_editor = ags_ladspa_browser_get_port_editor(plugin_browser->active_browser);
+	    start_port_editor = ags_ladspa_browser_get_port_editor(AGS_LADSPA_BROWSER(plugin_browser->active_browser));
 	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	  port_editor =
-	    start_port_editor = ags_lv2_browser_get_port_editor(plugin_browser->active_browser);
+	    start_port_editor = ags_lv2_browser_get_port_editor(AGS_LV2_BROWSER(plugin_browser->active_browser));
 #if defined(AGS_WITH_VST3)
 	}else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
 	  port_editor =
-	    start_port_editor = ags_vst3_browser_get_port_editor(plugin_browser->active_browser);
+	    start_port_editor = ags_vst3_browser_get_port_editor(AGS_VST3_BROWSER(plugin_browser->active_browser));
 #endif
 	}else{
 	  g_message("ags_line_member_editor_callbacks.c unsupported plugin browser");
@@ -191,9 +193,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	  gchar *control;
 
-	  model = gtk_combo_box_get_model(AGS_PORT_EDITOR(port_editor->data)->port_control);
+	  model = gtk_combo_box_get_model(GTK_COMBO_BOX(AGS_PORT_EDITOR(port_editor->data)->port_control));
 
-	  gtk_combo_box_get_active_iter(AGS_PORT_EDITOR(port_editor->data)->port_control,
+	  gtk_combo_box_get_active_iter(GTK_COMBO_BOX(AGS_PORT_EDITOR(port_editor->data)->port_control),
 					&iter);
 
 	  control = NULL;
@@ -352,7 +354,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 		
   ags_applicable_reset(AGS_APPLICABLE(plugin_browser->active_browser));
 
-  gtk_combo_box_set_active(plugin_browser->plugin_type,
+  gtk_combo_box_set_active(GTK_COMBO_BOX(plugin_browser->plugin_type),
 			   -1);
 }
 

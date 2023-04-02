@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -188,7 +188,6 @@ void
 ags_ui_osc_renew_controller_class_init(AgsUiOscRenewControllerClass *ui_osc_renew_controller)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
   
   ags_ui_osc_renew_controller_parent_class = g_type_class_peek_parent(ui_osc_renew_controller);
 
@@ -200,8 +199,6 @@ ags_ui_osc_renew_controller_class_init(AgsUiOscRenewControllerClass *ui_osc_rene
 
   gobject->dispose = ags_ui_osc_renew_controller_dispose;
   gobject->finalize = ags_ui_osc_renew_controller_finalize;
-
-  /* properties */
 
   /* AgsUiOscRenewControllerClass */
   ui_osc_renew_controller->set_data = ags_ui_osc_renew_controller_real_set_data;

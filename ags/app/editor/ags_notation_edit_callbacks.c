@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ ags_notation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   ags_notation_edit_reset_vscrollbar(notation_edit);
   ags_notation_edit_reset_hscrollbar(notation_edit);
   
-  gtk_widget_queue_draw(notation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
 }
 
 void
@@ -55,14 +55,10 @@ ags_notation_edit_vscrollbar_value_changed(GtkAdjustment *adjustment, AgsNotatio
   
   GtkAdjustment *piano_adjustment;
   
-  AgsApplicationContext *application_context;
-
-  application_context = ags_application_context_get_instance();
-
   editor = gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 				   AGS_TYPE_COMPOSITE_EDITOR);
 
-  scrolled_piano = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_control;
+  scrolled_piano = (AgsScrolledPiano *) AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit_control;
 
   piano_adjustment = gtk_scrolled_window_get_vadjustment(scrolled_piano->scrolled_window);
   

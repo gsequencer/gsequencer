@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,8 +44,8 @@ ags_machine_selector_add_by_uuid_callback(GAction *action, GVariant *parameter,
   gint position;
   gboolean success;  
 
-  window = gtk_widget_get_ancestor(machine_selector,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+						 AGS_TYPE_WINDOW);
 
   machine = 
     start_machine = ags_window_get_machine(window);
@@ -133,8 +133,6 @@ void
 ags_machine_selector_remove_index_callback(GAction *action, GVariant *parameter,
 					   AgsMachineSelector *machine_selector)
 {
-  AgsMachineRadioButton *machine_radio_button;
-  
   GList *start_list, *list;
 
   guint nth;
@@ -178,18 +176,13 @@ ags_machine_selector_reverse_mapping_callback(GAction *action, GVariant *paramet
   AgsCompositeEditor *composite_editor;
 
   GVariant *state;
-  
-  AgsApplicationContext *application_context;
 
   if((AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     return;
   }
 
-  application_context = ags_application_context_get_instance();
-
-    
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
   
@@ -221,12 +214,12 @@ ags_machine_selector_shift_a_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -262,12 +255,12 @@ ags_machine_selector_shift_a_sharp_callback(GAction *action, GVariant *parameter
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -303,12 +296,12 @@ ags_machine_selector_shift_h_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -344,12 +337,12 @@ ags_machine_selector_shift_c_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -385,12 +378,12 @@ ags_machine_selector_shift_c_sharp_callback(GAction *action, GVariant *parameter
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -426,12 +419,12 @@ ags_machine_selector_shift_d_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -467,12 +460,12 @@ ags_machine_selector_shift_d_sharp_callback(GAction *action, GVariant *parameter
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -508,12 +501,12 @@ ags_machine_selector_shift_e_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -549,12 +542,12 @@ ags_machine_selector_shift_f_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -590,12 +583,12 @@ ags_machine_selector_shift_f_sharp_callback(GAction *action, GVariant *parameter
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -631,12 +624,12 @@ ags_machine_selector_shift_g_callback(GAction *action, GVariant *parameter,
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 
@@ -672,12 +665,12 @@ ags_machine_selector_shift_g_sharp_callback(GAction *action, GVariant *parameter
 
   gint base_key_code;
 
-  composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   machine = composite_editor->selected_machine;
 
-  notation_edit = composite_editor->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
     
   piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
 

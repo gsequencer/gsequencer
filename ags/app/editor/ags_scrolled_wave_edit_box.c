@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,13 +97,13 @@ ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box)
   				 GTK_POLICY_EXTERNAL,
   				 GTK_POLICY_EXTERNAL);
 
-  gtk_widget_set_vexpand(scrolled_wave_edit_box->scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_wave_edit_box->scrolled_window,
 			 TRUE);
 
   /* wave_edit box */
-  scrolled_wave_edit_box->wave_edit_box = ags_wave_edit_box_new(GTK_ORIENTATION_VERTICAL);
+  scrolled_wave_edit_box->wave_edit_box = (GtkBox *) ags_wave_edit_box_new(GTK_ORIENTATION_VERTICAL);
   gtk_scrolled_window_set_child(scrolled_wave_edit_box->scrolled_window,
-				scrolled_wave_edit_box->wave_edit_box);
+				(GtkWidget *) scrolled_wave_edit_box->wave_edit_box);
 }
 
 void
@@ -150,7 +150,7 @@ ags_scrolled_wave_edit_box_get_wave_edit_box(AgsScrolledWaveEditBox *scrolled_wa
     return(NULL);
   }
   
-  return(scrolled_wave_edit_box->wave_edit_box);
+  return((AgsWaveEditBox *) scrolled_wave_edit_box->wave_edit_box);
 }
 
 /**

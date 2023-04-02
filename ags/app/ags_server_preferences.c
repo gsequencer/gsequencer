@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -132,19 +132,19 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(server_preferences),
 				 GTK_ORIENTATION_VERTICAL);  
 
-  gtk_box_set_spacing(server_preferences,
+  gtk_box_set_spacing((GtkBox *) server_preferences,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_vexpand(grid,
+  gtk_widget_set_vexpand((GtkWidget *) grid,
 			 FALSE);
-  gtk_widget_set_hexpand(grid,
+  gtk_widget_set_hexpand((GtkWidget *) grid,
 			 FALSE);
 
-  gtk_widget_set_halign(grid,
+  gtk_widget_set_halign((GtkWidget *) grid,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(grid,
+  gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_START);
 
   gtk_grid_set_column_spacing(grid,
@@ -152,20 +152,20 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
   
-  gtk_box_append(GTK_BOX(server_preferences),
-		 GTK_WIDGET(grid));
+  gtk_box_append((GtkBox *) server_preferences,
+		 (GtkWidget *) grid);
 
   server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("start server"));
 
-  gtk_widget_set_valign(server_preferences->start,
+  gtk_widget_set_valign((GtkWidget *) server_preferences->start,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(server_preferences->start,
+  gtk_widget_set_halign((GtkWidget *) server_preferences->start,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(server_preferences->start),
-		   0, 0,
-		   2, 1);
+		  (GtkWidget *) server_preferences->start,
+		  0, 0,
+		  2, 1);
   
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->start,
 			   FALSE);
@@ -176,24 +176,24 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "xalign", 0.0,
 				    NULL);
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(label),
+		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
 
   server_preferences->address = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		   GTK_WIDGET(server_preferences->address),
-		   1, 1,
-		   1, 1);
+		  (GtkWidget *) server_preferences->address,
+		  1, 1,
+		  1, 1);
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->address,
 			   FALSE);
 
@@ -203,30 +203,30 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "xalign", 0.0,
 				    NULL);
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(label),
+		  (GtkWidget *) label,
 		  0, 2,
 		  1, 1);
 
   server_preferences->port = (GtkEntry *) gtk_entry_new();
 
-  gtk_widget_set_valign(server_preferences->port,
+  gtk_widget_set_valign((GtkWidget *) server_preferences->port,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(server_preferences->port,
+  gtk_widget_set_halign((GtkWidget *) server_preferences->port,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(server_preferences->port),
-		   1, 2,
-		   1, 1);
+		  (GtkWidget *) server_preferences->port,
+		  1, 2,
+		  1, 1);
 
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->port,
 			   FALSE);
@@ -237,30 +237,30 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "xalign", 0.0,
 				    NULL);
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(label),
+		  (GtkWidget *) label,
 		  0, 3,
 		  1, 1);
 
   server_preferences->username = (GtkEntry *) gtk_entry_new();
 
-  gtk_widget_set_valign(server_preferences->username,
+  gtk_widget_set_valign((GtkWidget *) server_preferences->username,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(server_preferences->username,
+  gtk_widget_set_halign((GtkWidget *) server_preferences->username,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(server_preferences->username),
-		   1, 3,
-		   1, 1);
+		  (GtkWidget *) server_preferences->username,
+		  1, 3,
+		  1, 1);
 
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->username,
 			   FALSE);
@@ -271,31 +271,31 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "xalign", 0.0,
 				    NULL);
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_margin_end((GtkWidget *) label,
 			    AGS_UI_PROVIDER_DEFAULT_MARGIN_END);
 
   gtk_grid_attach(grid,
-		  GTK_WIDGET(label),
+		  (GtkWidget *) label,
 		  0, 4,
 		  1, 1);
 
   server_preferences->password = (GtkEntry *) gtk_entry_new();
 
-  gtk_widget_set_valign(server_preferences->password,
+  gtk_widget_set_valign((GtkWidget *) server_preferences->password,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(server_preferences->password,
+  gtk_widget_set_halign((GtkWidget *) server_preferences->password,
 			GTK_ALIGN_FILL);
 
   gtk_entry_set_visibility(server_preferences->password,
 			   FALSE);
   
   gtk_grid_attach(grid,
-		  GTK_WIDGET(server_preferences->password),
+		  (GtkWidget *) server_preferences->password,
 		  1, 4,
 		  1, 1);
   

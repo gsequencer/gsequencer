@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,17 +146,17 @@ ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_she
 	       "title", i18n("position sheet cursor"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(position_sheet_cursor_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) position_sheet_cursor_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_sheet_cursor_dialog),
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) position_sheet_cursor_dialog),
 		 GTK_WIDGET(vbox));  
 
   /* set focus */
   position_sheet_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_check_button_set_active((GtkToggleButton *) position_sheet_cursor_dialog->set_focus,
+  gtk_check_button_set_active(position_sheet_cursor_dialog->set_focus,
 			      TRUE);
   gtk_box_append(vbox,
 		 GTK_WIDGET(position_sheet_cursor_dialog->set_focus));  

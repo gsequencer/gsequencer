@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -174,9 +174,9 @@ ags_connection_editor_collection_init(AgsConnectionEditorCollection *connection_
   
   connection_editor_collection->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
 
-  gtk_widget_set_halign(connection_editor_collection->enabled,
+  gtk_widget_set_halign((GtkWidget *) connection_editor_collection->enabled,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(connection_editor_collection->enabled,
+  gtk_widget_set_valign((GtkWidget *) connection_editor_collection->enabled,
 			GTK_ALIGN_START);
   
   gtk_box_append((GtkBox *) connection_editor_collection,
@@ -193,9 +193,9 @@ ags_connection_editor_collection_init(AgsConnectionEditorCollection *connection_
   gtk_button_set_icon_name(connection_editor_collection->add_bulk,
 			   "list-add-symbolic");
 
-  gtk_widget_set_halign(connection_editor_collection->add_bulk,
+  gtk_widget_set_halign((GtkWidget *) connection_editor_collection->add_bulk,
 			GTK_ALIGN_END);
-  gtk_widget_set_valign(connection_editor_collection->add_bulk,
+  gtk_widget_set_valign((GtkWidget *) connection_editor_collection->add_bulk,
 			GTK_ALIGN_START);
 
   gtk_box_append((GtkBox *) connection_editor_collection,
@@ -372,7 +372,7 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 
   connection_editor_collection = AGS_CONNECTION_EDITOR_COLLECTION(applicable);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_collection,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_collection,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   if(connection_editor == NULL){
@@ -416,12 +416,12 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 	bulk = ags_connection_editor_bulk_new();
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
-	  gtk_widget_set_visible(bulk->output_grid,
+	  gtk_widget_set_visible((GtkWidget *) bulk->output_grid,
 				 TRUE);
 	}
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
-	  gtk_widget_set_visible(bulk->input_grid,
+	  gtk_widget_set_visible((GtkWidget *) bulk->input_grid,
 				 TRUE);
 	}
 
@@ -434,12 +434,12 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 	bulk = ags_connection_editor_bulk_new();
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
-	  gtk_widget_set_visible(bulk->output_grid,
+	  gtk_widget_set_visible((GtkWidget *) bulk->output_grid,
 				 TRUE);
 	}
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_INPUT & (connection_editor->flags)) != 0){
-	  gtk_widget_set_visible(bulk->input_grid,
+	  gtk_widget_set_visible((GtkWidget *) bulk->input_grid,
 				 TRUE);
 	}
 
@@ -507,7 +507,7 @@ ags_connection_editor_collection_add_bulk(AgsConnectionEditorCollection *connect
 							bulk);
     
     gtk_box_append(connection_editor_collection->bulk_box,
-		   bulk);
+		   (GtkWidget *) bulk);
   }
 }
 
@@ -532,7 +532,7 @@ ags_connection_editor_collection_remove_bulk(AgsConnectionEditorCollection *conn
 						       bulk);
     
     gtk_box_remove(connection_editor_collection->bulk_box,
-		   bulk);
+		   (GtkWidget *) bulk);
   }
 }
 

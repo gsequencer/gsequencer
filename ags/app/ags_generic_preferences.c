@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,7 +142,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(generic_preferences),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(generic_preferences,
+  gtk_box_set_spacing((GtkBox *) generic_preferences,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("autosave thread"));
@@ -178,11 +178,11 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		 (GtkWidget *) label);
   
   generic_preferences->engine_mode = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_combo_box_text_append_text(generic_preferences->engine_mode,
+  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(generic_preferences->engine_mode),
 				 "deterministic");
-  gtk_combo_box_text_append_text(generic_preferences->engine_mode,
+  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(generic_preferences->engine_mode),
 				 "performance");
-  gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
+  gtk_combo_box_set_active(generic_preferences->engine_mode,
 			   0);
   
   gtk_box_append(hbox,
@@ -273,7 +273,9 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
   AgsGenericPreferences *generic_preferences; 
 
   AgsConfig *config;
- 
+
+  gchar *str;
+  
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
   config = ags_config_get_instance();
@@ -295,25 +297,34 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 			 "false");
   }
 
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(generic_preferences->segmentation));
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
 		       "segmentation",
-		       gtk_combo_box_text_get_active_text(generic_preferences->segmentation));
+		       str);
+  
+  g_free(str);
 
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(generic_preferences->engine_mode));
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
 		       "engine-mode",
-		       gtk_combo_box_text_get_active_text(generic_preferences->engine_mode));
+		       str);
+  
+  g_free(str);
 
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
 		       "rt-safe",
 		       (gtk_check_button_get_active(generic_preferences->rt_safe) ? "true": "false"));
 
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(generic_preferences->gui_scale));
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
 		       "gui-scale",
-		       gtk_combo_box_text_get_active_text(generic_preferences->gui_scale));
+		       str);
+  
+  g_free(str);
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,8 +44,8 @@ G_BEGIN_DECLS
 
 #define AGS_EFFECT_LINE_PLUGIN(ptr) ((AgsEffectLinePlugin *)(ptr))
 
-#define AGS_EFFECT_LINE_DEFAULT_VERSION "4.0.0"
-#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "Mon Feb 28 01:22:56 UTC 2022"
+#define AGS_EFFECT_LINE_DEFAULT_VERSION "4.5.0"
+#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "Tue Mar 28 06:49:41 UTC 2023"
 
 #define AGS_EFFECT_LINE_COLUMNS_COUNT (2)
 #define AGS_EFFECT_LINE_SEPARATOR_FILENAME "ags-effect-line-separator-filename"
@@ -56,9 +56,8 @@ typedef struct _AgsEffectLinePlugin AgsEffectLinePlugin;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
 
 typedef enum{
-  AGS_EFFECT_LINE_CONNECTED           = 1,
-  AGS_EFFECT_LINE_MAPPED_RECALL       = 1 <<  1,
-  AGS_EFFECT_LINE_PREMAPPED_RECALL    = 1 <<  2,
+  AGS_EFFECT_LINE_MAPPED_RECALL       = 1,
+  AGS_EFFECT_LINE_PREMAPPED_RECALL    = 1 <<  1,
 }AgsEffectLineFlags;
 
 struct _AgsEffectLine
@@ -66,7 +65,8 @@ struct _AgsEffectLine
   GtkBox box;
 
   guint flags;
-
+  guint connectable_flags;
+  
   gchar *name;
 
   gchar *version;
@@ -145,6 +145,13 @@ struct _AgsEffectLinePlugin
 };
 
 GType ags_effect_line_get_type(void);
+
+gboolean ags_effect_line_test_flags(AgsEffectLine *effect_line,
+				    guint flags);
+void ags_effect_line_set_flags(AgsEffectLine *effect_line,
+			       guint flags);
+void ags_effect_line_unset_flags(AgsEffectLine *effect_line,
+				 guint flags);
 
 AgsEffectLinePlugin* ags_effect_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 						  gchar *plugin_name,

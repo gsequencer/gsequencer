@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2022 Joël Krähemann
+  * Copyright (C) 2005-2023 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -33,20 +33,19 @@ ags_connection_editor_bulk_remove_bulk_callback(GtkButton *button,
   xmlNode *node;
 
   GList *start_dialog_model, *dialog_model;
-  GList *start_list, *list;
+  GList *start_list;
   
   gint i, i_stop;
   
-  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   machine = connection_editor->machine;
 
-  list = 
-    start_list = ags_connection_editor_collection_get_bulk(connection_editor_collection);
+  start_list = ags_connection_editor_collection_get_bulk(connection_editor_collection);
 
   i_stop = g_list_index(start_list,
 			connection_editor_bulk);
@@ -106,13 +105,14 @@ ags_connection_editor_bulk_output_soundcard_callback(GtkComboBox *combo_box, Ags
 
   guint pcm_channels;
   gdouble first_line_upper;
-  gdouble first_soundcard_line_upper;
+  //NOTE:JK: for readability
+  //  gdouble first_soundcard_line_upper;
   gdouble count_upper;
 
-  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   machine = connection_editor->machine;
@@ -150,7 +150,7 @@ ags_connection_editor_bulk_output_soundcard_callback(GtkComboBox *combo_box, Ags
 			    0.0,
 			    (gdouble) pcm_channels - 1.0);
 
-  first_soundcard_line_upper = (gdouble) pcm_channels;
+  //  first_soundcard_line_upper = (gdouble) pcm_channels;
 
   count_upper = pcm_channels;
 
@@ -178,13 +178,14 @@ ags_connection_editor_bulk_input_soundcard_callback(GtkComboBox *combo_box, AgsC
 
   guint pcm_channels;
   gdouble first_line_upper;
-  gdouble first_soundcard_line_upper;
+  //NOTE:JK: for readability
+  //  gdouble first_soundcard_line_upper;
   gdouble count_upper;
 
-  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   machine = connection_editor->machine;
@@ -222,7 +223,7 @@ ags_connection_editor_bulk_input_soundcard_callback(GtkComboBox *combo_box, AgsC
 			    0.0,
 			    (gdouble) pcm_channels - 1.0);
 
-  first_soundcard_line_upper = (gdouble) pcm_channels;
+  //  first_soundcard_line_upper = (gdouble) pcm_channels;
 
   count_upper = pcm_channels;
 

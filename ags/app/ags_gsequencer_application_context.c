@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -685,7 +685,7 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->paper_size = g_strdup(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_PAPER_SIZE);
 
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
-		ags_gsequencer_application_context_loader_timeout,
+		(GSourceFunc) ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);
 
   g_timeout_add((guint) (1000.0 * AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT),
@@ -722,7 +722,7 @@ ags_gsequencer_application_context_set_property(GObject *gobject,
       g_object_ref(G_OBJECT(window));
     }
       
-    gsequencer_application_context->window = window;
+    gsequencer_application_context->window = (GtkWidget *) window;
   }
   break;
   default:
@@ -858,7 +858,7 @@ ags_gsequencer_application_context_dispose(GObject *gobject)
   
   /* window */
   if(gsequencer_application_context->window != NULL){
-    gtk_window_destroy(GTK_WIDGET(gsequencer_application_context->window));
+    gtk_window_destroy((GtkWindow *) gsequencer_application_context->window);
 
     gsequencer_application_context->window = NULL;
   }  
@@ -2235,7 +2235,7 @@ ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
-  gsequencer_application_context = AGS_APPLICATION_CONTEXT(ui_provider);
+  gsequencer_application_context = AGS_GSEQUENCER_APPLICATION_CONTEXT(ui_provider);
 
   /* set window */
   gsequencer_application_context->window = widget;
@@ -2543,7 +2543,7 @@ ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
 GtkApplication*
 ags_gsequencer_application_context_get_app(AgsUiProvider *ui_provider)
 {
-  GtkWidget *app;
+  GtkApplication *app;
   
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2602,7 +2602,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsWindow *window;
   AgsExportWindow *export_window;
   AgsExportSoundcard *export_soundcard;
-  GtkApplication *app;
   
 #if defined(AGS_WITH_MAC_INTEGRATION)
   GtkosxApplication *osx_app;
@@ -2827,9 +2826,9 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   }  
 
   /* AgsExportWindow */
-  export_window = ags_export_window_new(window);
+  export_window = ags_export_window_new((GtkWindow *) window);
   ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
-				    export_window);
+				    (GtkWidget *) export_window);
 
   export_soundcard = ags_export_soundcard_new();
   ags_export_window_add_export_soundcard(export_window,
@@ -3295,7 +3294,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 	gchar *str;
 	
 	if(is_output){
-	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) gsequencer_application_context);	  
+	  soundcard = (GObject *) ags_wasapi_devout_new();
 
 	  str = ags_config_get_value(config,
 				     soundcard_group,
@@ -3326,7 +3325,7 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 	    g_free(str);
 	  }
 	}else{
-	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) gsequencer_application_context);
+	  soundcard = (GObject *) ags_wasapi_devin_new();
 
 	  str = ags_config_get_value(config,
 				     soundcard_group,
@@ -4218,7 +4217,7 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
 
   stop_thread = ags_stop_thread_new();
   ags_task_launcher_add_task(task_launcher,
-			     stop_thread);
+			     (AgsTask *) stop_thread);
 
   g_usleep(2 * G_USEC_PER_SEC);
   
@@ -4319,7 +4318,7 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
   g_list_free_full(start_list,
 		   g_object_unref);
 
-  g_application_quit(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
+  g_application_quit(G_APPLICATION(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))));
 }
 
 void
@@ -4622,7 +4621,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			    AGS_LIBRARY_SUFFIX) &&
 	   !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  gsequencer_application_context->ladspa_loader = g_list_prepend(gsequencer_application_context->ladspa_loader,
 									 g_strdup_printf("%s%c%s",
 											 ladspa_path[0],
@@ -4665,7 +4664,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 			    AGS_LIBRARY_SUFFIX) &&
 	   !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  gsequencer_application_context->dssi_loader = g_list_prepend(gsequencer_application_context->dssi_loader,
 								       g_strdup_printf("%s%c%s",
 										       dssi_path[0],
@@ -4724,7 +4723,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 		       G_FILE_TEST_IS_DIR) &&
 	   !g_list_find_custom(lv2_manager->lv2_plugin_blacklist,
 			       filename,
-			       g_strcmp0)){
+			       (GCompareFunc) g_strcmp0)){
 	  gsequencer_application_context->lv2_loader = g_list_prepend(gsequencer_application_context->lv2_loader,
 								      g_strdup(plugin_path));
 	}

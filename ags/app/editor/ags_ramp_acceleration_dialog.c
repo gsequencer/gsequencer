@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,12 +146,12 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 	       "title", i18n("ramp accelerations"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(ramp_acceleration_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) ramp_acceleration_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(ramp_acceleration_dialog),
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) ramp_acceleration_dialog),
 		 GTK_WIDGET(vbox));  
 
   /* automation */
@@ -291,13 +291,13 @@ ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  g_signal_connect(ramp_acceleration_dialog, "response",
-		   G_CALLBACK(ags_ramp_acceleration_dialog_response_callback), ramp_acceleration_dialog);
+  g_signal_connect((GObject *) ramp_acceleration_dialog, "response",
+		   G_CALLBACK(ags_ramp_acceleration_dialog_response_callback), (gpointer) ramp_acceleration_dialog);
 
-  g_signal_connect(ramp_acceleration_dialog->port, "changed",
-		   G_CALLBACK(ags_ramp_acceleration_dialog_port_callback), ramp_acceleration_dialog);
+  g_signal_connect((GObject *) ramp_acceleration_dialog->port, "changed",
+		   G_CALLBACK(ags_ramp_acceleration_dialog_port_callback), (gpointer) ramp_acceleration_dialog);
 
   /* machine changed */
   composite_editor = window->composite_editor;
@@ -399,7 +399,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   gdouble upper, lower, range, step;
   gdouble c_upper, c_lower, c_range;
 
-  guint tmp;
   guint x0, x1;
   gdouble y0, y1;
   guint step_count;
@@ -414,13 +413,13 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));  
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));  
     
   composite_editor = window->composite_editor;
 
   machine = composite_editor->selected_machine;
 
-  focused_automation_edit = composite_editor->automation_edit->focused_edit;
+  focused_automation_edit = (AgsAutomationEdit *) composite_editor->automation_edit->focused_edit;
 
   if(focused_automation_edit == NULL){
     return;
@@ -900,7 +899,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
   
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   composite_editor = window->composite_editor;
 

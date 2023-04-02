@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,8 +45,8 @@ typedef struct _AgsExportWindow AgsExportWindow;
 typedef struct _AgsExportWindowClass AgsExportWindowClass;
 
 typedef enum{
-  AGS_EXPORT_WINDOW_CONNECTED     = 1,
-  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1 <<  1,
+  AGS_EXPORT_WINDOW_LIVE_EXPORT        = 1,
+  AGS_EXPORT_WINDOW_HAS_STOP_TIMEOUT   = 1 <<  1,
 }AgsExportWindowFlags;
 
 struct _AgsExportWindow
@@ -54,6 +54,9 @@ struct _AgsExportWindow
   GtkWindow window;
 
   guint flags;
+  guint connectable_flags;
+
+  volatile gboolean do_stop;
   
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;
@@ -79,6 +82,13 @@ struct _AgsExportWindowClass
 
 GType ags_export_window_get_type(void);
 
+gboolean ags_export_window_test_flags(AgsExportWindow *export_window,
+				      guint flags);
+void ags_export_window_set_flags(AgsExportWindow *export_window,
+				 guint flags);
+void ags_export_window_unset_flags(AgsExportWindow *export_window,
+				   guint flags);
+
 GList* ags_export_window_get_export_soundcard(AgsExportWindow *export_window);
 void ags_export_window_add_export_soundcard(AgsExportWindow *export_window,
 					    AgsExportSoundcard *export_soundcard);
@@ -90,7 +100,7 @@ void ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window);
 void ags_export_window_start_export(AgsExportWindow *export_window);
 void ags_export_window_stop_export(AgsExportWindow *export_window);
 
-AgsExportWindow* ags_export_window_new();
+AgsExportWindow* ags_export_window_new(GtkWindow *transient_for);
 
 G_END_DECLS
 

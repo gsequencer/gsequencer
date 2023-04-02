@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,14 +140,14 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_editor_bulk),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(machine_editor_bulk,
+  gtk_box_set_spacing((GtkBox *) machine_editor_bulk,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   machine_editor_bulk->connectable_flags = 0;
 
   machine_editor_bulk->parent_machine_editor_collection = NULL;
   
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
 
   gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_START);
@@ -162,7 +162,7 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
   gtk_box_append((GtkBox *) machine_editor_bulk,
 		 (GtkWidget *) grid);
 
-  label = gtk_label_new(i18n("link"));
+  label = (GtkLabel *) gtk_label_new(i18n("link"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -178,7 +178,7 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
 		  1, 0,
 		  1, 1);
 
-  label = gtk_label_new(i18n("first line"));
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -188,15 +188,15 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
 		  0, 1,
 		  1, 1);
   
-  machine_editor_bulk->first_line = (GtkComboBox *) gtk_spin_button_new_with_range(0.0,
-										   0.0,
-										   1.0);
+  machine_editor_bulk->first_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										     0.0,
+										     1.0);
   gtk_grid_attach(grid,
 		  (GtkWidget *) machine_editor_bulk->first_line,
 		  1, 1,
 		  1, 1);
 
-  label = gtk_label_new(i18n("first link line"));
+  label = (GtkLabel *) gtk_label_new(i18n("first link line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -206,15 +206,15 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
 		  0, 2,
 		  1, 1);
   
-  machine_editor_bulk->first_link_line = (GtkComboBox *) gtk_spin_button_new_with_range(0.0,
-											0.0,
-											1.0);
+  machine_editor_bulk->first_link_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											  0.0,
+											  1.0);
   gtk_grid_attach(grid,
 		  (GtkWidget *) machine_editor_bulk->first_link_line,
 		  1, 2,
 		  1, 1);
 
-  label = gtk_label_new(i18n("count"));
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -224,15 +224,15 @@ ags_machine_editor_bulk_init(AgsMachineEditorBulk *machine_editor_bulk)
 		  0, 3,
 		  1, 1);
   
-  machine_editor_bulk->count = (GtkComboBox *) gtk_spin_button_new_with_range(0.0,
-									      0.0,
-									      1.0);
+  machine_editor_bulk->count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										0.0,
+										1.0);
   gtk_grid_attach(grid,
 		  (GtkWidget *) machine_editor_bulk->count,
 		  1, 3,
 		  1, 1);
 
-  machine_editor_bulk->remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
+  machine_editor_bulk->remove_bulk = (GtkButton *) gtk_button_new_from_icon_name("list-remove-symbolic");
   gtk_grid_attach(grid,
 		  (GtkWidget *) machine_editor_bulk->remove_bulk,
 		  3, 3,
@@ -324,7 +324,7 @@ ags_machine_editor_bulk_apply(AgsApplicable *applicable)
   xmlNode *node;
 
   GList *start_dialog_model, *dialog_model;
-  GList *start_list, *list;
+  GList *start_list;
   
   guint first_line, first_link_line;
   guint count;
@@ -332,10 +332,10 @@ ags_machine_editor_bulk_apply(AgsApplicable *applicable)
   
   machine_editor_bulk = AGS_MACHINE_EDITOR_BULK(applicable);
 
-  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 								AGS_TYPE_MACHINE_EDITOR);
 
   machine = machine_editor->machine;
@@ -429,8 +429,7 @@ ags_machine_editor_bulk_apply(AgsApplicable *applicable)
     link = next_pad;
   }
 
-  list = 
-    start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
   i_stop = g_list_index(start_list,
 			machine_editor_bulk);
@@ -499,16 +498,16 @@ ags_machine_editor_bulk_reset(AgsApplicable *applicable)
   xmlNode *node;
 
   GList *start_dialog_model, *dialog_model;
-  GList *start_list, *list;
+  GList *start_list;
   
   gint i, i_stop;
   
   machine_editor_bulk = AGS_MACHINE_EDITOR_BULK(applicable);  
 
-  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor_collection = (AgsMachineEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 										     AGS_TYPE_MACHINE_EDITOR_COLLECTION);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_bulk,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_bulk,
 								AGS_TYPE_MACHINE_EDITOR);
 
   machine = machine_editor->machine;
@@ -522,8 +521,7 @@ ags_machine_editor_bulk_reset(AgsApplicable *applicable)
   gtk_combo_box_set_model(machine_editor_bulk->link,
 			  GTK_TREE_MODEL(list_store));
 
-  list = 
-    start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
+  start_list = ags_machine_editor_collection_get_bulk(machine_editor_collection);
 
   i_stop = g_list_index(start_list,
 			machine_editor_bulk);

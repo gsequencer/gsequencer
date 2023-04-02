@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,7 +121,6 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
-  GParamSpec *param_spec;
 
   ags_midi_import_wizard_parent_class = g_type_class_peek_parent(midi_import_wizard);
 
@@ -133,8 +132,6 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
 
   gobject->set_property = ags_midi_import_wizard_set_property;
   gobject->get_property = ags_midi_import_wizard_get_property;
-
-  /* properties */
 
   /* GtkWidget */
   widget->show = ags_midi_import_wizard_show;
@@ -162,16 +159,16 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 {
   AgsApplicationContext *application_context;
   
-  gtk_window_set_hide_on_close(midi_import_wizard,
+  gtk_window_set_hide_on_close((GtkWindow *) midi_import_wizard,
 			       TRUE);
 
-  gtk_window_set_default_size(midi_import_wizard,
+  gtk_window_set_default_size((GtkWindow *) midi_import_wizard,
 			      600, 480);
 
   application_context = ags_application_context_get_instance();
 
-  gtk_window_set_transient_for(midi_import_wizard,
-			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+  gtk_window_set_transient_for((GtkWindow *) midi_import_wizard,
+			       (GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
   
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 

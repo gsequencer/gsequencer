@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Daniel Maksymow, Joël Krähemann
+ * Copyright (C) 2005-2023 Daniel Maksymow, Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,8 +61,6 @@ ags_meta_data_window_get_type()
 void
 ags_meta_data_window_class_init(AgsMetaDataWindowClass *meta_data_window)
 {
-  GObjectClass *gobject;
-
   ags_meta_data_window_parent_class = g_type_class_peek_parent(meta_data_window);
 }
 
@@ -78,155 +76,155 @@ ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window)
 	       "hide-on-close", TRUE,
 	       NULL);
 
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
 
   gtk_grid_set_column_spacing(grid,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_window_set_child(meta_data_window,
-		       grid);
+  gtk_window_set_child((GtkWindow *) meta_data_window,
+		       (GtkWidget *) grid);
 
-  label = gtk_label_new(i18n("author"));
+  label = (GtkLabel *) gtk_label_new(i18n("author"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_BASELINE);
   
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
   
-  meta_data_window->author = gtk_entry_new();
+  meta_data_window->author = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		  meta_data_window->author,
+		  (GtkWidget *) meta_data_window->author,
 		  1, 0,
 		  1, 1);
 
-  label = gtk_label_new(i18n("title"));
+  label = (GtkLabel *) gtk_label_new(i18n("title"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_BASELINE);
 
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
   
-  meta_data_window->title = gtk_entry_new();
+  meta_data_window->title = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		  meta_data_window->title,
+		  (GtkWidget *) meta_data_window->title,
 		  1, 1,
 		  1, 1);
 
-  label = gtk_label_new(i18n("album"));
+  label = (GtkLabel *) gtk_label_new(i18n("album"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_BASELINE);
 
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 2,
 		  1, 1);
 
-  meta_data_window->album = gtk_entry_new();
+  meta_data_window->album = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		  meta_data_window->album,
+		  (GtkWidget *) meta_data_window->album,
 		  1, 2,
 		  1, 1);
 
-  label = gtk_label_new(i18n("release date"));
+  label = (GtkLabel *) gtk_label_new(i18n("release date"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_BASELINE);
 
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 3,
 		  1, 1);
 
-  meta_data_window->release_date = gtk_entry_new();
+  meta_data_window->release_date = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		  meta_data_window->release_date,
+		  (GtkWidget *) meta_data_window->release_date,
 		  1, 3,
 		  1, 1);
 
-  label = gtk_label_new(i18n("copyright"));
+  label = (GtkLabel *) gtk_label_new(i18n("copyright"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_BASELINE);
 
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 4,
 		  1, 1);
 
-  meta_data_window->copyright = gtk_entry_new();
+  meta_data_window->copyright = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		  meta_data_window->copyright,
+		  (GtkWidget *) meta_data_window->copyright,
 		  1, 4,
 		  1, 1);
 
-  label = gtk_label_new(i18n("license"));
+  label = (GtkLabel *) gtk_label_new(i18n("license"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_BASELINE);
 
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 5,
 		  1, 1);
 
-  meta_data_window->license = gtk_entry_new();
+  meta_data_window->license = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
-		  meta_data_window->license,
+		  (GtkWidget *) meta_data_window->license,
 		  1, 5,
 		  1, 1);
 
-  label = gtk_label_new(i18n("comment"));
+  label = (GtkLabel *) gtk_label_new(i18n("comment"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
-		  label,
+		  (GtkWidget *) label,
 		  0, 6,
 		  1, 1);
 
-  scrolled_window = gtk_scrolled_window_new();
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_size_request(scrolled_window,
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
 			      500, 300);
   
   gtk_grid_attach(grid,
-		  scrolled_window,
+		  (GtkWidget *) scrolled_window,
 		  1, 6,
 		  1, 1);
   
-  meta_data_window->comment = gtk_text_view_new();
+  meta_data_window->comment = (GtkTextView *) gtk_text_view_new();
 
-  gtk_widget_set_halign(meta_data_window->comment,
+  gtk_widget_set_halign((GtkWidget *) meta_data_window->comment,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(meta_data_window->comment,
+  gtk_widget_set_valign((GtkWidget *) meta_data_window->comment,
 			GTK_ALIGN_FILL);
   
   gtk_scrolled_window_set_child(scrolled_window,
-				meta_data_window->comment);
+				(GtkWidget *) meta_data_window->comment);
 }
 
 /**

@@ -35,5 +35,5 @@ ags_sheet_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
 					    gint width, gint height,
 					    AgsSheetEdit *sheet_edit)
 {  
-  gtk_widget_queue_draw(sheet_edit);
+  gtk_widget_queue_draw((GtkWidget *) sheet_edit);
 }

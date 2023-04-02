@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -143,7 +143,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(connection_editor_bulk),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(connection_editor_bulk,
+  gtk_box_set_spacing((GtkBox *) connection_editor_bulk,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   connection_editor_bulk->connectable_flags = 0;
@@ -152,8 +152,8 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   
   /* output */
   grid =
-    connection_editor_bulk->output_grid = gtk_grid_new();
-  gtk_widget_set_visible(connection_editor_bulk->output_grid,
+    connection_editor_bulk->output_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_visible((GtkWidget *) connection_editor_bulk->output_grid,
 			 FALSE);
 
   gtk_widget_set_valign((GtkWidget *) grid,
@@ -169,7 +169,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   gtk_box_append((GtkBox *) connection_editor_bulk,
 		 (GtkWidget *) grid);
 
-  label = gtk_label_new(i18n("soundcard"));
+  label = (GtkLabel *) gtk_label_new(i18n("soundcard"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -194,10 +194,12 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 				 "text", 0,
 				 NULL);
 
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  model = gtk_list_store_new(2,
+			     G_TYPE_STRING,
+			     G_TYPE_POINTER);
 
   gtk_combo_box_set_model(connection_editor_bulk->output_soundcard,
-			  model);
+			  GTK_TREE_MODEL(model));
   
   label = gtk_label_new(i18n("first line"));
 
@@ -217,7 +219,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 1,
 		  1, 1);
 
-  label = gtk_label_new(i18n("first soundcard line"));
+  label = (GtkLabel *) gtk_label_new(i18n("first soundcard line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -253,7 +255,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 3,
 		  1, 1);
 
-  connection_editor_bulk->output_remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
+  connection_editor_bulk->output_remove_bulk = (GtkButton *) gtk_button_new_from_icon_name("list-remove-symbolic");
   gtk_grid_attach(grid,
 		  (GtkWidget *) connection_editor_bulk->output_remove_bulk,
 		  3, 3,
@@ -261,8 +263,8 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 
   /* input */
   grid =
-    connection_editor_bulk->input_grid = gtk_grid_new();
-  gtk_widget_set_visible(connection_editor_bulk->input_grid,
+    connection_editor_bulk->input_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_visible((GtkWidget *) connection_editor_bulk->input_grid,
 			 FALSE);
 
   gtk_widget_set_valign((GtkWidget *) grid,
@@ -278,7 +280,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
   gtk_box_append((GtkBox *) connection_editor_bulk,
 		 (GtkWidget *) grid);
 
-  label = gtk_label_new(i18n("soundcard"));
+  label = (GtkLabel *) gtk_label_new(i18n("soundcard"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -303,12 +305,14 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 				 "text", 0,
 				 NULL);
 
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  model = gtk_list_store_new(2,
+			     G_TYPE_STRING,
+			     G_TYPE_POINTER);
 
   gtk_combo_box_set_model(connection_editor_bulk->input_soundcard,
-			  model);
+			  GTK_TREE_MODEL(model));
 
-  label = gtk_label_new(i18n("first line"));
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -326,7 +330,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 1,
 		  1, 1);
 
-  label = gtk_label_new(i18n("first soundcard line"));
+  label = (GtkLabel *) gtk_label_new(i18n("first soundcard line"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -344,7 +348,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 2,
 		  1, 1);
 
-  label = gtk_label_new(i18n("count"));
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
 
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
@@ -362,7 +366,7 @@ ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk)
 		  1, 3,
 		  1, 1);
 
-  connection_editor_bulk->input_remove_bulk = gtk_button_new_from_icon_name("list-remove-symbolic");
+  connection_editor_bulk->input_remove_bulk = (GtkButton *) gtk_button_new_from_icon_name("list-remove-symbolic");
   gtk_grid_attach(grid,
 		  (GtkWidget *) connection_editor_bulk->input_remove_bulk,
 		  3, 3,
@@ -482,10 +486,10 @@ ags_connection_editor_bulk_apply(AgsApplicable *applicable)
   
   connection_editor_bulk = AGS_CONNECTION_EDITOR_BULK(applicable);
 
-  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   machine = connection_editor->machine;
@@ -700,10 +704,10 @@ ags_connection_editor_bulk_reset(AgsApplicable *applicable)
 
   application_context = ags_application_context_get_instance();
 
-  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   machine = connection_editor->machine;
@@ -853,10 +857,10 @@ ags_connection_editor_bulk_to_xml_node(AgsConnectionEditorBulk *connection_edito
 
   g_return_val_if_fail(AGS_IS_CONNECTION_EDITOR_BULK(connection_editor_bulk), NULL);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 								      AGS_TYPE_CONNECTION_EDITOR);  
 
-  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor(connection_editor_bulk,
+  connection_editor_collection = (AgsConnectionEditorCollection *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_bulk,
 											   AGS_TYPE_CONNECTION_EDITOR_COLLECTION);
   
   node = NULL;

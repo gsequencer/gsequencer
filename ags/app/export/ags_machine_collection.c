@@ -143,7 +143,7 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_collection),
 				 GTK_ORIENTATION_VERTICAL);
   
-  gtk_box_set_spacing(machine_collection,
+  gtk_box_set_spacing((GtkBox *) machine_collection,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   machine_collection->flags = 0;
@@ -157,17 +157,17 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
   
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
-			TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
+			 TRUE);
   
-  gtk_box_append(GTK_BOX(machine_collection),
+  gtk_box_append((GtkBox *) machine_collection,
 		 (GtkWidget *) scrolled_window);
   
   machine_collection->machine_mapper_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -334,7 +334,7 @@ ags_machine_collection_add_machine_mapper(AgsMachineCollection *machine_collecti
 							machine_mapper);
     
     gtk_box_append(machine_collection->machine_mapper_box,
-		   machine_mapper);
+		   (GtkWidget *) machine_mapper);
   }
 }
 
@@ -359,7 +359,7 @@ ags_machine_collection_remove_machine_mapper(AgsMachineCollection *machine_colle
 						       machine_mapper);
     
     gtk_box_remove(machine_collection->machine_mapper_box,
-		   machine_mapper);
+		   (GtkWidget *) machine_mapper);
   }
 }
 
@@ -368,7 +368,6 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
 {
   AgsWindow *window;
   AgsMidiExportWizard *midi_export_wizard;
-  GtkWidget *parent;
 
   AgsApplicationContext *application_context;
   

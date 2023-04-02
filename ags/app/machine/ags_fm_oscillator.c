@@ -173,9 +173,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  1, 1);
   
   /* wave */
-  label = gtk_label_new(i18n("wave"));
+  label = (GtkLabel *) gtk_label_new(i18n("wave"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   
   gtk_grid_attach(grid,
@@ -234,9 +234,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   gtk_combo_box_set_active(fm_oscillator->wave, 0);
 
   /* other controls */
-  label = gtk_label_new(i18n("attack"));
+  label = (GtkLabel *) gtk_label_new(i18n("attack"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -250,9 +250,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  4, 0,
 		  1, 1);
 
-  label = gtk_label_new(i18n("length"));
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -266,9 +266,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  6, 0,
 		  1, 1);
 
-  label = gtk_label_new(i18n("phase"));
+  label = (GtkLabel *) gtk_label_new(i18n("phase"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -282,9 +282,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  2, 1,
 		  1, 1);
 
-  label = gtk_label_new(i18n("frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("frequency"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -300,9 +300,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  4, 1,
 		  1, 1);
 
-  label = gtk_label_new(i18n("volume"));
+  label = (GtkLabel *) gtk_label_new(i18n("volume"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -360,9 +360,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   }
 
   /* LFO wave */
-  label = gtk_label_new(i18n("LFO wave"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO wave"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -421,9 +421,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   gtk_combo_box_set_active(fm_oscillator->fm_lfo_wave, 0);
 
   /* LFO controls */
-  label = gtk_label_new(i18n("LFO frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO frequency"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -439,9 +439,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  4, 2,
 		  1, 1);
 
-  label = gtk_label_new(i18n("LFO depth"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO depth"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -457,9 +457,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  6, 2,
 		  1, 1);
 
-  label = gtk_label_new(i18n("LFO tuning"));
+  label = (GtkLabel *) gtk_label_new(i18n("LFO tuning"));
 
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,

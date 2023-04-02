@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
   notation_meta->flags = 0;
   notation_meta->connectable_flags = 0;
 
-  grid = gtk_grid_new();
+  grid = (GtkWidget *) gtk_grid_new();
   gtk_box_append((GtkBox *) notation_meta,
 		 (GtkWidget *) grid);
 
@@ -340,8 +340,8 @@ ags_notation_meta_connect(AgsConnectable *connectable)
 
   notation_meta->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
-  composite_editor = gtk_widget_get_ancestor(notation_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor != NULL){
     g_signal_connect_after(composite_editor, "machine-changed",
@@ -363,8 +363,8 @@ ags_notation_meta_disconnect(AgsConnectable *connectable)
 
   notation_meta->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
-  composite_editor = gtk_widget_get_ancestor(notation_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor != NULL){
     g_object_disconnect(composite_editor,
@@ -392,42 +392,42 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     return;
   }
   
-  composite_editor = gtk_widget_get_ancestor(notation_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsNotationMeta *) gtk_widget_get_ancestor((GtkWidget *) notation_meta,
+								 AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor == NULL){
     return;
   }
 
   if(composite_editor->selected_machine == NULL){
-    gtk_label_set_label(notation_meta->machine_type,
+    gtk_label_set_label((GtkLabel *) notation_meta->machine_type,
 			"(null)"); 
 
-    gtk_label_set_label(notation_meta->machine_name,
+    gtk_label_set_label((GtkLabel *) notation_meta->machine_name,
 			"(null)"); 
 
-    gtk_label_set_label(notation_meta->audio_channels,
+    gtk_label_set_label((GtkLabel *) notation_meta->audio_channels,
 			"-1");
 
-    gtk_label_set_label(notation_meta->output_pads,
+    gtk_label_set_label((GtkLabel *) notation_meta->output_pads,
 			"-1"); 
 
-    gtk_label_set_label(notation_meta->input_pads,
+    gtk_label_set_label((GtkLabel *) notation_meta->input_pads,
 			"-1"); 
 
-    gtk_label_set_label(notation_meta->editor_tool,
+    gtk_label_set_label((GtkLabel *) notation_meta->editor_tool,
 			"(null)");
 
-    gtk_label_set_label(notation_meta->active_audio_channel,
+    gtk_label_set_label((GtkLabel *) notation_meta->active_audio_channel,
 			"(null)"); 
 
-    gtk_label_set_label(notation_meta->cursor_x_position,
+    gtk_label_set_label((GtkLabel *) notation_meta->cursor_x_position,
 			"-1"); 
 
-    gtk_label_set_label(notation_meta->cursor_y_position,
+    gtk_label_set_label((GtkLabel *) notation_meta->cursor_y_position,
 			"-1"); 
 
-    gtk_label_set_label(notation_meta->current_note,
+    gtk_label_set_label((GtkLabel *) notation_meta->current_note,
 			"(null)"); 
   }else{
     AgsTimestamp *timestamp;
@@ -480,13 +480,13 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 
     str = NULL;
 
-    if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
+    if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->position){
       str = i18n("position");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->edit){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->edit){
       str = i18n("edit");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->clear){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->clear){
       str = i18n("clear");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->select){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->select){
       str = i18n("select");
     }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -148,13 +148,13 @@ ags_position_wave_cursor_dialog_init(AgsPositionWaveCursorDialog *position_wave_
 	       "title", i18n("position wave cursor"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(position_wave_cursor_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) position_wave_cursor_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_wave_cursor_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) position_wave_cursor_dialog),
+		 (GtkWidget *) vbox);
 
   /* set focus */
   position_wave_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
@@ -252,7 +252,6 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;    
   AgsWaveEdit *focused_wave_edit;
-  AgsMachine *machine;
   GtkWidget *widget;
 
   GtkAdjustment *hadjustment;
@@ -268,15 +267,13 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   composite_editor = window->composite_editor;
 
   composite_toolbar = composite_editor->toolbar;
 
-  machine = composite_editor->selected_machine;
-
-  focused_wave_edit = composite_editor->wave_edit->focused_edit;
+  focused_wave_edit = (AgsCompositeEdit *) composite_editor->wave_edit->focused_edit;
     
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
   

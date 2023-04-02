@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -161,14 +161,14 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_valign(grid,
+  gtk_widget_set_valign((GtkWidget *) grid,
 			GTK_ALIGN_START);
-  gtk_widget_set_halign(grid,
+  gtk_widget_set_halign((GtkWidget *) grid,
 			GTK_ALIGN_START);
   
-  gtk_widget_set_vexpand(grid,
+  gtk_widget_set_vexpand((GtkWidget *) grid,
 			 FALSE);
-  gtk_widget_set_hexpand(grid,
+  gtk_widget_set_hexpand((GtkWidget *) grid,
 			 FALSE);
 
   gtk_grid_set_column_spacing(grid,
@@ -314,7 +314,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   
   export_soundcard->filename = (GtkEntry *) gtk_entry_new_with_buffer(entry_buffer);
 
-  gtk_widget_set_hexpand(export_soundcard->filename,
+  gtk_widget_set_hexpand((GtkWidget *) export_soundcard->filename,
 			 TRUE);
   
   gtk_box_append((GtkBox *) hbox,

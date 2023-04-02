@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -139,7 +139,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 								       NULL);
   line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
 			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
-  ags_line_add_line_member(AGS_LINE(drum_input_line),
+  ags_line_add_line_member((AgsLine *) drum_input_line,
 			   line_member,
 			   0, 0,
 			   1, 1);
@@ -167,8 +167,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 								     "specifier", "./volume[0]",
 								     "control-port", "2/2",
 								     NULL);
-  ags_line_add_line_member(AGS_LINE(drum_input_line),
-			   GTK_WIDGET(line_member),
+  ags_line_add_line_member((AgsLine *) drum_input_line,
+			   line_member,
 			   1, 0,
 			   1, 1);
 

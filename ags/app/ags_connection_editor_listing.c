@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -176,9 +176,9 @@ ags_connection_editor_listing_init(AgsConnectionEditorListing *connection_editor
   
   connection_editor_listing->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
 
-  gtk_widget_set_halign(connection_editor_listing->enabled,
+  gtk_widget_set_halign((GtkWidget *) connection_editor_listing->enabled,
 			GTK_ALIGN_START);
-  gtk_widget_set_valign(connection_editor_listing->enabled,
+  gtk_widget_set_valign((GtkWidget *) connection_editor_listing->enabled,
 			GTK_ALIGN_START);
   
   gtk_box_append((GtkBox *) connection_editor_listing,
@@ -355,7 +355,7 @@ ags_connection_editor_listing_reset(AgsApplicable *applicable)
   
   connection_editor_listing = AGS_CONNECTION_EDITOR_LISTING(applicable);
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(connection_editor_listing,
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor((GtkWidget *) connection_editor_listing,
 								      AGS_TYPE_CONNECTION_EDITOR);
   
   pad =
@@ -485,7 +485,7 @@ ags_connection_editor_listing_add_pad(AgsConnectionEditorListing *connection_edi
 						    pad);
     
     gtk_box_append(connection_editor_listing->pad_box,
-		   pad);
+		   (GtkWidget *) pad);
   }
 }
 
@@ -510,7 +510,7 @@ ags_connection_editor_listing_remove_pad(AgsConnectionEditorListing *connection_
 						   pad);
     
     gtk_box_remove(connection_editor_listing->pad_box,
-		   pad);
+		   (GtkWidget *) pad);
   }
 }
 

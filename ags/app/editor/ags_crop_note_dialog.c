@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -103,7 +103,6 @@ void
 ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_crop_note_dialog_parent_class = g_type_class_peek_parent(crop_note_dialog);
 
@@ -111,9 +110,6 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
   gobject = (GObjectClass *) crop_note_dialog;
 
   gobject->finalize = ags_crop_note_dialog_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) crop_note_dialog;
 }
 
 void
@@ -151,7 +147,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append(gtk_dialog_get_content_area(crop_note_dialog),
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) crop_note_dialog),
 		 GTK_WIDGET(vbox));  
 
   /* absolute */
@@ -313,7 +309,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   composite_editor = window->composite_editor;
 

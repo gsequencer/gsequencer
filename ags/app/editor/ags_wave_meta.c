@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -108,7 +108,7 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   
   wave_meta->flags = 0;
 
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_append((GtkBox *) wave_meta,
 		 (GtkWidget *) grid);
 
@@ -296,12 +296,12 @@ ags_wave_meta_connect(AgsConnectable *connectable)
 
   wave_meta->flags |= AGS_WAVE_META_CONNECTED;
 
-  composite_editor = gtk_widget_get_ancestor(wave_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor != NULL){
-    g_signal_connect_after(composite_editor, "machine-changed",
-			   G_CALLBACK(ags_wave_meta_machine_changed_callback), wave_meta);
+    g_signal_connect_after((GObject *) composite_editor, "machine-changed",
+			   G_CALLBACK(ags_wave_meta_machine_changed_callback), (gpointer) wave_meta);
   }
 }
 
@@ -319,8 +319,8 @@ ags_wave_meta_disconnect(AgsConnectable *connectable)
 
   wave_meta->flags &= (~AGS_WAVE_META_CONNECTED);
 
-  composite_editor = gtk_widget_get_ancestor(wave_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
   
   if(composite_editor != NULL){
     g_object_disconnect(composite_editor,
@@ -348,8 +348,8 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
     return;
   }
   
-  composite_editor = gtk_widget_get_ancestor(wave_meta,
-					     AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_meta,
+								    AGS_TYPE_COMPOSITE_EDITOR);
 
   if(composite_editor == NULL){
     return;
@@ -386,7 +386,6 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
     guint output_pads, input_pads;
     gint active_start, active_end;
     gint position;
-    guint i;
 
     gtk_label_set_label(wave_meta->machine_type,
 			G_OBJECT_TYPE_NAME(composite_editor->selected_machine)); 
@@ -423,9 +422,9 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
 
     str = NULL;
 
-    if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->position){
+    if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->position){
       str = i18n("position");
-    }else if(composite_editor->toolbar->selected_tool == composite_editor->toolbar->select){
+    }else if(composite_editor->toolbar->selected_tool == (GtkButton *) composite_editor->toolbar->select){
       str = i18n("select");
     }
 

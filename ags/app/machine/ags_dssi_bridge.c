@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -223,7 +223,6 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
-  GtkGrid *grid;
 
   AgsAudio *audio;
 
@@ -260,15 +259,15 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    dssi_bridge);
+					    (AgsMachine *) dssi_bridge);
   
   audio = AGS_MACHINE(dssi_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -353,14 +352,14 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  dssi_bridge->program = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_append(hbox,
 		 (GtkWidget *) dssi_bridge->program);
 
   /* effect bridge */
   AGS_MACHINE(dssi_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->parent_machine = dssi_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->parent_machine = (GtkWidget *) dssi_bridge;
 
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge);

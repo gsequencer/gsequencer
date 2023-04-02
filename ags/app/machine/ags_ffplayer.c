@@ -212,15 +212,15 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    ffplayer);
+					    (AgsMachine *) ffplayer);
 
   audio = AGS_MACHINE(ffplayer)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -319,12 +319,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
 
-  gtk_widget_set_valign(vbox,
+  gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(vbox,
+  gtk_widget_set_halign((GtkWidget *) vbox,
 			GTK_ALIGN_START);
 
-  gtk_widget_set_hexpand(vbox,
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
 
   gtk_box_set_spacing(vbox,
@@ -600,7 +600,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       0);
 
-  gtk_widget_set_hexpand(aliase_hbox,
+  gtk_widget_set_hexpand((GtkWidget *) aliase_hbox,
 			 FALSE);
 
   gtk_box_set_spacing(aliase_hbox,
@@ -716,7 +716,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							   2.0,
 							   0.025);
   
-  gtk_widget_set_size_request(ffplayer->volume,
+  gtk_widget_set_size_request((GtkWidget *) ffplayer->volume,
 			      (gint) (gui_scale_factor * 16.0), (gint) (gui_scale_factor * 100.0));
   
   gtk_box_append(volume_hbox,
@@ -733,9 +733,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			 TRUE);  
 
   /* effect bridge */
-  AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
+  AGS_MACHINE(ffplayer)->bridge = (GtkGrid *) ags_ffplayer_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(ffplayer)->bridge)->parent_machine = ffplayer;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(ffplayer)->bridge)->parent_machine = (GtkWidget *) ffplayer;
   
   gtk_box_append(vbox,
 		 (GtkWidget *) AGS_MACHINE(ffplayer)->bridge);
@@ -792,7 +792,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
 
   gtk_drawing_area_set_draw_func(ffplayer->drawing_area,
-				 ags_ffplayer_draw_callback,
+				 (GtkDrawingAreaDrawFunc) ags_ffplayer_draw_callback,
 				 ffplayer,
 				 NULL);
 
@@ -996,7 +996,6 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 void
 ags_ffplayer_map_recall(AgsMachine *machine)
 {
-  AgsNavigation *navigation;
   AgsFFPlayer *ffplayer;
   
   AgsAudio *audio;
@@ -1013,8 +1012,6 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   }
 
   application_context = ags_application_context_get_instance();
-
-  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   ffplayer = AGS_FFPLAYER(machine);
 
@@ -1442,7 +1439,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   /* pitch type */
   pitch_type = "ags-fluid-4th-order";
 
-  str = gtk_combo_box_text_get_active_text(ffplayer->pitch_function);
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ffplayer->pitch_function));
 
   if(!g_ascii_strncasecmp(str,
 			  "ags-fast-pitch",
@@ -1698,19 +1695,19 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	gtk_widget_hide((GtkWidget *) ffplayer->sf2_loader_spinner);
 
 #if 0
-	gtk_widget_set_sensitive(ffplayer->filename,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->filename,
 				 TRUE);
 #endif
 	
-	gtk_widget_set_sensitive(ffplayer->preset,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->preset,
 				 TRUE);
-	gtk_widget_set_sensitive(ffplayer->instrument,
-				 TRUE);
-
-	gtk_widget_set_sensitive(ffplayer->open,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->instrument,
 				 TRUE);
 
-	gtk_widget_set_sensitive(ffplayer->update,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->open,
+				 TRUE);
+
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->update,
 				 TRUE);
       }
     }else{
@@ -1721,19 +1718,19 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	gtk_spinner_start(ffplayer->sf2_loader_spinner);
 
 #if 0
-	gtk_widget_set_sensitive(ffplayer->filename,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->filename,
 				 FALSE);
 #endif
 	
-	gtk_widget_set_sensitive(ffplayer->preset,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->preset,
 				 FALSE);
-	gtk_widget_set_sensitive(ffplayer->instrument,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->instrument,
 				 FALSE);
 	
-	gtk_widget_set_sensitive(ffplayer->open,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->open,
 				 FALSE);
 
-	gtk_widget_set_sensitive(ffplayer->update,
+	gtk_widget_set_sensitive((GtkWidget *) ffplayer->update,
 				 FALSE);
       }
     }

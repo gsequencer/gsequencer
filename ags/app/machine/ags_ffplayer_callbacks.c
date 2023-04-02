@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,7 +40,7 @@ void
 ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   if(ffplayer->open_dialog != NULL){
-    gtk_window_destroy(ffplayer->open_dialog);
+    gtk_window_destroy((GtkWindow *) ffplayer->open_dialog);
   }
 }
 
@@ -66,7 +66,7 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area,
   gboolean fg_success;
   gboolean bg_success;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
   
   gtk_widget_get_allocation((GtkWidget *) ffplayer->drawing_area,
 			    &allocation);
@@ -222,17 +222,19 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area,
 void
 ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
+  AgsWindow *window;
   GtkFileChooserDialog *file_chooser;
 
   GFile *file;
 
-  file_chooser = gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
-					     gtk_widget_get_ancestor(ffplayer,
-								     AGS_TYPE_WINDOW),
-					     GTK_FILE_CHOOSER_ACTION_OPEN,
-					     i18n("_OK"), GTK_RESPONSE_ACCEPT,
-					     i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-					     NULL);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) ffplayer,
+						 AGS_TYPE_WINDOW);
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open Soundfont2 file"),
+								      (GtkWindow *) window,
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
+								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 
@@ -270,7 +272,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
   }
 
   ffplayer->open_dialog = NULL;
-  gtk_window_destroy(widget);
+  gtk_window_destroy((GtkWindow *) widget);
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset), 0);
 }
@@ -363,11 +365,11 @@ ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ff
 void
 ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
-  ags_ffplayer_update((GtkWidget *) ffplayer);
+  ags_ffplayer_update(ffplayer);
 }
 
 void
-ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
+ags_ffplayer_enable_aliase_callback(GtkToggleButton *toggle, AgsFFPlayer *ffplayer)
 {
   AgsChannel *start_input;
   AgsChannel *channel;
@@ -376,7 +378,7 @@ ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   gfloat enabled;
 
-  enabled = gtk_toggle_button_get_active(widget) ? 1.0: 0.0;
+  enabled = gtk_toggle_button_get_active(toggle) ? 1.0: 0.0;
   
   start_input = NULL;
   

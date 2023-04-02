@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -253,7 +253,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   /* length */
   label = (GtkLabel *) gtk_label_new(i18n("length"));
   
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -272,7 +272,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   /* phase */
   label = (GtkLabel *) gtk_label_new(i18n("phase"));
   
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -290,7 +290,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   /* frequency */
   label = (GtkLabel *) gtk_label_new(i18n("frequency"));
   
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
@@ -310,7 +310,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   /* volume */
   label = (GtkLabel *) gtk_label_new(i18n("volume"));
   
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -167,8 +167,6 @@ void
 ags_connection_editor_line_init(AgsConnectionEditorLine *connection_editor_line)
 {
   GtkGrid *grid;
-
-  GtkLabel *label;
   
   GtkCellRenderer *cell_renderer;
   GtkListStore *model;
@@ -185,7 +183,7 @@ ags_connection_editor_line_init(AgsConnectionEditorLine *connection_editor_line)
 
   connection_editor_line->channel = NULL;
 
-  grid = gtk_grid_new();
+  grid = (GtkGrid *) gtk_grid_new();
 
   gtk_grid_set_column_spacing(grid,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
@@ -195,20 +193,20 @@ ags_connection_editor_line_init(AgsConnectionEditorLine *connection_editor_line)
   gtk_box_append((GtkBox *) connection_editor_line,
 		 (GtkWidget *) grid);
 
-  connection_editor_line->output_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						   AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_widget_set_visible(connection_editor_line->output_box,
+  connection_editor_line->output_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+							      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_widget_set_visible((GtkWidget *) connection_editor_line->output_box,
 			 FALSE);
   gtk_grid_attach(grid,
 		  (GtkWidget *) connection_editor_line->output_box,
 		  0, 0,
 		  1, 1);
 
-  connection_editor_line->output_label = gtk_label_new(i18n("line"));
+  connection_editor_line->output_label = (GtkLabel *) gtk_label_new(i18n("line"));
   gtk_box_append(connection_editor_line->output_box,
 		 (GtkWidget *) connection_editor_line->output_label);
   
-  connection_editor_line->output_soundcard = gtk_combo_box_new();
+  connection_editor_line->output_soundcard = (GtkComboBox *) gtk_combo_box_new();
   gtk_box_append(connection_editor_line->output_box,
 		 (GtkWidget *) connection_editor_line->output_soundcard);
 
@@ -224,28 +222,28 @@ ags_connection_editor_line_init(AgsConnectionEditorLine *connection_editor_line)
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 
   gtk_combo_box_set_model(connection_editor_line->output_soundcard,
-			  model);
+			  GTK_TREE_MODEL(model));
   
-  connection_editor_line->output_line = gtk_spin_button_new_with_range(0.0,
-								       0.0,
-								       1.0);
+  connection_editor_line->output_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											 0.0,
+											 1.0);
   gtk_box_append(connection_editor_line->output_box,
 		 (GtkWidget *) connection_editor_line->output_line);
   
-  connection_editor_line->input_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						  AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_widget_set_visible(connection_editor_line->input_box,
+  connection_editor_line->input_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+							     AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_widget_set_visible((GtkWidget *) connection_editor_line->input_box,
 			 FALSE);
   gtk_grid_attach(grid,
 		  (GtkWidget *) connection_editor_line->input_box,
 		  0, 1,
 		  1, 1);
 
-  connection_editor_line->input_label = gtk_label_new(i18n("line"));
+  connection_editor_line->input_label = (GtkLabel *) gtk_label_new(i18n("line"));
   gtk_box_append(connection_editor_line->input_box,
 		 (GtkWidget *) connection_editor_line->input_label);
   
-  connection_editor_line->input_soundcard = gtk_combo_box_new();
+  connection_editor_line->input_soundcard = (GtkComboBox *) gtk_combo_box_new();
   gtk_box_append(connection_editor_line->input_box,
 		 (GtkWidget *) connection_editor_line->input_soundcard);
 
@@ -261,11 +259,11 @@ ags_connection_editor_line_init(AgsConnectionEditorLine *connection_editor_line)
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 
   gtk_combo_box_set_model(connection_editor_line->input_soundcard,
-			  model);
+			  GTK_TREE_MODEL(model));
 
-  connection_editor_line->input_line = gtk_spin_button_new_with_range(0.0,
-								       0.0,
-								       1.0);
+  connection_editor_line->input_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											0.0,
+											1.0);
   gtk_box_append(connection_editor_line->input_box,
 		 (GtkWidget *) connection_editor_line->input_line);
 }
@@ -393,6 +391,8 @@ ags_connection_editor_line_set_update(AgsApplicable *applicable, gboolean update
   AgsConnectionEditorLine *connection_editor_line;
 
   connection_editor_line = AGS_CONNECTION_EDITOR_LINE(applicable);
+
+  //TODO:JK: implement me
 }
 
 void

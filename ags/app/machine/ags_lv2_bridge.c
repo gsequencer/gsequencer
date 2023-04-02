@@ -339,15 +339,15 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    lv2_bridge);
+					    (AgsMachine *) lv2_bridge);
 
   if(ags_lv2_bridge_lv2ui_handle == NULL){
     ags_lv2_bridge_lv2ui_handle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -453,7 +453,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   hbox =
     lv2_bridge->program_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						      AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_widget_set_visible(lv2_bridge->program_hbox,
+  gtk_widget_set_visible((GtkWidget *) lv2_bridge->program_hbox,
 			 FALSE);
   gtk_box_append(lv2_bridge->vbox,
 		 (GtkWidget *) hbox);
@@ -462,7 +462,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  lv2_bridge->program = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_append(hbox,
 		 (GtkWidget *) lv2_bridge->program);
       
@@ -478,7 +478,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   hbox =
     lv2_bridge->preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						     AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_widget_set_visible(lv2_bridge->preset_hbox,
+  gtk_widget_set_visible((GtkWidget *) lv2_bridge->preset_hbox,
 			 FALSE);
   gtk_box_append(lv2_bridge->vbox,
 		 (GtkWidget *) hbox);
@@ -487,14 +487,14 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  lv2_bridge->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
+  lv2_bridge->preset = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_append(hbox,
 		 (GtkWidget *) lv2_bridge->preset);
   
   /* effect bridge */  
-  AGS_MACHINE(lv2_bridge)->bridge = ags_effect_bridge_new(audio);
+  AGS_MACHINE(lv2_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->parent_machine = lv2_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->parent_machine = (GtkWidget *) lv2_bridge;
 
   gtk_box_append(lv2_bridge->vbox,
 		 (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
@@ -774,8 +774,9 @@ ags_lv2_bridge_finalize(GObject *gobject)
   }
 
   if(lv2_bridge->lv2_window != NULL){
-    g_object_run_dispose(lv2_bridge->lv2_window);
-    g_object_unref(lv2_bridge->lv2_window);
+    g_object_run_dispose(G_OBJECT(lv2_bridge->lv2_window));
+    
+    g_object_unref(G_OBJECT(lv2_bridge->lv2_window));
   }
   
   /* call parent */
@@ -1290,7 +1291,7 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
   }
   
   if(lv2_plugin == NULL){
-    gtk_widget_set_visible(lv2_bridge->program_hbox,
+    gtk_widget_set_visible((GtkWidget *) lv2_bridge->program_hbox,
 			   FALSE);
     
     return;
@@ -1311,6 +1312,8 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
     
     uint32_t i;
 
+    model = NULL;
+    
     if(lv2_bridge->lv2_handle == NULL){
       guint samplerate;
       guint buffer_size;
@@ -1385,10 +1388,10 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
   }
 
   if(success){
-    gtk_widget_set_visible(lv2_bridge->program_hbox,
+    gtk_widget_set_visible((GtkWidget *) lv2_bridge->program_hbox,
 			   TRUE);
   }else{
-    gtk_widget_set_visible(lv2_bridge->program_hbox,
+    gtk_widget_set_visible((GtkWidget *) lv2_bridge->program_hbox,
 			   FALSE);
   }
 }
@@ -1416,7 +1419,7 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   }
   
   if(lv2_plugin == NULL){
-    gtk_widget_set_visible(lv2_bridge->preset_hbox,
+    gtk_widget_set_visible((GtkWidget *) lv2_bridge->preset_hbox,
 			   FALSE);
 
     return;
@@ -1441,10 +1444,10 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   }
 
   if(success){
-    gtk_widget_set_visible(lv2_bridge->preset_hbox,
+    gtk_widget_set_visible((GtkWidget *) lv2_bridge->preset_hbox,
 			   TRUE);
   }else{
-    gtk_widget_set_visible(lv2_bridge->preset_hbox,
+    gtk_widget_set_visible((GtkWidget *) lv2_bridge->preset_hbox,
 			   FALSE);
   }
 

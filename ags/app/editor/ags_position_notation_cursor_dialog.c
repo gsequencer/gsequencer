@@ -142,7 +142,7 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 
   position_notation_cursor_dialog->connectable_flags = 0;
 
-  gtk_window_set_hide_on_close(position_notation_cursor_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) position_notation_cursor_dialog,
 			       TRUE);
   
   g_object_set(position_notation_cursor_dialog,
@@ -151,26 +151,26 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(position_notation_cursor_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *)position_notation_cursor_dialog),
+		 (GtkWidget *) vbox);
 
   /* set focus */
   position_notation_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
   gtk_check_button_set_active(position_notation_cursor_dialog->set_focus,
 			      TRUE);
   gtk_box_append(vbox,
-		 GTK_WIDGET(position_notation_cursor_dialog->set_focus));  
+		 (GtkWidget *) position_notation_cursor_dialog->set_focus);
 
   /* position x - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* position x - label */
   label = (GtkLabel *) gtk_label_new(i18n("position x"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* position x - spin button */
   position_notation_cursor_dialog->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -179,18 +179,18 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
   gtk_spin_button_set_value(position_notation_cursor_dialog->position_x,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
-		 GTK_WIDGET(position_notation_cursor_dialog->position_x));
+		 (GtkWidget *) position_notation_cursor_dialog->position_x);
   
   /* position y - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* position y - label */
   label = (GtkLabel *) gtk_label_new(i18n("position y"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* position y - spin button */
   position_notation_cursor_dialog->position_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -199,7 +199,7 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
   gtk_spin_button_set_value(position_notation_cursor_dialog->position_y,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(position_notation_cursor_dialog->position_y));
+		 (GtkWidget *) position_notation_cursor_dialog->position_y);
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) position_notation_cursor_dialog,
@@ -270,7 +270,6 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsMachine *machine;
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
-  GtkWidget *editor;
   AgsNotationEdit *notation_edit;
   GtkWidget *widget;
   
@@ -279,16 +278,17 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsApplicationContext *application_context;
 
   gdouble zoom;
-  guint map_height, height;
+  //NOTE:JK: some deco
+  //  guint map_height, height;
   guint history;
-  guint x, y;
+  guint x; //, y;
   
   position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(applicable);
 
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   composite_editor = window->composite_editor;
 
@@ -306,7 +306,7 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   
   x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
 
-  notation_edit = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit;
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
     notation_edit->cursor_position_x = 16 * x;

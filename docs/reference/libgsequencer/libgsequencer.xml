@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
@@ -17,6 +17,19 @@
 
 <book id="index">
   <bookinfo>
+    <legalnotice><para>Copyright (C)</para></legalnotice>
+    <author>
+      <honorific>Mr</honorific>
+      <firstname>Jo&euml;l</firstname>
+      <surname>Krähemann</surname>
+      <affiliation>
+	<shortaffil>Informatiker EFZ</shortaffil>
+	<jobtitle>Developer</jobtitle>
+	<orgname>kr&auml;hemann.com</orgname>
+	<orgdiv>Application Developement</orgdiv>
+      </affiliation>
+    </author>
+
     <title>Advanced Gtk+ Sequencer Application Reference Manual</title>
     <releaseinfo>
       for libgsequencer.

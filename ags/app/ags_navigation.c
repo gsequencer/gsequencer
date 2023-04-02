@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -321,9 +321,9 @@ ags_navigation_init(AgsNavigation *navigation)
 
 
   /* expansion */
-  navigation->expansion_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					  AGS_UI_PROVIDER_DEFAULT_PADDING);
-  gtk_box_append(navigation,
+  navigation->expansion_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) navigation->expansion_box);
 
   label = (GtkLabel *) gtk_label_new(i18n("loop L"));

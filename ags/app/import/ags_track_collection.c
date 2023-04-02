@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -174,7 +174,7 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(track_collection),
 				 GTK_ORIENTATION_VERTICAL);
   
-  gtk_box_set_spacing(track_collection,
+  gtk_box_set_spacing((GtkBox *) track_collection,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   track_collection->midi_doc = NULL;
@@ -196,14 +196,14 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
-  gtk_widget_set_halign(scrolled_window,
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(scrolled_window,
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
 			GTK_ALIGN_FILL);
 
-  gtk_widget_set_hexpand(scrolled_window,
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
 			 TRUE);
-  gtk_widget_set_vexpand(scrolled_window,
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
 			TRUE);
 
   gtk_box_append((GtkBox *) track_collection,
@@ -413,7 +413,7 @@ ags_track_collection_add_track_mapper(AgsTrackCollection *track_collection,
 						    track_mapper);
     
     gtk_box_append(track_collection->track_mapper_box,
-		   track_mapper);
+		   (GtkWidget *) track_mapper);
   }
 }
 
@@ -438,7 +438,7 @@ ags_track_collection_remove_track_mapper(AgsTrackCollection *track_collection,
 						   track_mapper);
     
     gtk_box_remove(track_collection->track_mapper_box,
-		   track_mapper);
+		   (GtkWidget *) track_mapper);
   }
 }
 

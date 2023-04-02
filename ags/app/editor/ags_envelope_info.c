@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,7 +114,6 @@ void
 ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
 
   ags_envelope_info_parent_class = g_type_class_peek_parent(envelope_info);
 
@@ -150,14 +149,13 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   GtkCellRenderer *renderer;
   
   GtkListStore  *model;
-  GtkTreeIter iter;
   
   gdouble width, height;
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(envelope_info),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_box_set_spacing(envelope_info,
+  gtk_box_set_spacing((GtkBox *) envelope_info,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   envelope_info->flags = 0;
@@ -184,9 +182,9 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   height = cartesian->y_end - cartesian->y_start;
 
   /* cartesian - size, pack and redraw */
-  gtk_widget_set_valign(cartesian,
+  gtk_widget_set_valign((GtkWidget *) cartesian,
 			GTK_ALIGN_START);
-  gtk_widget_set_halign(cartesian,
+  gtk_widget_set_halign((GtkWidget *) cartesian,
 			GTK_ALIGN_START);
 
   gtk_widget_set_size_request((GtkWidget *) cartesian,
@@ -467,8 +465,6 @@ ags_envelope_info_y_label_func(gdouble value,
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 {
-  AgsEnvelopeDialog *envelope_dialog;
-
   AgsCartesian *cartesian;
   AgsPlot *plot;
 
@@ -479,7 +475,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   
   GList *selection;
 
-  complex z;
+  double _Complex z;
   gdouble default_width, default_height;
   gdouble offset;
   gboolean do_plot;
@@ -487,9 +483,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   if(!AGS_IS_ENVELOPE_INFO(envelope_info)){
     return;
   }
-
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_info,
-								  AGS_TYPE_ENVELOPE_DIALOG);
 
   /* cartesian */
   cartesian = envelope_info->cartesian;

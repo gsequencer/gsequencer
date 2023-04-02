@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -194,15 +194,15 @@ ags_drum_init(AgsDrum *drum)
   g_free(machine_name);
 
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    drum);
+					    (AgsMachine *) drum);
 
   audio = AGS_MACHINE(drum)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -296,12 +296,12 @@ ags_drum_init(AgsDrum *drum)
   /* input pad */
   AGS_MACHINE(drum)->input_pad_grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_valign(AGS_MACHINE(drum)->input_pad_grid,
+  gtk_widget_set_valign((GtkWidget *) AGS_MACHINE(drum)->input_pad_grid,
 			GTK_ALIGN_START);  
-  gtk_widget_set_halign(AGS_MACHINE(drum)->input_pad_grid,
+  gtk_widget_set_halign((GtkWidget *) AGS_MACHINE(drum)->input_pad_grid,
 			GTK_ALIGN_START);
   
-  gtk_widget_set_hexpand(AGS_MACHINE(drum)->input_pad_grid,
+  gtk_widget_set_hexpand((GtkWidget *) AGS_MACHINE(drum)->input_pad_grid,
 			 FALSE);
 
   gtk_grid_set_column_spacing(AGS_MACHINE(drum)->input_pad_grid,
@@ -315,10 +315,10 @@ ags_drum_init(AgsDrum *drum)
   /* output pad */
   AGS_MACHINE(drum)->output_pad_grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_halign(AGS_MACHINE(drum)->output_pad_grid,
+  gtk_widget_set_halign((GtkWidget *) AGS_MACHINE(drum)->output_pad_grid,
 			GTK_ALIGN_START);
   
-  gtk_widget_set_hexpand(AGS_MACHINE(drum)->output_pad_grid,
+  gtk_widget_set_hexpand((GtkWidget *) AGS_MACHINE(drum)->output_pad_grid,
 			 FALSE);
 
   gtk_grid_set_column_spacing(AGS_MACHINE(drum)->output_pad_grid,
@@ -731,7 +731,6 @@ ags_drum_resize_pads(AgsMachine *machine,
 void
 ags_drum_map_recall(AgsMachine *machine)
 {
-  AgsNavigation *navigation;
   AgsDrum *drum;
   
   AgsAudio *audio;
@@ -748,8 +747,6 @@ ags_drum_map_recall(AgsMachine *machine)
   }
 
   application_context = ags_application_context_get_instance();
-
-  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
   
   drum = AGS_DRUM(machine);
   

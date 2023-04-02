@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -609,7 +609,7 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
       gtk_widget_queue_draw((GtkWidget *) composite_editor->automation_edit->ruler);
 
       list = 
-	start_list = ags_automation_edit_box_get_automation_edit(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
+	start_list = ags_automation_edit_box_get_automation_edit((AgsAutomationEditBox *) AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box);
 
       while(list != NULL){
 	gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(list->data)->drawing_area);
@@ -636,7 +636,7 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
       gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit->ruler);
 
       list = 
-	start_list = ags_wave_edit_box_get_wave_edit(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
+	start_list = ags_wave_edit_box_get_wave_edit((AgsWaveEditBox *) AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box);
 
       while(list != NULL){
 	gtk_widget_queue_draw((GtkWidget *) AGS_WAVE_EDIT(list->data)->drawing_area);

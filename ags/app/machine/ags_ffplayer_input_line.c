@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -126,7 +126,7 @@ ags_ffplayer_input_line_finalize(GObject *gobject)
 void
 ags_ffplayer_input_line_connect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_LINE_CONNECTED & (AGS_EFFECT_LINE(connectable)->flags)) != 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_LINE(connectable)->flags)) != 0){
     return;
   }
 
@@ -136,7 +136,7 @@ ags_ffplayer_input_line_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_input_line_disconnect(AgsConnectable *connectable)
 {
-  if((AGS_EFFECT_LINE_CONNECTED & (AGS_EFFECT_LINE(connectable)->flags)) == 0){
+  if((AGS_CONNECTABLE_CONNECTED & (AGS_EFFECT_LINE(connectable)->flags)) == 0){
     return;
   }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   ags_automation_edit_reset_vscrollbar(automation_edit);
   ags_automation_edit_reset_hscrollbar(automation_edit);
 
-  gtk_widget_queue_draw(automation_edit);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit);
 }
 
 void

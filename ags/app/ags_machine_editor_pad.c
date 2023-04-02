@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -365,7 +365,7 @@ ags_machine_editor_pad_reset(AgsApplicable *applicable)
   
   machine_editor_pad = AGS_MACHINE_EDITOR_PAD(applicable);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(machine_editor_pad,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_editor_pad,
 								AGS_TYPE_MACHINE_EDITOR);
   
   line =
@@ -496,10 +496,10 @@ ags_machine_editor_pad_add_line(AgsMachineEditorPad *machine_editor_pad,
     machine_editor_pad->line = g_list_prepend(machine_editor_pad->line,
 					      line);
 
-    line->parent_machine_editor_pad = machine_editor_pad;
+    line->parent_machine_editor_pad = (GtkWidget *) machine_editor_pad;
     
     gtk_box_append(machine_editor_pad->line_box,
-		   line);
+		   (GtkWidget *) line);
   }
 }
 
@@ -526,7 +526,7 @@ ags_machine_editor_pad_remove_line(AgsMachineEditorPad *machine_editor_pad,
     line->parent_machine_editor_pad = NULL;
     
     gtk_box_remove(machine_editor_pad->line_box,
-		   line);
+		   (GtkWidget *) line);
   }
 }
 

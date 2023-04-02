@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -264,15 +264,15 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   g_free(machine_name);
   
   /* machine selector */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   position = g_list_length(window->machine);
   
   ags_machine_selector_popup_insert_machine(composite_editor->machine_selector,
 					    position,
-					    live_dssi_bridge);
+					    (AgsMachine *) live_dssi_bridge);
 
   audio = AGS_MACHINE(live_dssi_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
@@ -336,7 +336,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_hexpand(vbox,
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
   
   gtk_frame_set_child(AGS_MACHINE(live_dssi_bridge)->frame,
@@ -352,16 +352,16 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  live_dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  live_dssi_bridge->program = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_append(hbox,
 		 (GtkWidget *) live_dssi_bridge->program);
 
   /* effect bridge */
-  AGS_MACHINE(live_dssi_bridge)->bridge = ags_effect_bridge_new(audio);
+  AGS_MACHINE(live_dssi_bridge)->bridge = (GtkGrid *) ags_effect_bridge_new(audio);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->parent_machine = live_dssi_bridge;
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->parent_machine = (GtkWidget *) live_dssi_bridge;
 
-  gtk_widget_set_hexpand(AGS_MACHINE(live_dssi_bridge)->bridge,
+  gtk_widget_set_hexpand((GtkWidget *) AGS_MACHINE(live_dssi_bridge)->bridge,
 			 FALSE);
 
   gtk_box_append(vbox,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,31 +147,31 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 	       "title", i18n("select notes"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(select_note_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) select_note_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_note_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) select_note_dialog),
+		 (GtkWidget *) vbox);
 
   /* copy selection */
   select_note_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
   gtk_check_button_set_active(select_note_dialog->copy_selection,
 			      TRUE);
   gtk_box_append(vbox,
-		 GTK_WIDGET(select_note_dialog->copy_selection));  
+		 (GtkWidget *) select_note_dialog->copy_selection);  
 
   /* select x0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* select x0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x0"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* select x0 - spin button */
   select_note_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -180,18 +180,18 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   gtk_spin_button_set_value(select_note_dialog->select_x0,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_note_dialog->select_x0));
+		 (GtkWidget *) select_note_dialog->select_x0);
   
   /* select y0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* select y0 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select y0"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* select y0 - spin button */
   select_note_dialog->select_y0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -200,18 +200,18 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   gtk_spin_button_set_value(select_note_dialog->select_y0,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_note_dialog->select_y0));
+		 (GtkWidget *) select_note_dialog->select_y0);
 
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* select x1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select x1"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* select x1 - spin button */
   select_note_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -220,18 +220,18 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   gtk_spin_button_set_value(select_note_dialog->select_x1,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_note_dialog->select_x1));
+		 (GtkWidget *) select_note_dialog->select_x1);
 
   /* select y1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_append(vbox,
-		 GTK_WIDGET(hbox));
+		 (GtkWidget *) hbox);
 
   /* select y1 - label */
   label = (GtkLabel *) gtk_label_new(i18n("select y1"));
   gtk_box_append(hbox,
-		 GTK_WIDGET(label));
+		 (GtkWidget *) label);
 
   /* select y1 - spin button */
   select_note_dialog->select_y1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -240,7 +240,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   gtk_spin_button_set_value(select_note_dialog->select_y1,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_note_dialog->select_y1));
+		 (GtkWidget *) select_note_dialog->select_y1);
   
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_note_dialog,
@@ -337,7 +337,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   composite_editor = window->composite_editor;
 

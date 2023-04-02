@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,7 +47,7 @@ void ags_pitch_sampler_lfo_phase_callback(GtkSpinButton *spin_button, AgsPitchSa
 void ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
 
-void ags_pitch_sampler_enable_aliase_callback(GtkWidget *widget, AgsPitchSampler *pitch_sampler);
+void ags_pitch_sampler_enable_aliase_callback(GtkToggleButton *toggle, AgsPitchSampler *pitch_sampler);
 
 void ags_pitch_sampler_aliase_a_amount_callback(AgsDial *dial, AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_aliase_a_phase_callback(AgsDial *dial, AgsPitchSampler *pitch_sampler);
