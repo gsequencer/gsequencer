@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -149,13 +149,13 @@ ags_time_stretch_buffer_dialog_init(AgsTimeStretchBufferDialog *time_stretch_buf
 	       "title", i18n("time stretch buffers"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(time_stretch_buffer_dialog,
+  gtk_window_set_hide_on_close((GtkWidget*) time_stretch_buffer_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(time_stretch_buffer_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) time_stretch_buffer_dialog),
+		 (GtkWidget *) vbox);  
   
   /* frequency - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -292,7 +292,6 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
   AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
-  AgsWaveEdit *focused_wave_edit;
 
   AgsAudio *audio;
   
@@ -324,14 +323,12 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   composite_editor = window->composite_editor;
 
   machine = composite_editor->selected_machine;
 
-  focused_wave_edit = composite_editor->wave_edit->focused_edit;
-    
   notebook = composite_editor->wave_edit->channel_selector;
   
   audio = machine->audio;
@@ -468,7 +465,7 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 
 	ags_time_stretch_util_stretch(&time_stretch_util);
 
-	current_new_wave = ags_wave_new(audio,
+	current_new_wave = ags_wave_new((GObject *) audio,
 					i);
 
 	g_object_set(current_new_wave,
@@ -517,7 +514,7 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
       
 	  /* iterate */
 	  if(floor(j / relative_offset) < floor((j + buffer_size) / relative_offset)){
-	    current_new_wave = ags_wave_new(audio,
+	    current_new_wave = ags_wave_new((GObject *) audio,
 					    i);
 
 	    g_object_set(current_new_wave,

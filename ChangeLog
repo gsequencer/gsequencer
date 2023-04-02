@@ -1,7 +1,7 @@
 ags (4.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: fixed type safety with recent clang
+	* fixed type safety with recent clang
 	* added ags_pad_test_flags(), ags_pad_set_flags() and ags_pad_unset_flags()
 	* added ags_line_test_flags(), ags_line_set_flags() and ags_line_unset_flags()
 	* added ags_effect_pad_test_flags(), ags_effect_pad_set_flags() and ags_effect_pad_unset_flags()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,8 +104,6 @@ ags_sheet_edit_get_type(void)
 void
 ags_sheet_edit_class_init(AgsSheetEditClass *sheet_edit)
 {
-  GtkWidgetClass *widget;
-  
   GObjectClass *gobject;
   
   ags_sheet_edit_parent_class = g_type_class_peek_parent(sheet_edit);
@@ -114,9 +112,6 @@ ags_sheet_edit_class_init(AgsSheetEditClass *sheet_edit)
   gobject = G_OBJECT_CLASS(sheet_edit);
 
   gobject->finalize = ags_sheet_edit_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) sheet_edit;
 }
 
 void
@@ -131,8 +126,6 @@ ags_sheet_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
 {
-  GtkAdjustment *adjustment;
-
   AgsSheetEditScript *g_clef_script, *f_clef_script;
   
   sheet_edit->flags = 0;
@@ -172,9 +165,9 @@ ags_sheet_edit_init(AgsSheetEdit *sheet_edit)
   gtk_widget_set_focusable((GtkWidget *) sheet_edit->drawing_area,
 			   TRUE);
 
-  gtk_widget_set_halign(sheet_edit->drawing_area,
+  gtk_widget_set_halign((GtkWidget *) sheet_edit->drawing_area,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign(sheet_edit->drawing_area,
+  gtk_widget_set_valign((GtkWidget *) sheet_edit->drawing_area,
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_hexpand((GtkWidget *) sheet_edit->drawing_area,
@@ -263,7 +256,7 @@ ags_sheet_edit_connect(AgsConnectable *connectable)
   
   /* drawing area */
   gtk_drawing_area_set_draw_func(sheet_edit->drawing_area,
-				 ags_sheet_edit_draw_callback,
+				 (GtkDrawingAreaDrawFunc) ags_sheet_edit_draw_callback,
 				 sheet_edit,
 				 NULL);
 
@@ -1031,6 +1024,8 @@ ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
   
   cairo_set_line_width(cr, 1.0);
 
+  i = 0;
+  
   do{
     PangoLayout *layout;
     PangoFontDescription *desc;
@@ -1081,6 +1076,8 @@ ags_sheet_edit_draw_clef(AgsSheetEdit *sheet_edit, cairo_t *cr,
     			    layout);
     
     current_y0 += (4.0 * (current->font_size / 2.0) + current->margin_bottom + (current->staff_extends_bottom * (current->font_size / 2.0)));
+
+    i++;
   }while((current = current->companion_script) != NULL);
 }
 
@@ -1805,12 +1802,9 @@ void
 ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
 {
   AgsCompositeEditor *composite_editor;
-  AgsCompositeToolbar *toolbar;
   AgsMachine *selected_machine;
 
   GtkStyleContext *style_context;
-
-  AgsApplicationContext *application_context;
 
   GList *start_script, *script;
   GList *start_notation, *notation;
@@ -1819,20 +1813,16 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit, cairo_t *cr)
   gdouble page_width, page_height;
   gdouble y0;
   
-  application_context = ags_application_context_get_instance();
-
   style_context = gtk_widget_get_style_context((GtkWidget *) sheet_edit);
 
   /*  */
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) sheet_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
     
-  toolbar = composite_editor->toolbar;
-
   selected_machine = composite_editor->selected_machine;
 
-  width = gtk_widget_get_width(sheet_edit);
-  height = gtk_widget_get_height(sheet_edit);
+  width = gtk_widget_get_width((GtkWidget *) sheet_edit);
+  height = gtk_widget_get_height((GtkWidget *) sheet_edit);
 
   if(sheet_edit->page_orientation == GTK_PAGE_ORIENTATION_PORTRAIT){
     page_width = AGS_SHEET_EDIT_DEFAULT_WIDTH;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -258,7 +258,7 @@ ags_wave_edit_box_add_wave_edit(AgsWaveEditBox *wave_edit_box,
 		     G_CALLBACK(ags_wave_edit_box_notify_height_request_callback), wave_edit_box);
     
     gtk_box_append(wave_edit_box,
-		   wave_edit);
+		   (GtkWidget *) wave_edit);
   }
 }
 
@@ -292,7 +292,7 @@ ags_wave_edit_box_remove_wave_edit(AgsWaveEditBox *wave_edit_box,
 					     wave_edit);
 
     gtk_box_remove(wave_edit_box,
-		   wave_edit);
+		   (GtkWidget *) wave_edit);
   }
 }
 
