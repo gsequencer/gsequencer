@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -153,13 +153,13 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 	       "title", i18n("select accelerations"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(select_acceleration_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) select_acceleration_dialog,
 			       TRUE);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
-  gtk_box_append((GtkBox *) gtk_dialog_get_content_area(select_acceleration_dialog),
-		 GTK_WIDGET(vbox));  
+  gtk_box_append((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) select_acceleration_dialog),
+		 (GtkWidget *) vbox);  
 
   /* copy selection */
   select_acceleration_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
@@ -268,14 +268,14 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
    /* application context */
   application_context = ags_application_context_get_instance();
   
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
-  g_signal_connect(select_acceleration_dialog, "response",
-		   G_CALLBACK(ags_select_acceleration_dialog_response_callback), select_acceleration_dialog);
+  g_signal_connect((GObject *) select_acceleration_dialog, "response",
+		   G_CALLBACK(ags_select_acceleration_dialog_response_callback), (gpointer) select_acceleration_dialog);
 
   /* machine changed */
-  g_signal_connect_after(window->composite_editor, "machine-changed",
-			 G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);
+  g_signal_connect_after((GObject *) window->composite_editor, "machine-changed",
+			 G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), (gpointer) select_acceleration_dialog);
 }
 
 void
@@ -296,7 +296,7 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
   
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
     
   g_object_disconnect(G_OBJECT(select_acceleration_dialog),
 		      "any_signal::response",
@@ -375,13 +375,13 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   composite_editor = window->composite_editor;
 
   machine = composite_editor->selected_machine;
 
-  focused_automation_edit = composite_editor->automation_edit->focused_edit;
+  focused_automation_edit = (AgsAutomationEdit *) composite_editor->automation_edit->focused_edit;
     
   notebook = composite_editor->automation_edit->channel_selector;
   

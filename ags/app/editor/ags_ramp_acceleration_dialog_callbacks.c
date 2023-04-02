@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,7 +78,7 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   /* application context */
   application_context = ags_application_context_get_instance();
   
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   composite_editor = window->composite_editor;
 

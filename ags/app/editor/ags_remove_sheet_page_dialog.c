@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,7 +142,7 @@ ags_remove_sheet_page_dialog_init(AgsRemoveSheetPageDialog *remove_sheet_page_di
 	       "title", i18n("remove sheet page"),
 	       NULL);
 
-  gtk_window_set_hide_on_close(remove_sheet_page_dialog,
+  gtk_window_set_hide_on_close((GtkWindow *) remove_sheet_page_dialog,
 			       TRUE);
   
   //TODO:JK: implement me
