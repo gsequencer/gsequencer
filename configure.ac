@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[4.5.0],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[4.5.1],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -215,9 +215,11 @@ AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
 
 AC_SUBST([GSEQUENCER_CFLAGS])
+AC_SUBST([GSEQUENCER_CXXFLAGS])
 AC_SUBST([GSEQUENCER_LDFLAGS])
 
 AC_SUBST([MIDI2XML_CFLAGS])
+AC_SUBST([MIDI2XML_CXXFLAGS])
 AC_SUBST([MIDI2XML_LDFLAGS])
 
 AC_SUBST([LIBAGS_CPPFLAGS])
@@ -482,12 +484,27 @@ AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
 WITH_VST3=0
 
+if test "${LIBAGS_VST3_LIBDIR+set}" = set; then
+echo "variable \$LIBAGS_VST3_LIBDIR is set to: $LIBAGS_VST3_LIBDIR"
+else
+LIBAGS_VST3_LIBDIR="-L$libexecdir/lib/vst3"
+echo "variable \$LIBAGS_VST3_LIBDIR is set to: $LIBAGS_VST3_LIBDIR"
+fi
+
+if test "${LIBAGS_VST3_LIBS+set}" = set; then
+echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
+else
+LIBAGS_VST3_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription"
+echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
+fi
+
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
       AC_SUBST(LIBAGS_VST3_RELEASE_TYPE)
       AC_SUBST(LIBAGS_VST3_CPPFLAGS)
       AC_SUBST(LIBAGS_VST3_CXXFLAGS)
       AC_SUBST(LIBAGS_VST3_LDFLAGS)
+      AC_SUBST(LIBAGS_VST3_LIBDIR)
       AC_SUBST(LIBAGS_VST3_LIBS)
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
