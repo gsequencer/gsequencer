@@ -3215,6 +3215,10 @@ libags_vst_h_sources = \
 
 deprecated_libags_vst_c_sources =
 
+EXTRA_DIST += \
+	ags/vst3-capi/host/updatehandler.h \
+	ags/vst3-capi/host/updatehandler.cpp
+
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
 	ags/vst3-capi/host/ags_vst_component_handler.cpp \

@@ -4,6 +4,7 @@ ags (4.5.1)
 	* added check LIBAGS_VST3_LIBDIR and LIBAGS_VST3_LIBS environment before set in configure.ac
 	* improved configure.ac and Makefile.am GSEQUENCER_CFLAGS, MIDI2XML_CFLAGS, MIDI2XML_CXXFLAGS and MIDI2XML_LDFLAGS
 	* modified -std=gnu++2a for gsequencer and midi2xml
+	* fixed ags_composite_editor.c wrong object cast with AgsAutomationEdit
 
 ags (4.5.0)
 
