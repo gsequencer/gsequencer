@@ -2,7 +2,8 @@ ags (4.5.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added check LIBAGS_VST3_LIBDIR and LIBAGS_VST3_LIBS environment before set in configure.ac
-	* improved Makefile.am MIDI2XML_CFLAGS and MIDI2XML_LDFLAGS
+	* improved configure.ac and Makefile.am GSEQUENCER_CFLAGS, MIDI2XML_CFLAGS, MIDI2XML_CXXFLAGS and MIDI2XML_LDFLAGS
+	* modified -std=gnu++2a for gsequencer and midi2xml
 
 ags (4.5.0)
 
