@@ -1,3 +1,8 @@
+ags (4.5.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am set LIBAGS_VST3_LIBDIR and LIBAGS_VST3_LIBS only conditionally
+
 ags (4.5.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
