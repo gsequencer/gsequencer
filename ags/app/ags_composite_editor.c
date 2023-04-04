@@ -1585,8 +1585,8 @@ ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
     automation = automation->next;
   }
 
-  ags_automation_edit_reset_vscrollbar(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->edit));
-  ags_automation_edit_reset_hscrollbar(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->edit));
+  ags_automation_edit_reset_vscrollbar(automation_edit);
+  ags_automation_edit_reset_hscrollbar(automation_edit);
   
   g_list_free_full(start_automation,
 		   g_object_unref);
@@ -2877,7 +2877,7 @@ ags_composite_editor_paste_notation_async(GObject *source_object,
     first_x = 0;
   }
     
-  gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit);
+  gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->focused_edit);
     
   xmlFreeDoc(clipboard); 
 
