@@ -19,7 +19,7 @@ AgsRecallContainer *echo_container;
 
 GObject *soundcard;
 
-soundcard = ags_devout_new(NULL);
+soundcard = ags_alsa_devout_new();
 audio = ags_audio_new(devout);
 
 /* create the container */
