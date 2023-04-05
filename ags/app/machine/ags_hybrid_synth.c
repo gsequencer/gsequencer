@@ -1837,7 +1837,7 @@ ags_hybrid_synth_connect(AgsConnectable *connectable)
   }
 
   ags_hybrid_synth_parent_connectable_interface->connect(connectable);
-
+  
   /* AgsHybridSynth */
   hybrid_synth = AGS_HYBRID_SYNTH(connectable);
 

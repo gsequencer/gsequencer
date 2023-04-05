@@ -103,7 +103,7 @@ ags_hybrid_synth_synth_0_octave_callback(AgsDial *dial, AgsHybridSynth *hybrid_s
 
   while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
-
+    
     port = NULL;
       
     g_object_get(recall->data,
@@ -118,7 +118,7 @@ ags_hybrid_synth_synth_0_octave_callback(AgsDial *dial, AgsHybridSynth *hybrid_s
 
       g_value_set_float(&value,
 			(gfloat) octave);
-
+      
       ags_port_safe_write(port,
 			  &value);
 
