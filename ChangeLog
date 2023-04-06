@@ -1,3 +1,9 @@
+ags (4.5.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_complex_get() return value
+	* fixed ags_complex_get_term() and ags_complex_set_term() gtk-doc function
+
 ags (4.5.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

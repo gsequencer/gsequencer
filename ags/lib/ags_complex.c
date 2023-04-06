@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,7 +119,7 @@ ags_complex_free(AgsComplex *ptr)
  *
  * Since: 3.0.0
  */
-double complex
+double _Complex
 ags_complex_get(AgsComplex *ptr)
 {
   double _Complex z;
@@ -146,7 +146,7 @@ ags_complex_set(AgsComplex *ptr, double _Complex z)
 }
 
 /**
- * ags_complex_get:
+ * ags_complex_get_term:
  * @ptr: the #AgsComplex-struct
  * @real: (out): the real part
  * @imag: (out): the imaginary part
@@ -172,7 +172,7 @@ ags_complex_get_term(AgsComplex *ptr,
 }
 
 /**
- * ags_complex_set:
+ * ags_complex_set_term:
  * @ptr: the #AgsComplex-struct
  * @real: the real part
  * @imag: the imaginary part
