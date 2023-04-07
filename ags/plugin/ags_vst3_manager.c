@@ -519,7 +519,7 @@ ags_vst3_manager_find_vst3_plugin_with_fallback(AgsVst3Manager *vst3_manager,
   if(!AGS_VST3_MANAGER(vst3_manager) ||
      filename == NULL ||
      strlen(filename) <= 0 ||
-     strrchr(filename, "/") == NULL ||
+     strrchr(filename, G_DIR_SEPARATOR) == NULL ||
      effect == NULL ||
      strlen(effect) <= 0){
     return(NULL);
@@ -532,7 +532,7 @@ ags_vst3_manager_find_vst3_plugin_with_fallback(AgsVst3Manager *vst3_manager,
 						  filename, effect);
 
   if(vst3_plugin == NULL){
-    filename_suffix = strrchr(filename, "/");
+    filename_suffix = strrchr(filename, G_DIR_SEPARATOR);
     
     /* collect */
     g_rec_mutex_lock(vst3_manager_mutex);
@@ -719,10 +719,10 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   GetPluginFactory = GetProcAddress(plugin_so,
 				    "GetPluginFactory");
   
-  InitDll = GetProcAddress(base_plugin->plugin_so,
+  InitDll = GetProcAddress(plugin_so,
 			   "InitDll");
 
-  ExitDll = GetProcAddress(base_plugin->plugin_so,
+  ExitDll = GetProcAddress(plugin_so,
 			   "ExitDll");
 
   success = (GetPluginFactory != NULL) ? TRUE: FALSE;
