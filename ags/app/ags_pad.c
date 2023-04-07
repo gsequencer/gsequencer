@@ -41,6 +41,8 @@ void ags_pad_get_property(GObject *gobject,
 void ags_pad_connect(AgsConnectable *connectable);
 void ags_pad_disconnect(AgsConnectable *connectable);
 
+void ags_pad_reset_flags(AgsPad *pad);
+
 void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			       guint audio_channels, guint audio_channels_old);
@@ -402,7 +404,9 @@ ags_pad_init(AgsPad *pad)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(pad),
 				 GTK_ORIENTATION_VERTICAL);  
   
-  pad->flags = 0;
+  pad->flags = (AGS_PAD_SHOW_GROUP |
+		AGS_PAD_SHOW_MUTE |
+		AGS_PAD_SHOW_SOLO);
   pad->connectable_flags = 0;
 
   pad->name = NULL;
@@ -722,9 +726,53 @@ ags_pad_test_flags(AgsPad *pad,
   
   g_return_val_if_fail(AGS_IS_PAD(pad), FALSE);
 
-  retval = (((flags &(pad->flags))) != 0) ? TRUE: FALSE;
+  retval = (((flags & (pad->flags))) != 0) ? TRUE: FALSE;
 
   return(retval);
+}
+
+void
+ags_pad_reset_flags(AgsPad *pad)
+{
+  if(pad->group != NULL){
+    if(!ags_pad_test_flags(pad, AGS_PAD_SHOW_GROUP)){
+      gtk_widget_set_visible((GtkWidget *) pad->group,
+			     FALSE);
+    }else{
+      gtk_widget_set_visible((GtkWidget *) pad->group,
+			     TRUE);
+    }
+  }
+
+  if(pad->mute != NULL){
+    if(!ags_pad_test_flags(pad, AGS_PAD_SHOW_MUTE)){
+      gtk_widget_set_visible((GtkWidget *) pad->mute,
+			     FALSE);
+    }else{
+      gtk_widget_set_visible((GtkWidget *) pad->mute,
+			     TRUE);
+    }
+  }
+
+  if(pad->solo != NULL){
+    if(!ags_pad_test_flags(pad, AGS_PAD_SHOW_SOLO)){
+      gtk_widget_set_visible((GtkWidget *) pad->solo,
+			     FALSE);
+    }else{
+      gtk_widget_set_visible((GtkWidget *) pad->solo,
+			     TRUE);
+    }
+  }
+
+  if(pad->play != NULL){
+    if(!ags_pad_test_flags(pad, AGS_PAD_SHOW_PLAY)){
+      gtk_widget_set_visible((GtkWidget *) pad->play,
+			     FALSE);
+    }else{
+      gtk_widget_set_visible((GtkWidget *) pad->play,
+			     TRUE);
+    }
+  }
 }
 
 /**
@@ -741,10 +789,10 @@ ags_pad_set_flags(AgsPad *pad,
 		  guint flags)
 {
   g_return_if_fail(AGS_IS_PAD(pad));
-
-  //TODO:JK: implement me
   
   pad->flags |= flags;
+
+  ags_pad_reset_flags(pad);
 }
 
 /**
@@ -762,9 +810,9 @@ ags_pad_unset_flags(AgsPad *pad,
 {
   g_return_if_fail(AGS_IS_PAD(pad));
 
-  //TODO:JK: implement me
-  
   pad->flags &= (~flags);
+
+  ags_pad_reset_flags(pad);
 }
 
 /**
