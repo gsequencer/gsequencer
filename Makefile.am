@@ -2512,6 +2512,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_server_preferences.h \
 	ags/app/ags_soundcard_editor_callbacks.h \
 	ags/app/ags_soundcard_editor.h \
+	ags/app/ags_ui_enums.h \
 	ags/app/ags_ui_provider.h \
 	ags/app/ags_window.h \
 	ags/app/ags_window_callbacks.h \
@@ -2634,6 +2635,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_sequencer_editor.c \
 	ags/app/ags_server_preferences.c \
 	ags/app/ags_server_preferences_callbacks.c \
+	ags/app/ags_ui_enums.c \
 	ags/app/ags_ui_provider.c \
 	ags/app/ags_window.c \
 	ags/app/ags_soundcard_editor_callbacks.c \

@@ -65,6 +65,7 @@ struct _AgsPad
 
   guint flags;
   guint connectable_flags;
+  guint ui_recall_flags;
   
   gchar *name;
 
