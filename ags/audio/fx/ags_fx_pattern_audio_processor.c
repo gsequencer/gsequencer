@@ -959,7 +959,7 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
 
       g_rec_mutex_lock(recycling_mutex);
 
-      template = ags_audio_signal_get_template(recycling->audio_signal);
+      template = ags_audio_signal_get_default_template(recycling->audio_signal);
       
       g_rec_mutex_unlock(recycling_mutex);
       

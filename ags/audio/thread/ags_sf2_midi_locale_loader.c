@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,7 @@ enum{
   PROP_BANK,
   PROP_PROGRAM,
   PROP_AUDIO_CONTAINER,
-  PROP_TEMPLATE,
+  PROP_SYNTH_TEMPLATE,
   PROP_SYNTH,
 };
 
@@ -205,18 +205,18 @@ ags_sf2_midi_locale_loader_class_init(AgsSF2MidiLocaleLoaderClass *sf2_midi_loca
 				  param_spec);
 
   /**
-   * AgsSF2MidiLocaleLoader:template:
+   * AgsSF2MidiLocaleLoader:synth-template:
    *
-   * The assigned template.
+   * The assigned synth template.
    * 
    * Since: 3.16.0
    */
-  param_spec = g_param_spec_pointer("template",
-				    i18n_pspec("template"),
-				    i18n_pspec("The template"),
+  param_spec = g_param_spec_pointer("synth-template",
+				    i18n_pspec("synth template"),
+				    i18n_pspec("The synth template"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_TEMPLATE,
+				  PROP_SYNTH_TEMPLATE,
 				  param_spec);
 
   /**
@@ -254,7 +254,7 @@ ags_sf2_midi_locale_loader_init(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader)
   sf2_midi_locale_loader->bank = -1;
   sf2_midi_locale_loader->program = -1;
   
-  sf2_midi_locale_loader->template = NULL;
+  sf2_midi_locale_loader->synth_template = NULL;
   sf2_midi_locale_loader->synth = NULL;
 
   sf2_midi_locale_loader->audio_container = NULL;
@@ -379,15 +379,15 @@ ags_sf2_midi_locale_loader_set_property(GObject *gobject,
     g_rec_mutex_unlock(sf2_midi_locale_loader_mutex);
   }
   break;
-  case PROP_TEMPLATE:
+  case PROP_SYNTH_TEMPLATE:
   {
-    AgsSF2SynthUtil *template;
+    AgsSF2SynthUtil *synth_template;
 
-    template = g_value_get_pointer(value);
+    synth_template = g_value_get_pointer(value);
       
     g_rec_mutex_lock(sf2_midi_locale_loader_mutex);
 
-    sf2_midi_locale_loader->template = template;
+    sf2_midi_locale_loader->synth_template = synth_template;
       
     g_rec_mutex_unlock(sf2_midi_locale_loader_mutex);
   }
@@ -472,11 +472,11 @@ ags_sf2_midi_locale_loader_get_property(GObject *gobject,
     g_rec_mutex_unlock(sf2_midi_locale_loader_mutex);
   }
   break;
-  case PROP_TEMPLATE:
+  case PROP_SYNTH_TEMPLATE:
   {
     g_rec_mutex_lock(sf2_midi_locale_loader_mutex);
       
-    g_value_set_pointer(value, sf2_midi_locale_loader->template);
+    g_value_set_pointer(value, sf2_midi_locale_loader->synth_template);
 
     g_rec_mutex_unlock(sf2_midi_locale_loader_mutex);
   }
@@ -718,67 +718,67 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     
     AgsApplicationContext *application_context;
 
-    AgsSF2SynthUtil *template;
+    AgsSF2SynthUtil *synth_template;
     
     application_context = ags_application_context_get_instance();
 
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
-    template =
-      sf2_midi_locale_loader->template = ags_sf2_synth_util_alloc();
+    synth_template =
+      sf2_midi_locale_loader->synth_template = ags_sf2_synth_util_alloc();
 
-    template->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
+    synth_template->flags |= AGS_SF2_SYNTH_UTIL_COMPUTE_MIDI_LOCALE;
     
-    template->sf2_file = sf2_midi_locale_loader->audio_container;
+    synth_template->sf2_file = sf2_midi_locale_loader->audio_container;
 
-    if(template->sf2_file != NULL){
-      g_object_ref(template->sf2_file);
+    if(synth_template->sf2_file != NULL){
+      g_object_ref(synth_template->sf2_file);
     }
     
-    template->source = ags_stream_alloc(buffer_length,
+    synth_template->source = ags_stream_alloc(buffer_length,
 					format);
 
-    template->sample_buffer = ags_stream_alloc(buffer_length,
+    synth_template->sample_buffer = ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_DOUBLE);
 
-    template->im_buffer = ags_stream_alloc(buffer_length,
+    synth_template->im_buffer = ags_stream_alloc(buffer_length,
 					   AGS_SOUNDCARD_DOUBLE);
 
     /*  */
-    ags_common_pitch_util_set_source(template->pitch_util,
-				     template->pitch_type,
-				     template->sample_buffer);
+    ags_common_pitch_util_set_source(synth_template->pitch_util,
+				     synth_template->pitch_type,
+				     synth_template->sample_buffer);
 
-    ags_common_pitch_util_set_destination(template->pitch_util,
-					  template->pitch_type,
-					  template->im_buffer);
+    ags_common_pitch_util_set_destination(synth_template->pitch_util,
+					  synth_template->pitch_type,
+					  synth_template->im_buffer);
     
-    ags_common_pitch_util_set_buffer_length(template->pitch_util,
-					    template->pitch_type,
+    ags_common_pitch_util_set_buffer_length(synth_template->pitch_util,
+					    synth_template->pitch_type,
 					    buffer_length);
-    ags_common_pitch_util_set_format(template->pitch_util,
-				     template->pitch_type,
+    ags_common_pitch_util_set_format(synth_template->pitch_util,
+				     synth_template->pitch_type,
 				     AGS_SOUNDCARD_DOUBLE);
-    ags_common_pitch_util_set_samplerate(template->pitch_util,
-					 template->pitch_type,
+    ags_common_pitch_util_set_samplerate(synth_template->pitch_util,
+					 synth_template->pitch_type,
 					 samplerate);
 
-    template->volume_util->source = template->im_buffer;
+    synth_template->volume_util->source = synth_template->im_buffer;
     
-    template->volume_util->destination = template->im_buffer;
+    synth_template->volume_util->destination = synth_template->im_buffer;
 
-    template->volume_util->buffer_length = buffer_length;
-    template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
+    synth_template->volume_util->buffer_length = buffer_length;
+    synth_template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
     
-    template->samplerate = samplerate;
-    template->buffer_length = buffer_length;
-    template->format = format;
+    synth_template->samplerate = samplerate;
+    synth_template->buffer_length = buffer_length;
+    synth_template->format = format;
 
-    ags_sf2_synth_util_load_midi_locale(template,
+    ags_sf2_synth_util_load_midi_locale(synth_template,
 					sf2_midi_locale_loader->bank,
 					sf2_midi_locale_loader->program);
     
-    apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(template,
+    apply_sf2_midi_locale = ags_apply_sf2_midi_locale_new(synth_template,
 							  sf2_midi_locale_loader->synth);
     
     ags_task_launcher_add_task(task_launcher,
@@ -1034,50 +1034,50 @@ ags_sf2_midi_locale_loader_set_audio_container(AgsSF2MidiLocaleLoader *sf2_midi_
 }
 
 /**
- * ags_sf2_midi_locale_loader_get_template:
+ * ags_sf2_midi_locale_loader_get_synth_template:
  * @sf2_midi_locale_loader: the #AgsSF2MidiLocaleLoader
  * 
- * Get #AgsSF2SynthUtil-struct template of @sf2_midi_locale_loader.
+ * Get #AgsSF2SynthUtil-struct synth template of @sf2_midi_locale_loader.
  * 
  * Returns: the assigned #AgsSF2SynthUtil-struct
  * 
  * Since: 3.16.0
  */
 AgsSF2SynthUtil*
-ags_sf2_midi_locale_loader_get_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader)
+ags_sf2_midi_locale_loader_get_synth_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader)
 {
-  AgsSF2SynthUtil *template;
+  AgsSF2SynthUtil *synth_template;
 
   if(!AGS_IS_SF2_MIDI_LOCALE_LOADER(sf2_midi_locale_loader)){
     return(NULL);
   }
 
   g_object_get(sf2_midi_locale_loader,
-	       "template", &template,
+	       "synth-template", &synth_template,
 	       NULL);
 
-  return(template);
+  return(synth_template);
 }
 
 /**
- * ags_sf2_midi_locale_loader_set_template:
+ * ags_sf2_midi_locale_loader_set_synth_template:
  * @sf2_midi_locale_loader: the #AgsSF2MidiLocaleLoader
- * @template: the #AgsSF2SynthUtil-struct
+ * @synth_template: the #AgsSF2SynthUtil-struct
  * 
- * Set #AgsSF2SynthUtil-struct template of @sf2_midi_locale_loader.
+ * Set #AgsSF2SynthUtil-struct synth template of @sf2_midi_locale_loader.
  * 
  * Since: 3.16.0
  */
 void
-ags_sf2_midi_locale_loader_set_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader,
-					AgsSF2SynthUtil *template)
+ags_sf2_midi_locale_loader_set_synth_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader,
+					      AgsSF2SynthUtil *synth_template)
 {
   if(!AGS_IS_SF2_MIDI_LOCALE_LOADER(sf2_midi_locale_loader)){
     return;
   }
 
   g_object_set(sf2_midi_locale_loader,
-	       "template", template,
+	       "synth-template", synth_template,
 	       NULL);
 }
 

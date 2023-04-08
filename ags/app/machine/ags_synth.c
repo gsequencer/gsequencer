@@ -521,7 +521,7 @@ ags_synth_update(AgsSynth *synth)
 		 NULL);
     
     /*  */
-    template = ags_audio_signal_get_template(start_list);
+    template = ags_audio_signal_get_default_template(start_list);
 
     clear_audio_signal = ags_clear_audio_signal_new(template);
     task = g_list_prepend(task,

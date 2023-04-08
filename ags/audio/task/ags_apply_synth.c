@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -442,7 +442,7 @@ ags_apply_synth_launch(AgsTask *task)
 		   "audio-signal", &list_start,
 		   NULL);
 	
-      audio_signal = ags_audio_signal_get_template(list_start);
+      audio_signal = ags_audio_signal_get_default_template(list_start);
 
       if(audio_signal == NULL){
 	audio_signal = ags_audio_signal_new(output_soundcard,

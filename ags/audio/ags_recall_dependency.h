@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_recall_id.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RECALL_DEPENDENCY                (ags_recall_dependency_get_type())
 #define AGS_RECALL_DEPENDENCY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependency))
 #define AGS_RECALL_DEPENDENCY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))

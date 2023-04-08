@@ -1510,7 +1510,7 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 
     g_rec_mutex_lock(recycling_mutex);
 
-    template = ags_audio_signal_get_template(recycling->audio_signal);
+    template = ags_audio_signal_get_default_template(recycling->audio_signal);
     
     g_rec_mutex_unlock(recycling_mutex);
 
