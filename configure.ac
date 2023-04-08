@@ -494,7 +494,8 @@ fi
 if test "${LIBAGS_VST3_LIBS+set}" = set; then
 echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
 else
-LIBAGS_VST3_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription"
+# -lvstgui_standalone
+LIBAGS_VST3_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_support -lvstgui_uidescription"
 echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
 fi
 

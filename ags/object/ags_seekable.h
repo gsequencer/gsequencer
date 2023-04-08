@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <unistd.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SEEKABLE                    (ags_seekable_get_type())

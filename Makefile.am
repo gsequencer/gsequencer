@@ -69,11 +69,11 @@ libags_vst3_LIBDIR = @LIBAGS_VST3_LIBDIR@
 libags_vst3_LIBS = @LIBAGS_VST3_LIBS@
 
 if WITH_W32API
-LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
+LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -L/usr/lib -luuid -Wl,-subsystem,windows
 
-gsequencer_LDFLAGS += -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
+gsequencer_LDFLAGS += -L/usr/lib -luuid -Wl,-subsystem,windows
 
-midi2xml_LDFLAGS += -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
+midi2xml_LDFLAGS += -L/usr/lib -luuid -Wl,-subsystem,windows
 endif
 
 # 
@@ -2512,6 +2512,7 @@ libgsequencer_h_sources = \
 	ags/app/ags_server_preferences.h \
 	ags/app/ags_soundcard_editor_callbacks.h \
 	ags/app/ags_soundcard_editor.h \
+	ags/app/ags_ui_enums.h \
 	ags/app/ags_ui_provider.h \
 	ags/app/ags_window.h \
 	ags/app/ags_window_callbacks.h \
@@ -2634,6 +2635,7 @@ libgsequencer_c_sources = \
 	ags/app/ags_sequencer_editor.c \
 	ags/app/ags_server_preferences.c \
 	ags/app/ags_server_preferences_callbacks.c \
+	ags/app/ags_ui_enums.c \
 	ags/app/ags_ui_provider.c \
 	ags/app/ags_window.c \
 	ags/app/ags_soundcard_editor_callbacks.c \

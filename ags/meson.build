@@ -85,8 +85,16 @@ if get_option('w32api')
 ags_config.set('AGS_WITH_W32API', true)
 endif
 
+if get_option('w32-exe-env')
+ags_config.set('AGS_W32_EXE_ENV', true)
+endif
+
 if get_option('osxapi')
 ags_config.set('AGS_WITH_OSXAPI', true)
+endif
+
+if get_option('osx-dmg-env')
+ags_config.set('AGS_OSX_DMG_ENV', true)
 endif
 
 if get_option('alsa')

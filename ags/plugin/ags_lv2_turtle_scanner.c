@@ -1885,7 +1885,7 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 	g_free(name);
 	
 	name = tmp;
-      }else if(name[0] = '"'){
+      }else if(name[0] == '"'){
 	gchar *tmp;
 
 	tmp = g_strndup(name + 1,

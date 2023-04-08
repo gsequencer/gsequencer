@@ -47,13 +47,16 @@ typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
 
 typedef enum{
-  AGS_PAD_SHOW_GROUPING       = 1,
-  AGS_PAD_GROUP_ALL           = 1 <<  1,
-  AGS_PAD_GROUP_LINE          = 1 <<  2,
-  AGS_PAD_MAPPED_RECALL       = 1 <<  3,
-  AGS_PAD_PREMAPPED_RECALL    = 1 <<  4,
-  AGS_PAD_BLOCK_PLAY          = 1 <<  5,
-  AGS_PAD_BLOCK_STOP          = 1 <<  6,
+  AGS_PAD_SHOW_GROUP          = 1,
+  AGS_PAD_SHOW_MUTE           = 1 <<  1,
+  AGS_PAD_SHOW_SOLO           = 1 <<  2,
+  AGS_PAD_SHOW_PLAY           = 1 <<  3,
+  AGS_PAD_GROUP_ALL           = 1 <<  4,
+  AGS_PAD_GROUP_LINE          = 1 <<  5,
+  AGS_PAD_MAPPED_RECALL       = 1 <<  6,
+  AGS_PAD_PREMAPPED_RECALL    = 1 <<  7,
+  AGS_PAD_BLOCK_PLAY          = 1 <<  8,
+  AGS_PAD_BLOCK_STOP          = 1 <<  9,
 }AgsPadFlags;
 
 struct _AgsPad
@@ -62,6 +65,7 @@ struct _AgsPad
 
   guint flags;
   guint connectable_flags;
+  guint ui_recall_flags;
   
   gchar *name;
 

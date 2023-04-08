@@ -6,8 +6,12 @@ option('alsa', type: 'boolean', value: false,
        description: 'Enable Linux alsa build')
 option('w32api', type: 'boolean', value: false,
        description: 'Enable Windows build')
+option('w32-exe-env', type: 'boolean', value: false,
+       description: 'Enable Windows exe environment')
 option('osxapi', type: 'boolean', value: false,
        description: 'Enable OSX build')
+option('osx-dmg-env', type: 'boolean', value: false,
+       description: 'Enable OS X DMG environment')
 option('oss', type: 'boolean', value: false,
        description: 'Enable OSS')
 option('core_audio', type: 'boolean', value: false,
