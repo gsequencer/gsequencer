@@ -201,10 +201,14 @@ AC_ARG_WITH([gstreamer],
             [with_gstreamer=yes])
 
 # Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
-AC_PROG_CXX
 AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 gl_EARLY
 
@@ -232,6 +236,20 @@ AC_SUBST([LIBGSEQUENCER_CPPFLAGS])
 AC_SUBST([LIBGSEQUENCER_TEST_LIBADD])
 
 AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
+
+# Checks for libraries.
+# FIXME: Replace 'main' with a function in '-lcrypt':
+AC_CHECK_LIB([crypt], [main])
+# FIXME: Replace 'main' with a function in '-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace 'main' with a function in '-lgnu':
+AC_CHECK_LIB([gnu], [main])
+# FIXME: Replace 'main' with a function in '-lm':
+AC_CHECK_LIB([m], [main])
+# FIXME: Replace 'main' with a function in '-lrt':
+AC_CHECK_LIB([rt], [main])
+# FIXME: Replace 'main' with a function in '-luuid':
+AC_CHECK_LIB([uuid], [main])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
@@ -268,7 +286,7 @@ AS_IF([test "x$enable_rt" != xno],
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([stdlib.h string.h unistd.h], , AC_MSG_ERROR("missing headers"))
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h mach/mach.h netinet/in.h stdint.h strings.h sys/ioctl.h sys/socket.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -555,10 +573,11 @@ AS_IF([test "x$enable_fast_test_mode" == xyes],
 AM_CONDITIONAL([FAST_TEST_MODE], [test "x$enable_fast_test_mode" == xyes])
 
 # Checks for library functions.
+AM_GNU_GETTEXT
 AC_FUNC_MALLOC
-AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor memmove memset pow putenv realpath regcomp setlocale sqrt strchr strdup strerror strrchr strstr strtoul])
+AC_FUNC_STRTOD
+AC_CHECK_FUNCS([atexit clock_gettime floor memmove memset pow putenv realpath regcomp setlocale sqrt strchr strdup strerror strrchr strstr strtoul uname])
 
 AC_CANONICAL_HOST
 

@@ -17,6 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "gsequencer_main.h"
+
 #include "config.h"
 
 #include <glib.h>
@@ -49,8 +51,30 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <ags/app/ags_gsequencer_application.h>
+#include <ags/app/ags_gsequencer_application_context.h>
+#include <ags/app/ags_gsequencer_resource.h>
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
+
 #if defined(AGS_OSX_DMG_ENV)
 #include <Foundation/Foundation.h>
+#endif
+
+#include <stdbool.h>
+
+#include <libintl.h>
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+//#include <ao/ao.h>
+
+#include <sys/types.h>
+
+#if defined(AGS_W32API)
+#else
+#include <pwd.h>
 #endif
 
 #define _GNU_SOURCE
@@ -62,14 +86,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #endif
-
-#include <ags/app/ags_gsequencer_application.h>
-#include <ags/app/ags_gsequencer_application_context.h>
-#include <ags/app/ags_gsequencer_resource.h>
-#include <ags/app/ags_ui_provider.h>
-#include <ags/app/ags_window.h>
-
-#include "gsequencer_main.h"
 
 #include <ags/i18n.h>
 
