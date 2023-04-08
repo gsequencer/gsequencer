@@ -162,11 +162,11 @@ if fix_me_and_disable
   compiler_flags += '-w'
 endif
 
+
 cxx_compiler_flags = [
   '-std=gnu++2a',
   '-DRELEASE',
   '-I/usr/include/vst3',
-  '-I/usr/include/uuid'
 ]
 
 libags_sources = files(
