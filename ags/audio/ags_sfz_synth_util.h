@@ -179,7 +179,7 @@ void ags_sfz_synth_util_set_pitch_type(AgsSFZSynthUtil *sfz_synth_util,
 
 gpointer ags_sfz_synth_util_get_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
-				       gpointer generic_pitch_util);
+				       gpointer pitch_util);
 
 void ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util);
 

@@ -4154,7 +4154,7 @@ ags_lfo_synth_util_compute_triangle_complex(AgsLFOSynthUtil *lfo_synth_util)
 }
 
 /**
- * ags_lfo_synth_util_compute_sin:
+ * ags_lfo_synth_util_compute_triangle:
  * @lfo_synth_util: the #AgsLFOSynthUtil-struct
  * 
  * Compute LFO triangle synth.

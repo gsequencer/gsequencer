@@ -108,7 +108,7 @@ void ags_fm_synth_util_set_volume(AgsFMSynthUtil *fm_synth_util,
 
 guint ags_fm_synth_util_get_lfo_oscillator_mode(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_lfo_oscillator_mode(AgsFMSynthUtil *fm_synth_util,
-					       guint synth_oscillator_mode);
+					       guint lfo_oscillator_mode);
 
 gdouble ags_fm_synth_util_get_lfo_frequency(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_lfo_frequency(AgsFMSynthUtil *fm_synth_util,

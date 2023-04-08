@@ -957,7 +957,7 @@ ags_phase_shift_util_process_complex(AgsPhaseShiftUtil *phase_shift_util)
 }
 
 /**
- * ags_phase_shift_util_process_complex:
+ * ags_phase_shift_util_process:
  * @phase_shift_util: the #AgsPhaseShiftUtil-struct
  * 
  * Process phase shift of @phase_shift_util.
