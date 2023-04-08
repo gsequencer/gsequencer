@@ -73,10 +73,10 @@ Build with VST3 support
 
 To build gsequencer with VST3 support you need download and compile the VST3 SDK. Then you can set some env variables configure is aware of.
 
-export CXXFLAGS="-include cstdio -std=gnu++20 -fpermissive"
+export CXXFLAGS="-include cstdio -include limits -std=gnu++20 -fpermissive"
 export LIBAGS_VST3_RELEASE_TYPE="-DRELEASE"
-export LIBAGS_VST3_CPPFLAGS="-I$HOME/github/vst3sdk"
-export LIBAGS_VST3_LIBDIR="-L$HOME/github/vst3sdk/build/lib"
+export LIBAGS_VST3_CXXFLAGS="-I$HOME/github/VST_SDK/vst3sdk"
+export LIBAGS_VST3_LIBDIR="-L$HOME/github/VST_SDK/build/lib"
 
 $ ./configure --prefix=/usr --enable-vst3
 $ make -j8

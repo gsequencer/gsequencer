@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,8 +28,6 @@
 #include <ags/lib/ags_uuid.h>
 
 #include <ags/object/ags_config.h>
-
-#include <unistd.h>
 
 G_BEGIN_DECLS
 

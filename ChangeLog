@@ -1,3 +1,20 @@
+ags (4.5.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_pad_reset_flags()
+	* implemented ags_ui_enums.c
+	* fixed ags_lv2_turtle_scanner.c memory corruption
+	* fixed ags_complex_get() return value
+	* fixed ags_complex_get_term() and ags_complex_set_term() gtk-doc function
+	* fixed ags_vst3_manager_load_file() w32 related plugin_so handle broken reference
+	* fixed ags_vst3_manager.c missing usage of G_DIR_SEPARATOR
+
+ags (4.5.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsDial to emit changed signal
+	* updated listing effects_recall_container.c.in in developer doc
+
 ags (4.5.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

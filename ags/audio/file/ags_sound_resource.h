@@ -25,8 +25,6 @@
 
 #include <ags/libags.h>
 
-#include <unistd.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SOUND_RESOURCE                    (ags_sound_resource_get_type())

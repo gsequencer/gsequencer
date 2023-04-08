@@ -25,10 +25,6 @@
 
 #include <libxml/tree.h>
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-
 #include <ags/libags.h>
 
 G_BEGIN_DECLS

@@ -25,8 +25,6 @@
 
 #include <libxml/tree.h>
 
-#include <unistd.h>
-
 G_BEGIN_DECLS
 
 #define AGS_TYPE_PLUGIN                    (ags_plugin_get_type())

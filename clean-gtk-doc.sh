@@ -61,9 +61,12 @@ rm -f docs/reference/libags/libags-undocumented.txt
 rm -f docs/reference/libags/libags-unused.txt
 rm -f docs/reference/libags/libags.args
 rm -f docs/reference/libags/libags.hierarchy
+rm -f docs/reference/libags/libags.pdf
 rm -f docs/reference/libags/libags.prerequisites
 rm -f docs/reference/libags/libags.signals
 rm -f docs/reference/libags/libags.types.bak
+rm -f docs/reference/libags/pdf.stamp
+rm -f docs/reference/libags/pdf-build.stamp
 rm -f docs/reference/libags/scan-build.stamp
 rm -f docs/reference/libags/setup-build.stamp
 rm -f docs/reference/libags/sgml-build.stamp

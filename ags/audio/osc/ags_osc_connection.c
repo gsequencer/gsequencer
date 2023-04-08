@@ -34,10 +34,6 @@
 #include <mach/mach.h>
 #endif
 
-#if defined(AGS_W32API)
-#include <memcpy.c>
-#endif
-
 #include <ags/i18n.h>
 
 void ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection);

@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 
-#include <uuid/uuid.h>
+#include <uuid.h>
 
 /**
  * SECTION:ags_id_generator

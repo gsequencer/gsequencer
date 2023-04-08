@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,17 +17,31 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GSEQUENCER_MAIN_H__
-#define __GSEQUENCER_MAIN_H__
+#ifndef __AGS_UI_ENUMS_H__
+#define __AGS_UI_ENUMS_H__
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gio/gio.h>
 
-#include <gtk/gtk.h>
+#include <ags/libags.h>
 
-#include <ags/ags_api_config.h>
+#define AGS_TYPE_UI_RECALL_FLAGS       (ags_ui_recall_flags_get_type())
 
-#define ALSA_PCM_NEW_HW_PARAMS_API
+G_BEGIN_DECLS
 
-#endif /*__GSEQUENCER_MAIN_H__*/
+/**
+ * AgsUiRecallFlags: 
+ * @AGS_UI_RECALL_MAPPED: recall mapped
+ * @AGS_UI_RECALL_PREMAPPED: recall premapped
+ * 
+ * Enum values to specify particular ability. Mark an object to be
+ * able to handle matching scope.
+ */
+typedef enum{
+  AGS_UI_RECALL_MAPPED              = 1,
+  AGS_UI_RECALL_PREMAPPED           = 1 <<  1,
+}AgsUiRecallFlags;
+
+G_END_DECLS
+
+#endif /*__AGS_UI_ENUMS_H__*/
