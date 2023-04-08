@@ -165,7 +165,8 @@ endif
 cxx_compiler_flags = [
   '-std=gnu++2a',
   '-DRELEASE',
-  '-I/usr/include/vst3'
+  '-I/usr/include/vst3',
+  '-I/usr/include/uuid'
 ]
 
 libags_sources = files(

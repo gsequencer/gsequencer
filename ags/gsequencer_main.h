@@ -26,23 +26,7 @@
 
 #include <gtk/gtk.h>
 
-#include <stdbool.h>
-
-#include <libintl.h>
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-
-//#include <ao/ao.h>
-
-#include <sys/types.h>
-
 #include <ags/ags_api_config.h>
-
-#if defined(AGS_W32API)
-#else
-#include <pwd.h>
-#endif
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
