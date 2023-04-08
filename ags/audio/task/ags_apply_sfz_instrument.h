@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ struct _AgsApplySFZInstrument
 {
   AgsTask task;
 
-  AgsSFZSynthUtil *template;
+  AgsSFZSynthUtil *synth_template;
   AgsSFZSynthUtil *synth;
 };
 
@@ -55,7 +55,7 @@ struct _AgsApplySFZInstrumentClass
 
 GType ags_apply_sfz_instrument_get_type();
 
-AgsApplySFZInstrument* ags_apply_sfz_instrument_new(AgsSFZSynthUtil *template,
+AgsApplySFZInstrument* ags_apply_sfz_instrument_new(AgsSFZSynthUtil *synth_template,
 						    AgsSFZSynthUtil *synth);
 
 G_END_DECLS

@@ -276,7 +276,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 		 "audio-signal", &start_list,
 		 NULL);
     
-    template = ags_audio_signal_get_template(start_list);
+    template = ags_audio_signal_get_default_template(start_list);
     
     /* create audio signal */
     if(output_soundcard != NULL &&

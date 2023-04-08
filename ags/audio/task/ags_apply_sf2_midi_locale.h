@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ struct _AgsApplySF2MidiLocale
 {
   AgsTask task;
 
-  AgsSF2SynthUtil *template;
+  AgsSF2SynthUtil *synth_template;
   AgsSF2SynthUtil *synth;
 };
 
@@ -55,7 +55,7 @@ struct _AgsApplySF2MidiLocaleClass
 
 GType ags_apply_sf2_midi_locale_get_type();
 
-AgsApplySF2MidiLocale* ags_apply_sf2_midi_locale_new(AgsSF2SynthUtil *template,
+AgsApplySF2MidiLocale* ags_apply_sf2_midi_locale_new(AgsSF2SynthUtil *synth_template,
 						     AgsSF2SynthUtil *synth);
 
 G_END_DECLS

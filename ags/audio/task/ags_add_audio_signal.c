@@ -454,7 +454,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal_flags)) != 0){
     g_rec_mutex_lock(recycling_mutex);
     
-    old_template = ags_audio_signal_get_template(add_audio_signal->recycling->audio_signal);
+    old_template = ags_audio_signal_get_default_template(add_audio_signal->recycling->audio_signal);
 
     g_rec_mutex_unlock(recycling_mutex);
   }

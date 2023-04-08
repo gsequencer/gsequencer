@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1794,7 +1794,7 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
 	       NULL);
 
   /* get template */
-  template = ags_audio_signal_get_template(audio_signal);
+  template = ags_audio_signal_get_default_template(audio_signal);
     
   if(template != NULL){
     g_object_set(template,
@@ -1882,7 +1882,7 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
 	       NULL);
 
   /* get template */
-  template = ags_audio_signal_get_template(audio_signal);
+  template = ags_audio_signal_get_default_template(audio_signal);
     
   if(template != NULL){
     g_object_set(template,
@@ -1970,7 +1970,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
 	       NULL);
 
   /* get template */
-  template = ags_audio_signal_get_template(audio_signal);
+  template = ags_audio_signal_get_default_template(audio_signal);
     
   if(template != NULL){
     g_object_set(template,
@@ -2098,7 +2098,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   /* get some fields */
   if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE)){
     /* old template */
-    old_template = ags_audio_signal_get_template(start_list);
+    old_template = ags_audio_signal_get_default_template(start_list);
     
     /* remove old template */
     ags_recycling_remove_audio_signal(recycling,
@@ -2372,7 +2372,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 	       NULL);
 
   /* get template */
-  template = ags_audio_signal_get_template(start_list);
+  template = ags_audio_signal_get_default_template(start_list);
 
   g_list_free_full(start_list,
 		   g_object_unref);  
@@ -2513,7 +2513,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	       NULL);  
 
   /* get template */
-  template = ags_audio_signal_get_template(start_list);
+  template = ags_audio_signal_get_default_template(start_list);
   
   g_list_free_full(start_list,
 		   g_object_unref);  

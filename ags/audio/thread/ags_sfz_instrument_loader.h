@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,7 +76,7 @@ struct _AgsSFZInstrumentLoader
   
   AgsAudioContainer *audio_container;
 
-  AgsSFZSynthUtil *template;
+  AgsSFZSynthUtil *synth_template;
   AgsSFZSynthUtil *synth;
 };
 
@@ -105,9 +105,9 @@ AgsAudioContainer* ags_sfz_instrument_loader_get_audio_container(AgsSFZInstrumen
 void ags_sfz_instrument_loader_set_audio_container(AgsSFZInstrumentLoader *sfz_instrument_loader,
 						   AgsAudioContainer *audio_container);
 
-AgsSFZSynthUtil* ags_sfz_instrument_loader_get_template(AgsSFZInstrumentLoader *sfz_instrument_loader);
-void ags_sfz_instrument_loader_set_template(AgsSFZInstrumentLoader *sfz_instrument_loader,
-					    AgsSFZSynthUtil *template);
+AgsSFZSynthUtil* ags_sfz_instrument_loader_get_synth_template(AgsSFZInstrumentLoader *sfz_instrument_loader);
+void ags_sfz_instrument_loader_set_synth_template(AgsSFZInstrumentLoader *sfz_instrument_loader,
+						  AgsSFZSynthUtil *synth_template);
 
 AgsSFZSynthUtil* ags_sfz_instrument_loader_get_synth(AgsSFZInstrumentLoader *sfz_instrument_loader);
 void ags_sfz_instrument_loader_set_synth(AgsSFZInstrumentLoader *sfz_instrument_loader,
