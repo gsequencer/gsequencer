@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <uuid/uuid.h>
+#include <uuid.h>
 
 /**
  * SECTION:ags_uuid

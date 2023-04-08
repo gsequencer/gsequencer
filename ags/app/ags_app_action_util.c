@@ -80,6 +80,11 @@
 
 #include <gdk/gdk.h>
 
+#if defined(AGS_W32API)
+#include <windows.h>
+#include <tchar.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>

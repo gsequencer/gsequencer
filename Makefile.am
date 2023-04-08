@@ -69,11 +69,11 @@ libags_vst3_LIBDIR = @LIBAGS_VST3_LIBDIR@
 libags_vst3_LIBS = @LIBAGS_VST3_LIBS@
 
 if WITH_W32API
-LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
+LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -L/usr/lib -luuid -Wl,-subsystem,windows
 
-gsequencer_LDFLAGS += -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
+gsequencer_LDFLAGS += -L/usr/lib -luuid -Wl,-subsystem,windows
 
-midi2xml_LDFLAGS += -L/mingw64/lib -luuid_mingw -Wl,-subsystem,windows
+midi2xml_LDFLAGS += -L/usr/lib -luuid -Wl,-subsystem,windows
 endif
 
 # 
