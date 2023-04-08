@@ -124,7 +124,7 @@ gpointer ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_
 
 /**
  * SECTION:ags_osc_meter_controller
- * @short_description: base osc_meter_controller
+ * @short_description: OSC meter controller
  * @title: AgsOscMeterController
  * @section_id:
  * @include: ags/audio/osc/controller/ags_osc_meter_controller.h
