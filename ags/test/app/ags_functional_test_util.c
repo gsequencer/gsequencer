@@ -48,6 +48,8 @@
 #ifndef AGS_W32API
 #include <sys/time.h>
 #include <sys/resource.h>
+
+#include <pwd.h>
 #endif
 
 #include <ags/i18n.h>
