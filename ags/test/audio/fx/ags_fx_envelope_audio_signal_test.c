@@ -172,7 +172,7 @@ ags_fx_envelope_audio_signal_test_run_inter()
 
   audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
 			      "output-soundcard", devout,
-			      "template", template,
+			      "default-template", template,
 			      NULL);
 
   ags_audio_signal_stream_resize(audio_signal,

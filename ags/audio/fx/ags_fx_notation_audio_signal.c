@@ -257,7 +257,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   template_frame_count = 0;  
 
   g_object_get(source,
-	       "template", &template,
+	       "default-template", &template,
 	       "note", &start_note,
 	       "length", &length,
 	       "frame-count", &frame_count,
@@ -375,7 +375,7 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
   template = NULL;
 
   g_object_get(source,
-	       "template", &template,
+	       "default-template", &template,
 	       NULL);
 		 
   if(x0 == offset_counter &&

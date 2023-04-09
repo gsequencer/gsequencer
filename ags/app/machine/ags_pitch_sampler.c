@@ -1590,6 +1590,8 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
     }
     
     if(start_sfz_synth_generator != NULL){
+      ags_sfz_synth_util_load_instrument(AGS_SFZ_SYNTH_GENERATOR(start_sfz_synth_generator->data)->sfz_synth_util);
+      
       g_object_set(start_sfz_synth_generator->data,
 		   "filename", audio_container->filename,
 		   "frame-count", requested_frame_count,
@@ -1678,7 +1680,8 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	  
 	  return(TRUE);
 	}
-	
+
+	start_list = NULL;
 	g_object_get(pitch_sampler->audio_container->sound_container,
 		     "sample", &start_list,
 		     NULL);

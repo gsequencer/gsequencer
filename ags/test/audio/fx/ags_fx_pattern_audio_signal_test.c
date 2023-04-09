@@ -302,7 +302,7 @@ ags_fx_pattern_audio_signal_test_stream_feed()
 				 3);
 
   audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-			      "template", template,
+			      "default-template", template,
 			      NULL);
 
   ags_audio_signal_stream_resize(audio_signal,

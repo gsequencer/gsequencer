@@ -130,7 +130,7 @@ ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *
       g_value_init(&value,
 		   G_TYPE_FLOAT);
       g_value_set_float(&value,
-			(gtk_toggle_button_get_active(toggle) ? 1.0: 0.0));
+			(gtk_check_button_get_active(toggle) ? 1.0: 0.0));
 
       ags_port_safe_write(port,
 			  &value);
@@ -154,7 +154,7 @@ ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *
       g_value_init(&value,
 		   G_TYPE_FLOAT);
       g_value_set_float(&value,
-			(gtk_toggle_button_get_active(toggle) ? 1.0: 0.0));
+			(gtk_check_button_get_active(toggle) ? 1.0: 0.0));
 
       ags_port_safe_write(port,
 			  &value);
@@ -515,7 +515,7 @@ ags_pitch_sampler_enable_aliase_callback(GtkToggleButton *toggle, AgsPitchSample
 
   gfloat enabled;
 
-  enabled = gtk_toggle_button_get_active(toggle) ? 1.0: 0.0;
+  enabled = gtk_check_button_get_active(toggle) ? 1.0: 0.0;
   
   start_input = NULL;
   

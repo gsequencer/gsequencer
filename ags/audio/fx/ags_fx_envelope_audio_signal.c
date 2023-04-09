@@ -275,7 +275,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   
   g_object_get(source,
 	       "output-soundcard", &output_soundcard,
-	       "template", &template,
+	       "default-template", &template,
 	       "note", &start_note,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
