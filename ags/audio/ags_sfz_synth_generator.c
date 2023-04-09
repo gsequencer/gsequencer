@@ -1629,7 +1629,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 			    0, G_SEEK_SET);
   }
 
-#if 0
+#if 1
   {
     gint current_midi_key;
 

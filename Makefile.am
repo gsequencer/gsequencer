@@ -898,7 +898,7 @@ endif
 
 # library libags-vst
 if WITH_VST3
-libags_vst_la_CPPFLAGS = -std=gnu++2a $(libags_vst3_RELEASE_TYPE) $(libags_vst3_CPPFLAGS) -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+libags_vst_la_CPPFLAGS = -std=c++2a $(libags_vst3_RELEASE_TYPE) $(libags_vst3_CPPFLAGS) -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 5:0:0 $(PIC_FLAGS) -pthread 
 libags_vst_la_LIBADD = -lm $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) $(GLIB_LIBS) $(W32API_LIBS)
@@ -921,7 +921,7 @@ gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 if WITH_OSXAPI
 gsequencer_CPPFLAGS = -x objective-c -framework Cocoa
 else
-gsequencer_CPPFLAGS = -std=gnu++2a
+gsequencer_CPPFLAGS = -std=c++2a
 endif
 
 gsequencer_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
@@ -954,7 +954,7 @@ midi2xml_SOURCES = ags/midi2xml_main.c
 if WITH_OSXAPI
 midi2xml_CPPFLAGS = -x objective-c -framework Cocoa
 else
-midi2xml_CPPFLAGS = -std=gnu++2a
+midi2xml_CPPFLAGS = -std=c++2a
 endif
 
 midi2xml_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)

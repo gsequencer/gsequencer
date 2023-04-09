@@ -970,7 +970,7 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
       ags_audio_signal_set_flags(audio_signal, (AGS_AUDIO_SIGNAL_STREAM |
 						AGS_AUDIO_SIGNAL_SLICE_ALLOC));
       g_object_set(audio_signal,
-		   "template", template,
+		   "default-template", template,
 		   "note", note,
 		   "attack", attack,
 		   NULL);

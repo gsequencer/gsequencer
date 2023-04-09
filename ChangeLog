@@ -2,6 +2,9 @@ ags (5.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: make gsequencer compile with clang++
+	* modified -std= from gnu++2a to c++2a
+	* refactored template variable and field names of some files
+	* fixed usage of GtkCheckButton get active
 
 ags (4.5.4)
 

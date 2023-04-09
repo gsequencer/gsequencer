@@ -1521,7 +1521,7 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
     ags_audio_signal_set_flags(audio_signal, (AGS_AUDIO_SIGNAL_FEED |
 					      AGS_AUDIO_SIGNAL_STREAM));
     g_object_set(audio_signal,
-		 "template", template,
+		 "default-template", template,
 		 "note", play_note,
 		 NULL);
 
