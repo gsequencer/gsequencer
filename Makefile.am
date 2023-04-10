@@ -24,6 +24,7 @@ endif
 CPPFLAGS += -DAGS_SRC_DIR=\"$(srcdir)\" -DAGS_DATA_DIR=\"$(datadir)\" -DAGS_DOC_DIR=\"$(docdir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1
 
 if WITH_W32API
+CPPFLAGS += -D_WINSOCK_H
 else
 if WITH_OSXAPI
 else
