@@ -1484,9 +1484,6 @@ ags_fx_sfz_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
 	channel_data = scope_data->channel_data[j];
 
-	ags_sfz_synth_util_set_buffer_length(channel_data->synth,
-					     buffer_size);
-
 	/* free chorus destination */
 	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
 	
@@ -1498,6 +1495,10 @@ ags_fx_sfz_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	
 	ags_chorus_util_set_destination(channel_data->chorus_util,
 					destination);
+	
+	/* set buffer length */
+	ags_sfz_synth_util_set_buffer_length(channel_data->synth,
+					     buffer_size);
 
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);

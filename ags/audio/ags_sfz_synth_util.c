@@ -1081,7 +1081,7 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       
       ags_sound_resource_seek(AGS_SOUND_RESOURCE(sample),
 			      0, G_SEEK_SET);
-
+      
       for(k = 0; k < sample_frame_count; ){
 	current_cache = cache;
       
