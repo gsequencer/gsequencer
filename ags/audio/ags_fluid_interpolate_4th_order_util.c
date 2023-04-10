@@ -666,7 +666,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
   ags_fluid_interpolate_4th_order_util_config();
   
   dsp_phase = 0;
-
+  
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
