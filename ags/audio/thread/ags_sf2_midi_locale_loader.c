@@ -738,6 +738,13 @@ ags_sf2_midi_locale_loader_run(void *ptr)
     synth_template->source = ags_stream_alloc(buffer_length,
 					format);
 
+    ags_sf2_synth_util_set_buffer_length(synth_template,
+					 buffer_length);
+    ags_sf2_synth_util_set_samplerate(synth_template,
+				      samplerate);
+    ags_sf2_synth_util_set_format(synth_template,
+				  format);
+
     synth_template->sample_buffer = ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_DOUBLE);
 

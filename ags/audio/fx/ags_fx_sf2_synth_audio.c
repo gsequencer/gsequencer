@@ -1496,6 +1496,7 @@ ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	ags_chorus_util_set_destination(channel_data->chorus_util,
 					destination);
 
+	/* set buffer length */
 	ags_sf2_synth_util_set_buffer_length(channel_data->synth,
 					     buffer_size);
 

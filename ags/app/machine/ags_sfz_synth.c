@@ -1164,6 +1164,9 @@ ags_sfz_synth_input_map_recall(AgsSFZSynth *sfz_synth,
 
 	g_list_free_full(start_recall,
 			 (GDestroyNotify) g_object_unref);
+
+	/* now input line is mapped */
+	input_line->mapped_recall = TRUE;	
       }
     }
   }

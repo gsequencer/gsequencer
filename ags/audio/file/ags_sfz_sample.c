@@ -943,6 +943,8 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
+  g_message("open SFZ sample %s", filename);
+  
   /* get sfz sample mutex */
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
@@ -952,6 +954,8 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   if(sfz_sample->info != NULL){
     g_rec_mutex_unlock(sfz_sample_mutex);
     
+    g_message("attempt to reopen SFZ sample %s", filename);
+
     return(FALSE);
   }
 
@@ -967,6 +971,8 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   if(sfz_sample->file == NULL){
     g_rec_mutex_unlock(sfz_sample_mutex);
   
+    g_message("failed to open SFZ sample %s", filename);
+    
     return(FALSE);
   }
 
@@ -1046,6 +1052,8 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
+  g_message("rw-open SFZ sample %s", filename);
+
   /* get sfz sample mutex */
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
@@ -1055,6 +1063,8 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   if(sfz_sample->info != NULL){
     g_rec_mutex_unlock(sfz_sample_mutex);
     
+    g_message("attempt to reopen SFZ sample %s", filename);
+
     return(FALSE);
   }
 
@@ -1063,6 +1073,8 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
 		  (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))){
     g_rec_mutex_unlock(sfz_sample_mutex);
 
+    g_message("failed to open SFZ sample %s", filename);
+    
     return(FALSE);
   }  
 
@@ -1514,7 +1526,7 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						sfz_sample->buffer, sfz_sample->info->channels, audio_channel,
 						read_count, copy_mode);
-//    g_message("[%d] %d", audio_channel, ags_synth_util_get_xcross_count_s16(dbuffer, read_count));
+    //    g_message("SFZ sample read [%d] %d", audio_channel, ags_synth_util_get_xcross_count_s16(dbuffer, read_count));
     
     i += read_count;
   }
@@ -1683,7 +1695,7 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
       }
     } 
   }else if(whence == G_SEEK_SET){
-    if(frame_count >= 0){
+    if(frame_count > 0){
       if(frame_count < total_frame_count){
 	sfz_sample->offset = frame_count;
       }else{
