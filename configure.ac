@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[4.5.3],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[4.5.4],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -208,7 +208,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+# AC_PROG_RANLIB
 
 gl_EARLY
 
@@ -573,7 +573,7 @@ AS_IF([test "x$enable_fast_test_mode" == xyes],
 AM_CONDITIONAL([FAST_TEST_MODE], [test "x$enable_fast_test_mode" == xyes])
 
 # Checks for library functions.
-AM_GNU_GETTEXT
+# AM_GNU_GETTEXT
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
