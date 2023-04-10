@@ -1264,7 +1264,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -1578,7 +1578,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -1892,7 +1892,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -2206,7 +2206,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -2520,7 +2520,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -2834,7 +2834,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -3148,7 +3148,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
@@ -3462,7 +3462,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
   if(sfz_synth_util == NULL ||
      sfz_synth_util->source == NULL ||
      !AGS_IS_AUDIO_CONTAINER(sfz_synth_util->sfz_file) ||
-     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_file->sound_container)){
+     !AGS_IS_SFZ_FILE(sfz_synth_util->sfz_file->sound_container)){
     return;
   }
 
