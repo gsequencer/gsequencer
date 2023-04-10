@@ -649,13 +649,20 @@ ags_sfz_instrument_loader_run(void *ptr)
     }
     
     synth_template->source = ags_stream_alloc(buffer_length,
-					format);
+					      format);
 
+    ags_sfz_synth_util_set_buffer_length(synth_template,
+					 buffer_length);
+    ags_sfz_synth_util_set_samplerate(synth_template,
+				      samplerate);
+    ags_sfz_synth_util_set_format(synth_template,
+				  format);
+    
     synth_template->sample_buffer = ags_stream_alloc(buffer_length,
-					       AGS_SOUNDCARD_DOUBLE);
+						     AGS_SOUNDCARD_DOUBLE);
 
     synth_template->im_buffer = ags_stream_alloc(buffer_length,
-					   AGS_SOUNDCARD_DOUBLE);
+						 AGS_SOUNDCARD_DOUBLE);
 
     /*  */
     ags_common_pitch_util_set_source(synth_template->pitch_util,

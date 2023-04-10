@@ -362,6 +362,12 @@ ags_sfz_synth_util_set_source(AgsSFZSynthUtil *sfz_synth_util,
   }
 
   sfz_synth_util->source = source;
+
+  ags_resample_util_set_source(sfz_synth_util->resample_util,
+			       source);
+  
+  ags_volume_util_set_source(sfz_synth_util->volume_util,
+			     source);
 }
 
 /**
@@ -402,6 +408,12 @@ ags_sfz_synth_util_set_source_stride(AgsSFZSynthUtil *sfz_synth_util,
   }
 
   sfz_synth_util->source_stride = source_stride;
+
+  ags_resample_util_set_source_stride(sfz_synth_util->resample_util,
+				      source_stride);
+  
+  ags_volume_util_set_source_stride(sfz_synth_util->volume_util,
+				    source_stride);
 }
 
 /**
@@ -1198,6 +1210,23 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       resample_util->target_samplerate = sfz_synth_util->samplerate;
 
       ags_resample_util_compute(resample_util);
+
+      /* reset */
+      resample_util->destination = NULL;
+		  
+      resample_util->source = NULL;
+
+      if(resample_util->secret_rabbit.data_in != NULL){
+	g_free(resample_util->secret_rabbit.data_in);
+
+	resample_util->secret_rabbit.data_in = NULL;
+      }
+
+      if(resample_util->secret_rabbit.data_out != NULL){
+	g_free(resample_util->secret_rabbit.data_out);
+
+	resample_util->secret_rabbit.data_out = NULL;
+      }
     }
 
     /* iterate */
@@ -1365,7 +1394,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -1679,7 +1708,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -1993,7 +2022,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2307,7 +2336,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2621,7 +2650,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2935,7 +2964,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3249,7 +3278,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3563,7 +3592,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
