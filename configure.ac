@@ -208,7 +208,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+# AC_PROG_RANLIB
 
 gl_EARLY
 
@@ -573,7 +573,7 @@ AS_IF([test "x$enable_fast_test_mode" == xyes],
 AM_CONDITIONAL([FAST_TEST_MODE], [test "x$enable_fast_test_mode" == xyes])
 
 # Checks for library functions.
-AM_GNU_GETTEXT
+# AM_GNU_GETTEXT
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD

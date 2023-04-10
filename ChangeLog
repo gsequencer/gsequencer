@@ -9,6 +9,7 @@ ags (5.0.0)
 ags (4.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong type check in AgsSFZSynthUtil
 	* implemented ags_pad_reset_flags()
 	* implemented ags_ui_enums.c
 	* fixed ags_lv2_turtle_scanner.c memory corruption
