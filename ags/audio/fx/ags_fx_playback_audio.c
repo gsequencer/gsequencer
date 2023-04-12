@@ -57,7 +57,7 @@ const gchar* ags_fx_playback_audio_specifier[] = {
   "./loop-start[0]",
   "./loop-end[0]",
   "./capture-mode[0]",
-  "./export[0]",
+  "./do-export[0]",
   "./filename[0]",
   "./file-audio-channels[0]",
   "./file-samplerate[0]",
@@ -94,7 +94,7 @@ enum{
   PROP_LOOP_START,
   PROP_LOOP_END,
   PROP_CAPTURE_MODE,
-  PROP_EXPORT,
+  PROP_DO_EXPORT,
   PROP_FILENAME,
   PROP_FILE_AUDIO_CHANNELS,
   PROP_FILE_SAMPLERATE,
@@ -281,19 +281,19 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
 				  param_spec);
 
   /**
-   * AgsFxPlaybackAudio:export:
+   * AgsFxPlaybackAudio:do-export:
    *
-   * The export switch.
+   * The do-export switch.
    * 
    * Since: 3.3.0
    */
-  param_spec = g_param_spec_object("export",
-				   i18n_pspec("export of recall"),
-				   i18n_pspec("The recall's export"),
+  param_spec = g_param_spec_object("do-export",
+				   i18n_pspec("do export of recall"),
+				   i18n_pspec("The recall's do export"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_EXPORT,
+				  PROP_DO_EXPORT,
 				  param_spec);
 
   /**
@@ -526,21 +526,21 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   ags_recall_add_port((AgsRecall *) fx_playback_audio,
 		      fx_playback_audio->capture_mode);
 
-  /* export */
-  fx_playback_audio->export = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name", ags_fx_playback_audio_plugin_name,
-					   "specifier", ags_fx_playback_audio_specifier[8],
-					   "control-port", ags_fx_playback_audio_control_port[8],
-					   "port-value-is-pointer", FALSE,
-					   "port-value-type", G_TYPE_BOOLEAN,
-					   "port-value-size", sizeof(gboolean),
-					   "port-value-length", 1,
-					   NULL);
+  /* do-export */
+  fx_playback_audio->do_export = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_fx_playback_audio_plugin_name,
+					      "specifier", ags_fx_playback_audio_specifier[8],
+					      "control-port", ags_fx_playback_audio_control_port[8],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_BOOLEAN,
+					      "port-value-size", sizeof(gboolean),
+					      "port-value-length", 1,
+					      NULL);
   
-  fx_playback_audio->export->port_value.ags_port_boolean = FALSE;
+  fx_playback_audio->do_export->port_value.ags_port_boolean = FALSE;
 
   ags_recall_add_port((AgsRecall *) fx_playback_audio,
-		      fx_playback_audio->export);
+		      fx_playback_audio->do_export);
 
   /* filename */
   fx_playback_audio->filename = g_object_new(AGS_TYPE_PORT,
@@ -853,7 +853,7 @@ ags_fx_playback_audio_set_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);
   }
   break;
-  case PROP_EXPORT:
+  case PROP_DO_EXPORT:
   {
     AgsPort *port;
 
@@ -861,21 +861,21 @@ ags_fx_playback_audio_set_property(GObject *gobject,
 
     g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_playback_audio->export){
+    if(port == fx_playback_audio->do_export){
       g_rec_mutex_unlock(recall_mutex);
 
       return;
     }
 
-    if(fx_playback_audio->export != NULL){
-      g_object_unref(G_OBJECT(fx_playback_audio->export));
+    if(fx_playback_audio->do_export != NULL){
+      g_object_unref(G_OBJECT(fx_playback_audio->do_export));
     }
       
     if(port != NULL){
       g_object_ref(G_OBJECT(port));
     }
 
-    fx_playback_audio->export = port;
+    fx_playback_audio->do_export = port;
 
     g_rec_mutex_unlock(recall_mutex);
   }
@@ -1109,11 +1109,11 @@ ags_fx_playback_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);
   }
   break;
-  case PROP_EXPORT:
+  case PROP_DO_EXPORT:
   {
     g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_playback_audio->export);
+    g_value_set_object(value, fx_playback_audio->do_export);
 
     g_rec_mutex_unlock(recall_mutex);
   }
@@ -1238,10 +1238,10 @@ ags_fx_playback_audio_dispose(GObject *gobject)
     fx_playback_audio->capture_mode = NULL;
   }
 
-  if(fx_playback_audio->export != NULL){
-    g_object_unref(fx_playback_audio->export);
+  if(fx_playback_audio->do_export != NULL){
+    g_object_unref(fx_playback_audio->do_export);
 
-    fx_playback_audio->export = NULL;
+    fx_playback_audio->do_export = NULL;
   }
 
   if(fx_playback_audio->filename != NULL){
@@ -1331,8 +1331,8 @@ ags_fx_playback_audio_finalize(GObject *gobject)
     g_object_unref(fx_playback_audio->capture_mode);
   }
 
-  if(fx_playback_audio->export != NULL){
-    g_object_unref(fx_playback_audio->export);
+  if(fx_playback_audio->do_export != NULL){
+    g_object_unref(fx_playback_audio->do_export);
   }
 
   if(fx_playback_audio->filename != NULL){

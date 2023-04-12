@@ -5,6 +5,7 @@ ags (5.0.0)
 	* modified -std= from gnu++2a to c++2a
 	* refactored template variable and field names of some files
 	* fixed usage of GtkCheckButton get active
+	* fixed midi2xml
 
 ags (4.5.4)
 

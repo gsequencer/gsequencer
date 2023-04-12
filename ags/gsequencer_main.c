@@ -577,11 +577,11 @@ main(int argc, char **argv)
 
   if(non_unique){
     gsequencer_app = ags_gsequencer_application_new(application_id,
-						    (G_APPLICATION_HANDLES_OPEN |
-						     G_APPLICATION_NON_UNIQUE));
+						    (GApplicationFlags) (G_APPLICATION_HANDLES_OPEN |
+									 G_APPLICATION_NON_UNIQUE));
   }else{
     gsequencer_app = ags_gsequencer_application_new(application_id,
-						    G_APPLICATION_HANDLES_OPEN);
+						    (GApplicationFlags) G_APPLICATION_HANDLES_OPEN);
   }
   
   error = NULL;
@@ -618,7 +618,7 @@ main(int argc, char **argv)
 			      (GtkWidget *) AGS_WINDOW(window)->header_bar);
     }
 
-    gtk_application_add_window(gsequencer_app,
+    gtk_application_add_window(GTK_APPLICATION(gsequencer_app),
 			       GTK_WINDOW(window));
 
     g_object_set(G_OBJECT(window),
@@ -637,7 +637,7 @@ main(int argc, char **argv)
       file[0] = g_file_new_for_path(filename);
       file[1] = NULL;
 	
-      g_application_open(gsequencer_app,
+      g_application_open(G_APPLICATION(gsequencer_app),
 			 file,
 			 1,
 			 "local command line");
