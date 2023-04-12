@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,10 +73,6 @@ struct _AgsTaskLauncherClass
 };
 
 GType ags_task_launcher_get_type();
-
-gboolean ags_task_launcher_test_flags(AgsTaskLauncher *task_launcher, guint flags);
-void ags_task_launcher_set_flags(AgsTaskLauncher *task_launcher, guint flags);
-void ags_task_launcher_unset_flags(AgsTaskLauncher *task_launcher, guint flags);
 
 void ags_task_launcher_attach(AgsTaskLauncher *task_launcher,
 			      GMainContext *main_context);

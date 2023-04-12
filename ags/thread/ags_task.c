@@ -336,7 +336,8 @@ ags_task_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_task_test_flags(AgsTask *task, guint flags)
+ags_task_test_flags(AgsTask *task,
+		    AgsTaskFlags flags)
 {
   gboolean retval;  
   
@@ -369,7 +370,8 @@ ags_task_test_flags(AgsTask *task, guint flags)
  * Since: 3.0.0
  */
 void
-ags_task_set_flags(AgsTask *task, guint flags)
+ags_task_set_flags(AgsTask *task,
+		   AgsTaskFlags flags)
 {
   guint task_flags;
   
@@ -400,7 +402,8 @@ ags_task_set_flags(AgsTask *task, guint flags)
  * Since: 3.0.0
  */
 void
-ags_task_unset_flags(AgsTask *task, guint flags)
+ags_task_unset_flags(AgsTask *task,
+		     AgsTaskFlags flags)
 {
   guint task_flags;
   
