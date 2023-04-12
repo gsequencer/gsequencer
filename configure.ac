@@ -208,7 +208,24 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+# AC_PROG_RANLIB
+
+PKG_PROG_PKG_CONFIG([0.19])
+
+AC_PATH_PROG([XSLTPROC], [xsltproc])
+if test -z "$XSLTPROC"; then
+   AC_MSG_WARN([xsltproc not found])
+else
+   AC_MSG_NOTICE([xsltproc found])
+fi
+
+AC_PATH_PROG([FOP], [fop])
+if test -z "$FOP"; then
+   AC_MSG_WARN([fop not found])
+else
+   AC_MSG_NOTICE([fop found])
+fi
+
 
 gl_EARLY
 
@@ -573,7 +590,7 @@ AS_IF([test "x$enable_fast_test_mode" == xyes],
 AM_CONDITIONAL([FAST_TEST_MODE], [test "x$enable_fast_test_mode" == xyes])
 
 # Checks for library functions.
-AM_GNU_GETTEXT
+# AM_GNU_GETTEXT
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
