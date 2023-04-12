@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,12 +32,7 @@ main(int argc, char **argv)
 {
   AgsMidiParser *midi_parser;
 
-  FILE *out;
-  FILE *file;
-  
-  xmlChar *buffer;
   gchar *filename;
-  size_t length;
 
   if(argc == 2){
     if(!g_ascii_strncasecmp(argv[1], "--help", 7)){
@@ -67,15 +62,7 @@ main(int argc, char **argv)
     return(-1);
   }
 
-  file = fopen(filename, "r");
-
-  if(file == NULL){
-    return(-1);
-  }
-
-  fseek(file, 0, SEEK_SET);
-
-  midi_parser = ags_midi_parser_new(file);
+  midi_parser = ags_midi_parser_new_from_filename(filename);
 
   ags_midi_parser_parse_full(midi_parser);
 

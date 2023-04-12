@@ -101,7 +101,7 @@ struct _AgsFxPlaybackAudio
 
   AgsPort *capture_mode;
 
-  AgsPort *export;
+  AgsPort *do_export;
   AgsPort *filename;
 
   AgsPort *file_audio_channels;
