@@ -210,6 +210,23 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 # AC_PROG_RANLIB
 
+PKG_PROG_PKG_CONFIG([0.19])
+
+AC_PATH_PROG([XSLTPROC], [xsltproc])
+if test -z "$XSLTPROC"; then
+   AC_MSG_WARN([xsltproc not found])
+else
+   AC_MSG_NOTICE([xsltproc found])
+fi
+
+AC_PATH_PROG([FOP], [fop])
+if test -z "$FOP"; then
+   AC_MSG_WARN([fop not found])
+else
+   AC_MSG_NOTICE([fop found])
+fi
+
+
 gl_EARLY
 
 # libtool
