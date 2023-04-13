@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,21 +30,51 @@ extern "C" {
     return((AgsVstBuffer *) new Steinberg::Buffer());
   }
   
+  /**
+   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
+   * AgsVstBuffer a void pointer.
+   *
+   * @param b the string 
+   * @param size the size
+   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   */
   AgsVstBuffer* ags_vst_buffer_new_from_string(void *b, guint32 size)
   {
     return((AgsVstBuffer *) new Steinberg::Buffer(b, size));
   }
   
+  /**
+   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
+   * AgsVstBuffer a void pointer.
+   *
+   * @param size the size
+   * @param init_val the initial value 
+   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   */
   AgsVstBuffer* ags_vst_buffer_new_and_fill_up(guint32 size, guint8 init_val)
   {
     return((AgsVstBuffer *) new Steinberg::Buffer(size, init_val));
   }
   
+  /**
+   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
+   * AgsVstBuffer a void pointer.
+   *
+   * @param size the size
+   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   */
   AgsVstBuffer* ags_vst_buffer_new_with_size(guint32 size)
   {
     return((AgsVstBuffer *) new Steinberg::Buffer(size));
   }
   
+  /**
+   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
+   * AgsVstBuffer a void pointer.
+   *
+   * @param buffer the buffer
+   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   */
   AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer *buffer)
   {
     Steinberg::Buffer *tmp_buffer_0 = static_cast<Steinberg::Buffer*>((void *) buffer);
@@ -53,46 +83,97 @@ extern "C" {
     return((AgsVstBuffer *) new Steinberg::Buffer(tmp_buffer_1));
   }
   
+  /**
+   * Delete Steinberg::Buffer.
+   *
+   * @param buffer the buffer
+   */
   void ags_vst_buffer_delete(AgsVstBuffer *buffer)
   {
     delete buffer;
   }
         
+  /**
+   * The destination is made equals to source.
+   *
+   * @param destination_buffer the destination buffer
+   * @param source_buffer the source buffer
+   */
   void ags_vst_buffer_equal(AgsVstBuffer *destination_buffer,
 			    AgsVstBuffer *source_buffer)
   {
     destination_buffer = source_buffer;
   }
 
+  /**
+   * The buffers a and b are tested to be equals.
+   *
+   * @param buffer_a the buffer
+   * @param buffer_b the other buffer
+   * @return true if equals, otherwise false
+   */
   gboolean ags_vst_buffer_equals(AgsVstBuffer *buffer_a,
 				 AgsVstBuffer *buffer_b)
   {
     return(buffer_a == buffer_b);
   }
 
+  /**
+   * Get buffer size.
+   *
+   * @param buffer the buffer
+   * @return the size of buffer
+   */
   guint32 ags_vst_buffer_get_size(AgsVstBuffer *buffer)
   {
     return(static_cast<Steinberg::Buffer*>((void *) buffer)->getSize());
   }
 
+  /**
+   * Set buffer size.
+   *
+   * @param buffer the buffer
+   * @param new_size the new size
+   * @return true if success, otherwise false
+   */
   gboolean ags_vst_buffer_set_size(AgsVstBuffer *buffer,
 				   guint32 new_size)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->setSize(new_size)));
   }
 
+  /**
+   * Grow buffer size.
+   *
+   * @param buffer the buffer
+   * @param mem_size the mem size
+   * @return true if success, otherwise false
+   */
   gboolean ags_vst_buffer_grow(AgsVstBuffer *buffer,
 			       guint32 mem_size)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->grow(mem_size)));
   }
 
+  /**
+   * Set buffer max size.
+   *
+   * @param buffer the buffer
+   * @param size the max size
+   * @return true if success, otherwise false
+   */
   gboolean ags_vst_buffer_set_max_size(AgsVstBuffer *buffer,
 				       guint32 size)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->setMaxSize(size)));
   }
 
+  /**
+   * Fill up buffer.
+   * 
+   * @param buffer the buffer
+   * @param init_val the initial value
+   */
   void ags_vst_buffer_fillup(AgsVstBuffer *buffer,
 			     guint8 init_val)
   {
