@@ -25,6 +25,14 @@
 
 extern "C" {
 
+  /**
+   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
+   * AgsVstBuffer a void pointer.
+   *
+   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   * 
+   * @since 5.0.0
+   */
   AgsVstBuffer* ags_vst_buffer_new()
   {
     return((AgsVstBuffer *) new Steinberg::Buffer());
@@ -37,6 +45,8 @@ extern "C" {
    * @param b the string 
    * @param size the size
    * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   * 
+   * @since 5.0.0
    */
   AgsVstBuffer* ags_vst_buffer_new_from_string(void *b, guint32 size)
   {
@@ -50,6 +60,8 @@ extern "C" {
    * @param size the size
    * @param init_val the initial value 
    * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   * 
+   * @since 5.0.0
    */
   AgsVstBuffer* ags_vst_buffer_new_and_fill_up(guint32 size, guint8 init_val)
   {
@@ -62,6 +74,8 @@ extern "C" {
    *
    * @param size the size
    * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   * 
+   * @since 5.0.0
    */
   AgsVstBuffer* ags_vst_buffer_new_with_size(guint32 size)
   {
@@ -74,6 +88,8 @@ extern "C" {
    *
    * @param buffer the buffer
    * @return the new instance of Steinberg::Buffer as AgsVstBuffer
+   * 
+   * @since 5.0.0
    */
   AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer *buffer)
   {
@@ -87,6 +103,8 @@ extern "C" {
    * Delete Steinberg::Buffer.
    *
    * @param buffer the buffer
+   * 
+   * @since 5.0.0
    */
   void ags_vst_buffer_delete(AgsVstBuffer *buffer)
   {
@@ -98,6 +116,8 @@ extern "C" {
    *
    * @param destination_buffer the destination buffer
    * @param source_buffer the source buffer
+   * 
+   * @since 5.0.0
    */
   void ags_vst_buffer_equal(AgsVstBuffer *destination_buffer,
 			    AgsVstBuffer *source_buffer)
@@ -111,6 +131,8 @@ extern "C" {
    * @param buffer_a the buffer
    * @param buffer_b the other buffer
    * @return true if equals, otherwise false
+   * 
+   * @since 5.0.0
    */
   gboolean ags_vst_buffer_equals(AgsVstBuffer *buffer_a,
 				 AgsVstBuffer *buffer_b)
@@ -123,6 +145,8 @@ extern "C" {
    *
    * @param buffer the buffer
    * @return the size of buffer
+   * 
+   * @since 5.0.0
    */
   guint32 ags_vst_buffer_get_size(AgsVstBuffer *buffer)
   {
@@ -135,6 +159,8 @@ extern "C" {
    * @param buffer the buffer
    * @param new_size the new size
    * @return true if success, otherwise false
+   * 
+   * @since 5.0.0
    */
   gboolean ags_vst_buffer_set_size(AgsVstBuffer *buffer,
 				   guint32 new_size)
@@ -148,6 +174,8 @@ extern "C" {
    * @param buffer the buffer
    * @param mem_size the mem size
    * @return true if success, otherwise false
+   * 
+   * @since 5.0.0
    */
   gboolean ags_vst_buffer_grow(AgsVstBuffer *buffer,
 			       guint32 mem_size)
@@ -161,6 +189,8 @@ extern "C" {
    * @param buffer the buffer
    * @param size the max size
    * @return true if success, otherwise false
+   * 
+   * @since 5.0.0
    */
   gboolean ags_vst_buffer_set_max_size(AgsVstBuffer *buffer,
 				       guint32 size)
@@ -173,6 +203,8 @@ extern "C" {
    * 
    * @param buffer the buffer
    * @param init_val the initial value
+   * 
+   * @since 5.0.0
    */
   void ags_vst_buffer_fillup(AgsVstBuffer *buffer,
 			     guint8 init_val)
@@ -180,109 +212,277 @@ extern "C" {
     static_cast<Steinberg::Buffer*>((void *) buffer)->fillup(init_val);
   }
   
+  /**
+   * Get fill size.
+   * 
+   * @param buffer the buffer
+   * @return the fill size
+   * 
+   * @since 5.0.0
+   */
   guint32 ags_vst_buffer_get_fill_size(AgsVstBuffer *buffer)
   {
     return(static_cast<Steinberg::Buffer*>((void *) buffer)->getFillSize());
   }
   
+  /**
+   * Set fill size.
+   * 
+   * @param buffer the buffer
+   * @param c the fill size
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_set_fill_size(AgsVstBuffer *buffer,
 					guint32 c)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->setFillSize(c)));
   }
 
+  /**
+   * Flush.
+   * 
+   * @param buffer the buffer
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_buffer_flush(AgsVstBuffer *buffer)
   {
     static_cast<Steinberg::Buffer*>((void *) buffer)->flush();
   }
   
+  /**
+   * Truncate to fill size.
+   * 
+   * @param buffer the buffer
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_truncate_to_fill_size(AgsVstBuffer *buffer)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->truncateToFillSize()));
   }
 
+  /**
+   * Test if is full.
+   * 
+   * @param buffer the buffer
+   * @return true if full, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_is_full(AgsVstBuffer *buffer)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->isFull()));
   }
 
+  /**
+   * Get free.
+   * 
+   * @param buffer the buffer
+   * @return the free size
+   * 
+   * @since 5.0.0
+   */
   guint32 ags_vst_buffer_get_free(AgsVstBuffer *buffer)
   {
     return(static_cast<Steinberg::Buffer*>((void *) buffer)->getFree());
   }
 
+  /**
+   * Shift start.
+   * 
+   * @param buffer the buffer
+   * @param amount the amount
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_buffer_shift_start(AgsVstBuffer *buffer,
 				  gint32 amount)
   {
     static_cast<Steinberg::Buffer*>((void *) buffer)->shiftStart(amount);
   }
   
+  /**
+   * Shift at.
+   * 
+   * @param buffer the buffer
+   * @param position the position
+   * @param amount the amount
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_buffer_shift_at(AgsVstBuffer *buffer,
 			       guint32 position, gint32 amount)
   {
     static_cast<Steinberg::Buffer*>((void *) buffer)->shiftAt(position, amount);
   }
   
+  /**
+   * Move.
+   * 
+   * @param buffer the buffer
+   * @param amount the amount
+   * @param init_val the initial value
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_buffer_move(AgsVstBuffer *buffer,
 			   gint32 amount, guint8 init_val)
   {
     static_cast<Steinberg::Buffer*>((void *) buffer)->move(amount, init_val);
   }
 
+  /**
+   * Copy.
+   * 
+   * @param buffer the buffer
+   * @param from the from position
+   * @param to the to position
+   * @param bytes the bytes count
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_copy(AgsVstBuffer *buffer,
 			       guint32 from, guint32 to, guint32 bytes)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->copy(from, to, bytes)));
   }
 
+  /**
+   * Get.
+   * 
+   * @param buffer the buffer
+   * @param b the pointer
+   * @param size the size
+   * @return the value
+   * 
+   * @since 5.0.0
+   */
   guint32 ags_vst_buffer_get(AgsVstBuffer *buffer,
 			     void *b, guint32 size)
   {
     return(static_cast<Steinberg::Buffer*>((void *) buffer)->get(b, size));
   }
 
+  /**
+   * Set delta.
+   * 
+   * @param buffer the buffer
+   * @param d the delta
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_buffer_set_delta(AgsVstBuffer *buffer,
 				guint32 d)
   {
     static_cast<Steinberg::Buffer*>((void *) buffer)->setDelta(d);
   }
 
+  /**
+   * Put from unsigned byte.
+   * 
+   * @param buffer the buffer
+   * @param val the value
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_uint8(AgsVstBuffer *buffer,
 					 guint8 val)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put((Steinberg::uint8) val)));
   }
 
+  /**
+   * Put from unicode character.
+   * 
+   * @param buffer the buffer
+   * @param c the value
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_unichar2(AgsVstBuffer *buffer,
 					    gunichar2 c)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put((Steinberg::char16) c)));
   }
 
+  /**
+   * Put from character.
+   * 
+   * @param buffer the buffer
+   * @param c the value
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_char(AgsVstBuffer *buffer,
 					gchar c)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put((char) c)));
   }
 
+  /**
+   * Put from buffer.
+   * 
+   * @param buffer the buffer
+   * @param ptr_buffer the pointer on buffer
+   * @param size the size
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_buffer(AgsVstBuffer *buffer,
 					  void *ptr_buffer, guint32 size)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(ptr_buffer, size)));
   }
 
+  /**
+   * Put from unsigned byte buffer.
+   * 
+   * @param buffer the buffer
+   * @param ptr_buffer the pointer on buffer
+   * @param size the size
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_uint8_buffer(AgsVstBuffer *buffer,
 						guint8 *ptr_buffer, guint32 size)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(ptr_buffer, size)));
   }
 
+  /**
+   * Put from character buffer.
+   * 
+   * @param buffer the buffer
+   * @param ptr_buffer the pointer on buffer
+   * @param size the size
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_char_buffer(AgsVstBuffer *buffer,
 					       gchar *ptr_buffer, guint32 size)
   {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(ptr_buffer, size)));
   }
 
+  /**
+   * Put from string.
+   * 
+   * @param buffer the buffer
+   * @param string the string
+   * @return true on success, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_buffer_put_from_string(AgsVstBuffer *buffer,
 					  gchar *string)
   {
@@ -292,6 +492,14 @@ extern "C" {
     return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(tmp_string_1)));
   }
 
+  /**
+   * Set unsigned byte value.
+   * 
+   * @param buffer the buffer
+   * @param value the value
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_buffer_set(AgsVstBuffer *buffer,
 			  guint8 value)
   {

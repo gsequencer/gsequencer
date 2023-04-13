@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,98 +30,27 @@ extern "C" {
 
   typedef struct AgsVstBuffer Buffer;
 
-  /**
-   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
-   * AgsVstBuffer a void pointer.
-   *
-   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
-   */
   AgsVstBuffer* ags_vst_buffer_new();
-
-  /**
-   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
-   * AgsVstBuffer a void pointer.
-   *
-   * @param the string 
-   * @param the size
-   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
-   */
   AgsVstBuffer* ags_vst_buffer_new_from_string(void *b, guint32 size);
-
-  /**
-   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
-   * AgsVstBuffer a void pointer.
-   *
-   * @param the size
-   * @param the initial value 
-   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
-   */
   AgsVstBuffer* ags_vst_buffer_new_and_fill_up(guint32 size, guint8 init_val);
-
-  /**
-   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
-   * AgsVstBuffer a void pointer.
-   *
-   * @param the size
-   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
-   */
   AgsVstBuffer* ags_vst_buffer_new_with_size(guint32 size);
-
-  /**
-   * Instantiate Steinberg::Buffer and return a C99 compatible handle 
-   * AgsVstBuffer a void pointer.
-   *
-   * @param the buffer
-   * @return the new instance of Steinberg::Buffer as AgsVstBuffer
-   */
   AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer *buffer);
 
-  /**
-   * Delete Steinberg::Buffer.
-   *
-   * @param the buffer
-   */
   void ags_vst_buffer_delete(AgsVstBuffer *buffer);
         
-  /**
-   * The destination is made equals to source.
-   *
-   * @param the destination buffer
-   * @param the source buffer
-   */
   void ags_vst_buffer_equal(AgsVstBuffer *destination_buffer,
 			    AgsVstBuffer *source_buffer);
 
-  /**
-   * The buffers a and b are tested to be equals.
-   *
-   * @param the buffer
-   * @param the other buffer
-   * @return true if equals, otherwise false
-   */
   gboolean ags_vst_buffer_equals(AgsVstBuffer *buffer_a,
 				 AgsVstBuffer *buffer_b);
 
-  /**
-   * Get buffer size.
-   *
-   * @param the buffer
-   * @return the size of buffer
-   */
   guint32 ags_vst_buffer_get_size(AgsVstBuffer *buffer);
-
-  /**
-   * Set buffer size.
-   *
-   * @param the buffer
-   * @param the new size
-   * @return true if success, otherwise false
-   */
   gboolean ags_vst_buffer_set_size(AgsVstBuffer *buffer,
 				   guint32 new_size);
 
   gboolean ags_vst_buffer_grow(AgsVstBuffer *buffer,
 			       guint32 mem_size);
+
   gboolean ags_vst_buffer_set_max_size(AgsVstBuffer *buffer,
 				       guint32 size);
 
