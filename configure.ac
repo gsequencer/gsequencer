@@ -816,6 +816,7 @@ AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 lib/Makefile
 Makefile
+Doxyfile
 m4/Makefile
 po/Makefile.in
 po/Makefile
