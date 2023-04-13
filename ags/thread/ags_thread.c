@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -946,7 +946,8 @@ ags_thread_global_get_use_sync_counter()
  * Since: 3.0.0
  */
 gboolean
-ags_thread_test_flags(AgsThread *thread, guint flags)
+ags_thread_test_flags(AgsThread *thread,
+		      AgsThreadFlags flags)
 {
   gboolean retval;  
 
@@ -979,7 +980,8 @@ ags_thread_test_flags(AgsThread *thread, guint flags)
  * Since: 3.0.0
  */
 void
-ags_thread_set_flags(AgsThread *thread, guint flags)
+ags_thread_set_flags(AgsThread *thread,
+		     AgsThreadFlags flags)
 {
   GRecMutex *thread_mutex;
 
@@ -1008,7 +1010,8 @@ ags_thread_set_flags(AgsThread *thread, guint flags)
  * Since: 3.0.0
  */
 void
-ags_thread_unset_flags(AgsThread *thread, guint flags)
+ags_thread_unset_flags(AgsThread *thread,
+		       AgsThreadFlags flags)
 {
   GRecMutex *thread_mutex;
 
@@ -1039,7 +1042,8 @@ ags_thread_unset_flags(AgsThread *thread, guint flags)
  * Since: 3.0.0
  */
 gboolean
-ags_thread_test_status_flags(AgsThread *thread, guint status_flags)
+ags_thread_test_status_flags(AgsThread *thread,
+			     AgsThreadStatusFlags status_flags)
 {
   gboolean retval;  
 
@@ -1062,7 +1066,8 @@ ags_thread_test_status_flags(AgsThread *thread, guint status_flags)
  * Since: 3.0.0
  */
 void
-ags_thread_set_status_flags(AgsThread *thread, guint status_flags)
+ags_thread_set_status_flags(AgsThread *thread,
+			    AgsThreadStatusFlags status_flags)
 {
   if(!AGS_IS_THREAD(thread)){
     return;
@@ -1081,7 +1086,8 @@ ags_thread_set_status_flags(AgsThread *thread, guint status_flags)
  * Since: 3.0.0
  */
 void
-ags_thread_unset_status_flags(AgsThread *thread, guint status_flags)
+ags_thread_unset_status_flags(AgsThread *thread,
+			      AgsThreadStatusFlags status_flags)
 {
   if(!AGS_IS_THREAD(thread)){
     return;
@@ -1120,7 +1126,8 @@ ags_thread_clear_status_flags(AgsThread *thread)
  * Since: 3.0.0
  */
 gboolean
-ags_thread_test_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
+ags_thread_test_sync_tic_flags(AgsThread *thread,
+			       AgsThreadSyncTicFlags sync_tic_flags)
 {
   gboolean retval;  
 
@@ -1143,7 +1150,8 @@ ags_thread_test_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
  * Since: 3.0.0
  */
 void
-ags_thread_set_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
+ags_thread_set_sync_tic_flags(AgsThread *thread,
+			      AgsThreadSyncTicFlags sync_tic_flags)
 {
   if(!AGS_IS_THREAD(thread)){
     return;
@@ -1162,7 +1170,8 @@ ags_thread_set_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
  * Since: 3.0.0
  */
 void
-ags_thread_unset_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
+ags_thread_unset_sync_tic_flags(AgsThread *thread,
+				AgsThreadSyncTicFlags sync_tic_flags)
 {
   if(!AGS_IS_THREAD(thread)){
     return;

@@ -899,7 +899,8 @@ ags_application_context_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags)
+ags_application_context_test_flags(AgsApplicationContext *application_context,
+				   AgsApplicationContextFlags flags)
 {
   gboolean retval;  
   
@@ -932,7 +933,8 @@ ags_application_context_test_flags(AgsApplicationContext *application_context, g
  * Since: 3.0.0
  */
 void
-ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags)
+ags_application_context_set_flags(AgsApplicationContext *application_context,
+				  AgsApplicationContextFlags flags)
 {
   guint application_context_flags;
   
@@ -963,7 +965,8 @@ ags_application_context_set_flags(AgsApplicationContext *application_context, gu
  * Since: 3.0.0
  */
 void
-ags_application_context_unset_flags(AgsApplicationContext *application_context, guint flags)
+ags_application_context_unset_flags(AgsApplicationContext *application_context,
+				    AgsApplicationContextFlags flags)
 {
   guint application_context_flags;
   

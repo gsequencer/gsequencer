@@ -118,9 +118,12 @@ struct _AgsApplicationContextClass
 GType ags_application_context_get_type();
 GType ags_application_context_flags_get_type();
 
-gboolean ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags);
-void ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags);
-void ags_application_context_unset_flags(AgsApplicationContext *application_context, guint flags);
+gboolean ags_application_context_test_flags(AgsApplicationContext *application_context,
+					    AgsApplicationContextFlags flags);
+void ags_application_context_set_flags(AgsApplicationContext *application_context,
+				       AgsApplicationContextFlags flags);
+void ags_application_context_unset_flags(AgsApplicationContext *application_context,
+					 AgsApplicationContextFlags flags);
 
 void ags_application_context_load_config(AgsApplicationContext *application_context);
 

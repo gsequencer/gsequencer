@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,9 +145,12 @@ struct _AgsServerInfo
 GType ags_server_get_type();
 GType ags_server_flags_get_type();
 
-gboolean ags_server_test_flags(AgsServer *server, guint flags);
-void ags_server_set_flags(AgsServer *server, guint flags);
-void ags_server_unset_flags(AgsServer *server, guint flags);
+gboolean ags_server_test_flags(AgsServer *server,
+			       AgsServerFlags flags);
+void ags_server_set_flags(AgsServer *server,
+			  AgsServerFlags flags);
+void ags_server_unset_flags(AgsServer *server,
+			    AgsServerFlags flags);
 
 AgsServerInfo* ags_server_info_alloc(gchar *server_name, gchar *uuid);
 

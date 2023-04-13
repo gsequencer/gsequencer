@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -558,7 +558,8 @@ ags_task_completion_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
+ags_task_completion_test_flags(AgsTaskCompletion *task_completion,
+			       AgsTaskCompletionFlags flags)
 {
   gboolean retval;  
   
@@ -591,7 +592,8 @@ ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
  * Since: 3.0.0
  */
 void
-ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
+ags_task_completion_set_flags(AgsTaskCompletion *task_completion,
+			      AgsTaskCompletionFlags flags)
 {
   guint task_completion_flags;
   
@@ -622,7 +624,8 @@ ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
  * Since: 3.0.0
  */
 void
-ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
+ags_task_completion_unset_flags(AgsTaskCompletion *task_completion,
+				AgsTaskCompletionFlags flags)
 {
   guint task_completion_flags;
   

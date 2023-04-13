@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -83,9 +83,12 @@ struct _AgsReturnableThreadClass
 GType ags_returnable_thread_get_type();
 GType ags_returnable_thread_flags_get_type();
 
-gboolean ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags);
-void ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags);
-void ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint flags);
+gboolean ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread,
+					  AgsReturnableThreadFlags flags);
+void ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread,
+				     AgsReturnableThreadFlags flags);
+void ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread,
+				       AgsReturnableThreadFlags flags);
 
 void ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread);
 

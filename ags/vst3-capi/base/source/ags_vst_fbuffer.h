@@ -45,12 +45,12 @@ extern "C" {
 				 AgsVstBuffer *buffer_b);
 
   guint32 ags_vst_buffer_get_size(AgsVstBuffer *buffer);
-
   gboolean ags_vst_buffer_set_size(AgsVstBuffer *buffer,
 				   guint32 new_size);
 
   gboolean ags_vst_buffer_grow(AgsVstBuffer *buffer,
 			       guint32 mem_size);
+
   gboolean ags_vst_buffer_set_max_size(AgsVstBuffer *buffer,
 				       guint32 size);
 
