@@ -399,6 +399,8 @@ EXTRA_DIST += application-x-gsequencer.xml \
 CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
 
 # extra
+EXTRA_DIST += Doxyfile.in
+
 EXTRA_DIST += \
 	libags.sym \
 	libags_thread.sym \

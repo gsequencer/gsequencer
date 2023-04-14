@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,14 @@ extern "C" {
 
   Steinberg::Vst::HostApplication *host_context = NULL;
 
+  /**
+   * Get Steinberg::Vst::HostApplication as a C99 compatible handle
+   * AgsVstHostContext a void pointer.
+   *
+   * @return the singleton of Steinberg::Vst::HostApplication as AgsVstHostContext
+   * 
+   * @since 5.0.0
+   */
   AgsVstHostContext* ags_vst_host_context_get_instance()
   {
     if(host_context == NULL){
@@ -33,11 +41,28 @@ extern "C" {
     return((AgsVstHostContext *) host_context);
   }
 
+  /**
+   * Instantiate Steinberg::Vst::HostApplication and return a C99 compatible handle
+   * AgsVstHostContext a void pointer.
+   *
+   * @return the new instance of Steinberg::Vst::HostApplication as AgsVstHostContext
+   * 
+   * @since 5.0.0
+   */
   AgsVstHostContext* ags_vst_host_context_new()
   {
     return((AgsVstHostContext *) new Steinberg::Vst::HostApplication());
   }
 
+  /**
+   * Get plug-interface support.
+   *
+   * @param host_context the host context
+   * 
+   * @return the AgsVstPlugInterfaceSupport
+   * 
+   * @since 5.0.0
+   */
   AgsVstPlugInterfaceSupport* ags_vst_host_context_get_plug_interface_support(AgsVstHostContext *host_context)
   {
     return((AgsVstPlugInterfaceSupport *) ((Steinberg::Vst::HostApplication *) host_context)->getPlugInterfaceSupport());

@@ -65,7 +65,7 @@ extern "C" {
   }
   
   /**
-   * Disconnect handler with callback.
+   * Disconnect handler.
    *
    * @param component_handler the component handler
    * @param handler_id the handler ID
