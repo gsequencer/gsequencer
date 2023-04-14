@@ -29,6 +29,11 @@ namespace Ags {
 
   namespace VstCAPI {
 
+    /**
+     * Instantiate a new Ags::VstCAPI::ComponentHandler.
+     * 
+     * Since: 5.0.0
+     */
     ComponentHandler::ComponentHandler()
     {
       this->handler = nullptr;
@@ -37,6 +42,14 @@ namespace Ags {
       this->handlerIDCount = 0;
     }
 
+    /**
+     * Begin edit component handler.
+     *
+     * @param id the identifier
+     * @return result code of action
+     * 
+     * Since: 5.0.0
+     */
     Steinberg::tresult PLUGIN_API ComponentHandler::beginEdit(Steinberg::Vst::ParamID id)
     {
       void *component_handler;
@@ -62,6 +75,15 @@ namespace Ags {
       return(0);
     }
 
+    /**
+     * Perform edit component handler.
+     *
+     * @param id the identifier
+     * @param valueNormalized the normalized value
+     * @return result code of action
+     * 
+     * Since: 5.0.0
+     */
     Steinberg::tresult PLUGIN_API ComponentHandler::performEdit(Steinberg::Vst::ParamID id, Steinberg::Vst::ParamValue valueNormalized)
     {
       void *component_handler;
@@ -87,6 +109,14 @@ namespace Ags {
       return(0);
     }
 
+    /**
+     * End edit component handler.
+     *
+     * @param id the identifier
+     * @return result code of action
+     * 
+     * Since: 5.0.0
+     */
     Steinberg::tresult PLUGIN_API ComponentHandler::endEdit(Steinberg::Vst::ParamID id)
     {
       void *component_handler;
@@ -112,6 +142,14 @@ namespace Ags {
       return(0);
     }
 
+    /**
+     * Restart component.
+     *
+     * @param flags flags
+     * @return result code of action
+     * 
+     * Since: 5.0.0
+     */
     Steinberg::tresult PLUGIN_API ComponentHandler::restartComponent(Steinberg::int32 flags)
     {
       void *component_handler;
@@ -137,6 +175,16 @@ namespace Ags {
       return(0);
     }
 
+    /**
+     * Connect handler with event name to callback passing data.
+     *
+     * @param event_name the event name
+     * @param callback the callback to invoke
+     * @param data the data to pass to callback
+     * @return the handler identifier
+     * 
+     * Since: 5.0.0
+     */
     int ComponentHandler::connectHandler(char *event_name, void *callback, void *data)
     {
       EventHandler *handler;
@@ -177,6 +225,13 @@ namespace Ags {
       return(handlerID);
     }
 
+    /**
+     * Disconnect handler by handler ID.
+     *
+     * @param handler_id the handler identifier
+     * 
+     * Since: 5.0.0
+     */
     void ComponentHandler::disconnectHandler(int handler_id)
     {
       int position;
@@ -219,6 +274,15 @@ namespace Ags {
       this->componentHandlerMutex.unlock();
     }
     
+    /**
+     * Query interface of component handler.
+     *
+     * @param _iid the iid to query
+     * @param obj return location of interface
+     * @return result code of action
+     *
+     * Since: 5.0.0
+     */
     Steinberg::tresult PLUGIN_API ComponentHandler::queryInterface (const char* _iid, void** obj)
     {
       QUERY_INTERFACE (_iid, obj, FUnknown::iid, IComponentHandler)
@@ -233,11 +297,25 @@ namespace Ags {
       return Steinberg::kResultFalse;
     }
 
+    /**
+     * Add reference count.
+     *
+     * @return 1
+     *
+     * Since: 5.0.0
+     */
     Steinberg::uint32 PLUGIN_API ComponentHandler::addRef ()
     {
       return 1;
     }
 
+    /**
+     * Release reference count.
+     *
+     * @return 1
+     *
+     * Since: 5.0.0
+     */
     Steinberg::uint32 PLUGIN_API ComponentHandler::release ()
     {
       return 1;
