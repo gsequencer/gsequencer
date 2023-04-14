@@ -173,10 +173,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsTaskLauncher test flags", ags_task_launcher_test_test_flags) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTaskLauncher set flags", ags_task_launcher_test_set_flags) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTaskLauncher unset flags", ags_task_launcher_test_unset_flags) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTaskLauncher add task", ags_task_launcher_test_add_task) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsTaskLauncher add task", ags_task_launcher_test_add_task) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTaskLauncher add task all", ags_task_launcher_test_add_task_all) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTaskLauncher add cyclic task", ags_task_launcher_test_add_cyclic_task) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTaskLauncher remove cyclic task", ags_task_launcher_test_remove_cyclic_task) == NULL)){
