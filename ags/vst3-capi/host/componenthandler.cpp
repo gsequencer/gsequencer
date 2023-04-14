@@ -32,7 +32,7 @@ namespace Ags {
     /**
      * Instantiate a new Ags::VstCAPI::ComponentHandler.
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     ComponentHandler::ComponentHandler()
     {
@@ -48,7 +48,7 @@ namespace Ags {
      * @param id the identifier
      * @return result code of action
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::tresult PLUGIN_API ComponentHandler::beginEdit(Steinberg::Vst::ParamID id)
     {
@@ -82,7 +82,7 @@ namespace Ags {
      * @param valueNormalized the normalized value
      * @return result code of action
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::tresult PLUGIN_API ComponentHandler::performEdit(Steinberg::Vst::ParamID id, Steinberg::Vst::ParamValue valueNormalized)
     {
@@ -115,7 +115,7 @@ namespace Ags {
      * @param id the identifier
      * @return result code of action
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::tresult PLUGIN_API ComponentHandler::endEdit(Steinberg::Vst::ParamID id)
     {
@@ -148,7 +148,7 @@ namespace Ags {
      * @param flags flags
      * @return result code of action
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::tresult PLUGIN_API ComponentHandler::restartComponent(Steinberg::int32 flags)
     {
@@ -183,7 +183,7 @@ namespace Ags {
      * @param data the data to pass to callback
      * @return the handler identifier
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     int ComponentHandler::connectHandler(char *event_name, void *callback, void *data)
     {
@@ -230,7 +230,7 @@ namespace Ags {
      *
      * @param handler_id the handler identifier
      * 
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     void ComponentHandler::disconnectHandler(int handler_id)
     {
@@ -281,7 +281,7 @@ namespace Ags {
      * @param obj return location of interface
      * @return result code of action
      *
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::tresult PLUGIN_API ComponentHandler::queryInterface (const char* _iid, void** obj)
     {
@@ -302,7 +302,7 @@ namespace Ags {
      *
      * @return 1
      *
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::uint32 PLUGIN_API ComponentHandler::addRef ()
     {
@@ -314,7 +314,7 @@ namespace Ags {
      *
      * @return 1
      *
-     * Since: 5.0.0
+     * @since 5.0.0
      */
     Steinberg::uint32 PLUGIN_API ComponentHandler::release ()
     {
