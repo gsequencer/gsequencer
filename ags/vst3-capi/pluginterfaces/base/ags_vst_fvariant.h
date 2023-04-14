@@ -55,8 +55,8 @@ extern "C" {
 
   void ags_vst_fvariant_set_boolean(AgsVstFVariant *fvariant,
 				    gboolean val);
-  void ags_vst_fvariant_set_uin32(AgsVstFVariant *fvariant,
-				  guint32 val);
+  void ags_vst_fvariant_set_uint32(AgsVstFVariant *fvariant,
+				   guint32 val);
   void ags_vst_fvariant_set_int64(AgsVstFVariant *fvariant,
 				  gint64 val);
   void ags_vst_fvariant_set_double(AgsVstFVariant *fvariant,
