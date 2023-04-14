@@ -626,7 +626,7 @@ ags_vst_fvariant_new_wstring
 ags_vst_fvariant_new_funknown
 ags_vst_fvariant_delete
 ags_vst_fvariant_set_boolean
-ags_vst_fvariant_set_uin32
+ags_vst_fvariant_set_uint32
 ags_vst_fvariant_set_int64
 ags_vst_fvariant_set_double
 ags_vst_fvariant_set_string
