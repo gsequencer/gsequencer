@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,28 @@
 
 extern "C" {
 
+  /**
+   * Get IID.
+   * 
+   * @return the Steinberg::TUID as AgsVstTUID
+   *
+   * @since 5.0.0
+   */
   AgsVstTUID*
   ags_vst_iplug_view_content_scale_support_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::IPlugViewContentScaleSupport::iid.toTUID()));
   }
 
+  /**
+   * Set content scale factor.
+   *
+   * @param iplug_view_content_scale_support the iplug-view content scale support
+   * @param factor the factor
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iplug_view_content_scale_support_set_content_scale_factor(AgsVstIPlugViewContentScaleSupport *iplug_view_content_scale_support,
 										  AgsVstScaleFactor factor)
   {
