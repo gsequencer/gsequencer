@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,27 @@
 
 extern "C" {
 
+  /**
+   * Virtual key code to char.
+   *
+   * @param vkey the virtual key code
+   * @return the unicode char
+   *
+   * @since 5.0.0
+   */
   gunichar2 ags_vst_keycodes_virtual_key_code_to_char(guint8 vkey)
   {
     return(Steinberg::VirtualKeyCodeToChar(vkey));
   }
 
+  /**
+   * Char to virtual key code.
+   *
+   * @param vkey the virtual key code
+   * @return the char
+   *
+   * @since 5.0.0
+   */
   guint8 ags_vst_keycodes_char_to_virtual_key_code(gunichar2 character)
   {
     return(Steinberg::CharToVirtualKeyCode(character));
