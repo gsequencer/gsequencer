@@ -34,17 +34,42 @@ extern "C" {
     return(NULL);
   }
 
+  /**
+   * Disable error UI.
+   *
+   * @param error_context the error context
+   * @param state the state
+   *
+   * @since 5.0.0
+   */
   void ags_vst_ierror_context_disable_error_ui(AgsVstIErrorContext *error_context,
 					       gboolean state)
   {
     ((Steinberg::IErrorContext *) error_context)->disableErrorUI(state);
   }
 
+  /**
+   * Error message shown.
+   *
+   * @param error_context the error context
+   * @return the return code
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_ierror_context_error_message_shown(AgsVstIErrorContext *error_context)
   {
     return(((Steinberg::IErrorContext *) error_context)->errorMessageShown());
   }
   
+  /**
+   * Get error message.
+   *
+   * @param error_context the error context
+   * @param message the message
+   * @return the return code
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
 							 AgsVstIString *message)
   {
