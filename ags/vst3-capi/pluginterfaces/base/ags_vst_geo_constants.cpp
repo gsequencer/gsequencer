@@ -23,16 +23,40 @@
 
 extern "C" {
 
+  /**
+   * To oposite.
+   *
+   * @param dir the direction
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   guint ags_vst_geo_constants_to_oposite(guint dir)
   {
     return((AgsVstDirection) Steinberg::GeoConstants::toOpposite((Steinberg::Direction) dir));
   }
   
+  /**
+   * To orientation.
+   *
+   * @param dir the direction
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   guint ags_vst_geo_constants_to_orientation(guint dir)
   {
     return((AgsVstOrientation) Steinberg::GeoConstants::toOrientation((Steinberg::Direction) dir));
   }
   
+  /**
+   * To orthogonal orientation.
+   *
+   * @param dir the direction
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   guint ags_vst_geo_constants_to_orthogonal_orientation(guint dir)
   {
     return((AgsVstOrientation) Steinberg::GeoConstants::toOrthogonalOrientation((Steinberg::Orientation) dir));
