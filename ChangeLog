@@ -2,6 +2,7 @@ ags (5.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: refactoring enumerated types as function arguments
+	* TODO:JK: extended libags_vst API reference manual
 	* modified -xc++ of gsequencer_CPPFLAGS and midi2xml_CPPFLAGS
 	* modified -std= from gnu++2a to c++2a
 	* refactored template variable and field names of some files

@@ -23,12 +23,27 @@
 
 extern "C" {
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstTUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID*
   ags_vst_icloneable_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::ICloneable::iid.toTUID()));
   }
 
+  /**
+   * Clone.
+   * 
+   * @param cloneable the cloneable
+   * @return Steinberg::FUnknown as AgsVstFUnknown
+   *
+   * @since 5.0.0
+   */
   AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable)
   {
     return((AgsVstFUnknown *) ((Steinberg::ICloneable *) cloneable)->clone());

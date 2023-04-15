@@ -1293,7 +1293,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = @abs_srcdir@/header.html
+HTML_HEADER            = @abs_srcdir@/docs/reference/libags-vst/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -1303,7 +1303,7 @@ HTML_HEADER            = @abs_srcdir@/header.html
 # that doxygen normally uses.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_FOOTER            = @abs_srcdir@/footer.html
+HTML_FOOTER            = @abs_srcdir@/docs/reference/libags-vst/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading style
 # sheet that is used by each HTML page. It can be used to fine-tune the look of

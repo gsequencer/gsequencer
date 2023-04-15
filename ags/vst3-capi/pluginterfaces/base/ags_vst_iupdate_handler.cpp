@@ -23,36 +23,99 @@
 
 extern "C" {
 
+  /**
+   * Get IID.
+   * 
+   * @return the Steinberg::TUID as AgsVstTUID
+   *
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iupdate_handler_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::IUpdateHandler::iid.toTUID()));
   }
-  
+
+  /**
+   * Add dependent.
+   *
+   * @param iupdate_handler the update handler
+   * @param funknown the object
+   * @param idependent the dependent
+   * @return the return code
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iupdate_handler_add_dependent(AgsVstIUpdateHandler *iupdate_handler, AgsVstFUnknown *funknown, AgsVstIDependent *idependent)
   {
     return(((Steinberg::IUpdateHandler *) iupdate_handler)->addDependent((Steinberg::FUnknown*) funknown, (Steinberg::IDependent*) idependent));
   }
   
+  /**
+   * Remove dependent.
+   *
+   * @param iupdate_handler the update handler
+   * @param funknown the object
+   * @param idependent the dependent
+   * @return the return code
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iupdate_handler_remove_dependent(AgsVstIUpdateHandler *iupdate_handler, AgsVstFUnknown *funknown, AgsVstIDependent *idependent)
   {
     return(((Steinberg::IUpdateHandler *) iupdate_handler)->removeDependent((Steinberg::FUnknown*) funknown, (Steinberg::IDependent*) idependent));
   }
   
+  /**
+   * Trigger updates.
+   *
+   * @param iupdate_handler the update handler
+   * @param funknown the object
+   * @param message the message
+   * @return the return code
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iupdate_handler_trigger_updates(AgsVstIUpdateHandler *iupdate_handler, AgsVstFUnknown *funknown, gint32 message)
   {
     return(((Steinberg::IUpdateHandler *) iupdate_handler)->triggerUpdates((Steinberg::FUnknown*) funknown, message));
   }
   
+  /**
+   * Defer updates.
+   *
+   * @param iupdate_handler the update handler
+   * @param funknown the object
+   * @param message the message
+   * @return the return code
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iupdate_handler_defer_updates(AgsVstIUpdateHandler *iupdate_handler, AgsVstFUnknown *funknown, gint32 message)
   {
     return(((Steinberg::IUpdateHandler *) iupdate_handler)->deferUpdates((Steinberg::FUnknown*) funknown, message));
   }
   
+  /**
+   * Get IID.
+   * 
+   * @return the Steinberg::TUID as AgsVstTUID
+   *
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_idependent_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::IDependent::iid.toTUID()));
   }
   
+  /**
+   * Update.
+   *
+   * @param idependent the dependent
+   * @param changed_funknown the changed object
+   * @param message the message
+   *
+   * @since 5.0.0
+   */
   void ags_vst_idependent_update(AgsVstIDependent *idependent, AgsVstFUnknown *changed_funknown, gint32 message)
   {
     ((Steinberg::IDependent *) idependent)->update((Steinberg::FUnknown*) changed_funknown, message);
