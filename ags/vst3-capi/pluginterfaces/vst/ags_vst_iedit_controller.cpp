@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,57 +28,142 @@
 extern "C" {
 
   const AgsVstCString ags_vst_editor = "editor";
-  
+
+  /**
+   * Allocate.
+   *
+   * @return the AgsVstParameterInfo
+   *
+   * @since 5.0.0
+   */
   AgsVstParameterInfo* ags_vst_parameter_info_alloc()
   {
     return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo());
   }
 
+  /**
+   * Free.
+   *
+   * @param info the parameter info
+   *
+   * @since 5.0.0
+   */
   void ags_vst_parameter_info_free(AgsVstParameterInfo *info)
   {
     delete ((Steinberg::Vst::ParameterInfo *) info);
   }
 
+  /**
+   * Get param id.
+   *
+   * @param info the parameter info
+   * @return the parameter identifier
+   * 
+   * @since 5.0.0
+   */
   AgsVstParamID ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info)
   {
     return((AgsVstParamID) ((Steinberg::Vst::ParameterInfo *) info)->id);
   }
-  
+
+  /**
+   * Get title.
+   *
+   * @param info the parameter info
+   * @return the title
+   *
+   * @since 5.0.0
+   */
   gchar* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info)
   {
     return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->title));
   }
   
+  /**
+   * Get short title.
+   *
+   * @param info the parameter info
+   * @return the short title
+   *
+   * @since 5.0.0
+   */
   gchar* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info)
   {
     return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->shortTitle));
   }
   
+  /**
+   * Get units.
+   *
+   * @param info the parameter info
+   * @return the units
+   *
+   * @since 5.0.0
+   */
   gchar* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info)
   {
     return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->units));
   }
   
+  /**
+   * Get step count.
+   *
+   * @param info the parameter info
+   * @return the step count
+   *
+   * @since 5.0.0
+   */
   gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info)
   {
     return((gint32) (((Steinberg::Vst::ParameterInfo *) info)->stepCount));
   }
 
+  /**
+   * Get default normalized value.
+   *
+   * @param info the parameter info
+   * @return the normalized value
+   *
+   * @since 5.0.0
+   */
   AgsVstParamValue ags_vst_parameter_info_get_default_normalized_value(AgsVstParameterInfo *info)
   {
     return((AgsVstParamValue) (((Steinberg::Vst::ParameterInfo *) info)->defaultNormalizedValue));
   }
   
+  /**
+   * Get unit identifier.
+   *
+   * @param info the parameter info
+   * @return the unit ID
+   *
+   * @since 5.0.0
+   */
   AgsVstUnitID ags_vst_parameter_info_get_unit_id(AgsVstParameterInfo *info)
   {
     return((AgsVstUnitID) (((Steinberg::Vst::ParameterInfo *) info)->unitId));
   }
   
+  /**
+   * Get flags.
+   *
+   * @param info the parameter info
+   * @return the flags
+   *
+   * @since 5.0.0
+   */
   guint ags_vst_parameter_info_get_flags(AgsVstParameterInfo *info)
   {
     return((guint) (((Steinberg::Vst::ParameterInfo *) info)->flags));
   }
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler::iid.toTUID()));
@@ -108,6 +193,13 @@ extern "C" {
     return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->restartComponent(flags));
   }
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_icomponent_handler2_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler2::iid.toTUID()));
@@ -130,6 +222,13 @@ extern "C" {
     return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->finishGroupEdit());
   }
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_icomponent_handler_bus_activation_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandlerBusActivation::iid.toTUID()));
@@ -145,6 +244,13 @@ extern "C" {
 															state));
   }
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iprogress_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IProgress::iid.toTUID()));
@@ -160,6 +266,16 @@ extern "C" {
 							    const_cast<Steinberg::Vst::IProgress::ID&>(((Steinberg::Vst::IProgress::ID *) out_id)[0])));
   }
 
+  /**
+   * Update.
+   *
+   * @param iprogress the iprogress
+   * @param id the identifier
+   * @param norm_value the normalized value
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iprogress_update(AgsVstIProgress *iprogress,
 					 AgsVstID id, AgsVstParamValue norm_value)
   {
@@ -167,40 +283,101 @@ extern "C" {
 							     norm_value));
   }
 
+  /**
+   * Finish.
+   *
+   * @param iprogress the iprogress
+   * @param id the identifier
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iprogress_finish(AgsVstIProgress *iprogress,
 					 AgsVstID id)
   {
     return(((Steinberg::Vst::IProgress *) iprogress)->finish((Steinberg::Vst::IProgress::ID) id));
   }
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iedit_controller_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEditController::iid.toTUID()));
   }
-
+  
+  /**
+   * Set component state.
+   *
+   * @param iedit_controller iedit controller
+   * @param state the state
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_set_component_state(AgsVstIEditController *iedit_controller,
 							     AgsVstIBStream *state)
   {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->setComponentState((Steinberg::IBStream *) state));
   }
   
+  /**
+   * Set state.
+   *
+   * @param iedit_controller iedit-controller
+   * @param state the stream
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_set_state(AgsVstIEditController *iedit_controller,
 						   AgsVstIBStream *state)
   {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->setState((Steinberg::IBStream *) state));
   }
   
+  /**
+   * Get state.
+   *
+   * @param iedit_controller iedit-controller
+   * @param state the stream
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_get_state(AgsVstIEditController *iedit_controller,
 						   AgsVstIBStream *state)
   {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->getState((Steinberg::IBStream *) state));
   }
   
+  /**
+   * Get parameter count.
+   *
+   * @param iedit_controller iedit-controller
+   * @return the parameter count
+   *
+   * @since 5.0.0
+   */
   gint32 ags_vst_iedit_controller_get_parameter_count(AgsVstIEditController *iedit_controller)
   {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->getParameterCount());
   }
 
+  /**
+   * Get parameter info.
+   *
+   * @param iedit_controller iedit-controller
+   * @param param_index the parameter index
+   * @param info the parameter info
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_get_parameter_info(AgsVstIEditController *iedit_controller,
 							    gint32 param_index, AgsVstParameterInfo *info)
   {
@@ -208,6 +385,17 @@ extern "C" {
 										    const_cast<Steinberg::Vst::ParameterInfo&>(((Steinberg::Vst::ParameterInfo *) info)[0])));
   }
 
+  /**
+   * Get parameter string by value.
+   *
+   * @param iedit_controller iedit-controller
+   * @param id the identifier
+   * @param value_normalized the normalized value
+   * @param string the string
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
 								   gchar *string)
@@ -223,6 +411,17 @@ extern "C" {
     return(retval);
   }
 
+  /**
+   * Get parameter value by string.
+   *
+   * @param iedit_controller iedit-controller
+   * @param id the identifier
+   * @param string the string
+   * @param value_normalized the normalized value
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_get_param_value_by_string(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id,
 								   AgsVstTChar *string,
@@ -232,7 +431,16 @@ extern "C" {
 											 (Steinberg::Vst::TChar *) string,
 											 const_cast<Steinberg::Vst::ParamValue&>(((Steinberg::Vst::ParamValue *) value_normalized)[0])));
   }
-  
+
+  /**
+   * Normalized parameter to plain.
+   *
+   * @param iedit_controller iedit-controller
+   * @param id the identifier
+   * @param value_normalized the normalized value
+   *
+   * @since 5.0.0
+   */
   AgsVstParamValue ags_vst_iedit_controller_normalized_param_to_plain(AgsVstIEditController *iedit_controller,
 								      AgsVstParamID id,
 								      AgsVstParamValue value_normalized)
@@ -274,6 +482,13 @@ extern "C" {
     return((AgsVstIPlugView *) ((Steinberg::Vst::IEditController *) iedit_controller)->createView(name));
   }
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iedit_controller2_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEditController2::iid.toTUID()));
