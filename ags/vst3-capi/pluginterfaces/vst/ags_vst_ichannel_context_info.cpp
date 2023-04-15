@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,32 +35,80 @@ extern "C" {
   const AgsVstCString AGS_VST_KCHANNEL_IMAGE_KEY = "channel image";
   const AgsVstCString AGS_VST_KCHANNEL_PLUGIN_LOCATION_KEY = "channel plugin location";
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iinfo_listener_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::ChannelContext::IInfoListener::iid.toTUID()));
   }
 
+  /**
+   * Set channel context info.
+   *
+   * @param iinfo_listener the info listener
+   * @param list the attribute list
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iinfo_listener_set_channel_context_info(AgsVstIInfoListener *iinfo_listener,
 								AgsVstIAttributeList *list)
   {
     return(((Steinberg::Vst::ChannelContext::IInfoListener *) iinfo_listener)->setChannelContextInfos((Steinberg::Vst::IAttributeList *) list));
   }
 
+  /**
+   * Get blue.
+   *
+   * @param cs the color spec
+   * @return the color component
+   *
+   * @since 5.0.0
+   */
   AgsVstColorComponent ags_vst_ichannel_context_get_blue(AgsVstColorSpec cs)
   {
     return(Steinberg::Vst::ChannelContext::GetBlue(cs));
   }
 
+  /**
+   * Get green.
+   *
+   * @param cs the color spec
+   * @return the color component
+   *
+   * @since 5.0.0
+   */
   AgsVstColorComponent ags_vst_ichannel_context_get_green(AgsVstColorSpec cs)
   {
     return(Steinberg::Vst::ChannelContext::GetGreen(cs));
   }
 
+  /**
+   * Get red.
+   *
+   * @param cs the color spec
+   * @return the color component
+   *
+   * @since 5.0.0
+   */
   AgsVstColorComponent ags_vst_ichannel_context_get_red(AgsVstColorSpec cs)
   {
     return(Steinberg::Vst::ChannelContext::GetRed(cs));
   }
 
+  /**
+   * Get alpha.
+   *
+   * @param cs the color spec
+   * @return the color component
+   *
+   * @since 5.0.0
+   */
   AgsVstColorComponent ags_vst_ichannel_context_get_alpha(AgsVstColorSpec cs)
   {
     return(Steinberg::Vst::ChannelContext::GetAlpha(cs));
