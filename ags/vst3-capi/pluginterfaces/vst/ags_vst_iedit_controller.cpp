@@ -169,24 +169,61 @@ extern "C" {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler::iid.toTUID()));
   }
 
+  /**
+   * Begin edit.
+   *
+   * @param icomponent_handler the component handler
+   * @param id the parameter identifier
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
 						      AgsVstParamID id)
   {
     return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->beginEdit(id));
   }
 
+  /**
+   * Perform edit.
+   *
+   * @param icomponent_handler the component handler
+   * @param id the parameter identifier
+   * @param value_normalized the normalized value
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler_perform_edit(AgsVstIComponentHandler *icomponent_handler,
 							AgsVstParamID id, AgsVstParamValue value_normalized)
   {
     return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->performEdit(id, value_normalized));
   }
 
+  /**
+   * End edit.
+   *
+   * @param icomponent_handler the component handler
+   * @param id the parameter identifier
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler_end_edit(AgsVstIComponentHandler *icomponent_handler,
 						    AgsVstParamID id)
   {
     return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->endEdit(id));
   }
 
+  /**
+   * Restart component.
+   *
+   * @param icomponent_handler the component handler
+   * @param flats the flags
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler_restart_component(AgsVstIComponentHandler *icomponent_handler,
 							     gint32 flags)
   {
@@ -205,18 +242,44 @@ extern "C" {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler2::iid.toTUID()));
   }
 
+  /**
+   * Set dirty.
+   *
+   * @param icomponent_handler2 the component handler2
+   * @param state true if dirty, otherwise false
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler2_set_dirty(AgsVstIComponentHandler2 *icomponent_handler2,
 						      gboolean state)
   {
     return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->setDirty(state));
   }
 
+  /**
+   * Request open editor.
+   *
+   * @param icomponent_handler2 the component handler2
+   * @param name the name
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler2_request_open_editor(AgsVstIComponentHandler2 *icomponent_handler2,
 								AgsVstFIDString name)
   {
     return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->requestOpenEditor((Steinberg::FIDString) name));
   }
   
+  /**
+   * Finish group edit.
+   *
+   * @param icomponent_handler2 the component handler2
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_icomponent_handler2_finish_group_edit(AgsVstIComponentHandler2 *icomponent_handler2)
   {
     return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->finishGroupEdit());
@@ -449,6 +512,16 @@ extern "C" {
 											  value_normalized));
   }
 
+  /**
+   * Plain parameter to normalized.
+   *
+   * @param iedit_controller iedit-controller
+   * @param id the identifier
+   * @param plain_value the plain value
+   * @return the parameter value
+   * 
+   * @since 5.0.0
+   */
   AgsVstParamValue ags_vst_iedit_controller_plain_param_to_normalized(AgsVstIEditController *iedit_controller,
 								      AgsVstParamID id,
 								      AgsVstParamValue plain_value)
@@ -457,12 +530,31 @@ extern "C" {
 											  plain_value));
   }
   
+  /**
+   * Get parameter normalized.
+   *
+   * @param iedit_controller iedit-controller
+   * @param id the identifier
+   * @return the parameter value
+   * 
+   * @since 5.0.0
+   */
   AgsVstParamValue ags_vst_iedit_controller_get_param_normalized(AgsVstIEditController *iedit_controller,
 								 AgsVstParamID id)
   {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->getParamNormalized(id));
   }
   
+  /**
+   * Set parameter normalized.
+   *
+   * @param iedit_controller iedit-controller
+   * @param id the identifier
+   * @param value the parameter value
+   * @return the parameter value
+   * 
+   * @since 5.0.0
+   */
   AgsVstParamValue ags_vst_iedit_controller_set_param_normalized(AgsVstIEditController *iedit_controller,
 								 AgsVstParamID id,
 								 AgsVstParamValue value)
@@ -470,12 +562,30 @@ extern "C" {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->setParamNormalized(id, value));
   }
 
+  /**
+   * Set component handler.
+   *
+   * @param iedit_controller iedit-controller
+   * @param handler the component handler
+   * @return the parameter value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_set_component_handler(AgsVstIEditController *iedit_controller,
 							       AgsVstIComponentHandler *handler)
   {
     return(((Steinberg::Vst::IEditController *) iedit_controller)->setComponentHandler((Steinberg::Vst::IComponentHandler *) handler));
   }
 
+  /**
+   * Create view.
+   *
+   * @param iedit_controller iedit-controller
+   * @param name the name
+   * @return the plug-view
+   * 
+   * @since 5.0.0
+   */
   AgsVstIPlugView* ags_vst_iedit_controller_create_view(AgsVstIEditController *iedit_controller,
 							AgsVstFIDString name)
   {
@@ -494,29 +604,75 @@ extern "C" {
     return((AgsVstTUID *) &(Steinberg::Vst::IEditController2::iid.toTUID()));
   }
 
+  /**
+   * Set knob mode.
+   * 
+   * @param iedit_controller iedit-controller2
+   * @param mode the know mode
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller2_set_knob_mode(AgsVstIEditController2 *iedit_controller2,
-						       guint mode)
+							guint mode)
   {
     return(((Steinberg::Vst::IEditController2 *) iedit_controller2)->setKnobMode(mode));
   }
   
+  /**
+   * Open help.
+   * 
+   * @param iedit_controller iedit-controller2
+   * @param only_check true if check, otherwise false
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller2_open_help(AgsVstIEditController2 *iedit_controller2,
 						    gboolean only_check)
   {
     return(((Steinberg::Vst::IEditController2 *) iedit_controller2)->openHelp(only_check));
   }
   
+  /**
+   * Open about box.
+   * 
+   * @param iedit_controller iedit-controller2
+   * @param only_check true if check, otherwise false
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller2_open_about_box(AgsVstIEditController2 *iedit_controller2,
 							 gboolean only_check)
   {
     return(((Steinberg::Vst::IEditController2 *) iedit_controller2)->openAboutBox(only_check));
   }
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_imidi_mapping_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IMidiMapping::iid.toTUID()));
   }
 
+  /**
+   * Get midi controller assignment.
+   * 
+   * @param imidi_mapping imidi-mapping
+   * @param bus_index the bus index
+   * @param channel the channel
+   * @param midi_controller_number midi controller number
+   * @param id the identifier 
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_imidi_mapping_get_midi_controller_assignment(AgsVstIMidiMapping *imidi_mapping,
 								     gint32 bus_index, gint16 channel,
 								     AgsVstCtrlNumber midi_controller_number, AgsVstParamID *id)
@@ -525,17 +681,42 @@ extern "C" {
 											 midi_controller_number, const_cast<Steinberg::Vst::ParamID&>(((Steinberg::Vst::ParamID *) id)[0])));
   }
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iedit_controller_host_editing_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEditControllerHostEditing::iid.toTUID()));
   }
 
+  /**
+   * Begin edit from host.
+   * 
+   * @param iedit_controller_host_editing the iedit-controller host editing
+   * @param param_id the parameter identifier
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_host_editing_begin_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
 									   AgsVstParamID param_id)
   {
     return(((Steinberg::Vst::IEditControllerHostEditing *) iedit_controller_host_editing)->beginEditFromHost(param_id));
   }
   
+  /**
+   * End edit from host.
+   * 
+   * @param iedit_controller_host_editing the iedit-controller host editing
+   * @param param_id the parameter identifier
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iedit_controller_host_editing_end_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
 									 AgsVstParamID param_id)
   {
