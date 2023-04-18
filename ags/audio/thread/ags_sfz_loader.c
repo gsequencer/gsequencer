@@ -45,7 +45,7 @@ void* ags_sfz_loader_run(void *ptr);
 
 /**
  * SECTION:ags_sfz_loader
- * @short_description: load sfz asynchronously
+ * @short_description: load SFZ asynchronously
  * @title: AgsSFZLoader
  * @section_id:
  * @include: ags/plugin/ags_sfz_loader.h
