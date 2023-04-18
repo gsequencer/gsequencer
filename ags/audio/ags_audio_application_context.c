@@ -75,13 +75,9 @@
 
 #include <sys/types.h>
 
+#if !defined(AGS_W32API)
 #include <unistd.h>
-
-#if !defined(AGS_W32API)
 #include <pwd.h>
-#endif
-
-#if !defined(AGS_W32API)
 #include <sys/utsname.h>
 #endif
 
