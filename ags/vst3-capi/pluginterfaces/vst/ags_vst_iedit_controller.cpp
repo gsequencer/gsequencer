@@ -30,7 +30,7 @@ extern "C" {
   const AgsVstCString ags_vst_editor = "editor";
 
   /**
-   * Allocate.
+   * Allocate parameter info.
    *
    * @return the AgsVstParameterInfo
    *
@@ -42,7 +42,7 @@ extern "C" {
   }
 
   /**
-   * Free.
+   * Free parameter info.
    *
    * @param info the parameter info
    *

@@ -26,7 +26,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if !defined(AGS_W32API)
 #include <unistd.h>
+#endif
 #include <time.h>
 
 #ifdef __APPLE__

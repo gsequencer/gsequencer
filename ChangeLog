@@ -9,6 +9,11 @@ ags (5.0.0)
 	* fixed usage of GtkCheckButton get active
 	* fixed midi2xml
 
+ags (4.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* introduced api-pdf automake target
+
 ags (4.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

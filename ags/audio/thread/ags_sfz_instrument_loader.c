@@ -49,12 +49,12 @@ void* ags_sfz_instrument_loader_run(void *ptr);
 
 /**
  * SECTION:ags_sfz_instrument_loader
- * @short_description: load Soundfont2 MIDI locale asynchronously
+ * @short_description: load SFZ instrument asynchronously
  * @title: AgsSFZInstrumentLoader
  * @section_id:
  * @include: ags/plugin/ags_sfz_instrument_loader.h
  *
- * The #AgsSFZInstrumentLoader loads Soundfont2 audio data of MIDI locale asynchronously.
+ * The #AgsSFZInstrumentLoader loads SFZ audio data of instrument asynchronously.
  */
 
 enum{

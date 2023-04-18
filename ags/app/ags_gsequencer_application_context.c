@@ -85,9 +85,8 @@
 
 #include <stdbool.h>
 
-#include <unistd.h>
-
 #if !defined(AGS_W32API)
+#include <unistd.h>
 #include <sys/utsname.h>
 #endif
 
