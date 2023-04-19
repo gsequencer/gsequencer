@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,29 @@
 
 extern "C" {
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_imidi_learn_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IMidiLearn::iid.toTUID()));
   }
 
+  /**
+   * On-live MIDI controller input.
+   *
+   * @param imidi_learn the iMIDI learn
+   * @param bus_index the bus index
+   * @param channel the MIDI channel
+   * @param midi_cc the MIDI control change
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_midi_learn_on_live_midi_controller_input(AgsVstIMidiLearn *imidi_learn,
 								 gint32 bus_index, gint16 channel,
 								 AgsVstCtrlNumber midi_cc)
