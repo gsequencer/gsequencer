@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,29 @@
 
 extern "C" {
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_inote_expression_physical_ui_mapping_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::INoteExpressionPhysicalUIMapping::iid.toTUID()));
   }
 
+  /**
+   * Get physical UI mapping.
+   * 
+   * @param inote_expression_physical_ui_mapping note expression physical UI mapping
+   * @param bus_index the bus index
+   * @param channel the MIDI channel
+   * @param list the physical UI map list
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_inote_expression_physical_ui_mapping_get_physical_ui_mapping(AgsVstINoteExpressionPhysicalUIMapping *inote_expression_physical_ui_mapping,
 										     gint32 bus_index, gint16 channel,
 										     AgsVstPhysicalUIMapList *list)
