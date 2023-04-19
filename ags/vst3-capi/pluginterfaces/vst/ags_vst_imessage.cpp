@@ -23,44 +23,109 @@
 
 extern "C" {
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_imessage_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IMessage::iid.toTUID()));
   }
 
+  /**
+   * Get message identifier.
+   *
+   * @param imessage the message
+   * @return the FID string
+   * 
+   * @since 5.0.0
+   */
   AgsVstFIDString ags_vst_imessage_get_message_id(AgsVstIMessage *imessage)
   {
     return(((Steinberg::Vst::IMessage *) imessage)->getMessageID());
   }
 
+  /**
+   * Set message identifier.
+   *
+   * @param imessage the message
+   * @param id the FID string
+   * 
+   * @since 5.0.0
+   */
   void ags_vst_imessage_set_message_id(AgsVstIMessage *imessage,
 				       AgsVstFIDString id)
   {
     return(((Steinberg::Vst::IMessage *) imessage)->setMessageID(id));
   }
-  
+
+  /**
+   * Get attributes.
+   *
+   * @param imessage the message
+   * @return the attribute list
+   * 
+   * @since 5.0.0
+   */
   AgsVstIAttributeList* ags_vst_imessage_get_attributes(AgsVstIMessage *imessage)
   {
     return((AgsVstIAttributeList *) ((Steinberg::Vst::IMessage *) imessage)->getAttributes());
   }
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iconnection_point_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IConnectionPoint::iid.toTUID()));
   }
 
+  /**
+   * Connect.
+   *
+   * @param iconnection_point the connection point
+   * @param other the other connection point
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iconnection_point_connect(AgsVstIConnectionPoint *iconnection_point,
 						  AgsVstIConnectionPoint *other)
   {
     return(((Steinberg::Vst::IConnectionPoint *) iconnection_point)->connect((Steinberg::Vst::IConnectionPoint *) other));
   }
 
+  /**
+   * Disonnect.
+   *
+   * @param iconnection_point the connection point
+   * @param other the other connection point
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iconnection_point_disconnect(AgsVstIConnectionPoint *iconnection_point,
 						     AgsVstIConnectionPoint *other)
   {
     return(((Steinberg::Vst::IConnectionPoint *) iconnection_point)->disconnect((Steinberg::Vst::IConnectionPoint *) other));
   }
 
+  /**
+   * Notify.
+   *
+   * @param iconnection_point the connection point
+   * @param imessage the message
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iconnection_point_notify(AgsVstIConnectionPoint *iconnection_point,
 						 AgsVstIMessage *imessage)
   {
