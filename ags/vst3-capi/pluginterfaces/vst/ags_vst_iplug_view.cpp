@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,29 @@
 
 extern "C" {
     
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iparameter_finder_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IParameterFinder::iid.toTUID()));
   }
 
+  /**
+   * Find parameter.
+   *
+   * @param iparameter_finder the parameter finder
+   * @param x_pos the x position
+   * @param y_pos the y position
+   * @param result_tag the result tag
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iparameter_finder_find_parameter(AgsVstIParameterFinder *iparameter_finder,
 							 gint32 x_pos, gint32 y_pos,
 							 AgsVstParamID *result_tag)
