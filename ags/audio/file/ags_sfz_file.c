@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,10 @@
 #include <ags/audio/file/ags_sfz_sample.h>
 
 #include <sys/stat.h>
+
+#if !defined(AGS_W32API)
 #include <unistd.h>
+#endif
 
 #include <string.h>
 #include <strings.h>
