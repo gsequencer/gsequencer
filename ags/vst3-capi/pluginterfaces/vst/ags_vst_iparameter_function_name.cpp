@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,11 +34,29 @@ extern "C" {
 
   const gchar *ags_vst_krandomize = "Randomize";
       
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iparameter_function_name_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IParameterFunctionName::iid.toTUID()));
   }
-  
+
+  /**
+   * Get parameter identifier from function name.
+   *
+   * @param iparameter_function_name the parameter function name
+   * @param unit_id the unit identifier
+   * @param function_name the function name
+   * @param param_id the parameter identifier
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iparameter_function_name_get_parameter_id_from_function_name(AgsVstIParameterFunctionName *iparameter_function_name,
 										     AgsVstUnitID unit_id, AgsVstFIDString function_name, AgsVstParamID *param_id)
   {
