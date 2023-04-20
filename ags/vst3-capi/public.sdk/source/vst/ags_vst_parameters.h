@@ -43,7 +43,7 @@ extern "C" {
 					      gint32 flags, gint32 unit_id,
 					      gunichar2 *short_title);
   
-  void ags_vst_parameters_delete(AgsVstParameter *parameter);
+  void ags_vst_parameter_delete(AgsVstParameter *parameter);
 
   AgsVstParameterInfo* ags_vst_parameter_get_info(AgsVstParameter *parameter);
 
@@ -102,12 +102,12 @@ extern "C" {
 							gint32 index, AgsVstString128 string);
 
   void ags_vst_string_list_parameter_to_string(AgsVstStringListParameter *string_list_parameter,
-					       gdouble _value_normalized, AgsVstString128 string);
+					       gdouble value_normalized, AgsVstString128 string);
   gboolean ags_vst_string_list_parameter_from_string(AgsVstStringListParameter *string_list_parameter,
 						     gunichar2 *string, gdouble *_value_normalized);
 
   gdouble ags_vst_string_list_parameter_to_plain(AgsVstStringListParameter *string_list_parameter,
-						 gdouble _value_normalized);
+						 gdouble value_normalized);
   gdouble ags_vst_string_list_parameter_to_normalized(AgsVstStringListParameter *string_list_parameter,
 						      gdouble plain_value);
 
