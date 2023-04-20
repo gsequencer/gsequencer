@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,14 @@
 
 extern "C" {
 
+  /**
+   * To unicode.
+   *
+   * @param source_str the string
+   * @return the unicode string
+   *
+   * @since 5.0.0
+   */
   gunichar2*
   ags_vst_string_util_to_unicode16(gchar *source_str)
   {
@@ -39,6 +47,15 @@ extern "C" {
     return(destination_str);
   }
 
+  /**
+   * To unicode extended.
+   *
+   * @param source_str the string
+   * @param destination_str the destination unicode string
+   * @param destination_length the destination string length
+   *
+   * @since 5.0.0
+   */
   void ags_vst_string_util_to_unicode16_extended(gchar *source_str,
 						 gunichar2 **destination_str, gsize *destination_length)
   {
@@ -102,6 +119,14 @@ extern "C" {
     }
   }
 
+  /**
+   * From unicode.
+   *
+   * @param source_str the source string
+   * @return the string
+   *
+   * @since 5.0.0
+   */
   gchar*
   ags_vst_string_util_from_unicode16(gunichar2 *source_str)
   {
