@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,14 @@
 
 extern "C" {
 
+  /**
+   * Instantiate new Steinberg::Vst::EventList the constructor as a C99
+   * compatible handle a void pointer.
+   * 
+   * @return the AgsVstEventList
+   * 
+   * @since 5.0.0
+   */
   AgsVstEventList* ags_vst_event_list_new()
   {
     Steinberg::Vst::EventList *event_list = new Steinberg::Vst::EventList();
@@ -30,6 +38,13 @@ extern "C" {
     return((AgsVstEventList *) event_list);
   }
 
+  /**
+   * Clear.
+   *
+   * @param event_list the event list
+   *
+   * @since 5.0.0
+   */
   void ags_vst_event_list_clear(AgsVstEventList *event_list)
   {
     ((Steinberg::Vst::EventList *) event_list)->clear();
