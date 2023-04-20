@@ -281,7 +281,7 @@ extern "C" {
   }
 
   /**
-   * Get media type of @bus_list.
+   * Get media type of bus list.
    * 
    * @param bus_list the bus list
    * @return the media type 
