@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,28 @@
 
 extern "C" {
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_ixml_representation_controller_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IXmlRepresentationController::iid.toTUID()));
   }
 
+  /**
+   * Get XML representation stream.
+   *
+   * @param ixml_representation_controller the XML representation controller
+   * @param info the representation info
+   * @param stream the stream
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_ixml_representation_controller_get_xml_representation_stream(AgsVstIXmlRepresentationController *ixml_representation_controller,
 										     AgsVstRepresentationInfo *info,
 										     AgsVstIBStream *stream)
