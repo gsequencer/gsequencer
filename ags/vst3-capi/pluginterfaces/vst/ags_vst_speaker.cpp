@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -317,67 +317,174 @@ extern "C" {
   const AgsVstCString ags_vst_speaker_kstring_ambi_1st_order_s   = "0 1 2 3";
   const AgsVstCString ags_vst_speaker_kstring_ambi_2cd_order_s   = "0 1 2 3 4 5 6 7 8";
   const AgsVstCString ags_vst_speaker_kstring_ambi_3rd_order_s   = "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15";
-  
+
+  /**
+   * Get channel count.
+   *
+   * @param arr the speaker arrangement
+   * @return the channel count
+   *
+   * @since 5.0.0
+   */
   gint32 ags_vst_speaker_get_channel_count(AgsVstSpeakerArrangement arr)
   {
     return(Steinberg::Vst::SpeakerArr::getChannelCount(arr));
   }
 
+  /**
+   * Get speaker index.
+   *
+   * @param arr the speaker arrangement
+   * @return the speaker index
+   *
+   * @since 5.0.0
+   */
   gint32 ags_vst_speaker_get_speaker_index(AgsVstSpeaker speaker, AgsVstSpeakerArrangement arr)
   {
     return(Steinberg::Vst::SpeakerArr::getSpeakerIndex(speaker, arr));
   }
   
+  /**
+   * Get speaker.
+   *
+   * @param arr the speaker arrangement
+   * @param index the index
+   * @return the speaker
+   *
+   * @since 5.0.0
+   */
   AgsVstSpeaker ags_vst_speaker_get_speaker(AgsVstSpeakerArrangement *arr, gint32 index)
   {
     return(Steinberg::Vst::SpeakerArr::getSpeaker(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0]), index));
   }
 
+  /**
+   * Is sub-set of.
+   * 
+   * @param arr_sub_set the speaker arrangement sub-set
+   * @param arr the speaker arrangement
+   * @return true if is sub-set of, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_is_subset_of(AgsVstSpeakerArrangement *arr_sub_set, AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::isSubsetOf(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr_sub_set[0]), const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Is auro.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is auro, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_is_auro(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::isAuro(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
   
+  /**
+   * Has top speakers.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is has top speakers, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_has_top_speakers(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::hasTopSpeakers(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Has bottom speakers.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is has bottom speakers, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_has_bottom_speakers(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::hasBottomSpeakers(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Has middle speakers.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is has middle speakers, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_has_middle_speakers(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::hasMiddleSpeakers(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Has lfe.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is has lfe, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_has_lfe(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::hasLfe(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Is 3d.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is is 3d, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_is_3d(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::is3D(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Is ambisonics.
+   * 
+   * @param arr the speaker arrangement
+   * @return true if is is ambisonics, otherwise false
+   * 
+   * @since 5.0.0
+   */
   gboolean ags_vst_speaker_is_ambisonics(AgsVstSpeakerArrangement *arr)
   {
     return(Steinberg::Vst::SpeakerArr::isAmbisonics(const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0])));
   }
 
+  /**
+   * Get speaker arrangement from string.
+   * 
+   * @param arr_str the string
+   * @return the speaker arrangement
+   * 
+   * @since 5.0.0
+   */
   AgsVstSpeakerArrangement ags_vst_speaker_get_speaker_arrangement_from_string(AgsVstCString arr_str)
   {
     return((AgsVstSpeakerArrangement) Steinberg::Vst::SpeakerArr::getSpeakerArrangementFromString(arr_str));
   }
 
+  /**
+   * Get speaker arrangement string.
+   * 
+   * @param arr the speaker arrangement
+   * @param with_speakers_name true if with speakers name, otherwise false
+   * @return the string
+   * 
+   * @since 5.0.0
+   */
   AgsVstCString ags_vst_speaker_get_speaker_arrangement_string(AgsVstSpeakerArrangement arr,
 							       gboolean with_speakers_name)
   {
@@ -385,6 +492,15 @@ extern "C" {
 										   with_speakers_name));
   }
 
+  /**
+   * Get speaker short name.
+   * 
+   * @param arr the speaker arrangement
+   * @param index the index
+   * @return the string
+   * 
+   * @since 5.0.0
+   */
   AgsVstCString ags_vst_speaker_get_speaker_short_name(AgsVstSpeakerArrangement *arr,
 						       gint32 index)
   {
