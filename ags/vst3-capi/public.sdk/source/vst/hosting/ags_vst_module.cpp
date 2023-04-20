@@ -24,6 +24,14 @@
 
 extern "C" {
 
+  /**
+   * Set host context.
+   *
+   * @param plugin_factory the plugin factory
+   * @param host_context the host context
+   *
+   * @since 5.0.0
+   */
   void ags_vst_plugin_factory_set_host_context(AgsVstPluginFactory *plugin_factory,
 					       AgsVstHostContext *host_context)
   {
@@ -52,6 +60,14 @@ extern "C" {
   }
 #endif
   
+  /**
+   * Get factory.
+   *
+   * @param module the module
+   * @return the plugin factory
+   *
+   * @since 5.0.0
+   */
   AgsVstPluginFactory* ags_vst_module_get_factory(AgsVstModule *module)
   {
     return((AgsVstPluginFactory *) const_cast<VST3::Hosting::PluginFactory *>(&(((VST3::Hosting::Module *) module)->getFactory())));
