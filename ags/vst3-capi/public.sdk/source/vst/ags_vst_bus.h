@@ -35,18 +35,6 @@ extern "C" {
 
   typedef struct AgsVstBus Bus;
 
-  /**
-   * ags_vst_bus_new:
-   * @name: the name as string
-   * @bus_type: the #AgsVstBusType-enum
-   * @flags: the flags
-   * 
-   * Wrapper of Bus constructor.
-   * 
-   * Returns: the #AgsVstBus-struct pointer
-   * 
-   * Since: 2.2.0
-   */
   AgsVstBus* ags_vst_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags);
 
   /**

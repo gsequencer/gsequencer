@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,16 @@
 extern "C" {
 
 #if 0  
+  /**
+   * Wrapper of Bus constructor.
+   * 
+   * @param name the name as string
+   * @param bus_type the bus type
+   * @param flags the flags
+   * @return the bus
+   * 
+   * @since 2.2.0
+   */
   AgsVstBus* ags_vst_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags)
   {
     return((AgsVstBus* ) new Steinberg::Vst::Bus());
