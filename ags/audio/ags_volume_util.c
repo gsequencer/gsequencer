@@ -347,7 +347,7 @@ ags_volume_util_set_buffer_length(AgsVolumeUtil *volume_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_volume_util_get_format(AgsVolumeUtil *volume_util)
 {
   if(volume_util == NULL){
@@ -368,7 +368,7 @@ ags_volume_util_get_format(AgsVolumeUtil *volume_util)
  */
 void
 ags_volume_util_set_format(AgsVolumeUtil *volume_util,
-			   guint format)
+			   AgsSoundcardFormat format)
 {
   if(volume_util == NULL){
     return;

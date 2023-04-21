@@ -55,7 +55,7 @@ struct _AgsAudioFile
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -71,7 +71,7 @@ struct _AgsAudioFile
   
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gint audio_channel;
 
@@ -123,9 +123,9 @@ guint ags_audio_file_get_frame_count(AgsAudioFile *audio_file);
 void ags_audio_file_set_frame_count(AgsAudioFile *audio_file,
 				    guint frame_count);
 
-guint ags_audio_file_get_format(AgsAudioFile *audio_file);
+AgsSoundcardFormat ags_audio_file_get_format(AgsAudioFile *audio_file);
 void ags_audio_file_set_format(AgsAudioFile *audio_file,
-			       guint format);
+			       AgsSoundcardFormat format);
 
 guint ags_audio_file_get_audio_channel(AgsAudioFile *audio_file);
 void ags_audio_file_set_audio_channel(AgsAudioFile *audio_file,

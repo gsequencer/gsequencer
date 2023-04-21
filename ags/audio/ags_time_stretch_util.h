@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,7 +48,7 @@ struct _AgsTimeStretchUtil
   guint destination_buffer_length;
   
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   gdouble frequency;
@@ -92,9 +92,9 @@ guint ags_time_stretch_util_get_buffer_size(AgsTimeStretchUtil *time_stretch_uti
 void ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
 					   guint buffer_size);
 
-guint ags_time_stretch_util_get_format(AgsTimeStretchUtil *time_stretch_util);
+AgsSoundcardFormat ags_time_stretch_util_get_format(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_format(AgsTimeStretchUtil *time_stretch_util,
-				      guint format);
+				      AgsSoundcardFormat format);
 
 guint ags_time_stretch_util_get_samplerate(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_samplerate(AgsTimeStretchUtil *time_stretch_util,

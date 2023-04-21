@@ -44,7 +44,7 @@ struct _AgsAudioContainer
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -63,7 +63,7 @@ struct _AgsAudioContainer
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gint audio_channel;
 
@@ -79,10 +79,6 @@ struct _AgsAudioContainerClass
 };
 
 GType ags_audio_container_get_type();
-
-gboolean ags_audio_container_test_flags(AgsAudioContainer *audio_container, guint flags);
-void ags_audio_container_set_flags(AgsAudioContainer *audio_container, guint flags);
-void ags_audio_container_unset_flags(AgsAudioContainer *audio_container, guint flags);
 
 gboolean ags_audio_container_check_suffix(gchar *filename);
 
@@ -107,7 +103,7 @@ void ags_audio_container_close(AgsAudioContainer *audio_container);
 
 void* ags_audio_container_read(AgsAudioContainer *audio_container,
 			       guint audio_channel,
-			       guint format,
+			       AgsSoundcardFormat format,
 			       GError **error);
 GList* ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container);
 GList* ags_audio_container_read_wave(AgsAudioContainer *audio_container,
@@ -116,7 +112,7 @@ GList* ags_audio_container_read_wave(AgsAudioContainer *audio_container,
 void ags_audio_container_seek(AgsAudioContainer *audio_container, guint frames, gint whence);
 void ags_audio_container_write(AgsAudioContainer *audio_container,
 			       void *buffer, guint buffer_size,
-			       guint format);
+			       AgsSoundcardFormat format);
 void ags_audio_container_flush(AgsAudioContainer *audio_container);
 
 /* instantiate */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1437,7 +1437,7 @@ ags_audio_file_set_frame_count(AgsAudioFile *audio_file,
  *
  * Since: 4.2.0
  */
-guint
+AgsSoundcardFormat
 ags_audio_file_get_format(AgsAudioFile *audio_file)
 {
   guint format;
@@ -1466,7 +1466,7 @@ ags_audio_file_get_format(AgsAudioFile *audio_file)
  */
 void
 ags_audio_file_set_format(AgsAudioFile *audio_file,
-			  guint format)
+			  AgsSoundcardFormat format)
 {
   if(!AGS_IS_AUDIO_FILE(audio_file)){
     return;
