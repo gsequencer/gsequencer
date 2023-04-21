@@ -328,8 +328,8 @@ void ags_recall_set_samplerate(AgsRecall *recall, guint samplerate);
 guint ags_recall_get_buffer_size(AgsRecall *recall);
 void ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size);
 
-guint ags_recall_get_format(AgsRecall *recall);
-void ags_recall_set_format(AgsRecall *recall, guint format);
+AgsSoundcardFormat ags_recall_get_format(AgsRecall *recall);
+void ags_recall_set_format(AgsRecall *recall, AgsSoundcardFormat format);
 
 /* events */
 void ags_recall_resolve_dependency(AgsRecall *recall);

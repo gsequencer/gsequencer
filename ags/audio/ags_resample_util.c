@@ -393,7 +393,7 @@ ags_resample_util_set_buffer_length(AgsResampleUtil *resample_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_resample_util_get_format(AgsResampleUtil *resample_util)
 {
   if(resample_util == NULL){
@@ -414,7 +414,7 @@ ags_resample_util_get_format(AgsResampleUtil *resample_util)
  */
 void
 ags_resample_util_set_format(AgsResampleUtil *resample_util,
-			     guint format)
+			     AgsSoundcardFormat format)
 {
   if(resample_util == NULL){
     return;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -477,7 +477,7 @@ ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util)
 {
   if(sfz_synth_util == NULL){
@@ -498,7 +498,7 @@ ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util)
  */
 void
 ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
-			      guint format)
+			      AgsSoundcardFormat format)
 {
   if(sfz_synth_util == NULL ||
      sfz_synth_util->format == format){

@@ -277,7 +277,7 @@ ags_synth_util_set_buffer_length(AgsSynthUtil *synth_util,
  * 
  * Since: 3.14.0
  */
-guint
+AgsSoundcardFormat
 ags_synth_util_get_format(AgsSynthUtil *synth_util)
 {
   if(synth_util == NULL){
@@ -298,7 +298,7 @@ ags_synth_util_get_format(AgsSynthUtil *synth_util)
  */
 void
 ags_synth_util_set_format(AgsSynthUtil *synth_util,
-			  guint format)
+			  AgsSoundcardFormat format)
 {
   if(synth_util == NULL){
     return;

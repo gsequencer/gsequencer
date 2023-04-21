@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -500,7 +500,7 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util)
 {
   if(sf2_synth_util == NULL){
@@ -521,7 +521,7 @@ ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util)
  */
 void
 ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
-			      guint format)
+			      AgsSoundcardFormat format)
 {
   if(sf2_synth_util == NULL ||
      sf2_synth_util->format == format){
@@ -1028,7 +1028,7 @@ ags_sf2_synth_util_set_offset(AgsSF2SynthUtil *sf2_synth_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSF2SynthUtilLoopMode
 ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util)
 {
   if(sf2_synth_util == NULL){
@@ -1049,7 +1049,7 @@ ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util)
  */
 void
 ags_sf2_synth_util_set_loop_mode(AgsSF2SynthUtil *sf2_synth_util,
-				 guint loop_mode)
+				 AgsSF2SynthUtilLoopMode loop_mode)
 {
   if(sf2_synth_util == NULL){
     return;

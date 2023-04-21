@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,7 @@ struct _AgsSynthUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   guint synth_oscillator_mode;
@@ -73,9 +73,9 @@ guint ags_synth_util_get_buffer_length(AgsSynthUtil *synth_util);
 void ags_synth_util_set_buffer_length(AgsSynthUtil *synth_util,
 				      guint buffer_length);
 
-guint ags_synth_util_get_format(AgsSynthUtil *synth_util);
+AgsSoundcardFormat ags_synth_util_get_format(AgsSynthUtil *synth_util);
 void ags_synth_util_set_format(AgsSynthUtil *synth_util,
-			       guint format);
+			       AgsSoundcardFormat format);
 
 guint ags_synth_util_get_samplerate(AgsSynthUtil *synth_util);
 void ags_synth_util_set_samplerate(AgsSynthUtil *synth_util,

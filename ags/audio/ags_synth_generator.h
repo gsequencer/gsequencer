@@ -68,7 +68,7 @@ struct _AgsSynthGenerator
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   guint frame_count;
   guint loop_start;
@@ -123,8 +123,8 @@ void ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guin
 guint ags_synth_generator_get_buffer_size(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint buffer_size);
 
-guint ags_synth_generator_get_format(AgsSynthGenerator *synth_generator);
-void ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format);
+AgsSoundcardFormat ags_synth_generator_get_format(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, AgsSoundcardFormat format);
 
 gdouble ags_synth_generator_get_delay(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_delay(AgsSynthGenerator *synth_generator, gdouble delay);

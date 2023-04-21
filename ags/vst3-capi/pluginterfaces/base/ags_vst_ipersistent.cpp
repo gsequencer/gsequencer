@@ -261,7 +261,7 @@ extern "C" {
    * Get IID.
    *
    * @param attr the attributes
-   * @para index the index of attribute
+   * @param index the index of attribute
    * @return the attribute identifier
    *
    * @since 5.0.0

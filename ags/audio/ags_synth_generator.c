@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -598,7 +598,7 @@ ags_synth_generator_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
       
       format = g_value_get_uint(value);
 
@@ -1181,7 +1181,7 @@ ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint bu
  * 
  * Since: 3.1.0
  */
-guint
+AgsSoundcardFormat
 ags_synth_generator_get_format(AgsSynthGenerator *synth_generator)
 {
   guint format;
@@ -1207,7 +1207,7 @@ ags_synth_generator_get_format(AgsSynthGenerator *synth_generator)
  * Since: 3.0.0
  */
 void
-ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
+ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, AgsSoundcardFormat format)
 {
   GRecMutex *synth_generator_mutex;
   
