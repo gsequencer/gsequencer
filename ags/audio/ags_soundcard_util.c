@@ -290,3 +290,39 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
   g_rec_mutex_unlock(obj_mutex);  
 }
+
+/**
+ * ags_soundcard_util_offset_to_system_time:
+ * @soundcard: the #GObject sub-type implementing #AgsSoundcard
+ * 
+ * Offset of @soundcard to system time.
+ * 
+ * Returns: the system time
+ * 
+ * Since: 5.0.0
+ */
+gint64
+ags_soundcard_util_offset_to_system_time(GObject *soundcard)
+{
+  gint64 system_time;
+  guint samplerate;
+  gdouble delay, delay_counter;
+  guint note_offset;
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
+
+  note_offset = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(soundcard));
+
+  system_time = (note_offset + delay_counter) * delay * buffer_size * (AGS_NSEC_PER_SEC / samplerate);
+
+  return(system_time);
+}
+

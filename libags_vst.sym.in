@@ -22,7 +22,7 @@ ags_vst_string_util_from_unicode16
 ags_vst_parameter_new
 ags_vst_parameter_new_with_info
 ags_vst_parameter_new_full
-ags_vst_parameters_delete
+ags_vst_parameter_delete
 ags_vst_parameter_get_info
 ags_vst_parameter_set_unit_id
 ags_vst_parameter_get_unit_id
