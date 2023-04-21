@@ -12548,7 +12548,7 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
+  AgsSoundStagingFlags current_staging_flags;
   gboolean play_context;
   
   GRecMutex *audio_mutex;
@@ -12803,7 +12803,7 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
+  AgsSoundStagingFlags current_staging_flags;
   
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -12947,19 +12947,19 @@ ags_audio_resolve_recall(AgsAudio *audio,
 
 void
 ags_audio_real_init_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id, guint staging_flags)
+			   AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
   
   GList *list_start, *list;
 
-  guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-				     AGS_SOUND_STAGING_RUN_INIT_PRE |
-				     AGS_SOUND_STAGING_RUN_INIT_INTER |
-				     AGS_SOUND_STAGING_RUN_INIT_POST);
+  gint sound_scope;
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						    AGS_SOUND_STAGING_RUN_INIT_PRE |
+						    AGS_SOUND_STAGING_RUN_INIT_INTER |
+						    AGS_SOUND_STAGING_RUN_INIT_POST);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13104,7 +13104,7 @@ ags_audio_real_init_recall(AgsAudio *audio,
  */
 void
 ags_audio_init_recall(AgsAudio *audio,
-		      AgsRecallID *recall_id, guint staging_flags)
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio));
 
@@ -13117,7 +13117,7 @@ ags_audio_init_recall(AgsAudio *audio,
 
 void
 ags_audio_real_play_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id, guint staging_flags)
+			   AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
@@ -13125,18 +13125,18 @@ ags_audio_real_play_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_mask = (AGS_SOUND_STAGING_RUN_INIT_PRE |
-				     AGS_SOUND_STAGING_RUN_INIT_INTER |
-				     AGS_SOUND_STAGING_RUN_INIT_POST |
-				     AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-				     AGS_SOUND_STAGING_AUTOMATE |
-				     AGS_SOUND_STAGING_RUN_PRE |
-				     AGS_SOUND_STAGING_RUN_INTER |
-				     AGS_SOUND_STAGING_RUN_POST |
-				     AGS_SOUND_STAGING_DO_FEEDBACK |
-				     AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
-				     AGS_SOUND_STAGING_FINI);
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_mask = (AGS_SOUND_STAGING_RUN_INIT_PRE |
+						    AGS_SOUND_STAGING_RUN_INIT_INTER |
+						    AGS_SOUND_STAGING_RUN_INIT_POST |
+						    AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+						    AGS_SOUND_STAGING_AUTOMATE |
+						    AGS_SOUND_STAGING_RUN_PRE |
+						    AGS_SOUND_STAGING_RUN_INTER |
+						    AGS_SOUND_STAGING_RUN_POST |
+						    AGS_SOUND_STAGING_DO_FEEDBACK |
+						    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+						    AGS_SOUND_STAGING_FINI);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13298,7 +13298,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
  */
 void
 ags_audio_play_recall(AgsAudio *audio,
-		      AgsRecallID *recall_id, guint staging_flags)
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio) && AGS_IS_RECALL_ID(recall_id));
 
@@ -13319,8 +13319,8 @@ ags_audio_real_done_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_flags = (AGS_SOUND_STAGING_DONE);  
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_DONE);  
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13476,9 +13476,9 @@ ags_audio_real_cancel_recall(AgsAudio *audio,
   
   GList *list_start, *list;
 
-  guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL);
+  gint sound_scope;
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CANCEL);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13636,14 +13636,14 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
   GList *match_start, *match;
 
   gint sound_scope;
-  guint current_staging_flags;
+  AgsSoundStagingFlags current_staging_flags;
   gboolean play_context;
   gboolean remove_recycling_context;
   
-  static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-				     AGS_SOUND_STAGING_RUN_INIT_PRE |
-				     AGS_SOUND_STAGING_RUN_INIT_INTER |
-				     AGS_SOUND_STAGING_RUN_INIT_POST);
+  static const AgsSoundStagingFlags staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						    AGS_SOUND_STAGING_RUN_INIT_PRE |
+						    AGS_SOUND_STAGING_RUN_INIT_INTER |
+						    AGS_SOUND_STAGING_RUN_INIT_POST);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13862,10 +13862,10 @@ ags_audio_real_start(AgsAudio *audio,
   gint i;
   guint success_counter, current_success_counter;
 
-  static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-				      AGS_SOUND_STAGING_RUN_INIT_PRE |
-				      AGS_SOUND_STAGING_RUN_INIT_INTER |
-				      AGS_SOUND_STAGING_RUN_INIT_POST);
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						     AGS_SOUND_STAGING_RUN_INIT_PRE |
+						     AGS_SOUND_STAGING_RUN_INIT_INTER |
+						     AGS_SOUND_STAGING_RUN_INIT_POST);
   
   if(sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
@@ -14273,8 +14273,8 @@ ags_audio_real_stop(AgsAudio *audio,
   
   gint i;
   
-  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
-				      AGS_SOUND_STAGING_REMOVE);
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CANCEL |
+						     AGS_SOUND_STAGING_REMOVE);
   
   if(recall_id == NULL ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
@@ -15372,7 +15372,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
 
 void
 ags_audio_real_recursive_run_stage(AgsAudio *audio,
-				   gint sound_scope, guint staging_flags)
+				   gint sound_scope, AgsSoundStagingFlags staging_flags)
 {
   AgsChannel *channel;
 
@@ -15419,7 +15419,7 @@ ags_audio_real_recursive_run_stage(AgsAudio *audio,
  */
 void
 ags_audio_recursive_run_stage(AgsAudio *audio,
-			      gint sound_scope, guint staging_flags)
+			      gint sound_scope, AgsSoundStagingFlags staging_flags)
 {  
   g_return_if_fail(AGS_IS_AUDIO(audio));
   

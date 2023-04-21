@@ -62,8 +62,8 @@ struct _AgsPort
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsPortFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -119,9 +119,9 @@ struct _AgsPortClass
 GType ags_port_get_type();
 GType ags_port_flags_get_type();
 
-gboolean ags_port_test_flags(AgsPort *port, guint flags);
-void ags_port_set_flags(AgsPort *port, guint flags);
-void ags_port_unset_flags(AgsPort *port, guint flags);
+gboolean ags_port_test_flags(AgsPort *port, AgsPortFlags flags);
+void ags_port_set_flags(AgsPort *port, AgsPortFlags flags);
+void ags_port_unset_flags(AgsPort *port, AgsPortFlags flags);
 
 void ags_port_safe_read(AgsPort *port, GValue *value);
 void ags_port_safe_read_raw(AgsPort *port, GValue *value);

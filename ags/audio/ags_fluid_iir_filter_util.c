@@ -439,7 +439,7 @@ ags_fluid_iir_filter_util_set_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_fil
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_fluid_iir_filter_util_get_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
 {
   if(fluid_iir_filter_util == NULL){
@@ -460,7 +460,7 @@ ags_fluid_iir_filter_util_get_format(AgsFluidIIRFilterUtil *fluid_iir_filter_uti
  */
 void
 ags_fluid_iir_filter_util_set_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
-				     guint format)
+				     AgsSoundcardFormat format)
 {
   if(fluid_iir_filter_util == NULL){
     return;
@@ -519,7 +519,7 @@ ags_fluid_iir_filter_util_set_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter
  * 
  * Since: 3.9.7
  */
-guint
+AgsFluidIIRFilterType
 ags_fluid_iir_filter_util_get_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
 {
   if(fluid_iir_filter_util == NULL){
@@ -540,7 +540,7 @@ ags_fluid_iir_filter_util_get_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filte
  */
 void
 ags_fluid_iir_filter_util_set_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
-					  guint filter_type)
+					  AgsFluidIIRFilterType filter_type)
 {
   if(fluid_iir_filter_util == NULL){
     return;

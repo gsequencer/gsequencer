@@ -69,8 +69,8 @@ struct _AgsAudioSignal
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsAudioSignalFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 

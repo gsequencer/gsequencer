@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -415,7 +415,7 @@ ags_noise_util_set_buffer_length(AgsNoiseUtil *noise_util,
  * 
  * Since: 3.15.0
  */
-guint
+AgsSoundcardFormat
 ags_noise_util_get_format(AgsNoiseUtil *noise_util)
 {
   if(noise_util == NULL){
@@ -436,7 +436,7 @@ ags_noise_util_get_format(AgsNoiseUtil *noise_util)
  */
 void
 ags_noise_util_set_format(AgsNoiseUtil *noise_util,
-			  guint format)
+			  AgsSoundcardFormat format)
 {
   if(noise_util == NULL){
     return;

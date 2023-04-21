@@ -44,7 +44,7 @@ struct _AgsFMSynthUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   guint synth_oscillator_mode;
@@ -82,9 +82,9 @@ guint ags_fm_synth_util_get_buffer_length(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_buffer_length(AgsFMSynthUtil *fm_synth_util,
 					 guint buffer_length);
 
-guint ags_fm_synth_util_get_format(AgsFMSynthUtil *fm_synth_util);
+AgsSoundcardFormat ags_fm_synth_util_get_format(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_format(AgsFMSynthUtil *fm_synth_util,
-				  guint format);
+				  AgsSoundcardFormat format);
 
 guint ags_fm_synth_util_get_samplerate(AgsFMSynthUtil *fm_synth_util);
 void ags_fm_synth_util_set_samplerate(AgsFMSynthUtil *fm_synth_util,

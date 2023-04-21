@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,7 +58,7 @@ struct _AgsFrequencyMapManager
 {
   GObject gobject;
 
-  guint flags;
+  AgsFrequencyMapManagerFlags flags;
   
   GRecMutex obj_mutex;
 
@@ -73,9 +73,9 @@ struct _AgsFrequencyMapManagerClass
 
 GType ags_frequency_map_manager_get_type(void);
 
-gboolean ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
-void ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
-void ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
+gboolean ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, AgsFrequencyMapManagerFlags flags);
+void ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, AgsFrequencyMapManagerFlags flags);
+void ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_manager, AgsFrequencyMapManagerFlags flags);
 
 void ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
 						 AgsFrequencyMap *frequency_map);

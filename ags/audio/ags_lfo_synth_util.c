@@ -361,7 +361,7 @@ ags_lfo_synth_util_set_samplerate(AgsLFOSynthUtil *lfo_synth_util,
  * 
  * Since: 4.0.0
  */
-guint
+AgsSynthOscillatorMode
 ags_lfo_synth_util_get_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util)
 {
   if(lfo_synth_util == NULL){
@@ -382,7 +382,7 @@ ags_lfo_synth_util_get_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util
  */
 void
 ags_lfo_synth_util_set_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util,
-						 guint lfo_synth_oscillator_mode)
+						 AgsSynthOscillatorMode lfo_synth_oscillator_mode)
 {
   if(lfo_synth_util == NULL){
     return;

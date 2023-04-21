@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1086,7 +1086,7 @@ ags_port_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_port_test_flags(AgsPort *port, guint flags)
+ags_port_test_flags(AgsPort *port, AgsPortFlags flags)
 {
   gboolean retval;  
   
@@ -1119,7 +1119,7 @@ ags_port_test_flags(AgsPort *port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_port_set_flags(AgsPort *port, guint flags)
+ags_port_set_flags(AgsPort *port, AgsPortFlags flags)
 {
   GRecMutex *port_mutex;
 
@@ -1148,7 +1148,7 @@ ags_port_set_flags(AgsPort *port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_port_unset_flags(AgsPort *port, guint flags)
+ags_port_unset_flags(AgsPort *port, AgsPortFlags flags)
 {
   GRecMutex *port_mutex;
 

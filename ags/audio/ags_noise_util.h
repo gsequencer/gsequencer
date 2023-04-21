@@ -116,10 +116,10 @@ struct _AgsNoiseUtil
   gpointer noise;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
-  guint mode;
+  AgsNoiseuUtilMode mode;
   
   gdouble volume;
   
@@ -156,9 +156,9 @@ guint ags_noise_util_get_buffer_length(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_buffer_length(AgsNoiseUtil *noise_util,
 				      guint buffer_length);
 
-guint ags_noise_util_get_format(AgsNoiseUtil *noise_util);
+AgsSoundcardFormat ags_noise_util_get_format(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_format(AgsNoiseUtil *noise_util,
-			       guint format);
+			       AgsSoundcardFormat format);
 
 guint ags_noise_util_get_samplerate(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_samplerate(AgsNoiseUtil *noise_util,

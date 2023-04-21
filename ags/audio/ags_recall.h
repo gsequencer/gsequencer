@@ -95,13 +95,13 @@ struct _AgsRecall
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  guint ability_flags;
-  guint behaviour_flags;
+  AgsRecallFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsSoundAbilityFlags ability_flags;
+  AgsSoundBehaviourFlags behaviour_flags;
   gint sound_scope;
-  guint staging_flags;
-  guint state_flags;
+  AgsSoundStagingFlags staging_flags;
+  AgsSoundStateFlags state_flags;
   
   //  gboolean rt_safe; note replace by globals
 
@@ -130,7 +130,7 @@ struct _AgsRecall
   
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   guint pad;
   guint audio_channel;
@@ -219,24 +219,24 @@ gboolean ags_recall_global_get_rt_safe();
 
 GRecMutex* ags_recall_get_obj_mutex(AgsRecall *recall);
 
-gboolean ags_recall_test_flags(AgsRecall *recall, guint flags);
-void ags_recall_set_flags(AgsRecall *recall, guint flags);
-void ags_recall_unset_flags(AgsRecall *recall, guint flags);
+gboolean ags_recall_test_flags(AgsRecall *recall, AgsRecallFlags flags);
+void ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags);
+void ags_recall_unset_flags(AgsRecall *recall, AgsRecallFlags flags);
 
 /* ability flags */
-gboolean ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags);
-void ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags);
-void ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags);
+gboolean ags_recall_test_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags);
+void ags_recall_set_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags);
+void ags_recall_unset_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags);
 
-gboolean ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags);
+gboolean ags_recall_check_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags);
 gboolean ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope);
 
 /* behaviour flags */
-gboolean ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
-void ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
-void ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
+gboolean ags_recall_test_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags);
+void ags_recall_set_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags);
+void ags_recall_unset_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags);
 
-gboolean ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
+gboolean ags_recall_check_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags);
 
 /* scope */
 void ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope);
@@ -245,18 +245,18 @@ gint ags_recall_get_sound_scope(AgsRecall *recall);
 gboolean ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope);
 
 /* staging flags */
-gboolean ags_recall_test_staging_flags(AgsRecall *recall, guint staging_flags);
-void ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags);
-void ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags);
+gboolean ags_recall_test_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags);
+void ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags);
+void ags_recall_unset_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags);
 
-gboolean ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags);
+gboolean ags_recall_check_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags);
 
 /* state flags */
-gboolean ags_recall_test_state_flags(AgsRecall *recall, guint state_flags);
-void ags_recall_set_state_flags(AgsRecall *recall, guint state_flags);
-void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
+gboolean ags_recall_test_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags);
+void ags_recall_set_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags);
+void ags_recall_unset_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags);
 
-gboolean ags_recall_check_state_flags(AgsRecall *recall, guint state_flags);
+gboolean ags_recall_check_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags);
 
 /* fields */
 gchar* ags_recall_get_filename(AgsRecall *recall);

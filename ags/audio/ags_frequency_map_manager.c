@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -180,7 +180,7 @@ ags_frequency_map_manager_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags)
+ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, AgsFrequencyMapManagerFlags flags)
 {
   gboolean retval;
   
@@ -213,7 +213,7 @@ ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manag
  * Since: 3.0.0
  */
 void
-ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags)
+ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, AgsFrequencyMapManagerFlags flags)
 {
   GRecMutex *frequency_map_manager_mutex;
 
@@ -242,7 +242,7 @@ ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manage
  * Since: 3.0.0
  */
 void
-ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags)
+ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_manager, AgsFrequencyMapManagerFlags flags)
 {
   GRecMutex *frequency_map_manager_mutex;
 

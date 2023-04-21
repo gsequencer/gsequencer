@@ -77,7 +77,7 @@ struct _AgsAutomation
 {
   GObject gobject;
 
-  guint flags;
+  AgsAutomationFlags flags;
 
   GRecMutex obj_mutex;
 
