@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,8 +135,8 @@ struct _AgsAlsaDevout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsAlsaDevoutFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -144,11 +144,11 @@ struct _AgsAlsaDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate; // sample_rate
 
-  guint app_buffer_mode;
+  AgsAlsaDevoutAppBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
 
@@ -159,7 +159,7 @@ struct _AgsAlsaDevout
 
   volatile gboolean available;
   
-  guint backend_buffer_mode;
+  AgsAlsaDevoutBackendBufferMode backend_buffer_mode;
   
   guchar **backend_buffer;
 
@@ -212,9 +212,9 @@ GType ags_alsa_devout_flags_get_type();
 
 GQuark ags_alsa_devout_error_quark();
 
-gboolean ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, guint flags);
-void ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, guint flags);
-void ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, guint flags);
+gboolean ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags flags);
+void ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags flags);
+void ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags flags);
 
 void ags_alsa_devout_switch_buffer(AgsAlsaDevout *alsa_devout);
 

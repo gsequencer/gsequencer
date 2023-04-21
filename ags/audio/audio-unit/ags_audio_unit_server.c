@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -868,103 +868,6 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
 
   g_list_free_full(start_list,
 		   g_object_unref);
-}
-
-/**
- * ags_audio_unit_server_test_flags:
- * @audio_unit_server: the #AgsAudioUnitServer
- * @flags: the flags
- *
- * Test @flags to be set on @audio_unit_server.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_audio_unit_server_test_flags(AgsAudioUnitServer *audio_unit_server, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *audio_unit_server_mutex;
-
-  if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
-    return(FALSE);
-  }
-
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
-
-  /* test */
-  g_rec_mutex_lock(audio_unit_server_mutex);
-
-  retval = (flags & (audio_unit_server->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(audio_unit_server_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_audio_unit_server_set_flags:
- * @audio_unit_server: the #AgsAudioUnitServer
- * @flags: see #AgsAudioUnitServerFlags-enum
- *
- * Enable a feature of @audio_unit_server.
- *
- * Since: 3.0.0
- */
-void
-ags_audio_unit_server_set_flags(AgsAudioUnitServer *audio_unit_server, guint flags)
-{
-  GRecMutex *audio_unit_server_mutex;
-
-  if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
-    return;
-  }
-
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
-
-  //TODO:JK: add more?
-
-  /* set flags */
-  g_rec_mutex_lock(audio_unit_server_mutex);
-
-  audio_unit_server->flags |= flags;
-  
-  g_rec_mutex_unlock(audio_unit_server_mutex);
-}
-    
-/**
- * ags_audio_unit_server_unset_flags:
- * @audio_unit_server: the #AgsAudioUnitServer
- * @flags: see #AgsAudioUnitServerFlags-enum
- *
- * Disable a feature of @audio_unit_server.
- *
- * Since: 3.0.0
- */
-void
-ags_audio_unit_server_unset_flags(AgsAudioUnitServer *audio_unit_server, guint flags)
-{  
-  GRecMutex *audio_unit_server_mutex;
-
-  if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
-    return;
-  }
-
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
-
-  //TODO:JK: add more?
-
-  /* unset flags */
-  g_rec_mutex_lock(audio_unit_server_mutex);
-
-  audio_unit_server->flags &= (~flags);
-  
-  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 void

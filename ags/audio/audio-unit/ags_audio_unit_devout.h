@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,9 +120,9 @@ struct _AgsAudioUnitDevout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsAudioUnitDevoutFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsAudioUnitDevoutSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -130,11 +130,11 @@ struct _AgsAudioUnitDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsAudioUnitDevoutAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
 
@@ -188,9 +188,9 @@ GType ags_audio_unit_devout_flags_get_type();
 
 GQuark ags_audio_unit_devout_error_quark();
 
-gboolean ags_audio_unit_devout_test_flags(AgsAudioUnitDevout *audio_unit_devout, guint flags);
-void ags_audio_unit_devout_set_flags(AgsAudioUnitDevout *audio_unit_devout, guint flags);
-void ags_audio_unit_devout_unset_flags(AgsAudioUnitDevout *audio_unit_devout, guint flags);
+gboolean ags_audio_unit_devout_test_flags(AgsAudioUnitDevout *audio_unit_devout, AgsAudioUnitDevoutFlags flags);
+void ags_audio_unit_devout_set_flags(AgsAudioUnitDevout *audio_unit_devout, AgsAudioUnitDevoutFlags flags);
+void ags_audio_unit_devout_unset_flags(AgsAudioUnitDevout *audio_unit_devout, AgsAudioUnitDevoutFlags flags);
 
 void ags_audio_unit_devout_switch_buffer_flag(AgsAudioUnitDevout *audio_unit_devout);
 
