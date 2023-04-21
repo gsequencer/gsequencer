@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -349,7 +349,7 @@ ags_buffer_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
       
       format = g_value_get_uint(value);
 
@@ -898,10 +898,10 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
  * 
  * Since: 3.1.0
  */
-guint
+AgsSoundcardFormat
 ags_buffer_get_format(AgsBuffer *buffer)
 {
-  guint format;
+  AgsSoundcardFormat format;
   
   if(!AGS_IS_BUFFER(buffer)){
     return(0);
@@ -925,7 +925,7 @@ ags_buffer_get_format(AgsBuffer *buffer)
  */
 void
 ags_buffer_set_format(AgsBuffer *buffer,
-		      guint format)
+		      AgsSoundcardFormat format)
 {
   void *data;
 

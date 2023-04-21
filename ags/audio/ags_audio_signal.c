@@ -1019,7 +1019,7 @@ ags_audio_signal_set_property(GObject *gobject,
   break;
   case PROP_FORMAT:
   {
-    guint format;
+    AgsSoundcardFormat format;
 
     format = g_value_get_uint(value);
 
@@ -2010,7 +2010,7 @@ ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal)
  * Since: 3.0.0
  */
 gboolean
-ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags)
+ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags)
 {
   gboolean retval;  
   
@@ -2043,7 +2043,7 @@ ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags)
+ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags)
 {
   GRecMutex *audio_signal_mutex;
 
@@ -2074,7 +2074,7 @@ ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags)
+ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags)
 {  
   GRecMutex *audio_signal_mutex;
 
@@ -2108,7 +2108,7 @@ ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags)
  */
 void*
 ags_stream_alloc(guint buffer_size,
-		 guint format)
+		 AgsSoundcardFormat format)
 {
   void *buffer;
   
@@ -2207,7 +2207,7 @@ ags_stream_free(void *buffer)
  */
 void*
 ags_stream_slice_alloc(guint buffer_size,
-		       guint format)
+		       AgsSoundcardFormat format)
 {
   void *buffer;
   guint word_size;
@@ -2281,7 +2281,7 @@ ags_stream_slice_alloc(guint buffer_size,
  */
 void
 ags_stream_slice_free(guint buffer_size,
-		      guint format,
+		      AgsSoundcardFormat format,
 		      void *buffer)
 {
   guint word_size;
@@ -2419,7 +2419,7 @@ ags_audio_signal_real_set_output_soundcard(AgsAudioSignal *audio_signal, GObject
 {
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   GRecMutex *audio_signal_mutex;
 
@@ -2620,7 +2620,7 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   guint end_offset;
   guint buffer_size;
   guint old_samplerate;
-  guint format;
+  AgsSoundcardFormat format;
   guint offset;
   guint copy_mode;
   
@@ -2853,7 +2853,7 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   guint stream_length;
   guint end_offset;
   guint offset;
-  guint format;
+  AgsSoundcardFormat format;
   guint old_buffer_size;
   guint word_size;
   guint copy_mode;
@@ -3081,10 +3081,10 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
  * 
  * Since: 3.1.0
  */
-guint
+AgsSoundcardFormat
 ags_audio_signal_get_format(AgsAudioSignal *audio_signal)
 {
-  guint format;
+  AgsSoundcardFormat format;
   
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return(0);
@@ -3107,7 +3107,7 @@ ags_audio_signal_get_format(AgsAudioSignal *audio_signal)
  * Since: 3.0.0
  */
 void
-ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
+ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat format)
 {
   GList *stream;
 
@@ -3320,7 +3320,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
   gboolean use_slice;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *audio_signal_mutex;
   GRecMutex *stream_mutex;
@@ -3389,7 +3389,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 {
   gboolean use_slice;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint old_length;
   guint i;
 
@@ -3538,7 +3538,7 @@ ags_audio_signal_clear(AgsAudioSignal *audio_signal)
   GList *stream;
 
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *audio_signal_stream_mutex;
 
@@ -3587,7 +3587,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
   guint samplerate;
   guint buffer_size;
-  guint default_template_format, format;
+  AgsSoundcardFormat default_template_format, format;
   guint length;
   guint copy_mode;
 
@@ -3729,7 +3729,7 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
   guint default_template_loop_frame_count;
   guint default_template_samplerate, samplerate;
   guint default_template_buffer_size, buffer_size;
-  guint default_template_format, format;
+  AgsSoundcardFormat default_template_format, format;
   guint copy_mode;
   guint n_frames;
   guint copy_n_frames;

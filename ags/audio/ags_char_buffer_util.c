@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2083,7 +2083,7 @@ void
 ags_char_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
 					   void *source, guint schannels, guint soffset,
 					   guint frame_count, guint byte_order,
-					   guint word_size, guint mode)
+					   guint word_size, AgsCharBufferUtilCopyMode mode)
 {
   if(destination == NULL ||
      source == NULL){

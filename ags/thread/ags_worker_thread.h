@@ -79,9 +79,9 @@ struct _AgsWorkerThreadClass
 GType ags_worker_thread_get_type();
 GType ags_worker_thread_status_flags_get_type();
 
-gboolean ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
-void ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
-void ags_worker_thread_unset_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
+gboolean ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, AgsWorkerThreadStatusFlags status_flags);
+void ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, AgsWorkerThreadStatusFlags status_flags);
+void ags_worker_thread_unset_status_flags(AgsWorkerThread *worker_thread, AgsWorkerThreadStatusFlags status_flags);
 
 void* ags_woker_thread_do_poll_loop(void *ptr);
 

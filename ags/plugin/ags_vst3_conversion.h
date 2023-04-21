@@ -59,10 +59,6 @@ struct _AgsVst3ConversionClass
 
 GType ags_vst3_conversion_get_type(void);
 
-gboolean ags_vst3_conversion_test_flags(AgsVst3Conversion *vst3_conversion, guint flags);
-void ags_vst3_conversion_set_flags(AgsVst3Conversion *vst3_conversion, guint flags);
-void ags_vst3_conversion_unset_flags(AgsVst3Conversion *vst3_conversion, guint flags);
-
 AgsVst3Conversion* ags_vst3_conversion_new();
 
 G_END_DECLS

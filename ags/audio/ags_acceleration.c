@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -356,7 +356,7 @@ ags_acceleration_get_obj_mutex(AgsAcceleration *acceleration)
  * Since: 3.0.0
  */
 gboolean
-ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
+ags_acceleration_test_flags(AgsAcceleration *acceleration, AgsAccelerationFlags flags)
 {
   gboolean retval;
   
@@ -389,7 +389,7 @@ ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
  * Since: 3.0.0
  */
 void
-ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
+ags_acceleration_set_flags(AgsAcceleration *acceleration, AgsAccelerationFlags flags)
 {
   GRecMutex *acceleration_mutex;
 
@@ -418,7 +418,7 @@ ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
  * Since: 3.0.0
  */
 void
-ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
+ags_acceleration_unset_flags(AgsAcceleration *acceleration, AgsAccelerationFlags flags)
 {
   GRecMutex *acceleration_mutex;
 

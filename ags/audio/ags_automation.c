@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -901,7 +901,7 @@ ags_automation_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_automation_test_flags(AgsAutomation *automation, guint flags)
+ags_automation_test_flags(AgsAutomation *automation, AgsAutomationFlags flags)
 {
   gboolean retval;
   
@@ -934,7 +934,7 @@ ags_automation_test_flags(AgsAutomation *automation, guint flags)
  * Since: 3.0.0
  */
 void
-ags_automation_set_flags(AgsAutomation *automation, guint flags)
+ags_automation_set_flags(AgsAutomation *automation, AgsAutomationFlags flags)
 {
   GRecMutex *automation_mutex;
 
@@ -963,7 +963,7 @@ ags_automation_set_flags(AgsAutomation *automation, guint flags)
  * Since: 3.0.0
  */
 void
-ags_automation_unset_flags(AgsAutomation *automation, guint flags)
+ags_automation_unset_flags(AgsAutomation *automation, AgsAutomationFlags flags)
 {
   GRecMutex *automation_mutex;
 
