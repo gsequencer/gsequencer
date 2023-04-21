@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,7 +50,7 @@ struct _AgsIpatchSample
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -60,7 +60,7 @@ struct _AgsIpatchSample
   gint64 *audio_channel_written;
 
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   guint offset;
   guint64 buffer_offset;
@@ -85,10 +85,6 @@ struct _AgsIpatchSampleClass
 };
 
 GType ags_ipatch_sample_get_type();
-
-gboolean ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags);
-void ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags);
-void ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags);
 
 /* instantiate */
 AgsIpatchSample* ags_ipatch_sample_new();

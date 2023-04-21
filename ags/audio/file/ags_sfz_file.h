@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,7 @@ struct _AgsSFZFile
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -103,10 +103,6 @@ struct _AgsSFZFileClass
 };
 
 GType ags_sfz_file_get_type();
-
-gboolean ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags);
-void ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags);
-void ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags);
 
 GList* ags_sfz_file_get_group(AgsSFZFile *sfz_file);
 void ags_sfz_file_set_group(AgsSFZFile *sfz_file,

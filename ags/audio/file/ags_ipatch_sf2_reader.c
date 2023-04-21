@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -533,103 +533,6 @@ ags_ipatch_sf2_reader_disconnect(AgsConnectable *connectable)
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   ipatch_sf2_reader->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-  
-  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-}
-
-/**
- * ags_ipatch_sf2_reader_test_flags:
- * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
- * @flags: the flags
- *
- * Test @flags to be set on @ipatch_sf2_reader.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_ipatch_sf2_reader_test_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *ipatch_sf2_reader_mutex;
-
-  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
-    return(FALSE);
-  }
-
-  /* get ipatch sf2 reader mutex */
-  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
-
-  /* test */
-  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
-
-  retval = (flags & (ipatch_sf2_reader->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_ipatch_sf2_reader_set_flags:
- * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
- * @flags: see #AgsIpatchSF2ReaderFlags-enum
- *
- * Enable a feature of @ipatch_sf2_reader.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_sf2_reader_set_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags)
-{
-  GRecMutex *ipatch_sf2_reader_mutex;
-
-  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
-    return;
-  }
-
-  /* get ipatch sf2 reader mutex */
-  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
-
-  //TODO:JK: add more?
-
-  /* set flags */
-  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
-
-  ipatch_sf2_reader->flags |= flags;
-  
-  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-}
-    
-/**
- * ags_ipatch_sf2_reader_unset_flags:
- * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
- * @flags: see #AgsIpatchSF2ReaderFlags-enum
- *
- * Disable a feature of @ipatch_sf2_reader.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_sf2_reader_unset_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags)
-{  
-  GRecMutex *ipatch_sf2_reader_mutex;
-
-  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
-    return;
-  }
-
-  /* get ipatch sf2 reader mutex */
-  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
-
-  //TODO:JK: add more?
-
-  /* unset flags */
-  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
-
-  ipatch_sf2_reader->flags &= (~flags);
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 }

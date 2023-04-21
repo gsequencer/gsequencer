@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,20 +63,20 @@ void ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
 				   guint channels,
 				   guint samplerate,
 				   guint buffer_size,
-				   guint format);
+				   AgsSoundcardFormat format);
 void ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
 				   guint *channels,
 				   guint *samplerate,
 				   guint *buffer_size,
-				   guint *format);
+				   AgsSoundcardFormat *format);
 guint ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 			     void *dbuffer, guint daudio_channels,
 			     guint audio_channel,
-			     guint frame_count, guint format);
+			     guint frame_count, AgsSoundcardFormat format);
 void ags_ipatch_sample_write(AgsSoundResource *sound_resource,
 			     void *sbuffer, guint saudio_channels,
 			     guint audio_channel,
-			     guint frame_count, guint format);
+			     guint frame_count, AgsSoundcardFormat format);
 void ags_ipatch_sample_flush(AgsSoundResource *sound_resource);
 void ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
 			    gint64 frame_count, gint whence);
@@ -348,7 +348,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -798,12 +798,12 @@ ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
 			      guint *channels,
 			      guint *samplerate,
 			      guint *buffer_size,
-			      guint *format)
+			      AgsSoundcardFormat *format)
 {
   AgsIpatchSample *ipatch_sample;
 
   guint current_buffer_size;
-  guint current_format;
+  AgsSoundcardFormat current_format;
 
   gint sample_format;
   guint sample_channels;
@@ -857,7 +857,7 @@ guint
 ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 		       void *dbuffer, guint daudio_channels,
 		       guint audio_channel,
-		       guint frame_count, guint format)
+		       guint frame_count, AgsSoundcardFormat format)
 {
   AgsIpatchSample *ipatch_sample;
 
@@ -988,7 +988,7 @@ void
 ags_ipatch_sample_write(AgsSoundResource *sound_resource,
 			void *sbuffer, guint saudio_channels,
 			guint audio_channel,
-			guint frame_count, guint format)
+			guint frame_count, AgsSoundcardFormat format)
 {
   AgsIpatchSample *ipatch_sample;
 
@@ -1157,103 +1157,6 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  g_rec_mutex_unlock(ipatch_sample_mutex);
-}
-
-/**
- * ags_ipatch_sample_test_flags:
- * @ipatch_sample: the #AgsIpatchSample
- * @flags: the flags
- *
- * Test @flags to be set on @ipatch_sample.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *ipatch_sample_mutex;
-
-  if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
-    return(FALSE);
-  }
-
-  /* get ipatch_sample mutex */
-  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
-
-  /* test */
-  g_rec_mutex_lock(ipatch_sample_mutex);
-
-  retval = (flags & (ipatch_sample->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(ipatch_sample_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_ipatch_sample_set_flags:
- * @ipatch_sample: the #AgsIpatchSample
- * @flags: see #AgsIpatchSampleFlags-enum
- *
- * Enable a feature of @ipatch_sample.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
-{
-  GRecMutex *ipatch_sample_mutex;
-
-  if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
-    return;
-  }
-
-  /* get ipatch_sample mutex */
-  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
-
-  //TODO:JK: add more?
-
-  /* set flags */
-  g_rec_mutex_lock(ipatch_sample_mutex);
-
-  ipatch_sample->flags |= flags;
-  
-  g_rec_mutex_unlock(ipatch_sample_mutex);
-}
-    
-/**
- * ags_ipatch_sample_unset_flags:
- * @ipatch_sample: the #AgsIpatchSample
- * @flags: see #AgsIpatchSampleFlags-enum
- *
- * Disable a feature of @ipatch_sample.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
-{  
-  GRecMutex *ipatch_sample_mutex;
-
-  if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
-    return;
-  }
-
-  /* get ipatch_sample mutex */
-  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
-
-  //TODO:JK: add more?
-
-  /* unset flags */
-  g_rec_mutex_lock(ipatch_sample_mutex);
-
-  ipatch_sample->flags &= (~flags);
-  
   g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 

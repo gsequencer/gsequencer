@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ struct _AgsSFZRegion
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -64,10 +64,6 @@ struct _AgsSFZRegionClass
 };
 
 GType ags_sfz_region_get_type();
-
-gboolean ags_sfz_region_test_flags(AgsSFZRegion *sfz_region, guint flags);
-void ags_sfz_region_set_flags(AgsSFZRegion *sfz_region, guint flags);
-void ags_sfz_region_unset_flags(AgsSFZRegion *sfz_region, guint flags);
 
 GObject* ags_sfz_region_get_group(AgsSFZRegion *sfz_region);
 void ags_sfz_region_set_group(AgsSFZRegion *sfz_region,
