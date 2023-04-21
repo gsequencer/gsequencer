@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,9 +120,9 @@ struct _AgsAudioUnitDevin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsAudioUnitDevinFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsAudioUnitDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -130,11 +130,11 @@ struct _AgsAudioUnitDevin
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsAudioUnitDevinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
   void** app_buffer;

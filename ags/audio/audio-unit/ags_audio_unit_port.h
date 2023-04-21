@@ -76,8 +76,8 @@ struct _AgsAudioUnitPort
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsAudioUnitPortFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -94,7 +94,7 @@ struct _AgsAudioUnitPort
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
 #ifdef AGS_WITH_AUDIO_UNIT
   AudioStreamBasicDescription *data_format;
@@ -138,9 +138,9 @@ struct _AgsAudioUnitPortClass
 GType ags_audio_unit_port_get_type();
 GType ags_audio_unit_port_flags_get_type();
 
-gboolean ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, guint flags);
-void ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, guint flags);
-void ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, guint flags);
+gboolean ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, AgsAudioUnitPortFlags flags);
+void ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, AgsAudioUnitPortFlags flags);
+void ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, AgsAudioUnitPortFlags flags);
 
 GList* ags_audio_unit_port_find(GList *audio_unit_port,
 				gchar *port_name);
@@ -152,7 +152,7 @@ void ags_audio_unit_port_register(AgsAudioUnitPort *audio_unit_port,
 void ags_audio_unit_port_unregister(AgsAudioUnitPort *audio_unit_port);
 
 void ags_audio_unit_port_set_format(AgsAudioUnitPort *audio_unit_port,
-				    guint format);
+				    AgsSoundcardFormat format);
 void ags_audio_unit_port_set_samplerate(AgsAudioUnitPort *audio_unit_port,
 					guint samplerate);
 void ags_audio_unit_port_set_pcm_channels(AgsAudioUnitPort *audio_unit_port,

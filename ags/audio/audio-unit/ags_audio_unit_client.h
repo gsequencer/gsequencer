@@ -65,8 +65,8 @@ struct _AgsAudioUnitClient
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsAudioUnitClientFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -89,9 +89,9 @@ struct _AgsAudioUnitClientClass
 GType ags_audio_unit_client_get_type();
 GType ags_audio_unit_client_flags_get_type();
 
-gboolean ags_audio_unit_client_test_flags(AgsAudioUnitClient *audio_unit_client, guint flags);
-void ags_audio_unit_client_set_flags(AgsAudioUnitClient *audio_unit_client, guint flags);
-void ags_audio_unit_client_unset_flags(AgsAudioUnitClient *audio_unit_client, guint flags);
+gboolean ags_audio_unit_client_test_flags(AgsAudioUnitClient *audio_unit_client, AgsAudioUnitClientFlags flags);
+void ags_audio_unit_client_set_flags(AgsAudioUnitClient *audio_unit_client, AgsAudioUnitClientFlags flags);
+void ags_audio_unit_client_unset_flags(AgsAudioUnitClient *audio_unit_client, AgsAudioUnitClientFlags flags);
 
 GList* ags_audio_unit_client_find_uuid(GList *audio_unit_client,
 				       gchar *client_uuid);

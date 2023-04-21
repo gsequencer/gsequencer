@@ -135,8 +135,8 @@ struct _AgsAlsaDevin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsAlsaDevinFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -144,11 +144,11 @@ struct _AgsAlsaDevin
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsAlsaDevinAppBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
 
@@ -159,7 +159,7 @@ struct _AgsAlsaDevin
 
   volatile gboolean available;
   
-  guint backend_buffer_mode;
+  AgsAlsaDevinBackendBufferMode backend_buffer_mode;
   
   guchar **backend_buffer;
 
@@ -207,9 +207,9 @@ GType ags_alsa_devin_flags_get_type();
 
 GQuark ags_alsa_devin_error_quark();
 
-gboolean ags_alsa_devin_test_flags(AgsAlsaDevin *alsa_devin, guint flags);
-void ags_alsa_devin_set_flags(AgsAlsaDevin *alsa_devin, guint flags);
-void ags_alsa_devin_unset_flags(AgsAlsaDevin *alsa_devin, guint flags);
+gboolean ags_alsa_devin_test_flags(AgsAlsaDevin *alsa_devin, AgsAlsaDevinFlags flags);
+void ags_alsa_devin_set_flags(AgsAlsaDevin *alsa_devin, AgsAlsaDevinFlags flags);
+void ags_alsa_devin_unset_flags(AgsAlsaDevin *alsa_devin, AgsAlsaDevinFlags flags);
 
 void ags_alsa_devin_switch_buffer_flag(AgsAlsaDevin *alsa_devin);
 
