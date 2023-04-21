@@ -91,7 +91,7 @@ GList* ags_fx_factory_create(AgsAudio *audio,
 			     guint start_audio_channel, guint stop_audio_channel,
 			     guint start_pad, guint stop_pad,
 			     gint position,
-			     guint create_flags, guint recall_flags);
+			     AgsFxFactoryCreateFlags create_flags, AgsRecallFlags recall_flags);
 
 G_END_DECLS
 

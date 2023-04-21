@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -340,7 +340,7 @@ ags_phase_shift_util_set_buffer_length(AgsPhaseShiftUtil *phase_shift_util,
  * 
  * Since: 4.0.0
  */
-guint
+AgsSoundcardFormat
 ags_phase_shift_util_get_format(AgsPhaseShiftUtil *phase_shift_util)
 {
   if(phase_shift_util == NULL){
@@ -361,7 +361,7 @@ ags_phase_shift_util_get_format(AgsPhaseShiftUtil *phase_shift_util)
  */
 void
 ags_phase_shift_util_set_format(AgsPhaseShiftUtil *phase_shift_util,
-				guint format)
+				AgsSoundcardFormat format)
 {
   if(phase_shift_util == NULL){
     return;

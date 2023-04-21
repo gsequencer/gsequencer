@@ -43,7 +43,7 @@ struct _AgsLFOSynthUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   guint lfo_synth_oscillator_mode;
@@ -77,17 +77,17 @@ guint ags_lfo_synth_util_get_buffer_length(AgsLFOSynthUtil *lfo_synth_util);
 void ags_lfo_synth_util_set_buffer_length(AgsLFOSynthUtil *lfo_synth_util,
 					  guint buffer_length);
 
-guint ags_lfo_synth_util_get_format(AgsLFOSynthUtil *lfo_synth_util);
+AgsSoundcardFormat ags_lfo_synth_util_get_format(AgsLFOSynthUtil *lfo_synth_util);
 void ags_lfo_synth_util_set_format(AgsLFOSynthUtil *lfo_synth_util,
-				   guint format);
+				   AgsSoundcardFormat format);
 
 guint ags_lfo_synth_util_get_samplerate(AgsLFOSynthUtil *lfo_synth_util);
 void ags_lfo_synth_util_set_samplerate(AgsLFOSynthUtil *lfo_synth_util,
 				       guint samplerate);
 
-guint ags_lfo_synth_util_get_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util);
+AgsSynthOscillatorMode ags_lfo_synth_util_get_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util);
 void ags_lfo_synth_util_set_lfo_synth_oscillator_mode(AgsLFOSynthUtil *lfo_synth_util,
-						      guint lfo_synth_oscillator_mode);
+						      AgsSynthOscillatorMode lfo_synth_oscillator_mode);
 
 gdouble ags_lfo_synth_util_get_frequency(AgsLFOSynthUtil *lfo_synth_util);
 void ags_lfo_synth_util_set_frequency(AgsLFOSynthUtil *lfo_synth_util,

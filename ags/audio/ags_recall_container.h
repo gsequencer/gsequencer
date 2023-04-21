@@ -70,8 +70,8 @@ struct _AgsRecallContainer
 {
   GObject gobject;
   
-  guint flags;
-  guint connectable_flags;
+  AgsRecallContainerFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -116,7 +116,7 @@ GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_co
 
 GList* ags_recall_container_find(GList *recall_container,
 				 GType type,
-				 guint find_flags,
+				 AgsRecallContainerFindFlags find_flags,
 				 AgsRecallID *recall_id);
 
 /* instantiate */

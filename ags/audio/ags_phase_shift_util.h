@@ -45,7 +45,7 @@ struct _AgsPhaseShiftUtil
   guint destination_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   gdouble frequency;
@@ -81,9 +81,9 @@ guint ags_phase_shift_util_get_buffer_length(AgsPhaseShiftUtil *phase_shift_util
 void ags_phase_shift_util_set_buffer_length(AgsPhaseShiftUtil *phase_shift_util,
 					    guint buffer_length);
 
-guint ags_phase_shift_util_get_format(AgsPhaseShiftUtil *phase_shift_util);
+AgsSoundcardFormat ags_phase_shift_util_get_format(AgsPhaseShiftUtil *phase_shift_util);
 void ags_phase_shift_util_set_format(AgsPhaseShiftUtil *phase_shift_util,
-				     guint format);
+				     AgsSoundcardFormat format);
 
 gdouble ags_phase_shift_util_get_frequency(AgsPhaseShiftUtil *phase_shift_util);
 void ags_phase_shift_util_set_frequency(AgsPhaseShiftUtil *phase_shift_util,

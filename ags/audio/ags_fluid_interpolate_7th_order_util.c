@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -422,7 +422,7 @@ ags_fluid_interpolate_7th_order_util_set_buffer_length(AgsFluidInterpolate7thOrd
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_fluid_interpolate_7th_order_util_get_format(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
   if(fluid_interpolate_7th_order_util == NULL){
@@ -443,7 +443,7 @@ ags_fluid_interpolate_7th_order_util_get_format(AgsFluidInterpolate7thOrderUtil 
  */
 void
 ags_fluid_interpolate_7th_order_util_set_format(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
-						guint format)
+						AgsSoundcardFormat format)
 {
   if(fluid_interpolate_7th_order_util == NULL){
     return;

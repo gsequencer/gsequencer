@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,10 +60,10 @@ struct _AgsFluidIIRFilterUtil
   guint destination_stride;
 
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
   
-  guint filter_type;
+  AgsFluidIIRFilterType filter_type;
 
   guint flags;
 
@@ -119,17 +119,17 @@ guint ags_fluid_iir_filter_util_get_buffer_length(AgsFluidIIRFilterUtil *fluid_i
 void ags_fluid_iir_filter_util_set_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
 						 guint buffer_length);
 
-guint ags_fluid_iir_filter_util_get_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+AgsSoundcardFormat ags_fluid_iir_filter_util_get_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_set_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
-					  guint format);
+					  AgsSoundcardFormat format);
 
 guint ags_fluid_iir_filter_util_get_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_set_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
 					      guint samplerate);
 
-guint ags_fluid_iir_filter_util_get_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+AgsFluidIIRFilterType ags_fluid_iir_filter_util_get_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_set_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
-					       guint filter_type);
+					       AgsFluidIIRFilterType filter_type);
 
 guint ags_fluid_iir_filter_util_get_flags(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_set_flags(AgsFluidIIRFilterUtil *fluid_iir_filter_util,

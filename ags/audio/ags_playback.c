@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -586,7 +586,7 @@ ags_playback_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_playback_test_flags(AgsPlayback *playback, guint flags)
+ags_playback_test_flags(AgsPlayback *playback, AgsPlaybackFlags flags)
 {
   gboolean retval;  
   
@@ -619,7 +619,7 @@ ags_playback_test_flags(AgsPlayback *playback, guint flags)
  * Since: 3.0.0
  */
 void
-ags_playback_set_flags(AgsPlayback *playback, guint flags)
+ags_playback_set_flags(AgsPlayback *playback, AgsPlaybackFlags flags)
 {
   GRecMutex *playback_mutex;
 
@@ -648,7 +648,7 @@ ags_playback_set_flags(AgsPlayback *playback, guint flags)
  * Since: 3.0.0
  */
 void
-ags_playback_unset_flags(AgsPlayback *playback, guint flags)
+ags_playback_unset_flags(AgsPlayback *playback, AgsPlaybackFlags flags)
 {
   GRecMutex *playback_mutex;
 

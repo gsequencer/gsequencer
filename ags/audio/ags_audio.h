@@ -84,11 +84,11 @@ struct _AgsAudio
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  guint ability_flags;
-  guint behaviour_flags;
-  guint staging_flags[AGS_SOUND_SCOPE_LAST];
+  AgsAudioFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsSoundAbilityFlags ability_flags;
+  AgsSoundBehaviourFlags behaviour_flags;
+  AgsSoundStagingFlags staging_flags[AGS_SOUND_SCOPE_LAST];
   
   gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
 
@@ -219,9 +219,9 @@ struct _AgsAudioClass
 			 AgsRecallID *recall_id);
 
   void (*init_recall)(AgsAudio *audio,
-		      AgsRecallID *recall_id, guint staging_flags);
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
   void (*play_recall)(AgsAudio *audio,
-		      AgsRecallID *recall_id, guint staging_flags);
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 
   void (*done_recall)(AgsAudio *audio,
 		      AgsRecallID *recall_id);
@@ -239,7 +239,7 @@ struct _AgsAudioClass
   GList* (*check_scope)(AgsAudio *audio, gint sound_scope);
   
   void (*recursive_run_stage)(AgsAudio *audio,
-			      gint sound_scope, guint staging_flags);
+			      gint sound_scope, AgsSoundStagingFlags staging_flags);
 };
 
 GType ags_audio_get_type();
@@ -519,9 +519,9 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
 
 void ags_audio_init_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id, guint staging_flags);
+			   AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 void ags_audio_play_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id, guint staging_flags);
+			   AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 
 void ags_audio_done_recall(AgsAudio *audio,
 			   AgsRecallID *recall_id);
@@ -574,7 +574,7 @@ void ags_audio_recursive_set_property(AgsAudio *audio,
 				      const gchar *parameter_name[], const GValue value[]);
 
 void ags_audio_recursive_run_stage(AgsAudio *audio,
-				   gint sound_scope, guint staging_flags);
+				   gint sound_scope, AgsSoundStagingFlags staging_flags);
 
 /* instantiate */
 AgsAudio* ags_audio_new(GObject *output_soundcard);

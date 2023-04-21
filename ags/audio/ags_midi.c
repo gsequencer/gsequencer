@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -472,7 +472,7 @@ ags_midi_get_obj_mutex(AgsMidi *midi)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_test_flags(AgsMidi *midi, guint flags)
+ags_midi_test_flags(AgsMidi *midi, AgsMidiFlags flags)
 {
   gboolean retval;
   
@@ -505,7 +505,7 @@ ags_midi_test_flags(AgsMidi *midi, guint flags)
  * Since: 3.0.0
  */
 void
-ags_midi_set_flags(AgsMidi *midi, guint flags)
+ags_midi_set_flags(AgsMidi *midi, AgsMidiFlags flags)
 {
   GRecMutex *midi_mutex;
 
@@ -534,7 +534,7 @@ ags_midi_set_flags(AgsMidi *midi, guint flags)
  * Since: 3.0.0
  */
 void
-ags_midi_unset_flags(AgsMidi *midi, guint flags)
+ags_midi_unset_flags(AgsMidi *midi, AgsMidiFlags flags)
 {
   GRecMutex *midi_mutex;
 

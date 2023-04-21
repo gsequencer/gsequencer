@@ -53,8 +53,8 @@ struct _AgsFrequencyMap
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsFrequencyMapFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -96,9 +96,9 @@ GType ags_frequency_map_get_type();
 gint ags_frequency_map_sort_func(gconstpointer a,
 				 gconstpointer b);
 
-gboolean ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags);
-void ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags);
-void ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags);
+gboolean ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, AgsFrequencyMapFlags flags);
+void ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, AgsFrequencyMapFlags flags);
+void ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, AgsFrequencyMapFlags flags);
 
 void ags_frequency_map_process(AgsFrequencyMap *frequency_map);
 

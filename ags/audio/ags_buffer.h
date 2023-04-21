@@ -58,7 +58,7 @@ struct _AgsBuffer
 {
   GObject gobject;
 
-  guint flags;
+  AgsBufferFlags flags;
 
   GRecMutex obj_mutex;
 

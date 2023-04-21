@@ -44,7 +44,7 @@ struct _AgsFluidInterpolate7thOrderUtil
   guint destination_stride;
 
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   gdouble base_key;
@@ -80,9 +80,9 @@ guint ags_fluid_interpolate_7th_order_util_get_buffer_length(AgsFluidInterpolate
 void ags_fluid_interpolate_7th_order_util_set_buffer_length(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
 							    guint buffer_length);
 
-guint ags_fluid_interpolate_7th_order_util_get_format(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+AgsSoundcardFormat ags_fluid_interpolate_7th_order_util_get_format(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
 void ags_fluid_interpolate_7th_order_util_set_format(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
-						     guint format);
+						     AgsSoundcardFormat format);
 
 guint ags_fluid_interpolate_7th_order_util_get_samplerate(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
 void ags_fluid_interpolate_7th_order_util_set_samplerate(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,

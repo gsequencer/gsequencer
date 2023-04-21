@@ -531,7 +531,7 @@ ags_notation_get_obj_mutex(AgsNotation *notation)
  * Since: 3.0.0
  */
 gboolean
-ags_notation_test_flags(AgsNotation *notation, guint flags)
+ags_notation_test_flags(AgsNotation *notation, AgsNotationFlags flags)
 {
   gboolean retval;
   
@@ -564,7 +564,7 @@ ags_notation_test_flags(AgsNotation *notation, guint flags)
  * Since: 3.0.0
  */
 void
-ags_notation_set_flags(AgsNotation *notation, guint flags)
+ags_notation_set_flags(AgsNotation *notation, AgsNotationFlags flags)
 {
   GRecMutex *notation_mutex;
 
@@ -593,7 +593,7 @@ ags_notation_set_flags(AgsNotation *notation, guint flags)
  * Since: 3.0.0
  */
 void
-ags_notation_unset_flags(AgsNotation *notation, guint flags)
+ags_notation_unset_flags(AgsNotation *notation, AgsNotationFlags flags)
 {
   GRecMutex *notation_mutex;
 

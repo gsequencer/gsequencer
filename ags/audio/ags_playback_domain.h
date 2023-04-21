@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,8 +58,8 @@ struct _AgsPlaybackDomain
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsPlaybackDomainFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -78,9 +78,9 @@ struct _AgsPlaybackDomainClass
 
 GType ags_playback_domain_get_type();
 
-gboolean ags_playback_domain_test_flags(AgsPlaybackDomain *playback_domain, guint flags);
-void ags_playback_domain_set_flags(AgsPlaybackDomain *playback_domain, guint flags);
-void ags_playback_domain_unset_flags(AgsPlaybackDomain *playback_domain, guint flags);
+gboolean ags_playback_domain_test_flags(AgsPlaybackDomain *playback_domain, AgsPlaybackDomainFlags flags);
+void ags_playback_domain_set_flags(AgsPlaybackDomain *playback_domain, AgsPlaybackDomainFlags flags);
+void ags_playback_domain_unset_flags(AgsPlaybackDomain *playback_domain, AgsPlaybackDomainFlags flags);
 
 /* get and set */
 void ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,

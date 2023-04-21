@@ -59,8 +59,8 @@ struct _AgsPlayback
 {
   GObject gobject;
   
-  guint flags;
-  guint connectable_flags;
+  AgsPlaybackFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -84,9 +84,9 @@ struct _AgsPlaybackClass
 GType ags_playback_get_type();
 GType ags_playback_flags_get_type();
 
-gboolean ags_playback_test_flags(AgsPlayback *playback, guint flags);
-void ags_playback_set_flags(AgsPlayback *playback, guint flags);
-void ags_playback_unset_flags(AgsPlayback *playback, guint flags);
+gboolean ags_playback_test_flags(AgsPlayback *playback, AgsPlaybackFlags flags);
+void ags_playback_set_flags(AgsPlayback *playback, AgsPlaybackFlags flags);
+void ags_playback_unset_flags(AgsPlayback *playback, AgsPlaybackFlags flags);
 
 /* get and set */
 void ags_playback_set_channel_thread(AgsPlayback *playback,

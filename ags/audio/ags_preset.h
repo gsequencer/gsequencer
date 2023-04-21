@@ -50,7 +50,7 @@ struct _AgsPreset
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
   

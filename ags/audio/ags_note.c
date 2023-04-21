@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -826,7 +826,7 @@ ags_note_get_obj_mutex(AgsNote *note)
  * Since: 3.0.0
  */
 gboolean
-ags_note_test_flags(AgsNote *note, guint flags)
+ags_note_test_flags(AgsNote *note, AgsNoteFlags flags)
 {
   gboolean retval;
   
@@ -859,7 +859,7 @@ ags_note_test_flags(AgsNote *note, guint flags)
  * Since: 3.0.0
  */
 void
-ags_note_set_flags(AgsNote *note, guint flags)
+ags_note_set_flags(AgsNote *note, AgsNoteFlags flags)
 {
   GRecMutex *note_mutex;
 
@@ -888,7 +888,7 @@ ags_note_set_flags(AgsNote *note, guint flags)
  * Since: 3.0.0
  */
 void
-ags_note_unset_flags(AgsNote *note, guint flags)
+ags_note_unset_flags(AgsNote *note, AgsNoteFlags flags)
 {
   GRecMutex *note_mutex;
 

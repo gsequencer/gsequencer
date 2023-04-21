@@ -205,7 +205,7 @@ GList* ags_fx_factory_create_playback(AgsAudio *audio,
 				      guint start_audio_channel, guint stop_audio_channel,
 				      guint start_pad, guint stop_pad,
 				      gint position,
-				      guint create_flags, guint recall_flags);
+				      guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_buffer(AgsAudio *audio,
 				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -215,7 +215,7 @@ GList* ags_fx_factory_create_buffer(AgsAudio *audio,
 				    guint start_audio_channel, guint stop_audio_channel,
 				    guint start_pad, guint stop_pad,
 				    gint position,
-				    guint create_flags, guint recall_flags);
+				    guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_volume(AgsAudio *audio,
 				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -225,7 +225,7 @@ GList* ags_fx_factory_create_volume(AgsAudio *audio,
 				    guint start_audio_channel, guint stop_audio_channel,
 				    guint start_pad, guint stop_pad,
 				    gint position,
-				    guint create_flags, guint recall_flags);
+				    guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_low_pass(AgsAudio *audio,
 				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -235,7 +235,7 @@ GList* ags_fx_factory_create_low_pass(AgsAudio *audio,
 				      guint start_audio_channel, guint stop_audio_channel,
 				      guint start_pad, guint stop_pad,
 				      gint position,
-				      guint create_flags, guint recall_flags);
+				      guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_high_pass(AgsAudio *audio,
 				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -245,7 +245,7 @@ GList* ags_fx_factory_create_high_pass(AgsAudio *audio,
 				       guint start_audio_channel, guint stop_audio_channel,
 				       guint start_pad, guint stop_pad,
 				       gint position,
-				       guint create_flags, guint recall_flags);
+				       guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_peak(AgsAudio *audio,
 				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -255,7 +255,7 @@ GList* ags_fx_factory_create_peak(AgsAudio *audio,
 				  guint start_audio_channel, guint stop_audio_channel,
 				  guint start_pad, guint stop_pad,
 				  gint position,
-				  guint create_flags, guint recall_flags);
+				  guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_eq10(AgsAudio *audio,
 				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -265,7 +265,7 @@ GList* ags_fx_factory_create_eq10(AgsAudio *audio,
 				  guint start_audio_channel, guint stop_audio_channel,
 				  guint start_pad, guint stop_pad,
 				  gint position,
-				  guint create_flags, guint recall_flags);
+				  guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_analyse(AgsAudio *audio,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -275,7 +275,7 @@ GList* ags_fx_factory_create_analyse(AgsAudio *audio,
 				     guint start_audio_channel, guint stop_audio_channel,
 				     guint start_pad, guint stop_pad,
 				     gint position,
-				     guint create_flags, guint recall_flags);
+				     guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -285,7 +285,7 @@ GList* ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 					     guint start_audio_channel, guint stop_audio_channel,
 					     guint start_pad, guint stop_pad,
 					     gint position,
-					     guint create_flags, guint recall_flags);
+					     guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_lfo(AgsAudio *audio,
 				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -295,7 +295,7 @@ GList* ags_fx_factory_create_lfo(AgsAudio *audio,
 				 guint start_audio_channel, guint stop_audio_channel,
 				 guint start_pad, guint stop_pad,
 				 gint position,
-				 guint create_flags, guint recall_flags);
+				 guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_envelope(AgsAudio *audio,
 				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -305,7 +305,7 @@ GList* ags_fx_factory_create_envelope(AgsAudio *audio,
 				      guint start_audio_channel, guint stop_audio_channel,
 				      guint start_pad, guint stop_pad,
 				      gint position,
-				      guint create_flags, guint recall_flags);
+				      guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_pattern(AgsAudio *audio,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -315,7 +315,7 @@ GList* ags_fx_factory_create_pattern(AgsAudio *audio,
 				     guint start_audio_channel, guint stop_audio_channel,
 				     guint start_pad, guint stop_pad,
 				     gint position,
-				     guint create_flags, guint recall_flags);
+				     guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_notation(AgsAudio *audio,
 				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -325,7 +325,7 @@ GList* ags_fx_factory_create_notation(AgsAudio *audio,
 				      guint start_audio_channel, guint stop_audio_channel,
 				      guint start_pad, guint stop_pad,
 				      gint position,
-				      guint create_flags, guint recall_flags);
+				      guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_synth(AgsAudio *audio,
 				   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -335,7 +335,7 @@ GList* ags_fx_factory_create_synth(AgsAudio *audio,
 				   guint start_audio_channel, guint stop_audio_channel,
 				   guint start_pad, guint stop_pad,
 				   gint position,
-				   guint create_flags, guint recall_flags);
+				   guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -345,7 +345,7 @@ GList* ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 				       guint start_audio_channel, guint stop_audio_channel,
 				       guint start_pad, guint stop_pad,
 				       gint position,
-				       guint create_flags, guint recall_flags);
+				       guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_sfz_synth(AgsAudio *audio,
 				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -355,7 +355,7 @@ GList* ags_fx_factory_create_sfz_synth(AgsAudio *audio,
 				       guint start_audio_channel, guint stop_audio_channel,
 				       guint start_pad, guint stop_pad,
 				       gint position,
-				       guint create_flags, guint recall_flags);
+				       guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_ladspa(AgsAudio *audio,
 				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -365,7 +365,7 @@ GList* ags_fx_factory_create_ladspa(AgsAudio *audio,
 				    guint start_audio_channel, guint stop_audio_channel,
 				    guint start_pad, guint stop_pad,
 				    gint position,
-				    guint create_flags, guint recall_flags);
+				    guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_dssi(AgsAudio *audio,
 				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -375,7 +375,7 @@ GList* ags_fx_factory_create_dssi(AgsAudio *audio,
 				  guint start_audio_channel, guint stop_audio_channel,
 				  guint start_pad, guint stop_pad,
 				  gint position,
-				  guint create_flags, guint recall_flags);
+				  guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_lv2(AgsAudio *audio,
 				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -385,7 +385,7 @@ GList* ags_fx_factory_create_lv2(AgsAudio *audio,
 				 guint start_audio_channel, guint stop_audio_channel,
 				 guint start_pad, guint stop_pad,
 				 gint position,
-				 guint create_flags, guint recall_flags);
+				 guint create_flags, AgsRecallFlags recall_flags);
 
 #if defined(AGS_WITH_VST3)
 GList* ags_fx_factory_create_vst3(AgsAudio *audio,
@@ -396,7 +396,7 @@ GList* ags_fx_factory_create_vst3(AgsAudio *audio,
 				  guint start_audio_channel, guint stop_audio_channel,
 				  guint start_pad, guint stop_pad,
 				  gint position,
-				  guint create_flags, guint recall_flags);
+				  guint create_flags, AgsRecallFlags recall_flags);
 #endif
 
 static gpointer ags_fx_factory_parent_class = NULL;
@@ -549,7 +549,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 			       guint start_audio_channel, guint stop_audio_channel,
 			       guint start_pad, guint stop_pad,
 			       gint position,
-			       guint create_flags, guint recall_flags)
+			       guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -973,7 +973,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 			     guint start_audio_channel, guint stop_audio_channel,
 			     guint start_pad, guint stop_pad,
 			     gint position,
-			     guint create_flags, guint recall_flags)
+			     guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -1384,7 +1384,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 			     guint start_audio_channel, guint stop_audio_channel,
 			     guint start_pad, guint stop_pad,
 			     gint position,
-			     guint create_flags, guint recall_flags)
+			     guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -1807,7 +1807,7 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
 			       guint start_audio_channel, guint stop_audio_channel,
 			       guint start_pad, guint stop_pad,
 			       gint position,
-			       guint create_flags, guint recall_flags)
+			       guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -2230,7 +2230,7 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
 				guint start_audio_channel, guint stop_audio_channel,
 				guint start_pad, guint stop_pad,
 				gint position,
-				guint create_flags, guint recall_flags)
+				guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -2653,7 +2653,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 			   guint start_audio_channel, guint stop_audio_channel,
 			   guint start_pad, guint stop_pad,
 			   gint position,
-			   guint create_flags, guint recall_flags)
+			   guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -3063,7 +3063,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 			   guint start_audio_channel, guint stop_audio_channel,
 			   guint start_pad, guint stop_pad,
 			   gint position,
-			   guint create_flags, guint recall_flags)
+			   guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -3484,7 +3484,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 			      guint start_audio_channel, guint stop_audio_channel,
 			      guint start_pad, guint stop_pad,
 			      gint position,
-			      guint create_flags, guint recall_flags)
+			      guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -3905,7 +3905,7 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 				      guint start_audio_channel, guint stop_audio_channel,
 				      guint start_pad, guint stop_pad,
 				      gint position,
-				      guint create_flags, guint recall_flags)
+				      guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -4324,7 +4324,7 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
 			  guint start_audio_channel, guint stop_audio_channel,
 			  guint start_pad, guint stop_pad,
 			  gint position,
-			  guint create_flags, guint recall_flags)
+			  guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -4747,7 +4747,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 			       guint start_audio_channel, guint stop_audio_channel,
 			       guint start_pad, guint stop_pad,
 			       gint position,
-			       guint create_flags, guint recall_flags)
+			       guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -5168,7 +5168,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 			      guint start_audio_channel, guint stop_audio_channel,
 			      guint start_pad, guint stop_pad,
 			      gint position,
-			      guint create_flags, guint recall_flags)
+			      guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -5560,7 +5560,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 			       guint start_audio_channel, guint stop_audio_channel,
 			       guint start_pad, guint stop_pad,
 			       gint position,
-			       guint create_flags, guint recall_flags)
+			       guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -5970,7 +5970,7 @@ ags_fx_factory_create_synth(AgsAudio *audio,
 			    guint start_audio_channel, guint stop_audio_channel,
 			    guint start_pad, guint stop_pad,
 			    gint position,
-			    guint create_flags, guint recall_flags)
+			    guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -6414,7 +6414,7 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
 			       guint start_audio_channel, guint stop_audio_channel,
 			       guint start_pad, guint stop_pad,
 			       gint position,
-			       guint create_flags, guint recall_flags)
+			       guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -6858,7 +6858,7 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 				guint start_audio_channel, guint stop_audio_channel,
 				guint start_pad, guint stop_pad,
 				gint position,
-				guint create_flags, guint recall_flags)
+				guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -7302,7 +7302,7 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
 				guint start_audio_channel, guint stop_audio_channel,
 				guint start_pad, guint stop_pad,
 				gint position,
-				guint create_flags, guint recall_flags)
+				guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -7746,7 +7746,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 			     guint start_audio_channel, guint stop_audio_channel,
 			     guint start_pad, guint stop_pad,
 			     gint position,
-			     guint create_flags, guint recall_flags)
+			     guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -8211,7 +8211,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 			   guint start_audio_channel, guint stop_audio_channel,
 			   guint start_pad, guint stop_pad,
 			   gint position,
-			   guint create_flags, guint recall_flags)
+			   guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -8679,7 +8679,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 			  guint start_audio_channel, guint stop_audio_channel,
 			  guint start_pad, guint stop_pad,
 			  gint position,
-			  guint create_flags, guint recall_flags)
+			  guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -9252,7 +9252,7 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
 			   guint start_audio_channel, guint stop_audio_channel,
 			   guint start_pad, guint stop_pad,
 			   gint position,
-			   guint create_flags, guint recall_flags)
+			   guint create_flags, AgsRecallFlags recall_flags)
 {
   AgsChannel *start_input, *start_output;
   AgsChannel *channel, *next_channel;
@@ -9847,7 +9847,7 @@ ags_fx_factory_create(AgsAudio *audio,
 		      guint start_audio_channel, guint stop_audio_channel,
 		      guint start_pad, guint stop_pad,
 		      gint position,
-		      guint create_flags, guint recall_flags)
+		      guint create_flags, AgsRecallFlags recall_flags)
 {
   GList *start_recall;
 

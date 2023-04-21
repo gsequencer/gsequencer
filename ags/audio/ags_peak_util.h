@@ -46,7 +46,7 @@ struct _AgsPeakUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
   
   gdouble harmonic_rate;
@@ -74,9 +74,9 @@ guint ags_peak_util_get_buffer_length(AgsPeakUtil *peak_util);
 void ags_peak_util_set_buffer_length(AgsPeakUtil *peak_util,
 				     guint buffer_length);
 
-guint ags_peak_util_get_format(AgsPeakUtil *peak_util);
+AgsSoundcardFormat ags_peak_util_get_format(AgsPeakUtil *peak_util);
 void ags_peak_util_set_format(AgsPeakUtil *peak_util,
-			      guint format);
+			      AgsSoundcardFormat format);
 
 guint ags_peak_util_get_samplerate(AgsPeakUtil *peak_util);
 void ags_peak_util_set_samplerate(AgsPeakUtil *peak_util,
