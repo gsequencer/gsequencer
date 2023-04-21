@@ -378,7 +378,8 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 			GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_START);
-  
+
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(live_dssi_bridge)->bridge;
   gtk_grid_attach(AGS_MACHINE(live_dssi_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input,
 		  0, 0,
@@ -697,7 +698,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 G_TYPE_BOOLEAN);
 
     g_value_set_boolean(&value,
-			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+			gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
 
     ags_port_safe_write(port,
 			&value);

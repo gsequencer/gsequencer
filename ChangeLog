@@ -1,4 +1,4 @@
-2ags (5.0.0)
+ags (5.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: vst3 output mode
@@ -13,6 +13,7 @@
 	* refactored template variable and field names of some files
 	* fixed usage of GtkCheckButton get active
 	* fixed midi2xml
+	* minor improvements
 
 ags (4.5.5)
 
