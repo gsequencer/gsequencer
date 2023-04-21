@@ -4,6 +4,9 @@
 	* TODO:JK: vst3 output mode
 	* TODO:JK: refactoring enumerated types as function arguments
 	* implemented provide system time to ags-fx-vst3
+	* implemented ags_soundcard_util_calc_system_time()
+	* implemented ags_soundcard_util_calc_time_samples()
+	* implemented ags_soundcard_util_calc_time_samples_absolute()
 	* extended libags_vst API reference manual
 	* modified -xc++ of gsequencer_CPPFLAGS and midi2xml_CPPFLAGS
 	* modified -std= from gnu++2a to c++2a

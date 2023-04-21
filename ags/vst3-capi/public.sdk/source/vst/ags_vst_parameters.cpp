@@ -518,7 +518,7 @@ extern "C" {
   void ags_vst_string_list_parameter_to_string(AgsVstStringListParameter *string_list_parameter,
 					       gdouble value_normalized, AgsVstString128 string)
   {
-    static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->toString(_value_normalized, (char16_t *) string);
+    static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->toString(value_normalized, (char16_t *) string);
   }
   
   /**
