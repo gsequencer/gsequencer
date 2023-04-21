@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,15 +115,15 @@ struct _AgsCoreAudioMidiin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsCoreAudioMidiinFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsCoreAudioMidiinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
   
   AgsUUID *uuid;
   
-  guint app_buffer_mode;
+  AgsCoreAudioMidiinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
   char **app_buffer;
@@ -166,9 +166,9 @@ GType ags_core_audio_midiin_flags_get_type();
 
 GQuark ags_core_audio_midiin_error_quark();
 
-gboolean ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
-void ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
-void ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
+gboolean ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCoreAudioMidiinFlags flags);
+void ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCoreAudioMidiinFlags flags);
+void ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCoreAudioMidiinFlags flags);
 
 void ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin);
 

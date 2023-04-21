@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1390,7 +1390,7 @@ ags_core_audio_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, guint flags)
+ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, AgsCoreAudioDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1423,7 +1423,7 @@ ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, guint fl
  * Since: 3.0.0
  */
 void
-ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, guint flags)
+ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, AgsCoreAudioDevoutFlags flags)
 {
   GRecMutex *core_audio_devout_mutex;
 
@@ -1454,7 +1454,7 @@ ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, guint fla
  * Since: 3.0.0
  */
 void
-ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, guint flags)
+ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, AgsCoreAudioDevoutFlags flags)
 {  
   GRecMutex *core_audio_devout_mutex;
 
@@ -1583,7 +1583,7 @@ ags_core_audio_devout_set_presets(AgsSoundcard *soundcard,
 				  guint channels,
 				  guint rate,
 				  guint buffer_size,
-				  guint format)
+				  AgsSoundcardFormat format)
 {
   AgsCoreAudioDevout *core_audio_devout;
 
@@ -1602,7 +1602,7 @@ ags_core_audio_devout_get_presets(AgsSoundcard *soundcard,
 				  guint *channels,
 				  guint *rate,
 				  guint *buffer_size,
-				  guint *format)
+				  AgsSoundcardFormat *format)
 {
   AgsCoreAudioDevout *core_audio_devout;
 
@@ -1853,7 +1853,8 @@ ags_core_audio_devout_port_init(AgsSoundcard *soundcard,
   AgsCoreAudioPort *core_audio_port;
   AgsCoreAudioDevout *core_audio_devout;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   gboolean use_cache;
 
   GRecMutex *core_audio_port_mutex;
@@ -2057,7 +2058,7 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     guint cache_offset;
     guint pcm_channels;
     guint buffer_size;
-    guint format;
+    AgsSoundcardFormat format;
     
     struct timespec idle_time = {
       0,
@@ -3365,7 +3366,7 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
 {
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *core_audio_devout_mutex;  

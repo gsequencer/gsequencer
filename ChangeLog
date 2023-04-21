@@ -10,8 +10,11 @@ ags (5.0.0)
 	* modified -xc++ of gsequencer_CPPFLAGS and midi2xml_CPPFLAGS
 	* modified -std= from gnu++2a to c++2a
 	* refactored template variable and field names of some files
+	* fixed typo in ags_core_audio_devout.h and ags_core_audio_devin.h
 	* fixed usage of GtkCheckButton get active
 	* fixed midi2xml
+	* removed symbols ags_audio_unit_server_test_flags(), ags_audio_unit_server_set_flags() and ags_audio_unit_server_unset_flags()
+	* removed symbols ags_core_audio_server_test_flags(), ags_core_audio_server_set_flags() and ags_core_audio_server_unset_flags()
 	* minor improvements
 
 ags (4.5.5)

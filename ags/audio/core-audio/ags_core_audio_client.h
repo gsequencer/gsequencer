@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,8 +65,8 @@ struct _AgsCoreAudioClient
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsCoreAudioClientFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -95,9 +95,9 @@ struct _AgsCoreAudioClientClass
 GType ags_core_audio_client_get_type();
 GType ags_core_audio_client_flags_get_type();
 
-gboolean ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, guint flags);
-void ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, guint flags);
-void ags_core_audio_client_unset_flags(AgsCoreAudioClient *core_audio_client, guint flags);
+gboolean ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, AgsCoreAudioClientFlags flags);
+void ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, AgsCoreAudioClientFlags flags);
+void ags_core_audio_client_unset_flags(AgsCoreAudioClient *core_audio_client, AgsCoreAudioClientFlags flags);
 
 GList* ags_core_audio_client_find_uuid(GList *core_audio_client,
 				       gchar *client_uuid);

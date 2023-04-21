@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -988,7 +988,7 @@ ags_core_audio_midiin_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags)
+ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCoreAudioMidiinFlags flags)
 {
   gboolean retval;  
   
@@ -1021,7 +1021,7 @@ ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, guint fl
  * Since: 3.0.0
  */
 void
-ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags)
+ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCoreAudioMidiinFlags flags)
 {
   GRecMutex *core_audio_midiin_mutex;
 
@@ -1052,7 +1052,7 @@ ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, guint fla
  * Since: 3.0.0
  */
 void
-ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags)
+ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCoreAudioMidiinFlags flags)
 {  
   GRecMutex *core_audio_midiin_mutex;
 
