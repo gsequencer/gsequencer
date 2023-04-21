@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ struct _AgsAudio
   
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gdouble bpm;
 
@@ -249,24 +249,24 @@ GRecMutex* ags_audio_get_obj_mutex(AgsAudio *audio);
 GRecMutex* ags_audio_get_play_mutex(AgsAudio *audio);
 GRecMutex* ags_audio_get_recall_mutex(AgsAudio *audio);
 
-gboolean ags_audio_test_flags(AgsAudio *audio, guint flags);
-void ags_audio_set_flags(AgsAudio *audio, guint flags);
-void ags_audio_unset_flags(AgsAudio *audio, guint flags);
+gboolean ags_audio_test_flags(AgsAudio *audio, AgsAudioFlags flags);
+void ags_audio_set_flags(AgsAudio *audio, AgsAudioFlags flags);
+void ags_audio_unset_flags(AgsAudio *audio, AgsAudioFlags flags);
 
-gboolean ags_audio_test_ability_flags(AgsAudio *audio, guint ability_flags);
-void ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags);
-void ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags);
+gboolean ags_audio_test_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags);
+void ags_audio_set_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags);
+void ags_audio_unset_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags);
 
-gboolean ags_audio_test_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
-void ags_audio_set_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
-void ags_audio_unset_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
+gboolean ags_audio_test_behaviour_flags(AgsAudio *audio, AgsSoundBehaviourFlags behaviour_flags);
+void ags_audio_set_behaviour_flags(AgsAudio *audio, AgsSoundBehaviourFlags behaviour_flags);
+void ags_audio_unset_behaviour_flags(AgsAudio *audio, AgsSoundBehaviourFlags behaviour_flags);
 
 gboolean ags_audio_test_staging_flags(AgsAudio *audio, gint sound_scope,
-				      guint staging_flags);
+				      AgsSoundStagingFlags staging_flags);
 void ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
-				 guint staging_flags);
+				 AgsSoundStagingFlags staging_flags);
 void ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
-				   guint staging_flags);
+				   AgsSoundStagingFlags staging_flags);
 
 gboolean ags_audio_test_staging_completed(AgsAudio *audio, gint sound_scope);
 void ags_audio_set_staging_completed(AgsAudio *audio, gint sound_scope);
@@ -344,8 +344,8 @@ void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
 guint ags_audio_get_buffer_size(AgsAudio *audio);
 void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
 
-guint ags_audio_get_format(AgsAudio *audio);
-void ags_audio_set_format(AgsAudio *audio, guint format);
+AgsSoundcardFormat ags_audio_get_format(AgsAudio *audio);
+void ags_audio_set_format(AgsAudio *audio, AgsSoundcardFormat format);
 
 /* bpm */
 gdouble ags_audio_get_bpm(AgsAudio *audio);

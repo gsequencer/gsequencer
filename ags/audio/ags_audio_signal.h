@@ -86,7 +86,7 @@ struct _AgsAudioSignal
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
   
   guint length;
@@ -139,18 +139,18 @@ GRecMutex* ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_lock(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal);
 
-gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags);
-void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags);
-void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags);
+gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
+void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
+void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
 
 void* ags_stream_alloc(guint buffer_size,
-		       guint format);
+		       AgsSoundcardFormat format);
 void ags_stream_free(void *buffer);
 
 void* ags_stream_slice_alloc(guint buffer_size,
-			     guint format);
+			     AgsSoundcardFormat format);
 void ags_stream_slice_free(guint buffer_size,
-			   guint format,
+			   AgsSoundcardFormat format,
 			   void *buffer);
 
 /* parent */
@@ -171,8 +171,8 @@ void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint sampler
 guint ags_audio_signal_get_buffer_size(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
 
-guint ags_audio_signal_get_format(AgsAudioSignal *audio_signal);
-void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format);
+AgsSoundcardFormat ags_audio_signal_get_format(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat format);
 
 /* children */
 GList* ags_audio_signal_get_note(AgsAudioSignal *audio_signal);
