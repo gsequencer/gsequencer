@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -234,7 +234,7 @@ ags_soundcard_get_presets(AgsSoundcard *soundcard,
 			  guint *channels,
 			  guint *rate,
 			  guint *buffer_size,
-			  guint *format)
+			  AgsSoundcardFormat *format)
 {
   AgsSoundcardInterface *soundcard_interface;
 
@@ -265,7 +265,7 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
 			  guint channels,
 			  guint rate,
 			  guint buffer_size,
-			  guint format)
+			  AgsSoundcardFormat format)
 {
   AgsSoundcardInterface *soundcard_interface;
 
@@ -346,12 +346,12 @@ ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
  * 
  * Since: 3.0.0
  */
-guint
+AgsSoundcardCapability
 ags_soundcard_get_capability(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  guint capability;
+  AgsSoundcardCapability capability;
   
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -131,18 +131,18 @@ struct _AgsSoundcardInterface
 		   guint *buffer_size_min, guint *buffer_size_max,
 		   GError **error);
 
-  guint (*get_capability)(AgsSoundcard *soundcard);
+  AgsSoundcardCapability (*get_capability)(AgsSoundcard *soundcard);
   
   void (*set_presets)(AgsSoundcard *soundcard,
 		      guint channels,
 		      guint rate,
 		      guint buffer_size,
-		      guint format);
+		      AgsSoundcardFormat format);
   void (*get_presets)(AgsSoundcard *soundcard,
 		      guint *channels,
 		      guint *rate,
 		      guint *buffer_size,
-		      guint *format);
+		      AgsSoundcardFormat *format);
   
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
@@ -236,12 +236,12 @@ void ags_soundcard_set_presets(AgsSoundcard *soundcard,
 			       guint channels,
 			       guint rate,
 			       guint buffer_size,
-			       guint format);
+			       AgsSoundcardFormat format);
 void ags_soundcard_get_presets(AgsSoundcard *soundcard,
 			       guint *channels,
 			       guint *rate,
 			       guint *buffer_size,
-			       guint *format);
+			       AgsSoundcardFormat *format);
 
 void ags_soundcard_list_cards(AgsSoundcard *soundcard,
 			      GList **card_id, GList **card_name);
@@ -251,7 +251,7 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    guint *buffer_size_min, guint *buffer_size_max,
 			    GError **error);
 
-guint ags_soundcard_get_capability(AgsSoundcard *soundcard);
+AgsSoundcardCapability ags_soundcard_get_capability(AgsSoundcard *soundcard);
 
 gboolean ags_soundcard_is_available(AgsSoundcard *soundcard);
 

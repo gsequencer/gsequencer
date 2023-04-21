@@ -1,7 +1,6 @@
 ags (5.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: vst3 output mode
 	* TODO:JK: refactoring enumerated types as function arguments
 	* implemented provide system time to ags-fx-vst3
 	* implemented ags_soundcard_util_calc_system_time()

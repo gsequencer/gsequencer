@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,9 +119,9 @@ struct _AgsLv2PluginClass
 GType ags_lv2_plugin_get_type(void);
 GType ags_lv2_plugin_flags_get_type();
 
-gboolean ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags);
-void ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags);
-void ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags);
+gboolean ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, AgsLv2PluginFlags flags);
+void ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, AgsLv2PluginFlags flags);
+void ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, AgsLv2PluginFlags flags);
 
 LV2_Event_Buffer* ags_lv2_plugin_event_buffer_alloc(guint buffer_size);
 void ags_lv2_plugin_event_buffer_free(gpointer event_buffer);
