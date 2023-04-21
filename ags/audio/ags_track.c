@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -337,7 +337,7 @@ ags_track_unlock(AgsTrack *track)
  * Since: 3.0.0
  */
 gboolean
-ags_track_test_flags(AgsTrack *track, guint flags)
+ags_track_test_flags(AgsTrack *track, AgsTrackFlags flags)
 {
   gboolean retval;
   
@@ -370,7 +370,7 @@ ags_track_test_flags(AgsTrack *track, guint flags)
  * Since: 3.0.0
  */
 void
-ags_track_set_flags(AgsTrack *track, guint flags)
+ags_track_set_flags(AgsTrack *track, AgsTrackFlags flags)
 {
   GRecMutex *track_mutex;
 
@@ -399,7 +399,7 @@ ags_track_set_flags(AgsTrack *track, guint flags)
  * Since: 3.0.0
  */
 void
-ags_track_unset_flags(AgsTrack *track, guint flags)
+ags_track_unset_flags(AgsTrack *track, AgsTrackFlags flags)
 {
   GRecMutex *track_mutex;
 

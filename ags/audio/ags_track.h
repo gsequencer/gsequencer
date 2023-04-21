@@ -56,7 +56,7 @@ struct _AgsTrack
 {
   GObject gobject;
 
-  guint flags;
+  AgsTrackFlags flags;
 
   GRecMutex obj_mutex;
 
@@ -80,9 +80,9 @@ GRecMutex* ags_track_get_obj_mutex(AgsTrack *track);
 void ags_track_lock(AgsTrack *track);
 void ags_track_unlock(AgsTrack *track);
 
-gboolean ags_track_test_flags(AgsTrack *track, guint flags);
-void ags_track_set_flags(AgsTrack *track, guint flags);
-void ags_track_unset_flags(AgsTrack *track, guint flags);
+gboolean ags_track_test_flags(AgsTrack *track, AgsTrackFlags flags);
+void ags_track_set_flags(AgsTrack *track, AgsTrackFlags flags);
+void ags_track_unset_flags(AgsTrack *track, AgsTrackFlags flags);
 
 gint ags_track_sort_func(gconstpointer a,
 			 gconstpointer b);

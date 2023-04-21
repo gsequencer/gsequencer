@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1597,7 +1597,7 @@ ags_audio_container_close(AgsAudioContainer *audio_container)
 void*
 ags_audio_container_read(AgsAudioContainer *audio_container,
 			 guint audio_channel,
-			 guint format,
+			 AgsSoundcardFormat format,
 			 GError **error)
 {
   GList *start_sound_resource;
@@ -1725,7 +1725,7 @@ ags_audio_container_seek(AgsAudioContainer *audio_container, guint frames, gint 
 void
 ags_audio_container_write(AgsAudioContainer *audio_container,
 			  void *buffer, guint buffer_size,
-			  guint format)
+			  AgsSoundcardFormat format)
 {
   g_message("missing implementation");
 
