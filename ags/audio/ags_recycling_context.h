@@ -59,8 +59,8 @@ struct _AgsRecyclingContext
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsRecyclingContextFlags flags;
+  AgsConnectableFlags connectable_flags;
   gint sound_scope;
 
   GRecMutex obj_mutex;

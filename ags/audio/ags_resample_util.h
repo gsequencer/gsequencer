@@ -53,7 +53,7 @@ struct _AgsResampleUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 
   guint target_samplerate;
@@ -87,9 +87,9 @@ guint ags_resample_util_get_buffer_length(AgsResampleUtil *resample_util);
 void ags_resample_util_set_buffer_length(AgsResampleUtil *resample_util,
 					 guint buffer_length);
 
-guint ags_resample_util_get_format(AgsResampleUtil *resample_util);
+AgsSoundcardFormat ags_resample_util_get_format(AgsResampleUtil *resample_util);
 void ags_resample_util_set_format(AgsResampleUtil *resample_util,
-				  guint format);
+				  AgsSoundcardFormat format);
 
 guint ags_resample_util_get_samplerate(AgsResampleUtil *resample_util);
 void ags_resample_util_set_samplerate(AgsResampleUtil *resample_util,
