@@ -942,7 +942,7 @@ ags_core_audio_port_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags)
+ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags)
 {
   gboolean retval;  
   
@@ -975,7 +975,7 @@ ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags)
+ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags)
 {
   GRecMutex *core_audio_port_mutex;
 
@@ -1006,7 +1006,7 @@ ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags)
+ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags)
 {  
   GRecMutex *core_audio_port_mutex;
 
@@ -1140,7 +1140,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   
   gpointer buffer;
   
-  guint format;
+  AgsSoundcardFormat format;
   guint copy_mode;
   gboolean is_playing;
   gboolean pass_through;
@@ -1302,7 +1302,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   
   gpointer buffer;
   
-  guint format;
+  AgsSoundcardFormat format;
   guint copy_mode;
   gboolean is_recording;
   gboolean pass_through;
@@ -1472,7 +1472,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
   gchar *name, *uuid;
 
-  guint format;
+  AgsSoundcardFormat format;
   guint i;
   gboolean use_cache;
 
@@ -2751,7 +2751,7 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
 
 void
 ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
-			       guint format)
+			       AgsSoundcardFormat format)
 {
   GRecMutex *core_audio_port_mutex;
 

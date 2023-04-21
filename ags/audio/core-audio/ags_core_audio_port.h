@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,8 +76,8 @@ struct _AgsCoreAudioPort
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsCoreAudioPortFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -94,7 +94,7 @@ struct _AgsCoreAudioPort
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gboolean use_cache;
   guint cache_buffer_size;
@@ -172,9 +172,9 @@ struct _AgsCoreAudioPortClass
 GType ags_core_audio_port_get_type();
 GType ags_core_audio_port_flags_get_type();
 
-gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags);
-void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags);
-void ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags);
+gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags);
+void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags);
+void ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPortFlags flags);
 
 GList* ags_core_audio_port_find(GList *core_audio_port,
 				gchar *port_name);
@@ -186,7 +186,7 @@ void ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 void ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port);
 
 void ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
-				    guint format);
+				    AgsSoundcardFormat format);
 void ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
 					guint samplerate);
 void ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,

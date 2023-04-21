@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,7 +53,7 @@ struct _AgsCoreAudioServer
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -82,10 +82,6 @@ struct _AgsCoreAudioServerClass
 };
 
 GType ags_core_audio_server_get_type();
-
-gboolean ags_core_audio_server_test_flags(AgsCoreAudioServer *core_audio_server, guint flags);
-void ags_core_audio_server_set_flags(AgsCoreAudioServer *core_audio_server, guint flags);
-void ags_core_audio_server_unset_flags(AgsCoreAudioServer *core_audio_server, guint flags);
 
 GList* ags_core_audio_server_find_url(GList *core_audio_server,
 				      gchar *url);
