@@ -44,7 +44,7 @@ struct _AgsSFZGroup
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -64,10 +64,6 @@ struct _AgsSFZGroupClass
 };
 
 GType ags_sfz_group_get_type();
-
-gboolean ags_sfz_group_test_flags(AgsSFZGroup *sfz_group, guint flags);
-void ags_sfz_group_set_flags(AgsSFZGroup *sfz_group, guint flags);
-void ags_sfz_group_unset_flags(AgsSFZGroup *sfz_group, guint flags);
 
 GList* ags_sfz_group_get_region(AgsSFZGroup *sfz_group);
 void ags_sfz_group_set_region(AgsSFZGroup *sfz_group,

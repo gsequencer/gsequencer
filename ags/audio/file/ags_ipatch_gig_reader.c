@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -532,103 +532,6 @@ ags_ipatch_gig_reader_disconnect(AgsConnectable *connectable)
   g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
   ipatch_gig_reader->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-  
-  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
-}
-
-/**
- * ags_ipatch_gig_reader_test_flags:
- * @ipatch_gig_reader: the #AgsIpatchGigReader
- * @flags: the flags
- *
- * Test @flags to be set on @ipatch_gig_reader.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_ipatch_gig_reader_test_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *ipatch_gig_reader_mutex;
-
-  if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
-    return(FALSE);
-  }
-
-  /* get ipatch gig reader mutex */
-  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
-
-  /* test */
-  g_rec_mutex_lock(ipatch_gig_reader_mutex);
-
-  retval = (flags & (ipatch_gig_reader->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_ipatch_gig_reader_set_flags:
- * @ipatch_gig_reader: the #AgsIpatchGigReader
- * @flags: see #AgsIpatchGigReaderFlags-enum
- *
- * Enable a feature of @ipatch_gig_reader.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_gig_reader_set_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
-{
-  GRecMutex *ipatch_gig_reader_mutex;
-
-  if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
-    return;
-  }
-
-  /* get ipatch gig reader mutex */
-  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
-
-  //TODO:JK: add more?
-
-  /* set flags */
-  g_rec_mutex_lock(ipatch_gig_reader_mutex);
-
-  ipatch_gig_reader->flags |= flags;
-  
-  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
-}
-    
-/**
- * ags_ipatch_gig_reader_unset_flags:
- * @ipatch_gig_reader: the #AgsIpatchGigReader
- * @flags: see #AgsIpatchGigReaderFlags-enum
- *
- * Disable a feature of @ipatch_gig_reader.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_gig_reader_unset_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
-{  
-  GRecMutex *ipatch_gig_reader_mutex;
-
-  if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
-    return;
-  }
-
-  /* get ipatch gig reader mutex */
-  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
-
-  //TODO:JK: add more?
-
-  /* unset flags */
-  g_rec_mutex_lock(ipatch_gig_reader_mutex);
-
-  ipatch_gig_reader->flags &= (~flags);
   
   g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 }

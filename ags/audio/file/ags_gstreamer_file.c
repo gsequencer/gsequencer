@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,20 +76,20 @@ void ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 				    guint channels,
 				    guint samplerate,
 				    guint buffer_size,
-				    guint format);
+				    AgsSoundcardFormat format);
 void ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
 				    guint *channels,
 				    guint *samplerate,
 				    guint *buffer_size,
-				    guint *format);
+				    AgsSoundcardFormat *format);
 guint ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 			      void *dbuffer, guint daudio_channels,
 			      guint audio_channel,
-			      guint frame_count, guint format);
+			      guint frame_count, AgsSoundcardFormat format);
 void ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 			      void *sbuffer, guint saudio_channels,
 			      guint audio_channel,
-			      guint frame_count, guint format);
+			      guint frame_count, AgsSoundcardFormat format);
 void ags_gstreamer_file_flush(AgsSoundResource *sound_resource);
 void ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
 			     gint64 frame_count, gint whence);
@@ -537,7 +537,7 @@ ags_gstreamer_file_set_property(GObject *gobject,
   break;
   case PROP_FORMAT:
   {
-    guint format;
+    AgsSoundcardFormat format;
 
     format = g_value_get_uint(value);
 
@@ -1794,7 +1794,7 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 			       guint channels,
 			       guint samplerate,
 			       guint buffer_size,
-			       guint format)
+			       AgsSoundcardFormat format)
 {
   AgsGstreamerFile *gstreamer_file;
 
@@ -1905,7 +1905,7 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
 			       guint *channels,
 			       guint *samplerate,
 			       guint *buffer_size,
-			       guint *format)
+			       AgsSoundcardFormat *format)
 {
   AgsGstreamerFile *gstreamer_file;
 
@@ -1918,7 +1918,7 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
   gint current_samplerate;
   gint current_channels;
   guint current_buffer_size;
-  guint current_format;
+  AgsSoundcardFormat current_format;
   
   GRecMutex *gstreamer_file_mutex;
 
@@ -2007,7 +2007,7 @@ guint
 ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 			void *dbuffer, guint daudio_channels,
 			guint audio_channel,
-			guint frame_count, guint format)
+			guint frame_count, AgsSoundcardFormat format)
 {
   AgsGstreamerFile *gstreamer_file;
 
@@ -2015,7 +2015,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
   
   guint saudio_channels;
   guint buffer_size;
-  guint source_format;
+  AgsSoundcardFormat source_format;
   guint64 offset;
   guint total_frame_count;
   guint read_frame_count;
@@ -2185,7 +2185,7 @@ void
 ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 			 void *sbuffer, guint saudio_channels,
 			 guint audio_channel,
-			 guint frame_count, guint format)
+			 guint frame_count, AgsSoundcardFormat format)
 {
   AgsGstreamerFile *gstreamer_file;
 
@@ -2198,7 +2198,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   guint64 offset;
   guint daudio_channels;
   guint buffer_size;
-  guint destination_format;
+  AgsSoundcardFormat destination_format;
   guint word_size;
   guint orig_copy_frame_count, copy_frame_count;
   guint dbuffer_offset, sbuffer_offset;

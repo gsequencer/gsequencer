@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,20 +71,20 @@ void ags_sndfile_set_presets(AgsSoundResource *sound_resource,
 			     guint channels,
 			     guint samplerate,
 			     guint buffer_size,
-			     guint format);
+			     AgsSoundcardFormat format);
 void ags_sndfile_get_presets(AgsSoundResource *sound_resource,
 			     guint *channels,
 			     guint *samplerate,
 			     guint *buffer_size,
-			     guint *format);
+			     AgsSoundcardFormat *format);
 guint ags_sndfile_read(AgsSoundResource *sound_resource,
 		       void *dbuffer, guint daudio_channels,
 		       guint audio_channel,
-		       guint frame_count, guint format);
+		       guint frame_count, AgsSoundcardFormat format);
 void ags_sndfile_write(AgsSoundResource *sound_resource,
 		       void *sbuffer, guint saudio_channels,
 		       guint audio_channel,
-		       guint frame_count, guint format);
+		       guint frame_count, AgsSoundcardFormat format);
 void ags_sndfile_flush(AgsSoundResource *sound_resource);
 void ags_sndfile_seek(AgsSoundResource *sound_resource,
 		      gint64 frame_count, gint whence);
@@ -454,7 +454,7 @@ ags_sndfile_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -803,7 +803,7 @@ ags_sndfile_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags)
+ags_sndfile_test_flags(AgsSndfile *sndfile, AgsSndfileFlags flags)
 {
   gboolean retval;  
   
@@ -836,7 +836,7 @@ ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags)
  * Since: 3.0.0
  */
 void
-ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags)
+ags_sndfile_set_flags(AgsSndfile *sndfile, AgsSndfileFlags flags)
 {
   GRecMutex *sndfile_mutex;
 
@@ -867,7 +867,7 @@ ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags)
  * Since: 3.0.0
  */
 void
-ags_sndfile_unset_flags(AgsSndfile *sndfile, guint flags)
+ags_sndfile_unset_flags(AgsSndfile *sndfile, AgsSndfileFlags flags)
 {  
   GRecMutex *sndfile_mutex;
 
@@ -894,7 +894,7 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
 {
   AgsSndfile *sndfile;
 
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *sndfile_mutex;
 
@@ -1181,7 +1181,7 @@ ags_sndfile_set_presets(AgsSoundResource *sound_resource,
 			guint channels,
 			guint samplerate,
 			guint buffer_size,
-			guint format)
+			AgsSoundcardFormat format)
 {
   AgsSndfile *sndfile;
 
@@ -1255,7 +1255,7 @@ ags_sndfile_get_presets(AgsSoundResource *sound_resource,
 			guint *channels,
 			guint *samplerate,
 			guint *buffer_size,
-			guint *format)
+			AgsSoundcardFormat *format)
 {
   AgsSndfile *sndfile;
    
@@ -1349,7 +1349,7 @@ guint
 ags_sndfile_read(AgsSoundResource *sound_resource,
 		 void *dbuffer, guint daudio_channels,
 		 guint audio_channel,
-		 guint frame_count, guint format)
+		 guint frame_count, AgsSoundcardFormat format)
 {
   AgsSndfile *sndfile;
 
@@ -1489,7 +1489,7 @@ void
 ags_sndfile_write(AgsSoundResource *sound_resource,
 		  void *sbuffer, guint saudio_channels,
 		  guint audio_channel,
-		  guint frame_count, guint format)
+		  guint frame_count, AgsSoundcardFormat format)
 {
   AgsSndfile *sndfile;
 
