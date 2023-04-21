@@ -313,7 +313,12 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
     input_data->parameter_changes[0].param_id = ~0;
 
     ags_vst_process_context_set_system_time(input_data->process_context,
-					    ags_soundcard_util_offset_to_system_time(output_soundcard));
+					    ags_soundcard_util_calc_system_time(output_soundcard));
+    ags_vst_process_context_set_project_time_samples(input_data->process_context,
+						     ags_soundcard_util_calc_time_samples(output_soundcard));
+    ags_vst_process_context_set_continous_time_samples(input_data->process_context,
+						       ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
+
     ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 				     input_data->process_data);  
     
@@ -507,7 +512,11 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 //	g_message("play channel data x0 = %d, y = %d", x0, y);
 	
       ags_vst_process_context_set_system_time(channel_data->process_context,
-					      ags_soundcard_util_offset_to_system_time(output_soundcard));
+					      ags_soundcard_util_calc_system_time(output_soundcard));
+      ags_vst_process_context_set_project_time_samples(channel_data->process_context,
+						       ags_soundcard_util_calc_time_samples(output_soundcard));
+      ags_vst_process_context_set_continous_time_samples(channel_data->process_context,
+							 ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
       
       ags_vst_ievent_list_add_event(channel_data->input_event,
 				    ags_vst_note_on_event_alloc(0,
@@ -554,7 +563,11 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 //	g_message("play input data x0 = %d, y = %d", x0, y);
 
       ags_vst_process_context_set_system_time(input_data->process_context,
-					      ags_soundcard_util_offset_to_system_time(output_soundcard));
+					      ags_soundcard_util_calc_system_time(output_soundcard));
+      ags_vst_process_context_set_project_time_samples(input_data->process_context,
+						       ags_soundcard_util_calc_time_samples(output_soundcard));
+      ags_vst_process_context_set_continous_time_samples(input_data->process_context,
+							 ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
 
       ags_vst_ievent_list_add_event(input_data->input_event,
 				    ags_vst_note_on_event_alloc(0,

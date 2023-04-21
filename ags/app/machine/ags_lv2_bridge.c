@@ -511,6 +511,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(lv2_bridge)->bridge;
   gtk_grid_attach(AGS_MACHINE(lv2_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 		  0, 0,
