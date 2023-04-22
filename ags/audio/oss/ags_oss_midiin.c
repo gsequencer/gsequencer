@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -885,7 +885,7 @@ ags_oss_midiin_disconnect(AgsConnectable *connectable)
  * Since: 3.13.2
  */
 gboolean
-ags_oss_midiin_test_flags(AgsOssMidiin *oss_midiin, guint flags)
+ags_oss_midiin_test_flags(AgsOssMidiin *oss_midiin, AgsOssMidiinFlags flags)
 {
   gboolean retval;  
   
@@ -918,7 +918,7 @@ ags_oss_midiin_test_flags(AgsOssMidiin *oss_midiin, guint flags)
  * Since: 3.13.2
  */
 void
-ags_oss_midiin_set_flags(AgsOssMidiin *oss_midiin, guint flags)
+ags_oss_midiin_set_flags(AgsOssMidiin *oss_midiin, AgsOssMidiinFlags flags)
 {
   GRecMutex *oss_midiin_mutex;
 
@@ -949,7 +949,7 @@ ags_oss_midiin_set_flags(AgsOssMidiin *oss_midiin, guint flags)
  * Since: 3.13.2
  */
 void
-ags_oss_midiin_unset_flags(AgsOssMidiin *oss_midiin, guint flags)
+ags_oss_midiin_unset_flags(AgsOssMidiin *oss_midiin, AgsOssMidiinFlags flags)
 {  
   GRecMutex *oss_midiin_mutex;
 

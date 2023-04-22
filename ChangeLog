@@ -1,7 +1,6 @@
 ags (5.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: refactoring enumerated types as function arguments
 	* implemented provide system time to ags-fx-vst3
 	* implemented ags_soundcard_util_calc_system_time()
 	* implemented ags_soundcard_util_calc_time_samples()
@@ -10,11 +9,15 @@ ags (5.0.0)
 	* modified -xc++ of gsequencer_CPPFLAGS and midi2xml_CPPFLAGS
 	* modified -std= from gnu++2a to c++2a
 	* refactored template variable and field names of some files
+	* refactored enumerated types as function arguments
 	* fixed typo in ags_core_audio_devout.h and ags_core_audio_devin.h
 	* fixed usage of GtkCheckButton get active
 	* fixed midi2xml
 	* removed symbols ags_audio_unit_server_test_flags(), ags_audio_unit_server_set_flags() and ags_audio_unit_server_unset_flags()
 	* removed symbols ags_core_audio_server_test_flags(), ags_core_audio_server_set_flags() and ags_core_audio_server_unset_flags()
+	* removed symbols ags_gstreamer_server_test_flags(), ags_gstreamer_server_set_flags() and ags_gstreamer_server_unset_flags()
+	* removed symbols ags_pulse_server_test_flags(), ags_pulse_server_set_flags() and ags_pulse_server_unset_flags()
+	* removed symbols ags_jack_server_test_flags(), ags_jack_server_set_flags() and ags_jack_server_unset_flags()
 	* minor improvements
 
 ags (4.5.5)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -388,7 +388,7 @@ ags_sfz_loader_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags)
+ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, AgsSFZLoaderFlags flags)
 {
   gboolean retval;
   
@@ -421,7 +421,7 @@ ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags)
  * Since: 3.0.0
  */
 void
-ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags)
+ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, AgsSFZLoaderFlags flags)
 {
   GRecMutex *sfz_loader_mutex;
 
@@ -450,7 +450,7 @@ ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags)
  * Since: 3.0.0
  */
 void
-ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags)
+ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, AgsSFZLoaderFlags flags)
 {
   GRecMutex *sfz_loader_mutex;
 

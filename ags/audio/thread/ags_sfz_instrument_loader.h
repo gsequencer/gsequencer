@@ -60,8 +60,8 @@ struct _AgsSFZInstrumentLoader
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsSFZInstrumentLoaderFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -88,9 +88,9 @@ struct _AgsSFZInstrumentLoaderClass
 GType ags_sfz_instrument_loader_get_type();
 
 /* flags */
-gboolean ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags);
-void ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags);
-void ags_sfz_instrument_loader_unset_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags);
+gboolean ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags);
+void ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags);
+void ags_sfz_instrument_loader_unset_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags);
 
 /* properties */
 AgsAudio* ags_sfz_instrument_loader_get_audio(AgsSFZInstrumentLoader *sfz_instrument_loader);

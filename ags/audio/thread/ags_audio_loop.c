@@ -1350,7 +1350,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
  * Since: 3.0.0
  */
 gboolean
-ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags)
+ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, AgsAudioLoopFlags flags)
 {
   gboolean retval;
   
@@ -1383,7 +1383,7 @@ ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags)
+ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, AgsAudioLoopFlags flags)
 {
   GRecMutex *audio_loop_mutex;
 
@@ -1412,7 +1412,7 @@ ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags)
+ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, AgsAudioLoopFlags flags)
 {
   GRecMutex *audio_loop_mutex;
 

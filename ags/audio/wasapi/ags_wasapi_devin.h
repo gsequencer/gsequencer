@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,8 +120,8 @@ struct _AgsWasapiDevin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsWasapiDevinFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -129,13 +129,13 @@ struct _AgsWasapiDevin
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
   guint wasapi_buffer_size;
 
-  guint app_buffer_mode;
+  AgsWasapiDevinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
 
@@ -193,9 +193,9 @@ GType ags_wasapi_devin_flags_get_type();
 
 GQuark ags_wasapi_devin_error_quark();
 
-gboolean ags_wasapi_devin_test_flags(AgsWasapiDevin *wasapi_devin, guint flags);
-void ags_wasapi_devin_set_flags(AgsWasapiDevin *wasapi_devin, guint flags);
-void ags_wasapi_devin_unset_flags(AgsWasapiDevin *wasapi_devin, guint flags);
+gboolean ags_wasapi_devin_test_flags(AgsWasapiDevin *wasapi_devin, AgsWasapiDevinFlags flags);
+void ags_wasapi_devin_set_flags(AgsWasapiDevin *wasapi_devin, AgsWasapiDevinFlags flags);
+void ags_wasapi_devin_unset_flags(AgsWasapiDevin *wasapi_devin, AgsWasapiDevinFlags flags);
 
 void ags_wasapi_devin_switch_buffer_flag(AgsWasapiDevin *wasapi_devin);
 

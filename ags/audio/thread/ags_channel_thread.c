@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -735,7 +735,7 @@ ags_channel_thread_stop(AgsThread *thread)
  * Since: 3.0.0
  */
 gboolean
-ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint status_flags)
+ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags)
 {
   gboolean retval;
   
@@ -758,7 +758,7 @@ ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint sta
  * Since: 3.0.0
  */
 void
-ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint status_flags)
+ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags)
 {
   if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
     return;
@@ -778,7 +778,7 @@ ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint stat
  * Since: 3.0.0
  */
 void
-ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint status_flags)
+ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags)
 {
   if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
     return;

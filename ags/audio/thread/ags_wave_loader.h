@@ -52,8 +52,8 @@ struct _AgsWaveLoader
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsWaveLoaderFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -74,9 +74,9 @@ struct _AgsWaveLoaderClass
 GType ags_wave_loader_get_type();
 
 /* flags */
-gboolean ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, guint flags);
-void ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, guint flags);
-void ags_wave_loader_unset_flags(AgsWaveLoader *wave_loader, guint flags);
+gboolean ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, AgsWaveLoaderFlags flags);
+void ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, AgsWaveLoaderFlags flags);
+void ags_wave_loader_unset_flags(AgsWaveLoader *wave_loader, AgsWaveLoaderFlags flags);
 
 /* properties */
 AgsAudio* ags_wave_loader_get_audio(AgsWaveLoader *wave_loader);

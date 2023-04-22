@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,9 +120,9 @@ struct _AgsPulseDevin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsPulseDevinFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsPulseDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -130,11 +130,11 @@ struct _AgsPulseDevin
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsPulseDevinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
   void** app_buffer;
@@ -187,9 +187,9 @@ GType ags_pulse_devin_flags_get_type();
 
 GQuark ags_pulse_devin_error_quark();
 
-gboolean ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, guint flags);
-void ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, guint flags);
-void ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, guint flags);
+gboolean ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags flags);
+void ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags flags);
+void ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags flags);
 
 void ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin);
 

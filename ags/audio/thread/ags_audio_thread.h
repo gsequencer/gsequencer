@@ -57,13 +57,13 @@ typedef enum{
   AGS_AUDIO_THREAD_STATUS_WAIT            = 1 <<  1,
   AGS_AUDIO_THREAD_STATUS_DONE_SYNC       = 1 <<  2,
   AGS_AUDIO_THREAD_STATUS_WAIT_SYNC       = 1 <<  3,
-}AgsAudioThreadFlags;
+}AgsAudioThreadStatusFlags;
 
 struct _AgsAudioThread
 {
   AgsThread thread;
 
-  volatile guint status_flags;
+  volatile AgsAudioThreadStatusFlags status_flags;
 
   GObject *default_output_soundcard;
   
@@ -107,9 +107,9 @@ struct _AgsAudioThreadScopeData
 GType ags_audio_thread_get_type();
 
 /* flags */
-gboolean ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_flags);
-void ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_flags);
-void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint status_flags);
+gboolean ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags);
+void ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags);
+void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags);
 
 gboolean ags_audio_thread_get_processing(AgsAudioThread *audio_thread);
 void ags_audio_thread_set_processing(AgsAudioThread *audio_thread,

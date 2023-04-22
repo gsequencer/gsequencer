@@ -588,9 +588,6 @@ ags_pulse_port_set_cache_buffer_size
 ags_pulse_port_get_latency
 ags_pulse_port_new
 ags_pulse_server_get_type
-ags_pulse_server_test_flags
-ags_pulse_server_set_flags
-ags_pulse_server_unset_flags
 ags_pulse_server_find_url
 ags_pulse_server_find_client
 ags_pulse_server_find_port

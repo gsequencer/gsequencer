@@ -63,7 +63,7 @@ struct _AgsExportOutput
   GObject *soundcard;
 
   gchar *filename;
-  guint format;
+  AgsExportOutputFormat format;
   
   guint tic;
   gboolean live_performance;

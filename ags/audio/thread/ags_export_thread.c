@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -544,7 +544,7 @@ ags_export_thread_stop(AgsThread *thread)
  * Since: 4.4.1
  */
 gboolean
-ags_export_thread_test_flags(AgsExportThread *export_thread, guint flags)
+ags_export_thread_test_flags(AgsExportThread *export_thread, AgsExportThreadFlags flags)
 {
   gboolean retval;  
   
@@ -577,7 +577,7 @@ ags_export_thread_test_flags(AgsExportThread *export_thread, guint flags)
  * Since: 4.4.1
  */
 void
-ags_export_thread_set_flags(AgsExportThread *export_thread, guint flags)
+ags_export_thread_set_flags(AgsExportThread *export_thread, AgsExportThreadFlags flags)
 {
   GRecMutex *export_thread_mutex;
 
@@ -606,7 +606,7 @@ ags_export_thread_set_flags(AgsExportThread *export_thread, guint flags)
  * Since: 4.4.1
  */
 void
-ags_export_thread_unset_flags(AgsExportThread *export_thread, guint flags)
+ags_export_thread_unset_flags(AgsExportThread *export_thread, AgsExportThreadFlags flags)
 {  
   GRecMutex *export_thread_mutex;
 

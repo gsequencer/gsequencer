@@ -80,12 +80,12 @@ struct _AgsScale
 {
   GtkWidget widget;
 
-  guint flags;
+  AgsScaleFlags flags;
 
   GtkOrientation orientation;
 
-  guint key_mask;
-  guint button_state;
+  AgsScaleKeyMask key_mask;
+  AgsScaleButtonState button_state;
 
   guint font_size;
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1160,7 +1160,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
  * Since: 3.0.0
  */
 gboolean
-ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_flags)
+ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags)
 {
   gboolean retval;
   
@@ -1183,7 +1183,7 @@ ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_fl
  * Since: 3.0.0
  */
 void
-ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_flags)
+ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags)
 {
   if(!AGS_IS_AUDIO_THREAD(audio_thread)){
     return;
@@ -1203,7 +1203,7 @@ ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_fla
  * Since: 3.0.0
  */
 void
-ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint status_flags)
+ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, AgsAudioThreadStatusFlags status_flags)
 {
   if(!AGS_IS_AUDIO_THREAD(audio_thread)){
     return;

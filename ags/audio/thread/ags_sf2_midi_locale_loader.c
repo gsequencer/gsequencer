@@ -553,7 +553,7 @@ ags_sf2_midi_locale_loader_finalize(GObject *gobject)
  * Since: 3.16.0
  */
 gboolean
-ags_sf2_midi_locale_loader_test_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, guint flags)
+ags_sf2_midi_locale_loader_test_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, AgsSF2MidiLocaleLoaderFlags flags)
 {
   gboolean retval;
   
@@ -586,7 +586,7 @@ ags_sf2_midi_locale_loader_test_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_lo
  * Since: 3.16.0
  */
 void
-ags_sf2_midi_locale_loader_set_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, guint flags)
+ags_sf2_midi_locale_loader_set_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, AgsSF2MidiLocaleLoaderFlags flags)
 {
   GRecMutex *sf2_midi_locale_loader_mutex;
 
@@ -615,7 +615,7 @@ ags_sf2_midi_locale_loader_set_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loa
  * Since: 3.16.0
  */
 void
-ags_sf2_midi_locale_loader_unset_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, guint flags)
+ags_sf2_midi_locale_loader_unset_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, AgsSF2MidiLocaleLoaderFlags flags)
 {
   GRecMutex *sf2_midi_locale_loader_mutex;
 
@@ -645,7 +645,7 @@ ags_sf2_midi_locale_loader_run(void *ptr)
 
   guint samplerate;
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *audio_container_manager_mutex;
 

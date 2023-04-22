@@ -468,7 +468,7 @@ ags_sfz_instrument_loader_finalize(GObject *gobject)
  * Since: 3.17.0
  */
 gboolean
-ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags)
+ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags)
 {
   gboolean retval;
   
@@ -501,7 +501,7 @@ ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_load
  * Since: 3.17.0
  */
 void
-ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags)
+ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags)
 {
   GRecMutex *sfz_instrument_loader_mutex;
 
@@ -530,7 +530,7 @@ ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loade
  * Since: 3.17.0
  */
 void
-ags_sfz_instrument_loader_unset_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags)
+ags_sfz_instrument_loader_unset_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags)
 {
   GRecMutex *sfz_instrument_loader_mutex;
 
@@ -560,7 +560,7 @@ ags_sfz_instrument_loader_run(void *ptr)
 
   guint samplerate;
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *audio_container_manager_mutex;
 
