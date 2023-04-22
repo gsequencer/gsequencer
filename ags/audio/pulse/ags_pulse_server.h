@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,7 @@ struct _AgsPulseServer
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -91,10 +91,6 @@ struct _AgsPulseServerClass
 };
 
 GType ags_pulse_server_get_type();
-
-gboolean ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags);
-void ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags);
-void ags_pulse_server_unset_flags(AgsPulseServer *pulse_server, guint flags);
 
 GList* ags_pulse_server_find_url(GList *pulse_server,
 				 gchar *url);

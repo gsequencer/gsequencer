@@ -496,7 +496,7 @@ ags_sf2_loader_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_sf2_loader_test_flags(AgsSF2Loader *sf2_loader, guint flags)
+ags_sf2_loader_test_flags(AgsSF2Loader *sf2_loader, AgsSF2LoaderFlags flags)
 {
   gboolean retval;
   
@@ -529,7 +529,7 @@ ags_sf2_loader_test_flags(AgsSF2Loader *sf2_loader, guint flags)
  * Since: 3.0.0
  */
 void
-ags_sf2_loader_set_flags(AgsSF2Loader *sf2_loader, guint flags)
+ags_sf2_loader_set_flags(AgsSF2Loader *sf2_loader, AgsSF2LoaderFlags flags)
 {
   GRecMutex *sf2_loader_mutex;
 
@@ -558,7 +558,7 @@ ags_sf2_loader_set_flags(AgsSF2Loader *sf2_loader, guint flags)
  * Since: 3.0.0
  */
 void
-ags_sf2_loader_unset_flags(AgsSF2Loader *sf2_loader, guint flags)
+ags_sf2_loader_unset_flags(AgsSF2Loader *sf2_loader, AgsSF2LoaderFlags flags)
 {
   GRecMutex *sf2_loader_mutex;
 

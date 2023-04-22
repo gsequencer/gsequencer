@@ -68,7 +68,7 @@ struct _AgsAudioLoop
 {
   AgsThread thread;
 
-  guint flags;
+  AgsAudioLoopFlags flags;
       
   GRecMutex tree_lock;
 
@@ -99,9 +99,9 @@ struct _AgsAudioLoopClass
 GType ags_audio_loop_get_type();
 
 /* flags */
-gboolean ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags);
-void ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags);
-void ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags);
+gboolean ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, AgsAudioLoopFlags flags);
+void ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, AgsAudioLoopFlags flags);
+void ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, AgsAudioLoopFlags flags);
 
 /* runtime */
 void ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio);

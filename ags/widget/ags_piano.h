@@ -83,11 +83,11 @@ struct _AgsPiano
 {
   GtkWidget widget;
 
-  guint flags;
+  AgsPianoFlags flags;
 
   GtkOrientation orientation;
 
-  guint button_state;
+  AgsPianoButtonState button_state;
 
   guint font_size;
   

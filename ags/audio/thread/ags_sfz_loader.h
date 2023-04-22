@@ -61,8 +61,8 @@ struct _AgsSFZLoader
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsSFZLoaderFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -86,9 +86,9 @@ struct _AgsSFZLoaderClass
 GType ags_sfz_loader_get_type();
 
 /* flags */
-gboolean ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags);
-void ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags);
-void ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags);
+gboolean ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, AgsSFZLoaderFlags flags);
+void ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, AgsSFZLoaderFlags flags);
+void ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, AgsSFZLoaderFlags flags);
 
 /* properties */
 AgsAudio* ags_sfz_loader_get_audio(AgsSFZLoader *sfz_loader);

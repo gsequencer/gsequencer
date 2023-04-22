@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -129,8 +129,8 @@ struct _AgsOssDevout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsOssDevoutFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -138,11 +138,11 @@ struct _AgsOssDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
   
-  guint app_buffer_mode;
+  AgsOssDevoutBackendBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
 
@@ -196,9 +196,9 @@ GType ags_oss_devout_flags_get_type();
 
 GQuark ags_oss_devout_error_quark();
 
-gboolean ags_oss_devout_test_flags(AgsOssDevout *oss_devout, guint flags);
-void ags_oss_devout_set_flags(AgsOssDevout *oss_devout, guint flags);
-void ags_oss_devout_unset_flags(AgsOssDevout *oss_devout, guint flags);
+gboolean ags_oss_devout_test_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flags);
+void ags_oss_devout_set_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flags);
+void ags_oss_devout_unset_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flags);
 
 void ags_oss_devout_switch_buffer_flag(AgsOssDevout *oss_devout);
 

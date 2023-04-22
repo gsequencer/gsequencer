@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1310,7 +1310,7 @@ ags_wasapi_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, guint flags)
+ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, AgsWasapiDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1343,7 +1343,7 @@ ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, guint flags)
  * Since: 3.0.0
  */
 void
-ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, guint flags)
+ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, AgsWasapiDevoutFlags flags)
 {
   GRecMutex *wasapi_devout_mutex;
 
@@ -1374,7 +1374,7 @@ ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, guint flags)
  * Since: 3.0.0
  */
 void
-ags_wasapi_devout_unset_flags(AgsWasapiDevout *wasapi_devout, guint flags)
+ags_wasapi_devout_unset_flags(AgsWasapiDevout *wasapi_devout, AgsWasapiDevoutFlags flags)
 {  
   GRecMutex *wasapi_devout_mutex;
 
@@ -1475,7 +1475,7 @@ ags_wasapi_devout_set_presets(AgsSoundcard *soundcard,
 			      guint channels,
 			      guint rate,
 			      guint buffer_size,
-			      guint format)
+			      AgsSoundcardFormat format)
 {
   AgsWasapiDevout *wasapi_devout;
 
@@ -1494,7 +1494,7 @@ ags_wasapi_devout_get_presets(AgsSoundcard *soundcard,
 			      guint *channels,
 			      guint *rate,
 			      guint *buffer_size,
-			      guint *format)
+			      AgsSoundcardFormat *format)
 {
   AgsWasapiDevout *wasapi_devout;
 
@@ -3357,7 +3357,7 @@ ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
 {
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *wasapi_devout_mutex;  

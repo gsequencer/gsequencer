@@ -71,7 +71,7 @@ struct _AgsDial
 {
   GtkWidget widget;
 
-  guint flags;
+  AgsDialFlags flags;
 
   guint radius;
   guint outline_strength;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,12 +76,12 @@ void ags_pulse_devout_set_presets(AgsSoundcard *soundcard,
 				  guint channels,
 				  guint rate,
 				  guint buffer_size,
-				  guint format);
+				  AgsSoundcardFormat format);
 void ags_pulse_devout_get_presets(AgsSoundcard *soundcard,
 				  guint *channels,
 				  guint *rate,
 				  guint *buffer_size,
-				  guint *format);
+				  AgsSoundcardFormat *format);
 
 void ags_pulse_devout_list_cards(AgsSoundcard *soundcard,
 				 GList **card_id, GList **card_name);
@@ -808,7 +808,7 @@ ags_pulse_devout_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1393,7 +1393,7 @@ ags_pulse_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_pulse_devout_test_flags(AgsPulseDevout *pulse_devout, guint flags)
+ags_pulse_devout_test_flags(AgsPulseDevout *pulse_devout, AgsPulseDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1426,7 +1426,7 @@ ags_pulse_devout_test_flags(AgsPulseDevout *pulse_devout, guint flags)
  * Since: 3.0.0
  */
 void
-ags_pulse_devout_set_flags(AgsPulseDevout *pulse_devout, guint flags)
+ags_pulse_devout_set_flags(AgsPulseDevout *pulse_devout, AgsPulseDevoutFlags flags)
 {
   GRecMutex *pulse_devout_mutex;
 
@@ -1457,7 +1457,7 @@ ags_pulse_devout_set_flags(AgsPulseDevout *pulse_devout, guint flags)
  * Since: 3.0.0
  */
 void
-ags_pulse_devout_unset_flags(AgsPulseDevout *pulse_devout, guint flags)
+ags_pulse_devout_unset_flags(AgsPulseDevout *pulse_devout, AgsPulseDevoutFlags flags)
 {  
   GRecMutex *pulse_devout_mutex;
 
@@ -1611,7 +1611,7 @@ ags_pulse_devout_set_presets(AgsSoundcard *soundcard,
 			     guint channels,
 			     guint rate,
 			     guint buffer_size,
-			     guint format)
+			     AgsSoundcardFormat format)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -1630,7 +1630,7 @@ ags_pulse_devout_get_presets(AgsSoundcard *soundcard,
 			     guint *channels,
 			     guint *rate,
 			     guint *buffer_size,
-			     guint *format)
+			     AgsSoundcardFormat *format)
 {
   AgsPulseDevout *pulse_devout;
 
@@ -1881,7 +1881,8 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   AgsPulsePort *pulse_port;
   AgsPulseDevout *pulse_devout;
   
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   gboolean use_cache;
   
   GRecMutex *pulse_port_mutex;
@@ -2091,7 +2092,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     guint cache_offset;
     guint pcm_channels;
     guint buffer_size;
-    guint format;
+    AgsSoundcardFormat format;
     
     struct timespec idle_time = {
       0,
@@ -3403,7 +3404,7 @@ ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
 {
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *pulse_devout_mutex;  

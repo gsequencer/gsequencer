@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,8 +120,8 @@ struct _AgsWasapiDevout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsWasapiDevoutFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -129,13 +129,13 @@ struct _AgsWasapiDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
   guint wasapi_buffer_size;
 
-  guint app_buffer_mode;
+  AgsWasapiDevoutAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
 
@@ -199,9 +199,9 @@ GType ags_wasapi_devout_flags_get_type();
 
 GQuark ags_wasapi_devout_error_quark();
 
-gboolean ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, guint flags);
-void ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, guint flags);
-void ags_wasapi_devout_unset_flags(AgsWasapiDevout *wasapi_devout, guint flags);
+gboolean ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, AgsWasapiDevoutFlags flags);
+void ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, AgsWasapiDevoutFlags flags);
+void ags_wasapi_devout_unset_flags(AgsWasapiDevout *wasapi_devout, AgsWasapiDevoutFlags flags);
 
 void ags_wasapi_devout_switch_buffer_flag(AgsWasapiDevout *wasapi_devout);
 

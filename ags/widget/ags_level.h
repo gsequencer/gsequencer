@@ -88,10 +88,10 @@ struct _AgsLevel
 
   GtkOrientation orientation;
   
-  guint key_mask;
-  guint button_state;
+  AgsLevelKeyMask key_mask;
+  AgsLevelButtonState button_state;
 
-  guint data_format;
+  AgsLevelDataFormat data_format;
   
   guint font_size;
 

@@ -59,8 +59,8 @@ struct _AgsSF2Loader
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsSF2LoaderFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -87,9 +87,9 @@ struct _AgsSF2LoaderClass
 GType ags_sf2_loader_get_type();
 
 /* flags */
-gboolean ags_sf2_loader_test_flags(AgsSF2Loader *sf2_loader, guint flags);
-void ags_sf2_loader_set_flags(AgsSF2Loader *sf2_loader, guint flags);
-void ags_sf2_loader_unset_flags(AgsSF2Loader *sf2_loader, guint flags);
+gboolean ags_sf2_loader_test_flags(AgsSF2Loader *sf2_loader, AgsSF2LoaderFlags flags);
+void ags_sf2_loader_set_flags(AgsSF2Loader *sf2_loader, AgsSF2LoaderFlags flags);
+void ags_sf2_loader_unset_flags(AgsSF2Loader *sf2_loader, AgsSF2LoaderFlags flags);
 
 /* properties */
 AgsAudio* ags_sf2_loader_get_audio(AgsSF2Loader *sf2_loader);
