@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 4.5.5\n"
+"Project-Id-Version: gsequencer 5.0.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-04-16 18:09+0200\n"
+"POT-Creation-Date: 2023-04-22 06:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -227,21 +227,21 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3368
+#: ags/app/ags_gsequencer_application_context.c:3375
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3378
+#: ags/app/ags_gsequencer_application_context.c:3385
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3614
+#: ags/app/ags_gsequencer_application_context.c:3621
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:3624
+#: ags/app/ags_gsequencer_application_context.c:3631
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -305,10 +305,10 @@ msgstr ""
 msgid "max precision of threads [Hz]"
 msgstr ""
 
-#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:420
-#: ags/app/machine/ags_live_dssi_bridge.c:423
-#: ags/app/machine/ags_live_vst3_bridge.c:480
-#: ags/app/machine/ags_vst3_bridge.c:460
+#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:421
+#: ags/app/machine/ags_live_dssi_bridge.c:424
+#: ags/app/machine/ags_live_vst3_bridge.c:481
+#: ags/app/machine/ags_vst3_bridge.c:461
 msgid "Plugin file not present"
 msgstr ""
 
@@ -1536,8 +1536,8 @@ msgstr ""
 msgid "Open SFZ file"
 msgstr ""
 
-#: ags/app/machine/ags_live_vst3_bridge.c:434
-#: ags/app/machine/ags_vst3_bridge.c:414
+#: ags/app/machine/ags_live_vst3_bridge.c:435
+#: ags/app/machine/ags_vst3_bridge.c:415
 msgid "show VST3 UI"
 msgstr ""
 

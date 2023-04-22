@@ -823,9 +823,13 @@ po/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile
+docs/reference/libags/version.xml
 docs/reference/libags-audio/Makefile
+docs/reference/libags-audio/version.xml
 docs/reference/libags-gui/Makefile
+docs/reference/libags-gui/version.xml
 docs/reference/libgsequencer/Makefile
+docs/reference/libgsequencer/version.xml
 libags.pc
 libags_audio.pc
 libags_gui.pc

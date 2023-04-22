@@ -3629,15 +3629,19 @@ clean-local:
 	@if test "$(top_builddir)" != "$(top_srcdir)" ; then rm -f "$(top_builddir)"/docs/reference/libags-gui/libags_gui.xml; fi
 	@if test "$(top_builddir)" != "$(top_srcdir)" ; then rm -f "$(top_builddir)"/docs/reference/libgsequencer/libgsequencer.xml; fi
 	@if test "$(top_builddir)" != "$(top_srcdir)" ; then rm -f "$(top_builddir)"/po/POTFILES.in; fi
+	rm -rf docs/reference/libags/version.xml
 	rm -rf docs/reference/libags/xml
 	rm -rf docs/reference/libags/libags-html
 	rm -rf docs/reference/libags/tmpl
+	rm -rf docs/reference/libags-audio/version.xml
 	rm -rf docs/reference/libags-audio/xml
 	rm -rf docs/reference/libags-audio/libags-audio-html
 	rm -rf docs/reference/libags-audio/tmpl
+	rm -rf docs/reference/libags-gui/version.xml
 	rm -rf docs/reference/libags-gui/xml
 	rm -rf docs/reference/libags-gui/libags-gui-html
 	rm -rf docs/reference/libags-gui/tmpl
+	rm -rf docs/reference/libgsequencer/version.xml
 	rm -rf docs/reference/libgsequencer/xml
 	rm -rf docs/reference/libgsequencer/libgsequencer-html
 	rm -rf docs/reference/libgsequencer/tmpl
