@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,8 +62,8 @@ struct _AgsGstreamerClient
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsGstreamerClientFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
   
@@ -92,9 +92,9 @@ struct _AgsGstreamerClientClass
 GType ags_gstreamer_client_get_type();
 GType ags_gstreamer_client_flags_get_type();
 
-gboolean ags_gstreamer_client_test_flags(AgsGstreamerClient *gstreamer_client, guint flags);
-void ags_gstreamer_client_set_flags(AgsGstreamerClient *gstreamer_client, guint flags);
-void ags_gstreamer_client_unset_flags(AgsGstreamerClient *gstreamer_client, guint flags);
+gboolean ags_gstreamer_client_test_flags(AgsGstreamerClient *gstreamer_client, AgsGstreamerClientFlags flags);
+void ags_gstreamer_client_set_flags(AgsGstreamerClient *gstreamer_client, AgsGstreamerClientFlags flags);
+void ags_gstreamer_client_unset_flags(AgsGstreamerClient *gstreamer_client, AgsGstreamerClientFlags flags);
 
 GList* ags_gstreamer_client_find_uuid(GList *gstreamer_client,
 				      gchar *client_uuid);

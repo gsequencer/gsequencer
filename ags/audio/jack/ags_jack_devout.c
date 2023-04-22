@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,12 +76,12 @@ void ags_jack_devout_set_presets(AgsSoundcard *soundcard,
 				 guint channels,
 				 guint rate,
 				 guint buffer_size,
-				 guint format);
+				 AgsSoundcardFormat format);
 void ags_jack_devout_get_presets(AgsSoundcard *soundcard,
 				 guint *channels,
 				 guint *rate,
 				 guint *buffer_size,
-				 guint *format);
+				 AgsSoundcardFormat *format);
 
 void ags_jack_devout_list_cards(AgsSoundcard *soundcard,
 				GList **card_id, GList **card_name);
@@ -804,7 +804,7 @@ ags_jack_devout_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1383,7 +1383,7 @@ ags_jack_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
+ags_jack_devout_test_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1416,7 +1416,7 @@ ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
+ags_jack_devout_set_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags flags)
 {
   GRecMutex *jack_devout_mutex;
 
@@ -1447,7 +1447,7 @@ ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags)
+ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags flags)
 {  
   GRecMutex *jack_devout_mutex;
 
@@ -1583,7 +1583,7 @@ ags_jack_devout_set_presets(AgsSoundcard *soundcard,
 			    guint channels,
 			    guint rate,
 			    guint buffer_size,
-			    guint format)
+			    AgsSoundcardFormat format)
 {
   AgsJackDevout *jack_devout;
 
@@ -1602,7 +1602,7 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
 			    guint *channels,
 			    guint *rate,
 			    guint *buffer_size,
-			    guint *format)
+			    AgsSoundcardFormat *format)
 {
   AgsJackDevout *jack_devout;
 
@@ -1852,7 +1852,8 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   
   GRecMutex *jack_devout_mutex;
 
@@ -3063,7 +3064,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
   guint port_count;
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *jack_devout_mutex;  

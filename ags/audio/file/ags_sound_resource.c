@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -201,7 +201,7 @@ ags_sound_resource_set_presets(AgsSoundResource *sound_resource,
 			       guint channels,
 			       guint samplerate,
 			       guint buffer_size,
-			       guint format)
+			       AgsSoundcardFormat format)
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
@@ -232,7 +232,7 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
 			       guint *channels,
 			       guint *samplerate,
 			       guint *buffer_size,
-			       guint *format)
+			       AgsSoundcardFormat *format)
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
@@ -266,7 +266,7 @@ guint
 ags_sound_resource_read(AgsSoundResource *sound_resource,
 			void *dbuffer, guint daudio_channels,
 			guint audio_channel,
-			guint frame_count, guint format)
+			guint frame_count, AgsSoundcardFormat format)
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
@@ -302,7 +302,7 @@ void
 ags_sound_resource_write(AgsSoundResource *sound_resource,
 			 void *sbuffer, guint saudio_channels,
 			 guint audio_channel,
-			 guint frame_count, guint format)
+			 guint frame_count, AgsSoundcardFormat format)
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
@@ -402,7 +402,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
   guint audio_channels;
   guint target_samplerate, samplerate;
   guint target_buffer_size, buffer_size;
-  guint target_format, format;
+  AgsSoundcardFormat target_format, format;
   guint copy_mode;
   guint i, i_start, i_stop;
 
@@ -624,7 +624,7 @@ ags_sound_resource_read_audio_signal_at_once(AgsSoundResource *sound_resource,
   guint audio_channels;
   guint target_samplerate, samplerate;
   guint target_buffer_size, buffer_size;
-  guint target_format, format;
+  AgsSoundcardFormat target_format, format;
   guint copy_mode;
   guint i, i_start, i_stop;
   guint j;
@@ -863,7 +863,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   guint audio_channels;
   guint target_samplerate, samplerate;
   guint target_buffer_size, buffer_size;
-  guint target_format, format;
+  AgsSoundcardFormat target_format, format;
   guint i, i_start, i_stop;
   
   if(!AGS_SOUND_RESOURCE(sound_resource)){

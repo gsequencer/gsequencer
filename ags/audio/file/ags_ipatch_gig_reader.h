@@ -65,6 +65,7 @@ struct _AgsIpatchGigReader
 {
   GObject gobject;
 
+  guint flags;
   AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;

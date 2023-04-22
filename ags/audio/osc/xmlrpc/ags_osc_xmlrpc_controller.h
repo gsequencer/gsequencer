@@ -62,7 +62,7 @@ struct _AgsOscXmlrpcController
 {
   AgsController controller;
 
-  guint flags;
+  AgsOscXmlrpcControllerFlags flags;
   
   GObject *osc_xmlrpc_server;
   
@@ -87,9 +87,9 @@ struct _AgsOscXmlrpcControllerClass
 GType ags_osc_xmlrpc_controller_get_type();
 GType ags_osc_xmlrpc_controller_flags_get_type();
 
-gboolean ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
-void ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
-void ags_osc_xmlrpc_controller_unset_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
+gboolean ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, AgsOscXmlrpcControllerFlags flags);
+void ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, AgsOscXmlrpcControllerFlags flags);
+void ags_osc_xmlrpc_controller_unset_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, AgsOscXmlrpcControllerFlags flags);
 
 void ags_osc_xmlrpc_controller_add_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 					  GObject *message);

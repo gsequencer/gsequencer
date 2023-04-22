@@ -46,7 +46,7 @@ struct _AgsGstreamerServer
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -77,10 +77,6 @@ struct _AgsGstreamerServerClass
 };
 
 GType ags_gstreamer_server_get_type();
-
-gboolean ags_gstreamer_server_test_flags(AgsGstreamerServer *gstreamer_server, guint flags);
-void ags_gstreamer_server_set_flags(AgsGstreamerServer *gstreamer_server, guint flags);
-void ags_gstreamer_server_unset_flags(AgsGstreamerServer *gstreamer_server, guint flags);
 
 GList* ags_gstreamer_server_find_url(GList *gstreamer_server,
 				     gchar *url);

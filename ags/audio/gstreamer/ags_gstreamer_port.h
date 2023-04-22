@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,8 +66,8 @@ struct _AgsGstreamerPort
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsGstreamerPortFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -85,7 +85,7 @@ struct _AgsGstreamerPort
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gboolean use_cache;
   guint cache_buffer_size;
@@ -114,9 +114,9 @@ struct _AgsGstreamerPortClass
 GType ags_gstreamer_port_get_type();
 GType ags_gstreamer_port_flags_get_type();
 
-gboolean ags_gstreamer_port_test_flags(AgsGstreamerPort *gstreamer_port, guint flags);
-void ags_gstreamer_port_set_flags(AgsGstreamerPort *gstreamer_port, guint flags);
-void ags_gstreamer_port_unset_flags(AgsGstreamerPort *gstreamer_port, guint flags);
+gboolean ags_gstreamer_port_test_flags(AgsGstreamerPort *gstreamer_port, AgsGstreamerPortFlags flags);
+void ags_gstreamer_port_set_flags(AgsGstreamerPort *gstreamer_port, AgsGstreamerPortFlags flags);
+void ags_gstreamer_port_unset_flags(AgsGstreamerPort *gstreamer_port, AgsGstreamerPortFlags flags);
 
 GList* ags_gstreamer_port_find(GList *gstreamer_port,
 			       gchar *port_name);
@@ -136,7 +136,7 @@ void ags_gstreamer_port_set_pcm_channels(AgsGstreamerPort *gstreamer_port,
 void ags_gstreamer_port_set_buffer_size(AgsGstreamerPort *gstreamer_port,
 					guint buffer_size);
 void ags_gstreamer_port_set_format(AgsGstreamerPort *gstreamer_port,
-				   guint format);
+				   AgsSoundcardFormat format);
 
 void ags_gstreamer_port_set_cache_buffer_size(AgsGstreamerPort *gstreamer_port,
 					      guint cache_buffer_size);

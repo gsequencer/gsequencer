@@ -55,7 +55,7 @@ struct _AgsMidiBuilder
 {
   GObject gobject;
 
-  guint flags;
+  AgsMidiBuilderFlags flags;
 
   GRecMutex obj_mutex;
 

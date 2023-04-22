@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -802,7 +802,7 @@ ags_jack_client_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags)
+ags_jack_client_test_flags(AgsJackClient *jack_client, AgsJackClientFlags flags)
 {
   gboolean retval;  
   
@@ -835,7 +835,7 @@ ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags)
+ags_jack_client_set_flags(AgsJackClient *jack_client, AgsJackClientFlags flags)
 {
   GRecMutex *jack_client_mutex;
 
@@ -866,7 +866,7 @@ ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_client_unset_flags(AgsJackClient *jack_client, guint flags)
+ags_jack_client_unset_flags(AgsJackClient *jack_client, AgsJackClientFlags flags)
 {  
   GRecMutex *jack_client_mutex;
 

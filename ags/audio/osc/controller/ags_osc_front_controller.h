@@ -58,7 +58,7 @@ struct _AgsOscFrontController
 {
   AgsOscController osc_controller;
 
-  guint flags;
+  AgsOscFrontControllerFlags flags;
   
   gint64 delegate_timeout;
   
@@ -87,9 +87,9 @@ struct _AgsOscFrontControllerClass
 GType ags_osc_front_controller_get_type();
 GType ags_osc_front_controller_flags_get_type();
 
-gboolean ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, guint flags);
-void ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags);
-void ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags);
+gboolean ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, AgsOscFrontControllerFlags flags);
+void ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, AgsOscFrontControllerFlags flags);
+void ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, AgsOscFrontControllerFlags flags);
 
 void ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
 					  GObject *message);

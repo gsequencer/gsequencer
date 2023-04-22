@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -605,7 +605,7 @@ ags_jack_port_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags)
+ags_jack_port_test_flags(AgsJackPort *jack_port, AgsJackPortFlags flags)
 {
   gboolean retval;  
   
@@ -638,7 +638,7 @@ ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags)
+ags_jack_port_set_flags(AgsJackPort *jack_port, AgsJackPortFlags flags)
 {
   GRecMutex *jack_port_mutex;
 
@@ -669,7 +669,7 @@ ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
+ags_jack_port_unset_flags(AgsJackPort *jack_port, AgsJackPortFlags flags)
 {  
   GRecMutex *jack_port_mutex;
 

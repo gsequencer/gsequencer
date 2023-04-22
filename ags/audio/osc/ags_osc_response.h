@@ -68,8 +68,8 @@ struct _AgsOscResponse
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsOscResponseFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -90,9 +90,9 @@ struct _AgsOscResponseClass
 
 GType ags_osc_response_get_type(void);
 
-gboolean ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags);
-void ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags);
-void ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags);
+gboolean ags_osc_response_test_flags(AgsOscResponse *osc_response, AgsOscResponseFlags flags);
+void ags_osc_response_set_flags(AgsOscResponse *osc_response, AgsOscResponseFlags flags);
+void ags_osc_response_unset_flags(AgsOscResponse *osc_response, AgsOscResponseFlags flags);
 
 AgsOscResponse* ags_osc_response_new();
 
