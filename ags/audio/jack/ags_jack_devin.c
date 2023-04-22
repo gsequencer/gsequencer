@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,12 +76,12 @@ void ags_jack_devin_set_presets(AgsSoundcard *soundcard,
 				guint channels,
 				guint rate,
 				guint buffer_size,
-				guint format);
+				AgsSoundcardFormat format);
 void ags_jack_devin_get_presets(AgsSoundcard *soundcard,
 				guint *channels,
 				guint *rate,
 				guint *buffer_size,
-				guint *format);
+				AgsSoundcardFormat *format);
 
 void ags_jack_devin_list_cards(AgsSoundcard *soundcard,
 			       GList **card_id, GList **card_name);
@@ -763,7 +763,7 @@ ags_jack_devin_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1330,7 +1330,7 @@ ags_jack_devin_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags)
+ags_jack_devin_test_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flags)
 {
   gboolean retval;  
   
@@ -1363,7 +1363,7 @@ ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags)
+ags_jack_devin_set_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flags)
 {
   GRecMutex *jack_devin_mutex;
 
@@ -1394,7 +1394,7 @@ ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags)
+ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flags)
 {  
   GRecMutex *jack_devin_mutex;
 
@@ -1530,7 +1530,7 @@ ags_jack_devin_set_presets(AgsSoundcard *soundcard,
 			   guint channels,
 			   guint rate,
 			   guint buffer_size,
-			   guint format)
+			   AgsSoundcardFormat format)
 {
   AgsJackDevin *jack_devin;
 
@@ -1549,7 +1549,7 @@ ags_jack_devin_get_presets(AgsSoundcard *soundcard,
 			   guint *channels,
 			   guint *rate,
 			   guint *buffer_size,
-			   guint *format)
+			   AgsSoundcardFormat *format)
 {
   AgsJackDevin *jack_devin;
 
@@ -1809,7 +1809,8 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
 {
   AgsJackDevin *jack_devin;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   
   GRecMutex *jack_devin_mutex;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,9 +109,9 @@ struct _AgsJackDevin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsJackDevinFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsJackDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -119,11 +119,11 @@ struct _AgsJackDevin
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
   
-  guint app_buffer_mode;
+  AgsJackDevinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
   void** app_buffer;
@@ -174,9 +174,9 @@ GType ags_jack_devin_flags_get_type();
 
 GQuark ags_jack_devin_error_quark();
 
-gboolean ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags);
-void ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags);
-void ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags);
+gboolean ags_jack_devin_test_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flags);
+void ags_jack_devin_set_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flags);
+void ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flags);
 
 void ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin);
 

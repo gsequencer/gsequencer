@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,15 +115,15 @@ struct _AgsJackMidiin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsJackMidiinFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsJackMidiinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
-  guint app_buffer_mode;
+  AgsJackMidiinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
   char **app_buffer;
@@ -166,9 +166,9 @@ GType ags_jack_midiin_flags_get_type();
 
 GQuark ags_jack_midiin_error_quark();
 
-gboolean ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags);
-void ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags);
-void ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags);
+gboolean ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags);
+void ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags);
+void ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags);
 
 void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
 

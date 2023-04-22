@@ -58,7 +58,7 @@ struct _AgsOscParser
 {
   GObject gobject;
 
-  guint flags;
+  AgsOscParserFlags flags;
 
   GRecMutex obj_mutex;
 

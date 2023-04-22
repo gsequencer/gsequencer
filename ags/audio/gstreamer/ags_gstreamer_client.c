@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -781,7 +781,7 @@ ags_gstreamer_client_disconnect(AgsConnectable *connectable)
  * Since: 3.6.0
  */
 gboolean
-ags_gstreamer_client_test_flags(AgsGstreamerClient *gstreamer_client, guint flags)
+ags_gstreamer_client_test_flags(AgsGstreamerClient *gstreamer_client, AgsGstreamerClientFlags flags)
 {
   gboolean retval;  
   
@@ -814,7 +814,7 @@ ags_gstreamer_client_test_flags(AgsGstreamerClient *gstreamer_client, guint flag
  * Since: 3.6.0
  */
 void
-ags_gstreamer_client_set_flags(AgsGstreamerClient *gstreamer_client, guint flags)
+ags_gstreamer_client_set_flags(AgsGstreamerClient *gstreamer_client, AgsGstreamerClientFlags flags)
 {
   GRecMutex *gstreamer_client_mutex;
 
@@ -845,7 +845,7 @@ ags_gstreamer_client_set_flags(AgsGstreamerClient *gstreamer_client, guint flags
  * Since: 3.6.0
  */
 void
-ags_gstreamer_client_unset_flags(AgsGstreamerClient *gstreamer_client, guint flags)
+ags_gstreamer_client_unset_flags(AgsGstreamerClient *gstreamer_client, AgsGstreamerClientFlags flags)
 {  
   GRecMutex *gstreamer_client_mutex;
 

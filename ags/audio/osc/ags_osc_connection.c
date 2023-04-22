@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -529,7 +529,7 @@ ags_osc_connection_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint flags)
+ags_osc_connection_test_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags)
 {
   gboolean retval;  
   
@@ -562,7 +562,7 @@ ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint flags)
  * Since: 3.0.0
  */
 void
-ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags)
+ags_osc_connection_set_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags)
 {
   GRecMutex *osc_connection_mutex;
 
@@ -591,7 +591,7 @@ ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags)
  * Since: 3.0.0
  */
 void
-ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flags)
+ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags)
 {
   GRecMutex *osc_connection_mutex;
 

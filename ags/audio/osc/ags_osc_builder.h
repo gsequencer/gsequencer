@@ -56,7 +56,7 @@ struct _AgsOscBuilder
 {
   GObject gobject;
 
-  guint flags;
+  AgsOscBuilderFlags flags;
 
   GRecMutex obj_mutex;
 

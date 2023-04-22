@@ -58,7 +58,7 @@ struct _AgsOscMeterController
 {
   AgsOscController osc_controller;
 
-  guint flags;
+  AgsOscMeterControllerFlags flags;
   
   GList *monitor;
 };
@@ -87,9 +87,9 @@ struct _AgsOscMeterControllerMonitor
 
 GType ags_osc_meter_controller_get_type();
 
-gboolean ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller, guint flags);
-void ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, guint flags);
-void ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, guint flags);
+gboolean ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller, AgsOscMeterControllerFlags flags);
+void ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, AgsOscMeterControllerFlags flags);
+void ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, AgsOscMeterControllerFlags flags);
 
 AgsOscMeterControllerMonitor* ags_osc_meter_controller_monitor_alloc();
 void ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor);

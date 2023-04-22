@@ -65,8 +65,8 @@ struct _AgsOscConnection
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsOscConnectionFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -109,9 +109,9 @@ struct _AgsOscConnectionClass
 
 GType ags_osc_connection_get_type(void);
 
-gboolean ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint flags);
-void ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags);
-void ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flags);
+gboolean ags_osc_connection_test_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags);
+void ags_osc_connection_set_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags);
+void ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags);
 
 gboolean ags_osc_connection_timeout_expired(struct timespec *start_time,
 					    struct timespec *timeout_delay);

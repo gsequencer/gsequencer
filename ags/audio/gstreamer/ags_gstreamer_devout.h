@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,9 +120,9 @@ struct _AgsGstreamerDevout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsGstreamerDevoutFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsGstreamerDevoutSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -130,11 +130,11 @@ struct _AgsGstreamerDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsGstreamerDevoutAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
 
@@ -188,9 +188,9 @@ GType ags_gstreamer_devout_flags_get_type();
 
 GQuark ags_gstreamer_devout_error_quark();
 
-gboolean ags_gstreamer_devout_test_flags(AgsGstreamerDevout *gstreamer_devout, guint flags);
-void ags_gstreamer_devout_set_flags(AgsGstreamerDevout *gstreamer_devout, guint flags);
-void ags_gstreamer_devout_unset_flags(AgsGstreamerDevout *gstreamer_devout, guint flags);
+gboolean ags_gstreamer_devout_test_flags(AgsGstreamerDevout *gstreamer_devout, AgsGstreamerDevoutFlags flags);
+void ags_gstreamer_devout_set_flags(AgsGstreamerDevout *gstreamer_devout, AgsGstreamerDevoutFlags flags);
+void ags_gstreamer_devout_unset_flags(AgsGstreamerDevout *gstreamer_devout, AgsGstreamerDevoutFlags flags);
 
 void ags_gstreamer_devout_switch_buffer_flag(AgsGstreamerDevout *gstreamer_devout);
 

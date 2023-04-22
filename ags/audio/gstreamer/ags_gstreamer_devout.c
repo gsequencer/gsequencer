@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,12 +76,12 @@ void ags_gstreamer_devout_set_presets(AgsSoundcard *soundcard,
 				      guint channels,
 				      guint rate,
 				      guint buffer_size,
-				      guint format);
+				      AgsSoundcardFormat format);
 void ags_gstreamer_devout_get_presets(AgsSoundcard *soundcard,
 				      guint *channels,
 				      guint *rate,
 				      guint *buffer_size,
-				      guint *format);
+				      AgsSoundcardFormat *format);
 
 void ags_gstreamer_devout_list_cards(AgsSoundcard *soundcard,
 				     GList **card_id, GList **card_name);
@@ -808,7 +808,7 @@ ags_gstreamer_devout_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1387,7 +1387,7 @@ ags_gstreamer_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.6.0
  */
 gboolean
-ags_gstreamer_devout_test_flags(AgsGstreamerDevout *gstreamer_devout, guint flags)
+ags_gstreamer_devout_test_flags(AgsGstreamerDevout *gstreamer_devout, AgsGstreamerDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1420,7 +1420,7 @@ ags_gstreamer_devout_test_flags(AgsGstreamerDevout *gstreamer_devout, guint flag
  * Since: 3.6.0
  */
 void
-ags_gstreamer_devout_set_flags(AgsGstreamerDevout *gstreamer_devout, guint flags)
+ags_gstreamer_devout_set_flags(AgsGstreamerDevout *gstreamer_devout, AgsGstreamerDevoutFlags flags)
 {
   GRecMutex *gstreamer_devout_mutex;
 
@@ -1451,7 +1451,7 @@ ags_gstreamer_devout_set_flags(AgsGstreamerDevout *gstreamer_devout, guint flags
  * Since: 3.6.0
  */
 void
-ags_gstreamer_devout_unset_flags(AgsGstreamerDevout *gstreamer_devout, guint flags)
+ags_gstreamer_devout_unset_flags(AgsGstreamerDevout *gstreamer_devout, AgsGstreamerDevoutFlags flags)
 {  
   GRecMutex *gstreamer_devout_mutex;
 
@@ -1586,7 +1586,7 @@ ags_gstreamer_devout_set_presets(AgsSoundcard *soundcard,
 				 guint channels,
 				 guint rate,
 				 guint buffer_size,
-				 guint format)
+				 AgsSoundcardFormat format)
 {
   AgsGstreamerDevout *gstreamer_devout;
 
@@ -1605,7 +1605,7 @@ ags_gstreamer_devout_get_presets(AgsSoundcard *soundcard,
 				 guint *channels,
 				 guint *rate,
 				 guint *buffer_size,
-				 guint *format)
+				 AgsSoundcardFormat *format)
 {
   AgsGstreamerDevout *gstreamer_devout;
 
@@ -1855,7 +1855,8 @@ ags_gstreamer_devout_port_init(AgsSoundcard *soundcard,
 {
   AgsGstreamerDevout *gstreamer_devout;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   
   GRecMutex *gstreamer_devout_mutex;
 
@@ -3137,7 +3138,7 @@ ags_gstreamer_devout_realloc_buffer(AgsGstreamerDevout *gstreamer_devout)
   guint port_count;
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *gstreamer_devout_mutex;  

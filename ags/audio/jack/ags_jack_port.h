@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,8 +68,8 @@ struct _AgsJackPort
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsJackPortFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -95,9 +95,9 @@ struct _AgsJackPortClass
 GType ags_jack_port_get_type();
 GType ags_jack_port_flags_get_type();
 
-gboolean ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags);
-void ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags);
-void ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags);
+gboolean ags_jack_port_test_flags(AgsJackPort *jack_port, AgsJackPortFlags flags);
+void ags_jack_port_set_flags(AgsJackPort *jack_port, AgsJackPortFlags flags);
+void ags_jack_port_unset_flags(AgsJackPort *jack_port, AgsJackPortFlags flags);
 
 GList* ags_jack_port_find(GList *jack_port,
 			  gchar *port_name);

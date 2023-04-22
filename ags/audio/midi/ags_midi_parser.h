@@ -63,7 +63,7 @@ struct _AgsMidiParser
 {
   GObject gobject;
 
-  guint flags;
+  AgsMidiParserFlags flags;
 
   GRecMutex obj_mutex;
 

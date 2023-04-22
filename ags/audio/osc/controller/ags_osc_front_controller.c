@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -572,7 +572,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
  * Since: 3.0.0
  */
 gboolean
-ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, guint flags)
+ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, AgsOscFrontControllerFlags flags)
 {
   gboolean retval;  
   
@@ -605,7 +605,7 @@ ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller,
  * Since: 3.0.0
  */
 void
-ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags)
+ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, AgsOscFrontControllerFlags flags)
 {
   GRecMutex *osc_controller_mutex;
 
@@ -634,7 +634,7 @@ ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, 
  * Since: 3.0.0
  */
 void
-ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags)
+ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, AgsOscFrontControllerFlags flags)
 {
   GRecMutex *osc_controller_mutex;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -988,7 +988,7 @@ ags_jack_midiin_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags)
+ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags)
 {
   gboolean retval;  
   
@@ -1021,7 +1021,7 @@ ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags)
+ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags)
 {
   GRecMutex *jack_midiin_mutex;
 
@@ -1052,7 +1052,7 @@ ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags)
+ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags)
 {  
   GRecMutex *jack_midiin_mutex;
 

@@ -25,6 +25,8 @@
 
 #include <gio/gio.h>
 
+#include <ags/libags.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_CLIENT                (ags_osc_client_get_type ())
@@ -72,8 +74,8 @@ struct _AgsOscClient
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsOscClientFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
   
@@ -126,9 +128,9 @@ struct _AgsOscClientClass
 GType ags_osc_client_get_type(void);
 GType ags_osc_client_flags_get_type();
 
-gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
-void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
-void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
+gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, AgsOscClientFlags flags);
+void ags_osc_client_set_flags(AgsOscClient *osc_client, AgsOscClientFlags flags);
+void ags_osc_client_unset_flags(AgsOscClient *osc_client, AgsOscClientFlags flags);
 
 void ags_osc_client_resolve(AgsOscClient *osc_client);
 void ags_osc_client_connect(AgsOscClient *osc_client);
