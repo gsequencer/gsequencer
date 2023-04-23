@@ -63,8 +63,8 @@ Build using mingw
 To build on windows you need gnulib. First import some functions using gnulib then compile with msys2.
 
 $ git clone git://git.sv.gnu.org/gnulib.git
-$ ./gnulib/gnulib-tool --import langinfo regex signal-h sigaction strings sys_types memcpy
-$ CPATH=/mingw64/include PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:/mingw64/lib64/pkgconfig CC=x86_64-w64-mingw32-gcc.exe ./configure --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-rt --enable-w32api --disable-alsa --enable-alsa-compat --disable-pulse --disable-jack --enable-wasapi --disable-x11 --without-webkit --with-poppler
+$ ./gnulib/gnulib-tool --import pthread-thread langinfo regex signal-h sigaction strings sys_types memcpy
+$ ./configure --prefix=/mingw64 --disable-rt --enable-w32api --disable-alsa --enable-alsa-compat --disable-pulse --disable-jack --enable-wasapi --disable-x11 --with-poppler
 $ make -j8
 $ make install
 

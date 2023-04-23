@@ -36,7 +36,9 @@
 #include <string.h>
 #include <strings.h>
 
+#if !defined(AGS_W32API)
 #include <sys/utsname.h>
+#endif
 
 #if defined(AGS_OSXAPI)
 #import <CoreFoundation/CoreFoundation.h>
@@ -834,8 +836,10 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 
   GDir *dir;
 
+#if !defined(AGS_W32API)
   struct utsname buf;
-
+#endif
+  
   gchar **vst3_path;
   gchar *filename;
   gchar *sysname;
@@ -846,11 +850,17 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
     return;
   }
 
+#if defined(AGS_W32API)
+  sysname = g_strdup("windows");
+#endif
+  
+#if !defined(AGS_W32API)
   uname(&buf);
 
   sysname = g_ascii_strdown(buf.sysname,
 			    -1);
-
+#endif
+  
   vst3_path = ags_vst3_default_path;
   
   while(vst3_path[0] != NULL){    
