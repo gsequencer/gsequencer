@@ -24,6 +24,12 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 
+#include <ags/ags_api_config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/i18n.h>
 
 void ags_sf2_synth_class_init(AgsSF2SynthClass *sf2_synth);

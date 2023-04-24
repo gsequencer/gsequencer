@@ -1124,6 +1124,8 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
     preset = preset->next;
   }
 
+  gtk_widget_queue_draw(GTK_WIDGET(pattern_envelope->tree_view));
+  
   g_list_free_full(start_preset,
 		   g_object_unref);
 }
@@ -1300,6 +1302,8 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_preset_add_parameter(preset,
 			   "release", &value);
 
+  gtk_widget_queue_draw(GTK_WIDGET(pattern_envelope->tree_view));
+
   g_list_free_full(start_preset,
 		   g_object_unref);
 }
@@ -1347,6 +1351,8 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_audio_remove_preset(audio,
 			  (GObject *) preset);
+
+  gtk_widget_queue_draw(GTK_WIDGET(pattern_envelope->tree_view));
 
   g_list_free_full(start_preset,
 		   g_object_unref);
