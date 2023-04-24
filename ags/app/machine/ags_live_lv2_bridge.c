@@ -464,14 +464,10 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   hbox =
     live_lv2_bridge->program_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							  AGS_UI_PROVIDER_DEFAULT_SPACING);
-
   gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->program_hbox,
 			 FALSE);
-
-  gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
-		  (GtkWidget *) hbox,
-		  0, 0,
-		  1, 1);
+  gtk_box_append(live_lv2_bridge->vbox,
+		 (GtkWidget *) hbox);
   
   label = (GtkLabel *) gtk_label_new(i18n("program"));
   gtk_box_append(hbox,
@@ -494,14 +490,10 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   hbox =
     live_lv2_bridge->preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							  AGS_UI_PROVIDER_DEFAULT_SPACING);
-
   gtk_widget_set_visible((GtkWidget *) live_lv2_bridge->preset_hbox,
 			 FALSE);
-
-  gtk_grid_attach(AGS_MACHINE(live_lv2_bridge)->bridge,
-		  (GtkWidget *) hbox,
-		  0, 1,
-		  1, 1);
+  gtk_box_append(live_lv2_bridge->vbox,
+		 (GtkWidget *) hbox);
   
   label = (GtkLabel *) gtk_label_new(i18n("preset"));
   gtk_box_append(hbox,
@@ -1486,6 +1478,8 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   /* get uri */
+  uri = NULL;
+  
   g_object_get(lv2_plugin,
 	       "uri", &uri,
 	       NULL);
