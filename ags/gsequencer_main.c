@@ -33,13 +33,9 @@
 
 #include <gtk/gtk.h>
 
-#if defined(AGS_WITH_MAC_INTEGRATION)
-#include <gtkosxapplication.h>
-#endif
-
 #include <ags/libags.h>
 
-#ifdef AGS_WITH_LIBINSTPATCH
+#if defined(AGS_WITH_LIBINSTPATCH)
 #include <libinstpatch/libinstpatch.h>
 #endif
 
