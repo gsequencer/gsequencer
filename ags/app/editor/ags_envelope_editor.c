@@ -333,13 +333,14 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   
   envelope_editor->attack_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								    0.0, 1.0, 0.001);
+
   gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_x,
 		      0.25);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->attack_x,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append(control,
 		 (GtkWidget *) envelope_editor->attack_x);
@@ -352,7 +353,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.0);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->attack_y,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append(control,
 		 (GtkWidget *) envelope_editor->attack_y);
@@ -383,7 +384,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.25);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->decay_x,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append((GtkBox *) control,
 		 (GtkWidget *) envelope_editor->decay_x);
@@ -396,7 +397,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.0);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->decay_y,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append((GtkBox *) control,
 		 (GtkWidget *) envelope_editor->decay_y);
@@ -427,7 +428,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.25);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->sustain_x,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append((GtkBox *) control,
 		 (GtkWidget *) envelope_editor->sustain_x);
@@ -440,7 +441,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.0);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->sustain_y,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append((GtkBox *) control,
 		 (GtkWidget *) envelope_editor->sustain_y);
@@ -471,7 +472,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.25);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->release_x,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append((GtkBox *) control,
 		 (GtkWidget *) envelope_editor->release_x);
@@ -484,7 +485,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      0.0);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->release_y,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_box_append((GtkBox *) control,
 		 (GtkWidget *) envelope_editor->release_y);
@@ -508,7 +509,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		      1.0);
 
   gtk_widget_set_size_request((GtkWidget *) envelope_editor->ratio,
-			      (gint) (gui_scale_factor * 250.0), (gint) (gui_scale_factor * 16.0));
+			      (gint) (gui_scale_factor * AGS_ENVELOPE_EDITOR_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(envelope_editor->ratio),

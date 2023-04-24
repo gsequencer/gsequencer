@@ -18,17 +18,6 @@
 <book id="index">
   <bookinfo>
     <legalnotice><para>Copyright (C)</para></legalnotice>
-    <author>
-      <honorific>Mr</honorific>
-      <firstname>Jo&euml;l</firstname>
-      <surname>Krähemann</surname>
-      <affiliation>
-	<shortaffil>Informatiker EFZ</shortaffil>
-	<jobtitle>Developer</jobtitle>
-	<orgname>kr&auml;hemann.com</orgname>
-	<orgdiv>Application Developement</orgdiv>
-      </affiliation>
-    </author>
 
     <title>Advanced Gtk+ Sequencer Audio Reference Manual</title>
     <releaseinfo>

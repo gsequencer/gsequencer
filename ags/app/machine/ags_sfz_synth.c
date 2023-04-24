@@ -422,9 +422,9 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->synth_octave);
 
   gtk_adjustment_set_lower(adjustment,
-			   -6.0);
+			   -12.0);
   gtk_adjustment_set_upper(adjustment,
-			   6.0);
+			   12.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);

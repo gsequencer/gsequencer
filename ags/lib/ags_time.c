@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_time.h>
 
+#include <ags/ags_api_config.h>
+
 #include <math.h>
 
 #ifdef __APPLE__

@@ -41,6 +41,8 @@ G_BEGIN_DECLS
 #define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "4.0.0"
 #define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "Tue Mar 01 12:27:51 UTC 2022"
 
+#define AGS_ENVELOPE_EDITOR_SCALE_WIDTH (250)
+
 typedef struct _AgsEnvelopeEditor AgsEnvelopeEditor;
 typedef struct _AgsEnvelopeEditorClass AgsEnvelopeEditorClass;
 
