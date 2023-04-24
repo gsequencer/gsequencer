@@ -41,6 +41,8 @@ G_BEGIN_DECLS
 #define AGS_IS_MIXER_INPUT_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MIXER_INPUT_LINE))
 #define AGS_MIXER_INPUT_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MIXER_INPUT_LINE, AgsMixerInputLineClass))
 
+#define AGS_MIXER_INPUT_LINE_SCALE_HEIGHT (150)
+
 typedef struct _AgsMixerInputLine AgsMixerInputLine;
 typedef struct _AgsMixerInputLineClass AgsMixerInputLineClass;
 
