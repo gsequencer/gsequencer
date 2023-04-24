@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[4.5.4],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[5.0.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -209,6 +209,23 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 # AC_PROG_RANLIB
+
+PKG_PROG_PKG_CONFIG([0.19])
+
+AC_PATH_PROG([XSLTPROC], [xsltproc])
+if test -z "$XSLTPROC"; then
+   AC_MSG_WARN([xsltproc not found])
+else
+   AC_MSG_NOTICE([xsltproc found])
+fi
+
+AC_PATH_PROG([FOP], [fop])
+if test -z "$FOP"; then
+   AC_MSG_WARN([fop not found])
+else
+   AC_MSG_NOTICE([fop found])
+fi
+
 
 gl_EARLY
 
@@ -799,15 +816,20 @@ AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 lib/Makefile
 Makefile
+Doxyfile
 m4/Makefile
 po/Makefile.in
 po/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile
+docs/reference/libags/version.xml
 docs/reference/libags-audio/Makefile
+docs/reference/libags-audio/version.xml
 docs/reference/libags-gui/Makefile
+docs/reference/libags-gui/version.xml
 docs/reference/libgsequencer/Makefile
+docs/reference/libgsequencer/version.xml
 libags.pc
 libags_audio.pc
 libags_gui.pc

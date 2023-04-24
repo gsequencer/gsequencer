@@ -990,6 +990,8 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
   ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
   
   gtk_widget_show((GtkWidget *) envelope_dialog);
+
+  ags_applicable_reset(AGS_APPLICABLE(machine->envelope_dialog));
   
   g_free(title);
 }
@@ -1510,7 +1512,7 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 
     g_rec_mutex_lock(recycling_mutex);
 
-    template = ags_audio_signal_get_template(recycling->audio_signal);
+    template = ags_audio_signal_get_default_template(recycling->audio_signal);
     
     g_rec_mutex_unlock(recycling_mutex);
 
@@ -1521,7 +1523,7 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
     ags_audio_signal_set_flags(audio_signal, (AGS_AUDIO_SIGNAL_FEED |
 					      AGS_AUDIO_SIGNAL_STREAM));
     g_object_set(audio_signal,
-		 "template", template,
+		 "default-template", template,
 		 "note", play_note,
 		 NULL);
 

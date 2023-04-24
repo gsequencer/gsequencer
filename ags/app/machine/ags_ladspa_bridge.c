@@ -310,6 +310,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   gtk_widget_set_hexpand((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			 FALSE);
   
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(ladspa_bridge)->bridge;
   gtk_grid_attach((GtkGrid *) AGS_MACHINE(ladspa_bridge)->bridge,
 		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 		  0, 0,

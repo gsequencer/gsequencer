@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -383,7 +383,7 @@ ags_wave_loader_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, guint flags)
+ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, AgsWaveLoaderFlags flags)
 {
   gboolean retval;
   
@@ -416,7 +416,7 @@ ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, guint flags)
  * Since: 3.0.0
  */
 void
-ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, guint flags)
+ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, AgsWaveLoaderFlags flags)
 {
   GRecMutex *wave_loader_mutex;
 
@@ -445,7 +445,7 @@ ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, guint flags)
  * Since: 3.0.0
  */
 void
-ags_wave_loader_unset_flags(AgsWaveLoader *wave_loader, guint flags)
+ags_wave_loader_unset_flags(AgsWaveLoader *wave_loader, AgsWaveLoaderFlags flags)
 {
   GRecMutex *wave_loader_mutex;
 

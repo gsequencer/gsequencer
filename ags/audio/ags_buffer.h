@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,7 +58,7 @@ struct _AgsBuffer
 {
   GObject gobject;
 
-  guint flags;
+  AgsBufferFlags flags;
 
   GRecMutex obj_mutex;
 
@@ -69,7 +69,7 @@ struct _AgsBuffer
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   
   void *data;
 };
@@ -87,9 +87,9 @@ GRecMutex* ags_buffer_get_obj_mutex(AgsBuffer *buffer);
 void ags_buffer_lock(AgsBuffer *buffer);
 void ags_buffer_unlock(AgsBuffer *buffer);
 
-gboolean ags_buffer_test_flags(AgsBuffer *buffer, guint flags);
-void ags_buffer_set_flags(AgsBuffer *buffer, guint flags);
-void ags_buffer_unset_flags(AgsBuffer *buffer, guint flags);
+gboolean ags_buffer_test_flags(AgsBuffer *buffer, AgsBufferFlags flags);
+void ags_buffer_set_flags(AgsBuffer *buffer, AgsBufferFlags flags);
+void ags_buffer_unset_flags(AgsBuffer *buffer, AgsBufferFlags flags);
 
 gint ags_buffer_sort_func(gconstpointer a,
 			  gconstpointer b);
@@ -105,9 +105,9 @@ guint ags_buffer_get_buffer_size(AgsBuffer *buffer);
 void ags_buffer_set_buffer_size(AgsBuffer *buffer,
 				guint buffer_size);
 
-guint ags_buffer_get_format(AgsBuffer *buffer);
+AgsSoundcardFormat ags_buffer_get_format(AgsBuffer *buffer);
 void ags_buffer_set_format(AgsBuffer *buffer,
-			   guint format);
+			   AgsSoundcardFormat format);
 
 gpointer ags_buffer_get_data(AgsBuffer *buffer);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,12 +75,12 @@ void ags_audio_unit_devout_set_presets(AgsSoundcard *soundcard,
 				       guint channels,
 				       guint rate,
 				       guint buffer_size,
-				       guint format);
+				       AgsSoundcardFormat format);
 void ags_audio_unit_devout_get_presets(AgsSoundcard *soundcard,
 				       guint *channels,
 				       guint *rate,
 				       guint *buffer_size,
-				       guint *format);
+				       AgsSoundcardFormat *format);
 
 void ags_audio_unit_devout_list_cards(AgsSoundcard *soundcard,
 				      GList **card_id, GList **card_name);
@@ -807,7 +807,7 @@ ags_audio_unit_devout_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1388,7 +1388,7 @@ ags_audio_unit_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_audio_unit_devout_test_flags(AgsAudioUnitDevout *audio_unit_devout, guint flags)
+ags_audio_unit_devout_test_flags(AgsAudioUnitDevout *audio_unit_devout, AgsAudioUnitDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1421,7 +1421,7 @@ ags_audio_unit_devout_test_flags(AgsAudioUnitDevout *audio_unit_devout, guint fl
  * Since: 3.0.0
  */
 void
-ags_audio_unit_devout_set_flags(AgsAudioUnitDevout *audio_unit_devout, guint flags)
+ags_audio_unit_devout_set_flags(AgsAudioUnitDevout *audio_unit_devout, AgsAudioUnitDevoutFlags flags)
 {
   GRecMutex *audio_unit_devout_mutex;
 
@@ -1452,7 +1452,7 @@ ags_audio_unit_devout_set_flags(AgsAudioUnitDevout *audio_unit_devout, guint fla
  * Since: 3.0.0
  */
 void
-ags_audio_unit_devout_unset_flags(AgsAudioUnitDevout *audio_unit_devout, guint flags)
+ags_audio_unit_devout_unset_flags(AgsAudioUnitDevout *audio_unit_devout, AgsAudioUnitDevoutFlags flags)
 {  
   GRecMutex *audio_unit_devout_mutex;
 
@@ -1580,7 +1580,7 @@ ags_audio_unit_devout_set_presets(AgsSoundcard *soundcard,
 				  guint channels,
 				  guint rate,
 				  guint buffer_size,
-				  guint format)
+				  AgsSoundcardFormat format)
 {
   AgsAudioUnitDevout *audio_unit_devout;
 
@@ -1599,7 +1599,7 @@ ags_audio_unit_devout_get_presets(AgsSoundcard *soundcard,
 				  guint *channels,
 				  guint *rate,
 				  guint *buffer_size,
-				  guint *format)
+				  AgsSoundcardFormat *format)
 {
   AgsAudioUnitDevout *audio_unit_devout;
 
@@ -1850,7 +1850,8 @@ ags_audio_unit_devout_port_init(AgsSoundcard *soundcard,
   AgsAudioUnitPort *audio_unit_port;
   AgsAudioUnitDevout *audio_unit_devout;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
 
   GRecMutex *audio_unit_port_mutex;
   GRecMutex *audio_unit_devout_mutex;
@@ -3263,7 +3264,7 @@ ags_audio_unit_devout_realloc_buffer(AgsAudioUnitDevout *audio_unit_devout)
 {
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *audio_unit_devout_mutex;  

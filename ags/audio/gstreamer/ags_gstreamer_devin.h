@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -120,9 +120,9 @@ struct _AgsGstreamerDevin
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsGstreamerDevinFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsGstreamerDevinSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -130,11 +130,11 @@ struct _AgsGstreamerDevin
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
   
-  guint app_buffer_mode;
+  AgsGstreamerDevinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
   void** app_buffer;
@@ -185,9 +185,9 @@ GType ags_gstreamer_devin_flags_get_type();
 
 GQuark ags_gstreamer_devin_error_quark();
 
-gboolean ags_gstreamer_devin_test_flags(AgsGstreamerDevin *gstreamer_devin, guint flags);
-void ags_gstreamer_devin_set_flags(AgsGstreamerDevin *gstreamer_devin, guint flags);
-void ags_gstreamer_devin_unset_flags(AgsGstreamerDevin *gstreamer_devin, guint flags);
+gboolean ags_gstreamer_devin_test_flags(AgsGstreamerDevin *gstreamer_devin, AgsGstreamerDevinFlags flags);
+void ags_gstreamer_devin_set_flags(AgsGstreamerDevin *gstreamer_devin, AgsGstreamerDevinFlags flags);
+void ags_gstreamer_devin_unset_flags(AgsGstreamerDevin *gstreamer_devin, AgsGstreamerDevinFlags flags);
 
 void ags_gstreamer_devin_switch_buffer_flag(AgsGstreamerDevin *gstreamer_devin);
 

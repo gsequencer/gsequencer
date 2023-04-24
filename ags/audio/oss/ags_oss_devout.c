@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,12 +96,12 @@ void ags_oss_devout_set_presets(AgsSoundcard *soundcard,
 				guint channels,
 				guint rate,
 				guint buffer_size,
-				guint format);
+				AgsSoundcardFormat format);
 void ags_oss_devout_get_presets(AgsSoundcard *soundcard,
 				guint *channels,
 				guint *rate,
 				guint *buffer_size,
-				guint *format);
+				AgsSoundcardFormat *format);
 
 void ags_oss_devout_list_cards(AgsSoundcard *soundcard,
 			       GList **card_id, GList **card_name);
@@ -122,7 +122,7 @@ gchar* ags_oss_devout_get_uptime(AgsSoundcard *soundcard);
 void ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
 				     GError **error);
 void ags_oss_devout_device_fill_backend_buffer(void *app_buffer,
-					       guint ags_format,
+					       AgsSoundcardFormat ags_format,
 					       guchar *backend_buffer,
 					       guint channels,
 					       guint buffer_size);
@@ -1306,7 +1306,7 @@ ags_oss_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.13.2
  */
 gboolean
-ags_oss_devout_test_flags(AgsOssDevout *oss_devout, guint flags)
+ags_oss_devout_test_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1339,7 +1339,7 @@ ags_oss_devout_test_flags(AgsOssDevout *oss_devout, guint flags)
  * Since: 3.13.2
  */
 void
-ags_oss_devout_set_flags(AgsOssDevout *oss_devout, guint flags)
+ags_oss_devout_set_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flags)
 {
   GRecMutex *oss_devout_mutex;
 
@@ -1370,7 +1370,7 @@ ags_oss_devout_set_flags(AgsOssDevout *oss_devout, guint flags)
  * Since: 3.13.2
  */
 void
-ags_oss_devout_unset_flags(AgsOssDevout *oss_devout, guint flags)
+ags_oss_devout_unset_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flags)
 {  
   GRecMutex *oss_devout_mutex;
 
@@ -1478,7 +1478,7 @@ ags_oss_devout_set_presets(AgsSoundcard *soundcard,
 			   guint channels,
 			   guint samplerate,
 			   guint buffer_size,
-			   guint format)
+			   AgsSoundcardFormat format)
 {
   AgsOssDevout *oss_devout;
 
@@ -1497,7 +1497,7 @@ ags_oss_devout_get_presets(AgsSoundcard *soundcard,
 			   guint *channels,
 			   guint *samplerate,
 			   guint *buffer_size,
-			   guint *format)
+			   AgsSoundcardFormat *format)
 {
   AgsOssDevout *oss_devout;
 
@@ -2185,7 +2185,7 @@ ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
 
 void
 ags_oss_devout_device_fill_backend_buffer(void *app_buffer,
-					  guint ags_format,
+					  AgsSoundcardFormat ags_format,
 					  guchar *backend_buffer,
 					  guint channels,
 					  guint buffer_size)
@@ -3306,7 +3306,7 @@ ags_oss_devout_realloc_buffer(AgsOssDevout *oss_devout)
   guint pcm_channels;
   guint buffer_size;
   guint word_size;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *oss_devout_mutex;  
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -385,7 +385,7 @@ ags_frequency_aliase_util_set_buffer_length(AgsFrequencyAliaseUtil *frequency_al
  * 
  * Since: 4.0.0
  */
-guint
+AgsSoundcardFormat
 ags_frequency_aliase_util_get_format(AgsFrequencyAliaseUtil *frequency_aliase_util)
 {
   if(frequency_aliase_util == NULL){
@@ -406,7 +406,7 @@ ags_frequency_aliase_util_get_format(AgsFrequencyAliaseUtil *frequency_aliase_ut
  */
 void
 ags_frequency_aliase_util_set_format(AgsFrequencyAliaseUtil *frequency_aliase_util,
-				     guint format)
+				     AgsSoundcardFormat format)
 {
   if(frequency_aliase_util == NULL){
     return;

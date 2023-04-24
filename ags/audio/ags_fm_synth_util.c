@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -288,7 +288,7 @@ ags_fm_synth_util_set_buffer_length(AgsFMSynthUtil *fm_synth_util,
  * 
  * Since: 3.14.0
  */
-guint
+AgsSoundcardFormat
 ags_fm_synth_util_get_format(AgsFMSynthUtil *fm_synth_util)
 {
   if(fm_synth_util == NULL){
@@ -309,7 +309,7 @@ ags_fm_synth_util_get_format(AgsFMSynthUtil *fm_synth_util)
  */
 void
 ags_fm_synth_util_set_format(AgsFMSynthUtil *fm_synth_util,
-			     guint format)
+			     AgsSoundcardFormat format)
 {
   if(fm_synth_util == NULL){
     return;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -77,12 +77,12 @@ void ags_pulse_devin_set_presets(AgsSoundcard *soundcard,
 				 guint channels,
 				 guint rate,
 				 guint buffer_size,
-				 guint format);
+				 AgsSoundcardFormat format);
 void ags_pulse_devin_get_presets(AgsSoundcard *soundcard,
 				 guint *channels,
 				 guint *rate,
 				 guint *buffer_size,
-				 guint *format);
+				 AgsSoundcardFormat *format);
 
 void ags_pulse_devin_list_cards(AgsSoundcard *soundcard,
 				GList **card_id, GList **card_name);
@@ -768,7 +768,7 @@ ags_pulse_devin_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1340,7 +1340,7 @@ ags_pulse_devin_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, guint flags)
+ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags flags)
 {
   gboolean retval;  
   
@@ -1373,7 +1373,7 @@ ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, guint flags)
+ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags flags)
 {
   GRecMutex *pulse_devin_mutex;
 
@@ -1404,7 +1404,7 @@ ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, guint flags)
+ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags flags)
 {  
   GRecMutex *pulse_devin_mutex;
 
@@ -1538,7 +1538,7 @@ ags_pulse_devin_set_presets(AgsSoundcard *soundcard,
 			    guint channels,
 			    guint rate,
 			    guint buffer_size,
-			    guint format)
+			    AgsSoundcardFormat format)
 {
   AgsPulseDevin *pulse_devin;
 
@@ -1557,7 +1557,7 @@ ags_pulse_devin_get_presets(AgsSoundcard *soundcard,
 			    guint *channels,
 			    guint *rate,
 			    guint *buffer_size,
-			    guint *format)
+			    AgsSoundcardFormat *format)
 {
   AgsPulseDevin *pulse_devin;
 
@@ -1807,7 +1807,8 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   
   GRecMutex *pulse_devin_mutex;
   
@@ -2870,7 +2871,7 @@ ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin)
 {
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *pulse_devin_mutex;  

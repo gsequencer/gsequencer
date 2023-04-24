@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,8 +60,8 @@ struct _AgsSF2MidiLocaleLoader
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsSF2MidiLocaleLoaderFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -79,7 +79,7 @@ struct _AgsSF2MidiLocaleLoader
   
   AgsAudioContainer *audio_container;
 
-  AgsSF2SynthUtil *template;
+  AgsSF2SynthUtil *synth_template;
   AgsSF2SynthUtil *synth;
 };
 
@@ -91,9 +91,9 @@ struct _AgsSF2MidiLocaleLoaderClass
 GType ags_sf2_midi_locale_loader_get_type();
 
 /* flags */
-gboolean ags_sf2_midi_locale_loader_test_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, guint flags);
-void ags_sf2_midi_locale_loader_set_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, guint flags);
-void ags_sf2_midi_locale_loader_unset_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, guint flags);
+gboolean ags_sf2_midi_locale_loader_test_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, AgsSF2MidiLocaleLoaderFlags flags);
+void ags_sf2_midi_locale_loader_set_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, AgsSF2MidiLocaleLoaderFlags flags);
+void ags_sf2_midi_locale_loader_unset_flags(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader, AgsSF2MidiLocaleLoaderFlags flags);
 
 /* properties */
 AgsAudio* ags_sf2_midi_locale_loader_get_audio(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader);
@@ -116,9 +116,9 @@ AgsAudioContainer* ags_sf2_midi_locale_loader_get_audio_container(AgsSF2MidiLoca
 void ags_sf2_midi_locale_loader_set_audio_container(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader,
 						    AgsAudioContainer *audio_container);
 
-AgsSF2SynthUtil* ags_sf2_midi_locale_loader_get_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader);
-void ags_sf2_midi_locale_loader_set_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader,
-					     AgsSF2SynthUtil *template);
+AgsSF2SynthUtil* ags_sf2_midi_locale_loader_get_synth_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader);
+void ags_sf2_midi_locale_loader_set_synth_template(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader,
+						   AgsSF2SynthUtil *synth_template);
 
 AgsSF2SynthUtil* ags_sf2_midi_locale_loader_get_synth(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader);
 void ags_sf2_midi_locale_loader_set_synth(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader,

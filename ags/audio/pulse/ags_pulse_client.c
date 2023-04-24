@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -785,7 +785,7 @@ ags_pulse_client_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags)
+ags_pulse_client_test_flags(AgsPulseClient *pulse_client, AgsPulseClientFlags flags)
 {
   gboolean retval;  
   
@@ -818,7 +818,7 @@ ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags)
  * Since: 3.0.0
  */
 void
-ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags)
+ags_pulse_client_set_flags(AgsPulseClient *pulse_client, AgsPulseClientFlags flags)
 {
   GRecMutex *pulse_client_mutex;
 
@@ -849,7 +849,7 @@ ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags)
  * Since: 3.0.0
  */
 void
-ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, guint flags)
+ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, AgsPulseClientFlags flags)
 {  
   GRecMutex *pulse_client_mutex;
 

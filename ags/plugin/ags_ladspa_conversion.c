@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -377,7 +377,7 @@ ags_ladspa_conversion_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
+ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, AgsLadspaConversionFlags flags)
 {
   gboolean retval;
   
@@ -410,7 +410,7 @@ ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint f
  * Since: 3.0.0
  */
 void
-ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
+ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, AgsLadspaConversionFlags flags)
 {
   GRecMutex *conversion_mutex;
 
@@ -439,7 +439,7 @@ ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint fl
  * Since: 3.0.0
  */
 void
-ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
+ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, AgsLadspaConversionFlags flags)
 {
   GRecMutex *conversion_mutex;
 

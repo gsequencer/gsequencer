@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,19 @@
 
 extern "C" {
 
+  /**
+   * Allocate note-on event.
+   *
+   * @param channel the MIDI channel
+   * @param pitch the pitch
+   * @param tuning the tuning
+   * @param velocity the MIDI velocity
+   * @param length the length
+   * @param note_id the note identifier
+   * @return the AgsVstEvent
+   *
+   * @since 5.0.0
+   */
   AgsVstEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
   {
     Steinberg::Vst::Event *event = new Steinberg::Vst::Event();
@@ -45,6 +58,19 @@ extern "C" {
     return((AgsVstEvent *) event);
   }
   
+  /**
+   * Allocate note-off event.
+   *
+   * @param channel the MIDI channel
+   * @param pitch the pitch
+   * @param tuning the tuning
+   * @param velocity the MIDI velocity
+   * @param length the length
+   * @param note_id the note identifier
+   * @return the AgsVstEvent
+   *
+   * @since 5.0.0
+   */
   AgsVstEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
   {
     Steinberg::Vst::Event *event = new Steinberg::Vst::Event();
@@ -66,22 +92,55 @@ extern "C" {
     return((AgsVstEvent *) event);
   }
 
+  /**
+   * Set sample offset.
+   * 
+   * @param event the event
+   * @param sample_offset sample offset
+   *
+   * @since 5.0.0
+   */
   void ags_vst_event_set_sample_offset(AgsVstEvent *event,
 				       gint32 sample_offset)
   {
     ((Steinberg::Vst::Event *) event)->sampleOffset = sample_offset;
   }
 
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_ievent_list_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEventList::iid.toTUID()));
   }
-  
+
+  /**
+   * Get event count.
+   *
+   * @param ievent_list the event list
+   * @return the event count
+   *
+   * @since 5.0.0
+   */
   gint32 ags_vst_ievent_list_get_event_count(AgsVstIEventList *ievent_list)
   {
     return(((Steinberg::Vst::IEventList *) ievent_list)->getEventCount());
   }
 
+  /**
+   * Get event.
+   *
+   * @param ievent_list the event list
+   * @param index the index
+   * @param e the event
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_ievent_list_get_event(AgsVstIEventList *ievent_list,
 					      gint32 index,
 					      AgsVstEvent *e)
@@ -92,6 +151,15 @@ extern "C" {
     return(((Steinberg::Vst::IEventList *) ievent_list)->getEvent(index, const_cast<Steinberg::Vst::Event&>(tmp_e_1)));
   }
 
+  /**
+   * Add event.
+   *
+   * @param ievent_list the event list
+   * @param e the event
+   * @return the return value
+   *
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_ievent_list_add_event(AgsVstIEventList *ievent_list,
 					      AgsVstEvent *e)
   {

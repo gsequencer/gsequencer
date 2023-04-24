@@ -64,8 +64,8 @@ struct _AgsPulseClient
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsPulseClientFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
   
@@ -94,9 +94,9 @@ struct _AgsPulseClientClass
 GType ags_pulse_client_get_type();
 GType ags_pulse_client_flags_get_type();
 
-gboolean ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags);
-void ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags);
-void ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, guint flags);
+gboolean ags_pulse_client_test_flags(AgsPulseClient *pulse_client, AgsPulseClientFlags flags);
+void ags_pulse_client_set_flags(AgsPulseClient *pulse_client, AgsPulseClientFlags flags);
+void ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, AgsPulseClientFlags flags);
 
 GList* ags_pulse_client_find_uuid(GList *pulse_client,
 				  gchar *client_uuid);

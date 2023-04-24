@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,7 +74,7 @@ struct _AgsWave
 {
   GObject gobject;
 
-  guint flags;
+  AgsWaveFlags flags;
 
   GRecMutex obj_mutex;
 
@@ -85,7 +85,7 @@ struct _AgsWave
   
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   AgsTimestamp *timestamp;
   
@@ -103,9 +103,9 @@ GType ags_wave_flags_get_type();
 
 GRecMutex* ags_wave_get_obj_mutex(AgsWave *wave);
 
-gboolean ags_wave_test_flags(AgsWave *wave, guint flags);
-void ags_wave_set_flags(AgsWave *wave, guint flags);
-void ags_wave_unset_flags(AgsWave *wave, guint flags);
+gboolean ags_wave_test_flags(AgsWave *wave, AgsWaveFlags flags);
+void ags_wave_set_flags(AgsWave *wave, AgsWaveFlags flags);
+void ags_wave_unset_flags(AgsWave *wave, AgsWaveFlags flags);
 
 GList* ags_wave_find_near_timestamp(GList *wave, guint line,
 				    AgsTimestamp *timestamp);
@@ -129,9 +129,9 @@ guint ags_wave_get_buffer_size(AgsWave *wave);
 void ags_wave_set_buffer_size(AgsWave *wave,
 			      guint buffer_size);
 
-guint ags_wave_get_format(AgsWave *wave);
+AgsSoundcardFormat ags_wave_get_format(AgsWave *wave);
 void ags_wave_set_format(AgsWave *wave,
-			 guint format);
+			 AgsSoundcardFormat format);
 
 AgsTimestamp* ags_wave_get_timestamp(AgsWave *wave);
 void ags_wave_set_timestamp(AgsWave *wave,

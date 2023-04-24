@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1972,7 +1972,7 @@ ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port)
     
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
   guint fixed_size;
 
@@ -2136,7 +2136,7 @@ ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
 
 void
 ags_pulse_port_set_format(AgsPulsePort *pulse_port,
-			  guint format)
+			  AgsSoundcardFormat format)
 {
   guint fixed_size;
 

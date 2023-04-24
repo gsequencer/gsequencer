@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,11 +90,11 @@ struct _AgsChannel
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  guint ability_flags;
-  guint behaviour_flags;
-  guint staging_flags[AGS_SOUND_SCOPE_LAST];
+  AgsChannelFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsSoundAbilityFlags ability_flags;
+  AgsSoundBehaviourFlags behaviour_flags;
+  AgsSoundStagingFlags staging_flags[AGS_SOUND_SCOPE_LAST];
 
   gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
   
@@ -112,7 +112,7 @@ struct _AgsChannel
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   guint pad;
   guint audio_channel;
@@ -174,9 +174,9 @@ struct _AgsChannelClass
 			 AgsRecallID *recall_id);
 
   void (*init_recall)(AgsChannel *channel,
-		      AgsRecallID *recall_id, guint staging_flags);
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
   void (*play_recall)(AgsChannel *channel,
-		      AgsRecallID *recall_id, guint staging_flags);
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 
   void (*done_recall)(AgsChannel *channel,
 		      AgsRecallID *recall_id);
@@ -194,7 +194,7 @@ struct _AgsChannelClass
   GList* (*check_scope)(AgsChannel *channel, gint sound_scope);
   
   void (*recursive_run_stage)(AgsChannel *channel,
-			      gint sound_scope, guint staging_flags);
+			      gint sound_scope, AgsSoundStagingFlags staging_flags);
 };
 
 GType ags_channel_get_type();
@@ -206,24 +206,24 @@ GRecMutex* ags_channel_get_obj_mutex(AgsChannel *channel);
 GRecMutex* ags_channel_get_play_mutex(AgsChannel *channel);
 GRecMutex* ags_channel_get_recall_mutex(AgsChannel *channel);
 
-gboolean ags_channel_test_flags(AgsChannel *channel, guint flags);
-void ags_channel_set_flags(AgsChannel *channel, guint flags);
-void ags_channel_unset_flags(AgsChannel *channel, guint flags);
+gboolean ags_channel_test_flags(AgsChannel *channel, AgsChannelFlags flags);
+void ags_channel_set_flags(AgsChannel *channel, AgsChannelFlags flags);
+void ags_channel_unset_flags(AgsChannel *channel, AgsChannelFlags flags);
 
-gboolean ags_channel_test_ability_flags(AgsChannel *channel, guint ability_flags);
-void ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags);
-void ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags);
+gboolean ags_channel_test_ability_flags(AgsChannel *channel, AgsSoundAbilityFlags ability_flags);
+void ags_channel_set_ability_flags(AgsChannel *channel, AgsSoundAbilityFlags ability_flags);
+void ags_channel_unset_ability_flags(AgsChannel *channel, AgsSoundAbilityFlags ability_flags);
 
-gboolean ags_channel_test_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
-void ags_channel_set_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
-void ags_channel_unset_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
+gboolean ags_channel_test_behaviour_flags(AgsChannel *channel, AgsSoundBehaviourFlags behaviour_flags);
+void ags_channel_set_behaviour_flags(AgsChannel *channel, AgsSoundBehaviourFlags behaviour_flags);
+void ags_channel_unset_behaviour_flags(AgsChannel *channel, AgsSoundBehaviourFlags behaviour_flags);
 
 gboolean ags_channel_test_staging_flags(AgsChannel *channel, gint sound_scope,
-					guint staging_flags);
+					AgsSoundStagingFlags staging_flags);
 void ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
-				   guint staging_flags);
+				   AgsSoundStagingFlags staging_flags);
 void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
-				     guint staging_flags);
+				     AgsSoundStagingFlags staging_flags);
 
 gboolean ags_channel_test_staging_completed(AgsChannel *channel, gint sound_scope);
 void ags_channel_set_staging_completed(AgsChannel *channel, gint sound_scope);
@@ -286,8 +286,8 @@ void ags_channel_set_samplerate(AgsChannel *channel, guint samplerate);
 guint ags_channel_get_buffer_size(AgsChannel *channel);
 void ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size);
 
-guint ags_channel_get_format(AgsChannel *channel);
-void ags_channel_set_format(AgsChannel *channel, guint format);
+AgsSoundcardFormat ags_channel_get_format(AgsChannel *channel);
+void ags_channel_set_format(AgsChannel *channel, AgsSoundcardFormat format);
 
 /* alignment */
 guint ags_channel_get_pad(AgsChannel *channel);
@@ -353,9 +353,9 @@ void ags_channel_resolve_recall(AgsChannel *channel,
 				AgsRecallID *recall_id);
 
 void ags_channel_init_recall(AgsChannel *channel,
-			     AgsRecallID *recall_id, guint staging_flags);
+			     AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 void ags_channel_play_recall(AgsChannel *channel,
-			     AgsRecallID *recall_id, guint staging_flags);
+			     AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 
 void ags_channel_done_recall(AgsChannel *channel,
 			     AgsRecallID *recall_id);
@@ -389,7 +389,7 @@ void ags_channel_recursive_set_property(AgsChannel *channel,
 					gchar **parameter_name, GValue *value);
 
 void ags_channel_recursive_run_stage(AgsChannel *channel,
-				     gint sound_scope, guint staging_flags);
+				     gint sound_scope, AgsSoundStagingFlags staging_flags);
 
 /* instantiate */
 AgsChannel* ags_channel_new(GObject *audio);

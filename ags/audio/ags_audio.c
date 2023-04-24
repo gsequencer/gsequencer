@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -244,8 +244,8 @@ void ags_audio_real_set_samplerate(AgsAudio *audio, guint samplerate);
 void ags_audio_set_buffer_size_channel(AgsChannel *start_channel, guint buffer_size);
 void ags_audio_real_set_buffer_size(AgsAudio *audio, guint buffer_size);
 
-void ags_audio_set_format_channel(AgsChannel *start_channel, guint format);
-void ags_audio_real_set_format(AgsAudio *audio, guint format);
+void ags_audio_set_format_channel(AgsChannel *start_channel, AgsSoundcardFormat format);
+void ags_audio_real_set_format(AgsAudio *audio, AgsSoundcardFormat format);
 
 void ags_audio_real_duplicate_recall(AgsAudio *audio,
 				     AgsRecallID *recall_id,
@@ -255,9 +255,9 @@ void ags_audio_real_resolve_recall(AgsAudio *audio,
 				   AgsRecallID *recall_id);
 
 void ags_audio_real_init_recall(AgsAudio *audio,
-				AgsRecallID *recall_id, guint staging_flags);
+				AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 void ags_audio_real_play_recall(AgsAudio *audio,
-				AgsRecallID *recall_id, guint staging_flags);
+				AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 
 void ags_audio_real_done_recall(AgsAudio *audio,
 				AgsRecallID *recall_id);
@@ -4539,7 +4539,7 @@ ags_audio_get_recall_mutex(AgsAudio *audio)
  * Since: 3.0.0
  */
 gboolean
-ags_audio_test_flags(AgsAudio *audio, guint flags)
+ags_audio_test_flags(AgsAudio *audio, AgsAudioFlags flags)
 {
   gboolean retval;  
   
@@ -4572,9 +4572,9 @@ ags_audio_test_flags(AgsAudio *audio, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_set_flags(AgsAudio *audio, guint flags)
+ags_audio_set_flags(AgsAudio *audio, AgsAudioFlags flags)
 {
-  guint audio_flags;
+  AgsAudioFlags audio_flags;
   
   GRecMutex *audio_mutex;
 
@@ -4726,9 +4726,9 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_unset_flags(AgsAudio *audio, guint flags)
+ags_audio_unset_flags(AgsAudio *audio, AgsAudioFlags flags)
 {
-  guint audio_flags;
+  AgsAudioFlags audio_flags;
   
   GRecMutex *audio_mutex;
 
@@ -4880,7 +4880,7 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
  * Since: 3.0.0
  */
 gboolean
-ags_audio_test_ability_flags(AgsAudio *audio, guint ability_flags)
+ags_audio_test_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags)
 {
   gboolean retval;  
   
@@ -4904,7 +4904,7 @@ ags_audio_test_ability_flags(AgsAudio *audio, guint ability_flags)
 }
 
 void
-ags_audio_set_ability_flags_channel(AgsChannel *start_channel, guint ability_flags)
+ags_audio_set_ability_flags_channel(AgsChannel *start_channel, AgsSoundAbilityFlags ability_flags)
 {
   AgsChannel *channel, *next_channel;
 
@@ -4938,7 +4938,7 @@ ags_audio_set_ability_flags_channel(AgsChannel *start_channel, guint ability_fla
  * Since: 3.0.0
  */
 void
-ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
+ags_audio_set_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags)
 {
   AgsChannel *start_output, *start_input;  
   AgsPlaybackDomain *playback_domain;
@@ -4951,7 +4951,7 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
   GObject *output_soundcard;
   
   guint samplerate, buffer_size;
-  guint audio_ability_flags;
+  AgsSoundAbilityFlags audio_ability_flags;
   gboolean super_threaded_audio;
   
   GRecMutex *audio_mutex;
@@ -5147,7 +5147,7 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 }
 
 void
-ags_audio_unset_ability_flags_channel(AgsChannel *start_channel, guint ability_flags)
+ags_audio_unset_ability_flags_channel(AgsChannel *start_channel, AgsSoundAbilityFlags ability_flags)
 {
   AgsChannel *channel, *next_channel;
 
@@ -5181,7 +5181,7 @@ ags_audio_unset_ability_flags_channel(AgsChannel *start_channel, guint ability_f
  * Since: 3.0.0
  */
 void
-ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
+ags_audio_unset_ability_flags(AgsAudio *audio, AgsSoundAbilityFlags ability_flags)
 {
   AgsChannel *start_output, *start_input;  
   AgsPlaybackDomain *playback_domain;
@@ -5191,7 +5191,7 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 
   AgsApplicationContext *application_context;
   
-  guint audio_ability_flags;
+  AgsSoundAbilityFlags audio_ability_flags;
   
   GRecMutex *audio_mutex;
 
@@ -5331,7 +5331,7 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
  * Since: 3.0.0
  */
 gboolean
-ags_audio_test_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
+ags_audio_test_behaviour_flags(AgsAudio *audio, AgsSoundBehaviourFlags behaviour_flags)
 {
   gboolean retval;  
   
@@ -5364,7 +5364,7 @@ ags_audio_test_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
  * Since: 3.0.0
  */
 void
-ags_audio_set_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
+ags_audio_set_behaviour_flags(AgsAudio *audio, AgsSoundBehaviourFlags behaviour_flags)
 {
   GRecMutex *audio_mutex;
 
@@ -5393,7 +5393,7 @@ ags_audio_set_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
  * Since: 3.0.0
  */
 void
-ags_audio_unset_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
+ags_audio_unset_behaviour_flags(AgsAudio *audio, AgsSoundBehaviourFlags behaviour_flags)
 {
   GRecMutex *audio_mutex;
 
@@ -5426,7 +5426,7 @@ ags_audio_unset_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
  */
 gboolean
 ags_audio_test_staging_flags(AgsAudio *audio, gint sound_scope,
-			     guint staging_flags)
+			     AgsSoundStagingFlags staging_flags)
 {
   gboolean retval;  
   
@@ -5461,7 +5461,7 @@ ags_audio_test_staging_flags(AgsAudio *audio, gint sound_scope,
  */
 void
 ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
-			    guint staging_flags)
+			    AgsSoundStagingFlags staging_flags)
 {
   guint i;
   
@@ -5500,7 +5500,7 @@ ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
  */
 void
 ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
-			      guint staging_flags)
+			      AgsSoundStagingFlags staging_flags)
 {
   guint i;
   
@@ -5973,7 +5973,7 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint pads;
   guint i, j;
 
@@ -7057,7 +7057,7 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint audio_channels;
   guint i, j;
 
@@ -8203,7 +8203,7 @@ ags_audio_real_set_output_soundcard(AgsAudio *audio,
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint i;
   
   GRecMutex *audio_mutex;
@@ -9214,7 +9214,7 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
  * 
  * Since: 3.1.0
  */
-guint
+AgsSoundcardFormat
 ags_audio_get_format(AgsAudio *audio)
 {
   guint format;
@@ -9231,7 +9231,7 @@ ags_audio_get_format(AgsAudio *audio)
 }
 
 void
-ags_audio_set_format_channel(AgsChannel *start_channel, guint format)
+ags_audio_set_format_channel(AgsChannel *start_channel, AgsSoundcardFormat format)
 {
   AgsChannel *channel, *next_channel;
 
@@ -9258,7 +9258,7 @@ ags_audio_set_format_channel(AgsChannel *start_channel, guint format)
 }  
 
 void
-ags_audio_real_set_format(AgsAudio *audio, guint format)
+ags_audio_real_set_format(AgsAudio *audio, AgsSoundcardFormat format)
 {
   AgsChannel *start_output, *start_input;
   
@@ -9267,7 +9267,7 @@ ags_audio_real_set_format(AgsAudio *audio, guint format)
   GList *start_message_queue;
   GList *start_list, *list;
 
-  guint old_format;
+  AgsSoundcardFormat old_format;
   
   GRecMutex *audio_mutex;
 
@@ -9394,7 +9394,7 @@ ags_audio_real_set_format(AgsAudio *audio, guint format)
  * Since: 3.0.0
  */
 void
-ags_audio_set_format(AgsAudio *audio, guint format)
+ags_audio_set_format(AgsAudio *audio, AgsSoundcardFormat format)
 {
   if(!AGS_IS_AUDIO(audio)){
     return;
@@ -12548,7 +12548,7 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
+  AgsSoundStagingFlags current_staging_flags;
   gboolean play_context;
   
   GRecMutex *audio_mutex;
@@ -12803,7 +12803,7 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
+  AgsSoundStagingFlags current_staging_flags;
   
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -12947,19 +12947,19 @@ ags_audio_resolve_recall(AgsAudio *audio,
 
 void
 ags_audio_real_init_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id, guint staging_flags)
+			   AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
   
   GList *list_start, *list;
 
-  guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-				     AGS_SOUND_STAGING_RUN_INIT_PRE |
-				     AGS_SOUND_STAGING_RUN_INIT_INTER |
-				     AGS_SOUND_STAGING_RUN_INIT_POST);
+  gint sound_scope;
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						    AGS_SOUND_STAGING_RUN_INIT_PRE |
+						    AGS_SOUND_STAGING_RUN_INIT_INTER |
+						    AGS_SOUND_STAGING_RUN_INIT_POST);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13104,7 +13104,7 @@ ags_audio_real_init_recall(AgsAudio *audio,
  */
 void
 ags_audio_init_recall(AgsAudio *audio,
-		      AgsRecallID *recall_id, guint staging_flags)
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio));
 
@@ -13117,7 +13117,7 @@ ags_audio_init_recall(AgsAudio *audio,
 
 void
 ags_audio_real_play_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id, guint staging_flags)
+			   AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
@@ -13125,18 +13125,18 @@ ags_audio_real_play_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_mask = (AGS_SOUND_STAGING_RUN_INIT_PRE |
-				     AGS_SOUND_STAGING_RUN_INIT_INTER |
-				     AGS_SOUND_STAGING_RUN_INIT_POST |
-				     AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-				     AGS_SOUND_STAGING_AUTOMATE |
-				     AGS_SOUND_STAGING_RUN_PRE |
-				     AGS_SOUND_STAGING_RUN_INTER |
-				     AGS_SOUND_STAGING_RUN_POST |
-				     AGS_SOUND_STAGING_DO_FEEDBACK |
-				     AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
-				     AGS_SOUND_STAGING_FINI);
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_mask = (AGS_SOUND_STAGING_RUN_INIT_PRE |
+						    AGS_SOUND_STAGING_RUN_INIT_INTER |
+						    AGS_SOUND_STAGING_RUN_INIT_POST |
+						    AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+						    AGS_SOUND_STAGING_AUTOMATE |
+						    AGS_SOUND_STAGING_RUN_PRE |
+						    AGS_SOUND_STAGING_RUN_INTER |
+						    AGS_SOUND_STAGING_RUN_POST |
+						    AGS_SOUND_STAGING_DO_FEEDBACK |
+						    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+						    AGS_SOUND_STAGING_FINI);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13298,7 +13298,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
  */
 void
 ags_audio_play_recall(AgsAudio *audio,
-		      AgsRecallID *recall_id, guint staging_flags)
+		      AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio) && AGS_IS_RECALL_ID(recall_id));
 
@@ -13319,8 +13319,8 @@ ags_audio_real_done_recall(AgsAudio *audio,
   GList *list_start, *list;
 
   guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_flags = (AGS_SOUND_STAGING_DONE);  
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_DONE);  
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13476,9 +13476,9 @@ ags_audio_real_cancel_recall(AgsAudio *audio,
   
   GList *list_start, *list;
 
-  guint sound_scope;
-  guint current_staging_flags;
-  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL);
+  gint sound_scope;
+  AgsSoundStagingFlags current_staging_flags;
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CANCEL);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13636,14 +13636,14 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
   GList *match_start, *match;
 
   gint sound_scope;
-  guint current_staging_flags;
+  AgsSoundStagingFlags current_staging_flags;
   gboolean play_context;
   gboolean remove_recycling_context;
   
-  static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-				     AGS_SOUND_STAGING_RUN_INIT_PRE |
-				     AGS_SOUND_STAGING_RUN_INIT_INTER |
-				     AGS_SOUND_STAGING_RUN_INIT_POST);
+  static const AgsSoundStagingFlags staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						    AGS_SOUND_STAGING_RUN_INIT_PRE |
+						    AGS_SOUND_STAGING_RUN_INIT_INTER |
+						    AGS_SOUND_STAGING_RUN_INIT_POST);
 
   GRecMutex *audio_mutex;
   GRecMutex *recall_id_mutex;
@@ -13862,10 +13862,10 @@ ags_audio_real_start(AgsAudio *audio,
   gint i;
   guint success_counter, current_success_counter;
 
-  static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-				      AGS_SOUND_STAGING_RUN_INIT_PRE |
-				      AGS_SOUND_STAGING_RUN_INIT_INTER |
-				      AGS_SOUND_STAGING_RUN_INIT_POST);
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						     AGS_SOUND_STAGING_RUN_INIT_PRE |
+						     AGS_SOUND_STAGING_RUN_INIT_INTER |
+						     AGS_SOUND_STAGING_RUN_INIT_POST);
   
   if(sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
@@ -14273,8 +14273,8 @@ ags_audio_real_stop(AgsAudio *audio,
   
   gint i;
   
-  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
-				      AGS_SOUND_STAGING_REMOVE);
+  static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CANCEL |
+						     AGS_SOUND_STAGING_REMOVE);
   
   if(recall_id == NULL ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
@@ -15372,7 +15372,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
 
 void
 ags_audio_real_recursive_run_stage(AgsAudio *audio,
-				   gint sound_scope, guint staging_flags)
+				   gint sound_scope, AgsSoundStagingFlags staging_flags)
 {
   AgsChannel *channel;
 
@@ -15419,7 +15419,7 @@ ags_audio_real_recursive_run_stage(AgsAudio *audio,
  */
 void
 ags_audio_recursive_run_stage(AgsAudio *audio,
-			      gint sound_scope, guint staging_flags)
+			      gint sound_scope, AgsSoundStagingFlags staging_flags)
 {  
   g_return_if_fail(AGS_IS_AUDIO(audio));
   

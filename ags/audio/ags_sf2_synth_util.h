@@ -113,7 +113,7 @@ struct _AgsSF2SynthUtil
   guint frame_count;
   guint offset;
 
-  guint loop_mode;
+  AgsSF2SynthUtilLoopMode loop_mode;
 
   gint loop_start;
   gint loop_end;
@@ -151,9 +151,9 @@ guint ags_sf2_synth_util_get_buffer_length(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
 					  guint buffer_length);
 
-guint ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util);
+AgsSoundcardFormat ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
-				   guint format);
+				   AgsSoundcardFormat format);
 
 guint ags_sf2_synth_util_get_samplerate(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_samplerate(AgsSF2SynthUtil *sf2_synth_util,
@@ -199,9 +199,9 @@ guint ags_sf2_synth_util_get_offset(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_offset(AgsSF2SynthUtil *sf2_synth_util,
 				   guint offset);
 
-guint ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util);
+AgsSF2SynthUtilLoopMode ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_loop_mode(AgsSF2SynthUtil *sf2_synth_util,
-				      guint loop_mode);
+				      AgsSF2SynthUtilLoopMode loop_mode);
 
 guint ags_sf2_synth_util_get_loop_start(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_loop_start(AgsSF2SynthUtil *sf2_synth_util,

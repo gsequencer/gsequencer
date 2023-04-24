@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,7 +45,7 @@ struct _AgsVolumeUtil
   guint source_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   
   gdouble volume;
 };
@@ -78,9 +78,9 @@ guint ags_volume_util_get_buffer_length(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_buffer_length(AgsVolumeUtil *volume_util,
 				       guint buffer_length);
 
-guint ags_volume_util_get_format(AgsVolumeUtil *volume_util);
+AgsSoundcardFormat ags_volume_util_get_format(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_format(AgsVolumeUtil *volume_util,
-				guint format);
+				AgsSoundcardFormat format);
 
 gdouble ags_volume_util_get_volume(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_volume(AgsVolumeUtil *volume_util,

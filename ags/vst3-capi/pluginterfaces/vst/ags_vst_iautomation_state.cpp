@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,27 @@
 
 extern "C" {
   
+  /**
+   * Get IID.
+   *
+   * @return the Steinberg::TUID as AgsVstFUID
+   * 
+   * @since 5.0.0
+   */
   const AgsVstTUID* ags_vst_iautomation_state_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IAutomationState::iid.toTUID()));
   }
-  
+
+  /**
+   * Set automation state.
+   *
+   * @param iautomation_state the automation state
+   * @param state the state
+   * @return the return value
+   * 
+   * @since 5.0.0
+   */
   AgsVstTResult ags_vst_iautomation_state_set_automation_state(AgsVstIAutomationState *iautomation_state,
 							       gint32 state)
   {

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -534,103 +534,6 @@ ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable)
   g_rec_mutex_lock(ipatch_dls2_reader_mutex);
 
   ipatch_dls2_reader->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-  
-  g_rec_mutex_unlock(ipatch_dls2_reader_mutex);
-}
-
-/**
- * ags_ipatch_dls2_reader_test_flags:
- * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
- * @flags: the flags
- *
- * Test @flags to be set on @ipatch_dls2_reader.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_ipatch_dls2_reader_test_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *ipatch_dls2_reader_mutex;
-
-  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
-    return(FALSE);
-  }
-
-  /* get ipatch_dls2_reader mutex */
-  ipatch_dls2_reader_mutex = AGS_IPATCH_DLS2_READER_GET_OBJ_MUTEX(ipatch_dls2_reader);
-
-  /* test */
-  g_rec_mutex_lock(ipatch_dls2_reader_mutex);
-
-  retval = (flags & (ipatch_dls2_reader->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(ipatch_dls2_reader_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_ipatch_dls2_reader_set_flags:
- * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
- * @flags: see #AgsIpatchDLS2ReaderFlags-enum
- *
- * Enable a feature of @ipatch_dls2_reader.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_dls2_reader_set_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags)
-{
-  GRecMutex *ipatch_dls2_reader_mutex;
-
-  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
-    return;
-  }
-
-  /* get ipatch_dls2_reader mutex */
-  ipatch_dls2_reader_mutex = AGS_IPATCH_DLS2_READER_GET_OBJ_MUTEX(ipatch_dls2_reader);
-
-  //TODO:JK: add more?
-
-  /* set flags */
-  g_rec_mutex_lock(ipatch_dls2_reader_mutex);
-
-  ipatch_dls2_reader->flags |= flags;
-  
-  g_rec_mutex_unlock(ipatch_dls2_reader_mutex);
-}
-    
-/**
- * ags_ipatch_dls2_reader_unset_flags:
- * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
- * @flags: see #AgsIpatchDLS2ReaderFlags-enum
- *
- * Disable a feature of @ipatch_dls2_reader.
- *
- * Since: 3.0.0
- */
-void
-ags_ipatch_dls2_reader_unset_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags)
-{  
-  GRecMutex *ipatch_dls2_reader_mutex;
-
-  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
-    return;
-  }
-
-  /* get ipatch_dls2_reader mutex */
-  ipatch_dls2_reader_mutex = AGS_IPATCH_DLS2_READER_GET_OBJ_MUTEX(ipatch_dls2_reader);
-
-  //TODO:JK: add more?
-
-  /* unset flags */
-  g_rec_mutex_lock(ipatch_dls2_reader_mutex);
-
-  ipatch_dls2_reader->flags &= (~flags);
   
   g_rec_mutex_unlock(ipatch_dls2_reader_mutex);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,9 +112,9 @@ struct _AgsJackDevout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
-  volatile guint sync_flags;
+  AgsJackDevoutFlags flags;
+  AgsConnectableFlags connectable_flags;
+  volatile AgsJackDevoutSyncFlags sync_flags;
   
   GRecMutex obj_mutex;
 
@@ -122,11 +122,11 @@ struct _AgsJackDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsJackDevoutAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
 
@@ -178,9 +178,9 @@ GType ags_jack_devout_flags_get_type();
 
 GQuark ags_jack_devout_error_quark();
 
-gboolean ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags);
-void ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags);
-void ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags);
+gboolean ags_jack_devout_test_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags flags);
+void ags_jack_devout_set_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags flags);
+void ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags flags);
 
 void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
 

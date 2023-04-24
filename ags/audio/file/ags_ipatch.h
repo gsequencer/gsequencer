@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,8 +68,8 @@ struct _AgsIpatch
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsIpatchFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -107,9 +107,9 @@ struct _AgsIpatchClass
 GType ags_ipatch_get_type();
 GType ags_ipatch_flags_get_type();
 
-gboolean ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags);
-void ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags);
-void ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags);
+gboolean ags_ipatch_test_flags(AgsIpatch *ipatch, AgsIpatchFlags flags);
+void ags_ipatch_set_flags(AgsIpatch *ipatch, AgsIpatchFlags flags);
+void ags_ipatch_unset_flags(AgsIpatch *ipatch, AgsIpatchFlags flags);
 
 gboolean ags_ipatch_check_suffix(gchar *filename);
 

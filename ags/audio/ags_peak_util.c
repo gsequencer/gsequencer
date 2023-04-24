@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -265,7 +265,7 @@ ags_peak_util_set_buffer_length(AgsPeakUtil *peak_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_peak_util_get_format(AgsPeakUtil *peak_util)
 {
   if(peak_util == NULL){
@@ -286,7 +286,7 @@ ags_peak_util_get_format(AgsPeakUtil *peak_util)
  */
 void
 ags_peak_util_set_format(AgsPeakUtil *peak_util,
-			 guint format)
+			 AgsSoundcardFormat format)
 {
   if(peak_util == NULL){
     return;

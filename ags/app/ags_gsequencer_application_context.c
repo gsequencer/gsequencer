@@ -85,9 +85,8 @@
 
 #include <stdbool.h>
 
-#include <unistd.h>
-
 #if !defined(AGS_W32API)
+#include <unistd.h>
 #include <sys/utsname.h>
 #endif
 
@@ -2612,6 +2611,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
   AgsMessageQueue *audio_message_queue;
+  AgsMessageQueue *gsequencer_message_queue;
 
   AgsConfig *config;
   
@@ -2728,6 +2728,13 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
 	       NULL);
   ags_message_delivery_add_message_queue(message_delivery,
 					 (GObject *) audio_message_queue);
+
+  gsequencer_message_queue = ags_message_queue_new("libgsequencer");
+  g_object_set(gsequencer_message_queue,
+	       "recipient-namespace", "libgsequencer",
+	       NULL);
+  ags_message_delivery_add_message_queue(message_delivery,
+					 (GObject *) gsequencer_message_queue);
   
   /* OSC server main context and main loop */
   osc_server_main_context = g_main_context_new();

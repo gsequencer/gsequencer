@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -141,7 +141,7 @@ ags_timestamp_finalize(GObject *gobject)
  */
 gboolean
 ags_timestamp_test_flags(AgsTimestamp *timestamp,
-			 guint flags)
+			 AgsTimestampFlags flags)
 {
   gboolean success;
   
@@ -175,7 +175,7 @@ ags_timestamp_test_flags(AgsTimestamp *timestamp,
  */
 void
 ags_timestamp_set_flags(AgsTimestamp *timestamp,
-			guint flags)
+			AgsTimestampFlags flags)
 {
   GRecMutex *timestamp_mutex;
 
@@ -205,7 +205,7 @@ ags_timestamp_set_flags(AgsTimestamp *timestamp,
  */
 void
 ags_timestamp_unset_flags(AgsTimestamp *timestamp,
-			  guint flags)
+			  AgsTimestampFlags flags)
 {
   GRecMutex *timestamp_mutex;
 

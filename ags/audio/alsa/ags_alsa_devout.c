@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,12 +74,12 @@ void ags_alsa_devout_set_presets(AgsSoundcard *soundcard,
 				 guint channels,
 				 guint rate,
 				 guint buffer_size,
-				 guint format);
+				 AgsSoundcardFormat format);
 void ags_alsa_devout_get_presets(AgsSoundcard *soundcard,
 				 guint *channels,
 				 guint *rate,
 				 guint *buffer_size,
-				 guint *format);
+				 AgsSoundcardFormat *format);
 
 void ags_alsa_devout_list_cards(AgsSoundcard *soundcard,
 				GList **card_id, GList **card_name);
@@ -104,7 +104,7 @@ gboolean ags_alsa_devout_device_io_func(GIOChannel *source,
 void ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
 				      GError **error);
 void ags_alsa_devout_device_fill_backend_buffer(void *app_buffer,
-						guint ags_format,
+						AgsSoundcardFormat ags_format,
 						guchar *backend_buffer,
 						guint channels,
 						guint buffer_size);
@@ -783,7 +783,7 @@ ags_alsa_devout_set_property(GObject *gobject,
   break;
   case PROP_FORMAT:
   {
-    guint format;
+    AgsSoundcardFormat format;
 
     format = g_value_get_uint(value);
 
@@ -1282,7 +1282,7 @@ ags_alsa_devout_disconnect(AgsConnectable *connectable)
  * Since: 3.13.2
  */
 gboolean
-ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, guint flags)
+ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags flags)
 {
   gboolean retval;  
   
@@ -1315,7 +1315,7 @@ ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, guint flags)
  * Since: 3.13.2
  */
 void
-ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, guint flags)
+ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags flags)
 {
   GRecMutex *alsa_devout_mutex;
 
@@ -1346,7 +1346,7 @@ ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, guint flags)
  * Since: 3.13.2
  */
 void
-ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, guint flags)
+ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags flags)
 {  
   GRecMutex *alsa_devout_mutex;
 
@@ -1446,7 +1446,7 @@ ags_alsa_devout_set_presets(AgsSoundcard *soundcard,
 			    guint channels,
 			    guint samplerate,
 			    guint buffer_size,
-			    guint format)
+			    AgsSoundcardFormat format)
 {
   AgsAlsaDevout *alsa_devout;
 
@@ -1465,7 +1465,7 @@ ags_alsa_devout_get_presets(AgsSoundcard *soundcard,
 			    guint *channels,
 			    guint *samplerate,
 			    guint *buffer_size,
-			    guint *format)
+			    AgsSoundcardFormat *format)
 {
   AgsAlsaDevout *alsa_devout;
 
@@ -2494,7 +2494,7 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
 
 void
 ags_alsa_devout_device_fill_backend_buffer(void *app_buffer,
-					   guint ags_format,
+					   AgsSoundcardFormat ags_format,
 					   guchar *backend_buffer,
 					   guint channels,
 					   guint buffer_size)
@@ -3792,7 +3792,7 @@ ags_alsa_devout_realloc_buffer(AgsAlsaDevout *alsa_devout)
   guint pcm_channels;
   guint buffer_size;
   guint word_size;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *alsa_devout_mutex;  
 

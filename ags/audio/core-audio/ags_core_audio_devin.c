@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,12 +76,12 @@ void ags_core_audio_devin_set_presets(AgsSoundcard *soundcard,
 				      guint channels,
 				      guint rate,
 				      guint buffer_size,
-				      guint format);
+				      AgsSoundcardFormat format);
 void ags_core_audio_devin_get_presets(AgsSoundcard *soundcard,
 				      guint *channels,
 				      guint *rate,
 				      guint *buffer_size,
-				      guint *format);
+				      AgsSoundcardFormat *format);
 
 void ags_core_audio_devin_list_cards(AgsSoundcard *soundcard,
 				     GList **card_id, GList **card_name);
@@ -776,7 +776,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -1348,7 +1348,7 @@ ags_core_audio_devin_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_core_audio_devin_test_flags(AgsCoreAudioDevin *core_audio_devin, guint flags)
+ags_core_audio_devin_test_flags(AgsCoreAudioDevin *core_audio_devin, AgsCoreAudioDevinFlags flags)
 {
   gboolean retval;  
   
@@ -1381,7 +1381,7 @@ ags_core_audio_devin_test_flags(AgsCoreAudioDevin *core_audio_devin, guint flags
  * Since: 3.0.0
  */
 void
-ags_core_audio_devin_set_flags(AgsCoreAudioDevin *core_audio_devin, guint flags)
+ags_core_audio_devin_set_flags(AgsCoreAudioDevin *core_audio_devin, AgsCoreAudioDevinFlags flags)
 {
   GRecMutex *core_audio_devin_mutex;
 
@@ -1412,7 +1412,7 @@ ags_core_audio_devin_set_flags(AgsCoreAudioDevin *core_audio_devin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_core_audio_devin_unset_flags(AgsCoreAudioDevin *core_audio_devin, guint flags)
+ags_core_audio_devin_unset_flags(AgsCoreAudioDevin *core_audio_devin, AgsCoreAudioDevinFlags flags)
 {  
   GRecMutex *core_audio_devin_mutex;
 
@@ -1546,7 +1546,7 @@ ags_core_audio_devin_set_presets(AgsSoundcard *soundcard,
 				 guint channels,
 				 guint rate,
 				 guint buffer_size,
-				 guint format)
+				 AgsSoundcardFormat format)
 {
   AgsCoreAudioDevin *core_audio_devin;
 
@@ -1565,7 +1565,7 @@ ags_core_audio_devin_get_presets(AgsSoundcard *soundcard,
 				 guint *channels,
 				 guint *rate,
 				 guint *buffer_size,
-				 guint *format)
+				 AgsSoundcardFormat *format)
 {
   AgsCoreAudioDevin *core_audio_devin;
 
@@ -1825,7 +1825,8 @@ ags_core_audio_devin_port_init(AgsSoundcard *soundcard,
 {
   AgsCoreAudioDevin *core_audio_devin;
 
-  guint format, word_size;
+  AgsSoundcardFormat format;
+  guint word_size;
   
   GRecMutex *core_audio_devin_mutex;
 
@@ -2955,7 +2956,7 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
 {
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
 
   GRecMutex *core_audio_devin_mutex;  

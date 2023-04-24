@@ -290,3 +290,109 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
   g_rec_mutex_unlock(obj_mutex);  
 }
+
+/**
+ * ags_soundcard_util_calc_system_time:
+ * @soundcard: the #GObject sub-type implementing #AgsSoundcard
+ * 
+ * Offset of @soundcard to system time.
+ * 
+ * Returns: the system time
+ * 
+ * Since: 5.0.0
+ */
+gint64
+ags_soundcard_util_calc_system_time(GObject *soundcard)
+{
+  gint64 system_time;
+  guint samplerate;
+  guint buffer_size;
+  gdouble delay, delay_counter;
+  guint note_offset;
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
+
+  note_offset = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(soundcard));
+
+  system_time = (note_offset + delay_counter) * delay * buffer_size * (AGS_NSEC_PER_SEC / samplerate);
+
+  return(system_time);
+}
+
+/**
+ * ags_soundcard_util_calc_time_samples:
+ * @soundcard: the #GObject sub-type implementing #AgsSoundcard
+ * 
+ * Offset of @soundcard to system time.
+ * 
+ * Returns: the system time
+ * 
+ * Since: 5.0.0
+ */
+gint64
+ags_soundcard_util_calc_time_samples(GObject *soundcard)
+{
+  gint64 time_samples;
+  guint buffer_size;
+  gdouble delay, delay_counter;
+  guint note_offset;
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+
+  time_samples = (note_offset + delay_counter) * delay * buffer_size;
+
+  return(time_samples);
+}
+
+/**
+ * ags_soundcard_util_calc_time_samples_absolute:
+ * @soundcard: the #GObject sub-type implementing #AgsSoundcard
+ * 
+ * Offset of @soundcard to system time.
+ * 
+ * Returns: the system time
+ * 
+ * Since: 5.0.0
+ */
+gint64
+ags_soundcard_util_calc_time_samples_absolute(GObject *soundcard)
+{
+  gint64 time_samples;
+  guint buffer_size;
+  gdouble delay, delay_counter;
+  guint note_offset;
+  
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+
+  note_offset = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(soundcard));
+
+  time_samples = (note_offset + delay_counter) * delay * buffer_size;
+
+  return(time_samples);
+}

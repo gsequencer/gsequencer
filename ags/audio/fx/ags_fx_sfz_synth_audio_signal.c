@@ -531,6 +531,9 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     g_rec_mutex_unlock(source_stream_mutex);
 
+    ags_sfz_synth_util_set_source(channel_data->synth,
+				  NULL);
+
     /* chorus */
     if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
        chorus_enabled){

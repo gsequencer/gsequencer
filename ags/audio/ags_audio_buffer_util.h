@@ -342,9 +342,9 @@ typedef gint64 ags_v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
 typedef gfloat ags_v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
 typedef gdouble ags_v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
 
-guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
-guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
-					  guint source_format);
+AgsAudioBufferUtilFormat ags_audio_buffer_util_format_from_soundcard(AgsSoundcardFormat soundcard_format);
+AgsAudioBufferUtilCopyMode ags_audio_buffer_util_get_copy_mode(AgsAudioBufferUtilFormat destination_format,
+							       AgsAudioBufferUtilFormat source_format);
 
 /* clear */
 void ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
@@ -679,7 +679,7 @@ void ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint d
 /* copy */
 void ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
 						 void *source, guint schannels, guint soffset,
-						 guint count, guint mode);
+						 guint count, AgsAudioBufferUtilCopyMode mode);
 
 G_END_DECLS
 

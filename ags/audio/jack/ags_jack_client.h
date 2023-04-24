@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,8 +60,8 @@ struct _AgsJackClient
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsJackClientFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -92,9 +92,9 @@ struct _AgsJackClientClass
 GType ags_jack_client_get_type();
 GType ags_jack_client_flags_get_type();
 
-gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
-void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);
-void ags_jack_client_unset_flags(AgsJackClient *jack_client, guint flags);
+gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, AgsJackClientFlags flags);
+void ags_jack_client_set_flags(AgsJackClient *jack_client, AgsJackClientFlags flags);
+void ags_jack_client_unset_flags(AgsJackClient *jack_client, AgsJackClientFlags flags);
 
 GList* ags_jack_client_find_uuid(GList *jack_client,
 				 gchar *client_uuid);

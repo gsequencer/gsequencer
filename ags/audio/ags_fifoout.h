@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -98,8 +98,8 @@ struct _AgsFifoout
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsFifooutFlags flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -107,11 +107,11 @@ struct _AgsFifoout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint format;
+  AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
 
-  guint app_buffer_mode;
+  AgsFifooutAppBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
 
@@ -160,9 +160,9 @@ GType ags_fifoout_flags_get_type();
 
 GQuark ags_fifoout_error_quark();
 
-gboolean ags_fifoout_test_flags(AgsFifoout *fifoout, guint flags);
-void ags_fifoout_set_flags(AgsFifoout *fifoout, guint flags);
-void ags_fifoout_unset_flags(AgsFifoout *fifoout, guint flags);
+gboolean ags_fifoout_test_flags(AgsFifoout *fifoout, AgsFifooutFlags flags);
+void ags_fifoout_set_flags(AgsFifoout *fifoout, AgsFifooutFlags flags);
+void ags_fifoout_unset_flags(AgsFifoout *fifoout, AgsFifooutFlags flags);
 
 void ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout);
 

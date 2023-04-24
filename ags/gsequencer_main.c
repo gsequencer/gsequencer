@@ -155,7 +155,6 @@ main(int argc, char **argv)
 //  mtrace();
 
   /* env */
-#if defined (AGS_W32API)
 #if defined(AGS_W32_EXE_ENV)
   app_dir = NULL;
 
@@ -187,7 +186,7 @@ main(int argc, char **argv)
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
 #endif
-#else
+
 #if defined(AGS_OSX_DMG_ENV)
   uid = getuid();
   pw = getpwuid(uid);
@@ -196,7 +195,7 @@ main(int argc, char **argv)
   
   putenv(g_strdup_printf("GIO_MODULE_DIR=%s/Contents/Resources/lib/gio/modules", app_dir));
 
-  putenv(g_strdup_printf("GSETTINGS_SCHEMA_DIR=%s/Contents/Resources/glib-2.0/schemas", app_dir));  
+  putenv(g_strdup_printf("GSETTINGS_SCHEMA_DIR=%s/Contents/Resources/share/glib-2.0/schemas", app_dir));  
 
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Contents/Resources/etc", app_dir));
@@ -240,7 +239,9 @@ main(int argc, char **argv)
   if((getenv("LV2_PATH")) == NULL){
     putenv(g_strdup_printf("LV2_PATH=%s/Contents/Plugins/lv2", app_dir));
   }
-#else
+#endif
+
+#if !defined(AGS_W32_EXE_ENV) && !defined(AGS_OSX_DMG_ENV)
   uid = getuid();
   pw = getpwuid(uid);
 
@@ -258,7 +259,6 @@ main(int argc, char **argv)
 
   g_free(priority_filename);
   g_free(wdir);
-#endif
 #endif
 
   /* init */
@@ -577,11 +577,11 @@ main(int argc, char **argv)
 
   if(non_unique){
     gsequencer_app = ags_gsequencer_application_new(application_id,
-						    (G_APPLICATION_HANDLES_OPEN |
-						     G_APPLICATION_NON_UNIQUE));
+						    (GApplicationFlags) (G_APPLICATION_HANDLES_OPEN |
+									 G_APPLICATION_NON_UNIQUE));
   }else{
     gsequencer_app = ags_gsequencer_application_new(application_id,
-						    G_APPLICATION_HANDLES_OPEN);
+						    (GApplicationFlags) G_APPLICATION_HANDLES_OPEN);
   }
   
   error = NULL;
@@ -618,7 +618,7 @@ main(int argc, char **argv)
 			      (GtkWidget *) AGS_WINDOW(window)->header_bar);
     }
 
-    gtk_application_add_window(gsequencer_app,
+    gtk_application_add_window(GTK_APPLICATION(gsequencer_app),
 			       GTK_WINDOW(window));
 
     g_object_set(G_OBJECT(window),
@@ -637,7 +637,7 @@ main(int argc, char **argv)
       file[0] = g_file_new_for_path(filename);
       file[1] = NULL;
 	
-      g_application_open(gsequencer_app,
+      g_application_open(G_APPLICATION(gsequencer_app),
 			 file,
 			 1,
 			 "local command line");

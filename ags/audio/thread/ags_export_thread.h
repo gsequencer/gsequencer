@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,7 +57,7 @@ struct _AgsExportThread
 {
   AgsThread thread;
 
-  guint flags;
+  AgsExportThreadFlags flags;
 
   guint tic;
   guint counter;
@@ -74,9 +74,9 @@ struct _AgsExportThreadClass
 GType ags_export_thread_get_type();
 
 /* flags */
-gboolean ags_export_thread_test_flags(AgsExportThread *export_thread, guint flags);
-void ags_export_thread_set_flags(AgsExportThread *export_thread, guint flags);
-void ags_export_thread_unset_flags(AgsExportThread *export_thread, guint flags);
+gboolean ags_export_thread_test_flags(AgsExportThread *export_thread, AgsExportThreadFlags flags);
+void ags_export_thread_set_flags(AgsExportThread *export_thread, AgsExportThreadFlags flags);
+void ags_export_thread_unset_flags(AgsExportThread *export_thread, AgsExportThreadFlags flags);
 
 AgsExportThread* ags_export_thread_find_soundcard(AgsExportThread *export_thread,
 						  GObject *soundcard);

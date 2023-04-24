@@ -88,7 +88,7 @@ ags_fx_playback_audio_test_new()
   CU_ASSERT(fx_playback_audio->loop_start != NULL);
   CU_ASSERT(fx_playback_audio->loop_end != NULL);
   CU_ASSERT(fx_playback_audio->capture_mode != NULL);
-  CU_ASSERT(fx_playback_audio->export != NULL);
+  CU_ASSERT(fx_playback_audio->do_export != NULL);
   CU_ASSERT(fx_playback_audio->filename != NULL);
   CU_ASSERT(fx_playback_audio->file_audio_channels != NULL);
   CU_ASSERT(fx_playback_audio->file_samplerate != NULL);
@@ -117,7 +117,7 @@ ags_fx_playback_audio_test_dispose()
   CU_ASSERT(fx_playback_audio->loop_start == NULL);
   CU_ASSERT(fx_playback_audio->loop_end == NULL);
   CU_ASSERT(fx_playback_audio->capture_mode == NULL);
-  CU_ASSERT(fx_playback_audio->export == NULL);
+  CU_ASSERT(fx_playback_audio->do_export == NULL);
   CU_ASSERT(fx_playback_audio->filename == NULL);
   CU_ASSERT(fx_playback_audio->file_audio_channels == NULL);
   CU_ASSERT(fx_playback_audio->file_samplerate == NULL);

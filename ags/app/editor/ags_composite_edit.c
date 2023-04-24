@@ -723,18 +723,22 @@ ags_composite_edit_set_scrollbar(AgsCompositeEdit *composite_edit, guint scrollb
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
-    gtk_widget_show((GtkWidget *) composite_edit->hscrollbar);
+    gtk_widget_set_visible((GtkWidget *) composite_edit->hscrollbar,
+			   TRUE);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) == 0){
-      gtk_widget_hide((GtkWidget *) composite_edit->hscrollbar);
+      gtk_widget_set_visible((GtkWidget *) composite_edit->hscrollbar,
+			     FALSE);
     }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
-    gtk_widget_show((GtkWidget *) composite_edit->vscrollbar);
+    gtk_widget_set_visible((GtkWidget *) composite_edit->vscrollbar,
+			   TRUE);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) == 0){
-      gtk_widget_hide((GtkWidget *) composite_edit->vscrollbar);
+      gtk_widget_set_visible((GtkWidget *) composite_edit->vscrollbar,
+			     FALSE);
     }
   }
   
@@ -759,18 +763,22 @@ ags_composite_edit_unset_scrollbar(AgsCompositeEdit *composite_edit, guint scrol
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (scrollbar)) != 0){
-    gtk_widget_hide((GtkWidget *) composite_edit->hscrollbar);
+    gtk_widget_set_visible((GtkWidget *) composite_edit->hscrollbar,
+			   FALSE);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_HORIZONTAL & (composite_edit->scrollbar)) != 0){
-      gtk_widget_show((GtkWidget *) composite_edit->hscrollbar);
+      gtk_widget_set_visible((GtkWidget *) composite_edit->hscrollbar,
+			     TRUE);
     }
   }
 
   if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (scrollbar)) != 0){
-    gtk_widget_hide((GtkWidget *) composite_edit->vscrollbar);
+    gtk_widget_set_visible((GtkWidget *) composite_edit->vscrollbar,
+			   FALSE);
   }else{
     if((AGS_COMPOSITE_EDIT_SCROLLBAR_VERTICAL & (composite_edit->scrollbar)) != 0){
-      gtk_widget_show((GtkWidget *) composite_edit->vscrollbar);
+      gtk_widget_set_visible((GtkWidget *) composite_edit->vscrollbar,
+			     TRUE);
     }
   }
 

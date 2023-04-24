@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -793,7 +793,7 @@ ags_core_audio_client_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, guint flags)
+ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, AgsCoreAudioClientFlags flags)
 {
   gboolean retval;  
   
@@ -826,7 +826,7 @@ ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, guint fl
  * Since: 3.0.0
  */
 void
-ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, guint flags)
+ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, AgsCoreAudioClientFlags flags)
 {
   GRecMutex *core_audio_client_mutex;
 
@@ -857,7 +857,7 @@ ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, guint fla
  * Since: 3.0.0
  */
 void
-ags_core_audio_client_unset_flags(AgsCoreAudioClient *core_audio_client, guint flags)
+ags_core_audio_client_unset_flags(AgsCoreAudioClient *core_audio_client, AgsCoreAudioClientFlags flags)
 {  
   GRecMutex *core_audio_client_mutex;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,10 @@
 #include <ags/audio/file/ags_sfz_sample.h>
 
 #include <sys/stat.h>
+
+#if !defined(AGS_W32API)
 #include <unistd.h>
+#endif
 
 #include <string.h>
 #include <strings.h>
@@ -1257,103 +1260,6 @@ void
 ags_sfz_file_close(AgsSoundContainer *sound_container)
 {
   //TODO:JK: implement me
-}
-
-/**
- * ags_sfz_file_test_flags:
- * @sfz_file: the #AgsSFZFile
- * @flags: the flags
- *
- * Test @flags to be set on @sfz_file.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *sfz_file_mutex;
-
-  if(!AGS_IS_SFZ_FILE(sfz_file)){
-    return(FALSE);
-  }
-
-  /* get sfz_file mutex */
-  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
-
-  /* test */
-  g_rec_mutex_lock(sfz_file_mutex);
-
-  retval = (flags & (sfz_file->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(sfz_file_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_sfz_file_set_flags:
- * @sfz_file: the #AgsSFZFile
- * @flags: see #AgsSFZFileFlags-enum
- *
- * Enable a feature of @sfz_file.
- *
- * Since: 3.0.0
- */
-void
-ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags)
-{
-  GRecMutex *sfz_file_mutex;
-
-  if(!AGS_IS_SFZ_FILE(sfz_file)){
-    return;
-  }
-
-  /* get sfz_file mutex */
-  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
-
-  //TODO:JK: add more?
-
-  /* set flags */
-  g_rec_mutex_lock(sfz_file_mutex);
-
-  sfz_file->flags |= flags;
-  
-  g_rec_mutex_unlock(sfz_file_mutex);
-}
-    
-/**
- * ags_sfz_file_unset_flags:
- * @sfz_file: the #AgsSFZFile
- * @flags: see #AgsSFZFileFlags-enum
- *
- * Disable a feature of @sfz_file.
- *
- * Since: 3.0.0
- */
-void
-ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags)
-{  
-  GRecMutex *sfz_file_mutex;
-
-  if(!AGS_IS_SFZ_FILE(sfz_file)){
-    return;
-  }
-
-  /* get sfz_file mutex */
-  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
-
-  //TODO:JK: add more?
-
-  /* unset flags */
-  g_rec_mutex_lock(sfz_file_mutex);
-
-  sfz_file->flags &= (~flags);
-  
-  g_rec_mutex_unlock(sfz_file_mutex);
 }
 
 /**

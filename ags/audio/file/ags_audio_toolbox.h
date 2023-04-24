@@ -66,7 +66,7 @@ struct _AgsAudioToolbox
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   guint64 offset;
   guint64 buffer_offset;

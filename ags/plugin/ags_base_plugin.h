@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,9 +115,9 @@ GType ags_base_plugin_flags_get_type();
 
 GRecMutex* ags_base_plugin_get_obj_mutex(AgsBasePlugin *base_plugin);
 
-gboolean ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags);
-void ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags);
-void ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags);
+gboolean ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, AgsBasePluginFlags flags);
+void ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, AgsBasePluginFlags flags);
+void ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, AgsBasePluginFlags flags);
 
 gchar* ags_base_plugin_get_filename(AgsBasePlugin *base_plugin);
 void ags_base_plugin_set_filename(AgsBasePlugin *base_plugin,

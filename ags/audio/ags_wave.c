@@ -670,7 +670,7 @@ ags_wave_get_obj_mutex(AgsWave *wave)
  * Since: 3.0.0
  */
 gboolean
-ags_wave_test_flags(AgsWave *wave, guint flags)
+ags_wave_test_flags(AgsWave *wave, AgsWaveFlags flags)
 {
   gboolean retval;
   
@@ -703,7 +703,7 @@ ags_wave_test_flags(AgsWave *wave, guint flags)
  * Since: 3.0.0
  */
 void
-ags_wave_set_flags(AgsWave *wave, guint flags)
+ags_wave_set_flags(AgsWave *wave, AgsWaveFlags flags)
 {
   GRecMutex *wave_mutex;
 
@@ -732,7 +732,7 @@ ags_wave_set_flags(AgsWave *wave, guint flags)
  * Since: 3.0.0
  */
 void
-ags_wave_unset_flags(AgsWave *wave, guint flags)
+ags_wave_unset_flags(AgsWave *wave, AgsWaveFlags flags)
 {
   GRecMutex *wave_mutex;
 
@@ -1729,7 +1729,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
  * 
  * Since: 3.1.0
  */
-guint
+AgsSoundcardFormat
 ags_wave_get_format(AgsWave *wave)
 {
   guint format;
@@ -1756,7 +1756,7 @@ ags_wave_get_format(AgsWave *wave)
  */
 void
 ags_wave_set_format(AgsWave *wave,
-		    guint format)
+		    AgsSoundcardFormat format)
 {
   GList *list_start, *list;
 

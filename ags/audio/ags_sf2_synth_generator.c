@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -936,7 +936,7 @@ ags_sf2_synth_generator_get_obj_mutex(AgsSF2SynthGenerator *sf2_synth_generator)
  * Since: 3.4.0
  */
 gboolean
-ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
+ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, AgsSF2SynthGeneratorFlags flags)
 {
   gboolean retval;
   
@@ -969,7 +969,7 @@ ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, gu
  * Since: 3.4.0
  */
 void
-ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
+ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, AgsSF2SynthGeneratorFlags flags)
 {
   GRecMutex *sf2_synth_generator_mutex;
 
@@ -998,7 +998,7 @@ ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, gui
  * Since: 3.4.0
  */
 void
-ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
+ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, AgsSF2SynthGeneratorFlags flags)
 {
   GRecMutex *sf2_synth_generator_mutex;
 
@@ -1386,7 +1386,7 @@ ags_sf2_synth_generator_set_buffer_size(AgsSF2SynthGenerator *sf2_synth_generato
  * 
  * Since: 3.4.0
  */
-guint
+AgsSoundcardFormat
 ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator)
 {
   guint format;
@@ -1412,7 +1412,7 @@ ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator)
  * Since: 3.4.0
  */
 void
-ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, guint format)
+ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, AgsSoundcardFormat format)
 {
   GRecMutex *sf2_synth_generator_mutex;
 

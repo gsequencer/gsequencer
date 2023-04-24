@@ -433,7 +433,7 @@ ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
  * 
  * Since: 3.13.0
  */
-guint
+AgsSoundcardFormat
 ags_time_stretch_util_get_format(AgsTimeStretchUtil *time_stretch_util)
 {
   if(time_stretch_util == NULL){
@@ -454,7 +454,7 @@ ags_time_stretch_util_get_format(AgsTimeStretchUtil *time_stretch_util)
  */
 void
 ags_time_stretch_util_set_format(AgsTimeStretchUtil *time_stretch_util,
-				 guint format)
+				 AgsSoundcardFormat format)
 {
   if(time_stretch_util == NULL){
     return;

@@ -84,9 +84,9 @@ GType ags_acceleration_flags_get_type();
 
 GRecMutex* ags_acceleration_get_obj_mutex(AgsAcceleration *acceleration);
 
-gboolean ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags);
-void ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags);
-void ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags);
+gboolean ags_acceleration_test_flags(AgsAcceleration *acceleration, AgsAccelerationFlags flags);
+void ags_acceleration_set_flags(AgsAcceleration *acceleration, AgsAccelerationFlags flags);
+void ags_acceleration_unset_flags(AgsAcceleration *acceleration, AgsAccelerationFlags flags);
 
 gint ags_acceleration_sort_func(gconstpointer a,
 				gconstpointer b);

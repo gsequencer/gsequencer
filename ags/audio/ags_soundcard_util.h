@@ -42,6 +42,10 @@ GRecMutex* ags_soundcard_util_get_obj_mutex(GObject *soundcard);
 
 void ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard);
 
+gint64 ags_soundcard_util_calc_system_time(GObject *soundcard);
+gint64 ags_soundcard_util_calc_time_samples(GObject *soundcard);
+gint64 ags_soundcard_util_calc_time_samples_absolute(GObject *soundcard);
+
 G_END_DECLS
 
 #endif /*__AGS_SOUNDCARD_UTIL_H__*/

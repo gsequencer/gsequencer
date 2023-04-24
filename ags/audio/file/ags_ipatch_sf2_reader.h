@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,7 +68,7 @@ struct _AgsIpatchSF2Reader
   GObject gobject;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
 
   GRecMutex obj_mutex;
 
@@ -110,10 +110,6 @@ struct _AgsIpatchSF2ReaderClass
 };
 
 GType ags_ipatch_sf2_reader_get_type();
-
-gboolean ags_ipatch_sf2_reader_test_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags);
-void ags_ipatch_sf2_reader_set_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags);
-void ags_ipatch_sf2_reader_unset_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags);
 
 #ifdef AGS_WITH_LIBINSTPATCH
 gboolean ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,

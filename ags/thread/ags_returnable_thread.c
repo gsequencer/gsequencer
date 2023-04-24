@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -402,7 +402,8 @@ ags_returnable_thread_resume(AgsThread *thread)
  * Since: 3.0.0
  */
 gboolean
-ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags)
+ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread,
+				 AgsReturnableThreadFlags flags)
 {
   gboolean retval;  
 
@@ -425,7 +426,8 @@ ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint f
  * Since: 3.0.0
  */
 void
-ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags)
+ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread,
+				AgsReturnableThreadFlags flags)
 {
   if(!AGS_IS_RETURNABLE_THREAD(returnable_thread)){
     return;
@@ -444,7 +446,8 @@ ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint fl
  * Since: 3.0.0
  */
 void
-ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint flags)
+ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread,
+				  AgsReturnableThreadFlags flags)
 {
   if(!AGS_IS_RETURNABLE_THREAD(returnable_thread)){
     return;

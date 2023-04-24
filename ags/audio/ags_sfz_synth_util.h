@@ -83,7 +83,7 @@ struct _AgsSFZSynthUtil
   gpointer im_buffer;
 
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
   guint orig_samplerate;
   
@@ -133,9 +133,9 @@ guint ags_sfz_synth_util_get_buffer_length(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
 					  guint buffer_length);
 
-guint ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util);
+AgsSoundcardFormat ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
-				   guint format);
+				   AgsSoundcardFormat format);
 
 guint ags_sfz_synth_util_get_samplerate(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,9 +82,12 @@ struct _AgsTaskCompletionClass
 GType ags_task_completion_get_type();
 GType ags_task_completion_flags_get_type();
 
-gboolean ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags);
-void ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags);
-void ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags);
+gboolean ags_task_completion_test_flags(AgsTaskCompletion *task_completion,
+					AgsTaskCompletionFlags flags);
+void ags_task_completion_set_flags(AgsTaskCompletion *task_completion,
+				   AgsTaskCompletionFlags flags);
+void ags_task_completion_unset_flags(AgsTaskCompletion *task_completion,
+				     AgsTaskCompletionFlags flags);
 
 void ags_task_completion_complete(AgsTaskCompletion *task_completion);
 

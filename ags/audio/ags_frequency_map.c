@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -705,7 +705,7 @@ ags_frequency_map_sort_func(gconstpointer a,
  * Since: 3.0.0
  */
 gboolean
-ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags)
+ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, AgsFrequencyMapFlags flags)
 {
   gboolean retval;
   
@@ -738,7 +738,7 @@ ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags)
  * Since: 3.0.0
  */
 void
-ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags)
+ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, AgsFrequencyMapFlags flags)
 {
   GRecMutex *frequency_map_mutex;
 
@@ -767,7 +767,7 @@ ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags)
  * Since: 3.0.0
  */
 void
-ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags)
+ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, AgsFrequencyMapFlags flags)
 {
   GRecMutex *frequency_map_mutex;
 

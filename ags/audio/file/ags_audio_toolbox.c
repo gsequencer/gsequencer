@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,20 +70,20 @@ void ags_audio_toolbox_set_presets(AgsSoundResource *sound_resource,
 				   guint channels,
 				   guint samplerate,
 				   guint buffer_size,
-				   guint format);
+				   AgsSoundcardFormat format);
 void ags_audio_toolbox_get_presets(AgsSoundResource *sound_resource,
 				   guint *channels,
 				   guint *samplerate,
 				   guint *buffer_size,
-				   guint *format);
+				   AgsSoundcardFormat *format);
 guint ags_audio_toolbox_read(AgsSoundResource *sound_resource,
 			     void *dbuffer, guint daudio_channels,
 			     guint audio_channel,
-			     guint frame_count, guint format);
+			     guint frame_count, AgsSoundcardFormat format);
 void ags_audio_toolbox_write(AgsSoundResource *sound_resource,
 			     void *sbuffer, guint saudio_channels,
 			     guint audio_channel,
-			     guint frame_count, guint format);
+			     guint frame_count, AgsSoundcardFormat format);
 void ags_audio_toolbox_flush(AgsSoundResource *sound_resource);
 void ags_audio_toolbox_seek(AgsSoundResource *sound_resource,
 			    gint64 frame_count, gint whence);
@@ -454,7 +454,7 @@ ags_audio_toolbox_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -905,7 +905,7 @@ ags_audio_toolbox_open(AgsSoundResource *sound_resource,
 
   AudioStreamBasicDescription *stream, *client_stream;
   
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
   guint audio_channels;
   guint32 prop_size;
@@ -1001,7 +1001,7 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
 {
   AgsAudioToolbox *audio_toolbox;
   
-  guint format;
+  AgsSoundcardFormat format;
   guint major_format;
   OSStatus retval;
   gboolean success;
@@ -1226,7 +1226,7 @@ ags_audio_toolbox_set_presets(AgsSoundResource *sound_resource,
 			      guint channels,
 			      guint samplerate,
 			      guint buffer_size,
-			      guint format)
+			      AgsSoundcardFormat format)
 {
   AgsAudioToolbox *audio_toolbox;
 
@@ -1245,7 +1245,7 @@ ags_audio_toolbox_get_presets(AgsSoundResource *sound_resource,
 			      guint *channels,
 			      guint *samplerate,
 			      guint *buffer_size,
-			      guint *format)
+			      AgsSoundcardFormat *format)
 {
   AgsAudioToolbox *audio_toolbox;
    
@@ -1445,7 +1445,7 @@ void
 ags_audio_toolbox_write(AgsSoundResource *sound_resource,
 			void *sbuffer, guint saudio_channels,
 			guint audio_channel,
-			guint frame_count, guint format)
+			guint frame_count, AgsSoundcardFormat format)
 {
   AgsAudioToolbox *audio_toolbox;
 

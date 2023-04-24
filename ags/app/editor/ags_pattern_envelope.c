@@ -155,11 +155,19 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   GtkCellRenderer *plot_renderer;
   GtkCellRenderer *renderer;
 
+  AgsApplicationContext *application_context;   
+
   GtkListStore  *model;
 
+  gdouble gui_scale_factor;
   gdouble width, height;
   guint i;
   
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(pattern_envelope),
 				 GTK_ORIENTATION_VERTICAL);
 
@@ -472,6 +480,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   
   pattern_envelope->attack_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								     0.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->attack_x,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_x,
@@ -481,6 +491,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->attack_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								     -1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->attack_y,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
@@ -510,6 +522,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->decay_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								    0.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->decay_x,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_x,
@@ -519,6 +533,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->decay_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								    -1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->decay_y,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
@@ -548,6 +564,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->sustain_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								      0.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->sustain_x,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_x,
@@ -557,6 +575,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->sustain_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								      -1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->sustain_y,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
@@ -586,6 +606,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->release_x = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								      0.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->release_x,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_x,
@@ -595,6 +617,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->release_y = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								      -1.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->release_y,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
@@ -617,6 +641,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   pattern_envelope->ratio = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
 								  0.0, 1.0, 0.001);
+  gtk_widget_set_size_request(pattern_envelope->ratio,
+			      (gint) (gui_scale_factor * AGS_PATTERN_ENVELOPE_SCALE_WIDTH), (gint) (gui_scale_factor * 16.0));
   gtk_scale_set_draw_value((GtkScale *) pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
@@ -1098,6 +1124,8 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
     preset = preset->next;
   }
 
+  gtk_widget_queue_draw(GTK_WIDGET(pattern_envelope->tree_view));
+  
   g_list_free_full(start_preset,
 		   g_object_unref);
 }
@@ -1274,6 +1302,8 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_preset_add_parameter(preset,
 			   "release", &value);
 
+  gtk_widget_queue_draw(GTK_WIDGET(pattern_envelope->tree_view));
+
   g_list_free_full(start_preset,
 		   g_object_unref);
 }
@@ -1321,6 +1351,8 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_audio_remove_preset(audio,
 			  (GObject *) preset);
+
+  gtk_widget_queue_draw(GTK_WIDGET(pattern_envelope->tree_view));
 
   g_list_free_full(start_preset,
 		   g_object_unref);

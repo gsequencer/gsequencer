@@ -91,7 +91,7 @@ struct _AgsMidiFile
 {
   GObject gobject;
 
-  guint flags;
+  AgsMidiFileFlags flags;
 
   GRecMutex obj_mutex;
 

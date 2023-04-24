@@ -29,9 +29,6 @@
 int ags_task_launcher_test_init_suite();
 int ags_task_launcher_test_clean_suite();
 
-void ags_task_launcher_test_test_flags();
-void ags_task_launcher_test_set_flags();
-void ags_task_launcher_test_unset_flags();
 void ags_task_launcher_test_add_task();
 void ags_task_launcher_test_add_task_all();
 void ags_task_launcher_test_add_cyclic_task();
@@ -55,50 +52,6 @@ int
 ags_task_launcher_test_clean_suite()
 {
   return(0);
-}
-
-void
-ags_task_launcher_test_test_flags()
-{
-  AgsTaskLauncher *task_launcher;
-
-  task_launcher = ags_task_launcher_new();
-
-  task_launcher->flags = 0;
-
-  CU_ASSERT(ags_task_launcher_test_flags(task_launcher, 0x1) == FALSE);
-
-  task_launcher->flags = 0x1;
-
-  CU_ASSERT(ags_task_launcher_test_flags(task_launcher, 0x1) == TRUE);
-}
-
-void
-ags_task_launcher_test_set_flags()
-{
-  AgsTaskLauncher *task_launcher;
-
-  task_launcher = ags_task_launcher_new();
-
-  task_launcher->flags = 0;
-
-  ags_task_launcher_set_flags(task_launcher, 0x1);
-
-  CU_ASSERT((0x1 & (task_launcher->flags)) != 0);
-}
-
-void
-ags_task_launcher_test_unset_flags()
-{
-  AgsTaskLauncher *task_launcher;
-
-  task_launcher = ags_task_launcher_new();
-
-  task_launcher->flags = 0x1;
-
-  ags_task_launcher_unset_flags(task_launcher, 0x1);
-
-  CU_ASSERT((0x1 & (task_launcher->flags)) == 0);
 }
 
 void
@@ -220,10 +173,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsTaskLauncher test flags", ags_task_launcher_test_test_flags) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTaskLauncher set flags", ags_task_launcher_test_set_flags) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTaskLauncher unset flags", ags_task_launcher_test_unset_flags) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTaskLauncher add task", ags_task_launcher_test_add_task) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsTaskLauncher add task", ags_task_launcher_test_add_task) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTaskLauncher add task all", ags_task_launcher_test_add_task_all) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTaskLauncher add cyclic task", ags_task_launcher_test_add_cyclic_task) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTaskLauncher remove cyclic task", ags_task_launcher_test_remove_cyclic_task) == NULL)){

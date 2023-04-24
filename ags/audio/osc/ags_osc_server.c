@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -730,7 +730,7 @@ ags_osc_server_finalize(GObject *gobject)
  * Since: 3.0.0
  */
 gboolean
-ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
+ags_osc_server_test_flags(AgsOscServer *osc_server, AgsOscServerFlags flags)
 {
   gboolean retval;  
   
@@ -763,7 +763,7 @@ ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
  * Since: 3.0.0
  */
 void
-ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
+ags_osc_server_set_flags(AgsOscServer *osc_server, AgsOscServerFlags flags)
 {
   GRecMutex *osc_server_mutex;
 
@@ -792,7 +792,7 @@ ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
  * Since: 3.0.0
  */
 void
-ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
+ags_osc_server_unset_flags(AgsOscServer *osc_server, AgsOscServerFlags flags)
 {
   GRecMutex *osc_server_mutex;
 

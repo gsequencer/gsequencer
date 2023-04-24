@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,12 +49,12 @@ void* ags_sfz_instrument_loader_run(void *ptr);
 
 /**
  * SECTION:ags_sfz_instrument_loader
- * @short_description: load Soundfont2 MIDI locale asynchronously
+ * @short_description: load SFZ instrument asynchronously
  * @title: AgsSFZInstrumentLoader
  * @section_id:
  * @include: ags/plugin/ags_sfz_instrument_loader.h
  *
- * The #AgsSFZInstrumentLoader loads Soundfont2 audio data of MIDI locale asynchronously.
+ * The #AgsSFZInstrumentLoader loads SFZ audio data of instrument asynchronously.
  */
 
 enum{
@@ -62,7 +62,7 @@ enum{
   PROP_AUDIO,
   PROP_FILENAME,
   PROP_AUDIO_CONTAINER,
-  PROP_TEMPLATE,
+  PROP_SYNTH_TEMPLATE,
   PROP_SYNTH,
 };
 
@@ -167,18 +167,18 @@ ags_sfz_instrument_loader_class_init(AgsSFZInstrumentLoaderClass *sfz_instrument
 				  param_spec);
 
   /**
-   * AgsSFZInstrumentLoader:template:
+   * AgsSFZInstrumentLoader:synth-template:
    *
-   * The assigned template.
+   * The assigned synth template.
    * 
    * Since: 3.17.0
    */
-  param_spec = g_param_spec_pointer("template",
-				    i18n_pspec("template"),
-				    i18n_pspec("The template"),
+  param_spec = g_param_spec_pointer("synth-template",
+				    i18n_pspec("synth template"),
+				    i18n_pspec("The synth template"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_TEMPLATE,
+				  PROP_SYNTH_TEMPLATE,
 				  param_spec);
 
   /**
@@ -213,7 +213,7 @@ ags_sfz_instrument_loader_init(AgsSFZInstrumentLoader *sfz_instrument_loader)
 
   sfz_instrument_loader->filename = NULL;
   
-  sfz_instrument_loader->template = NULL;
+  sfz_instrument_loader->synth_template = NULL;
   sfz_instrument_loader->synth = NULL;
 
   sfz_instrument_loader->audio_container = NULL;
@@ -312,15 +312,15 @@ ags_sfz_instrument_loader_set_property(GObject *gobject,
     g_rec_mutex_unlock(sfz_instrument_loader_mutex);
   }
   break;
-  case PROP_TEMPLATE:
+  case PROP_SYNTH_TEMPLATE:
   {
-    AgsSFZSynthUtil *template;
+    AgsSFZSynthUtil *synth_template;
 
-    template = g_value_get_pointer(value);
+    synth_template = g_value_get_pointer(value);
       
     g_rec_mutex_lock(sfz_instrument_loader_mutex);
 
-    sfz_instrument_loader->template = template;
+    sfz_instrument_loader->synth_template = synth_template;
       
     g_rec_mutex_unlock(sfz_instrument_loader_mutex);
   }
@@ -387,11 +387,11 @@ ags_sfz_instrument_loader_get_property(GObject *gobject,
     g_rec_mutex_unlock(sfz_instrument_loader_mutex);
   }
   break;
-  case PROP_TEMPLATE:
+  case PROP_SYNTH_TEMPLATE:
   {
     g_rec_mutex_lock(sfz_instrument_loader_mutex);
       
-    g_value_set_pointer(value, sfz_instrument_loader->template);
+    g_value_set_pointer(value, sfz_instrument_loader->synth_template);
 
     g_rec_mutex_unlock(sfz_instrument_loader_mutex);
   }
@@ -468,7 +468,7 @@ ags_sfz_instrument_loader_finalize(GObject *gobject)
  * Since: 3.17.0
  */
 gboolean
-ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags)
+ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags)
 {
   gboolean retval;
   
@@ -501,7 +501,7 @@ ags_sfz_instrument_loader_test_flags(AgsSFZInstrumentLoader *sfz_instrument_load
  * Since: 3.17.0
  */
 void
-ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags)
+ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags)
 {
   GRecMutex *sfz_instrument_loader_mutex;
 
@@ -530,7 +530,7 @@ ags_sfz_instrument_loader_set_flags(AgsSFZInstrumentLoader *sfz_instrument_loade
  * Since: 3.17.0
  */
 void
-ags_sfz_instrument_loader_unset_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, guint flags)
+ags_sfz_instrument_loader_unset_flags(AgsSFZInstrumentLoader *sfz_instrument_loader, AgsSFZInstrumentLoaderFlags flags)
 {
   GRecMutex *sfz_instrument_loader_mutex;
 
@@ -560,7 +560,7 @@ ags_sfz_instrument_loader_run(void *ptr)
 
   guint samplerate;
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   
   GRecMutex *audio_container_manager_mutex;
 
@@ -633,63 +633,70 @@ ags_sfz_instrument_loader_run(void *ptr)
     
     AgsApplicationContext *application_context;
 
-    AgsSFZSynthUtil *template;
+    AgsSFZSynthUtil *synth_template;
     
     application_context = ags_application_context_get_instance();
 
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
-    template =
-      sfz_instrument_loader->template = ags_sfz_synth_util_alloc();
+    synth_template =
+      sfz_instrument_loader->synth_template = ags_sfz_synth_util_alloc();
     
-    template->sfz_file = sfz_instrument_loader->audio_container;
+    synth_template->sfz_file = sfz_instrument_loader->audio_container;
 
-    if(template->sfz_file != NULL){
-      g_object_ref(template->sfz_file);
+    if(synth_template->sfz_file != NULL){
+      g_object_ref(synth_template->sfz_file);
     }
     
-    template->source = ags_stream_alloc(buffer_length,
-					format);
+    synth_template->source = ags_stream_alloc(buffer_length,
+					      format);
 
-    template->sample_buffer = ags_stream_alloc(buffer_length,
-					       AGS_SOUNDCARD_DOUBLE);
+    ags_sfz_synth_util_set_buffer_length(synth_template,
+					 buffer_length);
+    ags_sfz_synth_util_set_samplerate(synth_template,
+				      samplerate);
+    ags_sfz_synth_util_set_format(synth_template,
+				  format);
+    
+    synth_template->sample_buffer = ags_stream_alloc(buffer_length,
+						     AGS_SOUNDCARD_DOUBLE);
 
-    template->im_buffer = ags_stream_alloc(buffer_length,
-					   AGS_SOUNDCARD_DOUBLE);
+    synth_template->im_buffer = ags_stream_alloc(buffer_length,
+						 AGS_SOUNDCARD_DOUBLE);
 
     /*  */
-    ags_common_pitch_util_set_source(template->pitch_util,
-				     template->pitch_type,
-				     template->sample_buffer);
+    ags_common_pitch_util_set_source(synth_template->pitch_util,
+				     synth_template->pitch_type,
+				     synth_template->sample_buffer);
 
-    ags_common_pitch_util_set_destination(template->pitch_util,
-					  template->pitch_type,
-					  template->im_buffer);
+    ags_common_pitch_util_set_destination(synth_template->pitch_util,
+					  synth_template->pitch_type,
+					  synth_template->im_buffer);
     
-    ags_common_pitch_util_set_buffer_length(template->pitch_util,
-					    template->pitch_type,
+    ags_common_pitch_util_set_buffer_length(synth_template->pitch_util,
+					    synth_template->pitch_type,
 					    buffer_length);
-    ags_common_pitch_util_set_format(template->pitch_util,
-				     template->pitch_type,
+    ags_common_pitch_util_set_format(synth_template->pitch_util,
+				     synth_template->pitch_type,
 				     AGS_SOUNDCARD_DOUBLE);
-    ags_common_pitch_util_set_samplerate(template->pitch_util,
-					 template->pitch_type,
+    ags_common_pitch_util_set_samplerate(synth_template->pitch_util,
+					 synth_template->pitch_type,
 					 samplerate);
 
-    template->volume_util->source = template->im_buffer;
+    synth_template->volume_util->source = synth_template->im_buffer;
     
-    template->volume_util->destination = template->im_buffer;
+    synth_template->volume_util->destination = synth_template->im_buffer;
 
-    template->volume_util->buffer_length = buffer_length;
-    template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
+    synth_template->volume_util->buffer_length = buffer_length;
+    synth_template->volume_util->format = AGS_SOUNDCARD_DOUBLE;
 
-    template->samplerate = samplerate;
-    template->buffer_length = buffer_length;
-    template->format = format;
+    synth_template->samplerate = samplerate;
+    synth_template->buffer_length = buffer_length;
+    synth_template->format = format;
 
-    ags_sfz_synth_util_load_instrument(template);
+    ags_sfz_synth_util_load_instrument(synth_template);
     
-    apply_sfz_instrument = ags_apply_sfz_instrument_new(template,
+    apply_sfz_instrument = ags_apply_sfz_instrument_new(synth_template,
 							sfz_instrument_loader->synth);
     
     ags_task_launcher_add_task(task_launcher,
@@ -849,50 +856,50 @@ ags_sfz_instrument_loader_set_audio_container(AgsSFZInstrumentLoader *sfz_instru
 }
 
 /**
- * ags_sfz_instrument_loader_get_template:
+ * ags_sfz_instrument_loader_get_synth_template:
  * @sfz_instrument_loader: the #AgsSFZInstrumentLoader
  * 
- * Get #AgsSFZSynthUtil-struct template of @sfz_instrument_loader.
+ * Get #AgsSFZSynthUtil-struct synth template of @sfz_instrument_loader.
  * 
  * Returns: the assigned #AgsSFZSynthUtil-struct
  * 
  * Since: 3.17.0
  */
 AgsSFZSynthUtil*
-ags_sfz_instrument_loader_get_template(AgsSFZInstrumentLoader *sfz_instrument_loader)
+ags_sfz_instrument_loader_get_synth_template(AgsSFZInstrumentLoader *sfz_instrument_loader)
 {
-  AgsSFZSynthUtil *template;
+  AgsSFZSynthUtil *synth_template;
 
   if(!AGS_IS_SFZ_INSTRUMENT_LOADER(sfz_instrument_loader)){
     return(NULL);
   }
 
   g_object_get(sfz_instrument_loader,
-	       "template", &template,
+	       "synth-template", &synth_template,
 	       NULL);
 
-  return(template);
+  return(synth_template);
 }
 
 /**
- * ags_sfz_instrument_loader_set_template:
+ * ags_sfz_instrument_loader_set_synth_template:
  * @sfz_instrument_loader: the #AgsSFZInstrumentLoader
- * @template: the #AgsSFZSynthUtil-struct
+ * @synth_template: the #AgsSFZSynthUtil-struct
  * 
- * Set #AgsSFZSynthUtil-struct template of @sfz_instrument_loader.
+ * Set #AgsSFZSynthUtil-struct synth template of @sfz_instrument_loader.
  * 
  * Since: 3.17.0
  */
 void
-ags_sfz_instrument_loader_set_template(AgsSFZInstrumentLoader *sfz_instrument_loader,
-				       AgsSFZSynthUtil *template)
+ags_sfz_instrument_loader_set_synth_template(AgsSFZInstrumentLoader *sfz_instrument_loader,
+					     AgsSFZSynthUtil *synth_template)
 {
   if(!AGS_IS_SFZ_INSTRUMENT_LOADER(sfz_instrument_loader)){
     return;
   }
 
   g_object_set(sfz_instrument_loader,
-	       "template", template,
+	       "synth-template", synth_template,
 	       NULL);
 }
 

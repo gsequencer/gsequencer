@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,7 @@ struct _AgsSFZSynthGenerator
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gchar *pitch_type;
   
@@ -103,8 +103,8 @@ void ags_sfz_synth_generator_set_samplerate(AgsSFZSynthGenerator *sfz_synth_gene
 guint ags_sfz_synth_generator_get_buffer_size(AgsSFZSynthGenerator *sfz_synth_generator);
 void ags_sfz_synth_generator_set_buffer_size(AgsSFZSynthGenerator *sfz_synth_generator, guint buffer_size);
 
-guint ags_sfz_synth_generator_get_format(AgsSFZSynthGenerator *sfz_synth_generator);
-void ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, guint format);
+AgsSoundcardFormat ags_sfz_synth_generator_get_format(AgsSFZSynthGenerator *sfz_synth_generator);
+void ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, AgsSoundcardFormat format);
 
 gchar* ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator);
 void ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, gchar *pitch_type);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,8 +58,8 @@ struct _AgsSndfile
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsSndfileFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -93,9 +93,9 @@ struct _AgsSndfileClass
 GType ags_sndfile_get_type();
 GType ags_sndfile_flags_get_type();
 
-gboolean ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags);
-void ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags);
-void ags_sndfile_unset_flags(AgsSndfile *sndfile, guint flags);
+gboolean ags_sndfile_test_flags(AgsSndfile *sndfile, AgsSndfileFlags flags);
+void ags_sndfile_set_flags(AgsSndfile *sndfile, AgsSndfileFlags flags);
+void ags_sndfile_unset_flags(AgsSndfile *sndfile, AgsSndfileFlags flags);
 
 gboolean ags_sndfile_check_suffix(gchar *filename);
 

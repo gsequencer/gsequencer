@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 
 /**
  * AgsAudioSignalFlags:
- * @AGS_AUDIO_SIGNAL_TEMPLATE: the audio signal acts as a template
+ * @AGS_AUDIO_SIGNAL_TEMPLATE: the audio signal acts as template
  * @AGS_AUDIO_SIGNAL_RT_TEMPLATE: the audio signal acts as a realtime template
  * @AGS_AUDIO_SIGNAL_MASTER: the audio signal needs master
  * @AGS_AUDIO_SIGNAL_FEED: the audio signal needs feed
@@ -56,21 +56,21 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  2,
-  AGS_AUDIO_SIGNAL_RT_TEMPLATE          = 1 <<  3,
-  AGS_AUDIO_SIGNAL_MASTER               = 1 <<  4,
-  AGS_AUDIO_SIGNAL_FEED                 = 1 <<  5,
-  AGS_AUDIO_SIGNAL_RECYCLED             = 1 <<  6,
-  AGS_AUDIO_SIGNAL_STREAM               = 1 <<  7,
-  AGS_AUDIO_SIGNAL_SLICE_ALLOC          = 1 <<  8,            
+  AGS_AUDIO_SIGNAL_TEMPLATE                     = 1,
+  AGS_AUDIO_SIGNAL_RT_TEMPLATE                  = 1 <<  1,
+  AGS_AUDIO_SIGNAL_MASTER                       = 1 <<  2,
+  AGS_AUDIO_SIGNAL_FEED                         = 1 <<  3,
+  AGS_AUDIO_SIGNAL_RECYCLED                     = 1 <<  4,
+  AGS_AUDIO_SIGNAL_STREAM                       = 1 <<  5,
+  AGS_AUDIO_SIGNAL_SLICE_ALLOC                  = 1 <<  6,            
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsAudioSignalFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -86,7 +86,7 @@ struct _AgsAudioSignal
 
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
   
   guint length;
@@ -105,7 +105,7 @@ struct _AgsAudioSignal
   guint timbre_start;
   guint timbre_end;
 
-  GObject *template;
+  GObject *default_template;
   
   GObject *rt_template;
   GList *note;
@@ -139,18 +139,18 @@ GRecMutex* ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_lock(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal);
 
-gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags);
-void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags);
-void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags);
+gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
+void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
+void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, AgsAudioSignalFlags flags);
 
 void* ags_stream_alloc(guint buffer_size,
-		       guint format);
+		       AgsSoundcardFormat format);
 void ags_stream_free(void *buffer);
 
 void* ags_stream_slice_alloc(guint buffer_size,
-			     guint format);
+			     AgsSoundcardFormat format);
 void ags_stream_slice_free(guint buffer_size,
-			   guint format,
+			   AgsSoundcardFormat format,
 			   void *buffer);
 
 /* parent */
@@ -171,8 +171,8 @@ void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint sampler
 guint ags_audio_signal_get_buffer_size(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
 
-guint ags_audio_signal_get_format(AgsAudioSignal *audio_signal);
-void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format);
+AgsSoundcardFormat ags_audio_signal_get_format(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, AgsSoundcardFormat format);
 
 /* children */
 GList* ags_audio_signal_get_note(AgsAudioSignal *audio_signal);
@@ -197,24 +197,24 @@ void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint len
 void ags_audio_signal_clear(AgsAudioSignal *audio_signal);
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
-				       AgsAudioSignal *template);
+				       AgsAudioSignal *default_template);
 
 void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
-			   AgsAudioSignal *template,
+			   AgsAudioSignal *default_template,
 			   guint frame_count);
 void ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
-				    AgsAudioSignal *template,
+				    AgsAudioSignal *default_template,
 				    guint frame_count, guint old_frame_count,
 				    gboolean do_open, gboolean do_close);
 
 void ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
-				AgsAudioSignal *template,
+				AgsAudioSignal *default_template,
 				guint frame_count, guint old_frame_count);
 void ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
-				    AgsAudioSignal *template,
+				    AgsAudioSignal *default_template,
 				    guint frame_count, guint old_frame_count);
 void ags_audio_signal_close_feed(AgsAudioSignal *audio_signal,
-				 AgsAudioSignal *template,
+				 AgsAudioSignal *default_template,
 				 guint frame_count, guint old_frame_count);
 
 /* query */
@@ -222,8 +222,8 @@ guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
 gboolean ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
 					AgsNote *note);
 
-AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);
-GList* ags_audio_signal_get_rt_template(GList *audio_signal);
+AgsAudioSignal* ags_audio_signal_get_default_template(GList *audio_signal);
+GList* ags_audio_signal_get_rt_default_template(GList *audio_signal);
 
 GList* ags_audio_signal_find_stream_current(GList *audio_signal,
 					   GObject *recall_id);

@@ -450,7 +450,7 @@ ags_apply_sfz_synth_launch(AgsTask *task)
 		   "audio-signal", &list_start,
 		   NULL);
 	
-      audio_signal = ags_audio_signal_get_template(list_start);
+      audio_signal = ags_audio_signal_get_default_template(list_start);
 
       if(audio_signal == NULL){
 	audio_signal = ags_audio_signal_new(output_soundcard,
@@ -465,6 +465,10 @@ ags_apply_sfz_synth_launch(AgsTask *task)
 	
       /* compute audio signal */
       note = base_note + (gdouble) i;
+
+      g_object_set(sfz_synth_generator,
+		   "frame-count", requested_frame_count,
+		   NULL);
       
       ags_sfz_synth_generator_compute(sfz_synth_generator,
 				      (GObject *) audio_signal,

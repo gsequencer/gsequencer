@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2022 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -157,21 +157,21 @@ struct _AgsAlsaMidiin
 {
   GObject gobject;
 
-  guint flags;
-  volatile guint sync_flags;
+  AgsAlsaMidiinFlags flags;
+  volatile AgsAlsaMidiinSyncFlags sync_flags;
 
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
     
-  guint app_buffer_mode;
+  AgsAlsaMidiinAppBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
 
   char **app_buffer;
   guint app_buffer_size[AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
 
-  guint backend_buffer_mode;
+  AgsAlsaMidiinBackendBufferMode backend_buffer_mode;
   
   char **backend_buffer;
   guint backend_buffer_size[AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE];
@@ -210,9 +210,9 @@ GType ags_alsa_midiin_get_type();
 
 GQuark ags_alsa_midiin_error_quark();
 
-gboolean ags_alsa_midiin_test_flags(AgsAlsaMidiin *alsa_midiin, guint flags);
-void ags_alsa_midiin_set_flags(AgsAlsaMidiin *alsa_midiin, guint flags);
-void ags_alsa_midiin_unset_flags(AgsAlsaMidiin *alsa_midiin, guint flags);
+gboolean ags_alsa_midiin_test_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags);
+void ags_alsa_midiin_set_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags);
+void ags_alsa_midiin_unset_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags);
 
 void ags_alsa_midiin_switch_buffer_flag(AgsAlsaMidiin *alsa_midiin);
 

@@ -48,7 +48,7 @@ struct _AgsFrequencyAliaseUtil
   guint destination_stride;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
 };
 
@@ -88,9 +88,9 @@ guint ags_frequency_aliase_util_get_buffer_length(AgsFrequencyAliaseUtil *freque
 void ags_frequency_aliase_util_set_buffer_length(AgsFrequencyAliaseUtil *frequency_aliase_util,
 						 guint buffer_length);
 
-guint ags_frequency_aliase_util_get_format(AgsFrequencyAliaseUtil *frequency_aliase_util);
+AgsSoundcardFormat ags_frequency_aliase_util_get_format(AgsFrequencyAliaseUtil *frequency_aliase_util);
 void ags_frequency_aliase_util_set_format(AgsFrequencyAliaseUtil *frequency_aliase_util,
-					  guint format);
+					  AgsSoundcardFormat format);
 
 void ags_frequency_aliase_util_process_s8(AgsFrequencyAliaseUtil *frequency_aliase_util);
 void ags_frequency_aliase_util_process_s16(AgsFrequencyAliaseUtil *frequency_aliase_util);

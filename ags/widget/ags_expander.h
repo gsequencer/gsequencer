@@ -48,7 +48,7 @@ struct _AgsExpander
 {
   GtkBox box;
   
-  guint flags;
+  AgsExpanderFlags flags;
 
   GtkExpander *expander;
   GtkGrid *grid;

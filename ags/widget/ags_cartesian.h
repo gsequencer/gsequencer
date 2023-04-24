@@ -109,7 +109,7 @@ struct _AgsCartesian
 {
   GtkWidget widget;
 
-  guint flags;
+  AgsCartesianFlags flags;
   
   gdouble x_margin;
   gdouble y_margin;
@@ -221,7 +221,7 @@ struct _AgsCartesianClass
 
 struct _AgsPlot
 {			
-  guint fill_flags;
+  AgsPlotFillFlags fill_flags;
 
   guint n_points;
   gboolean join_points;

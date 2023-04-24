@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -732,7 +732,7 @@ ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_co
  * Since: 3.0.0
  */
 gboolean
-ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags)
+ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, AgsOscXmlrpcControllerFlags flags)
 {
   gboolean retval;  
   
@@ -765,7 +765,7 @@ ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controll
  * Since: 3.0.0
  */
 void
-ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags)
+ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, AgsOscXmlrpcControllerFlags flags)
 {
   GRecMutex *controller_mutex;
 
@@ -794,7 +794,7 @@ ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controlle
  * Since: 3.0.0
  */
 void
-ags_osc_xmlrpc_controller_unset_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags)
+ags_osc_xmlrpc_controller_unset_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, AgsOscXmlrpcControllerFlags flags)
 {
   GRecMutex *controller_mutex;
 

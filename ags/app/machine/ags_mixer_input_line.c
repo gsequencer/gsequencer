@@ -124,6 +124,15 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   AgsLineMember *line_member;
   GtkWidget *widget;
 
+  AgsApplicationContext *application_context;   
+
+  gdouble gui_scale_factor;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
   /* volume indicator */
   line_member =
     mixer_input_line->volume_indicator = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
@@ -141,7 +150,20 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 			   0, 0,
 			   1, 1);
   
-  widget = ags_line_member_get_widget(line_member);
+  widget = ags_line_member_get_widget(line_member);  
+
+  ags_indicator_set_segment_width(widget,
+				  (gint) (gui_scale_factor * 20.0));
+  ags_indicator_set_segment_height(widget,
+				   (gint) (gui_scale_factor * ((gdouble) AGS_MIXER_INPUT_LINE_SCALE_HEIGHT - 28.0) / 10.0));
+  ags_indicator_set_segment_padding(widget,
+				    (gint) (gui_scale_factor * 2));
+
+  gtk_widget_set_margin_top(widget,
+			    4);
+  gtk_widget_set_margin_bottom(widget,
+			       4);
+
   AGS_LINE(mixer_input_line)->indicator = widget;
   
   g_hash_table_insert(ags_line_indicator_refresh,
@@ -165,6 +187,9 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 
   widget = ags_line_member_get_widget(line_member);
 
+  gtk_widget_set_size_request(widget,
+			      -1, (gint) (gui_scale_factor * (gdouble) AGS_MIXER_INPUT_LINE_SCALE_HEIGHT));
+  
   gtk_scale_set_digits(GTK_SCALE(widget),
 		       3);
 

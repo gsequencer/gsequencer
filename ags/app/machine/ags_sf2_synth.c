@@ -24,6 +24,12 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 
+#include <ags/ags_api_config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/i18n.h>
 
 void ags_sf2_synth_class_init(AgsSF2SynthClass *sf2_synth);
@@ -471,9 +477,9 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   adjustment = ags_dial_get_adjustment(sf2_synth->synth_octave);
 
   gtk_adjustment_set_lower(adjustment,
-			   -6.0);
+			   -12.0);
   gtk_adjustment_set_upper(adjustment,
-			   6.0);
+			   12.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);

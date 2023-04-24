@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,8 +90,8 @@ ags_audio_buffer_util_free(gpointer ptr)
  *
  * Since: 3.0.0
  */
-guint
-ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
+AgsAudioBufferUtilFormat
+ags_audio_buffer_util_format_from_soundcard(AgsSoundcardFormat soundcard_format)
 {
   switch(soundcard_format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -131,8 +131,8 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
  * Since: 3.0.0
  */
 guint
-ags_audio_buffer_util_get_copy_mode(guint destination_format,
-				    guint source_format)
+ags_audio_buffer_util_get_copy_mode(AgsAudioBufferUtilFormat destination_format,
+				    AgsAudioBufferUtilFormat source_format)
 {
   guint copy_mode;
 
@@ -13660,7 +13660,7 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
 void
 ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
 					    void *source, guint schannels, guint soffset,
-					    guint count, guint mode)
+					    guint count, AgsAudioBufferUtilCopyMode mode)
 {
   if(destination == NULL ||
      source == NULL){

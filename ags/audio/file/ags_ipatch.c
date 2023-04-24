@@ -717,7 +717,7 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags)
+ags_ipatch_test_flags(AgsIpatch *ipatch, AgsIpatchFlags flags)
 {
   gboolean retval;  
   
@@ -750,7 +750,7 @@ ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags)
  * Since: 3.0.0
  */
 void
-ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags)
+ags_ipatch_set_flags(AgsIpatch *ipatch, AgsIpatchFlags flags)
 {
   GRecMutex *ipatch_mutex;
 
@@ -781,7 +781,7 @@ ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags)
  * Since: 3.0.0
  */
 void
-ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags)
+ags_ipatch_unset_flags(AgsIpatch *ipatch, AgsIpatchFlags flags)
 {  
   GRecMutex *ipatch_mutex;
 

@@ -70,7 +70,7 @@ struct _AgsSF2SynthGenerator
 {
   AgsFunction function;
 
-  guint flags;
+  AgsSF2SynthGeneratorFlags flags;
   
   GRecMutex obj_mutex;
 
@@ -84,7 +84,7 @@ struct _AgsSF2SynthGenerator
   
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   gchar *pitch_type;
   
@@ -114,9 +114,9 @@ GType ags_sf2_synth_generator_get_type();
 
 GRecMutex* ags_sf2_synth_generator_get_obj_mutex(AgsSF2SynthGenerator *sf2_synth_generator);
 
-gboolean ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags);
-void ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags);
-void ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags);
+gboolean ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, AgsSF2SynthGeneratorFlags flags);
+void ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, AgsSF2SynthGeneratorFlags flags);
+void ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, AgsSF2SynthGeneratorFlags flags);
 
 gchar* ags_sf2_synth_generator_get_filename(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_filename(AgsSF2SynthGenerator *sf2_synth_generator, gchar *filename);
@@ -139,8 +139,8 @@ void ags_sf2_synth_generator_set_samplerate(AgsSF2SynthGenerator *sf2_synth_gene
 guint ags_sf2_synth_generator_get_buffer_size(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_buffer_size(AgsSF2SynthGenerator *sf2_synth_generator, guint buffer_size);
 
-guint ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator);
-void ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, guint format);
+AgsSoundcardFormat ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, AgsSoundcardFormat format);
 
 gchar* ags_sf2_synth_generator_get_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator, gchar *pitch_type);

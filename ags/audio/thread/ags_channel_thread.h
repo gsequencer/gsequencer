@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,13 +56,13 @@ typedef enum{
   AGS_CHANNEL_THREAD_STATUS_WAIT            = 1 <<  1,
   AGS_CHANNEL_THREAD_STATUS_DONE_SYNC       = 1 <<  2,
   AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC       = 1 <<  3,
-}AgsChannelThreadFlags;
+}AgsChannelThreadStatusFlags;
 
 struct _AgsChannelThread
 {
   AgsThread thread;
 
-  volatile guint status_flags;
+  volatile AgsChannelThreadStatusFlags status_flags;
 
   GObject *default_output_soundcard;
     
@@ -94,9 +94,9 @@ struct _AgsChannelThreadClass
 GType ags_channel_thread_get_type();
 
 /* flags */
-gboolean ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint status_flags);
-void ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint status_flags);
-void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint status_flags);
+gboolean ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags);
+void ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags);
+void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, AgsChannelThreadStatusFlags status_flags);
 
 gboolean ags_channel_thread_get_processing(AgsChannelThread *channel_thread);
 void ags_channel_thread_set_processing(AgsChannelThread *channel_thread,

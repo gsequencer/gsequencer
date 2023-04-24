@@ -1341,7 +1341,7 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container
 GList*
 ags_recall_container_find(GList *recall_container,
 			  GType gtype,
-			  guint find_flags,
+			  AgsRecallContainerFindFlags find_flags,
 			  AgsRecallID *recall_id)
 {
   AgsRecallContainer *current;

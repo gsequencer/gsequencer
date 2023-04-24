@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -407,7 +407,7 @@ ags_fluid_interpolate_4th_order_util_set_buffer_length(AgsFluidInterpolate4thOrd
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_fluid_interpolate_4th_order_util_get_format(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util)
 {
   if(fluid_interpolate_4th_order_util == NULL){
@@ -428,7 +428,7 @@ ags_fluid_interpolate_4th_order_util_get_format(AgsFluidInterpolate4thOrderUtil 
  */
 void
 ags_fluid_interpolate_4th_order_util_set_format(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,
-						guint format)
+						AgsSoundcardFormat format)
 {
   if(fluid_interpolate_4th_order_util == NULL){
     return;
@@ -666,7 +666,7 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
   ags_fluid_interpolate_4th_order_util_config();
   
   dsp_phase = 0;
-
+  
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 

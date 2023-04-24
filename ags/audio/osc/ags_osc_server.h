@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,8 +84,8 @@ struct _AgsOscServer
 {
   GObject gobject;
 
-  guint flags;
-  guint connectable_flags;
+  AgsOscServerFlags flags;
+  AgsConnectableFlags connectable_flags;
   
   GRecMutex obj_mutex;
 
@@ -132,9 +132,9 @@ struct _AgsOscServerClass
 GType ags_osc_server_get_type(void);
 GType ags_osc_server_flags_get_type();
 
-gboolean ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags);
-void ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags);
-void ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags);
+gboolean ags_osc_server_test_flags(AgsOscServer *osc_server, AgsOscServerFlags flags);
+void ags_osc_server_set_flags(AgsOscServer *osc_server, AgsOscServerFlags flags);
+void ags_osc_server_unset_flags(AgsOscServer *osc_server, AgsOscServerFlags flags);
 
 /* fields */
 void ags_osc_server_add_connection(AgsOscServer *osc_server,

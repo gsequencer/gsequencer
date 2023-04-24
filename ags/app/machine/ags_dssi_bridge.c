@@ -376,6 +376,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   gtk_widget_set_halign(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
 			GTK_ALIGN_FILL);
   
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->parent_bridge = AGS_MACHINE(dssi_bridge)->bridge;
   gtk_grid_attach(GTK_GRID(AGS_MACHINE(dssi_bridge)->bridge),
 		  AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
 		  0, 0,

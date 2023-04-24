@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1294,7 +1294,7 @@ ags_recall_set_property(GObject *gobject,
     break;
   case PROP_FORMAT:
     {
-      guint format;
+      AgsSoundcardFormat format;
 
       format = g_value_get_uint(value);
 
@@ -2392,7 +2392,7 @@ ags_recall_get_obj_mutex(AgsRecall *recall)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_test_flags(AgsRecall *recall, guint flags)
+ags_recall_test_flags(AgsRecall *recall, AgsRecallFlags flags)
 {
   gboolean retval;  
   
@@ -2425,7 +2425,7 @@ ags_recall_test_flags(AgsRecall *recall, guint flags)
  * Since: 3.0.0
  */
 void
-ags_recall_set_flags(AgsRecall *recall, guint flags)
+ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 {
   GRecMutex *recall_mutex;
 
@@ -2454,7 +2454,7 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
  * Since: 3.0.0
  */
 void
-ags_recall_unset_flags(AgsRecall *recall, guint flags)
+ags_recall_unset_flags(AgsRecall *recall, AgsRecallFlags flags)
 {
   GRecMutex *recall_mutex;
 
@@ -2485,7 +2485,7 @@ ags_recall_unset_flags(AgsRecall *recall, guint flags)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
+ags_recall_test_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags)
 {
   gboolean retval;  
   
@@ -2518,7 +2518,7 @@ ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
  * Since: 3.0.0
  */
 void
-ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
+ags_recall_set_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags)
 {
   GList *child_start, *child, *next;
 
@@ -2574,7 +2574,7 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
  * Since: 3.0.0
  */
 void
-ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
+ags_recall_unset_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags)
 {
   GList *child_start, *child, *next;
 
@@ -2632,9 +2632,9 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
+ags_recall_check_ability_flags(AgsRecall *recall, AgsSoundAbilityFlags ability_flags)
 {
-  guint recall_ability_flags;
+  AgsSoundAbilityFlags recall_ability_flags;
   
   GRecMutex *recall_mutex;
 
@@ -2694,7 +2694,7 @@ ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
 gboolean
 ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
 {
-  guint recall_ability_flags;
+  AgsSoundAbilityFlags recall_ability_flags;
   
   GRecMutex *recall_mutex;
 
@@ -2770,7 +2770,7 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+ags_recall_test_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags)
 {
   gboolean retval;  
   
@@ -2803,7 +2803,7 @@ ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * Since: 3.0.0
  */
 void
-ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+ags_recall_set_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags)
 {
   GRecMutex *recall_mutex;
 
@@ -2832,7 +2832,7 @@ ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * Since: 3.0.0
  */
 void
-ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+ags_recall_unset_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags)
 {
   GRecMutex *recall_mutex;
 
@@ -2863,9 +2863,9 @@ ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+ags_recall_check_behaviour_flags(AgsRecall *recall, AgsSoundBehaviourFlags behaviour_flags)
 {
-  guint recall_behaviour_flags;
+  AgsSoundBehaviourFlags recall_behaviour_flags;
   
   GRecMutex *recall_mutex;
 
@@ -3114,7 +3114,7 @@ ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
  */
 gboolean
 ags_recall_test_staging_flags(AgsRecall *recall,
-			       guint staging_flags)
+			      AgsSoundStagingFlags staging_flags)
 {
   gboolean retval;  
   
@@ -3147,10 +3147,10 @@ ags_recall_test_staging_flags(AgsRecall *recall,
  * Since: 3.0.0
  */
 void
-ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
+ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags)
 {
-  guint recall_staging_flags;
-  guint recall_state_flags;
+  AgsSoundStagingFlags recall_staging_flags;
+  AgsSoundStateFlags recall_state_flags;
   
   gboolean omit_event;
 
@@ -3318,14 +3318,14 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 /**
  * ags_recall_unset_staging_flags:
  * @recall: the #AgsRecall
-* @staging_flags: staging flags to unset
+ * @staging_flags: staging flags to unset
  * 
  * Unset staging flags.
  * 
  * Since: 3.0.0
  */
 void
-ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
+ags_recall_unset_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags)
 {
   GList *list_start, *list, *next;
 
@@ -3385,9 +3385,9 @@ ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
+ags_recall_check_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_flags)
 {
-  guint recall_staging_flags;
+  AgsSoundStagingFlags recall_staging_flags;
   
   GRecMutex *recall_mutex;
 
@@ -3497,7 +3497,7 @@ ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
  */
 gboolean
 ags_recall_test_state_flags(AgsRecall *recall,
-			    guint state_flags)
+			    AgsSoundStateFlags state_flags)
 {
   gboolean retval;  
   
@@ -3530,7 +3530,7 @@ ags_recall_test_state_flags(AgsRecall *recall,
  * Since: 3.0.0
  */
 void
-ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
+ags_recall_set_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags)
 {  
   GRecMutex *recall_mutex;
 
@@ -3559,7 +3559,7 @@ ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
  * Since: 3.0.0
  */
 void
-ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
+ags_recall_unset_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags)
 {
   GRecMutex *recall_mutex;
 
@@ -3590,9 +3590,9 @@ ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
  * Since: 3.0.0
  */
 gboolean
-ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
+ags_recall_check_state_flags(AgsRecall *recall, AgsSoundStateFlags state_flags)
 {
-  guint recall_state_flags;
+  AgsSoundStateFlags recall_state_flags;
   
   GRecMutex *recall_mutex;
 
@@ -4260,11 +4260,11 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
   gint input_soundcard_channel;
   guint samplerate;
   guint buffer_size;
-  guint format;
-  guint recall_ability_flags;
-  guint recall_behaviour_flags;
+  AgsSoundcardFormat format;
+  AgsSoundAbilityFlags recall_ability_flags;
+  AgsSoundBehaviourFlags recall_behaviour_flags;
   gint recall_sound_scope;
-  guint staging_flags;
+  AgsSoundStagingFlags staging_flags;
   
   GRecMutex *recall_mutex, *child_mutex;
   
@@ -4591,7 +4591,7 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
 {
   guint samplerate;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
 
   GRecMutex *recall_mutex;
 
@@ -4825,10 +4825,10 @@ ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size)
  * 
  * Since: 3.1.0
  */
-guint
+AgsSoundcardFormat
 ags_recall_get_format(AgsRecall *recall)
 {
-  guint format;
+  AgsSoundcardFormat format;
   
   if(!AGS_IS_RECALL(recall)){
     return(0);
@@ -4851,7 +4851,7 @@ ags_recall_get_format(AgsRecall *recall)
  * Since: 3.0.0
  */
 void
-ags_recall_set_format(AgsRecall *recall, guint format)
+ags_recall_set_format(AgsRecall *recall, AgsSoundcardFormat format)
 {
   GRecMutex *recall_mutex;
 
@@ -6021,9 +6021,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
   
   GList *list, *child;
 
-  guint recall_flags;
-  guint ability_flags;
-  guint behaviour_flags;
+  AgsRecallFlags recall_flags;
+  AgsSoundAbilityFlags ability_flags;
+  AgsSoundBehaviourFlags behaviour_flags;
   gint output_soundcard_channel;
   gint input_soundcard_channel;
   guint local_n_params;
@@ -6292,8 +6292,8 @@ ags_recall_is_done(GList *recall, GObject *recycling_context)
   AgsRecallID *current_recall_id;
   AgsRecyclingContext *current_recycling_context;
   
-  guint current_recall_flags;
-  guint current_staging_flags;
+  AgsRecallFlags current_recall_flags;
+  AgsSoundStagingFlags current_staging_flags;
   
   GRecMutex *current_recall_mutex;
   GRecMutex *current_recall_id_mutex;
@@ -6590,7 +6590,7 @@ ags_recall_find_template(GList *recall)
 {
   AgsRecall *current_recall;
 
-  guint current_recall_flags;
+  AgsRecallFlags current_recall_flags;
   
   GRecMutex *current_recall_mutex;
   
@@ -6671,7 +6671,7 @@ ags_recall_template_find_all_type(GList *recall, ...)
   GType *recall_type, *offset;
   GType current;
 
-  guint current_recall_flags;
+  AgsRecallFlags current_recall_flags;
   guint i;
   
   va_list ap;
@@ -7008,7 +7008,7 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
 {
   AgsRecall *current_recall;
 
-  guint current_recall_flags;
+  AgsRecallFlags current_recall_flags;
   
   GRecMutex *current_recall_mutex;
 
@@ -7104,7 +7104,7 @@ ags_recall_child_done(AgsRecall *child,
 {
   GList *children;
 
-  guint parent_behaviour_flags;
+  AgsSoundBehaviourFlags parent_behaviour_flags;
   
   /* remove child */
   ags_connectable_disconnect(AGS_CONNECTABLE(child));

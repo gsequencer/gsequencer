@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,16 +51,40 @@ extern "C" {
   const AgsVstUCoord ags_vst_kmax_coord = ((AgsVstUCoord) 0x7FFFFFFF);
   const AgsVstUCoord ags_vst_kmin_coord = ((AgsVstUCoord) -0x7FFFFFFF);
 
+  /**
+   * Empty.
+   *
+   * @param str the string
+   * @return true if empty, otherwise false
+   *
+   * @since 5.0.0
+   */
   gboolean ags_vst_str_empty(ags_vst_tchar *str)
   {
     return(static_cast<gboolean>(strEmpty(reinterpret_cast<tchar *>(str))));
   }
   
+  /**
+   * Empty.
+   *
+   * @param str the string
+   * @return true if empty, otherwise false
+   *
+   * @since 5.0.0
+   */
   gboolean ags_vst_str8_empty(gchar *str)
   {
     return(static_cast<gboolean>(str8Empty(reinterpret_cast<char8 *>(str))));
   }
   
+  /**
+   * Unicode empty.
+   *
+   * @param str the string
+   * @return true if empty, otherwise false
+   *
+   * @since 5.0.0
+   */
   gboolean ags_vst_str16_empty(gunichar2 *str)
   {
     return(static_cast<gboolean>(str16Empty(reinterpret_cast<char16 *>(str))));

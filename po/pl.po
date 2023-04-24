@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-04-10 23:57+0200\n"
+"POT-Creation-Date: 2023-04-24 19:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,16 +116,16 @@ msgstr "ustawienia"
 msgid "envelope"
 msgstr "koperta"
 
-#: ags/app/ags_machine_callbacks.c:1016
-#: ags/app/editor/ags_pattern_envelope.c:243
+#: ags/app/ags_machine_callbacks.c:1018
+#: ags/app/editor/ags_pattern_envelope.c:251
 #: ags/app/editor/ags_envelope_editor.c:180
 #: ags/app/machine/ags_live_lv2_bridge.c:506
-#: ags/app/machine/ags_lv2_bridge.c:486 ags/app/machine/ags_sf2_synth.c:416
+#: ags/app/machine/ags_lv2_bridge.c:486 ags/app/machine/ags_sf2_synth.c:422
 #: ags/app/machine/ags_ffplayer.c:364
 msgid "preset"
 msgstr "ustawienia wstępne"
 
-#: ags/app/ags_machine_callbacks.c:1101
+#: ags/app/ags_machine_callbacks.c:1103
 msgid "connections"
 msgstr "powiązania"
 
@@ -234,21 +234,21 @@ msgstr "wejście"
 msgid "bulk input"
 msgstr "połącz wejście"
 
-#: ags/app/ags_gsequencer_application_context.c:3368
+#: ags/app/ags_gsequencer_application_context.c:3375
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "nieznany backend karty dźwiękowej - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3378
+#: ags/app/ags_gsequencer_application_context.c:3385
 msgid "unknown soundcard backend - NULL"
 msgstr "nieznany backend karty dźwiękowej - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:3614
+#: ags/app/ags_gsequencer_application_context.c:3621
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "nieznany backend sekwencera - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3624
+#: ags/app/ags_gsequencer_application_context.c:3631
 msgid "unknown sequencer backend - NULL"
 msgstr "nieznany backend sekwencera - NULL"
 
@@ -289,7 +289,7 @@ msgstr "nadpisz istniejące połączenie"
 #: ags/app/ags_pcm_file_chooser_dialog.c:169
 #: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/machine/ags_drum.c:363
 #: ags/app/machine/ags_sfz_synth.c:309 ags/app/machine/ags_audiorec.c:296
-#: ags/app/machine/ags_sf2_synth.c:316 ags/app/machine/ags_ffplayer.c:403
+#: ags/app/machine/ags_sf2_synth.c:322 ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
 msgstr "Otwórz"
 
@@ -313,10 +313,10 @@ msgstr "pula wątków - max liczba nieużytych wątków"
 msgid "max precision of threads [Hz]"
 msgstr "max precyzja wątków [Hz]"
 
-#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:420
-#: ags/app/machine/ags_live_dssi_bridge.c:423
-#: ags/app/machine/ags_live_vst3_bridge.c:480
-#: ags/app/machine/ags_vst3_bridge.c:460
+#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:421
+#: ags/app/machine/ags_live_dssi_bridge.c:424
+#: ags/app/machine/ags_live_vst3_bridge.c:481
+#: ags/app/machine/ags_vst3_bridge.c:461
 msgid "Plugin file not present"
 msgstr "Wtyczka niedostępna"
 
@@ -418,13 +418,13 @@ msgstr ""
 msgid "MIDI card"
 msgstr "karta MIDI"
 
-#: ags/app/ags_sequencer_editor.c:259 ags/app/editor/ags_pattern_envelope.c:649
+#: ags/app/ags_sequencer_editor.c:259 ags/app/editor/ags_pattern_envelope.c:675
 #: ags/app/editor/ags_envelope_editor.c:193 ags/app/ags_soundcard_editor.c:291
 msgid "_Add"
 msgstr ""
 
 #: ags/app/ags_sequencer_editor.c:263 ags/app/ags_sequencer_editor.c:268
-#: ags/app/editor/ags_pattern_envelope.c:654
+#: ags/app/editor/ags_pattern_envelope.c:680
 #: ags/app/editor/ags_envelope_editor.c:197 ags/app/ags_soundcard_editor.c:295
 #: ags/app/ags_soundcard_editor.c:648
 #, fuzzy
@@ -493,7 +493,7 @@ msgid "G#"
 msgstr ""
 
 #: ags/app/editor/ags_envelope_info.c:218
-#: ags/app/editor/ags_pattern_envelope.c:236
+#: ags/app/editor/ags_pattern_envelope.c:244
 msgid "plot"
 msgstr "wykres"
 
@@ -863,7 +863,7 @@ msgid "current acceleration: "
 msgstr "bieżąca akceleracja"
 
 #: ags/app/editor/ags_automation_meta.c:595
-#: ags/app/editor/ags_pattern_envelope.c:229
+#: ags/app/editor/ags_pattern_envelope.c:237
 #: ags/app/editor/ags_notation_meta.c:486
 #: ags/app/machine/ags_drum_input_pad.c:163
 msgid "edit"
@@ -901,67 +901,67 @@ msgstr "wybierz x0"
 msgid "select x1"
 msgstr "wybierz x1"
 
-#: ags/app/editor/ags_pattern_envelope.c:250
-#: ags/app/editor/ags_pattern_envelope.c:324
+#: ags/app/editor/ags_pattern_envelope.c:258
+#: ags/app/editor/ags_pattern_envelope.c:332
 msgid "audio channel start"
 msgstr "audio kanał start"
 
-#: ags/app/editor/ags_pattern_envelope.c:257
-#: ags/app/editor/ags_pattern_envelope.c:345
+#: ags/app/editor/ags_pattern_envelope.c:265
+#: ags/app/editor/ags_pattern_envelope.c:353
 msgid "audio channel end"
 msgstr "audio kanał koniec"
 
-#: ags/app/editor/ags_pattern_envelope.c:264
-#: ags/app/editor/ags_pattern_envelope.c:366
+#: ags/app/editor/ags_pattern_envelope.c:272
+#: ags/app/editor/ags_pattern_envelope.c:374
 msgid "pad start"
 msgstr "pad start"
 
-#: ags/app/editor/ags_pattern_envelope.c:271
-#: ags/app/editor/ags_pattern_envelope.c:387
+#: ags/app/editor/ags_pattern_envelope.c:279
+#: ags/app/editor/ags_pattern_envelope.c:395
 msgid "pad end"
 msgstr "pad koniec"
 
-#: ags/app/editor/ags_pattern_envelope.c:278
-#: ags/app/editor/ags_pattern_envelope.c:408
+#: ags/app/editor/ags_pattern_envelope.c:286
+#: ags/app/editor/ags_pattern_envelope.c:416
 msgid "x start"
 msgstr "x start"
 
-#: ags/app/editor/ags_pattern_envelope.c:285
-#: ags/app/editor/ags_pattern_envelope.c:429
+#: ags/app/editor/ags_pattern_envelope.c:293
+#: ags/app/editor/ags_pattern_envelope.c:437
 msgid "x end"
 msgstr "x koniec"
 
-#: ags/app/editor/ags_pattern_envelope.c:457
+#: ags/app/editor/ags_pattern_envelope.c:465
 #: ags/app/editor/ags_envelope_editor.c:304
 #: ags/app/machine/ags_oscillator.c:236 ags/app/machine/ags_fm_oscillator.c:237
 msgid "attack"
 msgstr "atak"
 
-#: ags/app/editor/ags_pattern_envelope.c:495
-#: ags/app/editor/ags_envelope_editor.c:362
+#: ags/app/editor/ags_pattern_envelope.c:507
+#: ags/app/editor/ags_envelope_editor.c:363
 msgid "decay"
 msgstr "rozpad"
 
-#: ags/app/editor/ags_pattern_envelope.c:533
-#: ags/app/editor/ags_envelope_editor.c:406
+#: ags/app/editor/ags_pattern_envelope.c:549
+#: ags/app/editor/ags_envelope_editor.c:407
 msgid "sustain"
 msgstr "udźwig"
 
-#: ags/app/editor/ags_pattern_envelope.c:571
-#: ags/app/editor/ags_envelope_editor.c:450
+#: ags/app/editor/ags_pattern_envelope.c:591
+#: ags/app/editor/ags_envelope_editor.c:451
 msgid "release"
 msgstr "wydanie"
 
-#: ags/app/editor/ags_pattern_envelope.c:609
-#: ags/app/editor/ags_envelope_editor.c:494
+#: ags/app/editor/ags_pattern_envelope.c:633
+#: ags/app/editor/ags_envelope_editor.c:495
 msgid "ratio"
 msgstr "współczynnik"
 
-#: ags/app/editor/ags_pattern_envelope.c:639
+#: ags/app/editor/ags_pattern_envelope.c:665
 msgid "move up"
 msgstr "do góry"
 
-#: ags/app/editor/ags_pattern_envelope.c:644
+#: ags/app/editor/ags_pattern_envelope.c:670
 msgid "move down"
 msgstr "na dół"
 
@@ -1326,7 +1326,7 @@ msgstr ""
 #: ags/app/machine/ags_dssi_bridge.c:351 ags/app/machine/ags_lv2_bridge.c:461
 #: ags/app/machine/ags_live_dssi_bridge.c:351
 #: ags/app/machine/ags_live_vst3_bridge.c:358
-#: ags/app/machine/ags_sf2_synth.c:409 ags/app/machine/ags_vst3_bridge.c:340
+#: ags/app/machine/ags_sf2_synth.c:415 ags/app/machine/ags_vst3_bridge.c:340
 msgid "program"
 msgstr "program"
 
@@ -1470,59 +1470,59 @@ msgstr ""
 msgid "value"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:412 ags/app/machine/ags_sf2_synth.c:461
+#: ags/app/machine/ags_sfz_synth.c:412 ags/app/machine/ags_sf2_synth.c:467
 msgid "WAV 1 - octave"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:448 ags/app/machine/ags_sf2_synth.c:497
+#: ags/app/machine/ags_sfz_synth.c:448 ags/app/machine/ags_sf2_synth.c:503
 msgid "WAV 1 - key"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:483 ags/app/machine/ags_sf2_synth.c:532
+#: ags/app/machine/ags_sfz_synth.c:483 ags/app/machine/ags_sf2_synth.c:538
 #, fuzzy
 msgid "WAV 1 - volume"
 msgstr "głośność"
 
 #: ags/app/machine/ags_sfz_synth.c:536
 #: ags/app/machine/ags_hybrid_fm_synth.c:1555
-#: ags/app/machine/ags_sf2_synth.c:585 ags/app/machine/ags_hybrid_synth.c:1608
+#: ags/app/machine/ags_sf2_synth.c:591 ags/app/machine/ags_hybrid_synth.c:1608
 msgid "chorus input volume"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:570
 #: ags/app/machine/ags_hybrid_fm_synth.c:1589
-#: ags/app/machine/ags_sf2_synth.c:619 ags/app/machine/ags_hybrid_synth.c:1642
+#: ags/app/machine/ags_sf2_synth.c:625 ags/app/machine/ags_hybrid_synth.c:1642
 msgid "chorus output volume"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:604
 #: ags/app/machine/ags_hybrid_fm_synth.c:1623
-#: ags/app/machine/ags_sf2_synth.c:653 ags/app/machine/ags_hybrid_synth.c:1676
+#: ags/app/machine/ags_sf2_synth.c:659 ags/app/machine/ags_hybrid_synth.c:1676
 msgid "chorus LFO"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:634
 #: ags/app/machine/ags_hybrid_fm_synth.c:1653
-#: ags/app/machine/ags_sf2_synth.c:683 ags/app/machine/ags_hybrid_synth.c:1706
+#: ags/app/machine/ags_sf2_synth.c:689 ags/app/machine/ags_hybrid_synth.c:1706
 #, fuzzy
 msgid "chorus LFO frequency"
 msgstr "częstotliwość LFO"
 
 #: ags/app/machine/ags_sfz_synth.c:649
 #: ags/app/machine/ags_hybrid_fm_synth.c:1668
-#: ags/app/machine/ags_sf2_synth.c:698 ags/app/machine/ags_hybrid_synth.c:1721
+#: ags/app/machine/ags_sf2_synth.c:704 ags/app/machine/ags_hybrid_synth.c:1721
 msgid "chorus depth"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:683
 #: ags/app/machine/ags_hybrid_fm_synth.c:1702
-#: ags/app/machine/ags_sf2_synth.c:732 ags/app/machine/ags_hybrid_synth.c:1755
+#: ags/app/machine/ags_sf2_synth.c:738 ags/app/machine/ags_hybrid_synth.c:1755
 msgid "chorus mix"
 msgstr ""
 
 #: ags/app/machine/ags_sfz_synth.c:717
 #: ags/app/machine/ags_hybrid_fm_synth.c:1736
-#: ags/app/machine/ags_sf2_synth.c:766 ags/app/machine/ags_hybrid_synth.c:1789
+#: ags/app/machine/ags_sf2_synth.c:772 ags/app/machine/ags_hybrid_synth.c:1789
 msgid "chorus delay"
 msgstr ""
 
@@ -1583,8 +1583,8 @@ msgstr "koniec pętli"
 msgid "Open SFZ file"
 msgstr "Otwórz Plik"
 
-#: ags/app/machine/ags_live_vst3_bridge.c:434
-#: ags/app/machine/ags_vst3_bridge.c:414
+#: ags/app/machine/ags_live_vst3_bridge.c:435
+#: ags/app/machine/ags_vst3_bridge.c:415
 #, fuzzy
 msgid "show VST3 UI"
 msgstr "pokaż interfejs graficzny"
@@ -1782,7 +1782,7 @@ msgstr ""
 msgid "high pass filter gain"
 msgstr ""
 
-#: ags/app/machine/ags_sf2_synth.c:372
+#: ags/app/machine/ags_sf2_synth.c:378
 msgid "bank"
 msgstr "bank"
 

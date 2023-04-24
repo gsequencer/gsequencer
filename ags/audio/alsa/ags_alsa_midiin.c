@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -804,7 +804,7 @@ ags_alsa_midiin_disconnect(AgsConnectable *connectable)
  * Since: 3.13.2
  */
 gboolean
-ags_alsa_midiin_test_flags(AgsAlsaMidiin *alsa_midiin, guint flags)
+ags_alsa_midiin_test_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags)
 {
   gboolean retval;  
   
@@ -837,7 +837,7 @@ ags_alsa_midiin_test_flags(AgsAlsaMidiin *alsa_midiin, guint flags)
  * Since: 3.13.2
  */
 void
-ags_alsa_midiin_set_flags(AgsAlsaMidiin *alsa_midiin, guint flags)
+ags_alsa_midiin_set_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags)
 {
   GRecMutex *alsa_midiin_mutex;
 
@@ -868,7 +868,7 @@ ags_alsa_midiin_set_flags(AgsAlsaMidiin *alsa_midiin, guint flags)
  * Since: 3.13.2
  */
 void
-ags_alsa_midiin_unset_flags(AgsAlsaMidiin *alsa_midiin, guint flags)
+ags_alsa_midiin_unset_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags)
 {  
   GRecMutex *alsa_midiin_mutex;
 
@@ -1207,8 +1207,8 @@ ags_alsa_midiin_device_record(AgsSequencer *sequencer,
   char **backend_buffer;
   
   gboolean no_event;
-  guint app_buffer_mode;
-  guint backend_buffer_mode;
+  AgsAlsaMidiinAppBufferMode app_buffer_mode;
+  AgsAlsaMidiinBackendBufferMode backend_buffer_mode;
   guint backend_buffer_size;
   int status;
   unsigned char c;

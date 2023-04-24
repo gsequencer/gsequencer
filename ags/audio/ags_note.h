@@ -27,6 +27,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTE                (ags_note_get_type())
@@ -70,8 +72,8 @@ struct _AgsNote
 {
   GObject gobject;
 
-  guint flags;
-  guint key_format;
+  AgsNoteFlags flags;
+  AgsSoundKeyFormat key_format;
 
   GRecMutex obj_mutex;
   
@@ -109,9 +111,9 @@ GType ags_note_get_type();
 
 GRecMutex* ags_note_get_obj_mutex(AgsNote *note);
 
-gboolean ags_note_test_flags(AgsNote *note, guint flags);
-void ags_note_set_flags(AgsNote *note, guint flags);
-void ags_note_unset_flags(AgsNote *note, guint flags);
+gboolean ags_note_test_flags(AgsNote *note, AgsNoteFlags flags);
+void ags_note_set_flags(AgsNote *note, AgsNoteFlags flags);
+void ags_note_unset_flags(AgsNote *note, AgsNoteFlags flags);
 
 gint ags_note_sort_func(gconstpointer a,
 			gconstpointer b);

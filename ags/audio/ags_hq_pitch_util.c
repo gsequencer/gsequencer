@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -384,7 +384,7 @@ ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_hq_pitch_util_get_format(AgsHQPitchUtil *hq_pitch_util)
 {
   if(hq_pitch_util == NULL){
@@ -405,7 +405,7 @@ ags_hq_pitch_util_get_format(AgsHQPitchUtil *hq_pitch_util)
  */
 void
 ags_hq_pitch_util_set_format(AgsHQPitchUtil *hq_pitch_util,
-			     guint format)
+			     AgsSoundcardFormat format)
 {
   if(hq_pitch_util == NULL ||
      hq_pitch_util->format == format){

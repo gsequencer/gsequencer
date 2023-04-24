@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -77,7 +77,7 @@ struct _AgsAutomation
 {
   GObject gobject;
 
-  guint flags;
+  AgsAutomationFlags flags;
 
   GRecMutex obj_mutex;
 
@@ -112,9 +112,9 @@ GType ags_automation_flags_get_type(void);
 
 GRecMutex* ags_automation_get_obj_mutex(AgsAutomation *automation);
 
-gboolean ags_automation_test_flags(AgsAutomation *automation, guint flags);
-void ags_automation_set_flags(AgsAutomation *automation, guint flags);
-void ags_automation_unset_flags(AgsAutomation *automation, guint flags);
+gboolean ags_automation_test_flags(AgsAutomation *automation, AgsAutomationFlags flags);
+void ags_automation_set_flags(AgsAutomation *automation, AgsAutomationFlags flags);
+void ags_automation_unset_flags(AgsAutomation *automation, AgsAutomationFlags flags);
 
 GList* ags_automation_find_port(GList *automation,
 				GObject *port);

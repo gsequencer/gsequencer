@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -590,103 +590,6 @@ ags_task_launcher_disconnect(AgsConnectable *connectable)
   g_rec_mutex_lock(task_launcher_mutex);
 
   task_launcher->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-  
-  g_rec_mutex_unlock(task_launcher_mutex);
-}
-
-/**
- * ags_task_launcher_test_flags:
- * @task_launcher: the #AgsTaskLauncher
- * @flags: the flags
- *
- * Test @flags to be set on @task_launcher.
- * 
- * Returns: %TRUE if flags are set, else %FALSE
- *
- * Since: 3.0.0
- */
-gboolean
-ags_task_launcher_test_flags(AgsTaskLauncher *task_launcher, guint flags)
-{
-  gboolean retval;  
-  
-  GRecMutex *task_launcher_mutex;
-
-  if(!AGS_IS_TASK_LAUNCHER(task_launcher)){
-    return(FALSE);
-  }
-
-  /* get task launcher mutex */
-  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
-
-  /* test */
-  g_rec_mutex_lock(task_launcher_mutex);
-
-  retval = (flags & (task_launcher->flags)) ? TRUE: FALSE;
-  
-  g_rec_mutex_unlock(task_launcher_mutex);
-
-  return(retval);
-}
-
-/**
- * ags_task_launcher_set_flags:
- * @task_launcher: the #AgsTaskLauncher
- * @flags: see enum AgsTaskLauncherFlags
- *
- * Enable a feature of #AgsTaskLauncher.
- *
- * Since: 3.0.0
- */
-void
-ags_task_launcher_set_flags(AgsTaskLauncher *task_launcher, guint flags)
-{
-  guint task_launcher_flags;
-  
-  GRecMutex *task_launcher_mutex;
-
-  if(!AGS_IS_TASK_LAUNCHER(task_launcher)){
-    return;
-  }
-
-  /* get task launcher mutex */
-  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
-
-  /* set flags */
-  g_rec_mutex_lock(task_launcher_mutex);
-
-  task_launcher->flags |= flags;
-  
-  g_rec_mutex_unlock(task_launcher_mutex);
-}
-    
-/**
- * ags_task_launcher_unset_flags:
- * @task_launcher: the #AgsTaskLauncher
- * @flags: see enum AgsTaskLauncherFlags
- *
- * Disable a feature of AgsTaskLauncher.
- *
- * Since: 3.0.0
- */
-void
-ags_task_launcher_unset_flags(AgsTaskLauncher *task_launcher, guint flags)
-{
-  guint task_launcher_flags;
-  
-  GRecMutex *task_launcher_mutex;
-
-  if(!AGS_IS_TASK_LAUNCHER(task_launcher)){
-    return;
-  }
-
-  /* get task launcher mutex */
-  task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
-
-  /* unset flags */
-  g_rec_mutex_lock(task_launcher_mutex);
-
-  task_launcher->flags &= (~flags);
   
   g_rec_mutex_unlock(task_launcher_mutex);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -823,7 +823,7 @@ ags_gstreamer_port_disconnect(AgsConnectable *connectable)
  * Since: 3.6.0
  */
 gboolean
-ags_gstreamer_port_test_flags(AgsGstreamerPort *gstreamer_port, guint flags)
+ags_gstreamer_port_test_flags(AgsGstreamerPort *gstreamer_port, AgsGstreamerPortFlags flags)
 {
   gboolean retval;  
   
@@ -856,7 +856,7 @@ ags_gstreamer_port_test_flags(AgsGstreamerPort *gstreamer_port, guint flags)
  * Since: 3.6.0
  */
 void
-ags_gstreamer_port_set_flags(AgsGstreamerPort *gstreamer_port, guint flags)
+ags_gstreamer_port_set_flags(AgsGstreamerPort *gstreamer_port, AgsGstreamerPortFlags flags)
 {
   GRecMutex *gstreamer_port_mutex;
 
@@ -887,7 +887,7 @@ ags_gstreamer_port_set_flags(AgsGstreamerPort *gstreamer_port, guint flags)
  * Since: 3.6.0
  */
 void
-ags_gstreamer_port_unset_flags(AgsGstreamerPort *gstreamer_port, guint flags)
+ags_gstreamer_port_unset_flags(AgsGstreamerPort *gstreamer_port, AgsGstreamerPortFlags flags)
 {  
   GRecMutex *gstreamer_port_mutex;
 
@@ -1094,7 +1094,7 @@ ags_gstreamer_port_get_fixed_size(AgsGstreamerPort *gstreamer_port)
     
   guint pcm_channels;
   guint buffer_size;
-  guint format;
+  AgsSoundcardFormat format;
   guint word_size;
   guint fixed_size;
 
@@ -1230,7 +1230,7 @@ ags_gstreamer_port_set_pcm_channels(AgsGstreamerPort *gstreamer_port,
 
 void
 ags_gstreamer_port_set_format(AgsGstreamerPort *gstreamer_port,
-			      guint format)
+			      AgsSoundcardFormat format)
 {
   guint fixed_size;
 

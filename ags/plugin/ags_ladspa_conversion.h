@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,9 +79,9 @@ struct _AgsLadspaConversionClass
 GType ags_ladspa_conversion_get_type(void);
 GType ags_ladspa_conversion_flags_get_type();
 
-gboolean ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint flags);
-void ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint flags);
-void ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint flags);
+gboolean ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, AgsLadspaConversionFlags flags);
+void ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, AgsLadspaConversionFlags flags);
+void ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, AgsLadspaConversionFlags flags);
 
 AgsLadspaConversion* ags_ladspa_conversion_new();
 

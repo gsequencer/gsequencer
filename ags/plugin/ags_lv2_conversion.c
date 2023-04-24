@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -327,7 +327,7 @@ ags_lv2_conversion_get_property(GObject *gobject,
  * Since: 3.0.0
  */
 gboolean
-ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, AgsLv2ConversionFlags flags)
 {
   gboolean retval;
   
@@ -360,7 +360,7 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
  * Since: 3.0.0
  */
 void
-ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, AgsLv2ConversionFlags flags)
 {
   GRecMutex *conversion_mutex;
 
@@ -389,7 +389,7 @@ ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
  * Since: 3.0.0
  */
 void
-ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, AgsLv2ConversionFlags flags)
 {
   GRecMutex *conversion_mutex;
 

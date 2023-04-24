@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -500,7 +500,7 @@ ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util)
 {
   if(sf2_synth_util == NULL){
@@ -521,7 +521,7 @@ ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util)
  */
 void
 ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
-			      guint format)
+			      AgsSoundcardFormat format)
 {
   if(sf2_synth_util == NULL ||
      sf2_synth_util->format == format){
@@ -1028,7 +1028,7 @@ ags_sf2_synth_util_set_offset(AgsSF2SynthUtil *sf2_synth_util,
  * 
  * Since: 3.9.6
  */
-guint
+AgsSF2SynthUtilLoopMode
 ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util)
 {
   if(sf2_synth_util == NULL){
@@ -1049,7 +1049,7 @@ ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util)
  */
 void
 ags_sf2_synth_util_set_loop_mode(AgsSF2SynthUtil *sf2_synth_util,
-				 guint loop_mode)
+				 AgsSF2SynthUtilLoopMode loop_mode)
 {
   if(sf2_synth_util == NULL){
     return;
@@ -2252,7 +2252,7 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2565,7 +2565,7 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2878,7 +2878,7 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3191,7 +3191,7 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3504,7 +3504,7 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3817,7 +3817,7 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -4130,7 +4130,7 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -4443,7 +4443,7 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
     current_sample_buffer = sf2_synth_util->sf2_resampled_buffer[nth_sample];
   }
     
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && position < current_sample_buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;

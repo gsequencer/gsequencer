@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -405,7 +405,7 @@ ags_fluid_interpolate_linear_util_set_buffer_length(AgsFluidInterpolateLinearUti
  * 
  * Since: 3.9.6
  */
-guint
+AgsSoundcardFormat
 ags_fluid_interpolate_linear_util_get_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
   if(fluid_interpolate_linear_util == NULL){
@@ -426,7 +426,7 @@ ags_fluid_interpolate_linear_util_get_format(AgsFluidInterpolateLinearUtil *flui
  */
 void
 ags_fluid_interpolate_linear_util_set_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
-					     guint format)
+					     AgsSoundcardFormat format)
 {
   if(fluid_interpolate_linear_util == NULL){
     return;

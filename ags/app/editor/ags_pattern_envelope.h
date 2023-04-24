@@ -41,6 +41,8 @@ G_BEGIN_DECLS
 #define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "4.0.0"
 #define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "Tue Mar 01 12:27:51 UTC 2022"
 
+#define AGS_PATTERN_ENVELOPE_SCALE_WIDTH (250)
+
 typedef struct _AgsPatternEnvelope AgsPatternEnvelope;
 typedef struct _AgsPatternEnvelopeClass AgsPatternEnvelopeClass;
 

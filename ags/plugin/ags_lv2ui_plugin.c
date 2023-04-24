@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -853,7 +853,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
  * Since: 3.0.0
  */
 gboolean
-ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
+ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, AgsLv2uiPluginFlags flags)
 {
   gboolean retval;
   
@@ -886,7 +886,7 @@ ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
+ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, AgsLv2uiPluginFlags flags)
 {
   GRecMutex *base_plugin_mutex;
 
@@ -915,7 +915,7 @@ ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
  * Since: 3.0.0
  */
 void
-ags_lv2ui_plugin_unset_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
+ags_lv2ui_plugin_unset_flags(AgsLv2uiPlugin *lv2ui_plugin, AgsLv2uiPluginFlags flags)
 {
   GRecMutex *base_plugin_mutex;
 

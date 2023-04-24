@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,8 +79,8 @@ struct _AgsNotation
 {
   GObject gobject;
 
-  guint flags;
-  guint key_format;
+  AgsNotationFlags flags;
+  AgsSoundKeyFormat key_format;
 
   GRecMutex obj_mutex;
 
@@ -108,9 +108,9 @@ GType ags_notation_flags_get_type();
 
 GRecMutex* ags_notation_get_obj_mutex(AgsNotation *notation);
 
-gboolean ags_notation_test_flags(AgsNotation *notation, guint flags);
-void ags_notation_set_flags(AgsNotation *notation, guint flags);
-void ags_notation_unset_flags(AgsNotation *notation, guint flags);
+gboolean ags_notation_test_flags(AgsNotation *notation, AgsNotationFlags flags);
+void ags_notation_set_flags(AgsNotation *notation, AgsNotationFlags flags);
+void ags_notation_unset_flags(AgsNotation *notation, AgsNotationFlags flags);
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					AgsTimestamp *timestamp);

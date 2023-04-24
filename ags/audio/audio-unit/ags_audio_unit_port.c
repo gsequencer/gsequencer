@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -735,7 +735,7 @@ ags_audio_unit_port_disconnect(AgsConnectable *connectable)
  * Since: 3.0.0
  */
 gboolean
-ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
+ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, AgsAudioUnitPortFlags flags)
 {
   gboolean retval;  
   
@@ -768,7 +768,7 @@ ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
+ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, AgsAudioUnitPortFlags flags)
 {
   GRecMutex *audio_unit_port_mutex;
 
@@ -799,7 +799,7 @@ ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
  * Since: 3.0.0
  */
 void
-ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
+ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, AgsAudioUnitPortFlags flags)
 {  
   GRecMutex *audio_unit_port_mutex;
 
@@ -961,7 +961,7 @@ ags_audio_unit_port_unregister(AgsAudioUnitPort *audio_unit_port)
 
 void
 ags_audio_unit_port_set_format(AgsAudioUnitPort *audio_unit_port,
-			       guint format)
+			       AgsSoundcardFormat format)
 {
   GRecMutex *audio_unit_port_mutex;
 

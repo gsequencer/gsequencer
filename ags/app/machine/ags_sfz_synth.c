@@ -422,9 +422,9 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   adjustment = ags_dial_get_adjustment(sfz_synth->synth_octave);
 
   gtk_adjustment_set_lower(adjustment,
-			   -6.0);
+			   -12.0);
   gtk_adjustment_set_upper(adjustment,
-			   6.0);
+			   12.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    1.0);
@@ -1164,6 +1164,9 @@ ags_sfz_synth_input_map_recall(AgsSFZSynth *sfz_synth,
 
 	g_list_free_full(start_recall,
 			 (GDestroyNotify) g_object_unref);
+
+	/* now input line is mapped */
+	input_line->mapped_recall = TRUE;	
       }
     }
   }

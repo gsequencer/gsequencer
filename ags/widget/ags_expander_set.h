@@ -52,7 +52,7 @@ struct _AgsExpanderSet
 {
   GtkGrid grid;
 
-  guint flags;
+  AgsExpanderSetFlags flags;
 
   GList *ghost;
   GList *location;
