@@ -1375,7 +1375,8 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
   GList *start_preset, *preset;
 
   guint audio_channels;
-
+  guint input_pads;
+  
   if(!AGS_IS_MACHINE(machine)){
     return;
   }
@@ -1387,11 +1388,13 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
   start_preset = NULL;
 
   audio_channels = 0;
+  input_pads = 0;
   
   g_object_get(audio,
 	       "input", &start_input,
 	       "preset", &start_preset,
 	       "audio-channels", &audio_channels,
+	       "input-pads", &input_pads,
 	       NULL);
 
   /* unset all envelope */
@@ -1577,8 +1580,8 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
 	k_start = x_start;
 	k_stop = x_end + 1;
 	  
-	for(i = i_start; i < i_stop; i++){
-	  for(j = j_start; j < j_stop; j++){
+	for(i = i_start; i < i_stop && i < input_pads; i++){
+	  for(j = j_start; j < j_stop && j < audio_channels; j++){
 	    AgsChannel *channel;
 	  
 	    GList *start_pattern, *pattern;
@@ -1586,47 +1589,47 @@ ags_machine_reset_pattern_envelope(AgsMachine *machine)
 	    channel = ags_channel_nth(start_input,
 				      i * audio_channels + j);
 
-	    start_pattern = NULL;
-	      
-	    g_object_get(channel,
-			 "pattern", &start_pattern,
-			 NULL);
-
-	    pattern = start_pattern;
-
-	    while(pattern != NULL){
-	      for(k = k_start; k < k_stop; k++){
-		AgsNote *note;
-		  		  
-		note = ags_pattern_get_note(pattern->data,
-					    k);
-		  
-		if(note != NULL){
-		  g_object_set(note,
-			       "attack", g_value_get_boxed(&attack),
-			       "decay", g_value_get_boxed(&decay),
-			       "sustain", g_value_get_boxed(&sustain),
-			       "release", g_value_get_boxed(&release),
-			       "ratio", g_value_get_boxed(&ratio),
-			       NULL);
-		    
-		  ags_note_set_flags(note,
-				     AGS_NOTE_ENVELOPE);
-
-		  g_object_unref(note);
-		}
-	      }
-		
-	      pattern = pattern->next;
-	    }
-
 	    if(channel != NULL){
-	      g_object_unref(channel);
-	    }
+	      start_pattern = NULL;
+
+	      g_object_get(channel,
+			   "pattern", &start_pattern,
+			   NULL);
 	      
-	    g_list_free_full(start_pattern,
-			     g_object_unref);
-	  }
+	      pattern = start_pattern;
+
+	      while(pattern != NULL){
+		for(k = k_start; k < k_stop; k++){
+		  AgsNote *note;
+		  		  
+		  note = ags_pattern_get_note(pattern->data,
+					      k);
+		  
+		  if(note != NULL){
+		    g_object_set(note,
+				 "attack", g_value_get_boxed(&attack),
+				 "decay", g_value_get_boxed(&decay),
+				 "sustain", g_value_get_boxed(&sustain),
+				 "release", g_value_get_boxed(&release),
+				 "ratio", g_value_get_boxed(&ratio),
+				 NULL);
+		    
+		    ags_note_set_flags(note,
+				       AGS_NOTE_ENVELOPE);
+
+		    g_object_unref(note);
+		  }
+		}
+		
+		pattern = pattern->next;
+	      }
+	    
+	      g_object_unref(channel);
+	      
+	      g_list_free_full(start_pattern,
+			       g_object_unref);
+	    }
+	  }	    
 	}
       }
 

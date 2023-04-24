@@ -990,6 +990,8 @@ ags_machine_envelope_callback(GAction *action, GVariant *parameter,
   ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
   
   gtk_widget_show((GtkWidget *) envelope_dialog);
+
+  ags_applicable_reset(AGS_APPLICABLE(machine->envelope_dialog));
   
   g_free(title);
 }
