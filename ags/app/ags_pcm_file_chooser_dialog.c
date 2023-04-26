@@ -74,20 +74,54 @@ ags_pcm_file_chooser_dialog_get_type()
 void
 ags_pcm_file_chooser_dialog_class_init(AgsPCMFileChooserDialogClass *pcm_file_chooser_dialog)
 {
+  GtkWidgetClass *widget;
+  
   ags_pcm_file_chooser_dialog_parent_class = g_type_class_peek_parent(pcm_file_chooser_dialog);
+
+  widget = (GtkWidgetClass *) pcm_file_chooser_dialog;
+
+  widget->show = ags_pcm_file_chooser_dialog_show;
 }
 
 void
 ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialog)
 {
   GtkBox *content_area;
+  GtkBox *vbox;
   GtkGrid *grid;
 
   gchar *str;
 
+  /* file chooser */  
+  gtk_dialog_add_buttons((GtkDialog *) pcm_file_chooser_dialog,
+			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+			 i18n("_Open"), GTK_RESPONSE_ACCEPT,
+			 NULL);
+
   pcm_file_chooser_dialog->flags = AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_AUDIO_CHANNEL;
   
   content_area = (GtkBox *) gtk_dialog_get_content_area((GtkDialog *) pcm_file_chooser_dialog);
+  
+  gtk_widget_set_vexpand((GtkWidget *) content_area,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) content_area,
+			 TRUE);
+
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+		     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
+			 TRUE);
+
+  gtk_widget_set_valign((GtkWidget *) vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) vbox,
+			GTK_ALIGN_FILL);
+
+  gtk_box_append(content_area,
+		 (GtkWidget *) vbox);
 
   pcm_file_chooser_dialog->file_chooser = (GtkFileChooserWidget *) gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
 
@@ -95,8 +129,13 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) pcm_file_chooser_dialog->file_chooser,
 			 TRUE);
+
+  gtk_widget_set_valign((GtkWidget *) pcm_file_chooser_dialog->file_chooser,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) pcm_file_chooser_dialog->file_chooser,
+			GTK_ALIGN_FILL);
   
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) pcm_file_chooser_dialog->file_chooser);
 
   grid = (GtkGrid *) gtk_grid_new();
@@ -111,7 +150,7 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_box_append(content_area,
+  gtk_box_append(vbox,
 		 (GtkWidget *) grid);
 
   /* audio channel */
@@ -159,15 +198,6 @@ ags_pcm_file_chooser_dialog_init(AgsPCMFileChooserDialog *pcm_file_chooser_dialo
 		  (GtkWidget *) pcm_file_chooser_dialog->existing_channel,
 		  0, 2,
 		  1, 1);
-
-  gtk_window_set_default_size((GtkWindow *) pcm_file_chooser_dialog,
-			      800, 600);
-
-  /* file chooser */  
-  gtk_dialog_add_buttons((GtkDialog *) pcm_file_chooser_dialog,
-			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
-			 i18n("_Open"), GTK_RESPONSE_ACCEPT,
-			 NULL);  
 }
 
 void
@@ -176,23 +206,27 @@ ags_pcm_file_chooser_dialog_show(GtkWidget *widget)
   AgsPCMFileChooserDialog *pcm_file_chooser_dialog;
 
   pcm_file_chooser_dialog = AGS_PCM_FILE_CHOOSER_DIALOG(widget);
-  
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_pcm_file_chooser_dialog_parent_class)->show(widget);
 
   /* hide unneeded */
   if((AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_AUDIO_CHANNEL & (pcm_file_chooser_dialog->flags)) == 0){
-    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->audio_channel_label);
-    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->audio_channel);
+    gtk_widget_set_visible((GtkWidget *) pcm_file_chooser_dialog->audio_channel_label,
+			   FALSE);
+    gtk_widget_set_visible((GtkWidget *) pcm_file_chooser_dialog->audio_channel,
+			   FALSE);
   }
 
   if((AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_NEW_CHANNEL & (pcm_file_chooser_dialog->flags)) == 0){
-    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->new_channel);
+    gtk_widget_set_visible((GtkWidget *) pcm_file_chooser_dialog->new_channel,
+			   FALSE);
   }
   
   if((AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_EXISTING_CHANNEL & (pcm_file_chooser_dialog->flags)) == 0){
-    gtk_widget_hide((GtkWidget *) pcm_file_chooser_dialog->existing_channel);
+    gtk_widget_set_visible((GtkWidget *) pcm_file_chooser_dialog->existing_channel,
+			   FALSE);
   }
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_pcm_file_chooser_dialog_parent_class)->show(widget);
 }
 
 /**

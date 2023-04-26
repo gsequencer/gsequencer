@@ -74,7 +74,10 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 			     FALSE);
   }
 
-  gtk_widget_show((GtkWidget *) pcm_file_chooser_dialog);
+  gtk_window_set_default_size((GtkWindow *) pcm_file_chooser_dialog,
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  gtk_widget_set_visible((GtkWidget *) pcm_file_chooser_dialog,
+			 TRUE);
 
   g_signal_connect((GObject *) pcm_file_chooser_dialog, "response",
 		   G_CALLBACK(ags_drum_input_pad_open_response_callback), (gpointer) drum_input_pad);

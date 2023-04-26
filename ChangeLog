@@ -2,6 +2,8 @@ ags (5.0.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsLiveLv2Bridge missing preset
+	* modified default size of application window
+	* modified default size of file chooser open dialog
 
 ags (5.0.0)
 

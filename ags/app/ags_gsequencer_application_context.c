@@ -21,10 +21,6 @@
 
 #include "config.h"
 
-#if defined(AGS_WITH_MAC_INTEGRATION)
-#include <gtkosxapplication.h>
-#endif
-
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_animation_window.h>
 #include <ags/app/ags_window.h>
@@ -2602,10 +2598,6 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   AgsExportWindow *export_window;
   AgsExportSoundcard *export_soundcard;
   
-#if defined(AGS_WITH_MAC_INTEGRATION)
-  GtkosxApplication *osx_app;
-#endif
-  
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
   AgsMessageDelivery *message_delivery;
@@ -2815,17 +2807,9 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   gsequencer_application_context->window = (GtkWidget *) window;
 
   gsequencer_application_context->navigation = (GtkWidget *) window->navigation;
-  
-#if defined(AGS_WITH_MAC_INTEGRATION)
-  osx_app = gtkosx_application_get();
 
-  gtkosx_application_set_menu_bar(osx_app,
-				  window->menu_bar);
-  
-  gtkosx_application_ready(osx_app);
-#endif
-
-  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+  gtk_window_set_default_size((GtkWindow *) window,
+			      AGS_WINDOW_DEFAULT_WIDTH, AGS_WINDOW_DEFAULT_HEIGHT);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
   
   if(filename != NULL){
