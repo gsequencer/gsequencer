@@ -19,6 +19,7 @@
 
 #include <ags/app/machine/ags_sf2_synth_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
 #include <ags/i18n.h>
@@ -63,10 +64,13 @@ ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
   
   sf2_synth->open_dialog = (GtkWidget *) file_chooser;
 
+  gtk_window_set_default_size((GtkWindow *) file_chooser,
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  gtk_widget_set_visible((GtkWidget *) file_chooser,
+			 TRUE);
+
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_sf2_synth_open_dialog_response_callback), AGS_MACHINE(sf2_synth));
-
-  gtk_widget_show((GtkWidget *) file_chooser);
 }
 
 void

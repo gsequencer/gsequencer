@@ -42,6 +42,9 @@ G_BEGIN_DECLS
 #define AGS_IS_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_WINDOW))
 #define AGS_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_WINDOW, AgsWindowClass))
 
+#define AGS_WINDOW_DEFAULT_WIDTH (1200)
+#define AGS_WINDOW_DEFAULT_HEIGHT (700)
+
 typedef struct _AgsWindow AgsWindow;
 typedef struct _AgsWindowClass AgsWindowClass;
 

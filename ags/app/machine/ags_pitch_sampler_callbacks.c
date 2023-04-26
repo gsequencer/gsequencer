@@ -46,7 +46,10 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
 								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
-  gtk_widget_show((GtkWidget *) dialog);
+  gtk_window_set_default_size((GtkWindow *) dialog,
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  gtk_widget_set_visible((GtkWidget *) dialog,
+			 TRUE);
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_pitch_sampler_open_response_callback), pitch_sampler);

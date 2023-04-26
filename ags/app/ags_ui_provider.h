@@ -47,6 +47,9 @@ G_BEGIN_DECLS
 #define AGS_UI_PROVIDER_DEFAULT_ROW_SPACING (6)
 #define AGS_UI_PROVIDER_DEFAULT_MARGIN_END (6)
 
+#define AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH (1024)
+#define AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT (768)
+
 typedef struct _AgsUiProvider AgsUiProvider;
 typedef struct _AgsUiProviderInterface AgsUiProviderInterface;
 
