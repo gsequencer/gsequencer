@@ -271,6 +271,8 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
   if(fx_vst3_channel->input_data[sound_scope]->iaudio_processor != NULL){
     AgsFxVst3ChannelInputData *input_data;
 
+    guint project_time_samples;
+    
     g_rec_mutex_lock(fx_vst3_channel_mutex);
 
     input_data = fx_vst3_channel->input_data[sound_scope];
@@ -295,6 +297,15 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
 						  buffer_size, copy_mode_in);
     }
 
+    project_time_samples = ags_soundcard_util_calc_time_samples(output_soundcard);
+    
+    ags_vst_process_context_set_system_time(input_data->process_context,
+					    ags_soundcard_util_calc_system_time(output_soundcard));
+    ags_vst_process_context_set_project_time_samples(input_data->process_context,
+						     project_time_samples);
+    ags_vst_process_context_set_continous_time_samples(input_data->process_context,
+						       ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
+
     for(i = 0; i < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES && input_data->parameter_changes[i].param_id != ~0; i++){
       AgsVstParameterValueQueue *parameter_value_queue;
 	
@@ -306,18 +317,11 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
 
       index = 0;
       ags_vst_parameter_value_queue_add_point(parameter_value_queue,
-					      0, input_data->parameter_changes[i].param_value,
+					      project_time_samples, input_data->parameter_changes[i].param_value,
 					      &index);
     }
 
     input_data->parameter_changes[0].param_id = ~0;
-
-    ags_vst_process_context_set_system_time(input_data->process_context,
-					    ags_soundcard_util_calc_system_time(output_soundcard));
-    ags_vst_process_context_set_project_time_samples(input_data->process_context,
-						     ags_soundcard_util_calc_time_samples(output_soundcard));
-    ags_vst_process_context_set_continous_time_samples(input_data->process_context,
-						       ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
 
     ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 				     input_data->process_data);  
@@ -505,39 +509,60 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     g_rec_mutex_lock(fx_vst3_audio_mutex);
 
     if(is_live_instrument){
+      AgsVstEvent *note_on;
       AgsVstEvent *note_off;
 
+      guint project_time_samples;
       guint i;
       
 //	g_message("play channel data x0 = %d, y = %d", x0, y);
-	
+
+      project_time_samples = ags_soundcard_util_calc_time_samples(output_soundcard);
+      
       ags_vst_process_context_set_system_time(channel_data->process_context,
 					      ags_soundcard_util_calc_system_time(output_soundcard));
       ags_vst_process_context_set_project_time_samples(channel_data->process_context,
-						       ags_soundcard_util_calc_time_samples(output_soundcard));
+						       project_time_samples);
       ags_vst_process_context_set_continous_time_samples(channel_data->process_context,
 							 ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
-      
-      ags_vst_ievent_list_add_event(channel_data->input_event,
-				    ags_vst_note_on_event_alloc(0,
-								midi_note,
-								0.0,
-								1.0,
-								buffer_size, // (x1 - x0) * (delay * buffer_size),
-								-1));
 
-      note_off = ags_vst_note_off_event_alloc(0,
-					      midi_note,
-					      0.0,
-					      1.0,
-					      -1,
-					      -1);
+      if(channel_data->input_data[midi_note]->note_on == NULL){
+	note_on =
+	  channel_data->input_data[midi_note]->note_on = ags_vst_note_on_event_alloc(0,
+										     midi_note,
+										     0.0,
+										     1.0,
+										     (x1 - x0) * (delay * buffer_size),
+										     midi_note);
+      }else{
+	note_on = channel_data->input_data[midi_note]->note_on;
+      }
       
-      ags_vst_event_set_sample_offset(note_off,
-				      buffer_size);
+      ags_vst_event_set_sample_offset(note_on,
+				      project_time_samples);
 
       ags_vst_ievent_list_add_event(channel_data->input_event,
-				    note_off);
+				    note_on);
+            
+      if((x1 - x0) * (delay * buffer_size) + buffer_size > project_time_samples){
+	if(channel_data->input_data[midi_note]->note_off == NULL){
+	  note_off =
+	    channel_data->input_data[midi_note]->note_off = ags_vst_note_off_event_alloc(0,
+											 midi_note,
+											 0.0,
+											 1.0,
+											 -1,
+											 midi_note);
+	}else{
+	  note_off = channel_data->input_data[midi_note]->note_off;
+	}
+      
+	ags_vst_event_set_sample_offset(note_off,
+					(x1 - x0) * (delay * buffer_size));
+
+	ags_vst_ievent_list_add_event(channel_data->input_event,
+				      note_off);
+      }
 
       for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && channel_data->parameter_changes[i].param_id != ~0; i++){
 	AgsVstParameterValueQueue *parameter_value_queue;
@@ -550,45 +575,66 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
 	index = 0;
 	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
-						0, channel_data->parameter_changes[i].param_value,
+						project_time_samples, channel_data->parameter_changes[i].param_value,
 						&index);
       }
 
       channel_data->parameter_changes[0].param_id = ~0;
     }else{
+      AgsVstEvent *note_on;
       AgsVstEvent *note_off;
 
+      guint project_time_samples;
       guint i;
       
 //	g_message("play input data x0 = %d, y = %d", x0, y);
 
+      project_time_samples = ags_soundcard_util_calc_time_samples(output_soundcard);
+      
       ags_vst_process_context_set_system_time(input_data->process_context,
 					      ags_soundcard_util_calc_system_time(output_soundcard));
       ags_vst_process_context_set_project_time_samples(input_data->process_context,
-						       ags_soundcard_util_calc_time_samples(output_soundcard));
+						       project_time_samples);
       ags_vst_process_context_set_continous_time_samples(input_data->process_context,
 							 ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
 
+      if(channel_data->input_data[midi_note]->note_on == NULL){
+	note_on =
+	  channel_data->input_data[midi_note]->note_on = ags_vst_note_on_event_alloc(0,
+										     midi_note,
+										     0.0,
+										     1.0,
+										     (x1 - x0) * (delay * buffer_size),
+										     midi_note);
+      }else{
+	note_on = channel_data->input_data[midi_note]->note_on;
+      }
+      
+      ags_vst_event_set_sample_offset(note_on,
+				      project_time_samples);
+      
       ags_vst_ievent_list_add_event(input_data->input_event,
-				    ags_vst_note_on_event_alloc(0,
-								midi_note,
-								0.0,
-								1.0,
-								buffer_size, // (x1 - x0) * (delay * buffer_size),
-								-1));
+				    note_on);
 
-      note_off = ags_vst_note_off_event_alloc(0,
-					      midi_note,
-					      0.0,
-					      1.0,
-					      -1,
-					      -1);
+      if((x1 - x0) * (delay * buffer_size) + buffer_size > project_time_samples){
+	if(channel_data->input_data[midi_note]->note_off == NULL){
+	  note_off =
+	    channel_data->input_data[midi_note]->note_off = ags_vst_note_off_event_alloc(0,
+											 midi_note,
+											 0.0,
+											 1.0,
+											 -1,
+											 midi_note);
+	}else{
+	  note_off = channel_data->input_data[midi_note]->note_off;
+	}
+
+	ags_vst_event_set_sample_offset(note_off,
+					project_time_samples + buffer_size);
       
-      ags_vst_event_set_sample_offset(note_off,
-				      buffer_size);
-      
-      ags_vst_ievent_list_add_event(input_data->input_event,
-				    note_off);
+	ags_vst_ievent_list_add_event(input_data->input_event,
+				      note_off);
+      }      
 
       for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && input_data->parameter_changes[i].param_id != ~0; i++){
 	AgsVstParameterValueQueue *parameter_value_queue;
@@ -601,7 +647,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
 	index = 0;
 	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
-						0, input_data->parameter_changes[i].param_value,
+						project_time_samples, input_data->parameter_changes[i].param_value,
 						&index);
       }
 

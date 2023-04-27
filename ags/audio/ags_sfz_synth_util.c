@@ -31,6 +31,8 @@
 #include <ags/audio/file/ags_sfz_group.h>
 #include <ags/audio/file/ags_sfz_region.h>
 
+#include <glib/gprintf.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

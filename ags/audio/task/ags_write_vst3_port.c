@@ -462,7 +462,7 @@ ags_write_vst3_port_launch(AgsTask *task)
   if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
      sound_scope == AGS_SOUND_SCOPE_NOTATION ||
      sound_scope == AGS_SOUND_SCOPE_MIDI){
-    if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    if(is_live_instrument){
       AgsFxVst3AudioScopeData *scope_data;
       
       scope_data = write_vst3_port->fx_vst3_audio->scope_data[sound_scope];
@@ -497,6 +497,8 @@ ags_write_vst3_port_launch(AgsTask *task)
 	      ags_vst_iedit_controller_host_editing_begin_edit_from_host(channel_data->iedit_controller_host_editing,
 									 param_id);
 	    }
+
+	    g_message("set param normalized");
 	    
 	    ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
 							  param_id, param_value);
