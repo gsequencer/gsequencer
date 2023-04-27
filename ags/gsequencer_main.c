@@ -181,6 +181,14 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s\\libexec\\gstreamer-1.0\\gst-plugin-scanner.exe", app_dir));
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
+
+  putenv(g_strdup_printf("AGS_ANIMATION_FILENAME=%s\\share\\gsequencer\\images\\gsequencer-800x450.png", app_dir));
+  
+  putenv(g_strdup_printf("AGS_LOGO_FILENAME=%s\\share\\gsequencer\\images\\ags.png", app_dir));
+  
+  putenv(g_strdup_printf("AGS_LICENSE_FILENAME=%s\\COPYING", app_dir));
+  
+  putenv(g_strdup_printf("AGS_ONLINE_HELP_PDF_FILENAME=%s\\share\\doc\\gsequencer\\pdf\\ags-user-manual.pdf", app_dir));
 #endif
 
 #if defined(AGS_OSX_DMG_ENV)
