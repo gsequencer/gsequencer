@@ -503,32 +503,27 @@ ags_write_vst3_port_launch(AgsTask *task)
 	    ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
 							  param_id, param_value);
 
-	    for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
+	    for(i = 0; i < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES; i++){
 	      if(write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id == param_id){
 		write_vst3_port->fx_vst3_audio->parameter_changes[i].param_value = write_vst3_port->value;
 
 		break;
 	      }
-	      
+	  
 	      if(write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id == ~0){
 		write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id = param_id;
 		write_vst3_port->fx_vst3_audio->parameter_changes[i].param_value = write_vst3_port->value;
 		
-		if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
+		if(i +  1 < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES){
 		  write_vst3_port->fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
 		}
 		
 		break;
 	      }
 	    }
-	    
-	    if(channel_data->iedit_controller_host_editing != NULL){
-	      ags_vst_iedit_controller_host_editing_end_edit_from_host(channel_data->iedit_controller_host_editing,
-								       param_id);
-	    }
 	  }
 	}
-
+	
 	if(!is_live_instrument){
 	  guint key;
 	  
@@ -661,6 +656,8 @@ ags_write_vst3_port_launch(AgsTask *task)
 	  ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
 								     param_id);
 	}	      
+
+	g_message("set param normalized");	    
 	      
 	ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
 						      param_id, param_value);
