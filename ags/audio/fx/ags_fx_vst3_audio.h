@@ -154,6 +154,9 @@ struct _AgsFxVst3AudioInputData
   float *output;
   float *input;
 
+  AgsVstEvent *note_on;
+  AgsVstEvent *note_off;    
+
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
