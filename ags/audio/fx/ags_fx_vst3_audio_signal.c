@@ -441,7 +441,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
   g_object_get(fx_vst3_audio,
 	       "audio", &audio,
-	       "ouput-soundcard", &output_soundcard,
+	       "output-soundcard", &output_soundcard,
 	       NULL);
 
   g_object_get(fx_vst3_audio_processor,
