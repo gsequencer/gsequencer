@@ -22,6 +22,8 @@
 
 #include <glib.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
 
 #ifndef AGS_VST_VERSION_STRING
