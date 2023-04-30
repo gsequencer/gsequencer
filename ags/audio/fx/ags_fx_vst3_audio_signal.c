@@ -22,6 +22,7 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_vst3_plugin.h>
 
+#include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_vst3_audio.h>
