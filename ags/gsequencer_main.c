@@ -469,11 +469,6 @@ main(int argc, char **argv)
   }
 #endif
   
-#if defined(AGS_WITH_MAC_INTEGRATION)
-  g_object_new(GTKOSX_TYPE_APPLICATION,
-	       NULL);
-#endif
-  
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
