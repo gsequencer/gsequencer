@@ -1,3 +1,9 @@
+ags (5.0.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved VST3 support
+	* fixed octave upper and lower of ags-fx-sf2 and ags-fx-sfz
+
 ags (5.0.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
