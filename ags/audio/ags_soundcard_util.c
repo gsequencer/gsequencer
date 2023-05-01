@@ -322,7 +322,7 @@ ags_soundcard_util_calc_system_time(GObject *soundcard)
 
   note_offset = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(soundcard));
 
-  system_time = (note_offset + delay_counter) * delay * buffer_size * (AGS_NSEC_PER_SEC / samplerate);
+  system_time = (note_offset * delay + delay_counter) * buffer_size * (AGS_NSEC_PER_SEC / samplerate);
 
   return(system_time);
 }
@@ -357,7 +357,7 @@ ags_soundcard_util_calc_time_samples(GObject *soundcard)
 
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
 
-  time_samples = (note_offset + delay_counter) * delay * buffer_size;
+  time_samples = (note_offset * delay + delay_counter) * buffer_size;
 
   return(time_samples);
 }
@@ -392,7 +392,7 @@ ags_soundcard_util_calc_time_samples_absolute(GObject *soundcard)
 
   note_offset = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(soundcard));
 
-  time_samples = (note_offset + delay_counter) * delay * buffer_size;
+  time_samples = (note_offset * delay + delay_counter) * buffer_size;
 
   return(time_samples);
 }

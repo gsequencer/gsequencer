@@ -22,6 +22,8 @@
 
 #include <glib.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
 
 #ifndef AGS_VST_VERSION_STRING
@@ -62,7 +64,12 @@ extern "C" {
   typedef gdouble AgsVstSample64;
   typedef gdouble AgsVstSampleRate;
 
+#if defined(AGS_OSXAPI)
+  typedef unsigned long long AgsVstSpeakerArrangement;
+#else
   typedef long unsigned int AgsVstSpeakerArrangement;
+#endif
+  
   typedef guint64 AgsVstSpeaker;
   
 #ifdef __cplusplus

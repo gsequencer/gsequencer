@@ -22,6 +22,7 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_vst3_plugin.h>
 
+#include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_vst3_audio.h>
@@ -440,7 +441,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
   g_object_get(fx_vst3_audio,
 	       "audio", &audio,
-	       "ouput-soundcard", &output_soundcard,
+	       "output-soundcard", &output_soundcard,
 	       NULL);
 
   g_object_get(fx_vst3_audio_processor,
@@ -539,36 +540,6 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
     if(is_live_instrument){      
 //	g_message("play channel data x0 = %d, y = %d", x0, y);
-
-      ags_vst_process_context_set_state(channel_data->process_context,
-					(AGS_VST_KPLAYING |
-					 AGS_VST_KSYSTEM_TIME_VALID |
-					 AGS_VST_KCONST_TIME_VALID |
-					 AGS_VST_KPROJECT_TIME_MUSIC_VALID |
-					 AGS_VST_kCycleValid |
-					 AGS_VST_KTEMPO_VALID));
-      
-      ags_vst_process_context_set_samplerate(channel_data->process_context,
-					     samplerate);
-      
-      ags_vst_process_context_set_system_time(channel_data->process_context,
-					      ags_soundcard_util_calc_system_time(output_soundcard));
-
-      ags_vst_process_context_set_project_time_samples(channel_data->process_context,
-						       project_time_samples);
-      ags_vst_process_context_set_continous_time_samples(channel_data->process_context,
-							 ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
-
-      ags_vst_process_context_set_project_time_music(channel_data->process_context,
-						     0.25 * note_offset);
-
-      ags_vst_process_context_set_cycle_start_music(channel_data->process_context,
-						    0.25 * loop_left);
-      ags_vst_process_context_set_cycle_end_music(channel_data->process_context,
-						  0.25 * loop_right);
-      
-      ags_vst_process_context_set_tempo(channel_data->process_context,
-					bpm);
       
       if(channel_data->input_data[midi_note]->note_on == NULL){
 	note_on =
@@ -628,36 +599,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       guint i;
       
 //	g_message("play input data x0 = %d, y = %d", x0, y);
-      ags_vst_process_context_set_state(input_data->process_context,
-					(AGS_VST_KPLAYING |
-					 AGS_VST_KSYSTEM_TIME_VALID |
-					 AGS_VST_KCONST_TIME_VALID |
-					 AGS_VST_KPROJECT_TIME_MUSIC_VALID |
-					 AGS_VST_kCycleValid |
-					 AGS_VST_KTEMPO_VALID));
       
-      ags_vst_process_context_set_samplerate(input_data->process_context,
-					     samplerate);
-      
-      ags_vst_process_context_set_system_time(input_data->process_context,
-					      ags_soundcard_util_calc_system_time(output_soundcard));
-
-      ags_vst_process_context_set_project_time_samples(input_data->process_context,
-						       project_time_samples);
-      ags_vst_process_context_set_continous_time_samples(input_data->process_context,
-							 ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
-
-      ags_vst_process_context_set_project_time_music(input_data->process_context,
-						     0.25 * note_offset);
-
-      ags_vst_process_context_set_cycle_start_music(input_data->process_context,
-						    0.25 * loop_left);
-      ags_vst_process_context_set_cycle_end_music(input_data->process_context,
-						  0.25 * loop_right);
-      
-      ags_vst_process_context_set_tempo(input_data->process_context,
-					bpm);
-
       if(channel_data->input_data[midi_note]->note_on == NULL){
 	note_on =
 	  channel_data->input_data[midi_note]->note_on = ags_vst_note_on_event_alloc(0,
