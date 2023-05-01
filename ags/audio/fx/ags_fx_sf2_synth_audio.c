@@ -1920,9 +1920,9 @@ ags_fx_sf2_synth_audio_get_synth_octave_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      -6.0);
+		      -12.0);
     g_value_set_float(plugin_port->upper_value,
-		      6.0);
+		      12.0);
   }
 
   g_mutex_unlock(&mutex);

@@ -316,7 +316,6 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
       parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
 									   &(input_data->parameter_changes[i].param_id), &index);
 
-      index = 0;
       ags_vst_parameter_value_queue_add_point(parameter_value_queue,
 					      project_time_samples, input_data->parameter_changes[i].param_value,
 					      &index);
@@ -554,7 +553,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       }
       
       ags_vst_event_set_sample_offset(note_on,
-				      project_time_samples + (delay_counter * buffer_size));
+				      project_time_samples);
 
       ags_vst_ievent_list_add_event(channel_data->input_event,
 				    note_on);
@@ -588,7 +587,6 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(channel_data->input_parameter_changes,
 									     &(channel_data->parameter_changes[i].param_id), &index);
 
-	index = 0;
 	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
 						project_time_samples, channel_data->parameter_changes[i].param_value,
 						&index);
@@ -613,7 +611,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       }
       
       ags_vst_event_set_sample_offset(note_on,
-				      project_time_samples + (delay_counter * buffer_size));
+				      project_time_samples);
       
       ags_vst_ievent_list_add_event(input_data->input_event,
 				    note_on);
@@ -647,7 +645,6 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
 									     &(input_data->parameter_changes[i].param_id), &index);
 
-	index = 0;
 	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
 						project_time_samples, input_data->parameter_changes[i].param_value,
 						&index);
@@ -758,6 +755,10 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   /* unref */
   if(audio != NULL){
     g_object_unref(audio);
+  }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }
   
   if(fx_vst3_audio != NULL){
