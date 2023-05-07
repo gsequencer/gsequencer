@@ -404,6 +404,12 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 		       "x1", &x1,
 		       NULL);
 
+	  if(note_offset < x0){
+	    note = note->next;
+
+	    continue;
+	  }
+	  
 	  /* get note envelope */
 	  g_rec_mutex_lock(note_mutex);
 
@@ -435,12 +441,11 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  g_message("frame-count: %d", frame_count);
 #endif
 	  
+	  current_frame = 0;
 	  offset = 0;
 
 	  if(note_offset >= x0){
 	    current_frame = (guint) floor(((gdouble) (note_offset - x0) * delay + delay_counter) * buffer_size);
-	  }else{
-	    current_frame = 0;
 	  }
 	  
 #if 0
