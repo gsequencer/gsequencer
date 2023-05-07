@@ -76,7 +76,11 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   pcm_file_chooser_dialog->flags |= (AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_NEW_CHANNEL |
 				     AGS_PCM_FILE_CHOOSER_DIALOG_SHOW_EXISTING_CHANNEL);
   
-  gtk_widget_show(GTK_WIDGET(pcm_file_chooser_dialog));
+  gtk_widget_set_visible(GTK_WIDGET(pcm_file_chooser_dialog),
+			 TRUE);
+
+  gtk_widget_set_size_request(GTK_WIDGET(pcm_file_chooser_dialog),
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
 
   g_signal_connect(G_OBJECT(pcm_file_chooser_dialog), "response",
 		   G_CALLBACK(ags_drum_open_response_callback), drum);

@@ -677,7 +677,7 @@ ags_machine_init(AgsMachine *machine)
 			 GTK_ALIGN_START);
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_PADDING);
   
   machine->frame = (GtkFrame *) gtk_frame_new(NULL);
 

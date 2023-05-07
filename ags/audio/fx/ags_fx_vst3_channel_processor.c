@@ -153,12 +153,17 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
   guint note_offset;
   gdouble delay;
   guint delay_counter;
+  guint samplerate;
   guint buffer_size;
+  guint project_time_samples;
+  gdouble bpm;
+  guint loop_left, loop_right;
   guint sound_scope;
   guint nth;
   guint j, k;    
   gboolean is_live_instrument;
   gboolean activated;
+  gboolean do_loop;
   
   GRecMutex *fx_vst3_audio_mutex;
   GRecMutex *fx_vst3_channel_mutex;
@@ -195,6 +200,28 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
   activated = AGS_FX_VST3_CHANNEL_PROCESSOR(recall)->activated;
   
   g_rec_mutex_unlock(fx_vst3_channel_processor_mutex);
+
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
+
+  ags_soundcard_get_loop(AGS_SOUNDCARD(output_soundcard),
+			 &loop_left, &loop_right,
+			 &do_loop);
+
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+      
+  project_time_samples = ags_soundcard_util_calc_time_samples(output_soundcard);
 
   if(!ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     if(!activated){
@@ -246,19 +273,37 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
     fx_vst3_channel->parameter_changes[0].param_id = ~0;
   
     g_rec_mutex_unlock(fx_vst3_channel_mutex);
-
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
-
-    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
-			      NULL,
-			      NULL,
-			      &buffer_size,
-			      NULL);
   
+    ags_vst_process_context_set_samplerate(input_data->process_context,
+					   samplerate);
+      
+    ags_vst_process_context_set_system_time(input_data->process_context,
+					    ags_soundcard_util_calc_system_time(output_soundcard));
+
     ags_vst_process_context_set_project_time_samples(input_data->process_context,
-						     (note_offset * delay + delay_counter) * buffer_size);
+						     project_time_samples);
+
+    ags_vst_process_context_set_continous_time_samples(input_data->process_context,
+						       ags_soundcard_util_calc_time_samples_absolute(output_soundcard));
+
+    ags_vst_process_context_set_project_time_music(input_data->process_context,
+						   0.25 * note_offset);
+
+    ags_vst_process_context_set_cycle_start_music(input_data->process_context,
+						  0.25 * loop_left);
+    ags_vst_process_context_set_cycle_end_music(input_data->process_context,
+						0.25 * loop_right);
+      
+    ags_vst_process_context_set_tempo(input_data->process_context,
+				      bpm);
+
+    ags_vst_process_context_set_state(input_data->process_context,
+				      (AGS_VST_KPLAYING |
+				       AGS_VST_KSYSTEM_TIME_VALID |
+				       AGS_VST_KCONST_TIME_VALID |
+				       AGS_VST_KPROJECT_TIME_MUSIC_VALID |
+				       AGS_VST_kCycleValid |
+				       AGS_VST_KTEMPO_VALID));
   }
 
   if(fx_vst3_audio != NULL){

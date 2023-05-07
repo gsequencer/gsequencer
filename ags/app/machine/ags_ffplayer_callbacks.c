@@ -244,11 +244,13 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 				       NULL);
   
   ffplayer->open_dialog = (GtkWidget *) file_chooser;
+  gtk_window_set_default_size((GtkWindow *) file_chooser,
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  gtk_widget_set_visible((GtkWidget *) file_chooser,
+			 TRUE);
 
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_ffplayer_open_dialog_response_callback), AGS_MACHINE(ffplayer));
-
-  gtk_widget_show((GtkWidget *) file_chooser);
 }
 
 void

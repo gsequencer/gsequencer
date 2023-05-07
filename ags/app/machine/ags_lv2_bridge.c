@@ -1524,6 +1524,8 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
     
+  gchar *uri;
+
   guint samplerate;
   guint buffer_size;
 
@@ -1545,8 +1547,14 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   }
   
   /* URI */
+  uri = NULL;
+  
+  g_object_get(lv2_plugin,
+	       "uri", &uri,
+	       NULL);
+
   g_object_set(lv2_bridge,
-	       "uri", lv2_plugin->uri,
+	       "uri", uri,
 	       NULL);
 
   /* samplerate and buffer size */

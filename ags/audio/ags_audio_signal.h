@@ -224,6 +224,7 @@ gboolean ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
 
 AgsAudioSignal* ags_audio_signal_get_default_template(GList *audio_signal);
 GList* ags_audio_signal_get_rt_default_template(GList *audio_signal);
+GList* ags_audio_signal_get_rt_template(GList *audio_signal);
 
 GList* ags_audio_signal_find_stream_current(GList *audio_signal,
 					   GObject *recall_id);

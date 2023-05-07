@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-04-24 19:19+0200\n"
+"POT-Creation-Date: 2023-05-01 10:50+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -119,7 +119,7 @@ msgstr "envelope"
 #: ags/app/ags_machine_callbacks.c:1018
 #: ags/app/editor/ags_pattern_envelope.c:251
 #: ags/app/editor/ags_envelope_editor.c:180
-#: ags/app/machine/ags_live_lv2_bridge.c:506
+#: ags/app/machine/ags_live_lv2_bridge.c:498
 #: ags/app/machine/ags_lv2_bridge.c:486 ags/app/machine/ags_sf2_synth.c:422
 #: ags/app/machine/ags_ffplayer.c:364
 msgid "preset"
@@ -154,9 +154,9 @@ msgstr "choisir l'audio fichier"
 #: ags/app/editor/ags_move_note_dialog.c:210
 #: ags/app/editor/ags_select_note_dialog.c:248 ags/app/ags_midi_dialog.c:444
 #: ags/app/machine/ags_audiorec_callbacks.c:43
-#: ags/app/machine/ags_sfz_synth_callbacks.c:53
+#: ags/app/machine/ags_sfz_synth_callbacks.c:54
 #: ags/app/machine/ags_ffplayer_callbacks.c:235
-#: ags/app/machine/ags_sf2_synth_callbacks.c:53
+#: ags/app/machine/ags_sf2_synth_callbacks.c:54
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:44
 #: ags/app/import/ags_midi_import_wizard.c:208 ags/app/ags_plugin_browser.c:271
 #: ags/app/ags_preferences.c:240
@@ -164,7 +164,7 @@ msgid "_OK"
 msgstr ""
 
 #: ags/app/ags_machine_editor_dialog.c:104
-#: ags/app/ags_pcm_file_chooser_dialog.c:168
+#: ags/app/ags_pcm_file_chooser_dialog.c:97
 #: ags/app/export/ags_wave_export_dialog_callbacks.c:58
 #: ags/app/export/ags_midi_export_wizard.c:225
 #: ags/app/export/ags_wave_export_dialog.c:343 ags/app/ags_input_dialog.c:88
@@ -185,9 +185,9 @@ msgstr ""
 #: ags/app/editor/ags_select_note_dialog.c:249
 #: ags/app/ags_export_soundcard_callbacks.c:435 ags/app/ags_midi_dialog.c:449
 #: ags/app/machine/ags_audiorec_callbacks.c:44
-#: ags/app/machine/ags_sfz_synth_callbacks.c:54
+#: ags/app/machine/ags_sfz_synth_callbacks.c:55
 #: ags/app/machine/ags_ffplayer_callbacks.c:236
-#: ags/app/machine/ags_sf2_synth_callbacks.c:54
+#: ags/app/machine/ags_sf2_synth_callbacks.c:55
 #: ags/app/machine/ags_pitch_sampler_callbacks.c:45
 #: ags/app/import/ags_midi_import_wizard.c:209 ags/app/ags_plugin_browser.c:272
 #: ags/app/ags_preferences.c:241
@@ -234,21 +234,21 @@ msgstr "intrant"
 msgid "bulk input"
 msgstr "lien intrant"
 
-#: ags/app/ags_gsequencer_application_context.c:3375
+#: ags/app/ags_gsequencer_application_context.c:3359
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "carte son backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3385
+#: ags/app/ags_gsequencer_application_context.c:3369
 msgid "unknown soundcard backend - NULL"
 msgstr "carte son backend inconnu - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:3621
+#: ags/app/ags_gsequencer_application_context.c:3605
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "séquencer backend inconnu - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:3631
+#: ags/app/ags_gsequencer_application_context.c:3615
 msgid "unknown sequencer backend - NULL"
 msgstr "séquencer backend inconnu - NULL"
 
@@ -272,26 +272,26 @@ msgstr "rt-safe"
 msgid "GUI scale factor"
 msgstr "graduer l'interface utilisateur"
 
-#: ags/app/ags_pcm_file_chooser_dialog.c:119
-#: ags/app/editor/ags_envelope_info.c:225
-msgid "audio channel"
-msgstr "audio canal"
-
-#: ags/app/ags_pcm_file_chooser_dialog.c:142
-msgid "open in new channel"
-msgstr "ouvrir dans un nouveau canal"
-
-#: ags/app/ags_pcm_file_chooser_dialog.c:153
-#, fuzzy
-msgid "override existing links"
-msgstr "écraser exister liens"
-
-#: ags/app/ags_pcm_file_chooser_dialog.c:169
+#: ags/app/ags_pcm_file_chooser_dialog.c:98
 #: ags/app/ags_export_soundcard_callbacks.c:436 ags/app/machine/ags_drum.c:363
 #: ags/app/machine/ags_sfz_synth.c:309 ags/app/machine/ags_audiorec.c:296
 #: ags/app/machine/ags_sf2_synth.c:322 ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
 msgstr "_Ouvrir"
+
+#: ags/app/ags_pcm_file_chooser_dialog.c:158
+#: ags/app/editor/ags_envelope_info.c:225
+msgid "audio channel"
+msgstr "audio canal"
+
+#: ags/app/ags_pcm_file_chooser_dialog.c:181
+msgid "open in new channel"
+msgstr "ouvrir dans un nouveau canal"
+
+#: ags/app/ags_pcm_file_chooser_dialog.c:192
+#, fuzzy
+msgid "override existing links"
+msgstr "écraser exister liens"
 
 #: ags/app/ags_performance_preferences.c:141
 msgid "Auto-sense on stream"
@@ -1194,7 +1194,7 @@ msgstr "réajuster canal"
 msgid "Open file"
 msgstr "Ouvrir fichier"
 
-#: ags/app/ags_app_action_util.c:482
+#: ags/app/ags_app_action_util.c:485
 #, fuzzy
 msgid "save file as"
 msgstr "Mémoriser comme"
@@ -1323,7 +1323,7 @@ msgstr "WASAPI calibre de mémoire"
 msgid "mute"
 msgstr ""
 
-#: ags/app/machine/ags_live_lv2_bridge.c:476
+#: ags/app/machine/ags_live_lv2_bridge.c:472
 #: ags/app/machine/ags_dssi_bridge.c:351 ags/app/machine/ags_lv2_bridge.c:461
 #: ags/app/machine/ags_live_dssi_bridge.c:351
 #: ags/app/machine/ags_live_vst3_bridge.c:358
@@ -1579,7 +1579,7 @@ msgstr "premier boucle"
 msgid "loop end"
 msgstr "dernier boucle"
 
-#: ags/app/machine/ags_sfz_synth_callbacks.c:50
+#: ags/app/machine/ags_sfz_synth_callbacks.c:51
 #, fuzzy
 msgid "Open SFZ file"
 msgstr "Ouvrir fichier"
@@ -1591,7 +1591,7 @@ msgid "show VST3 UI"
 msgstr "montrer GUI"
 
 #: ags/app/machine/ags_ffplayer_callbacks.c:232
-#: ags/app/machine/ags_sf2_synth_callbacks.c:50
+#: ags/app/machine/ags_sf2_synth_callbacks.c:51
 #, fuzzy
 msgid "Open Soundfont2 file"
 msgstr "Ouvrir d'audio fichier"

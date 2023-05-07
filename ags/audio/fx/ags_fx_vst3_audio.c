@@ -1154,6 +1154,9 @@ ags_fx_vst3_audio_input_data_alloc()
   input_data->output = g_malloc(2 * buffer_size * sizeof(float));
   input_data->input = g_malloc(2 * buffer_size * sizeof(float));
 
+  input_data->note_on = NULL;
+  input_data->note_off = NULL;
+  
   input_data->icomponent = NULL;
   input_data->iedit_controller = NULL;
   input_data->iaudio_processor = NULL;
@@ -1722,8 +1725,9 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 					"control-port", control_port,
 					"port-value-is-pointer", FALSE,
 					"port-value-type", G_TYPE_DOUBLE,
+					"plugin-port", current_plugin_port,
 					NULL);
-      
+	  
 	  if(ags_plugin_port_test_flags(current_plugin_port,
 					AGS_PLUGIN_PORT_OUTPUT)){
 	    ags_port_set_flags(vst3_port[nth], AGS_PORT_IS_OUTPUT);
@@ -1890,7 +1894,7 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
   AgsAudio *audio;
   AgsChannel *start_output, *output;
   AgsPlaybackDomain *playback_domain;
-
+  
   AgsVst3Plugin *vst3_plugin;
 
   GList *start_output_playback, *output_playback;
@@ -1905,6 +1909,8 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
   
   fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
 
+  g_message("ags-fx-vst3 safe write");
+  
   g_rec_mutex_lock(fx_vst3_audio_mutex);
 
   vst3_plugin = fx_vst3_audio->vst3_plugin;
@@ -2033,14 +2039,55 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 	}
 	
 	if(task_launcher != NULL){
-	  write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
-						    port,
-						    g_value_get_double(value),
-						    j,
-						    i);
+	  GList *keys, *values;
+	  
+	  AgsVstParamID param_id;
+	  gboolean success;
+	  
+	  keys = g_hash_table_get_keys(vst3_plugin->plugin_port);
+	  values = g_hash_table_get_values(vst3_plugin->plugin_port);
 
-	  ags_task_launcher_add_task(task_launcher,
-				     write_vst3_port);
+	  success = FALSE;
+	  
+	  while(values != NULL){
+	    if(values->data == port->plugin_port){
+	      param_id = keys->data;
+
+	      success = TRUE;
+	      
+	      break;
+	    }
+	    
+	    values = values->next;
+	  }
+
+	  if(success){
+	    AgsFxVst3AudioScopeData *scope_data;
+	    AgsFxVst3AudioChannelData *channel_data;;
+
+	    guint k;
+
+	    scope_data = fx_vst3_audio->scope_data[j];
+
+	    channel_data = scope_data->channel_data[i];
+
+	    for(k = 0; k < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; k++){
+	      if(channel_data->parameter_changes[k].param_id == param_id){
+		channel_data->parameter_changes[k].param_value = g_value_get_double(value);
+		    
+		break;
+	      }
+	    }
+	
+	    write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
+						      port,
+						      g_value_get_double(value),
+						      j,
+						      i);
+
+	    ags_task_launcher_add_task(task_launcher,
+				       write_vst3_port);	    
+	  }	  
 
 	  g_object_unref(task_launcher);
 	}

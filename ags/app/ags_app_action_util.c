@@ -140,7 +140,10 @@ ags_app_action_util_open()
 								      "_OK", GTK_RESPONSE_ACCEPT,
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
-  gtk_widget_show((GtkWidget *) file_chooser);
+  gtk_window_set_default_size((GtkWindow *) file_chooser,
+			      600, 480);
+  gtk_widget_set_visible((GtkWidget *) file_chooser,
+			 TRUE);
 
   g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_app_action_util_open_response_callback), NULL);
@@ -484,15 +487,17 @@ ags_app_action_util_save_as()
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
 								      "_Cancel", GTK_RESPONSE_CANCEL,
 								      "_OK", GTK_RESPONSE_ACCEPT,
-								      NULL);
-  
+								      NULL);  
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
+  gtk_window_set_default_size((GtkWindow *) file_chooser,
+			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+  gtk_widget_set_visible((GtkWidget *) file_chooser,
+			 TRUE);
 
   g_signal_connect(file_chooser, "response",
 		   G_CALLBACK(ags_app_action_util_save_as_response_callback), NULL);
 
-  gtk_widget_show((GtkWidget *) file_chooser);  
 }
 
 void
