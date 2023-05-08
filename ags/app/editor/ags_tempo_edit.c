@@ -2225,16 +2225,397 @@ ags_tempo_edit_draw_marker(AgsTempoEdit *tempo_edit,
 			   cairo_t *cr,
 			   gdouble opacity)
 {
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
+
+  GtkStyleContext *style_context;
+  GtkSettings *settings;
+
+  AgsApplicationContext *application_context;
+
+  GtkAllocation allocation;
+
+  GdkRGBA fg_color;
+  GdkRGBA shadow_color;
+
+  gdouble gui_scale_factor;
+  double zoom, zoom_factor;
+  double viewport_x, viewport_y;
+  gdouble val, step;
+  gdouble upper, lower, step_count;
+  gdouble c_range;
+  gint x, y;
+  gint a_x, b_x;
+  gdouble a_y, b_y;
+  double width, height;
+  gboolean dark_theme;
+  gboolean fg_success;
+  gboolean shadow_success;
+
+  GValue value = {0};
+  
+  if(!AGS_IS_TEMPO_EDIT(tempo_edit) ||
+     !AGS_IS_MARKER(marker_a) ||
+     cr == NULL){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+    
+  composite_toolbar = composite_editor->toolbar;
+
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
+   
+  /* style context */
+  style_context = gtk_widget_get_style_context((GtkWidget *) tempo_edit);
+
+  settings = gtk_settings_get_default();
+  
+  dark_theme = TRUE;
+  
+  g_object_get(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
+
+  /* colors */
+  fg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_fg_color",
+					      &fg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !shadow_success){
+    gdk_rgba_parse(&fg_color,
+		   "#101010");
+
+    gdk_rgba_parse(&shadow_color,
+		   "#ffffff40");
+  }
+  
+  gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
+			    &allocation);
+
+  c_range = 240.0;
+  
+  /* get offset and dimensions */
+  if(AGS_PROGRAM_DEFAULT_LENGTH > allocation.width){
+    viewport_x = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar));
+  }else{
+    viewport_x = 0.0;
+  }
+  
+  viewport_y = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(tempo_edit->vscrollbar));
+
+  g_object_get(marker_a,
+	       "x", &a_x,
+	       "y", &a_y,
+	       NULL);
+ 
+  x = ((double) a_x) - viewport_x;
+
+  lower = 0.0;
+  upper = 240.0;
+
+  a_y -= lower;
+  
+  y = allocation.height - ((double) a_y / c_range) * allocation.height - viewport_y;
+  
+  if(marker_b != NULL){
+    g_object_get(marker_b,
+		 "x", &b_x,
+		 NULL);
+    
+    width = ((double) b_x - a_x);
+  }else{
+    width = ((double) allocation.width) - x;
+  }
+
+  height = allocation.height - y;
+  
+  /* apply zoom */
+  x /= zoom_factor;
+  
+  width /= zoom_factor;
+
+  /* clip */
+  if(x < 0.0){
+    if(x + width < 0.0){
+      return;
+    }else{
+      width += x;
+      x = 0.0;
+    }
+  }else if(x > allocation.width){
+    return;
+  }
+
+  if(x + width > allocation.width){
+    width = ((double) allocation.width) - x;
+  }
+
+  if(marker_b == NULL){
+    width = ((double) allocation.width - x);
+  }
+  
+  if(y < 0.0){
+    if(y + height < 0.0){
+      return;
+    }else{
+      height += y;
+      y = 0.0;
+    }
+  }else if(y > allocation.height){
+    return;
+  }
+
+  if(y + height > allocation.height){
+    height = ((double) allocation.height) - y;
+  }
+
+  /* draw marker - dot */
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.blue,
+			fg_color.green,
+			opacity * fg_color.alpha);
+  
+  cairo_arc(cr,
+	    x, y,
+	    tempo_edit->point_radius,
+	    0.0,
+	    2.0 * M_PI);
+  
+  cairo_stroke(cr);
+  
+  /* draw marker - area */
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.blue,
+			fg_color.green,
+			opacity * fg_color.alpha);
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
+
+  /* check marker selected */
+  if(ags_marker_test_flags(marker_a, AGS_MARKER_IS_SELECTED)){
+    double selected_x, selected_y;
+    double selected_width, selected_height;
+
+    selected_x = x - tempo_edit->selected_marker_border;
+    selected_y = y - tempo_edit->selected_marker_border;
+
+    selected_width = width + (2.0 * (double) tempo_edit->selected_marker_border);
+    selected_height = height + (2.0 * (double) tempo_edit->selected_marker_border);
+
+    /* clip */
+    if(selected_x < 0.0){
+      selected_x = 0.0;
+    }
+    
+    if(selected_x + selected_width > allocation.width){
+      selected_width = ((double) allocation.width) - selected_x;
+    }
+  
+    if(selected_y < 0.0){
+      selected_y = 0.0;
+    }
+
+    if(selected_y + selected_height > allocation.height){
+      selected_height = ((double) allocation.height) - selected_y;
+    }
+
+    /* draw selected marker - dot */
+    cairo_set_source_rgba(cr,
+			  shadow_color.red,
+			  shadow_color.blue,
+			  shadow_color.green,
+			  opacity / 3.0);
+    
+    cairo_arc(cr,
+	      selected_x, selected_y,
+	      tempo_edit->point_radius + (2.0 * (double) tempo_edit->selected_marker_border),
+	      0.0,
+	      2.0 * M_PI);
+
+    cairo_stroke(cr);
+
+    /* draw selected marker - area */
+    cairo_rectangle(cr,
+		    selected_x, selected_y,
+		    selected_width, selected_height);
+    cairo_fill(cr);
+  }
 }
 
 void
 ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
+
+  AgsTimestamp *timestamp;
+  AgsTimestamp *current_timestamp;    
+  
+  AgsApplicationContext *application_context;
+
+  GtkAllocation allocation;
+
+  GType channel_type;
+
+  GList *start_list_program, *list_program;
+  GList *start_list_marker, *list_marker;
+
+  gchar *control_name;
+
+  gdouble opacity;
+  guint x0, x1;
+  guint offset;
+  
+  if(!AGS_IS_TEMPO_EDIT(tempo_edit)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
+			    &allocation);
+    
+  /* zoom */  
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  composite_toolbar = composite_editor->toolbar;
+
+  opacity = gtk_spin_button_get_value(composite_toolbar->opacity);  
+
+  /* get visisble region */
+  x0 = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar));
+  x1 = (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar)) + allocation.width);
+
+  /* draw tempo */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+  
+  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+
+  list_program =
+    start_list_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+
+  while((list_program = ags_program_find_near_timestamp_extended(list_program,
+								 "tempo",
+								 timestamp)) != NULL){
+    AgsProgram *tempo;
+
+    GList *start_list_marker, *list_marker;
+
+    tempo = AGS_PROGRAM(list_program->data);
+
+    g_object_get(tempo,
+		 "timestamp", &current_timestamp,
+		 NULL);
+
+    g_object_unref(current_timestamp);
+    
+    if(ags_timestamp_get_ags_offset(current_timestamp) > x1){
+      break;
+    }
+
+    if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_PROGRAM_DEFAULT_OFFSET < x0){
+      list_program = list_program->next;
+
+      continue;
+    }
+
+    g_object_get(tempo,
+		 "marker", &start_list_marker,
+		 NULL);
+      
+    list_marker = start_list_marker;
+
+    while(list_marker != NULL){
+      ags_tempo_edit_draw_marker(tempo_edit,
+				 list_marker->data, ((list_marker->next != NULL) ? list_marker->next->data: NULL),
+				 cr,
+				 opacity);
+
+      /* iterate */
+      list_marker = list_marker->next;
+    }
+
+    g_list_free_full(start_list_marker,
+		     g_object_unref);
+      
+    /* iterate */
+    list_program = list_program->next;
+  }
+  
+  g_list_free_full(start_list_program,
+		   g_object_unref);
 }
 
 void
 ags_tempo_edit_draw(AgsTempoEdit *tempo_edit, cairo_t *cr)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  ags_tempo_edit_reset_vscrollbar(tempo_edit);
+  ags_tempo_edit_reset_hscrollbar(tempo_edit);
+
+  /* segment */
+  ags_tempo_edit_draw_segment(tempo_edit, cr);
+
+  /* tempo */
+  ags_tempo_edit_draw_tempo(tempo_edit, cr);
+  
+  /* edit mode */
+  switch(tempo_edit->mode){
+  case AGS_TEMPO_EDIT_POSITION_CURSOR:
+    {
+      ags_tempo_edit_draw_cursor(tempo_edit, cr);
+    }
+    break;
+  case AGS_TEMPO_EDIT_ADD_MARKER:
+    {
+      if(tempo_edit->current_marker != NULL){
+	ags_tempo_edit_draw_marker(tempo_edit,
+				   tempo_edit->current_marker, NULL,
+				   cr,
+				   1.0);
+
+	cairo_surface_mark_dirty(cairo_get_target(cr));
+      }
+    }
+    break;
+  case AGS_TEMPO_EDIT_SELECT_MARKER:
+    {
+      ags_tempo_edit_draw_selection(tempo_edit, cr);
+    }
+    break;
+  }
+
+  /* fader */
+  if((AGS_TEMPO_EDIT_AUTO_SCROLL & (tempo_edit->flags)) != 0){
+    ags_tempo_edit_draw_position(tempo_edit, cr);
+  }
 }
 
 /**
