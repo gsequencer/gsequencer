@@ -81,6 +81,8 @@ void ags_app_action_util_edit_notation();
 void ags_app_action_util_edit_automation();
 void ags_app_action_util_edit_wave();
 void ags_app_action_util_edit_sheet();
+void ags_app_action_util_edit_meta();
+void ags_app_action_util_edit_tempo();
 
 G_END_DECLS
 
