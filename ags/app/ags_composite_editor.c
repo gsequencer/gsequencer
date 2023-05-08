@@ -580,6 +580,8 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 
   gtk_widget_set_visible((GtkWidget *) composite_editor->tempo_edit,
 			 FALSE);
+  gtk_widget_set_margin_start((GtkWidget *) composite_editor->tempo_edit,
+			      60);
 
   gtk_box_append(vbox,
 		 (GtkWidget *) composite_editor->tempo_edit);
@@ -741,6 +743,8 @@ ags_composite_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(composite_editor->automation_edit));
   ags_connectable_connect(AGS_CONNECTABLE(composite_editor->wave_edit));
 
+  ags_connectable_connect(AGS_CONNECTABLE(composite_editor->tempo_edit));
+  
   g_signal_connect(composite_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_composite_editor_machine_selector_changed_callback), composite_editor);
   
@@ -766,6 +770,8 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->sheet_edit));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->automation_edit));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->wave_edit));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_editor->tempo_edit));
 
   //TODO:JK: implement me
 }
