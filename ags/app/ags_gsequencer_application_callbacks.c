@@ -405,3 +405,17 @@ ags_gsequencer_edit_sheet_callback(GAction *action, GVariant *parameter,
 {
   ags_app_action_util_edit_sheet();
 }
+
+void
+ags_gsequencer_edit_meta_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_edit_meta();
+}
+
+void
+ags_gsequencer_edit_tempo_callback(GAction *action, GVariant *parameter,
+				  AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_edit_tempo();
+}

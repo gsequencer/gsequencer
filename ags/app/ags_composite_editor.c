@@ -582,7 +582,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 			 FALSE);
 
   gtk_box_append(vbox,
-		 (GtkWidget *) composite_editor->wave_edit);
+		 (GtkWidget *) composite_editor->tempo_edit);
 }
 
 void

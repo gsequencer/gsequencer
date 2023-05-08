@@ -141,6 +141,8 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *edit_automation_action;
   GSimpleAction *edit_wave_action;
   GSimpleAction *edit_sheet_action;
+  GSimpleAction *edit_meta_action;
+  GSimpleAction *edit_tempo_action;
   
   AgsApplicationContext *application_context;  
 
@@ -598,6 +600,22 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(edit_sheet_action));
 #endif
+
+  /* edit meta */
+  edit_meta_action = g_simple_action_new("edit_meta",
+					 NULL);
+  g_signal_connect(edit_meta_action, "activate",
+		   G_CALLBACK(ags_gsequencer_edit_meta_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(edit_meta_action));
+
+  /* edit tempo */
+  edit_tempo_action = g_simple_action_new("edit_tempo",
+					 NULL);
+  g_signal_connect(edit_tempo_action, "activate",
+		   G_CALLBACK(ags_gsequencer_edit_tempo_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(edit_tempo_action));
 }
 
 void

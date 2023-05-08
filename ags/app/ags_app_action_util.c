@@ -31,10 +31,13 @@
 
 #include <ags/app/editor/ags_composite_edit.h>
 #include <ags/app/editor/ags_composite_edit_callbacks.h>
+#include <ags/app/editor/ags_notation_edit.h>
+#include <ags/app/editor/ags_automation_edit.h>
 #include <ags/app/editor/ags_scrolled_wave_edit_box.h>
 #include <ags/app/editor/ags_wave_edit_box.h>
 #include <ags/app/editor/ags_wave_edit.h>
 #include <ags/app/editor/ags_sheet_edit.h>
+#include <ags/app/editor/ags_tempo_edit.h>
 
 #include <ags/app/import/ags_midi_import_wizard.h>
 
@@ -1846,4 +1849,66 @@ ags_app_action_util_edit_sheet()
     ags_machine_selector_set_flags(composite_editor->machine_selector,
 				   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
   }
+}
+
+void
+ags_app_action_util_edit_meta()
+{
+  AgsApplicationContext *application_context;
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+  AgsMachine *machine;
+  GtkWidget *scrolled_edit_meta;
+  
+  gboolean toggle_visible;
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+      
+  composite_editor = window->composite_editor;
+
+  machine = composite_editor->selected_machine;
+
+  scrolled_edit_meta = NULL;
+  
+  if(AGS_IS_NOTATION_EDIT(composite_editor->selected_edit)){
+    scrolled_edit_meta = composite_editor->notation_edit->scrolled_edit_meta;
+  }else if(AGS_IS_AUTOMATION_EDIT(composite_editor->selected_edit)){
+    scrolled_edit_meta = composite_editor->automation_edit->scrolled_edit_meta;
+  }else if(AGS_IS_WAVE_EDIT(composite_editor->selected_edit)){
+    scrolled_edit_meta = composite_editor->wave_edit->scrolled_edit_meta;
+  }else if(AGS_IS_SHEET_EDIT(composite_editor->selected_edit)){
+    scrolled_edit_meta = composite_editor->sheet_edit->scrolled_edit_meta;
+  }
+
+  if(scrolled_edit_meta != NULL){
+    toggle_visible = (gtk_widget_get_visible(scrolled_edit_meta)) ? FALSE: TRUE;
+  
+    gtk_widget_set_visible(scrolled_edit_meta,
+			   toggle_visible);
+  }
+}
+
+void
+ags_app_action_util_edit_tempo()
+{
+  AgsApplicationContext *application_context;
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
+
+  gboolean toggle_visible;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+      
+  composite_editor = window->composite_editor;
+
+  toggle_visible = (gtk_widget_get_visible((GtkWidget *) composite_editor->tempo_edit)) ? FALSE: TRUE;
+  
+  gtk_widget_set_visible((GtkWidget *) composite_editor->tempo_edit,
+			 toggle_visible);
+
+  gtk_widget_queue_draw(GTK_WIDGET(composite_editor->tempo_edit->drawing_area));
 }

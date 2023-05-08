@@ -1520,7 +1520,6 @@ ags_tempo_edit_reset_vscrollbar(AgsTempoEdit *tempo_edit)
 {
   AgsCompositeEdit *composite_edit;
   GtkAdjustment *adjustment;
-  GtkAdjustment *piano_adjustment;
 
   GtkAllocation allocation;
   
@@ -1536,8 +1535,6 @@ ags_tempo_edit_reset_vscrollbar(AgsTempoEdit *tempo_edit)
 
   composite_edit = (AgsCompositeEdit *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 								AGS_TYPE_COMPOSITE_EDIT);
-
-  piano_adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_PIANO(composite_edit->edit_control)->scrolled_window);
 
   /* */
   gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
@@ -1559,25 +1556,10 @@ ags_tempo_edit_reset_vscrollbar(AgsTempoEdit *tempo_edit)
   gtk_adjustment_set_upper(adjustment,
 			   upper);
 
-  /* piano - upper */
-  gtk_adjustment_set_lower(piano_adjustment,
-			   gtk_adjustment_get_lower(adjustment));
-  gtk_adjustment_set_step_increment(piano_adjustment,
-				    gtk_adjustment_get_step_increment(adjustment));
-  gtk_adjustment_set_page_increment(piano_adjustment,
-				    gtk_adjustment_get_page_increment(adjustment));
-  gtk_adjustment_set_page_size(piano_adjustment,
-			       gtk_adjustment_get_page_size(adjustment));
-  gtk_adjustment_set_upper(piano_adjustment,
-			   gtk_adjustment_get_upper(adjustment));
-
   /* reset value */
   if(old_upper != 0.0){
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
-
-    gtk_adjustment_set_value(piano_adjustment,
-			     gtk_adjustment_get_value(adjustment));
   }
 
   tempo_edit->flags &= (~AGS_TEMPO_EDIT_BLOCK_RESET_VSCROLLBAR);  
