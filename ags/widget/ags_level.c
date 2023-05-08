@@ -107,6 +107,7 @@ enum{
   PROP_LOWER,
   PROP_UPPER,
   PROP_NORMALIZED_VOLUME,
+  PROP_SAMPLERATE,
 };
 
 static gpointer ags_level_parent_class = NULL;
@@ -249,6 +250,24 @@ ags_level_class_init(AgsLevelClass *level)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NORMALIZED_VOLUME,
+				  param_spec);
+
+  /**
+   * AgsLevel:samplerate:
+   *
+   * The level's samplerate.
+   * 
+   * Since: 5.1.0
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 "samplerate",
+				 "The samplerate of level",
+				 8000,
+				 5644800,
+				 AGS_LEVEL_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
 				  param_spec);
 
   /* GtkWidgetClass */
@@ -1271,6 +1290,46 @@ ags_level_get_normalized_volume(AgsLevel *level)
 	       NULL);
 
   return(normalized_volume);
+}
+
+/**
+ * ags_level_set_data_format:
+ * @level: the #AgsLevel
+ * @data_format: the data format
+ *
+ * Set data-format.
+ * 
+ * Since: 5.1.0
+ */
+void
+ags_level_set_data_format(AgsLevel *level,
+			  AgsLevelDataFormat data_format)
+{
+  g_return_if_fail(AGS_IS_LEVEL(level));
+
+  level->data_format = data_format;
+
+  gtk_widget_queue_draw((GtkWidget *) level);
+}
+
+/**
+ * ags_level_set_samplerate:
+ * @level: the #AgsLevel
+ * @samplerate: the samplerate
+ *
+ * Set samplerate.
+ * 
+ * Since: 5.1.0
+ */
+void
+ags_level_set_samplerate(AgsLevel *level,
+			 guint samplerate)
+{
+  g_return_if_fail(AGS_IS_LEVEL(level));
+
+  level->samplerate = samplerate;
+
+  gtk_widget_queue_draw((GtkWidget *) level);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,6 +66,10 @@ struct _AgsSoundProviderInterface
   void (*set_osc_server)(AgsSoundProvider *sound_provider,
 			 GList *osc_server);
   GList* (*get_osc_server)(AgsSoundProvider *sound_provider);
+
+  void (*set_program)(AgsSoundProvider *sound_provider,
+		      GList *program);
+  GList* (*get_program)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
@@ -97,6 +101,10 @@ GList* ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider);
 void ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
 				       GList *osc_server);
 GList* ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_program(AgsSoundProvider *sound_provider,
+				    GList *program);
+GList* ags_sound_provider_get_program(AgsSoundProvider *sound_provider);
 
 G_END_DECLS
 

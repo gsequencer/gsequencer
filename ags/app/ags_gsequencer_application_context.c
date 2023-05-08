@@ -169,6 +169,9 @@ void ags_gsequencer_application_context_set_sound_server(AgsSoundProvider *sound
 GList* ags_gsequencer_application_context_get_osc_server(AgsSoundProvider *sound_provider);
 void ags_gsequencer_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 						       GList *osc_server);
+GList* ags_gsequencer_application_context_get_program(AgsSoundProvider *sound_provider);
+void ags_gsequencer_application_context_set_program(AgsSoundProvider *sound_provider,
+						    GList *program);
 
 gboolean ags_gsequencer_application_context_get_show_animation(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_show_animation(AgsUiProvider *ui_provider,
@@ -231,7 +234,7 @@ void ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
 						GtkApplication *app);
 GtkWidget* ags_gsequencer_application_context_get_meta_data_window(AgsUiProvider *ui_provider);
 void ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provider,
-							  GtkWidget *widget);
+							     GtkWidget *widget);
 
 void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
 void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
@@ -501,6 +504,9 @@ ags_gsequencer_application_context_sound_provider_interface_init(AgsSoundProvide
 
   sound_provider->get_osc_server = ags_gsequencer_application_context_get_osc_server;
   sound_provider->set_osc_server = ags_gsequencer_application_context_set_osc_server;
+
+  sound_provider->get_program = ags_gsequencer_application_context_get_program;
+  sound_provider->set_program = ags_gsequencer_application_context_set_program;
 }
 
 void
@@ -619,6 +625,8 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->audio = NULL;
 
   gsequencer_application_context->osc_server = NULL;
+
+  gsequencer_application_context->program = NULL;
 
   gsequencer_application_context->gui_ready = FALSE;
   gsequencer_application_context->show_animation = TRUE;
@@ -850,6 +858,14 @@ ags_gsequencer_application_context_dispose(GObject *gobject)
 
     gsequencer_application_context->osc_server = NULL;
   }
+
+  /* program */
+  if(gsequencer_application_context->program != NULL){
+    g_list_free_full(gsequencer_application_context->program,
+		     g_object_unref);
+
+    gsequencer_application_context->program = NULL;
+  }
   
   /* window */
   if(gsequencer_application_context->window != NULL){
@@ -935,6 +951,12 @@ ags_gsequencer_application_context_finalize(GObject *gobject)
   /* osc server */
   if(gsequencer_application_context->osc_server != NULL){
     g_list_free_full(gsequencer_application_context->osc_server,
+		     g_object_unref);
+  }
+
+  /* program */
+  if(gsequencer_application_context->program != NULL){
+    g_list_free_full(gsequencer_application_context->program,
 		     g_object_unref);
   }
   
@@ -1860,6 +1882,62 @@ ags_gsequencer_application_context_set_audio(AgsSoundProvider *sound_provider,
 		   (GDestroyNotify) g_object_unref);
 
   AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->audio = audio;
+
+  g_rec_mutex_unlock(application_context_mutex);
+}
+
+GList*
+ags_gsequencer_application_context_get_program(AgsSoundProvider *sound_provider)
+{
+  AgsApplicationContext *application_context;
+
+  GList *program;
+
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get program */
+  g_rec_mutex_lock(application_context_mutex);
+  
+  program = g_list_copy_deep(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->program,
+			     (GCopyFunc) g_object_ref,
+			     NULL);
+
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(program);
+}
+
+void
+ags_gsequencer_application_context_set_program(AgsSoundProvider *sound_provider,
+					       GList *program)
+{
+  AgsApplicationContext *application_context;
+
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* set program */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->program == program){
+    g_rec_mutex_unlock(application_context_mutex);
+
+    return;
+  }
+
+  g_list_free_full(AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->program,
+		   (GDestroyNotify) g_object_unref);
+
+  AGS_GSEQUENCER_APPLICATION_CONTEXT(application_context)->program = program;
 
   g_rec_mutex_unlock(application_context_mutex);
 }

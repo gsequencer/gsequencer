@@ -141,6 +141,8 @@ ags_level_set_lower
 ags_level_get_lower
 ags_level_set_normalized_volume
 ags_level_get_normalized_volume
+ags_level_set_data_format
+ags_level_set_samplerate
 ags_level_value_changed
 ags_level_new
 ags_expander_get_type
