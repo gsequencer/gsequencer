@@ -646,6 +646,8 @@ ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar 
 
       g_list_free(start_list);
     }
+
+    gtk_widget_queue_draw((GtkWidget *) composite_editor->tempo_edit->drawing_area);
   }
 }
 

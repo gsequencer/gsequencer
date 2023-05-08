@@ -275,13 +275,13 @@ ags_wave_class_init(AgsWaveClass *wave)
   /**
    * AgsWave:timestamp:
    *
-   * The pattern's timestamp.
+   * The wave's timestamp.
    * 
    * Since: 3.0.0
    */
   param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of pattern"),
-				   i18n_pspec("The timestamp of pattern"),
+				   i18n_pspec("timestamp of wave"),
+				   i18n_pspec("The timestamp of wave"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
