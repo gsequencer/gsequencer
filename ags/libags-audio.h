@@ -88,6 +88,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_lfo_synth_util.h>
 #include <ags/audio/ags_linear_interpolate_util.h>
+#include <ags/audio/ags_marker.h>
 #include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
@@ -100,6 +101,7 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_preset.h>
+#include <ags/audio/ags_program.h>
 #include <ags/audio/ags_fx_factory.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>

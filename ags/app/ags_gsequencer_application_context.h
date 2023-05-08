@@ -86,6 +86,8 @@ struct _AgsGSequencerApplicationContext
 
   GList *osc_server;
 
+  GList *program;
+
   gboolean gui_ready;
   gboolean show_animation;
   gboolean file_ready;

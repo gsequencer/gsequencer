@@ -1302,6 +1302,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_input.h \
 	ags/audio/ags_lfo_synth_util.h \
 	ags/audio/ags_linear_interpolate_util.h \
+	ags/audio/ags_marker.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_noise_util.h \
 	ags/audio/ags_notation.h \
@@ -1315,6 +1316,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_port.h \
 	ags/audio/ags_port_util.h \
 	ags/audio/ags_preset.h \
+	ags/audio/ags_program.h \
 	ags/audio/ags_recall_audio.h \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
@@ -1390,6 +1392,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_input.c \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
+	ags/audio/ags_marker.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_noise_util.c \
 	ags/audio/ags_notation.c \
@@ -1403,6 +1406,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_port.c \
 	ags/audio/ags_port_util.c \
 	ags/audio/ags_preset.c \
+	ags/audio/ags_program.c \
 	ags/audio/ags_recall_audio.c \
 	ags/audio/ags_recall_audio_run.c \
 	ags/audio/ags_recall_audio_signal.c \
@@ -3075,6 +3079,8 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_select_note_dialog_callbacks.h \
 	ags/app/editor/ags_sheet_edit.h \
 	ags/app/editor/ags_sheet_edit_callbacks.h \
+	ags/app/editor/ags_tempo_edit.h \
+	ags/app/editor/ags_tempo_edit_callbacks.h \
 	ags/app/editor/ags_time_stretch_buffer_dialog.h \
 	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.h \
 	ags/app/editor/ags_wave_edit_callbacks.h \
@@ -3145,6 +3151,8 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_select_note_dialog_callbacks.c \
 	ags/app/editor/ags_sheet_edit.c \
 	ags/app/editor/ags_sheet_edit_callbacks.c \
+	ags/app/editor/ags_tempo_edit.c \
+	ags/app/editor/ags_tempo_edit_callbacks.c \
 	ags/app/editor/ags_time_stretch_buffer_dialog.c \
 	ags/app/editor/ags_time_stretch_buffer_dialog_callbacks.c \
 	ags/app/editor/ags_wave_edit.c \

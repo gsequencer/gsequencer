@@ -574,6 +574,15 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
       
   gtk_box_append(composite_editor->wave_edit->edit_box,
 		 (GtkWidget *) composite_editor->wave_edit->edit);
+
+  /* edit - tempo edit */
+  composite_editor->tempo_edit = ags_tempo_edit_new();
+
+  gtk_widget_set_visible((GtkWidget *) composite_editor->tempo_edit,
+			 FALSE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) composite_editor->wave_edit);
 }
 
 void
@@ -843,6 +852,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   gboolean piano_shown;
   gboolean level_shown;
   guint audio_channels;
+  guint samplerate;
+  guint format;
+  AgsLevelDataFormat data_format;
   guint input_lines;
   guint i;
 
@@ -871,6 +883,35 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   
   /* selected machine */
   composite_editor->selected_machine = machine;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  g_object_get(machine->audio,
+	       "samplerate", &samplerate,
+	       "format", &format,
+	       NULL);
+
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    data_format = AGS_LEVEL_PCM_S8;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    data_format = AGS_LEVEL_PCM_S16;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    data_format = AGS_LEVEL_PCM_S24;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    data_format = AGS_LEVEL_PCM_S32;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    data_format = AGS_LEVEL_PCM_S64;
+  case AGS_SOUNDCARD_FLOAT:
+    data_format = AGS_LEVEL_PCM_FLOAT;
+  case AGS_SOUNDCARD_DOUBLE:
+    data_format = AGS_LEVEL_PCM_DOUBLE;
+  case AGS_SOUNDCARD_COMPLEX:
+    data_format = AGS_LEVEL_PCM_COMPLEX;
+  default:
+    data_format = AGS_LEVEL_PCM_S16;
+  }
   
   /* notation edit notebook - remove tabs */
   tab = 
@@ -1117,7 +1158,12 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 			    (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_HEIGHT_REQUEST));
       ags_level_box_add_level(AGS_LEVEL_BOX(AGS_SCROLLED_LEVEL_BOX(composite_editor->wave_edit->edit_control)->level_box),
 			      level);
-	
+
+      ags_level_set_samplerate(level,
+			       samplerate);
+      ags_level_set_data_format(level,
+				data_format);
+      
       gtk_widget_show((GtkWidget *) level);
 
       /* wave edit */
@@ -4586,6 +4632,179 @@ ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
   gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
   
   g_list_free_full(start_automation,
+		   g_object_unref);
+}
+
+/**
+ * ags_composite_editor_add_marker:
+ * @composite_editor: the #AgsCompositeEditor
+ * @marker: the #AgsMarker
+ * 
+ * Add @marker to @composite_editor.
+ * 
+ * Since: 5.1.0
+ */
+void
+ags_composite_editor_add_marker(AgsCompositeEditor *composite_editor,
+				AgsMarker *marker)
+{
+  AgsProgram *program;
+  AgsMarker *new_marker;
+  
+  AgsTimestamp *timestamp;
+
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+  
+  gint i;
+  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor) ||
+     !AGS_IS_MARKER(marker)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  start_list = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+  
+  /* check tempo */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+  timestamp->timer.ags_offset.offset = AGS_PROGRAM_DEFAULT_OFFSET * floor(marker->x / AGS_PROGRAM_DEFAULT_OFFSET);
+
+  list = ags_program_find_near_timestamp_extended(start_list,
+						  "tempo",
+						  timestamp);
+	
+  if(list == NULL){
+    program = ags_program_new("tempo");
+    program->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	  
+    /* add to audio */
+    start_list = g_list_prepend(start_list,
+				program);
+    ags_sound_provider_set_program(AGS_SOUND_PROVIDER(application_context),
+				   start_list);
+  }else{
+    program = list->data;
+  }
+	
+  new_marker = ags_marker_duplicate(marker);
+  ags_program_add_marker(program,
+			 new_marker,
+			 FALSE);
+  
+  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);
+  
+  /* unref */
+  g_object_unref(timestamp);
+}
+
+/**
+ * ags_composite_editor_delete_marker:
+ * @composite_editor: the #AgsCompositeEditor
+ * @x: the x offset
+ * @y: the y value
+ * 
+ * Delete marker at position @x and @y from @composite_editor.
+ * 
+ * Since: 5.1.0
+ */
+void
+ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
+				   guint x, gdouble y)
+{
+  GtkAdjustment *program_edit_vscrollbar_adjustment;
+
+  AgsProgram *current_program;
+
+  AgsTimestamp *timestamp;
+
+  AgsApplicationContext *application_context;
+
+  GtkAllocation program_edit_allocation;
+
+  GList *start_program, *program;
+
+  gdouble c_range;
+  guint g_range;
+  guint scan_x;
+  gdouble scan_y;
+  gboolean success;
+  gint j, j_step, j_stop;
+  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  start_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+
+  c_range = 240.0;
+
+  gtk_widget_get_allocation(GTK_WIDGET(composite_editor->tempo_edit->drawing_area),
+			    &program_edit_allocation);
+    
+  program_edit_vscrollbar_adjustment = gtk_scrollbar_get_adjustment(GTK_SCROLLBAR(composite_editor->tempo_edit->vscrollbar));
+    
+  g_range = gtk_adjustment_get_upper(program_edit_vscrollbar_adjustment) + program_edit_allocation.height;
+
+  /* check all active tabs */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+  timestamp->timer.ags_offset.offset = AGS_PROGRAM_DEFAULT_OFFSET * floor(x / AGS_PROGRAM_DEFAULT_OFFSET);
+
+  program = start_program;
+      
+  while((program = ags_program_find_near_timestamp_extended(program,
+							    "tempo",
+							    timestamp)) != NULL){
+      
+    if(program != NULL){
+      current_program = program->data;
+    }else{
+      program = program->next;
+      
+      continue;
+    }
+
+    success = FALSE;
+      
+    j = 0;
+    j_step = 1;
+    j_stop = 4;
+
+    while(!success &&
+	  exp2(j_step) <= AGS_TEMPO_EDIT_DEFAULT_SCAN_WIDTH){
+      scan_x = (-1 * j_step + floor(j / (2 * j_step)));
+      scan_y = ((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+
+      success = ags_program_remove_marker_at_position(current_program,
+						      x - scan_x);
+	
+      j++;
+	
+      if(j >= j_stop){
+	j_step++;
+	j_stop = exp2(j_step + 1);
+      }
+    }
+
+	
+    program = program->next;
+  }
+
+  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);
+  
+  g_list_free_full(start_program,
 		   g_object_unref);
 }
 
