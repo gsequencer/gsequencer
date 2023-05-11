@@ -132,6 +132,11 @@ void ags_level_set_normalized_volume(AgsLevel *level,
 				     gdouble normalized_volume);
 gdouble ags_level_get_normalized_volume(AgsLevel *level);
 
+void ags_level_set_data_format(AgsLevel *level,
+			       AgsLevelDataFormat data_format);
+void ags_level_set_samplerate(AgsLevel *level,
+			      guint samplerate);
+
 /* signal */
 void ags_level_value_changed(AgsLevel *level,
 			     gdouble normalized_volume);

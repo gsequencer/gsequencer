@@ -158,6 +158,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   composite_edit->uuid = ags_uuid_alloc();
   ags_uuid_generate(composite_edit->uuid);
 
+  composite_edit->parent_composite_editor = NULL;
+  
   /* widgets */
   composite_edit->composite_paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
 

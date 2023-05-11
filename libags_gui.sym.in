@@ -141,6 +141,8 @@ ags_level_set_lower
 ags_level_get_lower
 ags_level_set_normalized_volume
 ags_level_get_normalized_volume
+ags_level_set_data_format
+ags_level_set_samplerate
 ags_level_value_changed
 ags_level_new
 ags_expander_get_type
@@ -150,6 +152,17 @@ ags_expander_child_find
 ags_expander_add
 ags_expander_remove
 ags_expander_new
+ags_tempo_get_type
+ags_tempo_set_control_name
+ags_tempo_get_control_name
+ags_tempo_set_upper
+ags_tempo_get_upper
+ags_tempo_set_lower
+ags_tempo_get_lower
+ags_tempo_set_default_value
+ags_tempo_get_default_value
+ags_tempo_value_changed
+ags_tempo_new
 ags_ruler_get_type
 ags_ruler_get_font_size
 ags_ruler_set_font_size

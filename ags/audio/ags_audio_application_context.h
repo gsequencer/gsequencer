@@ -83,6 +83,8 @@ struct _AgsAudioApplicationContext
 
   GList *osc_server;
 
+  GList *program;
+  
   gboolean start_loader;
   
   gboolean setup_ready;

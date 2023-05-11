@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/audio/ags_sound_provider.h>
+
+#include <ags/audio/ags_program.h>
 
 void ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface);
 
@@ -370,4 +372,49 @@ ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider)
   g_return_val_if_fail(sound_provider_interface->get_osc_server, NULL);
 
   return(sound_provider_interface->get_osc_server(sound_provider));
+}
+
+/**
+ * ags_sound_provider_set_program:
+ * @sound_provider: the #AgsSoundProvider
+ * @program: (element-type AgsProgram.Program) (transfer full): a #GList-struct containing #AgsProgram
+ * 
+ * Set program objects.
+ *
+ * Since: 5.1.0
+ */
+void
+ags_sound_provider_set_program(AgsSoundProvider *sound_provider,
+			       GList *program)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_program);
+
+  sound_provider_interface->set_program(sound_provider,
+					program);
+}
+
+/**
+ * ags_sound_provider_get_program:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get program objects.
+ *
+ * Returns: (element-type AgsProgram.Program) (transfer full): a #GList-struct containing #AgsProgram
+ * 
+ * Since: 5.1.0
+ */
+GList*
+ags_sound_provider_get_program(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_program, NULL);
+
+  return(sound_provider_interface->get_program(sound_provider));
 }

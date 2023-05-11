@@ -20,6 +20,7 @@
 #include <ags/app/editor/ags_composite_edit_callbacks.h>
 
 #include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_composite_editor.h>
 
 #include <ags/app/editor/ags_notation_edit.h>
 #include <ags/app/editor/ags_automation_edit.h>
@@ -112,26 +113,33 @@ void
 ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
 				       AgsCompositeEdit *composite_edit)
 {
+  AgsCompositeEditor *composite_editor;
+  
+  AgsApplicationContext *application_context;
+    
+  gdouble gui_scale_factor;
+  gdouble value;
+
   if(composite_edit->block_hscrollbar){
     return;
   }
 
   composite_edit->block_hscrollbar = TRUE;
+
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
   if(AGS_IS_NOTATION_EDIT(composite_edit->edit)){
     gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(AGS_NOTATION_EDIT(composite_edit->edit)->hscrollbar),
 			     gtk_adjustment_get_value(adjustment));
   }
   
   if(AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)){
-    AgsApplicationContext *application_context;
-    
     GList *start_list, *list;
-
-    gdouble gui_scale_factor;
-    gdouble value;
-
-    application_context = ags_application_context_get_instance();
 
     /* scale factor */
     gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -154,17 +162,7 @@ ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
   }
   
   if(AGS_IS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)){
-    AgsApplicationContext *application_context;
-    
     GList *start_list, *list;
-
-    gdouble gui_scale_factor;
-    gdouble value;
-
-    application_context = ags_application_context_get_instance();
-
-    /* scale factor */
-    gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
     list =
       start_list = ags_wave_edit_box_get_wave_edit((AgsWaveEditBox *) AGS_SCROLLED_WAVE_EDIT_BOX(composite_edit->edit)->wave_edit_box);
@@ -180,6 +178,9 @@ ags_composite_edit_hscrollbar_callback(GtkAdjustment *adjustment,
     gtk_adjustment_set_value(composite_edit->ruler->adjustment,
 			     gui_scale_factor * value);
   }
+
+  gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(composite_editor->tempo_edit->hscrollbar),
+			   gtk_adjustment_get_value(adjustment));
 
   composite_edit->block_hscrollbar = FALSE;
 }

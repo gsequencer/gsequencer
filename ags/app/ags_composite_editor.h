@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,7 @@
 #include <ags/app/editor/ags_composite_toolbar.h>
 #include <ags/app/editor/ags_machine_selector.h>
 #include <ags/app/editor/ags_composite_edit.h>
+#include <ags/app/editor/ags_tempo_edit.h>
 
 G_BEGIN_DECLS
 
@@ -86,6 +87,11 @@ struct _AgsCompositeEditor
   AgsCompositeEdit *sheet_edit;
   AgsCompositeEdit *automation_edit;
   AgsCompositeEdit *wave_edit;
+
+  GtkBox *tempo_box;
+
+  AgsTempo *tempo;
+  AgsTempoEdit *tempo_edit;
 };
 
 struct _AgsCompositeEditorClass
@@ -132,6 +138,11 @@ void ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
 					   AgsAcceleration *acceleration);
 void ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
 					      guint x, gdouble y);
+
+void ags_composite_editor_add_marker(AgsCompositeEditor *composite_editor,
+				     AgsMarker *marker);
+void ags_composite_editor_delete_marker(AgsCompositeEditor *composite_editor,
+					guint x, gdouble y);
 
 void ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 					guint x0, guint y0, 

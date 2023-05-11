@@ -153,6 +153,12 @@ void ags_gsequencer_edit_wave_callback(GAction *action, GVariant *parameter,
 void ags_gsequencer_edit_sheet_callback(GAction *action, GVariant *parameter,
 					AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_edit_meta_callback(GAction *action, GVariant *parameter,
+				       AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_edit_tempo_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app);
+
 G_END_DECLS
 
 #endif /*__AGS_GSEQUENCER_APPLICATION_CALLBACKS_H__*/
