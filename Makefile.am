@@ -3067,6 +3067,8 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_preset_editor.h \
 	ags/app/editor/ags_ramp_acceleration_dialog.h \
 	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.h \
+	ags/app/editor/ags_ramp_marker_dialog.h \
+	ags/app/editor/ags_ramp_marker_dialog_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.h \
 	ags/app/editor/ags_remove_sheet_page_dialog.h \
 	ags/app/editor/ags_scrolled_automation_edit_box.h \
@@ -3139,6 +3141,8 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_preset_editor.c \
 	ags/app/editor/ags_ramp_acceleration_dialog.c \
 	ags/app/editor/ags_ramp_acceleration_dialog_callbacks.c \
+	ags/app/editor/ags_ramp_marker_dialog.c \
+	ags/app/editor/ags_ramp_marker_dialog_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog_callbacks.c \
 	ags/app/editor/ags_remove_sheet_page_dialog.c \
 	ags/app/editor/ags_scrolled_automation_edit_box.c \

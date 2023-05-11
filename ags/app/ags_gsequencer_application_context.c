@@ -2576,7 +2576,7 @@ ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provid
 
 void
 ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
-						  GtkWidget *widget)
+							GtkWidget *widget)
 {
   AgsGSequencerApplicationContext *gsequencer_application_context;
 
@@ -2893,7 +2893,7 @@ ags_gsequencer_application_context_prepare(AgsApplicationContext *application_co
   if(filename != NULL){
     window->filename = filename;
   }  
-
+  
   /* AgsExportWindow */
   export_window = ags_export_window_new((GtkWindow *) window);
   ags_ui_provider_set_export_window(AGS_UI_PROVIDER(application_context),
@@ -4519,6 +4519,86 @@ ags_gsequencer_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 gboolean
 ags_gsequencer_application_context_message_monitor_timeout(AgsGSequencerApplicationContext *gsequencer_application_context)
 {
+  if(gsequencer_application_context->soundcard != NULL){
+    AgsTimestamp *timestamp;
+  
+    GObject *soundcard;
+
+    GList *start_program, *program;
+    GList *start_marker, *marker;
+
+    gdouble delay;
+    guint note_offset, delay_counter;
+    guint64 x, x_end;
+  
+    soundcard = gsequencer_application_context->soundcard->data;
+  
+    /* retrieve position */
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+  
+    delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+
+    x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+    x_end = ((double) (note_offset + 1)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+
+    program =
+      start_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(gsequencer_application_context));
+
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+  
+    timestamp->timer.ags_offset.offset = AGS_PROGRAM_DEFAULT_OFFSET * floor(x / AGS_PROGRAM_DEFAULT_OFFSET);
+  
+    while((program = ags_program_find_near_timestamp_extended(program, "tempo", timestamp)) != NULL){
+      marker = 
+	start_marker = ags_program_get_marker(program->data);
+
+      while(marker != NULL){
+	if(ags_marker_get_x(marker->data) > x_end){
+	  break;
+	}
+
+	if(ags_marker_get_x(marker->data) >= x &&
+	   ags_marker_get_x(marker->data) < x_end){
+#if 0
+	  AgsApplyBpm *apply_bpm;
+
+	  AgsApplicationContext *application_context;
+  
+	  application_context = ags_application_context_get_instance();
+
+	  /* get task thread */
+	  apply_bpm = ags_apply_bpm_new((GObject *) application_context,
+					ags_marker_get_y(marker->data));
+  
+	  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					(AgsTask *) apply_bpm);
+#else
+	  AgsNavigation *navigation;
+
+	  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(gsequencer_application_context));
+	  
+	  gtk_spin_button_set_value(navigation->bpm,
+				    ags_marker_get_y(marker->data));
+#endif	
+	}
+      
+	marker = marker->next;
+      }
+
+      g_list_free_full(start_marker,
+		       (GDestroyNotify) g_object_unref);
+    
+      program = program->next;
+    }
+
+    g_list_free_full(start_program,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
   ags_ui_provider_check_message(AGS_UI_PROVIDER(gsequencer_application_context));
   ags_ui_provider_clean_message(AGS_UI_PROVIDER(gsequencer_application_context));
 

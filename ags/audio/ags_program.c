@@ -70,6 +70,7 @@ void ags_program_insert_native_level_from_clipboard(AgsProgram *program,
 enum{
   PROP_0,
   PROP_TIMESTAMP,
+  PROP_CONTROL_NAME,
   PROP_MARKER,
 };
 
@@ -145,19 +146,35 @@ ags_program_class_init(AgsProgramClass *program)
   /**
    * AgsProgram:timestamp:
    *
-   * The pattern's timestamp.
+   * The program's timestamp.
    * 
    * Since: 5.1.0
    */
   param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of pattern"),
-				   i18n_pspec("The timestamp of pattern"),
+				   i18n_pspec("timestamp of program"),
+				   i18n_pspec("The timestamp of program"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
 
+  /**
+   * AgsProgram:control-name:
+   *
+   * The program's control-name.
+   * 
+   * Since: 5.1.0
+   */
+  param_spec = g_param_spec_string("control-name",
+				   i18n_pspec("control-name of program"),
+				   i18n_pspec("The control name of program"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_NAME,
+				  param_spec);
+  
   /**
    * AgsProgram:marker: (type GList(AgsMarker)) (transfer full)
    *
@@ -197,6 +214,10 @@ ags_program_init(AgsProgram *program)
 
   g_object_ref(program->timestamp);
 
+  program->control_name = NULL;
+
+  program->port = NULL;
+  
   program->marker = NULL;
   program->selection = NULL;
 }
@@ -240,6 +261,27 @@ ags_program_set_property(GObject *gobject,
       }
 
       program->timestamp = timestamp;
+
+      g_rec_mutex_unlock(program_mutex);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      gchar *control_name;
+
+      control_name = (gchar *) g_value_get_string(value);
+
+      g_rec_mutex_lock(program_mutex);
+
+      if(control_name == program->control_name){
+	g_rec_mutex_unlock(program_mutex);
+	
+	return;
+      }
+
+      g_free(program->control_name);
+
+      program->control_name = g_strdup(control_name);
 
       g_rec_mutex_unlock(program_mutex);
     }
@@ -293,6 +335,15 @@ ags_program_get_property(GObject *gobject,
       g_rec_mutex_lock(program_mutex);
 
       g_value_set_object(value, program->timestamp);
+
+      g_rec_mutex_unlock(program_mutex);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      g_rec_mutex_lock(program_mutex);
+
+      g_value_set_string(value, program->control_name);
 
       g_rec_mutex_unlock(program_mutex);
     }
@@ -2499,6 +2550,127 @@ ags_program_insert_from_clipboard_extended(AgsProgram *program,
 }
 
 /**
+ * ags_program_get_control_name_unique:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ *
+ * Retrieve program port control_name.
+ *
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL terminated string array
+ *
+ * Since: 5.1.0
+ */
+gchar**
+ags_program_get_control_name_unique(GList *program)
+{
+  AgsProgram *current_program;
+  
+  gchar **control_name;
+  gchar *current_control_name;
+  
+  guint length, i;
+  gboolean contains_control_name;
+
+  GRecMutex *program_mutex;
+
+  if(program == NULL){
+    return(NULL);
+  }
+  
+  control_name = (gchar **) malloc(sizeof(gchar*));
+  control_name[0] = NULL;
+  length = 1;
+  
+  while(program != NULL){
+    current_program = program->data;
+    
+    /* get program mutex */
+    program_mutex = AGS_PROGRAM_GET_OBJ_MUTEX(current_program);
+
+    /* duplicate control name */
+    g_rec_mutex_lock(program_mutex);
+
+    current_control_name = g_strdup(current_program->control_name);
+    
+    g_rec_mutex_unlock(program_mutex);
+    
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(control_name,
+					    current_control_name);
+#else
+    contains_control_name = ags_strv_contains(control_name,
+					      current_control_name);
+#endif
+    
+    if(!contains_control_name){
+      control_name = (gchar **) realloc(control_name,
+					(length + 1) * sizeof(gchar *));
+      control_name[length - 1] = current_control_name;
+      control_name[length] = NULL;
+
+      length++;
+    }else{
+      g_free(current_control_name);
+    }
+
+    /* iterate */
+    program = program->next;
+  }
+  
+  return(control_name);
+}
+
+/**
+ * ags_program_find_control_name:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ * @control_name: the string control_name to find
+ *
+ * Find port control_name.
+ *
+ * Returns: (element-type AgsAudio.Program) (transfer none): Next matching #GList
+ *
+ * Since: 5.1.0
+ */
+GList*
+ags_program_find_control_name(GList *program,
+			      gchar *control_name)
+{
+  AgsProgram *current_program;
+  
+  gchar *current_control_name;
+
+  gboolean success;
+  
+  GRecMutex *program_mutex;
+ 
+  while(program != NULL){
+    current_program = program->data;
+
+    /* get program mutex */
+    program_mutex = AGS_PROGRAM_GET_OBJ_MUTEX(current_program);
+
+    /* duplicate control name */
+    g_rec_mutex_lock(program_mutex);
+
+    current_control_name = g_strdup(current_program->control_name);
+    
+    g_rec_mutex_unlock(program_mutex);
+
+    /* check control name */
+    success = (!g_ascii_strcasecmp(current_control_name,
+				   control_name)) ? TRUE: FALSE;
+    g_free(current_control_name);
+    
+    if(success){
+      break;
+    }
+
+    program = program->next;
+  }
+
+  return(program);
+}
+
+/**
  * ags_program_new:
  * @audio: the assigned #AgsAudio
  *
@@ -2514,6 +2686,7 @@ ags_program_new(gchar *control_name)
   AgsProgram *program;
   
   program = (AgsProgram *) g_object_new(AGS_TYPE_PROGRAM,
+					"control-name", control_name,
 					NULL);
   
   return(program);

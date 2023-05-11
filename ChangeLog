@@ -1,9 +1,11 @@
 ags (5.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented tempo editor
+	* implemented tempo editor
+	* implemented ramp program marker dialog used to automate tempo
 	* implemented AgsProgram and AgsMarker
 	* implemented ags_level_set_data_format() and ags_level_set_samplerate()
+	* implemented ags_sound_provider_set_program() and ags_sound_provider_get_program()
 
 ags (5.0.2)
 

@@ -72,43 +72,36 @@ void ags_tempo_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
 void ags_tempo_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
 							      GtkWidget *toolbar,
 							      AgsTempoEdit *tempo_edit,
-							      AgsMachine *machine,
 							      gint n_press,
 							      gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_button_press_add_marker(GtkWidget *editor,
 							 GtkWidget *toolbar,
 							 AgsTempoEdit *tempo_edit,
-							 AgsMachine *machine,
 							 gint n_press,
 							 gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_button_press_select_marker(GtkWidget *editor,
 							    GtkWidget *toolbar,
 							    AgsTempoEdit *tempo_edit,
-							    AgsMachine *machine,
 							    gint n_press,
 							    gdouble x, gdouble y);
 
 void ags_tempo_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
 								GtkWidget *toolbar,
 								AgsTempoEdit *tempo_edit,
-								AgsMachine *machine,
 								gint n_press, gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_button_release_add_marker(GtkWidget *editor,
 							   GtkWidget *toolbar,
 							   AgsTempoEdit *tempo_edit,
-							   AgsMachine *machine,
 							   gint n_press,
 							   gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_button_release_delete_marker(GtkWidget *editor,
 							      GtkWidget *toolbar,
 							      AgsTempoEdit *tempo_edit,
-							      AgsMachine *machine,
 							      gint n_press,
 							      gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_button_release_select_marker(GtkWidget *editor,
 							      GtkWidget *toolbar,
 							      AgsTempoEdit *tempo_edit,
-							      AgsMachine *machine,
 							      gint n_press,
 							      gdouble x, gdouble y);
 
@@ -141,17 +134,14 @@ gboolean ags_tempo_edit_modifiers_callback(GtkEventControllerKey *event_controll
 void ags_tempo_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
 							       GtkWidget *toolbar,
 							       AgsTempoEdit *tempo_edit,
-							       AgsMachine *machine,
 							       gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_motion_notify_add_marker(GtkWidget *editor,
 							  GtkWidget *toolbar,
 							  AgsTempoEdit *tempo_edit,
-							  AgsMachine *machine,
 							  gdouble x, gdouble y);
 void ags_tempo_edit_drawing_area_motion_notify_select_marker(GtkWidget *editor,
 							     GtkWidget *toolbar,
 							     AgsTempoEdit *tempo_edit,
-							     AgsMachine *machine,
 							     gdouble x, gdouble y);
 
 gboolean ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
@@ -554,7 +544,6 @@ ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 				    AgsTempoEdit *tempo_edit)
 {  
   GtkWidget *editor;
-  AgsMachine *machine;
 
   guint l_control_key, r_control_key;  
   gboolean key_handled;
@@ -573,13 +562,9 @@ ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
   }else{
     key_handled = TRUE;
   }
-
-  machine = NULL;
   
   editor = gtk_widget_get_ancestor(GTK_WIDGET(tempo_edit),
 				   AGS_TYPE_COMPOSITE_EDITOR);
-    
-  machine = AGS_COMPOSITE_EDITOR(editor)->selected_machine;
 
 #if defined(AGS_OSXAPI)
   l_control_key = AGS_TEMPO_EDIT_KEY_L_META;
@@ -589,39 +574,37 @@ ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
   r_control_key = AGS_TEMPO_EDIT_KEY_R_CONTROL;
 #endif
   
-  if(machine != NULL){
-    switch(keyval){
-    case GDK_KEY_Control_L:
-      {
-	tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_L_CONTROL;
-      }
-      break;
-    case GDK_KEY_Control_R:
-      {
-	tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_R_CONTROL;
-      }
-      break;
-    case GDK_KEY_Shift_L:
-      {
-	tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_L_SHIFT;
-      }
-      break;
-    case GDK_KEY_Shift_R:
-      {
-	tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_R_SHIFT;
-      }
-      break;
-    case GDK_KEY_Meta_L:
-      {
-	tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_L_META;
-      }
-      break;
-    case GDK_KEY_Meta_R:
-      {
-	tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_R_META;
-      }
-      break;
+  switch(keyval){
+  case GDK_KEY_Control_L:
+    {
+      tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_L_CONTROL;
     }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_R_CONTROL;
+    }
+    break;
+  case GDK_KEY_Shift_L:
+    {
+      tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_L_SHIFT;
+    }
+    break;
+  case GDK_KEY_Shift_R:
+    {
+      tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_R_SHIFT;
+    }
+    break;
+  case GDK_KEY_Meta_L:
+    {
+      tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_L_META;
+    }
+    break;
+  case GDK_KEY_Meta_R:
+    {
+      tempo_edit->key_mask |= AGS_TEMPO_EDIT_KEY_R_META;
+    }
+    break;
   }
 
   gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
@@ -636,7 +619,6 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
 				     GdkModifierType state,
 				     AgsTempoEdit *tempo_edit)
 {  
-  AgsMachine *machine;
   AgsCompositeEditor *composite_editor;
   
   GtkAllocation allocation;
@@ -646,8 +628,6 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
   gint i;
   gboolean do_feedback;
   gboolean key_handled;
-
-  GRecMutex *audio_mutex;
 
   if(keyval == GDK_KEY_Tab ||
      keyval == GDK_KEY_ISO_Left_Tab ||
@@ -667,8 +647,6 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
   composite_editor = gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 					     AGS_TYPE_COMPOSITE_EDITOR);
 
-  machine = composite_editor->selected_machine;
-    
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
 
   gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
@@ -682,46 +660,41 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
   r_control_key = AGS_TEMPO_EDIT_KEY_R_CONTROL;
 #endif
 
-  if(machine != NULL){
-    /* get audio mutex */
-    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
+  /* do feedback - initial set */
+  do_feedback = FALSE;
 
-    /* do feedback - initial set */
-    do_feedback = FALSE;
-
-    /* check key value */
-    switch(keyval){
-    case GDK_KEY_Control_L:
-      {
-	tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_L_CONTROL);
-      }
-      break;
-    case GDK_KEY_Control_R:
-      {
-	tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_R_CONTROL);
-      }
-      break;
-    case GDK_KEY_Shift_L:
-      {
-	tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_L_SHIFT);
-      }
-      break;
-    case GDK_KEY_Shift_R:
-      {
-	tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_R_SHIFT);
-      }
-      break;
-    case GDK_KEY_Meta_L:
-      {
-	tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_L_META);
-      }
-      break;
-    case GDK_KEY_Meta_R:
-      {
-	tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_R_META);
-      }
-      break;
+  /* check key value */
+  switch(keyval){
+  case GDK_KEY_Control_L:
+    {
+      tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_L_CONTROL);
     }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_R_CONTROL);
+    }
+    break;
+  case GDK_KEY_Shift_L:
+    {
+      tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_L_SHIFT);
+    }
+    break;
+  case GDK_KEY_Shift_R:
+    {
+      tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_R_SHIFT);
+    }
+    break;
+  case GDK_KEY_Meta_L:
+    {
+      tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_L_META);
+    }
+    break;
+  case GDK_KEY_Meta_R:
+    {
+      tempo_edit->key_mask &= (~AGS_TEMPO_EDIT_KEY_R_META);
+    }
+    break;
   }
 
   gtk_widget_queue_draw((GtkWidget *) tempo_edit);
@@ -743,7 +716,6 @@ void
 ags_tempo_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
 							  GtkWidget *toolbar,
 							  AgsTempoEdit *tempo_edit,
-							  AgsMachine *machine,
 							  gdouble x, gdouble y)
 {
   AgsApplicationContext *application_context;
@@ -773,7 +745,6 @@ void
 ags_tempo_edit_drawing_area_motion_notify_add_marker(GtkWidget *editor,
 						     GtkWidget *toolbar,
 						     AgsTempoEdit *tempo_edit,
-						     AgsMachine *machine,
 						     gdouble x, gdouble y)
 {
   GtkAdjustment *vscrollbar_adjustment;
@@ -836,7 +807,6 @@ void
 ags_tempo_edit_drawing_area_motion_notify_select_marker(GtkWidget *editor,
 							GtkWidget *toolbar,
 							AgsTempoEdit *tempo_edit,
-							AgsMachine *machine,
 							gdouble x, gdouble y)
 {
   if(x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar)) >= 0.0){
@@ -862,7 +832,6 @@ ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
 {
   AgsCompositeToolbar *composite_toolbar;
   AgsCompositeEditor *composite_editor;
-  AgsMachine *machine;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
 
@@ -874,8 +843,6 @@ ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
 
-  machine = composite_editor->selected_machine;
-
   composite_toolbar = composite_editor->toolbar;
 
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
@@ -885,19 +852,16 @@ ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
 
   gtk_widget_grab_focus((GtkWidget *) tempo_edit->drawing_area);
 
-  if(machine != NULL &&
-     (AGS_TEMPO_EDIT_BUTTON_1 & (tempo_edit->button_mask)) != 0){
+  if((AGS_TEMPO_EDIT_BUTTON_1 & (tempo_edit->button_mask)) != 0){
     if(selected_position_cursor){
       ags_tempo_edit_drawing_area_motion_notify_position_cursor((GtkWidget *) composite_editor,
 								(GtkWidget *) composite_toolbar,
 								tempo_edit,
-								machine,
 								x, y);
     }else if(selected_edit){
       ags_tempo_edit_drawing_area_motion_notify_add_marker((GtkWidget *) composite_editor,
 							   (GtkWidget *) composite_toolbar,
 							   tempo_edit,
-							   machine,
 							   x, y);
     }else if(selected_clear){
       //NOTE:JK: only takes action on release
@@ -905,7 +869,6 @@ ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
       ags_tempo_edit_drawing_area_motion_notify_select_marker((GtkWidget *) composite_editor,
 							      (GtkWidget *) composite_toolbar,
 							      tempo_edit,
-							      machine,
 							      x, y);
     }
 
@@ -919,7 +882,6 @@ void
 ags_tempo_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
 							 GtkWidget *toolbar,
 							 AgsTempoEdit *tempo_edit,
-							 AgsMachine *machine,
 							 gint n_press,
 							 gdouble x, gdouble y)
 {
@@ -942,7 +904,6 @@ void
 ags_tempo_edit_drawing_area_button_press_add_marker(GtkWidget *editor,
 						    GtkWidget *toolbar,
 						    AgsTempoEdit *tempo_edit,
-						    AgsMachine *machine,
 						    gint n_press,
 						    gdouble x, gdouble y)
 {
@@ -1008,7 +969,6 @@ void
 ags_tempo_edit_drawing_area_button_press_select_marker(GtkWidget *editor,
 						       GtkWidget *toolbar,
 						       AgsTempoEdit *tempo_edit,
-						       AgsMachine *machine,
 						       gint n_press,
 						       gdouble x, gdouble y)
 {
@@ -1025,7 +985,6 @@ void
 ags_tempo_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
 							   GtkWidget *toolbar,
 							   AgsTempoEdit *tempo_edit,
-							   AgsMachine *machine,
 							   gint n_press,
 							   gdouble x, gdouble y)
 {  
@@ -1048,7 +1007,6 @@ void
 ags_tempo_edit_drawing_area_button_release_add_marker(GtkWidget *editor,
 						      GtkWidget *toolbar,
 						      AgsTempoEdit *tempo_edit,
-						      AgsMachine *machine,
 						      gint n_press,
 						      gdouble x, gdouble y)
 {
@@ -1119,7 +1077,6 @@ void
 ags_tempo_edit_drawing_area_button_release_delete_marker(GtkWidget *editor,
 							 GtkWidget *toolbar,
 							 AgsTempoEdit *tempo_edit,
-							 AgsMachine *machine,
 							 gint n_press,
 							 gdouble x, gdouble y)
 {
@@ -1174,7 +1131,6 @@ void
 ags_tempo_edit_drawing_area_button_release_select_marker(GtkWidget *editor,
 							 GtkWidget *toolbar,
 							 AgsTempoEdit *tempo_edit,
-							 AgsMachine *machine,
 							 gint n_press,
 							 gdouble x, gdouble y)
 {
@@ -1208,7 +1164,6 @@ ags_tempo_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 {
   AgsCompositeToolbar *composite_toolbar;
   AgsCompositeEditor *composite_editor;
-  AgsMachine *machine;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
 
@@ -1220,8 +1175,6 @@ ags_tempo_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
   
-  machine = composite_editor->selected_machine;
-
   composite_toolbar = composite_editor->toolbar;
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
@@ -1231,44 +1184,39 @@ ags_tempo_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   
   gtk_widget_grab_focus((GtkWidget *) tempo_edit->drawing_area);
   
-  if(machine != NULL){
-    tempo_edit->button_mask |= AGS_TEMPO_EDIT_BUTTON_1;
+  tempo_edit->button_mask |= AGS_TEMPO_EDIT_BUTTON_1;
     
-    if(selected_position_cursor){
-      tempo_edit->mode = AGS_TEMPO_EDIT_POSITION_CURSOR;
+  if(selected_position_cursor){
+    tempo_edit->mode = AGS_TEMPO_EDIT_POSITION_CURSOR;
       
-      ags_tempo_edit_drawing_area_button_press_position_cursor((GtkWidget *) composite_editor,
-							       (GtkWidget *) composite_toolbar,
-							       tempo_edit,
-							       machine,
-							       n_press,
-							       x, y);
-    }else if(selected_edit){
-      tempo_edit->mode = AGS_TEMPO_EDIT_ADD_MARKER;
-
-      ags_tempo_edit_drawing_area_button_press_add_marker((GtkWidget *) composite_editor,
-							  (GtkWidget *) composite_toolbar,
-							  tempo_edit,
-							  machine,
-							  n_press,
-							  x, y);
-    }else if(selected_clear){
-      tempo_edit->mode = AGS_TEMPO_EDIT_DELETE_MARKER;
-
-      //NOTE:JK: only takes action on release
-    }else if(selected_select){
-      tempo_edit->mode = AGS_TEMPO_EDIT_SELECT_MARKER;
-
-      ags_tempo_edit_drawing_area_button_press_select_marker((GtkWidget *) composite_editor,
+    ags_tempo_edit_drawing_area_button_press_position_cursor((GtkWidget *) composite_editor,
 							     (GtkWidget *) composite_toolbar,
 							     tempo_edit,
-							     machine,
 							     n_press,
 							     x, y);
-    }
+  }else if(selected_edit){
+    tempo_edit->mode = AGS_TEMPO_EDIT_ADD_MARKER;
 
-    gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
+    ags_tempo_edit_drawing_area_button_press_add_marker((GtkWidget *) composite_editor,
+							(GtkWidget *) composite_toolbar,
+							tempo_edit,
+							n_press,
+							x, y);
+  }else if(selected_clear){
+    tempo_edit->mode = AGS_TEMPO_EDIT_DELETE_MARKER;
+
+    //NOTE:JK: only takes action on release
+  }else if(selected_select){
+    tempo_edit->mode = AGS_TEMPO_EDIT_SELECT_MARKER;
+
+    ags_tempo_edit_drawing_area_button_press_select_marker((GtkWidget *) composite_editor,
+							   (GtkWidget *) composite_toolbar,
+							   tempo_edit,
+							   n_press,
+							   x, y);
   }
+
+  gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
   
   return(FALSE);
 }
@@ -1282,7 +1230,6 @@ ags_tempo_edit_gesture_click_released_callback(GtkGestureClick *event_controller
 {
   AgsCompositeToolbar *composite_toolbar;
   AgsCompositeEditor *composite_editor;
-  AgsMachine *machine;
   
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
   
@@ -1294,8 +1241,6 @@ ags_tempo_edit_gesture_click_released_callback(GtkGestureClick *event_controller
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
   
-  machine = composite_editor->selected_machine;
-
   composite_toolbar = composite_editor->toolbar;
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->position) ? TRUE: FALSE;
@@ -1303,49 +1248,43 @@ ags_tempo_edit_gesture_click_released_callback(GtkGestureClick *event_controller
   selected_clear = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->clear) ? TRUE: FALSE;
   selected_select = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->select) ? TRUE: FALSE;
 
-  if(machine != NULL){    
-    tempo_edit->button_mask &= (~AGS_TEMPO_EDIT_BUTTON_1);
+  tempo_edit->button_mask &= (~AGS_TEMPO_EDIT_BUTTON_1);
     
-    if(selected_position_cursor){
-      ags_tempo_edit_drawing_area_button_release_position_cursor((GtkWidget *) composite_editor,
-								 (GtkWidget *) composite_toolbar,
-								 tempo_edit,
-								 machine,
-								 n_press,
-								 x, y);
+  if(selected_position_cursor){
+    ags_tempo_edit_drawing_area_button_release_position_cursor((GtkWidget *) composite_editor,
+							       (GtkWidget *) composite_toolbar,
+							       tempo_edit,
+							       n_press,
+							       x, y);
       
-      //      tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
-    }else if(selected_edit){
-      ags_tempo_edit_drawing_area_button_release_add_marker((GtkWidget *) composite_editor,
-							    (GtkWidget *) composite_toolbar,
-							    tempo_edit,
-							    machine,
-							    n_press,
-							    x, y);
+    //      tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
+  }else if(selected_edit){
+    ags_tempo_edit_drawing_area_button_release_add_marker((GtkWidget *) composite_editor,
+							  (GtkWidget *) composite_toolbar,
+							  tempo_edit,
+							  n_press,
+							  x, y);
 
-      tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
-    }else if(selected_clear){
-      ags_tempo_edit_drawing_area_button_release_delete_marker((GtkWidget *) composite_editor,
-							       (GtkWidget *) composite_toolbar,
-							       tempo_edit,
-							       machine,
-							       n_press,
-							       x, y);
+    tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
+  }else if(selected_clear){
+    ags_tempo_edit_drawing_area_button_release_delete_marker((GtkWidget *) composite_editor,
+							     (GtkWidget *) composite_toolbar,
+							     tempo_edit,
+							     n_press,
+							     x, y);
 
-      tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
-    }else if(selected_select){
-      ags_tempo_edit_drawing_area_button_release_select_marker((GtkWidget *) composite_editor,
-							       (GtkWidget *) composite_toolbar,
-							       tempo_edit,
-							       machine,
-							       n_press,
-							       x, y);
+    tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
+  }else if(selected_select){
+    ags_tempo_edit_drawing_area_button_release_select_marker((GtkWidget *) composite_editor,
+							     (GtkWidget *) composite_toolbar,
+							     tempo_edit,
+							     n_press,
+							     x, y);
 
-      tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
-    }
-
-    gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
+    tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
   }
+
+  gtk_widget_queue_draw((GtkWidget *) tempo_edit->drawing_area);
 
   return(FALSE);
 }
@@ -1471,8 +1410,6 @@ ags_tempo_edit_auto_scroll_timeout(GtkWidget *widget)
 
     GtkAdjustment *hscrollbar_adjustment;
 
-    AgsAudio *audio;
-    
     GObject *output_soundcard;
       
     double x;
@@ -1485,17 +1422,9 @@ ags_tempo_edit_auto_scroll_timeout(GtkWidget *widget)
 
     composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 								      AGS_TYPE_COMPOSITE_EDITOR);
+
+    output_soundcard = NULL;
     
-    if(composite_editor->selected_machine == NULL){
-      return(TRUE);
-    }
-
-    audio = composite_editor->selected_machine->audio;      
-
-    g_object_get(audio,
-		 "output-soundcard", &output_soundcard,
-		 NULL);    
-
     /* reset offset */
     tempo_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
     tempo_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
@@ -1891,7 +1820,6 @@ ags_tempo_edit_draw_segment(AgsTempoEdit *tempo_edit, cairo_t *cr)
 void
 ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
 {
-  AgsMachine *selected_machine;
   AgsCompositeEditor *composite_editor;
   
   GtkStyleContext *style_context;
@@ -1901,7 +1829,6 @@ ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
 
   GdkRGBA fg_color;
 
-  guint channel_count;
   double position;
   double x, y;
   double width, height;
@@ -1941,16 +1868,6 @@ ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
   /* get channel count */
   composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
 								    AGS_TYPE_COMPOSITE_EDITOR);
-    
-  if(composite_editor->selected_machine == NULL){
-    return;
-  }
-
-  selected_machine = composite_editor->selected_machine;
-
-  g_object_get(selected_machine->audio,
-	       "input-pads", &channel_count,
-	       NULL);
   
   /* get offset and dimensions */
   position = ((double) tempo_edit->note_offset) * ((double) tempo_edit->control_width);
@@ -1960,10 +1877,6 @@ ags_tempo_edit_draw_position(AgsTempoEdit *tempo_edit, cairo_t *cr)
 
   height = (double) allocation.height;
   width = (double) AGS_TEMPO_EDIT_DEFAULT_FADER_WIDTH;
-
-  if(height < channel_count * tempo_edit->control_height){
-    height = channel_count * tempo_edit->control_height;
-  }
 
   /* push group */
   cairo_push_group(cr);
@@ -2513,7 +2426,7 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
   
-  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+  timestamp->timer.ags_offset.offset = (guint64) AGS_PROGRAM_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_PROGRAM_DEFAULT_OFFSET);
 
   list_program =
     start_list_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));

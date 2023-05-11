@@ -1771,7 +1771,7 @@ ags_app_action_util_edit_wave()
     start_wave_edit = ags_wave_edit_box_get_wave_edit(AGS_WAVE_EDIT_BOX(AGS_SCROLLED_WAVE_EDIT_BOX(composite_editor->wave_edit->edit)->wave_edit_box));
       
     if(start_wave_edit != NULL){
-      adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_WAVE_EDIT(start_wave_edit->data)->hscrollbar));
+      adjustment = gtk_scrollbar_get_adjustment(AGS_WAVE_EDIT(start_wave_edit->data)->hscrollbar);
 	
       g_object_get(adjustment,
 		   "lower", &lower,
@@ -1782,7 +1782,7 @@ ags_app_action_util_edit_wave()
 		   "value", &value,
 		   NULL);
 
-      g_object_set(gtk_range_get_adjustment((GtkRange *) composite_editor->wave_edit->hscrollbar),
+      g_object_set(gtk_scrollbar_get_adjustment(composite_editor->wave_edit->hscrollbar),
 		   "lower", lower,
 		   "upper", upper,
 		   "page-increment", page_increment,
