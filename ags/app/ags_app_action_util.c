@@ -1905,9 +1905,9 @@ ags_app_action_util_edit_tempo()
       
   composite_editor = window->composite_editor;
 
-  toggle_visible = (gtk_widget_get_visible((GtkWidget *) composite_editor->tempo_edit)) ? FALSE: TRUE;
+  toggle_visible = (gtk_widget_get_visible((GtkWidget *) composite_editor->tempo_box)) ? FALSE: TRUE;
   
-  gtk_widget_set_visible((GtkWidget *) composite_editor->tempo_edit,
+  gtk_widget_set_visible((GtkWidget *) composite_editor->tempo_box,
 			 toggle_visible);
 
   gtk_widget_queue_draw(GTK_WIDGET(composite_editor->tempo_edit->drawing_area));

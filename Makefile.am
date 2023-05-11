@@ -2393,6 +2393,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_scale_box.h \
 	ags/widget/ags_scrolled_level_box.h \
 	ags/widget/ags_scrolled_scale_box.h \
+	ags/widget/ags_tempo.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_widget_marshal.h
 
@@ -2416,6 +2417,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_scale_box.c \
 	ags/widget/ags_scrolled_scale_box.c \
 	ags/widget/ags_scrolled_level_box.c \
+	ags/widget/ags_tempo.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_widget_marshal.c
 

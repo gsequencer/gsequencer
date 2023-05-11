@@ -1,7 +1,8 @@
 ags (5.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented tempo editor
+	* implemented tempo editor composite widget
+	* implemented tempo widget
 	* implemented ramp program marker dialog used to automate tempo
 	* implemented AgsProgram and AgsMarker
 	* implemented ags_level_set_data_format() and ags_level_set_samplerate()

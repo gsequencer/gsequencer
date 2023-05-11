@@ -872,6 +872,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     
     line++;
   }
+
+  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
 }
 
 void

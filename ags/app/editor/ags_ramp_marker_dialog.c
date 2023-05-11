@@ -705,6 +705,8 @@ ags_ramp_marker_dialog_apply(AgsApplicable *applicable)
 
     timestamp->timer.ags_offset.offset += AGS_PROGRAM_DEFAULT_OFFSET;
   }
+
+  gtk_widget_queue_draw(composite_editor->tempo_edit->drawing_area);  
 }
 
 void
