@@ -37,6 +37,7 @@
 #include <ags/widget/ags_scrolled_piano.h>
 #include <ags/widget/ags_scrolled_level_box.h>
 #include <ags/widget/ags_scrolled_scale_box.h>
+#include <ags/widget/ags_tempo.h>
 #include <ags/widget/ags_ruler.h>
 #include <ags/widget/ags_widget_marshal.h>
 

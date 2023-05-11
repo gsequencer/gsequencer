@@ -88,6 +88,9 @@ struct _AgsCompositeEditor
   AgsCompositeEdit *automation_edit;
   AgsCompositeEdit *wave_edit;
 
+  GtkBox *tempo_box;
+
+  AgsTempo *tempo;
   AgsTempoEdit *tempo_edit;
 };
 

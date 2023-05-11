@@ -286,7 +286,8 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 {
   GtkScrolledWindow *scrolled_window;
   GtkBox *vbox;
-
+  GtkBox *hbox;
+  
   GtkAdjustment *adjustment;
   
   /* scale factor */
@@ -576,14 +577,38 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 		 (GtkWidget *) composite_editor->wave_edit->edit);
 
   /* edit - tempo edit */
-  composite_editor->tempo_edit = ags_tempo_edit_new();
+  hbox =
+    composite_editor->tempo_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+							 0);
 
-  gtk_widget_set_visible((GtkWidget *) composite_editor->tempo_edit,
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
 			 FALSE);
-  gtk_widget_set_margin_start((GtkWidget *) composite_editor->tempo_edit,
-			      60);
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
+			 TRUE);
+
+  gtk_widget_set_visible((GtkWidget *) hbox,
+			 FALSE);
 
   gtk_box_append(vbox,
+		 (GtkWidget *) hbox);
+
+  composite_editor->tempo = ags_tempo_new(GTK_ORIENTATION_VERTICAL,
+					  60,
+					  128);
+  gtk_widget_set_valign((GtkWidget *) composite_editor->tempo,
+			GTK_ALIGN_START);
+  gtk_widget_set_vexpand((GtkWidget *) composite_editor->tempo,
+			 FALSE);
+  gtk_box_append(hbox,
+		 (GtkWidget *) composite_editor->tempo);
+  
+  composite_editor->tempo_edit = ags_tempo_edit_new();
+  gtk_box_append(hbox,
 		 (GtkWidget *) composite_editor->tempo_edit);
 }
 
