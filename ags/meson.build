@@ -1485,6 +1485,7 @@ libags_audio_audio_headers = [
   'audio/ags_linear_interpolate_util.h',
   'audio/ags_lfo_synth_util.h',
   'audio/ags_midi.h',
+  'audio/ags_marker.h',
   'audio/ags_noise_util.h',
   'audio/ags_notation.h',
   'audio/ags_note.h',
@@ -1497,6 +1498,7 @@ libags_audio_audio_headers = [
   'audio/ags_port.h',
   'audio/ags_port_util.h',
   'audio/ags_preset.h',
+  'audio/ags_program.h',
   'audio/ags_recall.h',
   'audio/ags_recall_audio.h',
   'audio/ags_recall_audio_run.h',
@@ -2001,6 +2003,7 @@ libags_gui_widget_headers = [
   'widget/ags_led_array.h',
   'widget/ags_led.h',
   'widget/ags_scrolled_piano.h',
+  'widget/ags_tempo.h',
   'widget/ags_notebook.h',
   'widget/ags_piano.h',
 ]

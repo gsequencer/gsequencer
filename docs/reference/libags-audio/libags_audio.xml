@@ -258,6 +258,8 @@
       <xi:include href="xml/ags_track.xml"/>
       <xi:include href="xml/ags_pattern.xml"/>
       <xi:include href="xml/ags_preset.xml"/>
+      <xi:include href="xml/ags_program.xml"/>
+      <xi:include href="xml/ags_marker.xml"/>
     </chapter>
     
     <chapter id="recall-fundamentals">
