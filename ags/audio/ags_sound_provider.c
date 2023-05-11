@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
+#include <ags/audio/ags_program.h>
+
 void ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface);
 
 /**
