@@ -109,6 +109,8 @@ struct _AgsWaveEdit
   guint button_mask;
   guint key_mask;
 
+  GtkWidget *parent_composite_edit;
+  
   guint line;
   
   guint note_offset;

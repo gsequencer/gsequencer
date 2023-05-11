@@ -339,6 +339,15 @@ ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback(GAction 
 }
 
 void
+ags_composite_toolbar_menu_tool_popup_program_ramp_marker_callback(GAction *action, GVariant *parameter,
+								   AgsCompositeToolbar *composite_toolbar)
+{
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->program_ramp_marker));
+  
+  gtk_widget_show((GtkWidget *) composite_toolbar->program_ramp_marker);
+}
+
+void
 ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GAction *action, GVariant *parameter,
 									 AgsCompositeToolbar *composite_toolbar)
 {

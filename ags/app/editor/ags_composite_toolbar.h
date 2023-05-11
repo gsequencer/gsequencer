@@ -190,6 +190,8 @@ struct _AgsCompositeToolbar
   GtkDialog *wave_select_buffer;
   GtkDialog *wave_position_cursor;
   GtkDialog *wave_time_stretch_buffer;
+
+  GtkDialog *program_ramp_marker;
 };
 
 struct _AgsCompositeToolbarClass

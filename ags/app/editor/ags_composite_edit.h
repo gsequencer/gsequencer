@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,6 +80,8 @@ struct _AgsCompositeEdit
 
   AgsUUID *uuid;
 
+  GtkWidget *parent_composite_editor;
+  
   GtkPaned *composite_paned;
 
   GtkBox *composite_box;

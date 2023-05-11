@@ -189,9 +189,9 @@ void ags_program_insert_from_clipboard_extended(AgsProgram *program,
 						gboolean reset_x_offset, guint x_offset,
 						gboolean no_duplicates);
 
-gchar** ags_program_get_specifier_unique(GList *program);
-GList* ags_program_find_specifier(GList *program,
-				  gchar *specifier);
+gchar** ags_program_get_control_name_unique(GList *program);
+GList* ags_program_find_control_name(GList *program,
+				     gchar *control_name);
 
 guint ags_program_get_value(AgsProgram *program,
 			    guint x, guint x_end,

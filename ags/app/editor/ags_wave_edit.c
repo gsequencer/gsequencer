@@ -305,6 +305,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->button_mask = 0;
   wave_edit->key_mask = 0;
 
+  wave_edit->parent_composite_edit = NULL;
+  
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -584,8 +586,7 @@ ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 
   application_context = ags_application_context_get_instance();
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   machine = composite_editor->selected_machine;
 
@@ -701,6 +702,8 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
   AgsMachine *machine;
   AgsNotebook *channel_selector;
   
+  AgsApplicationContext *application_context;
+
   GtkAllocation allocation;
 
   guint l_control_key, r_control_key;  
@@ -708,8 +711,9 @@ ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
   gint i;
   gboolean key_handled;
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  application_context = ags_application_context_get_instance();
+  
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   channel_selector = composite_editor->wave_edit->channel_selector;
     
@@ -905,12 +909,15 @@ ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
   AgsCompositeToolbar *composite_toolbar;
   AgsMachine *machine;
 
+  AgsApplicationContext *application_context;
+
   //NOTE:JK: to be complete
   //  gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
   gboolean selected_position_cursor, selected_select;
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  application_context = ags_application_context_get_instance();
+  
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = (AgsCompositeToolbar *) composite_editor->toolbar;
 
@@ -1017,22 +1024,22 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 {
   AgsCompositeEditor *composite_editor;
   AgsCompositeToolbar *composite_toolbar;
-  GtkWidget *toolbar;
   AgsMachine *machine;
+
+  AgsApplicationContext *application_context;
 
   gboolean selected_position_cursor, selected_select;
 
   selected_position_cursor = FALSE;
   selected_select = FALSE;
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  application_context = ags_application_context_get_instance();
+  
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = (AgsCompositeToolbar *) composite_editor->toolbar;
 
   machine = composite_editor->selected_machine;
-
-  composite_toolbar = (AgsCompositeToolbar *) toolbar;
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
   selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
@@ -1170,10 +1177,13 @@ ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
   AgsCompositeToolbar *composite_toolbar;
   AgsMachine *machine;
 
+  AgsApplicationContext *application_context;
+
   gboolean selected_position_cursor, selected_select;
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  application_context = ags_application_context_get_instance();
+  
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   machine = composite_editor->selected_machine;
 
@@ -1352,6 +1362,8 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
 
     GtkAdjustment *hscrollbar_adjustment;
 
+    AgsApplicationContext *application_context;
+
     GObject *output_soundcard;
     
     double x;
@@ -1362,8 +1374,9 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
       return(TRUE);
     }
     
-    composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								      AGS_TYPE_COMPOSITE_EDITOR);
+    application_context = ags_application_context_get_instance();
+    
+    composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
     if(composite_editor->selected_machine == NULL){
       return(TRUE);
@@ -1481,8 +1494,7 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
   adjustment = gtk_scrollbar_get_adjustment(wave_edit->hscrollbar);
 
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -1580,8 +1592,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = (AgsCompositeToolbar *) composite_editor->toolbar;
 
@@ -1790,8 +1801,7 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
@@ -1911,8 +1921,7 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
 			    &allocation);
   
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -2004,8 +2013,7 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 			    &allocation);
 
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = (AgsCompositeToolbar *) composite_editor->toolbar;
 
@@ -2135,8 +2143,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   if(composite_editor->selected_machine == NULL){
     return;
@@ -2417,8 +2424,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 			    &allocation);
  
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   if(composite_editor->selected_machine == NULL){
     return;

@@ -2426,7 +2426,7 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
   
-  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+  timestamp->timer.ags_offset.offset = (guint64) AGS_PROGRAM_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_PROGRAM_DEFAULT_OFFSET);
 
   list_program =
     start_list_program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));

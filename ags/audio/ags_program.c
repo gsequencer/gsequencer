@@ -2550,6 +2550,127 @@ ags_program_insert_from_clipboard_extended(AgsProgram *program,
 }
 
 /**
+ * ags_program_get_control_name_unique:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ *
+ * Retrieve program port control_name.
+ *
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL terminated string array
+ *
+ * Since: 5.1.0
+ */
+gchar**
+ags_program_get_control_name_unique(GList *program)
+{
+  AgsProgram *current_program;
+  
+  gchar **control_name;
+  gchar *current_control_name;
+  
+  guint length, i;
+  gboolean contains_control_name;
+
+  GRecMutex *program_mutex;
+
+  if(program == NULL){
+    return(NULL);
+  }
+  
+  control_name = (gchar **) malloc(sizeof(gchar*));
+  control_name[0] = NULL;
+  length = 1;
+  
+  while(program != NULL){
+    current_program = program->data;
+    
+    /* get program mutex */
+    program_mutex = AGS_PROGRAM_GET_OBJ_MUTEX(current_program);
+
+    /* duplicate control name */
+    g_rec_mutex_lock(program_mutex);
+
+    current_control_name = g_strdup(current_program->control_name);
+    
+    g_rec_mutex_unlock(program_mutex);
+    
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(control_name,
+					    current_control_name);
+#else
+    contains_control_name = ags_strv_contains(control_name,
+					      current_control_name);
+#endif
+    
+    if(!contains_control_name){
+      control_name = (gchar **) realloc(control_name,
+					(length + 1) * sizeof(gchar *));
+      control_name[length - 1] = current_control_name;
+      control_name[length] = NULL;
+
+      length++;
+    }else{
+      g_free(current_control_name);
+    }
+
+    /* iterate */
+    program = program->next;
+  }
+  
+  return(control_name);
+}
+
+/**
+ * ags_program_find_control_name:
+ * @program: (element-type AgsAudio.Program) (transfer none): the #GList-struct containing #AgsProgram
+ * @control_name: the string control_name to find
+ *
+ * Find port control_name.
+ *
+ * Returns: (element-type AgsAudio.Program) (transfer none): Next matching #GList
+ *
+ * Since: 5.1.0
+ */
+GList*
+ags_program_find_control_name(GList *program,
+			      gchar *control_name)
+{
+  AgsProgram *current_program;
+  
+  gchar *current_control_name;
+
+  gboolean success;
+  
+  GRecMutex *program_mutex;
+ 
+  while(program != NULL){
+    current_program = program->data;
+
+    /* get program mutex */
+    program_mutex = AGS_PROGRAM_GET_OBJ_MUTEX(current_program);
+
+    /* duplicate control name */
+    g_rec_mutex_lock(program_mutex);
+
+    current_control_name = g_strdup(current_program->control_name);
+    
+    g_rec_mutex_unlock(program_mutex);
+
+    /* check control name */
+    success = (!g_ascii_strcasecmp(current_control_name,
+				   control_name)) ? TRUE: FALSE;
+    g_free(current_control_name);
+    
+    if(success){
+      break;
+    }
+
+    program = program->next;
+  }
+
+  return(program);
+}
+
+/**
  * ags_program_new:
  * @audio: the assigned #AgsAudio
  *

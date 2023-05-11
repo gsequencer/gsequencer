@@ -41,6 +41,8 @@
 #include <ags/app/editor/ags_position_wave_cursor_dialog.h>
 #include <ags/app/editor/ags_time_stretch_buffer_dialog.h>
 
+#include <ags/app/editor/ags_ramp_marker_dialog.h>
+
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
@@ -350,6 +352,15 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
   
+  /* ramp markers */
+  action = g_simple_action_new_stateful("ramp_markers",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_program_ramp_marker_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
   composite_toolbar->flags = 0;
   composite_toolbar->connectable_flags = 0;
   
@@ -413,6 +424,8 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->wave_select_buffer = (GtkDialog *) ags_select_buffer_dialog_new();
   composite_toolbar->wave_position_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new();
   composite_toolbar->wave_time_stretch_buffer = (GtkDialog *) ags_time_stretch_buffer_dialog_new();
+
+  composite_toolbar->program_ramp_marker = (GtkDialog *) ags_ramp_marker_dialog_new();
 }
 
 AgsUUID*
@@ -569,6 +582,8 @@ ags_composite_toolbar_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_select_buffer));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_position_cursor));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_time_stretch_buffer));
+
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->program_ramp_marker));
 }
 
 void
@@ -600,6 +615,8 @@ ags_composite_toolbar_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_select_buffer));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_position_cursor));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_time_stretch_buffer));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->program_ramp_marker));
 }
 
 void
@@ -1838,6 +1855,11 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
       }
     }
   }
+
+  item = g_menu_item_new(i18n("ramp markers"),
+			 "composite_toolbar.ramp_markers");
+  g_menu_append_item(menu,
+		     item);
   
   return(G_MENU_MODEL(menu));
 }
@@ -2266,6 +2288,21 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
   composite_toolbar->selected_tool = NULL;
   
   /* create new */
+  ags_composite_toolbar_set_tool(composite_toolbar,
+				 (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
+				  AGS_COMPOSITE_TOOLBAR_TOOL_EDIT |
+				  AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR |
+				  AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
+
+  ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
+				     (GObject *) composite_toolbar->position);
+  ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
+				     (GObject *) composite_toolbar->edit);
+  ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
+				     (GObject *) composite_toolbar->clear);
+  ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
+				     (GObject *) composite_toolbar->select);
+
   if(scope != NULL){
     if(!g_strcmp0(scope,
 		  AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
@@ -2304,13 +2341,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       composite_toolbar->menu_tool_dialog = notation_menu_tool_dialog;
       composite_toolbar->menu_tool_value = notation_menu_tool_value;
       
-      /* set tool, action and option */
-      ags_composite_toolbar_set_tool(composite_toolbar,
-				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_EDIT |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
-
+      /* set tool, action and option */      
       composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_AUDIO_CHANNEL |
 				       AGS_COMPOSITE_TOOLBAR_PASTE_NO_DUPLICATES);
       ags_composite_toolbar_set_action(composite_toolbar,
@@ -2324,16 +2355,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 					AGS_COMPOSITE_TOOLBAR_HAS_ZOOM |
 					AGS_COMPOSITE_TOOLBAR_HAS_OPACITY));
 
-      /* connect */
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->position);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->edit);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->clear);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->select);
-      
+      /* connect */      
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 					 (GObject *) composite_toolbar->invert);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
@@ -2392,13 +2414,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       composite_toolbar->menu_tool_dialog = sheet_menu_tool_dialog;
       composite_toolbar->menu_tool_value = sheet_menu_tool_value;
       
-      /* set tool, action and option */
-      ags_composite_toolbar_set_tool(composite_toolbar,
-				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_EDIT |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
-
+      /* set tool, action and option */      
       composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_AUDIO_CHANNEL |
 				       AGS_COMPOSITE_TOOLBAR_PASTE_NO_DUPLICATES);
       ags_composite_toolbar_set_action(composite_toolbar,
@@ -2414,16 +2430,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 					AGS_COMPOSITE_TOOLBAR_HAS_BEATS |
 					AGS_COMPOSITE_TOOLBAR_HAS_BEATS_TYPE));
 
-      /* connect */
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->position);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->edit);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->clear);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->select);
-      
+      /* connect */      
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 					 (GObject *) composite_toolbar->invert);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
@@ -2482,13 +2489,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       composite_toolbar->menu_tool_dialog = automation_menu_tool_dialog;
       composite_toolbar->menu_tool_value = automation_menu_tool_value;
       
-      /* set tool, action and option */
-      ags_composite_toolbar_set_tool(composite_toolbar,
-				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_EDIT |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
-
+      /* set tool, action and option */      
       composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_LINE);
       ags_composite_toolbar_set_action(composite_toolbar,
 				       (AGS_COMPOSITE_TOOLBAR_ACTION_COPY |
@@ -2504,15 +2505,6 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       ags_composite_toolbar_load_port(composite_toolbar);
       
       /* connect */
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->position);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->edit);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->clear);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->select);
-      
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 					 (GObject *) composite_toolbar->copy);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
@@ -2572,11 +2564,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       composite_toolbar->menu_tool_dialog = wave_menu_tool_dialog;
       composite_toolbar->menu_tool_value = wave_menu_tool_value;
       
-      /* set tool, action and option */
-      ags_composite_toolbar_set_tool(composite_toolbar,
-				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
-
+      /* set tool, action and option */      
       composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_LINE);
       ags_composite_toolbar_set_action(composite_toolbar,
 				       (AGS_COMPOSITE_TOOLBAR_ACTION_COPY |
@@ -2588,12 +2576,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 					AGS_COMPOSITE_TOOLBAR_HAS_ZOOM |
 					AGS_COMPOSITE_TOOLBAR_HAS_OPACITY));
 
-      /* connect */
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->position);
-      ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
-					 (GObject *) composite_toolbar->select);
-      
+      /* connect */      
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 					 (GObject *) composite_toolbar->copy);
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
