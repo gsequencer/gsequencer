@@ -59,7 +59,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-fm-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?, ?ags-sf-equalizer10)>
+<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-fm-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?, ags-sf-dialog-model-list?, ags-sf-equalizer10?)>
 <!ATTLIST ags-sf-machine
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
@@ -253,6 +253,11 @@
 	  x-end                 NMTOKEN  #REQUIRED
 	  >
 
+<!-- dialog model -->
+<!ELEMENT ags-sf-dialog-model-list (ags-sf-dialog-model*)>
+
+<!ELEMENT ags-sf-dialog-model #CDATA>
+
 <!-- equalizer10 -->
 <!ELEMENT ags-sf-equalizer10 (ags-sf-control*)>
 
@@ -263,7 +268,7 @@
 <!ATTLIST ags-sf-automation
 	  line            NMTOKEN  #REQUIRED
 	  channel-type    CDATA    #REQUIRED
-	  control-name    CATA     #REQUIRED
+	  control-name    CDATA     #REQUIRED
 	  >
 
 <!ELEMENT ags-sf-acceleration EMPTY>

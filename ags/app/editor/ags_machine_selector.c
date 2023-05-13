@@ -664,7 +664,7 @@ ags_machine_selector_get_machine_radio_button(AgsMachineSelector *machine_select
 {
   g_return_val_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector), NULL);
 
-  return(g_list_reverse(g_list_copy(machine_selector->machine_radio_button)));
+  return(g_list_copy(machine_selector->machine_radio_button));
 }
 
 /**
@@ -711,22 +711,24 @@ ags_machine_selector_insert_machine_radio_button(AgsMachineSelector *machine_sel
     if(list != NULL){
       group = AGS_MACHINE_RADIO_BUTTON(start_list->data);
 
-      gtk_check_button_set_group(list->data,
-				 NULL);
+      if(position == 0){
+	gtk_check_button_set_group(list->data,
+				   NULL);
 
-      list = list->next;
-      
-      while(list != NULL){
-	gtk_check_button_set_group((GtkCheckButton *) list->data,
-				   (GtkCheckButton *) group);
-      
 	list = list->next;
+      
+	while(list != NULL){
+	  gtk_check_button_set_group((GtkCheckButton *) list->data,
+				     (GtkCheckButton *) group);
+      
+	  list = list->next;
+	}
       }
     }
-      
+    
     g_list_free(machine_selector->machine_radio_button);
 
-    machine_selector->machine_radio_button = g_list_reverse(start_list);
+    machine_selector->machine_radio_button = start_list;
 
     gtk_box_insert_child_after((GtkBox *) machine_selector->machine_radio_button_box,
 			       (GtkWidget *) machine_radio_button,
