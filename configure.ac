@@ -542,6 +542,14 @@ AS_IF([test "x$enable_vst3" != xno],
       AC_SUBST(LIBAGS_VST3_LDFLAGS)
       AC_SUBST(LIBAGS_VST3_LIBDIR)
       AC_SUBST(LIBAGS_VST3_LIBS)
+      LIBAGS_AUDIO_LIBINSTPATCH_XINCLUDE=""
+      LIBAGS_AUDIO_VST3_XINCLUDE=""
+      LIBGSEQUENCER_LIBINSTPATCH_XINCLUDE=""
+      LIBGSEQUENCER_LIBINSTPATCH_XINCLUDE=""
+      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_VST3_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_LIBINSTPATCH_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_VST3_XINCLUDE)
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
@@ -824,12 +832,16 @@ unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags/version.xml
+docs/reference/libags/libags.xml
 docs/reference/libags-audio/Makefile
 docs/reference/libags-audio/version.xml
+docs/reference/libags-audio/libags_audio.xml
 docs/reference/libags-gui/Makefile
 docs/reference/libags-gui/version.xml
+docs/reference/libags-gui/libags_gui.xml
 docs/reference/libgsequencer/Makefile
 docs/reference/libgsequencer/version.xml
+docs/reference/libgsequencer/libgsequencer.xml
 libags.pc
 libags_audio.pc
 libags_gui.pc
