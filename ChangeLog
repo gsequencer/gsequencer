@@ -1,3 +1,10 @@
+ags (5.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing persistence of machine's dialog model
+	* fixed automation XML persistence missing channel-type and control-name
+	* fixed machine selector insert machine radio button
+
 ags (5.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

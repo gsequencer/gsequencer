@@ -2940,6 +2940,38 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			 g_object_unref);
 
 	gobject->audio->preset = preset;
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-dialog-model-list",
+			   25)){
+	xmlNode *dialog_model;
+	xmlNode *model;
+
+	dialog_model = child->children;
+
+	while(dialog_model != NULL){
+	  if(dialog_model->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(dialog_model->name,
+			   (xmlChar *) "ags-sf-dialog-model",
+			   20)){
+	      model = dialog_model->children;
+
+	      while(model != NULL){
+		if(model->type == XML_ELEMENT_NODE){
+		  xmlNode *copy_model;
+
+		  copy_model = xmlCopyNode(model,
+					   1);
+		  ags_machine_add_dialog_model(gobject,
+		  			       copy_model);
+		}
+		
+		model = model->next;
+	      }
+	    }
+	  }
+	  
+	  dialog_model = dialog_model->next;
+	}
       }
     }
 
@@ -10340,7 +10372,7 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 
 	if(str != NULL){
 	  acceleration->y = g_strtod(str,
-				     10);
+				     NULL);
 
 	  xmlFree(str);
 	}
@@ -11595,7 +11627,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   xmlNode *node;
   xmlNode *pad_list;    
 
-  GList *list;
+  GList *start_list, *list;
 
   gchar *id;
   xmlChar *str;    
@@ -11755,6 +11787,35 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);
+  }
+
+  /* */
+  start_list = ags_machine_get_dialog_model(machine);
+
+  if(start_list != NULL){
+    xmlNode *dialog_model_list;
+    xmlNode *dialog_model;
+    
+    list = start_list;
+
+    dialog_model_list = xmlNewNode(NULL,
+				   "ags-sf-dialog-model-list");
+    xmlAddChild(node,
+		dialog_model_list);
+  
+    while(list != NULL){
+      dialog_model = xmlNewNode(NULL,
+				"ags-sf-dialog-model");
+      xmlAddChild(dialog_model_list,
+		  dialog_model);
+
+      xmlAddChild(dialog_model,
+		  list->data);
+      
+      list = list->next;
+    }
+
+    g_list_free(start_list);
   }
   
   /* machine specific */
@@ -15239,9 +15300,26 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   node = xmlNewNode(NULL,
 		    "ags-sf-automation");
 
+  str = g_strdup_printf("%d", automation->line);
   xmlNewProp(node,
 	     "line",
-	     g_strdup_printf("%d", automation->line));
+	     str);
+
+  g_free(str);
+
+  str = g_strdup_printf("%s", g_type_name(automation->channel_type));
+  xmlNewProp(node,
+	     "channel-type",
+	     str);
+
+  g_free(str);
+
+  str = g_strdup_printf("%s", automation->control_name);
+  xmlNewProp(node,
+	     "control-name",
+	     str);
+
+  g_free(str);
 
   /* timestamp */
   child = xmlNewNode(NULL,

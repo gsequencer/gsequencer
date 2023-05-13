@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- Copyright (C) 2005-2019 Joël Krähemann -->
-<!-- Copying and distribution of this file, with or without modification, -->
-<!-- are permitted in any medium without royalty provided the copyright -->
-<!-- notice and this notice are preserved.  This file is offered as-is, -->
-<!-- without any warranty. -->
-
-<ags-simple-file xmlns:agssf="http://nongnu.org/gsequencer/ns/ags-simple-file" id="6920687a-327a-11ea-83fe-3b5c1e3cc5c0" version="3.0.0-beta1" build-id="Wed Nov  6 18:28:15 UTC 2019">
-  <ags-sf-config id="6920687b-327a-11ea-83fe-3b5c1e3cc5c0" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
+<ags-simple-file xmlns:agssf="http://nongnu.org/gsequencer/ns/ags-simple-file" id="85aca4ec-f192-11ed-b4f7-a0a3f0705ed7" version="5.1.2" build-id="Wed Nov  6 18:28:15 UTC 2019">
+  <ags-sf-config id="85aca5aa-f192-11ed-b4f7-a0a3f0705ed7" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
 disable-feature=experimental
 autosave-thread=false
 segmentation=4/4
@@ -45,20 +38,29 @@ ip6-address=::1
 server-port=9000
 monitor-timeout=0.033333
 ]]></ags-sf-config>
+  <ags-sf-meta-list>
+    <ags-sf-meta name="author"><![CDATA[]]></ags-sf-meta>
+    <ags-sf-meta name="title"><![CDATA[]]></ags-sf-meta>
+    <ags-sf-meta name="album"><![CDATA[]]></ags-sf-meta>
+    <ags-sf-meta name="release-date"><![CDATA[]]></ags-sf-meta>
+    <ags-sf-meta name="copyright"><![CDATA[]]></ags-sf-meta>
+    <ags-sf-meta name="license"><![CDATA[]]></ags-sf-meta>
+    <ags-sf-meta name="comment"><![CDATA[]]></ags-sf-meta>
+  </ags-sf-meta-list>
   <ags-sf-window filename="ags_functional_notation_edit_test.xml" bpm="120.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
     <ags-sf-machine-list>
-      <ags-sf-machine id="6920687c-327a-11ea-83fe-3b5c1e3cc5c0" type="AgsPanel" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
+      <ags-sf-machine id="85aca9d8-f192-11ed-b4f7-a0a3f0705ed7" type="AgsPanel" name="Default 0" soundcard-device="default" bank-0="0" bank-1="0" channels="2" output-pads="1" input-pads="1">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="6920687d-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acac58-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="6920687e-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='6920689b-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acad52-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85acde3a-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="6920687f-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='6920689c-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acaf1e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85acdf66-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
@@ -69,147 +71,147 @@ monitor-timeout=0.033333
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="69206882-327a-11ea-83fe-3b5c1e3cc5c0" type="AgsMixer" name="Default 1" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
+      <ags-sf-machine id="85acb234-f192-11ed-b4f7-a0a3f0705ed7" type="AgsMixer" name="Default 1" soundcard-device="default" bank-0="0" bank-1="0" channels="2" output-pads="1" input-pads="8">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="69206883-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acb37e-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="69206884-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='692068cf-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acb43c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85ad5766-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.174000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.174000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="69206885-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='692068d0-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acb806-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85ad58a6-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.174000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.174000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="69206886-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="1" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acba90-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="69206887-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="2" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='692068e2-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acbb62-f192-11ed-b4f7-a0a3f0705ed7" nth-line="2" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85ad7fc0-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.261000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.261000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="69206888-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="3" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='692068e3-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acbdd8-f192-11ed-b4f7-a0a3f0705ed7" nth-line="3" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85ad80c4-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.261000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.261000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="69206889-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="2" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acc03a-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="2" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="6920688a-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="4" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='69206900-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acc102-f192-11ed-b4f7-a0a3f0705ed7" nth-line="4" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85ada7c0-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.217000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.217000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="6920688b-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="5" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='69206901-327a-11ea-83fe-3b5c1e3cc5c0']">
+              <ags-sf-line id="85acc364-f192-11ed-b4f7-a0a3f0705ed7" nth-line="5" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85ada8ba-f192-11ed-b4f7-a0a3f0705ed7']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.217000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.217000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="6920688c-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="3" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acc5ee-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="3" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="6920688d-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="6" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acc6b6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="6" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="6920688e-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="7" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acc8e6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="7" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="6920688f-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="4" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85accaee-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="4" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="69206890-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="8" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85accbac-f192-11ed-b4f7-a0a3f0705ed7" nth-line="8" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="69206891-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="9" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85accdb4-f192-11ed-b4f7-a0a3f0705ed7" nth-line="9" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="69206892-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="5" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85accfa8-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="5" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="69206893-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="10" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acd070-f192-11ed-b4f7-a0a3f0705ed7" nth-line="10" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="69206894-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="11" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acd278-f192-11ed-b4f7-a0a3f0705ed7" nth-line="11" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="69206895-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="6" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acd476-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="6" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="69206896-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="12" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acd53e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="12" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="69206897-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="13" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acd73c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="13" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="69206898-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="7" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85acd93a-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="7" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="69206899-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="14" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acda0c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="14" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="6920689a-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="15" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85acdc0a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="15" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
@@ -219,173 +221,13 @@ monitor-timeout=0.033333
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="6920689b-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='6920687e-327a-11ea-83fe-3b5c1e3cc5c0']"/>
-              <ags-sf-line id="6920689c-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='6920687f-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85acde3a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='85acad52-f192-11ed-b4f7-a0a3f0705ed7']"/>
+              <ags-sf-line id="85acdf66-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='85acaf1e-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
         <ags-sf-automation-list>
-          <ags-sf-automation line="1">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="1">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="0">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="0">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="3">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="3">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="2">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="2">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="5">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="5">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="4">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="4">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="7">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="7">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="6">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="6">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="9">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="9">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="8">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="8">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="11">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="11">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="10">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="10">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="13">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="13">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="12">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="12">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="15">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="15">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="14">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="14">
-            <ags-sf-timestamp offset="0"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-            <ags-sf-acceleration x="0" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="0">
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
@@ -420,488 +262,648 @@ monitor-timeout=0.033333
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="1">
+          <ags-sf-automation line="14" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="14" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="15" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="15" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="12" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="12" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="13" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="13" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="10" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="10" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="11" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="11" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="8" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="8" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="9" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="9" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="6" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="6" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="7" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="7" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="4" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="4" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="5" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="5" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="2" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="2" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="3" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="3" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="1" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="1" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+            <ags-sf-acceleration x="0" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
+            <ags-sf-timestamp offset="1179648"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+            <ags-sf-acceleration x="1228800" y="0.000000"/>
+          </ags-sf-automation>
+          <ags-sf-automation line="14" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="1">
+          <ags-sf-automation line="14" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="0">
+          <ags-sf-automation line="15" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="0">
+          <ags-sf-automation line="15" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="3">
+          <ags-sf-automation line="12" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="3">
+          <ags-sf-automation line="12" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="2">
+          <ags-sf-automation line="13" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="2">
+          <ags-sf-automation line="13" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="5">
+          <ags-sf-automation line="10" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="5">
+          <ags-sf-automation line="10" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="4">
+          <ags-sf-automation line="11" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="4">
+          <ags-sf-automation line="11" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="7">
+          <ags-sf-automation line="8" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="7">
+          <ags-sf-automation line="8" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="6">
+          <ags-sf-automation line="9" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="6">
+          <ags-sf-automation line="9" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="9">
+          <ags-sf-automation line="6" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="9">
+          <ags-sf-automation line="6" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="8">
+          <ags-sf-automation line="7" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="8">
+          <ags-sf-automation line="7" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="11">
+          <ags-sf-automation line="4" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="11">
+          <ags-sf-automation line="4" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="10">
+          <ags-sf-automation line="5" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="10">
+          <ags-sf-automation line="5" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="13">
+          <ags-sf-automation line="2" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="13">
+          <ags-sf-automation line="2" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="12">
+          <ags-sf-automation line="3" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="12">
+          <ags-sf-automation line="3" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="15">
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="15">
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="14">
+          <ags-sf-automation line="1" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="14">
+          <ags-sf-automation line="1" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-          </ags-sf-automation>
-          <ags-sf-automation line="0">
-            <ags-sf-timestamp offset="1179648"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
-            <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
         </ags-sf-automation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="6920689d-327a-11ea-83fe-3b5c1e3cc5c0" type="AgsDrum" name="Default 2" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="16" length="16">
+      <ags-sf-machine id="85ad019e-f192-11ed-b4f7-a0a3f0705ed7" type="AgsDrum" name="Default 2" soundcard-device="default" bank-0="0" bank-1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="16" length="16">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="6920689e-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad0342-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="6920689f-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/909_xOver_1.wav" file-channel="0">
+              <ags-sf-line id="85ad041e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/909_xOver_1.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068a0-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/909_xOver_1.wav" file-channel="1">
+              <ags-sf-line id="85ad06c6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/909_xOver_1.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068a1-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="1" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad091e-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068a2-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="2" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/am_sine_01_2.wav" file-channel="0">
+              <ags-sf-line id="85ad09e6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="2" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/am_sine_01_2.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068a3-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="3" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/am_sine_01_2.wav" file-channel="1">
+              <ags-sf-line id="85ad0c16-f192-11ed-b4f7-a0a3f0705ed7" nth-line="3" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/am_sine_01_2.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068a4-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="2" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad0e46-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="2" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068a5-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="4" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_01.wav" file-channel="0">
+              <ags-sf-line id="85ad0f0e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="4" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068a6-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="5" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_01.wav" file-channel="1">
+              <ags-sf-line id="85ad1152-f192-11ed-b4f7-a0a3f0705ed7" nth-line="5" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068a7-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="3" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad1382-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="3" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068a8-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="6" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_02.wav" file-channel="0">
+              <ags-sf-line id="85ad1436-f192-11ed-b4f7-a0a3f0705ed7" nth-line="6" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_02.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068a9-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="7" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_02.wav" file-channel="1">
+              <ags-sf-line id="85ad1670-f192-11ed-b4f7-a0a3f0705ed7" nth-line="7" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_02.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068aa-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="4" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad18a0-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="4" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ab-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="8" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_01.wav" file-channel="0">
+              <ags-sf-line id="85ad1954-f192-11ed-b4f7-a0a3f0705ed7" nth-line="8" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068ac-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="9" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_01.wav" file-channel="1">
+              <ags-sf-line id="85ad1b5c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="9" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068ad-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="5" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad1d78-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="5" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ae-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="10" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_08_01.wav" file-channel="0">
+              <ags-sf-line id="85ad1e2c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="10" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_08_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068af-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="11" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_08_01.wav" file-channel="1">
+              <ags-sf-line id="85ad205c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="11" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_08_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068b0-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="6" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad2282-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="6" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068b1-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="12" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/fx_18-2.wav" file-channel="0">
+              <ags-sf-line id="85ad2340-f192-11ed-b4f7-a0a3f0705ed7" nth-line="12" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/fx_18-2.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068b2-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="13" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/fx_18-2.wav" file-channel="1">
+              <ags-sf-line id="85ad267e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="13" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/fx_18-2.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068b3-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="7" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad28b8-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="7" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068b4-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="14" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_ohh_soft.wav" file-channel="0">
+              <ags-sf-line id="85ad2976-f192-11ed-b4f7-a0a3f0705ed7" nth-line="14" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_ohh_soft.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068b5-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="15" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_ohh_soft.wav" file-channel="1">
+              <ags-sf-line id="85ad2b9c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="15" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_ohh_soft.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068b6-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="8" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad2dcc-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="8" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068b7-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="16" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_perc_01.wav" file-channel="0">
+              <ags-sf-line id="85ad2e8a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="16" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_perc_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068b8-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="17" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_perc_01.wav" file-channel="1">
+              <ags-sf-line id="85ad30b0-f192-11ed-b4f7-a0a3f0705ed7" nth-line="17" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_perc_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068b9-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="9" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad32e0-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="9" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ba-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="18" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_xO_7.wav" file-channel="0">
+              <ags-sf-line id="85ad33a8-f192-11ed-b4f7-a0a3f0705ed7" nth-line="18" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_xO_7.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068bb-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="19" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_xO_7.wav" file-channel="1">
+              <ags-sf-line id="85ad35e2-f192-11ed-b4f7-a0a3f0705ed7" nth-line="19" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_xO_7.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068bc-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="10" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad3812-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="10" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068bd-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="20" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sim_k02-0.wav" file-channel="0">
+              <ags-sf-line id="85ad38c6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="20" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sim_k02-0.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068be-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="21" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sim_k02-0.wav" file-channel="1">
+              <ags-sf-line id="85ad3af6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="21" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sim_k02-0.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068bf-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="11" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad3d30-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="11" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068c0-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="22" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sw_01.wav" file-channel="0">
+              <ags-sf-line id="85ad3df8-f192-11ed-b4f7-a0a3f0705ed7" nth-line="22" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sw_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068c1-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="23" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sw_01.wav" file-channel="1">
+              <ags-sf-line id="85ad4028-f192-11ed-b4f7-a0a3f0705ed7" nth-line="23" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sw_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068c2-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="12" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad424e-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="12" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068c3-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="24" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/synth_01.wav" file-channel="0">
+              <ags-sf-line id="85ad4316-f192-11ed-b4f7-a0a3f0705ed7" nth-line="24" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/synth_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068c4-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="25" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/synth_01.wav" file-channel="1">
+              <ags-sf-line id="85ad453c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="25" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/synth_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068c5-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="13" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad476c-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="13" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068c6-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="26" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/tom_01.wav" file-channel="0">
+              <ags-sf-line id="85ad4834-f192-11ed-b4f7-a0a3f0705ed7" nth-line="26" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/tom_01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068c7-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="27" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/tom_01.wav" file-channel="1">
+              <ags-sf-line id="85ad4a5a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="27" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/tom_01.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068c8-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="14" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad4c80-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="14" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068c9-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="28" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_clap1.wav" file-channel="0">
+              <ags-sf-line id="85ad4d3e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="28" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_clap1.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068ca-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="29" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_clap1.wav" file-channel="1">
+              <ags-sf-line id="85ad4f64-f192-11ed-b4f7-a0a3f0705ed7" nth-line="29" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_clap1.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068cb-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="15" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad518a-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="15" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068cc-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="30" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_tom1.wav" file-channel="0">
+              <ags-sf-line id="85ad5248-f192-11ed-b4f7-a0a3f0705ed7" nth-line="30" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_tom1.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="692068cd-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="31" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_tom1.wav" file-channel="1">
+              <ags-sf-line id="85ad5464-f192-11ed-b4f7-a0a3f0705ed7" nth-line="31" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_tom1.wav" file-channel="1">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
@@ -909,15 +911,15 @@ monitor-timeout=0.033333
           </ags-sf-pad>
         </ags-sf-pad-list>
         <ags-sf-pad-list is-output="true">
-          <ags-sf-pad id="692068ce-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad569e-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068cf-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='69206884-327a-11ea-83fe-3b5c1e3cc5c0']"/>
-              <ags-sf-line id="692068d0-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='69206885-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad5766-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85acb43c-f192-11ed-b4f7-a0a3f0705ed7']"/>
+              <ags-sf-line id="85ad58a6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='85acb806-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
         <ags-sf-notation-list>
-          <ags-sf-notation channel="1">
+          <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-note x0="0" x1="1" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
             <ags-sf-note x0="8" x1="9" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
@@ -928,7 +930,7 @@ monitor-timeout=0.033333
             <ags-sf-note x0="48" x1="49" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
             <ags-sf-note x0="56" x1="57" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
-          <ags-sf-notation channel="0">
+          <ags-sf-notation channel="1">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-note x0="0" x1="1" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
             <ags-sf-note x0="8" x1="9" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
@@ -941,420 +943,420 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
         <ags-sf-automation-list>
-          <ags-sf-automation line="1">
+          <ags-sf-automation line="30" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="0">
+          <ags-sf-automation line="31" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="3">
+          <ags-sf-automation line="28" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="2">
+          <ags-sf-automation line="29" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="5">
+          <ags-sf-automation line="26" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="4">
+          <ags-sf-automation line="27" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="7">
+          <ags-sf-automation line="24" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="6">
+          <ags-sf-automation line="25" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="9">
+          <ags-sf-automation line="22" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="8">
+          <ags-sf-automation line="23" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="11">
+          <ags-sf-automation line="20" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="10">
+          <ags-sf-automation line="21" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="13">
+          <ags-sf-automation line="18" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="12">
+          <ags-sf-automation line="19" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="15">
+          <ags-sf-automation line="16" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="14">
+          <ags-sf-automation line="17" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="17">
+          <ags-sf-automation line="14" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="16">
+          <ags-sf-automation line="15" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="19">
+          <ags-sf-automation line="12" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="18">
+          <ags-sf-automation line="13" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="21">
+          <ags-sf-automation line="10" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="20">
+          <ags-sf-automation line="11" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="23">
+          <ags-sf-automation line="8" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="22">
+          <ags-sf-automation line="9" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="25">
+          <ags-sf-automation line="6" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="24">
+          <ags-sf-automation line="7" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="27">
+          <ags-sf-automation line="4" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="26">
+          <ags-sf-automation line="5" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="29">
+          <ags-sf-automation line="2" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="28">
+          <ags-sf-automation line="3" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="31">
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="30">
+          <ags-sf-automation line="1" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
             <ags-sf-acceleration x="0" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="1">
+          <ags-sf-automation line="30" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="0">
+          <ags-sf-automation line="31" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="3">
+          <ags-sf-automation line="28" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="2">
+          <ags-sf-automation line="29" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="5">
+          <ags-sf-automation line="26" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="4">
+          <ags-sf-automation line="27" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="7">
+          <ags-sf-automation line="24" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="6">
+          <ags-sf-automation line="25" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="9">
+          <ags-sf-automation line="22" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="8">
+          <ags-sf-automation line="23" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="11">
+          <ags-sf-automation line="20" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="10">
+          <ags-sf-automation line="21" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="13">
+          <ags-sf-automation line="18" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="12">
+          <ags-sf-automation line="19" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="15">
+          <ags-sf-automation line="16" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="14">
+          <ags-sf-automation line="17" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="17">
+          <ags-sf-automation line="14" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="16">
+          <ags-sf-automation line="15" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="19">
+          <ags-sf-automation line="12" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="18">
+          <ags-sf-automation line="13" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="21">
+          <ags-sf-automation line="10" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="20">
+          <ags-sf-automation line="11" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="23">
+          <ags-sf-automation line="8" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="22">
+          <ags-sf-automation line="9" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="25">
+          <ags-sf-automation line="6" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="24">
+          <ags-sf-automation line="7" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="27">
+          <ags-sf-automation line="4" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="26">
+          <ags-sf-automation line="5" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="29">
+          <ags-sf-automation line="2" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="28">
+          <ags-sf-automation line="3" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="31">
+          <ags-sf-automation line="0" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
-          <ags-sf-automation line="30">
+          <ags-sf-automation line="1" channel-type="void" control-name="(null)">
             <ags-sf-timestamp offset="1179648"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
             <ags-sf-acceleration x="1228800" y="0.000000"/>
           </ags-sf-automation>
         </ags-sf-automation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="692068d1-327a-11ea-83fe-3b5c1e3cc5c0" type="AgsMatrix" name="Default 3" soundcard-device="default" bank_0="0" bank_1="0" channels="1" output-pads="2" input-pads="16" length="16">
+      <ags-sf-machine id="85ad6f62-f192-11ed-b4f7-a0a3f0705ed7" type="AgsMatrix" name="Default 3" soundcard-device="default" bank-0="0" bank-1="0" channels="1" output-pads="2" input-pads="16" length="16" volume="1.000000">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d2-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068e9-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad70de-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad8ef2-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d3-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068ea-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad71e2-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9046-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="2">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d4-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="2" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068eb-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad72c8-f192-11ed-b4f7-a0a3f0705ed7" nth-line="2" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9172-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="3">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d5-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="3" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068ec-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad73b8-f192-11ed-b4f7-a0a3f0705ed7" nth-line="3" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9280-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="4">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d6-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="4" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068ed-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad749e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="4" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad937a-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="5">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d7-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="5" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068ee-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad758e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="5" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad947e-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="6">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d8-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="6" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068ef-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad767e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="6" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad95aa-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="7">
             <ags-sf-line-list>
-              <ags-sf-line id="692068d9-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="7" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f0-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7764-f192-11ed-b4f7-a0a3f0705ed7" nth-line="7" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad96a4-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="8">
             <ags-sf-line-list>
-              <ags-sf-line id="692068da-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="8" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f1-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad784a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="8" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad988e-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="9">
             <ags-sf-line-list>
-              <ags-sf-line id="692068db-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="9" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f2-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7930-f192-11ed-b4f7-a0a3f0705ed7" nth-line="9" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad999c-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="10">
             <ags-sf-line-list>
-              <ags-sf-line id="692068dc-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="10" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f3-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7a0c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="10" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9aa0-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="11">
             <ags-sf-line-list>
-              <ags-sf-line id="692068dd-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="11" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f4-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7ae8-f192-11ed-b4f7-a0a3f0705ed7" nth-line="11" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9c30-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="12">
             <ags-sf-line-list>
-              <ags-sf-line id="692068de-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="12" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f5-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7bce-f192-11ed-b4f7-a0a3f0705ed7" nth-line="12" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9d2a-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="13">
             <ags-sf-line-list>
-              <ags-sf-line id="692068df-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="13" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f6-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7caa-f192-11ed-b4f7-a0a3f0705ed7" nth-line="13" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9e24-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="14">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e0-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="14" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f7-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7dd6-f192-11ed-b4f7-a0a3f0705ed7" nth-line="14" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad9f46-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="15">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e1-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="15" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068f8-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7ebc-f192-11ed-b4f7-a0a3f0705ed7" nth-line="15" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ada068-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e2-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='69206887-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad7fc0-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='85acbb62-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e3-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='69206888-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad80c4-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='85acbdd8-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -1380,19 +1382,25 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="692068e4-327a-11ea-83fe-3b5c1e3cc5c0" type="AgsSynth" name="Default 4" soundcard-device="default" bank_0="0" bank_1="0" channels="1" output-pads="16" input-pads="2" base-note="-48.000000">
+      <ags-sf-machine id="85ad86dc-f192-11ed-b4f7-a0a3f0705ed7" type="AgsSynth" name="Default 4" soundcard-device="default" bank-0="0" bank-1="0" channels="1" output-pads="16" input-pads="2" base-note="-48.000000">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="692068e5-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad881c-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e6-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85ad88da-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" is-grouped="true">
                 <ags-oscillator wave="0" attack="0.000000" length="3200.000000" frequency="27.500000" phase="0.000000" volume="0.200000" sync="false" sync-point="0.000000 0.000000 0.000000 0.000000 0.000000 0.000000"/>
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect=""/>
+                </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="692068e7-327a-11ea-83fe-3b5c1e3cc5c0" nth-pad="1" group="true" mute="false" solo="false">
+          <ags-sf-pad id="85ad8b96-f192-11ed-b4f7-a0a3f0705ed7" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e8-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="85ad8c5e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" is-grouped="true">
                 <ags-oscillator wave="0" attack="0.000000" length="3200.000000" frequency="27.500000" phase="0.000000" volume="0.200000" sync="false" sync-point="0.000000 0.000000 0.000000 0.000000 0.000000 0.000000"/>
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect=""/>
+                </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
@@ -1400,97 +1408,97 @@ monitor-timeout=0.033333
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="692068e9-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d2-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad8ef2-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad70de-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ea-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d3-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9046-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad71e2-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="2">
             <ags-sf-line-list>
-              <ags-sf-line id="692068eb-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="2" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d4-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9172-f192-11ed-b4f7-a0a3f0705ed7" nth-line="2" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad72c8-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="3">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ec-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="3" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d5-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9280-f192-11ed-b4f7-a0a3f0705ed7" nth-line="3" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad73b8-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="4">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ed-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="4" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d6-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad937a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="4" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad749e-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="5">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ee-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="5" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d7-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad947e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="5" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad758e-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="6">
             <ags-sf-line-list>
-              <ags-sf-line id="692068ef-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="6" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d8-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad95aa-f192-11ed-b4f7-a0a3f0705ed7" nth-line="6" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad767e-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="7">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f0-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="7" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068d9-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad96a4-f192-11ed-b4f7-a0a3f0705ed7" nth-line="7" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7764-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="8">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f1-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="8" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068da-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad988e-f192-11ed-b4f7-a0a3f0705ed7" nth-line="8" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad784a-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="9">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f2-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="9" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068db-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad999c-f192-11ed-b4f7-a0a3f0705ed7" nth-line="9" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7930-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="10">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f3-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="10" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068dc-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9aa0-f192-11ed-b4f7-a0a3f0705ed7" nth-line="10" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7a0c-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="11">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f4-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="11" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068dd-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9c30-f192-11ed-b4f7-a0a3f0705ed7" nth-line="11" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7ae8-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="12">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f5-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="12" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068de-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9d2a-f192-11ed-b4f7-a0a3f0705ed7" nth-line="12" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7bce-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="13">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f6-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="13" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068df-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9e24-f192-11ed-b4f7-a0a3f0705ed7" nth-line="13" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7caa-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="14">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f7-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="14" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068e0-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ad9f46-f192-11ed-b4f7-a0a3f0705ed7" nth-line="14" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7dd6-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="15">
             <ags-sf-line-list>
-              <ags-sf-line id="692068f8-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="15" soundcard-device="default" link="xpath=//ags-sf-line[@id='692068e1-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ada068-f192-11ed-b4f7-a0a3f0705ed7" nth-line="15" soundcard-device="default" link="xpath=//ags-sf-line[@id='85ad7ebc-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="692068f9-327a-11ea-83fe-3b5c1e3cc5c0" type="AgsFFPlayer" name="Default 5" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="3" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="" instrument="">
+      <ags-sf-machine id="85ada158-f192-11ed-b4f7-a0a3f0705ed7" type="AgsFFPlayer" name="Default 5" soundcard-device="default" bank-0="0" bank-1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="3" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" pitch-type="fluid-4th-order-interpolate" base-note="-48.000000" key-count="78.000000" aliase-a-amount="0.000000" aliase-a-phase="0.000000" aliase-b-amount="0.000000" aliase-b-phase="0.000000" volume="1.000000">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="69206900-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='6920688a-327a-11ea-83fe-3b5c1e3cc5c0']"/>
-              <ags-sf-line id="69206901-327a-11ea-83fe-3b5c1e3cc5c0" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='6920688b-327a-11ea-83fe-3b5c1e3cc5c0']"/>
+              <ags-sf-line id="85ada7c0-f192-11ed-b4f7-a0a3f0705ed7" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='85acc102-f192-11ed-b4f7-a0a3f0705ed7']"/>
+              <ags-sf-line id="85ada8ba-f192-11ed-b4f7-a0a3f0705ed7" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='85acc364-f192-11ed-b4f7-a0a3f0705ed7']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
         <ags-sf-notation-list>
-          <ags-sf-notation channel="1">
+          <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-note x0="0" x1="4" y="2" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
             <ags-sf-note x0="4" x1="8" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
@@ -1509,7 +1517,7 @@ monitor-timeout=0.033333
             <ags-sf-note x0="56" x1="60" y="2" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
             <ags-sf-note x0="60" x1="64" y="1" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
-          <ags-sf-notation channel="0">
+          <ags-sf-notation channel="1">
             <ags-sf-timestamp offset="0"/>
             <ags-sf-note x0="0" x1="4" y="2" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
             <ags-sf-note x0="4" x1="8" y="0" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
@@ -1531,8 +1539,7 @@ monitor-timeout=0.033333
         </ags-sf-notation-list>
       </ags-sf-machine>
     </ags-sf-machine-list>
-    <ags-sf-notation-editor zoom="1:1"/>
-    <ags-sf-automation-editor zoom="1:1"/>
-    <ags-sf-wave-editor zoom="1:1"/>
+    <ags-sf-composite-editor zoom="1:1"/>
   </ags-sf-window>
+  <ags-sf-program-list/>
 </ags-simple-file>
