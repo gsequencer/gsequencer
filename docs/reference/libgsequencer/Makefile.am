@@ -50,7 +50,7 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 # SCAN_OPTIONS=--rebuild-types --rebuild-sections
-SCAN_OPTIONS=--module=libgsequencer --deprecated-guards="G_DISABLE_DEPRECATED"
+SCAN_OPTIONS=--rebuild-sections --module=libgsequencer --deprecated-guards="G_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml

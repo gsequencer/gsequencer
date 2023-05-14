@@ -214,19 +214,15 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags/version.xml.in \
-	docs/reference/libags/libags-sections.txt.in \
 	docs/reference/libags/libags.types.in \
 	docs/reference/libags/libags.interfaces.in \
 	docs/reference/libags-audio/version.xml.in \
-	docs/reference/libags-audio/libags_audio-sections.txt.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
 	docs/reference/libags-gui/version.xml.in \
-	docs/reference/libags-gui/libags_gui-sections.txt.in \
 	docs/reference/libags-gui/libags_gui.types.in \
 	docs/reference/libags-gui/libags_gui.interfaces.in \
 	docs/reference/libgsequencer/version.xml.in \
-	docs/reference/libgsequencer/libgsequencer-sections.txt.in \
 	docs/reference/libgsequencer/libgsequencer.types.in \
 	docs/reference/libgsequencer/libgsequencer.interfaces.in \
 	clean-gtk-doc.sh
@@ -417,9 +413,8 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags/libags-overrides.txt \
-	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
-	docs/reference/libags/libags.xml
+	docs/reference/libags/libags.xml.in
 
 EXTRA_DIST += \
 	docs/reference/libags-audio/git.mk \
@@ -429,9 +424,8 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags-audio/libags_audio-overrides.txt \
-	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
-	docs/reference/libags-audio/libags_audio.xml
+	docs/reference/libags-audio/libags_audio.xml.in
 
 EXTRA_DIST += \
 	docs/reference/libags-gui/git.mk \
@@ -441,9 +435,8 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags-gui/libags_gui-overrides.txt \
-	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
-	docs/reference/libags-gui/libags_gui.xml
+	docs/reference/libags-gui/libags_gui.xml.in
 
 EXTRA_DIST += docs/reference/libgsequencer/git.mk \
 	docs/reference/libgsequencer/gtk-doc.make \
@@ -452,7 +445,8 @@ EXTRA_DIST += docs/reference/libgsequencer/git.mk \
 
 EXTRA_DIST += \
 	docs/reference/libgsequencer/libgsequencer-overrides.txt \
-	docs/reference/libgsequencer/libgsequencer.xml
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.xml.in
 
 # EXTRA_DIST += docs/reference/libgsequencer
 

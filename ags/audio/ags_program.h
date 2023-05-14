@@ -187,7 +187,7 @@ void ags_program_insert_from_clipboard(AgsProgram *program,
 void ags_program_insert_from_clipboard_extended(AgsProgram *program,
 						xmlNode *program_node,
 						gboolean reset_x_offset, guint x_offset,
-						gboolean no_duplicates);
+						gboolean do_replace);
 
 gchar** ags_program_get_control_name_unique(GList *program);
 GList* ags_program_find_control_name(GList *program,

@@ -159,6 +159,8 @@
       <xi:include href="xml/ags_lv2_browser.xml"/>
       <xi:include href="xml/ags_lv2_browser_callbacks.xml"/>
 
+@LIBGSEQUENCER_VST3_BROWSER_XINCLUDE@
+
       <xi:include href="xml/ags_midi_dialog.xml"/>
       <xi:include href="xml/ags_midi_dialog_callbacks.xml"/>
 
@@ -279,13 +281,6 @@
       <xi:include href="xml/ags_dssi_bridge_callbacks.xml"/>
       <xi:include href="xml/ags_equalizer10.xml"/>
       <xi:include href="xml/ags_equalizer10_callbacks.xml"/>
-      <xi:include href="xml/ags_ffplayer.xml"/>
-      <xi:include href="xml/ags_ffplayer_bridge.xml"/>
-      <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
-      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
-      <xi:include href="xml/ags_ffplayer_input_line.xml"/>
-      <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
-      <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
       <xi:include href="xml/ags_ladspa_bridge.xml"/>      
       <xi:include href="xml/ags_live_dssi_bridge.xml"/>
       <xi:include href="xml/ags_live_dssi_bridge_callbacks.xml"/>
@@ -325,8 +320,11 @@
       <xi:include href="xml/ags_hybrid_synth_callbacks.xml"/>
       <xi:include href="xml/ags_hybrid_fm_synth.xml"/>
       <xi:include href="xml/ags_hybrid_fm_synth_callbacks.xml"/>
-      <xi:include href="xml/ags_sf2_synth.xml"/>
-      <xi:include href="xml/ags_sf2_synth_callbacks.xml"/>
+
+@LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE@
+
+@LIBGSEQUENCER_VST3_MACHINE_XINCLUDE@
+
     </chapter>
     
     <chapter id="file">

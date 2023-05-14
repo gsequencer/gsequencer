@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-05-13 17:35+0200\n"
+"POT-Creation-Date: 2023-05-14 15:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -498,7 +498,7 @@ msgid "Note:y"
 msgstr ""
 
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:148
-#: ags/app/editor/ags_composite_toolbar.c:1834
+#: ags/app/editor/ags_composite_toolbar.c:1835
 msgid "position wave cursor"
 msgstr ""
 
@@ -517,7 +517,7 @@ msgid "position x"
 msgstr ""
 
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1743
+#: ags/app/editor/ags_composite_toolbar.c:1744
 msgid "position notation cursor"
 msgstr ""
 
@@ -527,7 +527,7 @@ msgid "position y"
 msgstr ""
 
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1800
+#: ags/app/editor/ags_composite_toolbar.c:1801
 msgid "ramp accelerations"
 msgstr ""
 
@@ -552,7 +552,7 @@ msgid "ramp step count"
 msgstr ""
 
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1755
+#: ags/app/editor/ags_composite_toolbar.c:1756
 msgid "position sheet cursor"
 msgstr ""
 
@@ -562,7 +562,7 @@ msgid "preset name"
 msgstr ""
 
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1845
+#: ags/app/editor/ags_composite_toolbar.c:1846
 msgid "time stretch buffers"
 msgstr ""
 
@@ -582,7 +582,7 @@ msgid "new BPM"
 msgstr ""
 
 #: ags/app/editor/ags_crop_note_dialog.c:142
-#: ags/app/editor/ags_composite_toolbar.c:1721
+#: ags/app/editor/ags_composite_toolbar.c:1722
 msgid "crop notes"
 msgstr ""
 
@@ -705,72 +705,72 @@ msgstr ""
 msgid "beats type"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1603
+#: ags/app/editor/ags_composite_toolbar.c:1604
 msgid "match audio channel"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1610
+#: ags/app/editor/ags_composite_toolbar.c:1611
 msgid "match line"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1617
+#: ags/app/editor/ags_composite_toolbar.c:1618
 msgid "no duplicates"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1623
+#: ags/app/editor/ags_composite_toolbar.c:1624
 msgid "paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1665
+#: ags/app/editor/ags_composite_toolbar.c:1666
 msgid "enable all audio channels"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1676
+#: ags/app/editor/ags_composite_toolbar.c:1677
 msgid "disable all audio channels"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1687
+#: ags/app/editor/ags_composite_toolbar.c:1688
 msgid "enable all lines"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1698
+#: ags/app/editor/ags_composite_toolbar.c:1699
 msgid "disable all lines"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1710
+#: ags/app/editor/ags_composite_toolbar.c:1711
 #: ags/app/editor/ags_move_note_dialog.c:144
 msgid "move notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1732
+#: ags/app/editor/ags_composite_toolbar.c:1733
 #: ags/app/editor/ags_select_note_dialog.c:147
 msgid "select notes"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1766
+#: ags/app/editor/ags_composite_toolbar.c:1767
 msgid "add page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1777
+#: ags/app/editor/ags_composite_toolbar.c:1778
 msgid "remove page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1789
+#: ags/app/editor/ags_composite_toolbar.c:1790
 #: ags/app/editor/ags_select_acceleration_dialog.c:153
 msgid "select accelerations"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1811
+#: ags/app/editor/ags_composite_toolbar.c:1812
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:151
 msgid "position automation cursor"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1823
+#: ags/app/editor/ags_composite_toolbar.c:1824
 #: ags/app/editor/ags_select_buffer_dialog.c:146
 msgid "select buffers"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1859
+#: ags/app/editor/ags_composite_toolbar.c:1860
 msgid "ramp markers"
 msgstr ""
 

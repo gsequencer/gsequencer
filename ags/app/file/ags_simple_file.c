@@ -272,11 +272,11 @@ xmlNode* ags_simple_file_write_program_list(AgsSimpleFile *simple_file, xmlNode 
 xmlNode* ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsProgram *program);
 
 /**
- * SECTION:ags_file
+ * SECTION:ags_simple_file
  * @short_description: read/write XML file
  * @title: AgsSimpleFile
  * @section_id:
- * @include: ags/file/ags_file.h
+ * @include: ags/app/file/ags_simple_file.h
  *
  * The #AgsSimpleFile is an object to read or write files using XML. It
  * is the persisting layer of Advanced Gtk+ Sequencer.
