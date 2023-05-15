@@ -218,7 +218,7 @@ void ags_line_check_message(AgsLine *line);
 
 gboolean ags_line_indicator_refresh_timeout(GtkWidget *widget);
 
-AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
+AgsLine* ags_line_new(GtkWidget *parent_pad, AgsChannel *channel);
 
 G_END_DECLS
 

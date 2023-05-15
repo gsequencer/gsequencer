@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2022 Joël Krähemann
+# Copyright (C) 2005-2023 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -57,11 +57,6 @@ ags_envelope_info_get_type
 ags_equalizer10_get_type
 ags_export_soundcard_get_type
 ags_export_window_get_type
-ags_ffplayer_bridge_get_type
-ags_ffplayer_bulk_input_get_type
-ags_ffplayer_get_type
-ags_ffplayer_input_line_get_type
-ags_ffplayer_input_pad_get_type
 ags_fm_oscillator_get_type
 ags_fm_syncsynth_get_type
 ags_fm_synth_get_type
@@ -145,7 +140,6 @@ ags_select_buffer_dialog_get_type
 ags_select_note_dialog_get_type
 ags_sequencer_editor_get_type
 ags_server_preferences_get_type
-ags_sf2_synth_get_type
 ags_sfz_synth_get_type
 ags_sheet_edit_get_type
 ags_simple_file_get_type

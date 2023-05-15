@@ -1,3 +1,15 @@
+ags (5.1.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gtk-doc conditional build
+	* improved gtk-doc rebuild sections
+
+ags (5.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gtk-doc conditional built vst3 related types
+	* improved gtk-doc conditional built libinstpatch related types
+
 ags (5.1.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

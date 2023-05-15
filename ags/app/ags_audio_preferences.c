@@ -494,10 +494,6 @@ ags_audio_preferences_get_soundcard_editor(AgsAudioPreferences *audio_preference
  * ags_audio_preferences_add_soundcard_editor:
  * @audio_preferences: the #AgsAudio_Preferences
  * @soundcard_editor: the #AgsSoundcardEditor
- * @x: the x position
- * @y: the y position
- * @width: the width
- * @height: the height
  * 
  * Add @soundcard_editor to @audio_preferences.
  * 

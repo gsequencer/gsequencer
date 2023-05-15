@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[5.1.2],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[5.1.4],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -513,6 +513,47 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
       AC_SUBST(LIBINSTPATCH_CFLAGS)
       AC_SUBST(LIBINSTPATCH_LIBS)
+
+LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE="      <xi:include href=\"xml/ags_ipatch.xml\"/>\\
+      <xi:include href=\"xml/ags_ipatch_gig_reader.xml\"/>\\
+      <xi:include href=\"xml/ags_ipatch_sf2_reader.xml\"/>\\
+      <xi:include href=\"xml/ags_ipatch_dls2_reader.xml\"/>\\
+      <xi:include href=\"xml/ags_ipatch_sample.xml\"/>"
+
+LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE="      <xi:include href=\"xml/ags_sf2_synth_generator.xml\"/>\\
+      <xi:include href=\"xml/ags_sf2_synth_util.xml\"/>"
+      
+LIBAGS_AUDIO_LIBINSTPATCH_THREAD_XINCLUDE="      <xi:include href=\"xml/ags_sf2_loader.xml\"/>\\
+      <xi:include href=\"xml/ags_sf2_midi_locale_loader.xml\"/>"
+
+LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_sf2_synth_audio.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_sf2_synth_audio_processor.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_sf2_synth_audio_signal.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_sf2_synth_channel.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_sf2_synth_channel_processor.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_sf2_synth_recycling.xml\"/>"
+
+LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE="      <xi:include href=\"xml/ags_apply_sf2_synth.xml\"/>\\
+      <xi:include href=\"xml/ags_apply_sf2_midi_locale.xml\"/>\\
+      <xi:include href=\"xml/ags_open_sf2_instrument.xml\"/>\\
+      <xi:include href=\"xml/ags_open_sf2_sample.xml\"/>"
+
+LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_ffplayer.xml\"/>\\
+      <xi:include href=\"xml/ags_ffplayer_bridge.xml\"/>\\
+      <xi:include href=\"xml/ags_ffplayer_bulk_input.xml\"/>\\
+      <xi:include href=\"xml/ags_ffplayer_callbacks.xml\"/>\\
+      <xi:include href=\"xml/ags_ffplayer_input_line.xml\"/>\\
+      <xi:include href=\"xml/ags_ffplayer_input_line_callbacks.xml\"/>\\
+      <xi:include href=\"xml/ags_ffplayer_input_pad.xml\"/>\\
+      <xi:include href=\"xml/ags_sf2_synth.xml\"/>\\
+      <xi:include href=\"xml/ags_sf2_synth_callbacks.xml\"/>"
+
+      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_TRHEAD_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE)
       AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
       [AC_MSG_NOTICE([libinstpatch disabled])])
 AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
@@ -536,6 +577,37 @@ fi
 
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
+LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE="    <chapter id=\"plugin-vst3\">\\
+      <title>VST3 plugins</title>\\
+      <para>The VST3 plugin objects.</para>\\
+      <xi:include href=\"xml/ags_vst3_conversion.xml\"/>\\
+      <xi:include href=\"xml/ags_vst3_plugin.xml\"/>\\
+      <xi:include href=\"xml/ags_vst3_manager.xml\"/>\\
+    </chapter>"
+
+LIBAGS_AUDIO_VST3_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_vst3_audio.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_vst3_audio_processor.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_vst3_audio_signal.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_vst3_channel.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_vst3_channel_processor.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_vst3_recycling.xml\"/>"
+
+LIBAGS_AUDIO_VST3_TASK_XINCLUDE="      <xi:include href=\"xml/ags_instantiate_vst3_plugin.xml\"/>\\
+      <xi:include href=\"xml/ags_write_vst3_port.xml\"/>"
+
+LIBGSEQUENCER_VST3_BROWSER_XINCLUDE="      <xi:include href=\"xml/ags_vst3_browser.xml\"/>\\
+      <xi:include href=\"xml/ags_vst3_browser_callbacks.xml\"/>"
+
+LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_vst3_bridge.xml\"/>\\
+      <xi:include href=\"xml/ags_live_vst3_bridge_callbacks.xml\"/>\\
+      <xi:include href=\"xml/ags_vst3_bridge.xml\"/>\\
+      <xi:include href=\"xml/ags_vst3_bridge_callbacks.xml\"/>"
+
+      AC_SUBST(LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_VST3_FX_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_VST3_TASK_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_VST3_BROWSER_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_VST3_MACHINE_XINCLUDE)
       AC_SUBST(LIBAGS_VST3_RELEASE_TYPE)
       AC_SUBST(LIBAGS_VST3_CPPFLAGS)
       AC_SUBST(LIBAGS_VST3_CXXFLAGS)
@@ -824,12 +896,16 @@ unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags/version.xml
+docs/reference/libags/libags.xml
 docs/reference/libags-audio/Makefile
 docs/reference/libags-audio/version.xml
+docs/reference/libags-audio/libags_audio.xml
 docs/reference/libags-gui/Makefile
 docs/reference/libags-gui/version.xml
+docs/reference/libags-gui/libags_gui.xml
 docs/reference/libgsequencer/Makefile
 docs/reference/libgsequencer/version.xml
+docs/reference/libgsequencer/libgsequencer.xml
 libags.pc
 libags_audio.pc
 libags_gui.pc

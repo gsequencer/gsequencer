@@ -341,10 +341,6 @@ ags_midi_preferences_get_sequencer_editor(AgsMidiPreferences *midi_preferences)
  * ags_midi_preferences_add_sequencer_editor:
  * @midi_preferences: the #AgsMidi_Preferences
  * @sequencer_editor: the #AgsSequencerEditor
- * @x: the x position
- * @y: the y position
- * @width: the width
- * @height: the height
  * 
  * Add @sequencer_editor to @midi_preferences.
  * 
