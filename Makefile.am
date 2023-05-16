@@ -213,12 +213,15 @@ EXTRA_DIST += \
 	functional-system-tests.mk.in
 
 EXTRA_DIST += \
+	docs/reference/libags/Ags.conf.in \
 	docs/reference/libags/version.xml.in \
 	docs/reference/libags/libags.types.in \
 	docs/reference/libags/libags.interfaces.in \
+	docs/reference/libags-audio/AgsAudio.conf.in \
 	docs/reference/libags-audio/version.xml.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-gui/AgsGui.conf.in \
 	docs/reference/libags-gui/version.xml.in \
 	docs/reference/libags-gui/libags_gui.types.in \
 	docs/reference/libags-gui/libags_gui.interfaces.in \
@@ -302,12 +305,15 @@ CLEANFILES = \
 	docs/listings/thread_application_context.c \
 	docs/listings/thread_obj_mutex.c \
 	docs/listings/wave_concat.c \
+	docs/reference/libags/Ags.conf \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \
+	docs/reference/libags-audio/AgsAudio.conf \
 	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
 	docs/reference/libags-audio/libags_audio.interfaces \
+	docs/reference/libags-gui/AgsGui.conf \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
 	docs/reference/libags-gui/libags_gui.interfaces \
@@ -925,7 +931,11 @@ gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 if WITH_OSXAPI
 gsequencer_CPPFLAGS = -x objective-c -framework Cocoa
 else
+if WITH_W32API
+gsequencer_CPPFLAGS = -std=c++20
+else
 gsequencer_CPPFLAGS = -std=gnu99
+endif
 endif
 
 gsequencer_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)

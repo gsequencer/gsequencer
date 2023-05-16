@@ -1,0 +1,29 @@
+[library]
+version = "@VERSION@"
+description = "Advanced Gtk+ Sequencer Gui"
+authors = "AGS Development Team"
+license = "GPL-3-or-later"
+browse_url = "http://git.savannah.nongnu.org/cgit/gsequencer.git"
+repository_url = "http://git.savannah.nongnu.org/cgit/gsequencer.git"
+website_url = "http://nongnu.org/gsequencer"
+logo_url = "ags.svg"
+dependencies = [
+  "GObject-2.0",
+  "Gtk-4.0",
+]
+devhelp = true
+search_index = true
+
+[source-location]
+# The base URL for the web UI
+base_url = "https://git.savannah.nongnu.org/cgit/gsequencer.git/tree"
+
+[dependencies."GObject-2.0"]
+name = "GObject"
+description = "The base type system library"
+docs_url = "https://docs.gtk.org/gobject/"
+
+[dependencies."Gtk-4.0"]
+name = "Gtk"
+description = "The gimp toolkit library"
+docs_url = "https://docs.gtk.org/gtk4/"

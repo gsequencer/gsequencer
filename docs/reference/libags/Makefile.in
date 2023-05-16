@@ -162,7 +162,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/ags/config.h \
 	$(top_builddir)/ags/ags_api_config.h
-CONFIG_CLEAN_FILES = version.xml libags.xml
+CONFIG_CLEAN_FILES = Ags.conf version.xml libags.xml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -388,9 +388,9 @@ am__set_b = \
     *) \
       b='$*';; \
   esac
-am__DIST_COMMON = $(srcdir)/./gtk-doc.make $(srcdir)/Makefile.in \
-	$(srcdir)/libags.xml.in $(srcdir)/version.xml.in \
-	$(top_srcdir)/test-driver
+am__DIST_COMMON = $(srcdir)/./gtk-doc.make $(srcdir)/Ags.conf.in \
+	$(srcdir)/Makefile.in $(srcdir)/libags.xml.in \
+	$(srcdir)/version.xml.in $(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
@@ -842,6 +842,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+Ags.conf: $(top_builddir)/config.status $(srcdir)/Ags.conf.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 version.xml: $(top_builddir)/config.status $(srcdir)/version.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 libags.xml: $(top_builddir)/config.status $(srcdir)/libags.xml.in
