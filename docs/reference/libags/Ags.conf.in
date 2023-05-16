@@ -1,15 +1,29 @@
 [library]
+version = "@VERSION@"
 description = "Advanced Gtk+ Sequencer"
 authors = "AGS Development Team"
 license = "GPL-3-or-later"
 browse_url = "http://git.savannah.nongnu.org/cgit/gsequencer.git"
 repository_url = "http://git.savannah.nongnu.org/cgit/gsequencer.git"
 website_url = "http://nongnu.org/gsequencer"
+logo_url = "ags.svg"
 dependencies = [
   "GObject-2.0",
+  "Libsoup-3.0",
 ]
+devhelp = true
+search_index = true
+
+[source-location]
+# The base URL for the web UI
+base_url = "https://git.savannah.nongnu.org/cgit/gsequencer.git/tree"
 
 [dependencies."GObject-2.0"]
 name = "GObject"
 description = "The base type system library"
-docs_url = "https://developer.gnome.org/gobject/stable"
+docs_url = "https://docs.gtk.org/gobject/"
+
+[dependencies."Libsoup-3.0"]
+name = "Libsoup"
+description = "HTTP client/server library for GNOME"
+docs_url = "https://libsoup.org/libsoup-3.0/index.html"

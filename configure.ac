@@ -895,12 +895,15 @@ po/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile
+docs/reference/libags/Ags.conf
 docs/reference/libags/version.xml
 docs/reference/libags/libags.xml
 docs/reference/libags-audio/Makefile
+docs/reference/libags-audio/AgsAudio.conf
 docs/reference/libags-audio/version.xml
 docs/reference/libags-audio/libags_audio.xml
 docs/reference/libags-gui/Makefile
+docs/reference/libags-gui/AgsGui.conf
 docs/reference/libags-gui/version.xml
 docs/reference/libags-gui/libags_gui.xml
 docs/reference/libgsequencer/Makefile

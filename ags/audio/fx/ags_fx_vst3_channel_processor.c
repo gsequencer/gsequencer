@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_vst3_plugin.h>
+
+#include <ags/audio/ags_soundcard_util.h>
 
 #include <ags/audio/fx/ags_fx_vst3_audio.h>
 #include <ags/audio/fx/ags_fx_vst3_channel.h>

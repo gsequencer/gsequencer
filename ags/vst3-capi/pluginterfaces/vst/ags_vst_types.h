@@ -64,7 +64,7 @@ extern "C" {
   typedef gdouble AgsVstSample64;
   typedef gdouble AgsVstSampleRate;
 
-#if defined(AGS_OSXAPI)
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
   typedef unsigned long long AgsVstSpeakerArrangement;
 #else
   typedef long unsigned int AgsVstSpeakerArrangement;

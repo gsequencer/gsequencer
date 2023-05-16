@@ -1308,6 +1308,9 @@ ags_ruler_set_adjustment(AgsRuler *ruler,
  * ags_ruler_new:
  * @orientation: the #GtkOrientation
  * @step: the step size
+ * @factor: the factor
+ * @precision: the precision
+ * @scale_precision: the scale precision
  *
  * Create a new instance of #AgsRuler
  *
