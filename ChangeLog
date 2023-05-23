@@ -1,6 +1,7 @@
 ags (5.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-fm-synth OSC1 volume
 	* fixed missing include
 
 ags (5.1.4)
