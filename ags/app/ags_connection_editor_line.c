@@ -659,7 +659,7 @@ ags_connection_editor_line_reset(AgsApplicable *applicable)
 
 /**
  * ags_connection_editor_line_new:
- * @channel_type: the channel type
+ * @channel: the #AgsChannel
  *
  * Creates an #AgsConnectionEditorLine
  *

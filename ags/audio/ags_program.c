@@ -2500,7 +2500,7 @@ ags_program_insert_from_clipboard(AgsProgram *program,
  * @program_node: the clipboard XML data
  * @reset_x_offset: if %TRUE @x_offset used as cursor
  * @x_offset: region start cursor offset
- * @do_replace: if %TRUE current data is replaced, otherwise additive mixing is performed 
+ * @do_replace: if %TRUE current data is replaced, otherwise combined
  * 
  * Paste previously copied markers. 
  * 
@@ -2672,7 +2672,7 @@ ags_program_find_control_name(GList *program,
 
 /**
  * ags_program_new:
- * @audio: the assigned #AgsAudio
+ * @control_name: the control name
  *
  * Creates a new instance of #AgsProgram.
  *

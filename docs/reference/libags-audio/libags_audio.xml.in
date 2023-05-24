@@ -91,18 +91,8 @@
       <xi:include href="xml/ags_lv2ui_plugin.xml"/>
     </chapter>
 
-    <!-- 
-    <chapter id="plugin-vst3">
-      <title>VST3 plugins</title>
-      <para>
-	The VST3 plugin objects.
-      </para>
-      
-      <xi:include href="xml/ags_vst3_conversion.xml"/>
-      <xi:include href="xml/ags_vst3_plugin.xml"/>
-      <xi:include href="xml/ags_vst3_manager.xml"/>
-      </chapter>
-      -->
+@LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE@
+
   </part>
     
   <part id="audio">
@@ -140,12 +130,13 @@
       <xi:include href="xml/ags_resample_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
       <xi:include href="xml/ags_fm_synth_util.xml"/>
-      <xi:include href="xml/ags_sf2_synth_util.xml"/>
       <xi:include href="xml/ags_sfz_synth_util.xml"/>
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_synth_generator.xml"/>
-      <xi:include href="xml/ags_sf2_synth_generator.xml"/>
       <xi:include href="xml/ags_sfz_synth_generator.xml"/>
+
+@LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE@
+      
     </chapter>
 
     <chapter id="audio-fluid">
@@ -301,8 +292,6 @@
       <xi:include href="xml/ags_export_thread.xml"/>
       <xi:include href="xml/ags_sequencer_thread.xml"/>
       <xi:include href="xml/ags_soundcard_thread.xml"/>
-      <xi:include href="xml/ags_sf2_loader.xml"/>
-      <xi:include href="xml/ags_sf2_midi_locale_loader.xml"/>
       <xi:include href="xml/ags_sfz_loader.xml"/>
       <xi:include href="xml/ags_sfz_instrument_loader.xml"/>
       <xi:include href="xml/ags_wave_loader.xml"/>
@@ -393,11 +382,9 @@
       <xi:include href="xml/ags_audio_file.xml"/>
       <xi:include href="xml/ags_audio_file_link.xml"/>
       <xi:include href="xml/ags_gstreamer_file.xml"/>
-      <xi:include href="xml/ags_ipatch.xml"/>
-      <xi:include href="xml/ags_ipatch_gig_reader.xml"/>
-      <xi:include href="xml/ags_ipatch_sf2_reader.xml"/>
-      <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
-      <xi:include href="xml/ags_ipatch_sample.xml"/>
+
+@LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE@
+      
       <xi:include href="xml/ags_sndfile.xml"/>
       <!-- <xi:include href="xml/ags_audio_toolbox.xml"/> -->
       <xi:include href="xml/ags_sfz_file.xml"/>
@@ -469,14 +456,7 @@
       <xi:include href="xml/ags_fx_lv2_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_lv2_recycling.xml"/>      
 
-      <!--
-      <xi:include href="xml/ags_fx_vst3_audio.xml"/>
-      <xi:include href="xml/ags_fx_vst3_audio_processor.xml"/>
-      <xi:include href="xml/ags_fx_vst3_audio_signal.xml"/>
-      <xi:include href="xml/ags_fx_vst3_channel.xml"/>
-      <xi:include href="xml/ags_fx_vst3_channel_processor.xml"/>
-      <xi:include href="xml/ags_fx_vst3_recycling.xml"/>      
-      -->
+@LIBAGS_AUDIO_VST3_FX_XINCLUDE@
       
       <para>
 	Synths extending ags-fx-notation.
@@ -496,13 +476,8 @@
       <xi:include href="xml/ags_fx_fm_synth_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_fm_synth_recycling.xml"/>
 
-      <xi:include href="xml/ags_fx_sf2_synth_audio.xml"/>
-      <xi:include href="xml/ags_fx_sf2_synth_audio_processor.xml"/>
-      <xi:include href="xml/ags_fx_sf2_synth_audio_signal.xml"/>
-      <xi:include href="xml/ags_fx_sf2_synth_channel.xml"/>
-      <xi:include href="xml/ags_fx_sf2_synth_channel_processor.xml"/>
-      <xi:include href="xml/ags_fx_sf2_synth_recycling.xml"/>
-
+@LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE@
+      
     </chapter>
 
     <chapter id="audio-fx-peak-and-analyse">
@@ -614,8 +589,6 @@
       <xi:include href="xml/ags_apply_sequencer_length.xml"/>
       <xi:include href="xml/ags_apply_sound_config.xml"/>
       <xi:include href="xml/ags_apply_synth.xml"/>
-      <xi:include href="xml/ags_apply_sf2_synth.xml"/>
-      <xi:include href="xml/ags_apply_sf2_midi_locale.xml"/>
       <xi:include href="xml/ags_apply_sfz_synth.xml"/>
       <xi:include href="xml/ags_apply_sfz_instrument.xml"/>
       <xi:include href="xml/ags_apply_tact.xml"/>
@@ -626,13 +599,10 @@
       <xi:include href="xml/ags_crop_note.xml"/>
       <xi:include href="xml/ags_export_output.xml"/>
       <xi:include href="xml/ags_free_selection.xml"/>
-      <!-- <xi:include href="xml/ags_instantiate_vst3_plugin.xml"/> -->
       <xi:include href="xml/ags_link_channel.xml"/>
       <xi:include href="xml/ags_move_note.xml"/>
       <xi:include href="xml/ags_open_file.xml"/>
       <xi:include href="xml/ags_open_single_file.xml"/>
-      <xi:include href="xml/ags_open_sf2_instrument.xml"/>
-      <xi:include href="xml/ags_open_sf2_sample.xml"/>
       <xi:include href="xml/ags_open_sfz_file.xml"/>
       <xi:include href="xml/ags_open_wave.xml"/>
       <xi:include href="xml/ags_remove_audio.xml"/>
@@ -660,7 +630,11 @@
       <xi:include href="xml/ags_switch_buffer_flag.xml"/>
       <xi:include href="xml/ags_tic_device.xml"/>
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
-      <!-- <xi:include href="xml/ags_write_vst3_port.xml"/> -->
+
+@LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE@
+
+@LIBAGS_AUDIO_VST3_TASK_XINCLUDE@
+      
     </chapter>
   </part>
 

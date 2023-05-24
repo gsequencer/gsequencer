@@ -1582,6 +1582,7 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
 
 /**
  * ags_composite_toolbar_paste_popup_new:
+ * @composite_toolbar: the #AgsCompositeToolbar
  * @paste_mode: the paste mode
  *
  * Create a new #GMenuModel suitable for menu tool button.

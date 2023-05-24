@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -219,6 +219,9 @@ void ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple
 void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
 void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
 
+void ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GList **program);
+void ags_simple_file_read_program(AgsSimpleFile *simple_file, xmlNode *node, AgsProgram **program);
+
 xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
 xmlNode* ags_simple_file_write_meta_data_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsMetaDataWindow *meta_data_window);
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
@@ -265,13 +268,15 @@ xmlNode* ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNo
 xmlNode* ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomation *automation);
 xmlNode* ags_simple_file_write_preset_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *preset);
 xmlNode* ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPreset *preset);
+xmlNode* ags_simple_file_write_program_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *program);
+xmlNode* ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsProgram *program);
 
 /**
- * SECTION:ags_file
+ * SECTION:ags_simple_file
  * @short_description: read/write XML file
  * @title: AgsSimpleFile
  * @section_id:
- * @include: ags/file/ags_file.h
+ * @include: ags/app/file/ags_simple_file.h
  *
  * The #AgsSimpleFile is an object to read or write files using XML. It
  * is the persisting layer of Advanced Gtk+ Sequencer.
@@ -1116,9 +1121,11 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
 {
   AgsApplicationContext *application_context;
   AgsConfig *config;
-  
+
   xmlNode *node;
   
+  GList *program;
+
   gchar *id;
 
   int size;
@@ -1158,6 +1165,11 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
   ags_simple_file_write_window(simple_file,
 			       node,
 			       (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  program = ags_sound_provider_get_program(AGS_SOUND_PROVIDER(application_context));
+  ags_simple_file_write_program_list(simple_file,
+				     node,
+				     program);
 
   /* resolve */
   ags_simple_file_write_resolve(simple_file);
@@ -1274,6 +1286,18 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	ags_simple_file_read_meta_data_window(simple_file,
 					      child,
 					      (AgsMetaDataWindow **) &meta_data_window);
+      }else if(!xmlStrncmp(BAD_CAST "ags-sf-program-list",
+			   child->name,
+			   23)){
+	GList *program;
+
+	program = NULL;
+	ags_simple_file_read_program_list(simple_file,
+					  child,
+					  &program);
+
+	ags_sound_provider_set_program(AGS_SOUND_PROVIDER(application_context),
+				       program);
       }
     }
 
@@ -2916,6 +2940,38 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			 g_object_unref);
 
 	gobject->audio->preset = preset;
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-dialog-model-list",
+			   25)){
+	xmlNode *dialog_model;
+	xmlNode *model;
+
+	dialog_model = child->children;
+
+	while(dialog_model != NULL){
+	  if(dialog_model->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(dialog_model->name,
+			   (xmlChar *) "ags-sf-dialog-model",
+			   20)){
+	      model = dialog_model->children;
+
+	      while(model != NULL){
+		if(model->type == XML_ELEMENT_NODE){
+		  xmlNode *copy_model;
+
+		  copy_model = xmlCopyNode(model,
+					   1);
+		  ags_machine_add_dialog_model(gobject,
+		  			       copy_model);
+		}
+		
+		model = model->next;
+	      }
+	    }
+	  }
+	  
+	  dialog_model = dialog_model->next;
+	}
       }
     }
 
@@ -10315,9 +10371,8 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 			 "y");
 
 	if(str != NULL){
-	  acceleration->y = g_ascii_strtoull(str,
-					     NULL,
-					     10);
+	  acceleration->y = g_strtod(str,
+				     NULL);
 
 	  xmlFree(str);
 	}
@@ -10548,6 +10603,156 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 	ags_simple_file_read_value(simple_file, child, &value);
 
 	i++;
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
+ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GList **program)
+{
+  AgsProgram *current;
+  
+  xmlNode *child;
+
+  GList *list;
+  
+  guint i;
+  
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-program",
+		     11)){
+	current = NULL;
+
+	if(*program != NULL){
+	  GList *iter;
+
+	  iter = g_list_nth(*program,
+			    i);
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
+	}
+
+	ags_simple_file_read_program(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+	
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *program = list;
+}
+
+void
+ags_simple_file_read_program(AgsSimpleFile *simple_file, xmlNode *node, AgsProgram **program)
+{
+  AgsProgram *gobject;
+  AgsMarker *marker;
+
+  xmlNode *child;
+  
+  xmlChar *str;
+  gchar *control_name;
+  
+  GType channel_type;
+
+  guint line;
+  gboolean found_timestamp;
+  
+  if(*program != NULL){
+    gobject = *program;
+
+    control_name = gobject->control_name;
+  }else{    
+    control_name = xmlGetProp(node,
+			      "control-name");
+    
+    gobject = g_object_new(AGS_TYPE_PROGRAM,
+			   "control-name", control_name,
+			   NULL);
+
+    *program = gobject;
+  }
+
+  /* children */
+  child = node->children;
+
+  found_timestamp = FALSE;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-timestamp",
+		     17)){
+	found_timestamp = TRUE;
+	
+	/* offset */
+	str = xmlGetProp(child,
+			 "offset");
+
+	if(str != NULL){
+	  gobject->timestamp->timer.ags_offset.offset = g_ascii_strtoull(str,
+									 NULL,
+									 10);
+	  
+	  xmlFree(str);
+	}
+      }
+    }
+
+    child = child->next;
+  }
+  
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-marker",
+		     14)){
+	marker = ags_marker_new();
+
+	/* position and offset */
+	str = xmlGetProp(child,
+			 "x");
+
+	if(str != NULL){
+	  marker->x = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+
+	  xmlFree(str);
+	}	
+
+	str = xmlGetProp(child,
+			 "y");
+
+	if(str != NULL){
+	  marker->y = g_strtod(str,
+			       NULL);
+
+	  xmlFree(str);
+	}
+
+	/* add */
+	ags_program_add_marker(gobject,
+			       marker,
+			       FALSE);
       }
     }
 
@@ -11422,7 +11627,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   xmlNode *node;
   xmlNode *pad_list;    
 
-  GList *list;
+  GList *start_list, *list;
 
   gchar *id;
   xmlChar *str;    
@@ -11582,6 +11787,35 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);
+  }
+
+  /* */
+  start_list = ags_machine_get_dialog_model(machine);
+
+  if(start_list != NULL){
+    xmlNode *dialog_model_list;
+    xmlNode *dialog_model;
+    
+    list = start_list;
+
+    dialog_model_list = xmlNewNode(NULL,
+				   "ags-sf-dialog-model-list");
+    xmlAddChild(node,
+		dialog_model_list);
+  
+    while(list != NULL){
+      dialog_model = xmlNewNode(NULL,
+				"ags-sf-dialog-model");
+      xmlAddChild(dialog_model_list,
+		  dialog_model);
+
+      xmlAddChild(dialog_model,
+		  list->data);
+      
+      list = list->next;
+    }
+
+    g_list_free(start_list);
   }
   
   /* machine specific */
@@ -15066,9 +15300,26 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   node = xmlNewNode(NULL,
 		    "ags-sf-automation");
 
+  str = g_strdup_printf("%d", automation->line);
   xmlNewProp(node,
 	     "line",
-	     g_strdup_printf("%d", automation->line));
+	     str);
+
+  g_free(str);
+
+  str = g_strdup_printf("%s", g_type_name(automation->channel_type));
+  xmlNewProp(node,
+	     "channel-type",
+	     str);
+
+  g_free(str);
+
+  str = g_strdup_printf("%s", automation->control_name);
+  xmlNewProp(node,
+	     "control-name",
+	     str);
+
+  g_free(str);
 
   /* timestamp */
   child = xmlNewNode(NULL,
@@ -15246,6 +15497,98 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
     
     return(NULL);
   }
+}
+
+xmlNode*
+ags_simple_file_write_program_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *program)
+{
+  xmlNode *node;
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-program-list");
+
+  while(program != NULL){
+    ags_simple_file_write_program(simple_file,
+				     node,
+				     program->data);
+
+    program = program->next;
+  }
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsProgram *program)
+{
+  xmlNode *node;
+  xmlNode *child;
+
+  GList *list;
+
+  gchar *str;
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-program");
+
+  xmlNewProp(node,
+	     "control-name",
+	     g_strdup(program->control_name));
+
+  /* timestamp */
+  child = xmlNewNode(NULL,
+		     "ags-sf-timestamp");
+
+  xmlNewProp(child,
+	     "offset",
+	     g_strdup_printf("%lu",
+			     program->timestamp->timer.ags_offset.offset));
+    
+  /* add to parent */
+  xmlAddChild(node,
+	      child);
+
+  /* marker */
+  list = program->marker;
+
+  while(list != NULL){
+    child = xmlNewNode(NULL,
+		       "ags-sf-marker");
+
+    str = g_strdup_printf("%d",
+			  AGS_MARKER(list->data)->x);
+    
+    xmlNewProp(child,
+	       "x",
+	       str);
+
+    g_free(str);
+    
+    str = g_strdup_printf("%lf",
+			  AGS_MARKER(list->data)->y);
+    
+    xmlNewProp(child,
+	       "y",
+	       str);
+
+    g_free(str);
+
+    /* add to parent */
+    xmlAddChild(node,
+		child);
+
+    list = list->next;
+  }
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 AgsSimpleFile*

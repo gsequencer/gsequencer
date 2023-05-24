@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-05-11 17:17+0200\n"
+"POT-Creation-Date: 2023-05-23 03:50+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -510,7 +510,7 @@ msgid "Note:y"
 msgstr "Note:y"
 
 #: ags/app/editor/ags_position_wave_cursor_dialog.c:148
-#: ags/app/editor/ags_composite_toolbar.c:1834
+#: ags/app/editor/ags_composite_toolbar.c:1835
 msgid "position wave cursor"
 msgstr "positioniere Wellenform Wakenlauf"
 
@@ -529,7 +529,7 @@ msgid "position x"
 msgstr "positioniere x"
 
 #: ags/app/editor/ags_position_notation_cursor_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1743
+#: ags/app/editor/ags_composite_toolbar.c:1744
 msgid "position notation cursor"
 msgstr "positioniere Notation's Wagenlauf"
 
@@ -539,7 +539,7 @@ msgid "position y"
 msgstr "positioniere y"
 
 #: ags/app/editor/ags_ramp_acceleration_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1800
+#: ags/app/editor/ags_composite_toolbar.c:1801
 msgid "ramp accelerations"
 msgstr "Beschleunigungen auframpen"
 
@@ -564,7 +564,7 @@ msgid "ramp step count"
 msgstr "Rampen Schrittanzahl"
 
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1755
+#: ags/app/editor/ags_composite_toolbar.c:1756
 #, fuzzy
 msgid "position sheet cursor"
 msgstr "positioniere Wagenlauf"
@@ -575,7 +575,7 @@ msgid "preset name"
 msgstr "Voreinstellungsname"
 
 #: ags/app/editor/ags_time_stretch_buffer_dialog.c:149
-#: ags/app/editor/ags_composite_toolbar.c:1845
+#: ags/app/editor/ags_composite_toolbar.c:1846
 #, fuzzy
 msgid "time stretch buffers"
 msgstr "selektioniere Puffer"
@@ -596,7 +596,7 @@ msgid "new BPM"
 msgstr ""
 
 #: ags/app/editor/ags_crop_note_dialog.c:142
-#: ags/app/editor/ags_composite_toolbar.c:1721
+#: ags/app/editor/ags_composite_toolbar.c:1722
 msgid "crop notes"
 msgstr "Noten scheren"
 
@@ -731,74 +731,74 @@ msgstr ""
 msgid "beats type"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1603
+#: ags/app/editor/ags_composite_toolbar.c:1604
 msgid "match audio channel"
 msgstr "übereinstimme Audiokanal"
 
-#: ags/app/editor/ags_composite_toolbar.c:1610
+#: ags/app/editor/ags_composite_toolbar.c:1611
 #, fuzzy
 msgid "match line"
 msgstr "übereinstimme Audiokanal"
 
-#: ags/app/editor/ags_composite_toolbar.c:1617
+#: ags/app/editor/ags_composite_toolbar.c:1618
 msgid "no duplicates"
 msgstr "keine Duplikate"
 
-#: ags/app/editor/ags_composite_toolbar.c:1623
+#: ags/app/editor/ags_composite_toolbar.c:1624
 msgid "paste"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1665
+#: ags/app/editor/ags_composite_toolbar.c:1666
 msgid "enable all audio channels"
 msgstr "Alle Audiokanäle einschalten"
 
-#: ags/app/editor/ags_composite_toolbar.c:1676
+#: ags/app/editor/ags_composite_toolbar.c:1677
 msgid "disable all audio channels"
 msgstr "Alle Audiokanäle ausschalten"
 
-#: ags/app/editor/ags_composite_toolbar.c:1687
+#: ags/app/editor/ags_composite_toolbar.c:1688
 msgid "enable all lines"
 msgstr "Alle Lines einschalten"
 
-#: ags/app/editor/ags_composite_toolbar.c:1698
+#: ags/app/editor/ags_composite_toolbar.c:1699
 msgid "disable all lines"
 msgstr "Alle Lines ausschalten"
 
-#: ags/app/editor/ags_composite_toolbar.c:1710
+#: ags/app/editor/ags_composite_toolbar.c:1711
 #: ags/app/editor/ags_move_note_dialog.c:144
 msgid "move notes"
 msgstr "Noten bewegen"
 
-#: ags/app/editor/ags_composite_toolbar.c:1732
+#: ags/app/editor/ags_composite_toolbar.c:1733
 #: ags/app/editor/ags_select_note_dialog.c:147
 msgid "select notes"
 msgstr "Noten auswählen"
 
-#: ags/app/editor/ags_composite_toolbar.c:1766
+#: ags/app/editor/ags_composite_toolbar.c:1767
 msgid "add page"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1777
+#: ags/app/editor/ags_composite_toolbar.c:1778
 #, fuzzy
 msgid "remove page"
 msgstr "Index entfernen"
 
-#: ags/app/editor/ags_composite_toolbar.c:1789
+#: ags/app/editor/ags_composite_toolbar.c:1790
 #: ags/app/editor/ags_select_acceleration_dialog.c:153
 msgid "select accelerations"
 msgstr "Beschleuningungen auswählen"
 
-#: ags/app/editor/ags_composite_toolbar.c:1811
+#: ags/app/editor/ags_composite_toolbar.c:1812
 #: ags/app/editor/ags_position_automation_cursor_dialog.c:151
 msgid "position automation cursor"
 msgstr "positioniere Wagenlauf"
 
-#: ags/app/editor/ags_composite_toolbar.c:1823
+#: ags/app/editor/ags_composite_toolbar.c:1824
 #: ags/app/editor/ags_select_buffer_dialog.c:146
 msgid "select buffers"
 msgstr "selektioniere Puffer"
 
-#: ags/app/editor/ags_composite_toolbar.c:1859
+#: ags/app/editor/ags_composite_toolbar.c:1860
 #, fuzzy
 msgid "ramp markers"
 msgstr "Beschleunigungen auframpen"

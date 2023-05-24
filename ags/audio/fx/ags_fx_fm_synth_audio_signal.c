@@ -549,7 +549,7 @@ ags_fx_fm_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
       ags_port_safe_read(port,
 			 &value);
 
-      ags_fm_synth_util_set_volume(channel_data->synth_0,
+      ags_fm_synth_util_set_volume(channel_data->synth_1,
 				   (gdouble) g_value_get_float(&value));
       
       g_object_unref(port);

@@ -213,20 +213,19 @@ EXTRA_DIST += \
 	functional-system-tests.mk.in
 
 EXTRA_DIST += \
+	docs/reference/libags/Ags.conf.in \
 	docs/reference/libags/version.xml.in \
-	docs/reference/libags/libags-sections.txt.in \
 	docs/reference/libags/libags.types.in \
 	docs/reference/libags/libags.interfaces.in \
+	docs/reference/libags-audio/AgsAudio.conf.in \
 	docs/reference/libags-audio/version.xml.in \
-	docs/reference/libags-audio/libags_audio-sections.txt.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-gui/AgsGui.conf.in \
 	docs/reference/libags-gui/version.xml.in \
-	docs/reference/libags-gui/libags_gui-sections.txt.in \
 	docs/reference/libags-gui/libags_gui.types.in \
 	docs/reference/libags-gui/libags_gui.interfaces.in \
 	docs/reference/libgsequencer/version.xml.in \
-	docs/reference/libgsequencer/libgsequencer-sections.txt.in \
 	docs/reference/libgsequencer/libgsequencer.types.in \
 	docs/reference/libgsequencer/libgsequencer.interfaces.in \
 	clean-gtk-doc.sh
@@ -306,12 +305,15 @@ CLEANFILES = \
 	docs/listings/thread_application_context.c \
 	docs/listings/thread_obj_mutex.c \
 	docs/listings/wave_concat.c \
+	docs/reference/libags/Ags.conf \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \
+	docs/reference/libags-audio/AgsAudio.conf \
 	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
 	docs/reference/libags-audio/libags_audio.interfaces \
+	docs/reference/libags-gui/AgsGui.conf \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
 	docs/reference/libags-gui/libags_gui.interfaces \
@@ -417,9 +419,8 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags/libags-overrides.txt \
-	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
-	docs/reference/libags/libags.xml
+	docs/reference/libags/libags.xml.in
 
 EXTRA_DIST += \
 	docs/reference/libags-audio/git.mk \
@@ -429,9 +430,8 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags-audio/libags_audio-overrides.txt \
-	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
-	docs/reference/libags-audio/libags_audio.xml
+	docs/reference/libags-audio/libags_audio.xml.in
 
 EXTRA_DIST += \
 	docs/reference/libags-gui/git.mk \
@@ -441,9 +441,8 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	docs/reference/libags-gui/libags_gui-overrides.txt \
-	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
-	docs/reference/libags-gui/libags_gui.xml
+	docs/reference/libags-gui/libags_gui.xml.in
 
 EXTRA_DIST += docs/reference/libgsequencer/git.mk \
 	docs/reference/libgsequencer/gtk-doc.make \
@@ -452,7 +451,8 @@ EXTRA_DIST += docs/reference/libgsequencer/git.mk \
 
 EXTRA_DIST += \
 	docs/reference/libgsequencer/libgsequencer-overrides.txt \
-	docs/reference/libgsequencer/libgsequencer.xml
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.xml.in
 
 # EXTRA_DIST += docs/reference/libgsequencer
 
@@ -931,7 +931,11 @@ gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 if WITH_OSXAPI
 gsequencer_CPPFLAGS = -x objective-c -framework Cocoa
 else
+if WITH_W32API
+gsequencer_CPPFLAGS = -std=c++20
+else
 gsequencer_CPPFLAGS = -std=gnu99
+endif
 endif
 
 gsequencer_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
@@ -3644,18 +3648,22 @@ clean-local:
 	@if test "$(top_builddir)" != "$(top_srcdir)" ; then rm -f "$(top_builddir)"/docs/reference/libgsequencer/libgsequencer.xml; fi
 	@if test "$(top_builddir)" != "$(top_srcdir)" ; then rm -f "$(top_builddir)"/po/POTFILES.in; fi
 	rm -rf docs/reference/libags/version.xml
+	rm -rf docs/reference/libags/libags.xml
 	rm -rf docs/reference/libags/xml
 	rm -rf docs/reference/libags/libags-html
 	rm -rf docs/reference/libags/tmpl
 	rm -rf docs/reference/libags-audio/version.xml
+	rm -rf docs/reference/libags-audio/libags_audio.xml
 	rm -rf docs/reference/libags-audio/xml
 	rm -rf docs/reference/libags-audio/libags-audio-html
 	rm -rf docs/reference/libags-audio/tmpl
 	rm -rf docs/reference/libags-gui/version.xml
+	rm -rf docs/reference/libags-gui/libags_gui.xml
 	rm -rf docs/reference/libags-gui/xml
 	rm -rf docs/reference/libags-gui/libags-gui-html
 	rm -rf docs/reference/libags-gui/tmpl
 	rm -rf docs/reference/libgsequencer/version.xml
+	rm -rf docs/reference/libgsequencer/libgsequencer.xml
 	rm -rf docs/reference/libgsequencer/xml
 	rm -rf docs/reference/libgsequencer/libgsequencer-html
 	rm -rf docs/reference/libgsequencer/tmpl

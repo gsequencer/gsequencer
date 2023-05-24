@@ -40,6 +40,47 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.1.5" date="2023-05-23">
+      <description>
+	<p>
+	  Fixed get property with wrong name of AgsHybridFMSynth OSC1 volume.
+	</p>
+      </description>
+    </release>
+
+    <release version="5.1.2" date="2023-05-13">
+      <description>
+	<p>
+	  Fixed machine dialog model persistence.
+	</p>
+	<p>
+	  Fixed automation persistence.
+	</p>
+	<p>
+	  Fixed machine selector insert machine radio button.
+	</p>
+      </description>
+    </release>
+    
+    <release version="5.1.1" date="2023-05-12">
+      <description>
+	<p>
+	  Implemented tempo editor persistence.
+	</p>
+	<p>
+	  Fixed automation persistence restore.
+	</p>
+      </description>
+    </release>
+    
+    <release version="5.1.0" date="2023-05-12">
+      <description>
+	<p>
+	  Implemented tempo editor.
+	</p>
+      </description>
+    </release>
+    
     <release version="4.4.3" date="2022-09-27">
       <description>
 	<p>
@@ -47,7 +88,7 @@
 	</p>
       </description>
     </release>
-
+    
     <release version="4.4.2" date="2022-09-17">
       <description>
 	<p>

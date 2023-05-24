@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -314,7 +314,7 @@ ags_machine_editor_line_reset(AgsApplicable *applicable)
 
 /**
  * ags_machine_editor_line_new:
- * @channel_type: the channel type
+ * @channel: the #AgsChannel
  *
  * Creates an #AgsMachineEditorLine
  *

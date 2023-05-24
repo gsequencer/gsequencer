@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2022 Joël Krähemann
+# Copyright (C) 2005-2023 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -30,8 +30,6 @@ ags_alsa_midiin_get_type
 ags_apply_bpm_get_type
 ags_apply_presets_get_type
 ags_apply_sequencer_length_get_type
-ags_apply_sf2_midi_locale_get_type
-ags_apply_sf2_synth_get_type
 ags_apply_sfz_instrument_get_type
 ags_apply_sfz_synth_get_type
 ags_apply_sound_config_get_type
@@ -201,12 +199,6 @@ ags_fx_playback_audio_signal_get_type
 ags_fx_playback_channel_get_type
 ags_fx_playback_channel_processor_get_type
 ags_fx_playback_recycling_get_type
-ags_fx_sf2_synth_audio_get_type
-ags_fx_sf2_synth_audio_processor_get_type
-ags_fx_sf2_synth_audio_signal_get_type
-ags_fx_sf2_synth_channel_get_type
-ags_fx_sf2_synth_channel_processor_get_type
-ags_fx_sf2_synth_recycling_get_type
 ags_fx_sfz_synth_audio_get_type
 ags_fx_sfz_synth_audio_processor_get_type
 ags_fx_sfz_synth_audio_signal_get_type
@@ -245,12 +237,6 @@ ags_gstreamer_port_get_type
 ags_gstreamer_server_get_type
 ags_hq_pitch_util_get_type
 ags_input_get_type
-ags_ipatch_dls2_reader_get_type
-ags_ipatch_flags_get_type
-ags_ipatch_get_type
-ags_ipatch_gig_reader_get_type
-ags_ipatch_sample_get_type
-ags_ipatch_sf2_reader_get_type
 ags_jack_client_flags_get_type
 ags_jack_client_get_type
 ags_jack_devin_flags_get_type
@@ -290,6 +276,8 @@ ags_lv2_worker_manager_get_type
 ags_lv2ui_manager_get_type
 ags_lv2ui_plugin_flags_get_type
 ags_lv2ui_plugin_get_type
+ags_marker_flags_get_type
+ags_marker_get_type
 ags_midi_buffer_util_get_type
 ags_midi_builder_get_type
 ags_midi_file_get_type
@@ -302,8 +290,6 @@ ags_notation_flags_get_type
 ags_notation_get_type
 ags_note_get_type
 ags_open_file_get_type
-ags_open_sf2_instrument_get_type
-ags_open_sf2_sample_get_type
 ags_open_sfz_file_get_type
 ags_open_single_file_get_type
 ags_open_wave_get_type
@@ -354,6 +340,8 @@ ags_port_flags_get_type
 ags_port_get_type
 ags_port_util_get_type
 ags_preset_get_type
+ags_program_flags_get_type
+ags_program_get_type
 ags_pulse_client_flags_get_type
 ags_pulse_client_get_type
 ags_pulse_devin_flags_get_type
@@ -398,11 +386,6 @@ ags_set_device_get_type
 ags_set_format_get_type
 ags_set_muted_get_type
 ags_set_samplerate_get_type
-ags_sf2_loader_get_type
-ags_sf2_midi_locale_loader_get_type
-ags_sf2_synth_generator_get_type
-ags_sf2_synth_util_get_type
-ags_sf2_synth_util_loop_mode_get_type
 ags_sfz_file_get_type
 ags_sfz_group_get_type
 ags_sfz_instrument_loader_get_type

@@ -162,7 +162,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/ags/config.h \
 	$(top_builddir)/ags/ags_api_config.h
-CONFIG_CLEAN_FILES = version.xml
+CONFIG_CLEAN_FILES = AgsAudio.conf version.xml libags_audio.xml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -388,7 +388,8 @@ am__set_b = \
     *) \
       b='$*';; \
   esac
-am__DIST_COMMON = $(srcdir)/./gtk-doc.make $(srcdir)/Makefile.in \
+am__DIST_COMMON = $(srcdir)/./gtk-doc.make $(srcdir)/AgsAudio.conf.in \
+	$(srcdir)/Makefile.in $(srcdir)/libags_audio.xml.in \
 	$(srcdir)/version.xml.in $(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -484,6 +485,14 @@ LIBAGS_API_DOC = @LIBAGS_API_DOC@
 LIBAGS_AUDIO_API_DIR = @LIBAGS_AUDIO_API_DIR@
 LIBAGS_AUDIO_API_DOC = @LIBAGS_AUDIO_API_DOC@
 LIBAGS_AUDIO_CPPFLAGS = @LIBAGS_AUDIO_CPPFLAGS@
+LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE = @LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE@
+LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE = @LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE@
+LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE = @LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE@
+LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE = @LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE@
+LIBAGS_AUDIO_LIBINSTPATCH_TRHEAD_XINCLUDE = @LIBAGS_AUDIO_LIBINSTPATCH_TRHEAD_XINCLUDE@
+LIBAGS_AUDIO_VST3_FX_XINCLUDE = @LIBAGS_AUDIO_VST3_FX_XINCLUDE@
+LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE = @LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE@
+LIBAGS_AUDIO_VST3_TASK_XINCLUDE = @LIBAGS_AUDIO_VST3_TASK_XINCLUDE@
 LIBAGS_CPPFLAGS = @LIBAGS_CPPFLAGS@
 LIBAGS_GUI_API_DIR = @LIBAGS_GUI_API_DIR@
 LIBAGS_GUI_API_DOC = @LIBAGS_GUI_API_DOC@
@@ -503,7 +512,10 @@ LIBDSSIALSACOMPAT_LIBS = @LIBDSSIALSACOMPAT_LIBS@
 LIBGSEQUENCER_API_DIR = @LIBGSEQUENCER_API_DIR@
 LIBGSEQUENCER_API_DOC = @LIBGSEQUENCER_API_DOC@
 LIBGSEQUENCER_CPPFLAGS = @LIBGSEQUENCER_CPPFLAGS@
+LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE = @LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE@
 LIBGSEQUENCER_TEST_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
+LIBGSEQUENCER_VST3_BROWSER_XINCLUDE = @LIBGSEQUENCER_VST3_BROWSER_XINCLUDE@
+LIBGSEQUENCER_VST3_MACHINE_XINCLUDE = @LIBGSEQUENCER_VST3_MACHINE_XINCLUDE@
 LIBICONV = @LIBICONV@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
 LIBINSTPATCH_LIBS = @LIBINSTPATCH_LIBS@
@@ -654,7 +666,7 @@ SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 # SCAN_OPTIONS=--rebuild-types --rebuild-sections
-SCAN_OPTIONS = --module=libags_audio --deprecated-guards="G_DISABLE_DEPRECATED"
+SCAN_OPTIONS = --rebuild-sections --module=libags_audio --deprecated-guards="G_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
@@ -831,7 +843,11 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+AgsAudio.conf: $(top_builddir)/config.status $(srcdir)/AgsAudio.conf.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 version.xml: $(top_builddir)/config.status $(srcdir)/version.xml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+libags_audio.xml: $(top_builddir)/config.status $(srcdir)/libags_audio.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
