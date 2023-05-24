@@ -19,8 +19,9 @@
 
 #include <ags/audio/midi/ags_midi_ci_1_1_port.h>
 
-gpointer ags_midi_ci_1_1_port_copy(gpointer ptr);
-void ags_midi_ci_1_1_port_free(gpointer ptr);
+void ags_midi_ci_1_1_port_class_init(AgsMidiCI_1_1_PortClass *midi_ci_1_1_port);
+void ags_midi_ci_1_1_port_init(AgsMidiCI_1_1_Port *midi_ci_1_1_port);
+void ags_midi_ci_1_1_port_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_midi_ci_1_1_port
@@ -40,10 +41,21 @@ ags_midi_ci_1_1_port_get_type(void)
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_midi_ci_1_1_port = 0;
 
-    ags_type_midi_ci_1_1_port =
-      g_boxed_type_register_static("AgsMidiCI_1_1_Port",
-				   (GBoxedCopyFunc) ags_midi_ci_1_1_port_copy,
-				   (GBoxedFreeFunc) ags_midi_ci_1_1_port_free);
+    static const GTypeInfo ags_midi_ci_1_1_port_info = {
+      sizeof (AgsMidiCI_1_1_PortClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_midi_ci_1_1_port_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsMidiCI_1_1_Port),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_midi_ci_1_1_port_init,
+    };
+
+    ags_type_midi_ci_1_1_port = g_type_register_static(G_TYPE_OBJECT,
+						       "AgsMidiCI_1_1_Port", &ags_midi_ci_1_1_port_info,
+						       0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_ci_1_1_port);
   }
@@ -51,18 +63,56 @@ ags_midi_ci_1_1_port_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_midi_ci_1_1_port_copy(gpointer ptr)
+void
+ags_midi_ci_1_1_port_class_init(AgsMidiCI_1_1_PortClass *midi_ci_1_1_port)
 {
-  gpointer retval;
+  GObjectClass *gobject;
+  
+  ags_midi_ci_1_1_port_parent_class = g_type_class_peek_parent(midi_ci_1_1_port);
 
-  retval = g_memdup(ptr, sizeof(AgsMidiCI_1_1_Port));
- 
-  return(retval);
+  /* GObjectClass */
+  gobject = (GObjectClass *) midi_ci_1_1_port;  
+
+  gobject->finalize = ags_midi_ci_1_1_port_finalize;
+
+  /* AgsMidiCI_1_1_PortClass */
+  midi_ci_1_1_port->send_bytes = NULL;
+  midi_ci_1_1_port->receive_bytes = NULL;
 }
 
 void
-ags_midi_ci_1_1_port_free(gpointer ptr)
+ags_midi_ci_1_1_port_init(AgsMidiCI_1_1_Port *midi_ci_1_1_port)
 {
-  g_free(ptr);
+  midi_ci_1_1_port->direction = AGS_MIDI_CI_1_1_PORT_INPUT;
+}
+
+void
+ags_midi_ci_1_1_port_finalize(GObject *gobject)
+{
+  AgsMidiCI_1_1_Port *midi_ci_1_1_port;
+    
+  midi_ci_1_1_port = (AgsMidiCI_1_1_Port *) gobject;
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_midi_ci_1_1_port_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_midi_ci_1_1_port_new:
+ * 
+ * Creates a new instance of #AgsMidiCI_1_1_Port
+ *
+ * Returns: the new #AgsMidiCI_1_1_Port
+ * 
+ * Since: 5.2.0
+ */
+AgsMidiCI_1_1_Port*
+ags_midi_ci_1_1_port_new()
+{
+  AgsMidiCI_1_1_Port *midi_ci_1_1_port;
+
+  midi_ci_1_1_port = (AgsMidiCI_1_1_Port *) g_object_new(AGS_TYPE_MIDI_CI_1_1_PORT,
+							 NULL);
+  
+  return(midi_ci_1_1_port);
 }
