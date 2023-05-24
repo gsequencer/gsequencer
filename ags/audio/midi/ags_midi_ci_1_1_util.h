@@ -31,6 +31,7 @@ G_BEGIN_DECLS
 
 #define AGS_MIDI_CI_1_1_UTIL_BROADCAST_MUID (0x0fffffff)
 #define AGS_MIDI_CI_1_1_UTIL_MAX_BROADCAST_MESSAGE_SIZE (512)
+#define AGS_MIDI_CI_1_1_UTIL_DISCOVERY_TIMEOUT_USEC (3 * AGS_USEC_PER_SEC)
 
 typedef struct _AgsMidiCI_1_1_Util AgsMidiCI_1_1_Util;
 typedef guint32 AgsMUID;
@@ -55,6 +56,16 @@ typedef enum _AgsMidiCI_1_1_Category{
   /* AGS_MIDI_CI_1_1_RESERVED                  = 0x50, */
   /* AGS_MIDI_CI_1_1_RESERVED                  = 0x60, */
   AGS_MIDI_CI_1_1_PROPERTY_MANAGEMENT          = 0x70,
+};
+
+typedef enum _AgsMidiCI_1_1_CategorySupport{
+  /* AGS_MIDI_CI_1_1_RESERVED                            = 1, */
+  AGS_MIDI_CI_1_1_PROTOCOL_NEGOTIATION_SUPPORTED         = 1 <<  1,
+  AGS_MIDI_CI_1_1_PROFILE_CONFIGURATION_SUPPORTED        = 1 <<  2,
+  AGS_MIDI_CI_1_1_PROPERTY_EXCHANGE_SUPPORTED            = 1 <<  3,
+  /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  4, */
+  /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  5, */
+  /* AGS_MIDI_CI_1_1_RESERVED                            = 1 <<  6, */
 };
 
 struct _AgsMidiCI_1_1_Util
@@ -94,6 +105,29 @@ guint ags_midi_ci_1_1_util_generate_get_discovery(AgsMidiCI_1_1_Util *midi_ci_1_
 						  guint32 *software_revision_level,
 						  guchar *capability,
 						  guint32 *max_sysex_message_size);
+
+guint ags_midi_ci_1_1_util_generate_put_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							guchar *buffer,
+							guchar version,
+							AgsMUID source,
+							AgsMUID destination,
+							guint32 manufacturer_id,
+							guint32 device_family,
+							guint32 device_family_model_number,
+							guint32 software_revision_level,
+							guchar capability,
+							guint32 max_sysex_message_size);
+guint ags_midi_ci_1_1_util_generate_get_discovery_reply(AgsMidiCI_1_1_Util *midi_ci_1_1_util,
+							guchar *buffer,
+							guchar *version,
+							AgsMUID *source,
+							AgsMUID *destination,
+							guint32 *manufacturer_id,
+							guint32 *device_family,
+							guint32 *device_family_model_number,
+							guint32 *software_revision_level,
+							guchar *capability,
+							guint32 *max_sysex_message_size);
 
 G_END_DECLS
 
