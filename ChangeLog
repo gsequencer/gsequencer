@@ -1,3 +1,9 @@
+ags (5.1.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsPresetEditor missing editable set in model
+	* fixed ags_app_action_util.c use gtk_widget_set_visible()
+
 ags (5.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
