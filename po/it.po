@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2023-05-23 03:50+0200\n"
+"POT-Creation-Date: 2023-05-25 15:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,28 +92,28 @@ msgstr ""
 msgid "rename machine"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:775
+#: ags/app/ags_machine_callbacks.c:776
 msgid "rename audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:852
+#: ags/app/ags_machine_callbacks.c:854
 msgid "reposition audio"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:858 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:860 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:900
+#: ags/app/ags_machine_callbacks.c:903
 msgid "properties"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:978
+#: ags/app/ags_machine_callbacks.c:982
 msgid "envelope"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1018
+#: ags/app/ags_machine_callbacks.c:1023
 #: ags/app/editor/ags_pattern_envelope.c:251
 #: ags/app/editor/ags_envelope_editor.c:180
 #: ags/app/machine/ags_live_lv2_bridge.c:498
@@ -122,7 +122,7 @@ msgstr ""
 msgid "preset"
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:1103
+#: ags/app/ags_machine_callbacks.c:1109
 msgid "connections"
 msgstr ""
 
@@ -1065,7 +1065,7 @@ msgstr ""
 msgid "loop R"
 msgstr ""
 
-#: ags/app/ags_navigation.c:359 ags/app/ags_export_window.c:193
+#: ags/app/ags_navigation.c:359 ags/app/ags_export_window.c:195
 msgid "exclude sequencers"
 msgstr ""
 
@@ -1928,23 +1928,23 @@ msgstr ""
 msgid "Export to audio data"
 msgstr ""
 
-#: ags/app/ags_export_window.c:183
+#: ags/app/ags_export_window.c:185
 msgid "live export"
 msgstr ""
 
-#: ags/app/ags_export_window.c:220
+#: ags/app/ags_export_window.c:222
 msgid "mode"
 msgstr ""
 
-#: ags/app/ags_export_window.c:256
+#: ags/app/ags_export_window.c:258
 msgid "tact"
 msgstr ""
 
-#: ags/app/ags_export_window.c:287
+#: ags/app/ags_export_window.c:289
 msgid "time"
 msgstr ""
 
-#: ags/app/ags_export_window.c:370
+#: ags/app/ags_export_window.c:372
 msgid "export"
 msgstr ""
 
