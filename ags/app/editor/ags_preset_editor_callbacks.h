@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,11 @@ void ags_preset_editor_new_preset_callback(GtkButton *button, AgsPresetEditor *p
 void ags_preset_editor_save_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
 void ags_preset_editor_open_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
 void ags_preset_editor_apply_preset_callback(GtkButton *button, AgsPresetEditor *preset_editor);
+
+void ags_preset_editor_value_renderer_callback(GtkCellRendererText *cell,
+					       gchar *path,
+					       gchar *value,
+					       AgsPresetEditor *preset_editor);
 
 G_END_DECLS
 
