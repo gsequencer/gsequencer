@@ -272,6 +272,19 @@ ags_fx_vst3_audio_notify_audio_callback(GObject *gobject,
 
   g_signal_connect_after((GObject *) audio, "set-pads",
 			 G_CALLBACK(ags_fx_vst3_audio_set_pads_callback), fx_vst3_audio);
+
+  if(audio != NULL){
+    guint audio_channels;
+
+    audio_channels = ags_audio_get_audio_channels(audio);
+
+    ags_fx_vst3_audio_set_audio_channels_callback(audio,
+						  audio_channels, 0,
+						  fx_vst3_audio);
+    
+    
+    g_object_unref(audio);
+  }
 }
 
 void
@@ -1083,6 +1096,8 @@ ags_fx_vst3_audio_channel_data_alloc()
     channel_data->input_data[i] = ags_fx_vst3_audio_input_data_alloc();
 
     channel_data->input_data[i]->parent = channel_data;
+
+    channel_data->input_data[i]->event_buffer->data.note.note = i;
   }
 
   return(channel_data);

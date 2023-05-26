@@ -1297,7 +1297,7 @@ ags_sf2_synth_refresh_port(AgsMachine *machine)
 
   machine->flags |= AGS_MACHINE_NO_UPDATE;
 
-  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SYNTH_AUDIO)) != NULL){
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SF2_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     /* synth octave */

@@ -6027,11 +6027,11 @@ ags_fx_factory_create_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxSynthAudio */
     fx_synth_audio = (AgsFxSynthAudio *) g_object_new(AGS_TYPE_FX_SYNTH_AUDIO,
+						      "filename", filename,
+						      "effect", effect,						    
 						      "output-soundcard", output_soundcard,
 						      "audio", audio,
 						      "recall-container", play_container,
-						      "filename", filename,
-						      "effect", effect,						    
 						      NULL);
     ags_recall_set_flags((AgsRecall *) fx_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -6055,12 +6055,12 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     
     /* AgsFxSynthAudioProcessor */
     fx_synth_audio_processor = (AgsFxSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_SYNTH_AUDIO_PROCESSOR,
+									 "filename", filename,
+									 "effect", effect,						    
 									 "output-soundcard", output_soundcard,
 									 "audio", audio,
 									 "recall-audio", fx_synth_audio,
 									 "recall-container", play_container,
-									 "filename", filename,
-									 "effect", effect,						    
 									 NULL);
     ags_recall_set_flags((AgsRecall *) fx_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -6124,12 +6124,12 @@ ags_fx_factory_create_synth(AgsAudio *audio,
 	
       /* AgsFxSynthChannel */
       fx_synth_channel = (AgsFxSynthChannel *) g_object_new(AGS_TYPE_FX_SYNTH_CHANNEL,
+							    "filename", filename,
+							    "effect", effect,						    
 							    "output-soundcard", output_soundcard,
 							    "source", channel,
 							    "recall-audio", fx_synth_audio,
 							    "recall-container", play_container,
-							    "filename", filename,
-							    "effect", effect,						    
 							    NULL);
       ags_recall_set_flags((AgsRecall *) fx_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -6153,14 +6153,14 @@ ags_fx_factory_create_synth(AgsAudio *audio,
 
       /* AgsFxSynthChannelProcessor */
       fx_synth_channel_processor = (AgsFxSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_SYNTH_CHANNEL_PROCESSOR,
+									       "filename", filename,
+									       "effect", effect,						    
 									       "output-soundcard", output_soundcard,
 									       "source", channel,
 									       "recall-audio", fx_synth_audio,
 									       "recall-audio-run", fx_synth_audio_processor,
 									       "recall-channel", fx_synth_channel,
 									       "recall-container", play_container,
-									       "filename", filename,
-									       "effect", effect,						    
 									       NULL);
       ags_recall_set_flags((AgsRecall *) fx_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -6212,11 +6212,11 @@ ags_fx_factory_create_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxSynthAudio */
     fx_synth_audio = (AgsFxSynthAudio *) g_object_new(AGS_TYPE_FX_SYNTH_AUDIO,
+						      "filename", filename,
+						      "effect", effect,						    
 						      "output-soundcard", output_soundcard,
 						      "audio", audio,
 						      "recall-container", recall_container,
-						      "filename", filename,
-						      "effect", effect,						    
 						      NULL);
     ags_recall_set_flags((AgsRecall *) fx_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -6240,12 +6240,12 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     
     /* AgsFxSynthAudioProcessor */
     fx_synth_audio_processor = (AgsFxSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_SYNTH_AUDIO_PROCESSOR,
+									 "filename", filename,
+									 "effect", effect,						    
 									 "output-soundcard", output_soundcard,
 									 "audio", audio,
 									 "recall-audio", fx_synth_audio,
 									 "recall-container", recall_container,
-									 "filename", filename,
-									 "effect", effect,						    
 									 NULL);
     ags_recall_set_flags((AgsRecall *) fx_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -6305,12 +6305,12 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxSynthChannel */
       fx_synth_channel = (AgsFxSynthChannel *) g_object_new(AGS_TYPE_FX_SYNTH_CHANNEL,
+							    "filename", filename,
+							    "effect", effect,						    
 							    "output-soundcard", output_soundcard,
 							    "source", channel,
 							    "recall-audio", fx_synth_audio,
 							    "recall-container", recall_container,
-							    "filename", filename,
-							    "effect", effect,						    
 							    NULL);
       ags_recall_set_flags((AgsRecall *) fx_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -6334,14 +6334,14 @@ ags_fx_factory_create_synth(AgsAudio *audio,
 
       /* AgsFxSynthChannelProcessor */
       fx_synth_channel_processor = (AgsFxSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_SYNTH_CHANNEL_PROCESSOR,
+									       "filename", filename,
+									       "effect", effect,						    
 									       "output-soundcard", output_soundcard,
 									       "source", channel,
 									       "recall-audio", fx_synth_audio,
 									       "recall-audio-run", fx_synth_audio_processor,
 									       "recall-channel", fx_synth_channel,
 									       "recall-container", recall_container,
-									       "filename", filename,
-									       "effect", effect,						    
 									       NULL);
       ags_recall_set_flags((AgsRecall *) fx_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -6471,11 +6471,11 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxFMSynthAudio */
     fx_fm_synth_audio = (AgsFxFMSynthAudio *) g_object_new(AGS_TYPE_FX_FM_SYNTH_AUDIO,
+							   "filename", filename,
+							   "effect", effect,						    
 							   "output-soundcard", output_soundcard,
 							   "audio", audio,
 							   "recall-container", play_container,
-							   "filename", filename,
-							   "effect", effect,						    
 							   NULL);
     ags_recall_set_flags((AgsRecall *) fx_fm_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -6499,12 +6499,12 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
     
     /* AgsFxFMSynthAudioProcessor */
     fx_fm_synth_audio_processor = (AgsFxFMSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_FM_SYNTH_AUDIO_PROCESSOR,
+									      "filename", filename,
+									      "effect", effect,						    
 									      "output-soundcard", output_soundcard,
 									      "audio", audio,
 									      "recall-audio", fx_fm_synth_audio,
 									      "recall-container", play_container,
-									      "filename", filename,
-									      "effect", effect,						    
 									      NULL);
     ags_recall_set_flags((AgsRecall *) fx_fm_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -6568,12 +6568,12 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
 	
       /* AgsFxFMSynthChannel */
       fx_fm_synth_channel = (AgsFxFMSynthChannel *) g_object_new(AGS_TYPE_FX_FM_SYNTH_CHANNEL,
+								 "filename", filename,
+								 "effect", effect,						    
 								 "output-soundcard", output_soundcard,
 								 "source", channel,
 								 "recall-audio", fx_fm_synth_audio,
 								 "recall-container", play_container,
-								 "filename", filename,
-								 "effect", effect,						    
 								 NULL);
       ags_recall_set_flags((AgsRecall *) fx_fm_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -6597,14 +6597,14 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
 
       /* AgsFxFMSynthChannelProcessor */
       fx_fm_synth_channel_processor = (AgsFxFMSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_FM_SYNTH_CHANNEL_PROCESSOR,
+										    "filename", filename,
+										    "effect", effect,						    
 										    "output-soundcard", output_soundcard,
 										    "source", channel,
 										    "recall-audio", fx_fm_synth_audio,
 										    "recall-audio-run", fx_fm_synth_audio_processor,
 										    "recall-channel", fx_fm_synth_channel,
 										    "recall-container", play_container,
-										    "filename", filename,
-										    "effect", effect,						    
 										    NULL);
       ags_recall_set_flags((AgsRecall *) fx_fm_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -6656,11 +6656,11 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxFMSynthAudio */
     fx_fm_synth_audio = (AgsFxFMSynthAudio *) g_object_new(AGS_TYPE_FX_FM_SYNTH_AUDIO,
+							   "filename", filename,
+							   "effect", effect,						    
 							   "output-soundcard", output_soundcard,
 							   "audio", audio,
 							   "recall-container", recall_container,
-							   "filename", filename,
-							   "effect", effect,						    
 							   NULL);
     ags_recall_set_flags((AgsRecall *) fx_fm_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -6684,12 +6684,12 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
     
     /* AgsFxFMSynthAudioProcessor */
     fx_fm_synth_audio_processor = (AgsFxFMSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_FM_SYNTH_AUDIO_PROCESSOR,
+									      "filename", filename,
+									      "effect", effect,						    
 									      "output-soundcard", output_soundcard,
 									      "audio", audio,
 									      "recall-audio", fx_fm_synth_audio,
 									      "recall-container", recall_container,
-									      "filename", filename,
-									      "effect", effect,						    
 									      NULL);
     ags_recall_set_flags((AgsRecall *) fx_fm_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -6749,12 +6749,12 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxFMSynthChannel */
       fx_fm_synth_channel = (AgsFxFMSynthChannel *) g_object_new(AGS_TYPE_FX_FM_SYNTH_CHANNEL,
+								 "filename", filename,
+								 "effect", effect,						    
 								 "output-soundcard", output_soundcard,
 								 "source", channel,
 								 "recall-audio", fx_fm_synth_audio,
 								 "recall-container", recall_container,
-								 "filename", filename,
-								 "effect", effect,						    
 								 NULL);
       ags_recall_set_flags((AgsRecall *) fx_fm_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -6778,14 +6778,14 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
 
       /* AgsFxFMSynthChannelProcessor */
       fx_fm_synth_channel_processor = (AgsFxFMSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_FM_SYNTH_CHANNEL_PROCESSOR,
+										    "filename", filename,
+										    "effect", effect,						    
 										    "output-soundcard", output_soundcard,
 										    "source", channel,
 										    "recall-audio", fx_fm_synth_audio,
 										    "recall-audio-run", fx_fm_synth_audio_processor,
 										    "recall-channel", fx_fm_synth_channel,
 										    "recall-container", recall_container,
-										    "filename", filename,
-										    "effect", effect,						    
 										    NULL);
       ags_recall_set_flags((AgsRecall *) fx_fm_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -6915,11 +6915,11 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxSF2SynthAudio */
     fx_sf2_synth_audio = (AgsFxSF2SynthAudio *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_AUDIO,
+							     "filename", filename,
+							     "effect", effect,						    
 							     "output-soundcard", output_soundcard,
 							     "audio", audio,
 							     "recall-container", play_container,
-							     "filename", filename,
-							     "effect", effect,						    
 							     NULL);
     ags_recall_set_flags((AgsRecall *) fx_sf2_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -6943,12 +6943,12 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     
     /* AgsFxSF2SynthAudioProcessor */
     fx_sf2_synth_audio_processor = (AgsFxSF2SynthAudioProcessor *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_AUDIO_PROCESSOR,
+										"filename", filename,
+										"effect", effect,						    
 										"output-soundcard", output_soundcard,
 										"audio", audio,
 										"recall-audio", fx_sf2_synth_audio,
 										"recall-container", play_container,
-										"filename", filename,
-										"effect", effect,						    
 										NULL);
     ags_recall_set_flags((AgsRecall *) fx_sf2_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -7012,12 +7012,12 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 	
       /* AgsFxSF2SynthChannel */
       fx_sf2_synth_channel = (AgsFxSF2SynthChannel *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_CHANNEL,
+								   "filename", filename,
+								   "effect", effect,						    
 								   "output-soundcard", output_soundcard,
 								   "source", channel,
 								   "recall-audio", fx_sf2_synth_audio,
 								   "recall-container", play_container,
-								   "filename", filename,
-								   "effect", effect,						    
 								   NULL);
       ags_recall_set_flags((AgsRecall *) fx_sf2_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -7041,14 +7041,14 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 
       /* AgsFxSF2SynthChannelProcessor */
       fx_sf2_synth_channel_processor = (AgsFxSF2SynthChannelProcessor *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_CHANNEL_PROCESSOR,
+										      "filename", filename,
+										      "effect", effect,						    
 										      "output-soundcard", output_soundcard,
 										      "source", channel,
 										      "recall-audio", fx_sf2_synth_audio,
 										      "recall-audio-run", fx_sf2_synth_audio_processor,
 										      "recall-channel", fx_sf2_synth_channel,
 										      "recall-container", play_container,
-										      "filename", filename,
-										      "effect", effect,						    
 										      NULL);
       ags_recall_set_flags((AgsRecall *) fx_sf2_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -7100,11 +7100,11 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxSF2SynthAudio */
     fx_sf2_synth_audio = (AgsFxSF2SynthAudio *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_AUDIO,
+							     "filename", filename,
+							     "effect", effect,						    
 							     "output-soundcard", output_soundcard,
 							     "audio", audio,
 							     "recall-container", recall_container,
-							     "filename", filename,
-							     "effect", effect,						    
 							     NULL);
     ags_recall_set_flags((AgsRecall *) fx_sf2_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -7128,12 +7128,12 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     
     /* AgsFxSF2SynthAudioProcessor */
     fx_sf2_synth_audio_processor = (AgsFxSF2SynthAudioProcessor *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_AUDIO_PROCESSOR,
+										"filename", filename,
+										"effect", effect,						    
 										"output-soundcard", output_soundcard,
 										"audio", audio,
 										"recall-audio", fx_sf2_synth_audio,
 										"recall-container", recall_container,
-										"filename", filename,
-										"effect", effect,						    
 										NULL);
     ags_recall_set_flags((AgsRecall *) fx_sf2_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -7193,12 +7193,12 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxSF2SynthChannel */
       fx_sf2_synth_channel = (AgsFxSF2SynthChannel *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_CHANNEL,
+								   "filename", filename,
+								   "effect", effect,						    
 								   "output-soundcard", output_soundcard,
 								   "source", channel,
 								   "recall-audio", fx_sf2_synth_audio,
 								   "recall-container", recall_container,
-								   "filename", filename,
-								   "effect", effect,						    
 								   NULL);
       ags_recall_set_flags((AgsRecall *) fx_sf2_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -7222,14 +7222,14 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 
       /* AgsFxSF2SynthChannelProcessor */
       fx_sf2_synth_channel_processor = (AgsFxSF2SynthChannelProcessor *) g_object_new(AGS_TYPE_FX_SF2_SYNTH_CHANNEL_PROCESSOR,
+										      "filename", filename,
+										      "effect", effect,						    
 										      "output-soundcard", output_soundcard,
 										      "source", channel,
 										      "recall-audio", fx_sf2_synth_audio,
 										      "recall-audio-run", fx_sf2_synth_audio_processor,
 										      "recall-channel", fx_sf2_synth_channel,
 										      "recall-container", recall_container,
-										      "filename", filename,
-										      "effect", effect,						    
 										      NULL);
       ags_recall_set_flags((AgsRecall *) fx_sf2_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -7359,11 +7359,11 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxSFZSynthAudio */
     fx_sfz_synth_audio = (AgsFxSFZSynthAudio *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_AUDIO,
+							     "filename", filename,
+							     "effect", effect,						    
 							     "output-soundcard", output_soundcard,
 							     "audio", audio,
 							     "recall-container", play_container,
-							     "filename", filename,
-							     "effect", effect,						    
 							     NULL);
     ags_recall_set_flags((AgsRecall *) fx_sfz_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -7387,12 +7387,12 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
     
     /* AgsFxSFZSynthAudioProcessor */
     fx_sfz_synth_audio_processor = (AgsFxSFZSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_AUDIO_PROCESSOR,
+										"filename", filename,
+										"effect", effect,						    
 										"output-soundcard", output_soundcard,
 										"audio", audio,
 										"recall-audio", fx_sfz_synth_audio,
 										"recall-container", play_container,
-										"filename", filename,
-										"effect", effect,						    
 										NULL);
     ags_recall_set_flags((AgsRecall *) fx_sfz_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -7456,12 +7456,12 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
 	
       /* AgsFxSFZSynthChannel */
       fx_sfz_synth_channel = (AgsFxSFZSynthChannel *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_CHANNEL,
+								   "filename", filename,
+								   "effect", effect,						    
 								   "output-soundcard", output_soundcard,
 								   "source", channel,
 								   "recall-audio", fx_sfz_synth_audio,
 								   "recall-container", play_container,
-								   "filename", filename,
-								   "effect", effect,						    
 								   NULL);
       ags_recall_set_flags((AgsRecall *) fx_sfz_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -7485,14 +7485,14 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
 
       /* AgsFxSFZSynthChannelProcessor */
       fx_sfz_synth_channel_processor = (AgsFxSFZSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_CHANNEL_PROCESSOR,
+										      "filename", filename,
+										      "effect", effect,						    
 										      "output-soundcard", output_soundcard,
 										      "source", channel,
 										      "recall-audio", fx_sfz_synth_audio,
 										      "recall-audio-run", fx_sfz_synth_audio_processor,
 										      "recall-channel", fx_sfz_synth_channel,
 										      "recall-container", play_container,
-										      "filename", filename,
-										      "effect", effect,						    
 										      NULL);
       ags_recall_set_flags((AgsRecall *) fx_sfz_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -7544,11 +7544,11 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxSFZSynthAudio */
     fx_sfz_synth_audio = (AgsFxSFZSynthAudio *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_AUDIO,
+							     "filename", filename,
+							     "effect", effect,						    
 							     "output-soundcard", output_soundcard,
 							     "audio", audio,
 							     "recall-container", recall_container,
-							     "filename", filename,
-							     "effect", effect,						    
 							     NULL);
     ags_recall_set_flags((AgsRecall *) fx_sfz_synth_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -7572,12 +7572,12 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
     
     /* AgsFxSFZSynthAudioProcessor */
     fx_sfz_synth_audio_processor = (AgsFxSFZSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_AUDIO_PROCESSOR,
+										"filename", filename,
+										"effect", effect,						    
 										"output-soundcard", output_soundcard,
 										"audio", audio,
 										"recall-audio", fx_sfz_synth_audio,
 										"recall-container", recall_container,
-										"filename", filename,
-										"effect", effect,						    
 										NULL);
     ags_recall_set_flags((AgsRecall *) fx_sfz_synth_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -7637,12 +7637,12 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxSFZSynthChannel */
       fx_sfz_synth_channel = (AgsFxSFZSynthChannel *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_CHANNEL,
+								   "filename", filename,
+								   "effect", effect,						    
 								   "output-soundcard", output_soundcard,
 								   "source", channel,
 								   "recall-audio", fx_sfz_synth_audio,
 								   "recall-container", recall_container,
-								   "filename", filename,
-								   "effect", effect,						    
 								   NULL);
       ags_recall_set_flags((AgsRecall *) fx_sfz_synth_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -7666,14 +7666,14 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
 
       /* AgsFxSFZSynthChannelProcessor */
       fx_sfz_synth_channel_processor = (AgsFxSFZSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_SFZ_SYNTH_CHANNEL_PROCESSOR,
+										      "filename", filename,
+										      "effect", effect,						    
 										      "output-soundcard", output_soundcard,
 										      "source", channel,
 										      "recall-audio", fx_sfz_synth_audio,
 										      "recall-audio-run", fx_sfz_synth_audio_processor,
 										      "recall-channel", fx_sfz_synth_channel,
 										      "recall-container", recall_container,
-										      "filename", filename,
-										      "effect", effect,						    
 										      NULL);
       ags_recall_set_flags((AgsRecall *) fx_sfz_synth_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -7803,11 +7803,11 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxLadspaAudio */
     fx_ladspa_audio = (AgsFxLadspaAudio *) g_object_new(AGS_TYPE_FX_LADSPA_AUDIO,
+							"filename", filename,
+							"effect", effect,						    
 							"output-soundcard", output_soundcard,
 							"audio", audio,
 							"recall-container", play_container,
-							"filename", filename,
-							"effect", effect,						    
 							NULL);
     ags_recall_set_flags((AgsRecall *) fx_ladspa_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -7833,12 +7833,12 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     
     /* AgsFxLadspaAudioProcessor */
     fx_ladspa_audio_processor = (AgsFxLadspaAudioProcessor *) g_object_new(AGS_TYPE_FX_LADSPA_AUDIO_PROCESSOR,
+									   "filename", filename,
+									   "effect", effect,						    
 									   "output-soundcard", output_soundcard,
 									   "audio", audio,
 									   "recall-audio", fx_ladspa_audio,
 									   "recall-container", play_container,
-									   "filename", filename,
-									   "effect", effect,						    
 									   NULL);
     ags_recall_set_flags((AgsRecall *) fx_ladspa_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -7900,12 +7900,12 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxLadspaChannel */
       fx_ladspa_channel = (AgsFxLadspaChannel *) g_object_new(AGS_TYPE_FX_LADSPA_CHANNEL,
+							      "filename", filename,
+							      "effect", effect,						    
 							      "output-soundcard", output_soundcard,
 							      "source", channel,
 							      "recall-audio", fx_ladspa_audio,
 							      "recall-container", play_container,
-							      "filename", filename,
-							      "effect", effect,						    
 							      NULL);
       ags_recall_set_flags((AgsRecall *) fx_ladspa_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -7931,14 +7931,14 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
       /* AgsFxLadspaChannelProcessor */
       fx_ladspa_channel_processor = (AgsFxLadspaChannelProcessor *) g_object_new(AGS_TYPE_FX_LADSPA_CHANNEL_PROCESSOR,
+										 "filename", filename,
+										 "effect", effect,						    
 										 "output-soundcard", output_soundcard,
 										 "source", channel,
 										 "recall-audio", fx_ladspa_audio,
 										 "recall-audio-run", fx_ladspa_audio_processor,
 										 "recall-channel", fx_ladspa_channel,
 										 "recall-container", play_container,
-										 "filename", filename,
-										 "effect", effect,						    
 										 NULL);
       ags_recall_set_flags((AgsRecall *) fx_ladspa_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -7996,11 +7996,11 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxLadspaAudio */
     fx_ladspa_audio = (AgsFxLadspaAudio *) g_object_new(AGS_TYPE_FX_LADSPA_AUDIO,
+							"filename", filename,
+							"effect", effect,						    
 							"output-soundcard", output_soundcard,
 							"audio", audio,
 							"recall-container", recall_container,
-							"filename", filename,
-							"effect", effect,						    
 							NULL);
     ags_recall_set_flags((AgsRecall *) fx_ladspa_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -8026,12 +8026,12 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     
     /* AgsFxLadspaAudioProcessor */
     fx_ladspa_audio_processor = (AgsFxLadspaAudioProcessor *) g_object_new(AGS_TYPE_FX_LADSPA_AUDIO_PROCESSOR,
+									   "filename", filename,
+									   "effect", effect,						    
 									   "output-soundcard", output_soundcard,
 									   "audio", audio,
 									   "recall-audio", fx_ladspa_audio,
 									   "recall-container", recall_container,
-									   "filename", filename,
-									   "effect", effect,						    
 									   NULL);
     ags_recall_set_flags((AgsRecall *) fx_ladspa_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -8094,12 +8094,12 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxLadspaChannel */
       fx_ladspa_channel = (AgsFxLadspaChannel *) g_object_new(AGS_TYPE_FX_LADSPA_CHANNEL,
+							      "filename", filename,
+							      "effect", effect,						    
 							      "output-soundcard", output_soundcard,
 							      "source", channel,
 							      "recall-audio", fx_ladspa_audio,
 							      "recall-container", recall_container,
-							      "filename", filename,
-							      "effect", effect,						    
 							      NULL);
       ags_recall_set_flags((AgsRecall *) fx_ladspa_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -8125,14 +8125,14 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
       /* AgsFxLadspaChannelProcessor */
       fx_ladspa_channel_processor = (AgsFxLadspaChannelProcessor *) g_object_new(AGS_TYPE_FX_LADSPA_CHANNEL_PROCESSOR,
+										 "filename", filename,
+										 "effect", effect,						    
 										 "output-soundcard", output_soundcard,
 										 "source", channel,
 										 "recall-audio", fx_ladspa_audio,
 										 "recall-audio-run", fx_ladspa_audio_processor,
 										 "recall-channel", fx_ladspa_channel,
 										 "recall-container", recall_container,
-										 "filename", filename,
-										 "effect", effect,						    
 										 NULL);
       ags_recall_set_flags((AgsRecall *) fx_ladspa_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -8268,11 +8268,11 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxDssiAudio */
     fx_dssi_audio = (AgsFxDssiAudio *) g_object_new(AGS_TYPE_FX_DSSI_AUDIO,
+						    "filename", filename,
+						    "effect", effect,						    
 						    "output-soundcard", output_soundcard,
 						    "audio", audio,
 						    "recall-container", play_container,
-						    "filename", filename,
-						    "effect", effect,						    
 						    NULL);
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -8296,12 +8296,12 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     
     /* AgsFxDssiAudioProcessor */
     fx_dssi_audio_processor = (AgsFxDssiAudioProcessor *) g_object_new(AGS_TYPE_FX_DSSI_AUDIO_PROCESSOR,
+								       "filename", filename,
+								       "effect", effect,						    
 								       "output-soundcard", output_soundcard,
 								       "audio", audio,
 								       "recall-audio", fx_dssi_audio,
 								       "recall-container", play_container,
-								       "filename", filename,
-								       "effect", effect,						    
 								       NULL);
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -8374,12 +8374,12 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 	
       /* AgsFxDssiChannel */
       fx_dssi_channel = (AgsFxDssiChannel *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL,
+							  "filename", filename,
+							  "effect", effect,						    
 							  "output-soundcard", output_soundcard,
 							  "source", channel,
 							  "recall-audio", fx_dssi_audio,
 							  "recall-container", play_container,
-							  "filename", filename,
-							  "effect", effect,						    
 							  NULL);
       ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -8403,14 +8403,14 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
       /* AgsFxDssiChannelProcessor */
       fx_dssi_channel_processor = (AgsFxDssiChannelProcessor *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL_PROCESSOR,
+									     "filename", filename,
+									     "effect", effect,						    
 									     "output-soundcard", output_soundcard,
 									     "source", channel,
 									     "recall-audio", fx_dssi_audio,
 									     "recall-audio-run", fx_dssi_audio_processor,
 									     "recall-channel", fx_dssi_channel,
 									     "recall-container", play_container,
-									     "filename", filename,
-									     "effect", effect,						    
 									     NULL);
       ags_recall_set_flags((AgsRecall *) fx_dssi_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -8465,11 +8465,11 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxDssiAudio */
     fx_dssi_audio = (AgsFxDssiAudio *) g_object_new(AGS_TYPE_FX_DSSI_AUDIO,
+						    "filename", filename,
+						    "effect", effect,						    
 						    "output-soundcard", output_soundcard,
 						    "audio", audio,
 						    "recall-container", recall_container,
-						    "filename", filename,
-						    "effect", effect,						    
 						    NULL);
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -8493,12 +8493,12 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     
     /* AgsFxDssiAudioProcessor */
     fx_dssi_audio_processor = (AgsFxDssiAudioProcessor *) g_object_new(AGS_TYPE_FX_DSSI_AUDIO_PROCESSOR,
+								       "filename", filename,
+								       "effect", effect,						    
 								       "output-soundcard", output_soundcard,
 								       "audio", audio,
 								       "recall-audio", fx_dssi_audio,
 								       "recall-container", recall_container,
-								       "filename", filename,
-								       "effect", effect,						    
 								       NULL);
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -8567,12 +8567,12 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxDssiChannel */
       fx_dssi_channel = (AgsFxDssiChannel *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL,
+							  "filename", filename,
+							  "effect", effect,						    
 							  "output-soundcard", output_soundcard,
 							  "source", channel,
 							  "recall-audio", fx_dssi_audio,
 							  "recall-container", recall_container,
-							  "filename", filename,
-							  "effect", effect,						    
 							  NULL);
       ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -8596,14 +8596,14 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
       /* AgsFxDssiChannelProcessor */
       fx_dssi_channel_processor = (AgsFxDssiChannelProcessor *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL_PROCESSOR,
+									     "filename", filename,
+									     "effect", effect,						    
 									     "output-soundcard", output_soundcard,
 									     "source", channel,
 									     "recall-audio", fx_dssi_audio,
 									     "recall-audio-run", fx_dssi_audio_processor,
 									     "recall-channel", fx_dssi_channel,
 									     "recall-container", recall_container,
-									     "filename", filename,
-									     "effect", effect,						    
 									     NULL);
       ags_recall_set_flags((AgsRecall *) fx_dssi_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -8747,11 +8747,11 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxLv2Audio */
     fx_lv2_audio = (AgsFxLv2Audio *) g_object_new(AGS_TYPE_FX_LV2_AUDIO,
+						  "filename", filename,
+						  "effect", effect,			    
 						  "output-soundcard", output_soundcard,
 						  "audio", audio,
 						  "recall-container", play_container,
-						  "filename", filename,
-						  "effect", effect,			    
 						  NULL);
     ags_recall_set_flags((AgsRecall *) fx_lv2_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -8786,12 +8786,12 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     
     /* AgsFxLv2AudioProcessor */
     fx_lv2_audio_processor = (AgsFxLv2AudioProcessor *) g_object_new(AGS_TYPE_FX_LV2_AUDIO_PROCESSOR,
+								     "filename", filename,
+								     "effect", effect,						    
 								     "output-soundcard", output_soundcard,
 								     "audio", audio,
 								     "recall-audio", fx_lv2_audio,
 								     "recall-container", play_container,
-								     "filename", filename,
-								     "effect", effect,						    
 								     NULL);
     ags_recall_set_flags((AgsRecall *) fx_lv2_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -8878,12 +8878,12 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 	
       /* AgsFxLv2Channel */
       fx_lv2_channel = (AgsFxLv2Channel *) g_object_new(AGS_TYPE_FX_LV2_CHANNEL,
+							"filename", filename,
+							"effect", effect,						    
 							"output-soundcard", output_soundcard,
 							"source", channel,
 							"recall-audio", fx_lv2_audio,
 							"recall-container", play_container,
-							"filename", filename,
-							"effect", effect,						    
 							NULL);
       ags_recall_set_flags((AgsRecall *) fx_lv2_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -8918,14 +8918,14 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
       /* AgsFxLv2ChannelProcessor */
       fx_lv2_channel_processor = (AgsFxLv2ChannelProcessor *) g_object_new(AGS_TYPE_FX_LV2_CHANNEL_PROCESSOR,
+									   "filename", filename,
+									   "effect", effect,						    
 									   "output-soundcard", output_soundcard,
 									   "source", channel,
 									   "recall-audio", fx_lv2_audio,
 									   "recall-audio-run", fx_lv2_audio_processor,
 									   "recall-channel", fx_lv2_channel,
 									   "recall-container", play_container,
-									   "filename", filename,
-									   "effect", effect,						    
 									   NULL);
       ags_recall_set_flags((AgsRecall *) fx_lv2_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -8992,11 +8992,11 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxLv2Audio */
     fx_lv2_audio = (AgsFxLv2Audio *) g_object_new(AGS_TYPE_FX_LV2_AUDIO,
+						  "filename", filename,
+						  "effect", effect,						    
 						  "output-soundcard", output_soundcard,
 						  "audio", audio,
 						  "recall-container", recall_container,
-						  "filename", filename,
-						  "effect", effect,						    
 						  NULL);
     ags_recall_set_flags((AgsRecall *) fx_lv2_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -9031,12 +9031,12 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     
     /* AgsFxLv2AudioProcessor */
     fx_lv2_audio_processor = (AgsFxLv2AudioProcessor *) g_object_new(AGS_TYPE_FX_LV2_AUDIO_PROCESSOR,
+								     "filename", filename,
+								     "effect", effect,						    
 								     "output-soundcard", output_soundcard,
 								     "audio", audio,
 								     "recall-audio", fx_lv2_audio,
 								     "recall-container", recall_container,
-								     "filename", filename,
-								     "effect", effect,						    
 								     NULL);
     ags_recall_set_flags((AgsRecall *) fx_lv2_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -9116,12 +9116,12 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxLv2Channel */
       fx_lv2_channel = (AgsFxLv2Channel *) g_object_new(AGS_TYPE_FX_LV2_CHANNEL,
+							"filename", filename,
+							"effect", effect,						    
 							"output-soundcard", output_soundcard,
 							"source", channel,
 							"recall-audio", fx_lv2_audio,
 							"recall-container", recall_container,
-							"filename", filename,
-							"effect", effect,						    
 							NULL);
       ags_recall_set_flags((AgsRecall *) fx_lv2_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -9156,14 +9156,14 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
       /* AgsFxLv2ChannelProcessor */
       fx_lv2_channel_processor = (AgsFxLv2ChannelProcessor *) g_object_new(AGS_TYPE_FX_LV2_CHANNEL_PROCESSOR,
+									   "filename", filename,
+									   "effect", effect,						    
 									   "output-soundcard", output_soundcard,
 									   "source", channel,
 									   "recall-audio", fx_lv2_audio,
 									   "recall-audio-run", fx_lv2_audio_processor,
 									   "recall-channel", fx_lv2_channel,
 									   "recall-container", recall_container,
-									   "filename", filename,
-									   "effect", effect,						    
 									   NULL);
       ags_recall_set_flags((AgsRecall *) fx_lv2_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -9320,11 +9320,11 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxVst3Audio */
     fx_vst3_audio = (AgsFxVst3Audio *) g_object_new(AGS_TYPE_FX_VST3_AUDIO,
+						    "filename", filename,
+						    "effect", effect,			    
 						    "output-soundcard", output_soundcard,
 						    "audio", audio,
 						    "recall-container", play_container,
-						    "filename", filename,
-						    "effect", effect,			    
 						    NULL);
     ags_recall_set_flags((AgsRecall *) fx_vst3_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -9359,12 +9359,12 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
     
     /* AgsFxVst3AudioProcessor */
     fx_vst3_audio_processor = (AgsFxVst3AudioProcessor *) g_object_new(AGS_TYPE_FX_VST3_AUDIO_PROCESSOR,
+								       "filename", filename,
+								       "effect", effect,						    
 								       "output-soundcard", output_soundcard,
 								       "audio", audio,
 								       "recall-audio", fx_vst3_audio,
 								       "recall-container", play_container,
-								       "filename", filename,
-								       "effect", effect,						    
 								       NULL);
     ags_recall_set_flags((AgsRecall *) fx_vst3_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -9451,12 +9451,12 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
 	
       /* AgsFxVst3Channel */
       fx_vst3_channel = (AgsFxVst3Channel *) g_object_new(AGS_TYPE_FX_VST3_CHANNEL,
+							  "filename", filename,
+							  "effect", effect,						    
 							  "output-soundcard", output_soundcard,
 							  "source", channel,
 							  "recall-audio", fx_vst3_audio,
 							  "recall-container", play_container,
-							  "filename", filename,
-							  "effect", effect,						    
 							  NULL);
       ags_recall_set_flags((AgsRecall *) fx_vst3_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -9491,14 +9491,14 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
 
       /* AgsFxVst3ChannelProcessor */
       fx_vst3_channel_processor = (AgsFxVst3ChannelProcessor *) g_object_new(AGS_TYPE_FX_VST3_CHANNEL_PROCESSOR,
+									     "filename", filename,
+									     "effect", effect,						    
 									     "output-soundcard", output_soundcard,
 									     "source", channel,
 									     "recall-audio", fx_vst3_audio,
 									     "recall-audio-run", fx_vst3_audio_processor,
 									     "recall-channel", fx_vst3_channel,
 									     "recall-container", play_container,
-									     "filename", filename,
-									     "effect", effect,						    
 									     NULL);
       ags_recall_set_flags((AgsRecall *) fx_vst3_channel_processor,
 			   (AGS_RECALL_TEMPLATE));
@@ -9565,11 +9565,11 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
   if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
     /* AgsFxVst3Audio */
     fx_vst3_audio = (AgsFxVst3Audio *) g_object_new(AGS_TYPE_FX_VST3_AUDIO,
+						    "filename", filename,
+						    "effect", effect,						    
 						    "output-soundcard", output_soundcard,
 						    "audio", audio,
 						    "recall-container", recall_container,
-						    "filename", filename,
-						    "effect", effect,						    
 						    NULL);
     ags_recall_set_flags((AgsRecall *) fx_vst3_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -9604,12 +9604,12 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
     
     /* AgsFxVst3AudioProcessor */
     fx_vst3_audio_processor = (AgsFxVst3AudioProcessor *) g_object_new(AGS_TYPE_FX_VST3_AUDIO_PROCESSOR,
+								       "filename", filename,
+								       "effect", effect,						    
 								       "output-soundcard", output_soundcard,
 								       "audio", audio,
 								       "recall-audio", fx_vst3_audio,
 								       "recall-container", recall_container,
-								       "filename", filename,
-								       "effect", effect,						    
 								       NULL);
     ags_recall_set_flags((AgsRecall *) fx_vst3_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -9689,12 +9689,12 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
     for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
       /* AgsFxVst3Channel */
       fx_vst3_channel = (AgsFxVst3Channel *) g_object_new(AGS_TYPE_FX_VST3_CHANNEL,
+							  "filename", filename,
+							  "effect", effect,						    
 							  "output-soundcard", output_soundcard,
 							  "source", channel,
 							  "recall-audio", fx_vst3_audio,
 							  "recall-container", recall_container,
-							  "filename", filename,
-							  "effect", effect,						    
 							  NULL);
       ags_recall_set_flags((AgsRecall *) fx_vst3_channel,
 			   (AGS_RECALL_TEMPLATE));
@@ -9729,14 +9729,14 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
 
       /* AgsFxVst3ChannelProcessor */
       fx_vst3_channel_processor = (AgsFxVst3ChannelProcessor *) g_object_new(AGS_TYPE_FX_VST3_CHANNEL_PROCESSOR,
+									     "filename", filename,
+									     "effect", effect,						    
 									     "output-soundcard", output_soundcard,
 									     "source", channel,
 									     "recall-audio", fx_vst3_audio,
 									     "recall-audio-run", fx_vst3_audio_processor,
 									     "recall-channel", fx_vst3_channel,
 									     "recall-container", recall_container,
-									     "filename", filename,
-									     "effect", effect,						    
 									     NULL);
       ags_recall_set_flags((AgsRecall *) fx_vst3_channel_processor,
 			   (AGS_RECALL_TEMPLATE));

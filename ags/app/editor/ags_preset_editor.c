@@ -40,7 +40,6 @@ void ags_preset_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_preset_editor_apply(AgsApplicable *applicable);
 void ags_preset_editor_reset(AgsApplicable *applicable);
 
-
 /**
  * SECTION:ags_preset_editor
  * @short_description: Edit preset of notes
@@ -229,6 +228,17 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
   gtk_widget_set_size_request((GtkWidget *) preset_editor->preset_tree_view,
 			      AGS_PRESET_EDITOR_TREE_VIEW_WIDTH_REQUEST,
 			      AGS_PRESET_EDITOR_TREE_VIEW_HEIGHT_REQUEST);
+  
+  preset_list_store = gtk_list_store_new(6,
+					 G_TYPE_STRING,
+					 G_TYPE_STRING,
+					 G_TYPE_STRING,
+					 G_TYPE_STRING,
+					 G_TYPE_STRING,
+					 G_TYPE_GTYPE);
+  
+  gtk_tree_view_set_model(GTK_TREE_VIEW(preset_editor->preset_tree_view),
+			  GTK_TREE_MODEL(preset_list_store));  
 
   context_renderer = gtk_cell_renderer_text_new();
 
@@ -266,7 +276,8 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
   gtk_tree_view_append_column(preset_editor->preset_tree_view,
 			      range_column);
   
-  value_renderer = gtk_cell_renderer_text_new();
+  value_renderer =
+    preset_editor->value_renderer = gtk_cell_renderer_text_new();
   g_object_set(value_renderer,
 	       "editable", TRUE,
 	       NULL);
@@ -277,17 +288,6 @@ ags_preset_editor_init(AgsPresetEditor *preset_editor)
 							  NULL);
   gtk_tree_view_append_column(preset_editor->preset_tree_view,
 			      value_column);
-  
-  preset_list_store = gtk_list_store_new(6,
-					 G_TYPE_STRING,
-					 G_TYPE_STRING,
-					 G_TYPE_STRING,
-					 G_TYPE_STRING,
-					 G_TYPE_STRING,
-					 G_TYPE_GTYPE);
-  
-  gtk_tree_view_set_model(preset_editor->preset_tree_view,
-			  GTK_TREE_MODEL(preset_list_store));  
 }
 
 void
@@ -314,6 +314,9 @@ ags_preset_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect(preset_editor->apply_preset, "clicked",
 		   G_CALLBACK(ags_preset_editor_apply_preset_callback), preset_editor);
+
+  g_signal_connect_after(preset_editor->value_renderer, "edited",
+			 G_CALLBACK(ags_preset_editor_value_renderer_callback), preset_editor);
 }
 
 void
@@ -350,6 +353,12 @@ ags_preset_editor_disconnect(AgsConnectable *connectable)
   g_object_disconnect(preset_editor->apply_preset,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_preset_editor_apply_preset_callback),
+		      preset_editor,
+		      NULL);
+
+  g_object_disconnect(preset_editor->value_renderer,
+		      "any_signal::edited",
+		      G_CALLBACK(ags_preset_editor_value_renderer_callback),
 		      preset_editor,
 		      NULL);
 }
@@ -844,13 +853,6 @@ ags_preset_editor_apply_preset(AgsPresetEditor *preset_editor)
 
   GtkListStore *list_store;
 
-  AgsChannel *start_channel;
-  AgsChannel *channel;
-
-  GList *start_port, *port;
-
-  GtkTreeIter iter;
-
   g_return_if_fail(AGS_IS_PRESET_EDITOR(preset_editor));
 
   preset_dialog = (AgsPresetDialog *) gtk_widget_get_ancestor((GtkWidget *) preset_editor,
@@ -863,141 +865,9 @@ ags_preset_editor_apply_preset(AgsPresetEditor *preset_editor)
 
   list_store = GTK_LIST_STORE(gtk_tree_view_get_model(preset_editor->preset_tree_view));
 
-  if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store),
-				   &iter)){
-    do{
-      gchar *context;
-      gchar *line;
-      gchar *specifier;
-      gchar *range;
-      gchar *value;
-
-      context = NULL;
-      specifier = NULL;
-      range = NULL;
-      value = NULL;
-      
-      gtk_tree_model_get(GTK_TREE_MODEL(list_store), &iter,
-			 0, &context,
-			 1, &line,
-			 2, &specifier,
-			 3, &range,
-			 4, &value,
-			 -1);
-
-      /* get start port */
-      if(!xmlStrncmp(BAD_CAST "audio",
-		     context,
-		     6)){
-	start_port = ags_audio_collect_all_audio_ports(machine->audio);
-      }else if(!xmlStrncmp(BAD_CAST "output",
-			   context,
-			   7)){
-	start_channel = ags_audio_get_output(machine->audio);
-
-	channel = ags_channel_nth(start_channel,
-				  g_ascii_strtoull(line,
-						   NULL,
-						   10));
-
-	start_port = NULL;
-
-	/* output */
-	port = ags_channel_collect_all_channel_ports(channel);
-	
-	if(start_port != NULL){
-	  if(port != NULL){
-	    start_port = g_list_concat(start_port,
-				       port);
-	  }
-	}else{
-	  start_port = port;
-	}
-
-	/* unref */
-	if(start_channel != NULL){
-	  g_object_unref(start_channel);
-	}	      
-
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}	      
-      }else if(!xmlStrncmp(BAD_CAST "input",
-			   context,
-			   6)){
-	start_channel = ags_audio_get_input(machine->audio);
-
-	channel = ags_channel_nth(start_channel,
-				  g_ascii_strtoull(line,
-						   NULL,
-						   10));
-
-	start_port = NULL;
-
-	/* input */
-	port = ags_channel_collect_all_channel_ports(channel);
-	
-	if(start_port != NULL){
-	  if(port != NULL){
-	    start_port = g_list_concat(start_port,
-				       port);
-	  }
-	}else{
-	  start_port = port;
-	}
-
-	/* unref */
-	if(start_channel != NULL){
-	  g_object_unref(start_channel);
-	}	      
-
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}	      
-      }
-
-      port = start_port;
-      
-      while((port = ags_port_find_specifier(port,
-					    specifier)) != NULL){
-	GValue port_value = G_VALUE_INIT;
-
-	gboolean success;  
-
-	success = FALSE;
-	
-	if(!(AGS_PORT(port->data)->port_value_is_pointer)){
-	  if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
-	    success = TRUE;
-	    
-	    g_value_init(&port_value,
-			 G_TYPE_FLOAT);
-
-	    g_value_set_float(&port_value,
-			      (gfloat) g_strtod(value,
-						NULL));
-	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
-	    success = TRUE;
-	    
-	    g_value_init(&port_value,
-			 G_TYPE_DOUBLE);
-
-	    g_value_set_double(&port_value,
-			       g_strtod(value,
-					NULL));
-	  }
-	}
-
-	if(success){
-	  ags_port_safe_write(port->data,
-			      &port_value);
-	}
-      
-	port = port->next;
-      }
-    }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store),
-				    &iter));
-  }
+  ags_machine_apply_preset(machine,
+			   list_store);
+  ags_machine_refresh_port(machine);
 }
 
 /**

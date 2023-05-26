@@ -1,8 +1,8 @@
-ags (5.2.0)
+ags (5.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented MIDI-CI version 1.1 support
-	* TODO:JK: implemented MIDI-2.0 support
+	* fixed AgsPresetEditor missing editable set in model
+	* fixed ags_app_action_util.c use gtk_widget_set_visible()
 
 ags (5.1.5)
 

@@ -883,6 +883,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   LV2_Options_Interface *options_interface;
   LV2_Options_Option *options;
+
+  LV2_Programs_Interface *program_interface;
   
   LV2_Feature **feature;
 
@@ -1290,6 +1292,13 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 		 NULL);
   }
 
+  if(plugin_descriptor != NULL &&
+     plugin_descriptor->extension_data != NULL &&
+     (program_interface = plugin_descriptor->extension_data(LV2_PROGRAMS__Interface)) != NULL){
+    ags_lv2_plugin_set_flags(lv2_plugin,
+			     AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE);
+  }
+  
   g_free(path);
   
   return(lv2_handle);
@@ -1949,6 +1958,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
     /* decode midi sequencer event */    
     if((count = ags_midi_buffer_util_decode(midi_buffer,
 					    &(events[i]))) <= 8){
+      g_message("add MIDI[%d] 0x%x 0x%x 0x%x 0x%x", count, midi_buffer[0], midi_buffer[1], midi_buffer[2], midi_buffer[3]);
       aev->time.frames = 0;
 
       aev->body.size = count;

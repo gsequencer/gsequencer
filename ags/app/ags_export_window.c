@@ -143,8 +143,10 @@ ags_export_window_init(AgsExportWindow *export_window)
   
   g_object_set(export_window,
 	       "title", i18n("Export to audio data"),
-	       "hide-on-close", TRUE,
 	       NULL);
+
+  gtk_window_set_hide_on_close((GtkWindow *) export_window,
+			       TRUE);
 
   g_atomic_int_set(&(export_window->do_stop),
 		   FALSE);
@@ -394,7 +396,7 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(application_context, "update-ui",
 			 G_CALLBACK(ags_export_window_update_ui_callback), export_window);
-
+  
   g_signal_connect(G_OBJECT(export_window->add), "clicked",
 		   G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
 
