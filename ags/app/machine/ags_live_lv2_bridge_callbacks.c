@@ -380,7 +380,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 	if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
 		      AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
 	  GtkWidget *child_widget;
-	  
+
 	  //	AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
 
 	  child_widget = ags_bulk_member_get_widget(AGS_BULK_MEMBER(list->data));
@@ -402,8 +402,8 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 					     TRUE);
 	    }
 	    
-	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				     value);
+	    ags_dial_set_value(AGS_DIAL(child_widget),
+			       value);
 	    gtk_widget_queue_draw(child_widget);
 	  }
 	
