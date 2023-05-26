@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1370,7 +1370,8 @@ ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio)
   
   GRecMutex *recall_mutex;
 
-  if(!AGS_IS_FX_LV2_AUDIO(fx_lv2_audio)){
+  if(!AGS_IS_FX_LV2_AUDIO(fx_lv2_audio) ||
+     ags_sound){
     return;
   }
 
@@ -1465,7 +1466,10 @@ ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio)
     
     g_rec_mutex_unlock(recall_mutex);
   }
-  
+
+  ags_recall_set_sound_state(AGS_RECALL(fx_lv2_audio),
+			     AGS_SOUND_STATE_IS_PLUGIN_LOADED);
+    
   g_free(filename);
   g_free(effect);
 }
@@ -1875,6 +1879,9 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   
   g_rec_mutex_unlock(recall_mutex);
 
+  ags_recall_set_sound_state(AGS_RECALL(fx_lv2_audio),
+			     AGS_SOUND_STATE_IS_PORT_LOADED);
+  
   /* unref */
   if(audio != NULL){
     g_object_unref(audio);
