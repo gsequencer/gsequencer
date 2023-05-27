@@ -94,7 +94,7 @@ struct _AgsSF2SynthUtil
   gpointer im_buffer;
   
   guint buffer_length;
-  guint format;
+  AgsSoundcardFormat format;
   guint samplerate;
   guint orig_samplerate;
   

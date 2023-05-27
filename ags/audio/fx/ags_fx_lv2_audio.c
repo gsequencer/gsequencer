@@ -321,6 +321,11 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
   GRecMutex *recall_mutex;
   
   fx_lv2_audio = AGS_FX_LV2_AUDIO(gobject);
+
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+				  AGS_SOUND_STATE_PORT_LOADED)){
+    return;
+  }
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
@@ -446,29 +451,18 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
   gboolean is_live_instrument;
   
   GRecMutex *recall_mutex;
-  GRecMutex *base_plugin_mutex;
-
-  void (*deactivate)(LV2_Handle Instance);
-  void (*cleanup)(LV2_Handle Instance);
   
   fx_lv2_audio = AGS_FX_LV2_AUDIO(gobject);
 
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
-
-  /* get lv2 plugin */
-  g_rec_mutex_lock(recall_mutex);
-
-  lv2_plugin = fx_lv2_audio->lv2_plugin;
-  
-  g_rec_mutex_unlock(recall_mutex);
-
-  if(lv2_plugin == NULL ||
-     !ags_base_plugin_test_flags((AgsBasePlugin *) lv2_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+  if(!ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+				  AGS_SOUND_STATE_PORT_LOADED)){
     return;
   }
 
   g_message("notify samplerate");
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
 
   audio = NULL;
 
@@ -505,28 +499,8 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 
   g_rec_mutex_unlock(recall_mutex);
 
-  /* get deactivate and cleanup */
-  base_plugin_mutex = NULL;
-
-  deactivate = NULL;
-  cleanup = NULL;
-  
-  if(lv2_plugin != NULL){
-    gpointer plugin_descriptor;
-    
-    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
-    
-    g_rec_mutex_lock(base_plugin_mutex);
-  
-    plugin_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
-
-    deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
-    cleanup = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
-      
-    g_rec_mutex_unlock(base_plugin_mutex);
-  }
-
-  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
+  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
+						   AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
 
   /* reallocate buffer - apply buffer size */
   g_rec_mutex_lock(recall_mutex);
@@ -545,65 +519,10 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	if(is_live_instrument){
-	  AgsPort **iter;
-	  
-	  guint nth;
-
-	  if(deactivate != NULL &&
-	     channel_data->lv2_handle != NULL){
-	    deactivate(channel_data->lv2_handle[0]);
-	  }
-
-	  if(cleanup != NULL &&
-	     channel_data->lv2_handle != NULL){
-	    cleanup(channel_data->lv2_handle[0]);
-	  }	  
-
-	  channel_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-								 samplerate, buffer_size);
-
-	  for(nth = 0; nth < output_port_count; nth++){
-	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					 channel_data->lv2_handle[0],
-					 fx_lv2_audio->output_port[nth],
-					 &(channel_data->output[nth]));
-	  }
-
-	  for(nth = 0; nth < input_port_count; nth++){
-	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					 channel_data->lv2_handle[0],
-					 fx_lv2_audio->input_port[nth],
-					 &(channel_data->input[nth]));
-	  }
-
-	  if(fx_lv2_audio->lv2_port != NULL){
-	    for(iter = fx_lv2_audio->lv2_port; iter[0] != NULL; iter++){
-	      AgsPluginPort *plugin_port;
-
-	      guint port_index;
-
-	      plugin_port = NULL;
-	    
-	      port_index = 0;
-	    
-	      g_object_get(iter[0],
-			   "plugin-port", &plugin_port,
-			   NULL);
-
-	      g_object_get(plugin_port,
-			   "port-index", &port_index,
-			   NULL);
-	    
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   port_index,
-					   &(iter[0]->port_value.ags_port_float));
-
-	      if(plugin_port != NULL){
-		g_object_unref(plugin_port);
-	      }
-	    }
-	  }
+	  ags_fx_lv2_audio_channel_data_load_plugin(fx_lv2_audio,
+						    channel_data);
+	  ags_fx_lv2_audio_channel_data_load_port(fx_lv2_audio,
+						  channel_data);
 	}
 	
 	if(!is_live_instrument){
@@ -612,18 +531,8 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 
-	    if(deactivate != NULL &&
-	       input_data->lv2_handle != NULL){
-	      deactivate(input_data->lv2_handle[0]);
-	    }
-
-	    if(cleanup != NULL &&
-	       input_data->lv2_handle != NULL){
-	      cleanup(input_data->lv2_handle[0]);
-	    }
-
-	    input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-								 samplerate, buffer_size);
+	    ags_fx_lv2_audio_input_data_load_plugin(fx_lv2_audio,
+						    input_data);
 	  }
 	}
       }
@@ -731,7 +640,8 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
   g_rec_mutex_unlock(recall_mutex);
 
   /* allocate channel data */
-  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
+  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
+						   AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
     
   g_rec_mutex_lock(recall_mutex);
 
@@ -772,7 +682,7 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 	  
 	    guint nth;
 
-	    if(ags_recall_test_sound_state(AGS_RECALL(fx_lv2_audio),
+	    if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
 					   AGS_SOUND_STATE_PLUGIN_LOADED)){
 	      ags_fx_lv2_audio_channel_data_load_plugin(fx_lv2_audio,
 							channel_data);
@@ -798,49 +708,10 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 	      }
 	    }	  
 
-	    if(ags_recall_test_sound_state(AGS_RECALL(fx_lv2_audio),
+	    if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
 					   AGS_SOUND_STATE_PORT_LOADED)){
-	    }
-	    
-	    for(nth = 0; nth < output_port_count; nth++){
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   fx_lv2_audio->output_port[nth],
-					   &(channel_data->output[nth]));
-	    }
-
-	    for(nth = 0; nth < input_port_count; nth++){
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   fx_lv2_audio->input_port[nth],
-					   &(channel_data->input[nth]));
-	    }
-
-	    for(iter = fx_lv2_audio->lv2_port; iter[0] != NULL; iter++){
-	      AgsPluginPort *plugin_port;
-
-	      guint port_index;
-
-	      plugin_port = NULL;
-	    
-	      port_index = 0;
-	    
-	      g_object_get(iter[0],
-			   "plugin-port", &plugin_port,
-			   NULL);
-
-	      g_object_get(plugin_port,
-			   "port-index", &port_index,
-			   NULL);
-	    
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   port_index,
-					   &(iter[0]->port_value.ags_port_float));
-
-	      if(plugin_port != NULL){
-		g_object_unref(plugin_port);
-	      }
+	      ags_fx_lv2_audio_channel_data_load_port(fx_lv2_audio,
+						      channel_data);
 	    }
 	  }
 	
@@ -850,8 +721,11 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 
 	      input_data = channel_data->input_data[k];
 
-	      input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-								   samplerate, buffer_size);
+	      if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
+					     AGS_SOUND_STATE_PLUGIN_LOADED)){
+		ags_fx_lv2_audio_input_data_load_plugin(fx_lv2_audio,
+							input_data);
+	      }
 	    
 	      if(output_port_count > 0 &&
 		 buffer_size > 0){
@@ -877,12 +751,11 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 	}
       }
 
-      g_message("audio channels %d", audio_channels);
       scope_data->audio_channels = audio_channels;
     }    
   }  
 
-  if(ags_recall_test_sound_state(AGS_RECALL(fx_lv2_audio),
+  if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
 				 AGS_SOUND_STATE_PORT_LOADED)){
     if(!is_live_instrument &&
        audio_channels_old < audio_channels){
@@ -1080,8 +953,11 @@ ags_fx_lv2_audio_channel_data_alloc()
   channel_data->output = NULL;
   channel_data->input = NULL;
 
-  channel_data->event_port = NULL;
-  channel_data->atom_port = NULL;
+  channel_data->midiin_event_port = NULL;
+  channel_data->midiout_event_port = NULL;
+
+  channel_data->midiin_atom_port = NULL;
+  channel_data->midiout_atom_port = NULL;
 
   channel_data->lv2_handle = NULL;
 
@@ -1118,8 +994,11 @@ ags_fx_lv2_audio_channel_data_free(AgsFxLv2AudioChannelData *channel_data)
   g_free(channel_data->output);
   g_free(channel_data->input);
 
-  ags_lv2_plugin_event_buffer_free(channel_data->event_port);
-  ags_lv2_plugin_atom_sequence_free(channel_data->atom_port);
+  ags_lv2_plugin_event_buffer_free(channel_data->midiin_event_port);
+  ags_lv2_plugin_event_buffer_free(channel_data->midiout_event_port);
+
+  ags_lv2_plugin_atom_sequence_free(channel_data->midiin_atom_port);
+  ags_lv2_plugin_atom_sequence_free(channel_data->midiout_atom_port);
   
   if(channel_data->lv2_handle != NULL){
     gpointer plugin_descriptor;
@@ -1195,8 +1074,11 @@ ags_fx_lv2_audio_input_data_alloc()
   input_data->output = NULL;
   input_data->input = NULL;
 
-  input_data->event_port = NULL;
-  input_data->atom_port = NULL;
+  input_data->midiin_event_port = NULL;
+  input_data->midiout_event_port = NULL;
+
+  input_data->midiin_atom_port = NULL;
+  input_data->midiout_atom_port = NULL;
 
   input_data->lv2_handle = NULL;
 
@@ -1233,8 +1115,11 @@ ags_fx_lv2_audio_input_data_free(AgsFxLv2AudioInputData *input_data)
   g_free(input_data->output);
   g_free(input_data->input);
 
-  ags_lv2_plugin_event_buffer_free(input_data->event_port);
-  ags_lv2_plugin_atom_sequence_free(input_data->atom_port);
+  ags_lv2_plugin_event_buffer_free(input_data->midiin_event_port);
+  ags_lv2_plugin_event_buffer_free(input_data->midiout_event_port);
+
+  ags_lv2_plugin_atom_sequence_free(input_data->midiin_atom_port);
+  ags_lv2_plugin_atom_sequence_free(input_data->midiout_atom_port);
 
   if(input_data->lv2_handle != NULL){
     gpointer plugin_descriptor;
@@ -1389,7 +1274,11 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
   guint buffer_size;
   guint samplerate;
 
+  GRecMutex *base_plugin_mutex;
   GRecMutex *recall_mutex;
+
+  void (*deactivate)(LV2_Handle Instance);
+  void (*cleanup)(LV2_Handle Instance);
 
   lv2_manager = ags_lv2_manager_get_instance();
   
@@ -1432,21 +1321,149 @@ ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
     }
   }  
 
-  if(input_data->lv2_handle == NULL){
-    input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-							 samplerate, buffer_size);
+  lv2_plugin = NULL;
+    
+  deactivate = NULL;
+  cleanup = NULL;
+
+  base_plugin_mutex = NULL;
+    
+  if(input_data->parent != NULL &&
+     AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->parent != NULL &&
+     AGS_FX_LV2_AUDIO_SCOPE_DATA(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->parent)->parent != NULL){
+    lv2_plugin = AGS_FX_LV2_AUDIO(AGS_FX_LV2_AUDIO_CHANNEL_DATA(input_data->parent)->parent)->lv2_plugin;
   }
+    
+  if(lv2_plugin != NULL){
+    gpointer plugin_descriptor;
+
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
+
+    g_rec_mutex_lock(base_plugin_mutex);
+  
+    plugin_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+
+    deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
+    cleanup = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
+      
+    g_rec_mutex_unlock(base_plugin_mutex);
+  }
+
+  if(deactivate != NULL &&
+     input_data->lv2_handle != NULL){
+    deactivate(input_data->lv2_handle[0]);
+  }
+
+  if(cleanup != NULL &&
+     input_data->lv2_handle != NULL){
+    cleanup(input_data->lv2_handle[0]);
+  }
+
+  input_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
+						       samplerate, buffer_size);
 }
 
 void
 ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
 					  AgsFxLv2AudioChannelData *channel_data)
 {
-  if(is_live_instrument){
-    if(channel_data->lv2_handle == NULL){
-      channel_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
-							     samplerate, buffer_size);
+  AgsLv2Manager *lv2_manager;
+  AgsLv2Plugin *lv2_plugin;
+
+  gchar *filename, *effect;
+
+  guint buffer_size;
+  guint samplerate;
+  guint k;
+  gboolean is_live_instrument;
+
+  GRecMutex *base_plugin_mutex;
+  GRecMutex *recall_mutex;
+
+  void (*deactivate)(LV2_Handle Instance);
+  void (*cleanup)(LV2_Handle Instance);
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
+						   AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  
+  g_object_get(fx_lv2_audio,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
+
+  /* get filename and effect */
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_lv2_audio,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* check if already loaded */
+  g_rec_mutex_lock(recall_mutex);
+
+  lv2_plugin = fx_lv2_audio->lv2_plugin;
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  if(lv2_plugin == NULL){
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+						 filename, effect);
+
+    if(lv2_plugin != NULL){
+      g_object_ref(lv2_plugin);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      fx_lv2_audio->lv2_plugin = lv2_plugin;
+
+      g_rec_mutex_unlock(recall_mutex);
     }
+  }  
+
+  /* get deactivate and cleanup */
+  base_plugin_mutex = NULL;
+
+  deactivate = NULL;
+  cleanup = NULL;
+  
+  if(lv2_plugin != NULL){
+    gpointer plugin_descriptor;
+    
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
+    
+    g_rec_mutex_lock(base_plugin_mutex);
+  
+    plugin_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+
+    deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
+    cleanup = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
+      
+    g_rec_mutex_unlock(base_plugin_mutex);
+  }
+
+  if(is_live_instrument){
+    if(deactivate != NULL &&
+       channel_data->lv2_handle != NULL){
+      deactivate(channel_data->lv2_handle[0]);
+    }
+
+    if(cleanup != NULL &&
+       channel_data->lv2_handle != NULL){
+      cleanup(channel_data->lv2_handle[0]);
+    }	  
+
+    channel_data->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
+							   samplerate, buffer_size);
   }
 	
   if(!is_live_instrument){
@@ -1465,18 +1482,16 @@ void
 ags_fx_lv2_audio_scope_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
 					AgsFxLv2AudioScopeData *scope_data)
 {
-  if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-     i == AGS_SOUND_SCOPE_NOTATION ||
-     i == AGS_SOUND_SCOPE_MIDI){
-    for(j = 0; j < scope_data->audio_channels; j++){
-      AgsFxLv2AudioChannelData *channel_data;
+  guint j;
+  
+  for(j = 0; j < scope_data->audio_channels; j++){
+    AgsFxLv2AudioChannelData *channel_data;
 
-      channel_data = scope_data->channel_data[j];
+    channel_data = scope_data->channel_data[j];
 	  
-      ags_fx_lv2_audio_channel_data_load_plugin(fx_lv2_audio,
-						channel_data);
-    }
-  }
+    ags_fx_lv2_audio_channel_data_load_plugin(fx_lv2_audio,
+					      channel_data);
+  }  
 }
 
 /**
@@ -1494,19 +1509,32 @@ ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio)
   AgsLv2Plugin *lv2_plugin;
 
   gchar *filename, *effect;
-
-  guint audio_channels;
   
   GRecMutex *recall_mutex;
 
   if(!AGS_IS_FX_LV2_AUDIO(fx_lv2_audio) ||
-     ags_recall_test_sound_state(AGS_RECALL(fx_lv2_audio),
+     ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
 				 AGS_SOUND_STATE_PLUGIN_LOADED)){
     return;
   }
-
   
+  lv2_manager = ags_lv2_manager_get_instance();
 
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
+
+  /* get filename and effect */
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_lv2_audio,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+  
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+					       filename, effect);
+  
   if(lv2_plugin == NULL ||
      !ags_base_plugin_test_flags((AgsBasePlugin *) lv2_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     g_free(filename);
@@ -1516,10 +1544,11 @@ ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio)
   }
     
   if(lv2_plugin != NULL){
-    guint i, j, k;
+    guint i;
     gboolean is_live_instrument;
 
-    is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
+    is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
+						     AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
     
     /* set lv2 plugin */    
     g_rec_mutex_lock(recall_mutex);
@@ -1529,14 +1558,18 @@ ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio)
 
       scope_data = fx_lv2_audio->scope_data[i];
       
-      ags_fx_lv2_audio_scope_data_load_plugin(fx_lv2_audio,
-					      scope_data);    
+      if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+	 i == AGS_SOUND_SCOPE_NOTATION ||
+	 i == AGS_SOUND_SCOPE_MIDI){
+	ags_fx_lv2_audio_scope_data_load_plugin(fx_lv2_audio,
+						scope_data);
+      }
     }
     
     g_rec_mutex_unlock(recall_mutex);
   }
 
-  ags_recall_set_sound_state(AGS_RECALL(fx_lv2_audio),
+  ags_recall_set_state_flags(AGS_RECALL(fx_lv2_audio),
 			     AGS_SOUND_STATE_PLUGIN_LOADED);
     
   g_free(filename);
@@ -1547,9 +1580,15 @@ void
 ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
 					AgsFxLv2AudioChannelData *channel_data)
 {
+  AgsLv2Manager *lv2_manager;
+  AgsLv2Plugin *lv2_plugin;
+
+  gchar *filename, *effect;
+
   guint *output_port;
   guint *input_port;
 
+  guint buffer_size;
   guint output_port_count, input_port_count;
   guint control_port_count;
   guint midiin_event_port;
@@ -1561,11 +1600,28 @@ ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
 
   GRecMutex *recall_mutex;
   
+  lv2_manager = ags_lv2_manager_get_instance();
+  
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
 
   is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
 						   AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
+
+  /* get filename and effect */
+  filename = NULL;
+  effect = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(fx_lv2_audio,
+	       "filename", &filename,
+	       "effect", &effect,
+	       "buffer-size", &buffer_size,
+	       NULL);
+  
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+					       filename, effect);
 
   g_rec_mutex_lock(recall_mutex);
 
@@ -1650,7 +1706,7 @@ ags_fx_lv2_audio_scope_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
     channel_data = scope_data->channel_data[j];
 
     ags_fx_lv2_audio_channel_data_load_port(fx_lv2_audio,
-					    channel_data)
+					    channel_data);
   }
 }
 
@@ -1679,14 +1735,15 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   guint midiin_event_port;
   guint midiin_atom_port;
   guint nth;
-  guint i;
+  guint i, j, k;
+  gboolean is_live_instrument;
   gboolean has_midiin_atom_port;
   gboolean has_midiin_event_port;
   
   GRecMutex *recall_mutex;
 
   if(!AGS_IS_FX_LV2_AUDIO(fx_lv2_audio) ||
-     ags_recall_test_sound_state(AGS_RECALL(fx_lv2_audio),
+     ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
 				 AGS_SOUND_STATE_PORT_LOADED)){
     return;
   }
@@ -1715,6 +1772,8 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 
   recall_container = NULL;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   g_object_get(fx_lv2_audio,
 	       "audio", &audio,
 	       "recall-container", &recall_container,
@@ -1754,11 +1813,11 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   output_port_count = 0;
   input_port_count = 0;
 
-  has_event_port = FALSE;
-  event_port = 0;
+  has_midiin_event_port = FALSE;
+  midiin_event_port = 0;
   
-  has_atom_port = FALSE;
-  atom_port = 0;
+  has_midiin_atom_port = FALSE;
+  midiin_atom_port = 0;
   
   control_port_count = 0;
   
@@ -1832,6 +1891,9 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   fx_lv2_audio->midiin_atom_port = midiin_atom_port;
   
   g_rec_mutex_unlock(recall_mutex);
+
+  is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio,
+						   AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
 
   /* AgsRecall:port */
   if(is_live_instrument){
@@ -1997,7 +2059,7 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
     }
   }  
   
-  ags_recall_set_sound_state(AGS_RECALL(fx_lv2_audio),
+  ags_recall_set_state_flags(AGS_RECALL(fx_lv2_audio),
 			     AGS_SOUND_STATE_PORT_LOADED);
   
   /* unref */
