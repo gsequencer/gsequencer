@@ -82,10 +82,12 @@ ags_tremolo_util_alloc()
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   ptr->tremolo_gain = 1.0;
+  ptr->tremolo_lfo_depth = 0.0;
   ptr->tremolo_lfo_freq = 6.0;
+  ptr->tremolo_tuning = 0.0;
 
-  ptr->lfo_frame_count = ptr->samplerate / ptr->tremolo_lfo_freq;
-  ptr->lfo_offset = 0;
+  ptr->tremolo_lfo_frame_count = ptr->samplerate / ptr->tremolo_lfo_freq;
+  ptr->tremolo_lfo_offset = 0;
 
   return(ptr);
 }
@@ -119,10 +121,12 @@ ags_tremolo_util_copy(AgsTremoloUtil *ptr)
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->tremolo_gain = ptr->tremolo_gain;
+  new_ptr->tremolo_lfo_depth = ptr->tremolo_lfo_depth;
   new_ptr->tremolo_lfo_freq = ptr->tremolo_lfo_freq;
+  new_ptr->tremolo_tuning = ptr->tremolo_tuning;
 
-  new_ptr->lfo_frame_count = ptr->lfo_frame_count;
-  new_ptr->lfo_offset = ptr->lfo_offset;
+  new_ptr->tremolo_lfo_frame_count = ptr->tremolo_lfo_frame_count;
+  new_ptr->tremolo_lfo_offset = ptr->tremolo_lfo_offset;
 
   return(new_ptr);
 }
@@ -468,6 +472,46 @@ ags_tremolo_util_set_tremolo_gain(AgsTremoloUtil *tremolo_util,
 }
 
 /**
+ * ags_tremolo_util_get_tremolo_lfo_depth:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * 
+ * Get tremolo LFO depth of @tremolo_util.
+ * 
+ * Returns: the tremolo LFO depth
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_tremolo_util_get_tremolo_lfo_depth(AgsTremoloUtil *tremolo_util)
+{
+  if(tremolo_util == NULL){
+    return(1.0);
+  }
+
+  return(tremolo_util->tremolo_lfo_depth);
+}
+
+/**
+ * ags_tremolo_util_set_tremolo:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * @tremolo_lfo_depth: the tremolo LFO depth
+ *
+ * Set @tremolo_lfo_depth of @tremolo_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_tremolo_util_set_tremolo_lfo_depth(AgsTremoloUtil *tremolo_util,
+				       gdouble tremolo_lfo_depth)
+{
+  if(tremolo_util == NULL){
+    return;
+  }
+
+  tremolo_util->tremolo_lfo_depth = tremolo_lfo_depth;
+}
+
+/**
  * ags_tremolo_util_get_tremolo_lfo_freq:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * 
@@ -498,13 +542,53 @@ ags_tremolo_util_get_tremolo_lfo_freq(AgsTremoloUtil *tremolo_util)
  */
 void
 ags_tremolo_util_set_tremolo_lfo_freq(AgsTremoloUtil *tremolo_util,
-				  gdouble tremolo_lfo_freq)
+				      gdouble tremolo_lfo_freq)
 {
   if(tremolo_util == NULL){
     return;
   }
 
   tremolo_util->tremolo_lfo_freq = tremolo_lfo_freq;
+}
+
+/**
+ * ags_tremolo_util_get_tremolo_tuning:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * 
+ * Get tremolo LFO freq of @tremolo_util.
+ * 
+ * Returns: the tremolo LFO freq
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_tremolo_util_get_tremolo_tuning(AgsTremoloUtil *tremolo_util)
+{
+  if(tremolo_util == NULL){
+    return(1.0);
+  }
+
+  return(tremolo_util->tremolo_tuning);
+}
+
+/**
+ * ags_tremolo_util_set_tremolo:
+ * @tremolo_util: the #AgsTremoloUtil-struct
+ * @tremolo_tuning: the tremolo LFO freq
+ *
+ * Set @tremolo_tuning of @tremolo_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
+				      gdouble tremolo_tuning)
+{
+  if(tremolo_util == NULL){
+    return;
+  }
+
+  tremolo_util->tremolo_tuning = tremolo_tuning;
 }
 
 /**
@@ -520,6 +604,14 @@ ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util)
 {
   gint8 *destination;
   gint8 *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -529,7 +621,20 @@ ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gint8 *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+  
   source = (gint8 *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -542,46 +647,46 @@ ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
     v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
     };
-    
-    source += tremolo_util->source_stride;
+    		 
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gint8) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint8) v_buffer[7];
+    *(destination += destination_stride) = (gint8) v_buffer[1];
+    *(destination += destination_stride) = (gint8) v_buffer[2];
+    *(destination += destination_stride) = (gint8) v_buffer[3];
+    *(destination += destination_stride) = (gint8) v_buffer[4];
+    *(destination += destination_stride) = (gint8) v_buffer[5];
+    *(destination += destination_stride) = (gint8) v_buffer[6];
+    *(destination += destination_stride) = (gint8) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -591,77 +696,76 @@ ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gint8) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint8) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
+    
+    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    *(destination) = (gint8) ((gint16) ((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint8) ((gint16) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gint8) ((gint16) (source[0] * tremolo_util->tremolo));
+    *(destination) = (gint8) ((gint16) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -678,6 +782,14 @@ ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util)
 {
   gint16 *destination;
   gint16 *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -687,7 +799,20 @@ ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gint16 *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (gint16 *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -696,49 +821,50 @@ ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util)
 
   for(; i < i_stop;){
     ags_v8double v_buffer;
+    ags_v8double v_tremolo;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
-    };
-
-    v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
     
-    source += tremolo_util->source_stride;
+    v_tremolo = (ags_v8double) {
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
+    };
+    
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gint16) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint16) v_buffer[7];
+    *(destination += destination_stride) = (gint16) v_buffer[1];
+    *(destination += destination_stride) = (gint16) v_buffer[2];
+    *(destination += destination_stride) = (gint16) v_buffer[3];
+    *(destination += destination_stride) = (gint16) v_buffer[4];
+    *(destination += destination_stride) = (gint16) v_buffer[5];
+    *(destination += destination_stride) = (gint16) v_buffer[6];
+    *(destination += destination_stride) = (gint16) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -748,77 +874,76 @@ ags_tremolo_util_compute_s16(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gint16) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint16) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
-    *(destination) = (gint16) ((gint32) ((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint16) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
+    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gint16) ((gint32) (source[0] * tremolo_util->tremolo));
+    *(destination) = (gint16) ((gint32) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -835,6 +960,14 @@ ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util)
 {
   gint32 *destination;
   gint32 *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -844,7 +977,20 @@ ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gint32 *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (gint32 *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -853,49 +999,50 @@ ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util)
 
   for(; i < i_stop;){
     ags_v8double v_buffer;
+    ags_v8double v_tremolo;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
-    };
-
-    v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
     
-    source += tremolo_util->source_stride;
+    v_tremolo = (ags_v8double) {
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
+    };
+    
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gint32) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[7];
+    *(destination += destination_stride) = (gint32) v_buffer[1];
+    *(destination += destination_stride) = (gint32) v_buffer[2];
+    *(destination += destination_stride) = (gint32) v_buffer[3];
+    *(destination += destination_stride) = (gint32) v_buffer[4];
+    *(destination += destination_stride) = (gint32) v_buffer[5];
+    *(destination += destination_stride) = (gint32) v_buffer[6];
+    *(destination += destination_stride) = (gint32) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -905,77 +1052,76 @@ ags_tremolo_util_compute_s24(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gint32) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
-    *(destination) = (gint32) ((gint32) ((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint32) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
+    *(destination) = (gint32) ((gint32) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gint32) ((gint32) (source[0] * tremolo_util->tremolo));
+    *(destination) = (gint32) ((gint32) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -992,6 +1138,14 @@ ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util)
 {
   gint32 *destination;
   gint32 *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -1001,7 +1155,20 @@ ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gint32 *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (gint32 *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -1010,49 +1177,50 @@ ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util)
 
   for(; i < i_stop;){
     ags_v8double v_buffer;
+    ags_v8double v_tremolo;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
-    };
-
-    v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
     
-    source += tremolo_util->source_stride;
+    v_tremolo = (ags_v8double) {
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
+    };
+    
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gint32) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint32) v_buffer[7];
+    *(destination += destination_stride) = (gint32) v_buffer[1];
+    *(destination += destination_stride) = (gint32) v_buffer[2];
+    *(destination += destination_stride) = (gint32) v_buffer[3];
+    *(destination += destination_stride) = (gint32) v_buffer[4];
+    *(destination += destination_stride) = (gint32) v_buffer[5];
+    *(destination += destination_stride) = (gint32) v_buffer[6];
+    *(destination += destination_stride) = (gint32) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -1062,77 +1230,76 @@ ags_tremolo_util_compute_s32(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gint32) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint32) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
-    *(destination) = (gint32) ((gint64) ((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint32) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
+    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gint32) ((gint64) (source[0] * tremolo_util->tremolo));
+    *(destination) = (gint32) ((gint64) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -1149,6 +1316,14 @@ ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util)
 {
   gint64 *destination;
   gint64 *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -1158,7 +1333,20 @@ ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gint64 *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (gint64 *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -1167,49 +1355,50 @@ ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util)
 
   for(; i < i_stop;){
     ags_v8double v_buffer;
+    ags_v8double v_tremolo;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
-    };
-
-    v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
     
-    source += tremolo_util->source_stride;
+    v_tremolo = (ags_v8double) {
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
+    };
+    
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gint64) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint64) v_buffer[7];
+    *(destination += destination_stride) = (gint64) v_buffer[1];
+    *(destination += destination_stride) = (gint64) v_buffer[2];
+    *(destination += destination_stride) = (gint64) v_buffer[3];
+    *(destination += destination_stride) = (gint64) v_buffer[4];
+    *(destination += destination_stride) = (gint64) v_buffer[5];
+    *(destination += destination_stride) = (gint64) v_buffer[6];
+    *(destination += destination_stride) = (gint64) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -1219,77 +1408,76 @@ ags_tremolo_util_compute_s64(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gint64) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gint64) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
-    *(destination) = (gint64) ((gint64) ((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gint64) ((gint64) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
+    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gint64) ((gint64) (source[0] * tremolo_util->tremolo));
+    *(destination) = (gint64) ((gint64) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -1306,6 +1494,14 @@ ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util)
 {
   gfloat *destination;
   gfloat *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -1315,7 +1511,20 @@ ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gfloat *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (gfloat *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -1324,49 +1533,50 @@ ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util)
 
   for(; i < i_stop;){
     ags_v8double v_buffer;
+    ags_v8double v_tremolo;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
-    };
-
-    v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
     
-    source += tremolo_util->source_stride;
+    v_tremolo = (ags_v8double) {
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
+    };
+    
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gfloat) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gfloat) v_buffer[7];
+    *(destination += destination_stride) = (gfloat) v_buffer[1];
+    *(destination += destination_stride) = (gfloat) v_buffer[2];
+    *(destination += destination_stride) = (gfloat) v_buffer[3];
+    *(destination += destination_stride) = (gfloat) v_buffer[4];
+    *(destination += destination_stride) = (gfloat) v_buffer[5];
+    *(destination += destination_stride) = (gfloat) v_buffer[6];
+    *(destination += destination_stride) = (gfloat) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -1376,77 +1586,76 @@ ags_tremolo_util_compute_float(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gfloat) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gfloat) ret_v_buffer[7];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[1];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[2];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[3];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[4];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[5];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[6];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
-    *(destination) = (gfloat) (((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) (((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gfloat) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
+    *(destination) = (gfloat) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gfloat) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gfloat) ((source[0] * tremolo_util->tremolo));
+    *(destination) = (gfloat) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -1463,6 +1672,14 @@ ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util)
 {
   gdouble *destination;
   gdouble *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i, i_stop;
 
   if(tremolo_util == NULL ||
@@ -1472,7 +1689,20 @@ ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util)
   }
 
   destination = (gdouble *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (gdouble *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
@@ -1481,49 +1711,50 @@ ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util)
 
   for(; i < i_stop;){
     ags_v8double v_buffer;
+    ags_v8double v_tremolo;
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride),
-      (gdouble) *(source += tremolo_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
     v_tremolo = (ags_v8double) {
-      (gdouble) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (gdouble) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))
+      (gdouble) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (gdouble) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))
     };
     
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
     
     v_buffer *= v_tremolo;
 
     *(destination) = (gdouble) v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gdouble) v_buffer[7];
+    *(destination += destination_stride) = (gdouble) v_buffer[1];
+    *(destination += destination_stride) = (gdouble) v_buffer[2];
+    *(destination += destination_stride) = (gdouble) v_buffer[3];
+    *(destination += destination_stride) = (gdouble) v_buffer[4];
+    *(destination += destination_stride) = (gdouble) v_buffer[5];
+    *(destination += destination_stride) = (gdouble) v_buffer[6];
+    *(destination += destination_stride) = (gdouble) v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
@@ -1533,77 +1764,76 @@ ags_tremolo_util_compute_double(AgsTremoloUtil *tremolo_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride),
-      (double) *(source += tremolo_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_tremolo[] = {
-      (double) (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))),
-      (double) (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))};
+      (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))),
+      (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate)))};
 
-    source += tremolo_util->source_stride;
+    source += source_stride;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     vDSP_vmulD(v_buffer, 1, v_tremolo, 1, ret_v_buffer, 1, 8);
 
     *(destination) = (gdouble) ret_v_buffer[0];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[1];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[2];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[3];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[4];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[5];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[6];
-    *(destination += tremolo_util->destination_stride) = (gdouble) ret_v_buffer[7];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[1];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[2];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[3];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[4];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[5];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[6];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[7];
 
-    destination += tremolo_util->destination_stride;
+    destination += destination_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #else
   i_stop = tremolo_util->buffer_length - (tremolo_util->buffer_length % 8);
 
   for(; i < i_stop;){
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
-    *(destination) = (gdouble) (((source)[0] * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate)))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((()tremolo_util->lfo_offset + 1) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 2) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 3) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 4) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) (((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 5) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 6) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
-    *(destination += tremolo_util->destination_stride) = (gdouble) ((source += tremolo_util->source_stride)[0] * (tremolo_util->tremolo_gain * sin((((tremolo_util->lfo_offset + 7) / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
+    *(destination) = (gdouble) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 1) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 1) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 2) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 2) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 3) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 3) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 4) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 4) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 5) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 5) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 6) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 6) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
+    *(destination += destination_stride) = (gdouble) ((source += source_stride)[0] * (double) (tremolo_gain * sin((gdouble) ((tremolo_lfo_offset + 7) * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin((tremolo_lfo_offset + 7) * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
-    tremolo_util->lfo_offset += 8;
+    tremolo_util->tremolo_lfo_offset += 8;
   }
 #endif
 
   /* loop tail */
   for(; i < tremolo_util->buffer_length;){
-    destination[0] = (gdouble) ((source[0] * tremolo_util->tremolo));
+    *(destination) = (gdouble) ((source)[0] * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
     
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 
@@ -1620,6 +1850,14 @@ ags_tremolo_util_compute_complex(AgsTremoloUtil *tremolo_util)
 {
   AgsComplex *destination;
   AgsComplex *source;
+
+  gint source_stride, destination_stride;
+  guint samplerate;
+  gdouble tremolo_gain;
+  gdouble tremolo_lfo_freq;
+  gdouble tremolo_lfo_depth;
+  gdouble tremolo_tuning;
+  gdouble tremolo_lfo_offset;
   guint i;
 
   if(tremolo_util == NULL ||
@@ -1629,26 +1867,39 @@ ags_tremolo_util_compute_complex(AgsTremoloUtil *tremolo_util)
   }
   
   destination = (AgsComplex *) tremolo_util->destination;
+  destination_stride = tremolo_util->destination_stride;
+
   source = (AgsComplex *) tremolo_util->source;
+  source_stride = tremolo_util->source_stride;
+
+  samplerate = tremolo_util->samplerate;
+
+  tremolo_gain = tremolo_util->tremolo_gain;
+
+  tremolo_lfo_freq = tremolo_util->tremolo_lfo_freq;
+  tremolo_lfo_depth = tremolo_util->tremolo_lfo_depth;
+  tremolo_tuning = tremolo_util->tremolo_tuning;
+
+  tremolo_lfo_offset = tremolo_util->tremolo_lfo_offset;
   
   i = 0;
   
   for(; i < tremolo_util->buffer_length;){
     double _Complex z;
 
-    if(tremolo_util->lfo_offset > tremolo_util->lfo_frame_count){
-      tremolo_util->lfo_offset = 0;
+    if(tremolo_util->tremolo_lfo_offset > tremolo_util->tremolo_lfo_frame_count){
+      tremolo_util->tremolo_lfo_offset = 0;
     }
 
     z = ags_complex_get(source);
 
     ags_complex_set(destination,
-		    z * (tremolo_util->tremolo_gain * sin(((tremolo_util->lfo_offset / tremolo_util->lfo_freq) * 2.0 * M_PI) / (tremolo_util->samplerate))));
+		    z * (double) (tremolo_gain * sin((gdouble) (tremolo_lfo_offset * 2.0 * M_PI * (tremolo_lfo_freq * exp2(tremolo_tuning / 1200.0 + sin(tremolo_lfo_offset * 2.0 * M_PI * tremolo_lfo_freq / samplerate) * tremolo_lfo_depth)) / (gdouble) samplerate))));
 
-    destination += tremolo_util->destination_stride;
-    source += tremolo_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
-    tremolo_util->lfo_offset += 1;
+    tremolo_util->tremolo_lfo_offset += 1;
   }
 }
 

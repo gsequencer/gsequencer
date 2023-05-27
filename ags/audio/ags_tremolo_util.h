@@ -49,10 +49,12 @@ struct _AgsTremoloUtil
   guint samplerate;
   
   gdouble tremolo_gain;
+  gdouble tremolo_lfo_depth;
   gdouble tremolo_lfo_freq;
+  gdouble tremolo_tuning;
 
-  guint lfo_frame_count;
-  guint lfo_offset;
+  guint tremolo_lfo_frame_count;
+  guint tremolo_lfo_offset;
 };
 
 GType ags_tremolo_util_get_type(void);
@@ -95,9 +97,17 @@ gdouble ags_tremolo_util_get_tremolo_gain(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_set_tremolo_gain(AgsTremoloUtil *tremolo_util,
 				       gdouble tremolo_gain);
 
+gdouble ags_tremolo_util_get_tremolo_lfo_depth(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_tremolo_lfo_depth(AgsTremoloUtil *tremolo_util,
+					    gdouble tremolo_lfo_depth);
+
 gdouble ags_tremolo_util_get_tremolo_lfo_freq(AgsTremoloUtil *tremolo_util);
 void ags_tremolo_util_set_tremolo_lfo_freq(AgsTremoloUtil *tremolo_util,
 					   gdouble tremolo_lfo_freq);
+
+gdouble ags_tremolo_util_get_tremolo_tuning(AgsTremoloUtil *tremolo_util);
+void ags_tremolo_util_set_tremolo_tuning(AgsTremoloUtil *tremolo_util,
+					 gdouble tremolo_tuning);
 
 /* compute */
 void ags_tremolo_util_compute_s8(AgsTremoloUtil *tremolo_util);

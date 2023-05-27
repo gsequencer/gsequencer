@@ -95,9 +95,6 @@ ags_fx_tremolo_channel_class_init(AgsFxTremoloChannelClass *fx_tremolo_channel)
   /* GObjectClass */
   gobject = (GObjectClass *) fx_tremolo_channel;
 
-  gobject->set_property = ags_fx_tremolo_channel_set_property;
-  gobject->get_property = ags_fx_tremolo_channel_get_property;
-
   gobject->dispose = ags_fx_tremolo_channel_dispose;
   gobject->finalize = ags_fx_tremolo_channel_finalize;
 

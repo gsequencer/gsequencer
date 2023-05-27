@@ -249,12 +249,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
       
     g_rec_mutex_lock(stream_mutex);
 
-    if(!muted){
-      ags_tremolo_util_compute(&(fx_tremolo_audio_signal->tremolo_util));
-    }else{
-      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
-					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
-    }
+    ags_tremolo_util_compute(&(fx_tremolo_audio_signal->tremolo_util));
     
     g_rec_mutex_unlock(stream_mutex);
   }
