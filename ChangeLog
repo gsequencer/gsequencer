@@ -1,3 +1,11 @@
+ags (5.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: fix ags-fx-lv2
+	* TODO:JK: implemented ags-fx-tremolo
+	* TODO:JK: implemented ags-fx-vibrato
+	* TODO:JK: implemented ags-fx-wah-wah
+
 ags (5.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
