@@ -42,6 +42,12 @@ void ags_sf2_synth_disconnect(AgsConnectable *connectable);
 
 void ags_sf2_synth_show(GtkWidget *widget);
 
+void ags_sf2_synth_wah_wah_draw_function(GtkDrawingArea *area,
+					 cairo_t *cr,
+					 int width,
+					 int height,
+					 AgsSF2Synth *sf2_synth);
+
 void ags_sf2_synth_resize_audio_channels(AgsMachine *machine,
 					 guint audio_channels, guint audio_channels_old,
 					 gpointer data);
@@ -153,12 +159,20 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 {
   AgsWindow *window;
   AgsCompositeEditor *composite_editor;
+  GtkBox *vbox;
   GtkBox *sf2_hbox;
   GtkBox *sf2_file_hbox;
   GtkBox *sf2_preset_hbox;
   GtkBox *effect_vbox;
   GtkGrid *synth_grid;
   GtkGrid *chorus_grid;
+  GtkBox *ext_hbox;
+  GtkFrame *tremolo_frame;
+  GtkGrid *tremolo_grid;
+  GtkFrame *vibrato_frame;
+  GtkGrid *vibrato_grid;
+  GtkFrame *wah_wah_frame;
+  GtkGrid *wah_wah_grid;
   GtkTreeView *sf2_bank_tree_view;
   GtkTreeView *sf2_program_tree_view;
   GtkTreeViewColumn *sf2_bank_column;
@@ -283,9 +297,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   /* audio container */
   sf2_synth->audio_container = NULL;
 
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_frame_set_child(AGS_MACHINE(sf2_synth)->frame,
+		      (GtkWidget *) vbox);
+
   /* SF2 */
   sf2_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				    0);
+				    AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) sf2_hbox,
 			GTK_ALIGN_START);  
@@ -295,15 +315,12 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_widget_set_hexpand((GtkWidget *) sf2_hbox,
 			 FALSE);
 
-  gtk_box_set_spacing((GtkWidget *) sf2_hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
-
-  gtk_frame_set_child(AGS_MACHINE(sf2_synth)->frame,
-		      (GtkWidget *) sf2_hbox);
+  gtk_box_append(vbox,
+		 (GtkWidget *) sf2_hbox);
 
   /* file */
   sf2_file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					 0);  
+					 AGS_UI_PROVIDER_DEFAULT_SPACING);  
 
   gtk_box_set_spacing(sf2_file_hbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -344,10 +361,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->program = -1;
   
   sf2_preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					   0);
-
-  gtk_box_set_spacing(sf2_preset_hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+					   AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(sf2_hbox,
 		 (GtkWidget *) sf2_preset_hbox);
@@ -436,10 +450,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   /* effect control */
   effect_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				       0);
-
-  gtk_box_set_spacing(effect_vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+				       AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(sf2_hbox,
 		 (GtkWidget *) effect_vbox);
@@ -802,6 +813,548 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  5, 2,
 		  1, 1);
 
+  /* ext */
+  ext_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) ext_hbox,
+			GTK_ALIGN_START);  
+  gtk_widget_set_halign((GtkWidget *) ext_hbox,
+			GTK_ALIGN_START);
+
+  gtk_widget_set_hexpand((GtkWidget *) ext_hbox,
+			 FALSE);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) ext_hbox);
+
+  /* tremolo */
+  tremolo_frame = gtk_frame_new(i18n("tremolo"));
+
+  gtk_box_append(ext_hbox,
+		 (GtkWidget *) tremolo_frame);
+
+  tremolo_grid = (GtkGrid *) gtk_grid_new();
+  gtk_frame_set_child(tremolo_frame,
+		      (GtkWidget *) tremolo_grid);
+
+  sf2_synth->tremolo_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) sf2_synth->tremolo_enabled,
+		  0, 0,
+		  2, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  sf2_synth->tremolo_gain = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->tremolo_gain,
+		      12);
+
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) sf2_synth->tremolo_gain,
+		  1, 1,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-depth"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
+  sf2_synth->tremolo_lfo_depth = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->tremolo_lfo_depth,
+		      12);
+
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) sf2_synth->tremolo_lfo_depth,
+		  1, 2,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-freq"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+
+  sf2_synth->tremolo_lfo_freq = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->tremolo_lfo_freq,
+		      12);
+
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) sf2_synth->tremolo_lfo_freq,
+		  1, 3,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+
+  sf2_synth->tremolo_tuning = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->tremolo_tuning,
+		      12);
+
+  gtk_grid_attach(tremolo_grid,
+		  (GtkWidget *) sf2_synth->tremolo_tuning,
+		  1, 4,
+		  1, 1);
+  
+  /* vibrato */
+  vibrato_frame = gtk_frame_new(i18n("vibrato"));
+
+  gtk_box_append(ext_hbox,
+		 (GtkWidget *) vibrato_frame);
+
+  vibrato_grid = (GtkGrid *) gtk_grid_new();
+  gtk_frame_set_child(vibrato_frame,
+		      (GtkWidget *) vibrato_grid);
+
+  sf2_synth->vibrato_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) sf2_synth->vibrato_enabled,
+		  0, 0,
+		  2, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  sf2_synth->vibrato_gain = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->vibrato_gain,
+		      12);
+
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) sf2_synth->vibrato_gain,
+		  1, 1,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-depth"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
+  sf2_synth->vibrato_lfo_depth = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->vibrato_lfo_depth,
+		      12);
+
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) sf2_synth->vibrato_lfo_depth,
+		  1, 2,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-freq"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+
+  sf2_synth->vibrato_lfo_freq = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->vibrato_lfo_freq,
+		      12);
+
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) sf2_synth->vibrato_lfo_freq,
+		  1, 3,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+
+  sf2_synth->vibrato_tuning = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->vibrato_tuning,
+		      12);
+
+  gtk_grid_attach(vibrato_grid,
+		  (GtkWidget *) sf2_synth->vibrato_tuning,
+		  1, 4,
+		  1, 1);
+  
+  /* wah-wah */
+  wah_wah_frame = gtk_frame_new(i18n("wah-wah"));
+
+  gtk_box_append(ext_hbox,
+		 (GtkWidget *) wah_wah_frame);
+
+  wah_wah_grid = (GtkGrid *) gtk_grid_new();
+  gtk_frame_set_child(wah_wah_frame,
+		      (GtkWidget *) wah_wah_grid);
+  
+  sf2_synth->wah_wah_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_enabled,
+		  0, 0,
+		  2, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("attack [x|y]"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+
+  sf2_synth->wah_wah_attack_x = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_attack_x);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.25);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_attack_x,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_attack_x,
+		  1, 1,
+		  1, 1);
+
+  sf2_synth->wah_wah_attack_y = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_attack_y);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_attack_y,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_attack_y,
+		  2, 1,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("decay [x|y]"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
+  sf2_synth->wah_wah_decay_x = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_decay_x);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.25);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_decay_x,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_decay_x,
+		  1, 2,
+		  1, 1);
+
+  sf2_synth->wah_wah_decay_y = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_decay_y);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_decay_y,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_decay_y,
+		  2, 2,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("sustain [x|y]"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+
+  sf2_synth->wah_wah_sustain_x = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_sustain_x);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.25);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_sustain_x,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_sustain_x,
+		  1, 3,
+		  1, 1);
+
+  sf2_synth->wah_wah_sustain_y = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_sustain_y);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.5);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_sustain_y,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_sustain_y,
+		  2, 3,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("release [x|y]"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+
+  sf2_synth->wah_wah_release_x = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_release_x);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.25);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_release_x,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_release_x,
+		  1, 4,
+		  1, 1);
+
+  sf2_synth->wah_wah_release_y = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_release_y);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.5);
+  
+  ags_dial_set_radius(sf2_synth->wah_wah_release_y,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_release_y,
+		  2, 4,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("ratio"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  0, 5,
+		  1, 1);
+
+  sf2_synth->wah_wah_ratio = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(sf2_synth->wah_wah_ratio);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+
+  ags_dial_set_radius(sf2_synth->wah_wah_ratio,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_ratio,
+		  1, 5,
+		  1, 1);
+  
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-depth"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  3, 1,
+		  1, 1);
+
+  sf2_synth->wah_wah_lfo_depth = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->wah_wah_lfo_depth,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_lfo_depth,
+		  4, 1,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-freq"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  3, 2,
+		  1, 1);
+
+  sf2_synth->wah_wah_lfo_freq = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->wah_wah_lfo_freq,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_lfo_freq,
+		  4, 2,
+		  1, 1);
+
+  label = (GtkLabel *) gtk_label_new(i18n("tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  3, 3,
+		  1, 1);
+
+  sf2_synth->wah_wah_tuning = (AgsDial *) ags_dial_new();
+
+  ags_dial_set_radius(sf2_synth->wah_wah_tuning,
+		      12);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_tuning,
+		  4, 3,
+		  1, 1);
+
+  sf2_synth->wah_wah_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+
+  gtk_drawing_area_set_content_width(sf2_synth->wah_wah_drawing_area,
+				     480);
+  gtk_drawing_area_set_content_height(sf2_synth->wah_wah_drawing_area,
+				      120);
+  
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_drawing_area,
+		  5, 1,
+		  1, 4);
+
+  gtk_drawing_area_set_draw_func(sf2_synth->wah_wah_drawing_area,
+				 ags_sf2_synth_wah_wah_draw_function,
+				 sf2_synth,
+				 NULL);
   /* dialog */
   sf2_synth->open_dialog = NULL;
 
@@ -889,6 +1442,33 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(sf2_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_chorus_delay_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_attack_x, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_attack_y, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->wah_wah_decay_x, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_decay_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_decay_y, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_decay_callback), sf2_synth);
+  
+  g_signal_connect_after(sf2_synth->wah_wah_sustain_x, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_sustain_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_sustain_y, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_sustain_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_release_x, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_release_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_release_y, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_release_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_ratio, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_ratio_callback), sf2_synth);
 }
 
 void
@@ -982,6 +1562,134 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_sf2_synth_chorus_delay_callback),
 		      (gpointer) sf2_synth,
 		      NULL);
+  
+  g_object_disconnect(sf2_synth->wah_wah_attack_x,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect(sf2_synth->wah_wah_attack_y,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback),
+		      sf2_synth,
+		      NULL);
+  
+  g_object_disconnect(sf2_synth->wah_wah_decay_x,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_decay_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect(sf2_synth->wah_wah_decay_y,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_decay_callback),
+		      sf2_synth,
+		      NULL);
+  
+  g_object_disconnect(sf2_synth->wah_wah_sustain_x,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_sustain_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect(sf2_synth->wah_wah_sustain_y,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_sustain_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect(sf2_synth->wah_wah_release_x,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_release_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect(sf2_synth->wah_wah_release_y,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_release_callback),
+		      sf2_synth,
+		      NULL);
+
+  g_object_disconnect(sf2_synth->wah_wah_ratio,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_ratio_callback),
+		      sf2_synth,
+		      NULL);
+}
+
+void
+ags_sf2_synth_wah_wah_draw_function(GtkDrawingArea *area,
+				    cairo_t *cr,
+				    int width,
+				    int height,
+				    AgsSF2Synth *sf2_synth)
+{
+  GtkStyleContext *context;
+
+  gdouble position_x;
+  
+  context = gtk_widget_get_style_context (GTK_WIDGET (area));
+
+  cairo_set_source_rgba(cr,
+			0.0,
+			0.0,
+			0.0,
+			1.0);
+  
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  (double) width, (double) height);
+
+  cairo_fill(cr);
+
+  /* wah-wah */
+  cairo_set_source_rgba(cr,
+			0.0,
+			1.0,
+			1.0,
+			1.0);
+  
+  cairo_set_line_width(cr,
+		       2.5);
+
+  /* attack */
+  position_x = 0.0;
+  
+  cairo_move_to(cr,
+		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_ratio));
+
+  cairo_line_to(cr,
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_y));
+
+  /* decay */
+  position_x += 480.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_x);
+  
+  cairo_move_to(cr,
+		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_y));
+
+  cairo_line_to(cr,
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_y));
+
+  /* sustain */
+  position_x += 480.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_x);
+  
+  cairo_move_to(cr,
+		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_y));
+
+  cairo_line_to(cr,
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_y));
+
+  /* release */
+  position_x += 480.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_x);
+  
+  cairo_move_to(cr,
+		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_y));
+
+  cairo_line_to(cr,
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_release_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_release_y));
+
+  cairo_stroke(cr);
 }
 
 void
