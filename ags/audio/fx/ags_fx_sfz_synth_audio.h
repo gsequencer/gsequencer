@@ -61,6 +61,12 @@ struct _AgsFxSFZSynthAudio
 
   AgsPort *synth_volume;  
   
+  AgsPort *vibrato_enabled;
+  
+  AgsPort *vibrato_lfo_depth;
+  AgsPort *vibrato_lfo_freq;
+  AgsPort *vibrato_tuning;
+
   AgsPort *chorus_enabled;
   
   AgsPort *chorus_pitch_type;

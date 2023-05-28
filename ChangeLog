@@ -5,6 +5,7 @@ ags (5.2.0)
 	* implemented ags-fx-tremolo
 	* implemented ags_tremolo_util.[ch]
 	* TODO:JK: refactored ags_sf2_synth_util.[ch] added vibrato
+	* TODO:JK: refactored ags_sfz_synth_util.[ch] added vibrato
 	* TODO:JK: refactored ags_volume_util.[ch]
 	* TODO:JK: implemented ags-fx-wah-wah
 

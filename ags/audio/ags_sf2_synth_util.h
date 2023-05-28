@@ -125,8 +125,8 @@ struct _AgsSF2SynthUtil
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
 
-  guint lfo_frame_count;
-  guint lfo_offset;
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
 
   GType pitch_type;  
   gpointer pitch_util;

@@ -86,7 +86,7 @@ ags_tremolo_util_alloc()
   ptr->tremolo_lfo_freq = 6.0;
   ptr->tremolo_tuning = 0.0;
 
-  ptr->tremolo_lfo_frame_count = ptr->samplerate / ptr->tremolo_lfo_freq;
+  ptr->tremolo_lfo_frame_count = (guint) (ptr->samplerate / ptr->tremolo_lfo_freq);
   ptr->tremolo_lfo_offset = 0;
 
   return(ptr);

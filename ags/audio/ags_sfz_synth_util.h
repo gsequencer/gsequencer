@@ -102,6 +102,14 @@ struct _AgsSFZSynthUtil
   
   AgsResampleUtil *resample_util;
 
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
+
   GType pitch_type;  
   gpointer pitch_util;
 

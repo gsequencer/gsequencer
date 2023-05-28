@@ -169,6 +169,13 @@ ags_sfz_synth_util_alloc()
   ags_resample_util_set_format(ptr->resample_util,
 			       AGS_SOUNDCARD_DOUBLE);  
 
+  ptr->vibrato_gain = 1.0;
+  ptr->vibrato_lfo_depth = 0.0;
+  ptr->vibrato_lfo_freq = 6.0;
+  ptr->vibrato_tuning = 0.0;
+  ptr->vibrato_lfo_frame_count = (guint) (ptr->samplerate / ptr->vibrato_lfo_freq);
+  ptr->vibrato_lfo_offset = 0;
+
   ptr->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
@@ -218,6 +225,13 @@ ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
   new_ptr->loop_end = ptr->loop_end;
 
   new_ptr->resample_util = ags_resample_util_copy(ptr->resample_util);
+
+  new_ptr->vibrato_gain = ptr->vibrato_gain;
+  new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
+  new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
+  new_ptr->vibrato_tuning = ptr->vibrato_tuning;
+  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
+  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
 
   new_ptr->pitch_type = ptr->pitch_type;
 
@@ -933,6 +947,166 @@ ags_sfz_synth_util_set_pitch_type(AgsSFZSynthUtil *sfz_synth_util,
 }
 
 /**
+ * ags_sfz_synth_util_get_vibrato_gain:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get pitch type of @sfz_synth_util.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_sfz_synth_util_get_vibrato_gain(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(sfz_synth_util->vibrato_gain);
+}
+
+/**
+ * ags_sfz_synth_util_set_vibrato_gain:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @vibrato_gain: the pitch type
+ *
+ * Set @vibrato_gain of @sfz_synth_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_sfz_synth_util_set_vibrato_gain(AgsSFZSynthUtil *sfz_synth_util,
+				    gdouble vibrato_gain)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+
+  sfz_synth_util->vibrato_gain = vibrato_gain;
+}
+
+/**
+ * ags_sfz_synth_util_get_vibrato_lfo_depth:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get pitch type of @sfz_synth_util.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_sfz_synth_util_get_vibrato_lfo_depth(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(sfz_synth_util->vibrato_lfo_depth);
+}
+
+/**
+ * ags_sfz_synth_util_set_vibrato_lfo_depth:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @vibrato_lfo_depth: the pitch type
+ *
+ * Set @vibrato_lfo_depth of @sfz_synth_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_sfz_synth_util_set_vibrato_lfo_depth(AgsSFZSynthUtil *sfz_synth_util,
+					 gdouble vibrato_lfo_depth)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+
+  sfz_synth_util->vibrato_lfo_depth = vibrato_lfo_depth;
+}
+
+/**
+ * ags_sfz_synth_util_get_vibrato_lfo_freq:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get pitch type of @sfz_synth_util.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_sfz_synth_util_get_vibrato_lfo_freq(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(sfz_synth_util->vibrato_lfo_freq);
+}
+
+/**
+ * ags_sfz_synth_util_set_vibrato_lfo_freq:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @vibrato_lfo_freq: the pitch type
+ *
+ * Set @vibrato_lfo_freq of @sfz_synth_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_sfz_synth_util_set_vibrato_lfo_freq(AgsSFZSynthUtil *sfz_synth_util,
+					 gdouble vibrato_lfo_freq)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+
+  sfz_synth_util->vibrato_lfo_freq = vibrato_lfo_freq;
+}
+
+/**
+ * ags_sfz_synth_util_get_vibrato_tuning:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * 
+ * Get pitch type of @sfz_synth_util.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_sfz_synth_util_get_vibrato_tuning(AgsSFZSynthUtil *sfz_synth_util)
+{
+  if(sfz_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(sfz_synth_util->vibrato_tuning);
+}
+
+/**
+ * ags_sfz_synth_util_set_vibrato_tuning:
+ * @sfz_synth_util: the #AgsSFZSynthUtil-struct
+ * @vibrato_tuning: the pitch type
+ *
+ * Set @vibrato_tuning of @sfz_synth_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_sfz_synth_util_set_vibrato_tuning(AgsSFZSynthUtil *sfz_synth_util,
+				      gdouble vibrato_tuning)
+{
+  if(sfz_synth_util == NULL){
+    return;
+  }
+
+  sfz_synth_util->vibrato_tuning = vibrato_tuning;
+}
+
+/**
  * ags_sfz_synth_util_get_pitch_util:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
  * 
@@ -1293,7 +1467,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
   guint buffer_length;
   guint samplerate, orig_samplerate;
   guint current_sample_buffer_length;
-    
+  
   gint midi_key;
   gdouble note;
 
@@ -1306,6 +1480,14 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
   gint loop_start;
   gint loop_end;
 
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
+  
   guint nth_sample;
   gint position;
   guint copy_mode;
@@ -1339,6 +1521,14 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 
   midi_key = sfz_synth_util->midi_key;
 
+  vibrato_gain = sfz_synth_util->vibrato_gain;
+
+  vibrato_lfo_depth = sfz_synth_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = sfz_synth_util->vibrato_lfo_freq;
+  vibrato_tuning = sfz_synth_util->vibrato_tuning;
+
+  vibrato_lfo_offset = sfz_synth_util->vibrato_lfo_offset;
+  
   nth_sample = 0;
  
   for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
