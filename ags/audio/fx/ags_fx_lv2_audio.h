@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,7 +69,7 @@ struct _AgsFxLv2Audio
 {
   AgsFxNotationAudio fx_notation_audio;
 
-  guint flags;
+  AgsFxLv2AudioFlags flags;
   
   guint output_port_count;
   guint *output_port;
@@ -120,8 +120,11 @@ struct _AgsFxLv2AudioChannelData
   float *output;
   float *input;
 
-  gpointer event_port;
-  gpointer atom_port;
+  gpointer midiin_event_port;
+  gpointer midiout_event_port;
+  
+  gpointer midiin_atom_port;
+  gpointer midiout_atom_port;
   
   LV2_Handle *lv2_handle;
 
@@ -137,8 +140,11 @@ struct _AgsFxLv2AudioInputData
   float *output;
   float *input;
 
-  gpointer event_port;
-  gpointer atom_port;
+  gpointer midiin_event_port;
+  gpointer midiout_event_port;
+  
+  gpointer midiin_atom_port;
+  gpointer midiout_atom_port;
 
   LV2_Handle *lv2_handle;
   
@@ -159,9 +165,9 @@ AgsFxLv2AudioInputData* ags_fx_lv2_audio_input_data_alloc();
 void ags_fx_lv2_audio_input_data_free(AgsFxLv2AudioInputData *input_data);
 
 /* flags */
-gboolean ags_fx_lv2_audio_test_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
-void ags_fx_lv2_audio_set_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
-void ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
+gboolean ags_fx_lv2_audio_test_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
+void ags_fx_lv2_audio_set_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
+void ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, AgsFxLv2AudioFlags flags);
 
 /* load/unload */
 void ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio);
