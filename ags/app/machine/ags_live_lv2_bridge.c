@@ -991,7 +991,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
       AgsPort *port;
 
       GValue value = G_VALUE_INIT;
-    
+
       /* loop */
       port = NULL;
     
@@ -1497,7 +1497,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 							    samplerate, buffer_size);
   
-  if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
+  if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE)){
     ags_live_lv2_bridge_load_program(live_lv2_bridge);
   }
   
