@@ -145,8 +145,11 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   
   guint buffer_size;
   guint format;
+  gboolean tremolo_enabled;
   gdouble tremolo_gain;
+  gdouble tremolo_lfo_depth;
   gdouble tremolo_lfo_freq;
+  gdouble tremolo_tuning;
 
   GRecMutex *stream_mutex;
   
@@ -161,8 +164,11 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   
+  tremolo_enabled = FALSE;
   tremolo_gain = 1.0;
+  tremolo_lfo_depth = 0.0;
   tremolo_lfo_freq = 6.0;
+  tremolo_tuning = 0.0;
 
   g_object_get(recall,
 	       "parent", &fx_tremolo_recycling,
@@ -188,6 +194,32 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    /* tremolo enabled */    
+    g_object_get(fx_tremolo_audio,
+		 "tremolo-enabled", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	tremolo_enabled = TRUE;
+      }
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+  }
+
+  if(fx_tremolo_audio != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+    
     /* tremolo gain */    
     g_object_get(fx_tremolo_audio,
 		 "tremolo-gain", &port,
@@ -200,6 +232,30 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 			 &value);
 
       tremolo_gain = g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+  }
+
+  if(fx_tremolo_audio != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+    
+    /* tremolo LFO depth */
+    g_object_get(fx_tremolo_audio,
+		 "tremolo-lfo-depth", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      tremolo_lfo_depth = g_value_get_float(&value);
       
       g_object_unref(port);
     }
@@ -230,9 +286,34 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_value_unset(&value);
   }
+
+  if(fx_tremolo_audio != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+    
+    /* tremolo LFO freq */
+    g_object_get(fx_tremolo_audio,
+		 "tremolo-tuning", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      tremolo_tuning = g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+  }
   
   if(source != NULL &&
-     source->stream_current != NULL){
+     source->stream_current != NULL &&
+     tremolo_enabled){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
     
     fx_tremolo_audio_signal->tremolo_util.destination = source->stream_current->data;
@@ -245,7 +326,9 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
     fx_tremolo_audio_signal->tremolo_util.format = format;
 	
     fx_tremolo_audio_signal->tremolo_util.tremolo_gain = tremolo_gain;
+    fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_depth = tremolo_lfo_depth;
     fx_tremolo_audio_signal->tremolo_util.tremolo_lfo_freq = tremolo_lfo_freq;
+    fx_tremolo_audio_signal->tremolo_util.tremolo_tuning = tremolo_tuning;
       
     g_rec_mutex_lock(stream_mutex);
 

@@ -44,8 +44,12 @@ struct _AgsFxTremoloAudio
 {
   AgsRecallAudio recall_audio;
 
+  AgsPort *tremolo_enabled;
+
   AgsPort *tremolo_gain;
+  AgsPort *tremolo_lfo_depth;
   AgsPort *tremolo_lfo_freq;
+  AgsPort *tremolo_tuning;
 };
 
 struct _AgsFxTremoloAudioClass

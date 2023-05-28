@@ -52,6 +52,8 @@ struct _AgsFxEnvelopeChannel
 
   guint envelope_mode;
 
+  AgsPort *envelope_enabled;
+
   AgsPort *fixed_length;
 
   AgsPort *attack;
