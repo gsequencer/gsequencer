@@ -1,8 +1,19 @@
 ags (5.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented MIDI-CI version 1.1 support
-	* TODO:JK: implemented MIDI-2.0 support
+	* refactored ags-fx-lv2
+	* implemented ags-fx-tremolo
+	* implemented ags_tremolo_util.[ch]
+	* TODO:JK: refactored ags_sf2_synth_util.[ch] added vibrato
+	* TODO:JK: refactored ags_sfz_synth_util.[ch] added vibrato
+	* TODO:JK: refactored ags_volume_util.[ch]
+	* TODO:JK: implemented ags-fx-wah-wah
+
+ags (5.1.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsPresetEditor missing editable set in model
+	* fixed ags_app_action_util.c use gtk_widget_set_visible()
 
 ags (5.1.5)
 

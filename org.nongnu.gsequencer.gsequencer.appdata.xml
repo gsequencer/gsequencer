@@ -40,6 +40,17 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="5.1.6" date="2023-05-25">
+      <description>
+	<p>
+	  Fixed preset editor missing editable cell applying to model and refresh port.
+	</p>
+	<p>
+	  Fixed restore dialogs after hide.
+	</p>
+      </description>
+    </release>
+
     <release version="5.1.5" date="2023-05-23">
       <description>
 	<p>

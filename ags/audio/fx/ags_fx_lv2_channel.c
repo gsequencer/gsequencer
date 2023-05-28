@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -539,10 +539,10 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
   guint pad;
   guint output_port_count, input_port_count;
   guint control_port_count;
-  gboolean has_event_port;
-  guint event_port;  
-  gboolean has_atom_port;
-  guint atom_port;
+  gboolean has_midiin_event_port;
+  guint midiin_event_port;  
+  gboolean has_midiin_atom_port;
+  guint midiin_atom_port;
   guint samplerate;
   guint buffer_size;
   guint nth;
@@ -621,11 +621,11 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
   input_port_count = fx_lv2_audio->input_port_count;
   input_port = fx_lv2_audio->input_port;
 
-  has_event_port = fx_lv2_audio->has_event_port;
-  event_port = fx_lv2_audio->event_port;
+  has_midiin_event_port = fx_lv2_audio->has_midiin_event_port;
+  midiin_event_port = fx_lv2_audio->midiin_event_port;
 
-  has_atom_port = fx_lv2_audio->has_atom_port;
-  atom_port = fx_lv2_audio->atom_port;
+  has_midiin_atom_port = fx_lv2_audio->has_midiin_atom_port;
+  midiin_atom_port = fx_lv2_audio->midiin_atom_port;
 
   g_rec_mutex_unlock(fx_lv2_audio_mutex);
 
@@ -844,22 +844,22 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 					 &(input_data->input[nth]));
 	  }
 
-	  if(has_event_port){
-	    input_data->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	  if(has_midiin_event_port){
+	    input_data->midiin_event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
 	    
 	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 					 input_data->lv2_handle[0],
-					 event_port,
-					 input_data->event_port);
+					 midiin_event_port,
+					 input_data->midiin_event_port);
 	  }
 
-	  if(has_atom_port){
-	    input_data->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	  if(has_midiin_atom_port){
+	    input_data->midiin_atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
 	    
 	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 					 input_data->lv2_handle[0],
-					 atom_port,
-					 input_data->atom_port);
+					 midiin_atom_port,
+					 input_data->midiin_atom_port);
 	  }
 
 	  ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -191,13 +191,13 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
       channel_data = scope_data->channel_data[audio_channel];
 
-      if(channel_data->event_port != NULL){
-	ags_lv2_plugin_event_buffer_append_midi(channel_data->event_port,
+      if(channel_data->midiin_event_port != NULL){
+	ags_lv2_plugin_event_buffer_append_midi(channel_data->midiin_event_port,
 						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						channel_data->input_data[midi_note]->event_buffer,
 						1);
-      }else if(channel_data->atom_port != NULL){
-	ags_lv2_plugin_atom_sequence_append_midi(channel_data->atom_port,
+      }else if(channel_data->midiin_atom_port != NULL){
+	ags_lv2_plugin_atom_sequence_append_midi(channel_data->midiin_atom_port,
 						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						 channel_data->input_data[midi_note]->event_buffer,
 						 1);
@@ -217,13 +217,13 @@ ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio
 
       input_data = channel_data->input_data[midi_note];
 
-      if(input_data->event_port != NULL){
-	ags_lv2_plugin_event_buffer_append_midi(input_data->event_port,
+      if(input_data->midiin_event_port != NULL){
+	ags_lv2_plugin_event_buffer_append_midi(input_data->midiin_event_port,
 						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						input_data->event_buffer,
 						1);
-      }else if(input_data->atom_port != NULL){
-	ags_lv2_plugin_atom_sequence_append_midi(input_data->atom_port,
+      }else if(input_data->midiin_atom_port != NULL){
+	ags_lv2_plugin_atom_sequence_append_midi(input_data->midiin_atom_port,
 						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						 input_data->event_buffer,
 						 1);

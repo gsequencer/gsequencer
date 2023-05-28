@@ -485,7 +485,7 @@ ags_fluid_interpolate_none_util_set_base_key(AgsFluidInterpolateNoneUtil *fluid_
 
   root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
   
-  phase_incr = (exp2(((double) base_key + (fluid_interpolate_none_util->tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+  phase_incr = (exp2(((double) base_key - 48.0 + (fluid_interpolate_none_util->tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
   
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -538,7 +538,7 @@ ags_fluid_interpolate_none_util_set_tuning(AgsFluidInterpolateNoneUtil *fluid_in
 
   root_pitch_hz = exp2(((double) fluid_interpolate_none_util->base_key - 48.0) / 12.0) * 440.0;
   
-  phase_incr = (exp2(((double) fluid_interpolate_none_util->base_key + (tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
+  phase_incr = (exp2(((double) fluid_interpolate_none_util->base_key - 48.0 + (tuning / 100.0)) / 12.0) * 440.0) / root_pitch_hz;
   
   if(phase_incr == 0.0){
     phase_incr = 1.0;

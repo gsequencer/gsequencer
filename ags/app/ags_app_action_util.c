@@ -513,7 +513,8 @@ ags_app_action_util_meta_data()
   application_context = ags_application_context_get_instance();
 
   meta_data_window = (AgsMetaDataWindow *) ags_ui_provider_get_meta_data_window(AGS_UI_PROVIDER(application_context));
-  gtk_widget_show((GtkWidget *) meta_data_window);
+  gtk_widget_set_visible((GtkWidget *) meta_data_window,
+			 TRUE);
 }
 
 void
@@ -526,7 +527,8 @@ ags_app_action_util_export()
   application_context = ags_application_context_get_instance();
 
   export_window = (AgsExportWindow *) ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
-  gtk_widget_show((GtkWidget *) export_window);
+  gtk_widget_set_visible((GtkWidget *) export_window,
+			 TRUE);
 }
 
 void
@@ -551,7 +553,8 @@ ags_app_action_util_smf_import()
   ags_connectable_connect(AGS_CONNECTABLE(midi_import_wizard));
   ags_applicable_reset(AGS_APPLICABLE(midi_import_wizard));
 
-  gtk_widget_show(GTK_WIDGET(midi_import_wizard));
+  gtk_widget_set_visible((GtkWidget *) midi_import_wizard,
+			 TRUE);
 }
 
 void
@@ -576,7 +579,8 @@ ags_app_action_util_smf_export()
   ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard));
   ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard));
 
-  gtk_widget_show(GTK_WIDGET(midi_export_wizard));
+  gtk_widget_set_visible((GtkWidget *) midi_export_wizard,
+			 TRUE);
 }
 
 void
@@ -602,7 +606,8 @@ ags_app_action_util_preferences()
   
   ags_applicable_reset(AGS_APPLICABLE(preferences));
 
-  gtk_widget_show(GTK_WIDGET(preferences));
+  gtk_widget_set_visible((GtkWidget *) preferences,
+			 TRUE);
 }
 
 void
@@ -774,7 +779,8 @@ ags_app_action_util_help()
 					   (GtkWidget *) online_help_window);
   }
   
-  gtk_widget_show((GtkWidget *) online_help_window);
+  gtk_widget_set_visible((GtkWidget *) online_help_window,
+			 TRUE);
 }
 
 void
@@ -791,7 +797,8 @@ ags_app_action_util_quit()
 
   quit_dialog = ags_quit_dialog_new((GtkWindow *) window);
 
-  gtk_widget_show((GtkWidget *) quit_dialog);
+  gtk_widget_set_visible((GtkWidget *) quit_dialog,
+			 TRUE);
   
   gtk_widget_grab_focus((GtkWidget *) quit_dialog->cancel);
   

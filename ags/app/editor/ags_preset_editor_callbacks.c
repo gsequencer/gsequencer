@@ -575,3 +575,23 @@ ags_preset_editor_apply_preset_callback(GtkButton *button, AgsPresetEditor *pres
   ags_preset_editor_apply_preset(preset_editor);
 }
 
+void
+ags_preset_editor_value_renderer_callback(GtkCellRendererText *cell,
+					  gchar *path,
+					  gchar *str_value,
+					  AgsPresetEditor *preset_editor)
+{
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+  
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(GTK_TREE_VIEW(preset_editor->preset_tree_view)));
+
+  gtk_tree_model_get_iter_from_string(model,
+				      &iter,
+				      path);
+
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		     4, str_value,
+		     -1);
+}

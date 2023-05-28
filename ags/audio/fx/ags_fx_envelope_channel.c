@@ -133,7 +133,7 @@ ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channe
   /**
    * AgsFxEnvelopeChannel:fixed-length:
    *
-   * The beats per minute.
+   * The fixed length.
    * 
    * Since: 3.3.0
    */
@@ -149,7 +149,7 @@ ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channe
   /**
    * AgsFxEnvelopeChannel:attack:
    *
-   * The beats per minute.
+   * The attack.
    * 
    * Since: 3.3.0
    */
@@ -165,7 +165,7 @@ ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channe
   /**
    * AgsFxEnvelopeChannel:decay:
    *
-   * The beats per minute.
+   * The decay.
    * 
    * Since: 3.3.0
    */
@@ -181,7 +181,7 @@ ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channe
   /**
    * AgsFxEnvelopeChannel:sustain:
    *
-   * The beats per minute.
+   * The sustain.
    * 
    * Since: 3.3.0
    */
@@ -197,7 +197,7 @@ ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channe
   /**
    * AgsFxEnvelopeChannel:release:
    *
-   * The beats per minute.
+   * The release.
    * 
    * Since: 3.3.0
    */
@@ -213,7 +213,7 @@ ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channe
   /**
    * AgsFxEnvelopeChannel:ratio:
    *
-   * The beats per minute.
+   * The ratio.
    * 
    * Since: 3.3.0
    */

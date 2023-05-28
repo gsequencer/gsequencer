@@ -50,6 +50,8 @@ void ags_machine_real_resize_pads(AgsMachine *machine,
 void ags_machine_real_map_recall(AgsMachine *machine);
 GList* ags_machine_real_find_port(AgsMachine *machine);
 
+void ags_machine_real_apply_preset(AgsMachine *machine,
+				   GtkListStore *list_store);
 void ags_machine_real_refresh_port(AgsMachine *machine);
 
 xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
@@ -79,6 +81,7 @@ enum{
   MAP_RECALL,
   FIND_PORT,
   STOP,
+  APPLY_PRESET,
   REFRESH_PORT,
   LAST_SIGNAL,
 };
@@ -249,6 +252,7 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->map_recall = ags_machine_real_map_recall;
   machine->find_port = ags_machine_real_find_port;
   machine->stop = NULL;
+  machine->apply_preset = ags_machine_real_apply_preset;
   machine->refresh_port = ags_machine_real_refresh_port;
 
   /* signals */
@@ -415,6 +419,25 @@ ags_machine_class_init(AgsMachineClass *machine)
                  ags_cclosure_marshal_VOID__POINTER_INT,
                  G_TYPE_NONE, 2,
 		 G_TYPE_POINTER, G_TYPE_INT);
+
+  /**
+   * AgsMachine::apply-preset:
+   * @machine: the #AgsMachine
+   * @list_store: the #GtkListStore
+   *
+   * The ::apply-preset signal.
+   * 
+   * Since: 5.2.6
+   */
+  machine_signals[APPLY_PRESET] =
+    g_signal_new("apply-preset",
+                 G_TYPE_FROM_CLASS(machine),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMachineClass, apply_preset),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 
   /**
    * AgsMachine::refresh-port:
@@ -2800,6 +2823,175 @@ ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
   g_signal_emit((GObject *) machine,
 		machine_signals[STOP], 0,
 		recall_id, sound_scope);
+  g_object_unref((GObject *) machine);
+}
+
+void
+ags_machine_real_apply_preset(AgsMachine *machine,
+			      GtkListStore *list_store)
+{
+  AgsChannel *start_channel;
+  AgsChannel *channel;
+
+  GList *start_port, *port;
+
+  GtkTreeIter iter;
+
+  if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store),
+				   &iter)){
+    do{
+      gchar *context;
+      gchar *line;
+      gchar *specifier;
+      gchar *range;
+      gchar *value;
+
+      context = NULL;
+      specifier = NULL;
+      range = NULL;
+      value = NULL;
+      
+      gtk_tree_model_get(GTK_TREE_MODEL(list_store), &iter,
+			 0, &context,
+			 1, &line,
+			 2, &specifier,
+			 3, &range,
+			 4, &value,
+			 -1);
+
+      /* get start port */
+      if(!xmlStrncmp(BAD_CAST "audio",
+		     context,
+		     6)){
+	start_port = ags_audio_collect_all_audio_ports(machine->audio);
+      }else if(!xmlStrncmp(BAD_CAST "output",
+			   context,
+			   7)){
+	start_channel = ags_audio_get_output(machine->audio);
+
+	channel = ags_channel_nth(start_channel,
+				  g_ascii_strtoull(line,
+						   NULL,
+						   10));
+
+	start_port = NULL;
+
+	/* output */
+	port = ags_channel_collect_all_channel_ports(channel);
+	
+	if(start_port != NULL){
+	  if(port != NULL){
+	    start_port = g_list_concat(start_port,
+				       port);
+	  }
+	}else{
+	  start_port = port;
+	}
+
+	/* unref */
+	if(start_channel != NULL){
+	  g_object_unref(start_channel);
+	}	      
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}	      
+      }else if(!xmlStrncmp(BAD_CAST "input",
+			   context,
+			   6)){
+	start_channel = ags_audio_get_input(machine->audio);
+
+	channel = ags_channel_nth(start_channel,
+				  g_ascii_strtoull(line,
+						   NULL,
+						   10));
+
+	start_port = NULL;
+
+	/* input */
+	port = ags_channel_collect_all_channel_ports(channel);
+	
+	if(start_port != NULL){
+	  if(port != NULL){
+	    start_port = g_list_concat(start_port,
+				       port);
+	  }
+	}else{
+	  start_port = port;
+	}
+
+	/* unref */
+	if(start_channel != NULL){
+	  g_object_unref(start_channel);
+	}	      
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}	      
+      }
+
+      port = start_port;
+      
+      while((port = ags_port_find_specifier(port,
+					    specifier)) != NULL){
+	GValue port_value = G_VALUE_INIT;
+
+	gboolean success;  
+
+	success = FALSE;
+	
+	if(!(AGS_PORT(port->data)->port_value_is_pointer)){
+	  if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+	    success = TRUE;
+	    
+	    g_value_init(&port_value,
+			 G_TYPE_FLOAT);
+
+	    g_value_set_float(&port_value,
+			      (gfloat) g_strtod(value,
+						NULL));
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+	    success = TRUE;
+	    
+	    g_value_init(&port_value,
+			 G_TYPE_DOUBLE);
+
+	    g_value_set_double(&port_value,
+			       g_strtod(value,
+					NULL));
+	  }
+	}
+
+	if(success){
+	  ags_port_safe_write(port->data,
+			      &port_value);
+	}
+      
+	port = port->next;
+      }
+    }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store),
+				    &iter));
+  }
+}
+
+/**
+ * ags_machine_apply_preset:
+ * @machine: the #AgsMachine
+ *
+ * Apply preset.
+ * 
+ * Since: 5.2.6
+ */
+void
+ags_machine_apply_preset(AgsMachine *machine,
+			 GtkListStore *list_store)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit((GObject *) machine,
+		machine_signals[APPLY_PRESET], 0,
+		list_store);
   g_object_unref((GObject *) machine);
 }
 

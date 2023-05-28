@@ -232,6 +232,14 @@ ags_fx_dssi_audio_notify_audio_callback(GObject *gobject,
 			 G_CALLBACK(ags_fx_dssi_audio_set_pads_callback), fx_dssi_audio);
 
   if(audio != NULL){
+    guint audio_channels;
+
+    audio_channels = ags_audio_get_audio_channels(audio);
+
+    ags_fx_dssi_audio_set_audio_channels_callback(audio,
+						  audio_channels, 0,
+						  fx_dssi_audio);
+    
     g_object_unref(audio);
   }
 }
@@ -968,6 +976,8 @@ ags_fx_dssi_audio_channel_data_alloc()
     channel_data->input_data[i] = ags_fx_dssi_audio_input_data_alloc();
 
     channel_data->input_data[i]->parent = channel_data;
+
+    channel_data->input_data[i]->event_buffer->data.note.note = i;
   }
 
   return(channel_data);
