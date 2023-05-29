@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_wah_wah_channel.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <complex.h>
 
 #include <ags/i18n.h>
@@ -1020,7 +1022,7 @@ ags_fx_wah_wah_channel_dispose(GObject *gobject)
   }  
 
   /* attack */
-  if(fx_wah_wah_channel->wah_wah_wah_wah_attack != NULL){
+  if(fx_wah_wah_channel->wah_wah_attack != NULL){
     g_object_unref(G_OBJECT(fx_wah_wah_channel->wah_wah_attack));
 
     fx_wah_wah_channel->wah_wah_attack = NULL;

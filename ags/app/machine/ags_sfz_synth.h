@@ -120,15 +120,23 @@ struct _AgsSFZSynth
 
   GtkCheckButton *wah_wah_enabled;
 
-  AgsDial *wah_wah_attack;
-  AgsDial *wah_wah_decay;
-  AgsDial *wah_wah_sustain;
-  AgsDial *wah_wah_release;
+  GtkComboBox *wah_wah_length;  
+
+  AgsDial *wah_wah_attack_x;
+  AgsDial *wah_wah_attack_y;
+  AgsDial *wah_wah_decay_x;
+  AgsDial *wah_wah_decay_y;
+  AgsDial *wah_wah_sustain_x;
+  AgsDial *wah_wah_sustain_y;
+  AgsDial *wah_wah_release_x;
+  AgsDial *wah_wah_release_y;
   AgsDial *wah_wah_ratio;
 
   AgsDial *wah_wah_lfo_depth;
   AgsDial *wah_wah_lfo_freq;
   AgsDial *wah_wah_tuning;
+
+  GtkDrawingArea *wah_wah_drawing_area;
 
   GtkWidget *open_dialog;
 };

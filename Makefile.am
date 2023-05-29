@@ -1995,6 +1995,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_envelope_channel_processor.h \
 	ags/audio/fx/ags_fx_envelope_recycling.h \
 	ags/audio/fx/ags_fx_envelope_audio_signal.h \
+	ags/audio/fx/ags_fx_wah_wah_audio.h \
+	ags/audio/fx/ags_fx_wah_wah_audio_processor.h \
+	ags/audio/fx/ags_fx_wah_wah_channel.h \
+	ags/audio/fx/ags_fx_wah_wah_channel_processor.h \
+	ags/audio/fx/ags_fx_wah_wah_recycling.h \
+	ags/audio/fx/ags_fx_wah_wah_audio_signal.h \
 	ags/audio/fx/ags_fx_analyse_audio.h \
 	ags/audio/fx/ags_fx_analyse_audio_processor.h \
 	ags/audio/fx/ags_fx_analyse_channel.h \
@@ -2144,6 +2150,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_envelope_channel_processor.c \
 	ags/audio/fx/ags_fx_envelope_recycling.c \
 	ags/audio/fx/ags_fx_envelope_audio_signal.c \
+	ags/audio/fx/ags_fx_wah_wah_audio.c \
+	ags/audio/fx/ags_fx_wah_wah_audio_processor.c \
+	ags/audio/fx/ags_fx_wah_wah_channel.c \
+	ags/audio/fx/ags_fx_wah_wah_channel_processor.c \
+	ags/audio/fx/ags_fx_wah_wah_recycling.c \
+	ags/audio/fx/ags_fx_wah_wah_audio_signal.c \
 	ags/audio/fx/ags_fx_analyse_audio.c \
 	ags/audio/fx/ags_fx_analyse_audio_processor.c \
 	ags/audio/fx/ags_fx_analyse_channel.c \

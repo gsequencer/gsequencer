@@ -1020,12 +1020,36 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		  0, 0,
 		  2, 1);
 
-  label = (GtkLabel *) gtk_label_new(i18n("attack [x|y]"));
+  label = (GtkLabel *) gtk_label_new(i18n("length"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
 		  0, 1,
+		  1, 1);
+
+  sf2_synth->wah_wah_length = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->wah_wah_length,
+				 "1/1");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->wah_wah_length,
+				 "2/2");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->wah_wah_length,
+				 "4/4");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->wah_wah_length,
+				 "8/8");
+  gtk_combo_box_text_append_text((GtkComboBoxText *) sf2_synth->wah_wah_length,
+				 "16/16");
+
+  gtk_combo_box_set_active(sf2_synth->wah_wah_length,
+			   2);
+
+  label = (GtkLabel *) gtk_label_new(i18n("attack [x|y]"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) label,
+		  2, 1,
 		  1, 1);
 
   sf2_synth->wah_wah_attack_x = (AgsDial *) ags_dial_new();
@@ -1050,7 +1074,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_attack_x,
-		  1, 1,
+		  3, 1,
 		  1, 1);
 
   sf2_synth->wah_wah_attack_y = (AgsDial *) ags_dial_new();
@@ -1075,7 +1099,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_attack_y,
-		  2, 1,
+		  4, 1,
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("decay [x|y]"));
@@ -1083,7 +1107,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  0, 2,
+		  2, 2,
 		  1, 1);
 
   sf2_synth->wah_wah_decay_x = (AgsDial *) ags_dial_new();
@@ -1108,7 +1132,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_decay_x,
-		  1, 2,
+		  3, 2,
 		  1, 1);
 
   sf2_synth->wah_wah_decay_y = (AgsDial *) ags_dial_new();
@@ -1133,7 +1157,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_decay_y,
-		  2, 2,
+		  4, 2,
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("sustain [x|y]"));
@@ -1141,7 +1165,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  0, 3,
+		  2, 3,
 		  1, 1);
 
   sf2_synth->wah_wah_sustain_x = (AgsDial *) ags_dial_new();
@@ -1166,7 +1190,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_sustain_x,
-		  1, 3,
+		  3, 3,
 		  1, 1);
 
   sf2_synth->wah_wah_sustain_y = (AgsDial *) ags_dial_new();
@@ -1191,7 +1215,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_sustain_y,
-		  2, 3,
+		  4, 3,
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("release [x|y]"));
@@ -1199,7 +1223,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  0, 4,
+		  2, 4,
 		  1, 1);
 
   sf2_synth->wah_wah_release_x = (AgsDial *) ags_dial_new();
@@ -1224,7 +1248,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_release_x,
-		  1, 4,
+		  3, 4,
 		  1, 1);
 
   sf2_synth->wah_wah_release_y = (AgsDial *) ags_dial_new();
@@ -1249,7 +1273,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_release_y,
-		  2, 4,
+		  4, 4,
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("ratio"));
@@ -1257,7 +1281,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  0, 5,
+		  2, 5,
 		  1, 1);
 
   sf2_synth->wah_wah_ratio = (AgsDial *) ags_dial_new();
@@ -1282,7 +1306,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_ratio,
-		  1, 5,
+		  3, 5,
 		  1, 1);
   
   label = (GtkLabel *) gtk_label_new(i18n("lfo-depth"));
@@ -1290,7 +1314,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  3, 1,
+		  4, 1,
 		  1, 1);
 
   sf2_synth->wah_wah_lfo_depth = (AgsDial *) ags_dial_new();
@@ -1308,7 +1332,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  3, 2,
+		  5, 2,
 		  1, 1);
 
   sf2_synth->wah_wah_lfo_freq = (AgsDial *) ags_dial_new();
@@ -1318,7 +1342,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_lfo_freq,
-		  4, 2,
+		  6, 2,
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("tuning"));
@@ -1326,7 +1350,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  3, 3,
+		  5, 3,
 		  1, 1);
 
   sf2_synth->wah_wah_tuning = (AgsDial *) ags_dial_new();
@@ -1336,7 +1360,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_tuning,
-		  4, 3,
+		  6, 3,
 		  1, 1);
 
   sf2_synth->wah_wah_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
@@ -1348,13 +1372,14 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_drawing_area,
-		  5, 1,
+		  7, 1,
 		  1, 4);
 
   gtk_drawing_area_set_draw_func(sf2_synth->wah_wah_drawing_area,
 				 ags_sf2_synth_wah_wah_draw_function,
 				 sf2_synth,
 				 NULL);
+
   /* dialog */
   sf2_synth->open_dialog = NULL;
 
