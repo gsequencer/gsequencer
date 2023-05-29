@@ -27,7 +27,7 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
-#include <ags/audio/ags_wah_wah_util.h>
+#include <ags/audio/ags_envelope_util.h>
 
 G_BEGIN_DECLS
 

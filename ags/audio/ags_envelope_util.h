@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,9 +47,19 @@ struct _AgsEnvelopeUtil
   
   guint buffer_length;
   guint format;
+  guint samplerate;
   
   gdouble volume;
   gdouble amount;
+
+  gboolean wah_wah_enabled;
+  
+  gdouble wah_wah_lfo_depth;
+  gdouble wah_wah_lfo_freq;
+  gdouble wah_wah_tuning;
+
+  guint wah_wah_lfo_frame_count;
+  guint wah_wah_lfo_offset;
 };
 
 GType ags_envelope_util_get_type(void);
@@ -90,6 +100,18 @@ void ags_envelope_util_set_volume(AgsEnvelopeUtil *envelope_util,
 gdouble ags_envelope_util_get_amount(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_amount(AgsEnvelopeUtil *envelope_util,
 				  gdouble amount);
+
+gdouble ags_envelope_util_get_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_wah_wah_lfo_depth(AgsEnvelopeUtil *envelope_util,
+					    gdouble wah_wah_lfo_depth);
+
+gdouble ags_envelope_util_get_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_wah_wah_lfo_freq(AgsEnvelopeUtil *envelope_util,
+					   gdouble wah_wah_lfo_freq);
+
+gdouble ags_envelope_util_get_wah_wah_tuning(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_wah_wah_tuning(AgsEnvelopeUtil *envelope_util,
+					 gdouble wah_wah_tuning);
 
 void ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util);

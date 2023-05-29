@@ -452,7 +452,7 @@ ags_tremolo_util_get_tremolo_gain(AgsTremoloUtil *tremolo_util)
 }
 
 /**
- * ags_tremolo_util_set_tremolo:
+ * ags_tremolo_util_set_tremolo_gain:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * @tremolo_gain: the tremolo gain
  *
@@ -492,7 +492,7 @@ ags_tremolo_util_get_tremolo_lfo_depth(AgsTremoloUtil *tremolo_util)
 }
 
 /**
- * ags_tremolo_util_set_tremolo:
+ * ags_tremolo_util_set_tremolo_lfo_depth:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * @tremolo_lfo_depth: the tremolo LFO depth
  *
@@ -532,7 +532,7 @@ ags_tremolo_util_get_tremolo_lfo_freq(AgsTremoloUtil *tremolo_util)
 }
 
 /**
- * ags_tremolo_util_set_tremolo:
+ * ags_tremolo_util_set_tremolo_lfo_freq:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * @tremolo_lfo_freq: the tremolo LFO freq
  *
@@ -555,9 +555,9 @@ ags_tremolo_util_set_tremolo_lfo_freq(AgsTremoloUtil *tremolo_util,
  * ags_tremolo_util_get_tremolo_tuning:
  * @tremolo_util: the #AgsTremoloUtil-struct
  * 
- * Get tremolo LFO freq of @tremolo_util.
+ * Get tremolo tuning of @tremolo_util.
  * 
- * Returns: the tremolo LFO freq
+ * Returns: the tremolo tuning
  * 
  * Since: 5.2.0
  */
@@ -572,9 +572,9 @@ ags_tremolo_util_get_tremolo_tuning(AgsTremoloUtil *tremolo_util)
 }
 
 /**
- * ags_tremolo_util_set_tremolo:
+ * ags_tremolo_util_set_tremolo_tuning:
  * @tremolo_util: the #AgsTremoloUtil-struct
- * @tremolo_tuning: the tremolo LFO freq
+ * @tremolo_tuning: the tremolo tuning
  *
  * Set @tremolo_tuning of @tremolo_util.
  *
