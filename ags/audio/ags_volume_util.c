@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -430,6 +430,8 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
 {
   gint8 *destination;
   gint8 *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -441,6 +443,9 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
   destination = (gint8 *) volume_util->destination;
   source = (gint8 *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -451,29 +456,29 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gint8) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint8) v_buffer[7];
+    *(destination += destination_stride) = (gint8) v_buffer[1];
+    *(destination += destination_stride) = (gint8) v_buffer[2];
+    *(destination += destination_stride) = (gint8) v_buffer[3];
+    *(destination += destination_stride) = (gint8) v_buffer[4];
+    *(destination += destination_stride) = (gint8) v_buffer[5];
+    *(destination += destination_stride) = (gint8) v_buffer[6];
+    *(destination += destination_stride) = (gint8) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -484,30 +489,30 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gint8) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint8) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint8) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -515,16 +520,16 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gint8) ((gint16) ((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint8) ((gint16) ((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint8) ((gint16) ((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -533,8 +538,8 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gint8) ((gint16) (source[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -552,6 +557,8 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
 {
   gint16 *destination;
   gint16 *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -563,6 +570,9 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
   destination = (gint16 *) volume_util->destination;
   source = (gint16 *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -573,29 +583,29 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gint16) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint16) v_buffer[7];
+    *(destination += destination_stride) = (gint16) v_buffer[1];
+    *(destination += destination_stride) = (gint16) v_buffer[2];
+    *(destination += destination_stride) = (gint16) v_buffer[3];
+    *(destination += destination_stride) = (gint16) v_buffer[4];
+    *(destination += destination_stride) = (gint16) v_buffer[5];
+    *(destination += destination_stride) = (gint16) v_buffer[6];
+    *(destination += destination_stride) = (gint16) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -606,30 +616,30 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gint16) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint16) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint16) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -637,16 +647,16 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gint16) ((gint32) ((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint16) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint16) ((gint32) ((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -655,8 +665,8 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gint16) ((gint32) (source[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -674,6 +684,8 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
 {
   gint32 *destination;
   gint32 *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -685,6 +697,9 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
   destination = (gint32 *) volume_util->destination;
   source = (gint32 *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -695,29 +710,29 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gint32) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[7];
+    *(destination += destination_stride) = (gint32) v_buffer[1];
+    *(destination += destination_stride) = (gint32) v_buffer[2];
+    *(destination += destination_stride) = (gint32) v_buffer[3];
+    *(destination += destination_stride) = (gint32) v_buffer[4];
+    *(destination += destination_stride) = (gint32) v_buffer[5];
+    *(destination += destination_stride) = (gint32) v_buffer[6];
+    *(destination += destination_stride) = (gint32) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -728,30 +743,30 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gint32) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -759,16 +774,16 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gint32) ((gint32) ((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint32) ((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint32) ((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -777,8 +792,8 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gint32) ((gint32) (source[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -796,6 +811,8 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
 {
   gint32 *destination;
   gint32 *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -807,6 +824,9 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
   destination = (gint32 *) volume_util->destination;
   source = (gint32 *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -817,29 +837,29 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gint32) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint32) v_buffer[7];
+    *(destination += destination_stride) = (gint32) v_buffer[1];
+    *(destination += destination_stride) = (gint32) v_buffer[2];
+    *(destination += destination_stride) = (gint32) v_buffer[3];
+    *(destination += destination_stride) = (gint32) v_buffer[4];
+    *(destination += destination_stride) = (gint32) v_buffer[5];
+    *(destination += destination_stride) = (gint32) v_buffer[6];
+    *(destination += destination_stride) = (gint32) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -850,30 +870,30 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gint32) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint32) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint32) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -881,16 +901,16 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gint32) ((gint64) ((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint32) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint32) ((gint64) ((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -899,8 +919,8 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gint32) ((gint64) (source[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -918,6 +938,8 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
 {
   gint64 *destination;
   gint64 *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -929,6 +951,9 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
   destination = (gint64 *) volume_util->destination;
   source = (gint64 *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -939,29 +964,29 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gint64) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint64) v_buffer[7];
+    *(destination += destination_stride) = (gint64) v_buffer[1];
+    *(destination += destination_stride) = (gint64) v_buffer[2];
+    *(destination += destination_stride) = (gint64) v_buffer[3];
+    *(destination += destination_stride) = (gint64) v_buffer[4];
+    *(destination += destination_stride) = (gint64) v_buffer[5];
+    *(destination += destination_stride) = (gint64) v_buffer[6];
+    *(destination += destination_stride) = (gint64) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -972,30 +997,30 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gint64) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gint64) ret_v_buffer[7];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[1];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[2];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[3];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[4];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[5];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[6];
+    *(destination += destination_stride) = (gint64) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -1003,16 +1028,16 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gint64) ((gint64) ((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gint64) ((gint64) ((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gint64) ((gint64) ((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -1021,8 +1046,8 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gint64) ((gint64) (source[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -1040,6 +1065,8 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
 {
   gfloat *destination;
   gfloat *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -1051,6 +1078,9 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
   destination = (gfloat *) volume_util->destination;
   source = (gfloat *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1061,29 +1091,29 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gfloat) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gfloat) v_buffer[7];
+    *(destination += destination_stride) = (gfloat) v_buffer[1];
+    *(destination += destination_stride) = (gfloat) v_buffer[2];
+    *(destination += destination_stride) = (gfloat) v_buffer[3];
+    *(destination += destination_stride) = (gfloat) v_buffer[4];
+    *(destination += destination_stride) = (gfloat) v_buffer[5];
+    *(destination += destination_stride) = (gfloat) v_buffer[6];
+    *(destination += destination_stride) = (gfloat) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -1094,30 +1124,30 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gfloat) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gfloat) ret_v_buffer[7];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[1];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[2];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[3];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[4];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[5];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[6];
+    *(destination += destination_stride) = (gfloat) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -1125,16 +1155,16 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gfloat) (((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gfloat) (((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gfloat) (((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -1143,8 +1173,8 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gfloat) ((source[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -1162,6 +1192,8 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
 {
   gdouble *destination;
   gdouble *source;
+
+  guint source_stride, destination_stride;
   guint i, i_stop;
 
   if(volume_util == NULL ||
@@ -1173,6 +1205,9 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
   destination = (gdouble *) volume_util->destination;
   source = (gdouble *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -1183,29 +1218,29 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
 
     v_buffer = (ags_v8double) {
       (gdouble) *(source),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride),
-      (gdouble) *(source += volume_util->source_stride)
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride),
+      (gdouble) *(source += source_stride)
     };
 
-    source += volume_util->source_stride;
+    source += source_stride;
     
     v_buffer *= volume_util->volume;
 
     *(destination) = (gdouble) v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gdouble) v_buffer[7];
+    *(destination += destination_stride) = (gdouble) v_buffer[1];
+    *(destination += destination_stride) = (gdouble) v_buffer[2];
+    *(destination += destination_stride) = (gdouble) v_buffer[3];
+    *(destination += destination_stride) = (gdouble) v_buffer[4];
+    *(destination += destination_stride) = (gdouble) v_buffer[5];
+    *(destination += destination_stride) = (gdouble) v_buffer[6];
+    *(destination += destination_stride) = (gdouble) v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -1216,30 +1251,30 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
 
     double v_buffer[] = {
       (double) *(source),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride),
-      (double) *(source += volume_util->source_stride)};
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride),
+      (double) *(source += source_stride)};
 
     double v_volume[] = {(double) volume_util->volume};
 
-    source += volume_util->source_stride;
+    source += source_stride;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
 
     *(destination) = (gdouble) ret_v_buffer[0];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[1];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[2];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[3];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[4];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[5];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[6];
-    *(destination += volume_util->destination_stride) = (gdouble) ret_v_buffer[7];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[1];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[2];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[3];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[4];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[5];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[6];
+    *(destination += destination_stride) = (gdouble) ret_v_buffer[7];
 
-    destination += volume_util->destination_stride;
+    destination += destination_stride;
     i += 8;
   }
 #else
@@ -1247,16 +1282,16 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
 
   for(; i < i_stop;){
     *(destination) = (gdouble) (((source)[0] * (volume_util->volume)));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
-    *(destination += volume_util->destination_stride) = (gdouble) (((source += volume_util->source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
+    *(destination += destination_stride) = (gdouble) (((source += source_stride)[0] * volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i += 8;
   }
 #endif
@@ -1265,8 +1300,8 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
   for(; i < volume_util->buffer_length;){
     destination[0] = (gdouble) ((source[0] * volume_util->volume));
     
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }
@@ -1284,6 +1319,8 @@ ags_volume_util_compute_complex(AgsVolumeUtil *volume_util)
 {
   AgsComplex *destination;
   AgsComplex *source;
+
+  guint source_stride, destination_stride;
   guint i;
 
   if(volume_util == NULL ||
@@ -1295,6 +1332,9 @@ ags_volume_util_compute_complex(AgsVolumeUtil *volume_util)
   destination = (AgsComplex *) volume_util->destination;
   source = (AgsComplex *) volume_util->source;
   
+  source_stride = volume_util->source_stride;
+  destination_stride = volume_util->destination_stride;
+
   i = 0;
   
   for(; i < volume_util->buffer_length;){
@@ -1305,8 +1345,8 @@ ags_volume_util_compute_complex(AgsVolumeUtil *volume_util)
     ags_complex_set(destination,
 		    z * (volume_util->volume));
 
-    destination += volume_util->destination_stride;
-    source += volume_util->source_stride;
+    destination += destination_stride;
+    source += source_stride;
     i++;
   }
 }

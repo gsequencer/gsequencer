@@ -104,6 +104,14 @@ ags_fast_pitch_util_alloc()
   ptr->base_key = 0.0;
   ptr->tuning = 0.0;
 
+  ptr->vibrato_gain = 1.0;
+  ptr->vibrato_lfo_depth = 0.0;
+  ptr->vibrato_lfo_freq = 8.172;
+  ptr->vibrato_tuning = 0.0;
+
+  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
+  ptr->vibrato_lfo_offset = 0;
+
   return(ptr);
 }
 
@@ -158,6 +166,14 @@ ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
   new_ptr->base_key = ptr->base_key;
   new_ptr->tuning = ptr->tuning;
 
+  new_ptr->vibrato_gain = ptr->vibrato_gain;
+  new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
+  new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
+  new_ptr->vibrato_tuning = ptr->vibrato_tuning;
+
+  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
+  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
+  
   return(new_ptr);
 }
 
@@ -569,6 +585,167 @@ ags_fast_pitch_util_set_tuning(AgsFastPitchUtil *fast_pitch_util,
 
   fast_pitch_util->tuning = tuning;
 }
+
+/**
+ * ags_fast_pitch_util_get_vibrato_gain:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get vibrato gain of @fast_pitch_util.
+ * 
+ * Returns: the vibrato gain
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fast_pitch_util_get_vibrato_gain(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(fast_pitch_util->vibrato_gain);
+}
+
+/**
+ * ags_fast_pitch_util_set_vibrato_gain:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @vibrato_gain: the vibrato gain
+ *
+ * Set @vibrato_gain of @fast_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fast_pitch_util_set_vibrato_gain(AgsFastPitchUtil *fast_pitch_util,
+				     gdouble vibrato_gain)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->vibrato_gain = vibrato_gain;
+}
+
+/**
+ * ags_fast_pitch_util_get_vibrato_lfo_depth:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get vibrato lfo_depth of @fast_pitch_util.
+ * 
+ * Returns: the vibrato lfo_depth
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fast_pitch_util_get_vibrato_lfo_depth(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(fast_pitch_util->vibrato_lfo_depth);
+}
+
+/**
+ * ags_fast_pitch_util_set_vibrato_lfo_depth:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @vibrato_lfo_depth: the vibrato lfo_depth
+ *
+ * Set @vibrato_lfo_depth of @fast_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fast_pitch_util_set_vibrato_lfo_depth(AgsFastPitchUtil *fast_pitch_util,
+					  gdouble vibrato_lfo_depth)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->vibrato_lfo_depth = vibrato_lfo_depth;
+}
+
+/**
+ * ags_fast_pitch_util_get_vibrato_lfo_freq:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get vibrato lfo_freq of @fast_pitch_util.
+ * 
+ * Returns: the vibrato lfo_freq
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fast_pitch_util_get_vibrato_lfo_freq(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(fast_pitch_util->vibrato_lfo_freq);
+}
+
+/**
+ * ags_fast_pitch_util_set_vibrato_lfo_freq:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @vibrato_lfo_freq: the vibrato lfo_freq
+ *
+ * Set @vibrato_lfo_freq of @fast_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fast_pitch_util_set_vibrato_lfo_freq(AgsFastPitchUtil *fast_pitch_util,
+					 gdouble vibrato_lfo_freq)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->vibrato_lfo_freq = vibrato_lfo_freq;
+}
+
+/**
+ * ags_fast_pitch_util_get_vibrato_tuning:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get vibrato tuning of @fast_pitch_util.
+ * 
+ * Returns: the vibrato tuning
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fast_pitch_util_get_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(fast_pitch_util->vibrato_tuning);
+}
+
+/**
+ * ags_fast_pitch_util_set_vibrato_tuning:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @vibrato_tuning: the vibrato tuning
+ *
+ * Set @vibrato_tuning of @fast_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fast_pitch_util_set_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util,
+				       gdouble vibrato_tuning)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->vibrato_tuning = vibrato_tuning;
+}
+
 
 /**
  * ags_fast_pitch_util_pitch_s8:

@@ -93,6 +93,14 @@ ags_hq_pitch_util_alloc()
 
   ptr->linear_interpolate_util = ags_linear_interpolate_util_alloc();
 
+  ptr->vibrato_gain = 1.0;
+  ptr->vibrato_lfo_depth = 0.0;
+  ptr->vibrato_lfo_freq = 8.172;
+  ptr->vibrato_tuning = 0.0;
+
+  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
+  ptr->vibrato_lfo_offset = 0;
+
   return(ptr);
 }
 
@@ -136,6 +144,14 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 
   new_ptr->base_key = ptr->base_key;
   new_ptr->tuning = ptr->tuning;
+
+  new_ptr->vibrato_gain = ptr->vibrato_gain;
+  new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
+  new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
+  new_ptr->vibrato_tuning = ptr->vibrato_tuning;
+
+  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
+  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
 
   return(new_ptr);
 }
@@ -549,6 +565,166 @@ ags_hq_pitch_util_set_tuning(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->tuning = tuning;
+}
+
+/**
+ * ags_hq_pitch_util_get_vibrato_gain:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get vibrato gain of @hq_pitch_util.
+ * 
+ * Returns: the vibrato gain
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_hq_pitch_util_get_vibrato_gain(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(hq_pitch_util->vibrato_gain);
+}
+
+/**
+ * ags_hq_pitch_util_set_vibrato_gain:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @vibrato_gain: the vibrato gain
+ *
+ * Set @vibrato_gain of @hq_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_hq_pitch_util_set_vibrato_gain(AgsHQPitchUtil *hq_pitch_util,
+				   gdouble vibrato_gain)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->vibrato_gain = vibrato_gain;
+}
+
+/**
+ * ags_hq_pitch_util_get_vibrato_lfo_depth:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get vibrato lfo_depth of @hq_pitch_util.
+ * 
+ * Returns: the vibrato lfo_depth
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_hq_pitch_util_get_vibrato_lfo_depth(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(hq_pitch_util->vibrato_lfo_depth);
+}
+
+/**
+ * ags_hq_pitch_util_set_vibrato_lfo_depth:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @vibrato_lfo_depth: the vibrato lfo_depth
+ *
+ * Set @vibrato_lfo_depth of @hq_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_hq_pitch_util_set_vibrato_lfo_depth(AgsHQPitchUtil *hq_pitch_util,
+					gdouble vibrato_lfo_depth)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->vibrato_lfo_depth = vibrato_lfo_depth;
+}
+
+/**
+ * ags_hq_pitch_util_get_vibrato_lfo_freq:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get vibrato lfo_freq of @hq_pitch_util.
+ * 
+ * Returns: the vibrato lfo_freq
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_hq_pitch_util_get_vibrato_lfo_freq(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(hq_pitch_util->vibrato_lfo_freq);
+}
+
+/**
+ * ags_hq_pitch_util_set_vibrato_lfo_freq:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @vibrato_lfo_freq: the vibrato lfo_freq
+ *
+ * Set @vibrato_lfo_freq of @hq_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_hq_pitch_util_set_vibrato_lfo_freq(AgsHQPitchUtil *hq_pitch_util,
+				       gdouble vibrato_lfo_freq)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->vibrato_lfo_freq = vibrato_lfo_freq;
+}
+
+/**
+ * ags_hq_pitch_util_get_vibrato_tuning:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get vibrato tuning of @hq_pitch_util.
+ * 
+ * Returns: the vibrato tuning
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_hq_pitch_util_get_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(hq_pitch_util->vibrato_tuning);
+}
+
+/**
+ * ags_hq_pitch_util_set_vibrato_tuning:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @vibrato_tuning: the vibrato tuning
+ *
+ * Set @vibrato_tuning of @hq_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
+				     gdouble vibrato_tuning)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->vibrato_tuning = vibrato_tuning;
 }
 
 /**
