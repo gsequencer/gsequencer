@@ -740,3 +740,33 @@ ags_sfz_synth_volume_callback(GtkRange *range, AgsSFZSynth *sfz_synth)
     g_object_unref(start_input);
   }
 }
+
+void
+ags_sfz_synth_wah_wah_attack_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
+{
+  gtk_widget_queue_draw(sfz_synth->wah_wah_drawing_area);
+}
+
+void
+ags_sfz_synth_wah_wah_decay_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
+{
+  gtk_widget_queue_draw(sfz_synth->wah_wah_drawing_area);
+}
+
+void
+ags_sfz_synth_wah_wah_sustain_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
+{
+  gtk_widget_queue_draw(sfz_synth->wah_wah_drawing_area);
+}
+
+void
+ags_sfz_synth_wah_wah_release_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
+{
+  gtk_widget_queue_draw(sfz_synth->wah_wah_drawing_area);
+}
+
+void
+ags_sfz_synth_wah_wah_ratio_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
+{
+  gtk_widget_queue_draw(sfz_synth->wah_wah_drawing_area);
+}

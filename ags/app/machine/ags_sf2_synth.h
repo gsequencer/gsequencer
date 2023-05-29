@@ -137,6 +137,8 @@ struct _AgsSF2Synth
 
   GtkCheckButton *wah_wah_enabled;
   
+  GtkComboBox *wah_wah_length;  
+
   AgsDial *wah_wah_attack_x;
   AgsDial *wah_wah_attack_y;
   AgsDial *wah_wah_decay_x;
