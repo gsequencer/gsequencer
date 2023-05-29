@@ -551,6 +551,13 @@
       <xi:include href="xml/ags_fx_envelope_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_envelope_recycling.xml"/>
 
+      <xi:include href="xml/ags_fx_wah_wah_audio.xml"/>
+      <xi:include href="xml/ags_fx_wah_wah_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_wah_wah_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_wah_wah_channel.xml"/>
+      <xi:include href="xml/ags_fx_wah_wah_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_wah_wah_recycling.xml"/>
+
     </chapter>
 
     <chapter id="audio-fx-misc-plugins">

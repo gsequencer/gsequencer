@@ -61,6 +61,14 @@ struct _AgsHQPitchUtil
   gdouble tuning;
 
   AgsLinearInterpolateUtil *linear_interpolate_util;
+
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
 };
 
 GType ags_hq_pitch_util_get_type(void);
@@ -105,6 +113,22 @@ void ags_hq_pitch_util_set_base_key(AgsHQPitchUtil *hq_pitch_util,
 gdouble ags_hq_pitch_util_get_tuning(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_tuning(AgsHQPitchUtil *hq_pitch_util,
 				  gdouble tuning);
+
+gdouble ags_hq_pitch_util_get_vibrato_gain(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_vibrato_gain(AgsHQPitchUtil *hq_pitch_util,
+					gdouble vibrato_gain);
+
+gdouble ags_hq_pitch_util_get_vibrato_lfo_depth(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_vibrato_lfo_depth(AgsHQPitchUtil *hq_pitch_util,
+					     gdouble vibrato_lfo_depth);
+
+gdouble ags_hq_pitch_util_get_vibrato_lfo_freq(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_vibrato_lfo_freq(AgsHQPitchUtil *hq_pitch_util,
+					    gdouble vibrato_lfo_freq);
+
+gdouble ags_hq_pitch_util_get_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_vibrato_tuning(AgsHQPitchUtil *hq_pitch_util,
+					  gdouble vibrato_tuning);
 
 void ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util);

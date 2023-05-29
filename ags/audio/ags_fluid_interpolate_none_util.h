@@ -51,6 +51,14 @@ struct _AgsFluidInterpolateNoneUtil
   gdouble tuning;
 
   gdouble phase_increment;
+
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
 };
 
 GType ags_fluid_interpolate_none_util_get_type(void);
@@ -99,6 +107,22 @@ void ags_fluid_interpolate_none_util_set_tuning(AgsFluidInterpolateNoneUtil *flu
 gdouble ags_fluid_interpolate_none_util_get_phase_increment(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_set_phase_increment(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 							 gdouble phase_increment);
+
+gdouble ags_fluid_interpolate_none_util_get_vibrato_gain(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_vibrato_gain(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						      gdouble vibrato_gain);
+
+gdouble ags_fluid_interpolate_none_util_get_vibrato_lfo_depth(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_vibrato_lfo_depth(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							   gdouble vibrato_lfo_depth);
+
+gdouble ags_fluid_interpolate_none_util_get_vibrato_lfo_freq(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_vibrato_lfo_freq(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							  gdouble vibrato_lfo_freq);
+
+gdouble ags_fluid_interpolate_none_util_get_vibrato_tuning(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_vibrato_tuning(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							gdouble vibrato_tuning);
 
 void ags_fluid_interpolate_none_util_pitch_s8(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_pitch_s16(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);

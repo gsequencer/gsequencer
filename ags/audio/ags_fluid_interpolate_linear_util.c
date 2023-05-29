@@ -136,6 +136,14 @@ ags_fluid_interpolate_linear_util_alloc()
 
   ptr->phase_increment = 0.0;
 
+  ptr->vibrato_gain = 1.0;
+  ptr->vibrato_lfo_depth = 0.0;
+  ptr->vibrato_lfo_freq = 8.172;
+  ptr->vibrato_tuning = 0.0;
+
+  ptr->vibrato_lfo_frame_count = ptr->samplerate / ptr->vibrato_lfo_freq;
+  ptr->vibrato_lfo_offset = 0;
+
   return(ptr);
 }
 
@@ -171,6 +179,14 @@ ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr)
   new_ptr->tuning = ptr->tuning;
 
   new_ptr->phase_increment = ptr->phase_increment;
+
+  new_ptr->vibrato_gain = ptr->vibrato_gain;
+  new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
+  new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
+  new_ptr->vibrato_tuning = ptr->vibrato_tuning;
+
+  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
+  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
 
   return(new_ptr);
 }
@@ -582,6 +598,166 @@ ags_fluid_interpolate_linear_util_set_tuning(AgsFluidInterpolateLinearUtil *flui
 }
 
 /**
+ * ags_fluid_interpolate_linear_util_get_vibrato_gain:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get vibrato_gain of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the vibrato_gain
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fluid_interpolate_linear_util_get_vibrato_gain(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_interpolate_linear_util->vibrato_gain);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_vibrato_gain:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @vibrato_gain: the vibrato_gain
+ *
+ * Set @vibrato_gain of @fluid_interpolate_linear_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_vibrato_gain(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						   gdouble vibrato_gain)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->vibrato_gain = vibrato_gain;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_vibrato_lfo_depth:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get vibrato_lfo_depth of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the vibrato_lfo_depth
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fluid_interpolate_linear_util_get_vibrato_lfo_depth(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_interpolate_linear_util->vibrato_lfo_depth);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_vibrato_lfo_depth:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @vibrato_lfo_depth: the vibrato_lfo_depth
+ *
+ * Set @vibrato_lfo_depth of @fluid_interpolate_linear_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_vibrato_lfo_depth(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							gdouble vibrato_lfo_depth)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->vibrato_lfo_depth = vibrato_lfo_depth;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_vibrato_lfo_freq:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get vibrato_lfo_freq of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the vibrato_lfo_freq
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fluid_interpolate_linear_util_get_vibrato_lfo_freq(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_interpolate_linear_util->vibrato_lfo_freq);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_vibrato_lfo_freq:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @vibrato_lfo_freq: the vibrato_lfo_freq
+ *
+ * Set @vibrato_lfo_freq of @fluid_interpolate_linear_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_vibrato_lfo_freq(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						       gdouble vibrato_lfo_freq)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->vibrato_lfo_freq = vibrato_lfo_freq;
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_get_vibrato_tuning:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * 
+ * Get vibrato_tuning of @fluid_interpolate_linear_util.
+ * 
+ * Returns: the vibrato_tuning
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_fluid_interpolate_linear_util_get_vibrato_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_interpolate_linear_util->vibrato_tuning);
+}
+
+/**
+ * ags_fluid_interpolate_linear_util_set_vibrato_tuning:
+ * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
+ * @vibrato_tuning: the vibrato_tuning
+ *
+ * Set @vibrato_tuning of @fluid_interpolate_linear_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fluid_interpolate_linear_util_set_vibrato_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						     gdouble vibrato_tuning)
+{
+  if(fluid_interpolate_linear_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_linear_util->vibrato_tuning = vibrato_tuning;
+}
+
+/**
  * ags_fluid_interpolate_linear_util_get_phase_increment:
  * @fluid_interpolate_linear_util: the #AgsFluidInterpolateLinearUtil-struct
  * 
@@ -595,7 +771,7 @@ gdouble
 ags_fluid_interpolate_linear_util_get_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
   if(fluid_interpolate_linear_util == NULL){
-    return(1.0);
+    return(0.0);
   }
 
   return(fluid_interpolate_linear_util->phase_increment);

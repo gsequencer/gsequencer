@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -650,7 +650,7 @@ void
 ags_common_pitch_util_set_tuning(gpointer pitch_util,
 				 GType pitch_type,
  				 gdouble tuning)
- {
+{
   if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
     ags_fast_pitch_util_set_tuning(pitch_util,
 				   tuning);
@@ -669,6 +669,278 @@ ags_common_pitch_util_set_tuning(gpointer pitch_util,
   }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
     ags_fluid_interpolate_7th_order_util_set_tuning(pitch_util,
 						    tuning);
+  }
+}
+
+/**
+ * ags_common_pitch_util_get_vibrato_gain:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * 
+ * Get vibrato_gain of @pitch_util.
+ * 
+ * Returns: the vibrato_gain of @pitch_util
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_common_pitch_util_get_vibrato_gain(gpointer pitch_util,
+				       GType pitch_type)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    return(ags_fast_pitch_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    return(ags_hq_pitch_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    return(ags_fluid_interpolate_none_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    return(ags_fluid_interpolate_linear_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_4th_order_util_get_vibrato_gain(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_7th_order_util_get_vibrato_gain(pitch_util));
+  }
+
+  return(0.0);
+}
+
+/**
+ * ags_common_pitch_util_set_vibrato_gain:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * @vibrato_gain: the vibrato_gain
+ * 
+ * Set @vibrato_gain of @pitch_util.
+ * 
+ * Since: 5.2.0
+ */
+void
+ags_common_pitch_util_set_vibrato_gain(gpointer pitch_util,
+				       GType pitch_type,
+				       gdouble vibrato_gain)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    ags_fast_pitch_util_set_vibrato_gain(pitch_util,
+					 vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    ags_hq_pitch_util_set_vibrato_gain(pitch_util,
+				       vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    ags_fluid_interpolate_none_util_set_vibrato_gain(pitch_util,
+						     vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    ags_fluid_interpolate_linear_util_set_vibrato_gain(pitch_util,
+						       vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    ags_fluid_interpolate_4th_order_util_set_vibrato_gain(pitch_util,
+							  vibrato_gain);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    ags_fluid_interpolate_7th_order_util_set_vibrato_gain(pitch_util,
+							  vibrato_gain);
+  }
+}
+
+/**
+ * ags_common_pitch_util_get_vibrato_lfo_depth:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * 
+ * Get vibrato_lfo_depth of @pitch_util.
+ * 
+ * Returns: the vibrato_lfo_depth of @pitch_util
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_common_pitch_util_get_vibrato_lfo_depth(gpointer pitch_util,
+					    GType pitch_type)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    return(ags_fast_pitch_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    return(ags_hq_pitch_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    return(ags_fluid_interpolate_none_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    return(ags_fluid_interpolate_linear_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_depth(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_depth(pitch_util));
+  }
+
+  return(0.0);
+}
+
+/**
+ * ags_common_pitch_util_set_vibrato_lfo_depth:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * @vibrato_lfo_depth: the vibrato_lfo_depth
+ * 
+ * Set @vibrato_lfo_depth of @pitch_util.
+ * 
+ * Since: 5.2.0
+ */
+void
+ags_common_pitch_util_set_vibrato_lfo_depth(gpointer pitch_util,
+					    GType pitch_type,
+					    gdouble vibrato_lfo_depth)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    ags_fast_pitch_util_set_vibrato_lfo_depth(pitch_util,
+					      vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    ags_hq_pitch_util_set_vibrato_lfo_depth(pitch_util,
+					    vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    ags_fluid_interpolate_none_util_set_vibrato_lfo_depth(pitch_util,
+							  vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    ags_fluid_interpolate_linear_util_set_vibrato_lfo_depth(pitch_util,
+							    vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    ags_fluid_interpolate_4th_order_util_set_vibrato_lfo_depth(pitch_util,
+							       vibrato_lfo_depth);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_depth(pitch_util,
+							       vibrato_lfo_depth);
+  }
+}
+
+/**
+ * ags_common_pitch_util_get_vibrato_lfo_freq:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * 
+ * Get vibrato_lfo_freq of @pitch_util.
+ * 
+ * Returns: the vibrato_lfo_freq of @pitch_util
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_common_pitch_util_get_vibrato_lfo_freq(gpointer pitch_util,
+					   GType pitch_type)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    return(ags_fast_pitch_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    return(ags_hq_pitch_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    return(ags_fluid_interpolate_none_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    return(ags_fluid_interpolate_linear_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_4th_order_util_get_vibrato_lfo_freq(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_freq(pitch_util));
+  }
+
+  return(0.0);
+}
+
+/**
+ * ags_common_pitch_util_set_vibrato_lfo_freq:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * @vibrato_lfo_freq: the vibrato_lfo_freq
+ * 
+ * Set @vibrato_lfo_freq of @pitch_util.
+ * 
+ * Since: 5.2.0
+ */
+void
+ags_common_pitch_util_set_vibrato_lfo_freq(gpointer pitch_util,
+					   GType pitch_type,
+					   gdouble vibrato_lfo_freq)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    ags_fast_pitch_util_set_vibrato_lfo_freq(pitch_util,
+					     vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    ags_hq_pitch_util_set_vibrato_lfo_freq(pitch_util,
+					   vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    ags_fluid_interpolate_none_util_set_vibrato_lfo_freq(pitch_util,
+							 vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    ags_fluid_interpolate_linear_util_set_vibrato_lfo_freq(pitch_util,
+							   vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    ags_fluid_interpolate_4th_order_util_set_vibrato_lfo_freq(pitch_util,
+							      vibrato_lfo_freq);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_freq(pitch_util,
+							      vibrato_lfo_freq);
+  }
+}
+
+/**
+ * ags_common_pitch_util_get_vibrato_tuning:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * 
+ * Get vibrato_tuning of @pitch_util.
+ * 
+ * Returns: the vibrato_tuning of @pitch_util
+ * 
+ * Since: 5.2.0
+ */
+gdouble
+ags_common_pitch_util_get_vibrato_tuning(gpointer pitch_util,
+					 GType pitch_type)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    return(ags_fast_pitch_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    return(ags_hq_pitch_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    return(ags_fluid_interpolate_none_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    return(ags_fluid_interpolate_linear_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_4th_order_util_get_vibrato_tuning(pitch_util));
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    return(ags_fluid_interpolate_7th_order_util_get_vibrato_tuning(pitch_util));
+  }
+
+  return(0.0);
+}
+
+/**
+ * ags_common_pitch_util_set_vibrato_tuning:
+ * @pitch_util: the pitch util
+ * @pitch_type: the pitch type
+ * @vibrato_tuning: the vibrato_tuning
+ * 
+ * Set @vibrato_tuning of @pitch_util.
+ * 
+ * Since: 5.2.0
+ */
+void
+ags_common_pitch_util_set_vibrato_tuning(gpointer pitch_util,
+					 GType pitch_type,
+					 gdouble vibrato_tuning)
+{
+  if(pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
+    ags_fast_pitch_util_set_vibrato_tuning(pitch_util,
+					   vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_HQ_PITCH_UTIL){
+    ags_hq_pitch_util_set_vibrato_tuning(pitch_util,
+					 vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL){
+    ags_fluid_interpolate_none_util_set_vibrato_tuning(pitch_util,
+						       vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL){
+    ags_fluid_interpolate_linear_util_set_vibrato_tuning(pitch_util,
+							 vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL){
+    ags_fluid_interpolate_4th_order_util_set_vibrato_tuning(pitch_util,
+							    vibrato_tuning);
+  }else if(pitch_type == AGS_TYPE_FLUID_INTERPOLATE_7TH_ORDER_UTIL){
+    ags_fluid_interpolate_7th_order_util_set_vibrato_tuning(pitch_util,
+							    vibrato_tuning);
   }
 }
 
