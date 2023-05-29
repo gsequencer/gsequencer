@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -108,7 +108,7 @@ struct _AgsSF2Synth
   AgsDial *synth_key;
 
   AgsDial *synth_volume;
-
+  
   GtkCheckButton *chorus_enabled;
 
   AgsDial *chorus_input_volume;
@@ -120,6 +120,38 @@ struct _AgsSF2Synth
   AgsDial *chorus_depth;
   AgsDial *chorus_mix;
   AgsDial *chorus_delay;
+
+  GtkCheckButton *tremolo_enabled;
+
+  AgsDial *tremolo_gain;
+  AgsDial *tremolo_lfo_depth;
+  AgsDial *tremolo_lfo_freq;
+  AgsDial *tremolo_tuning;
+
+  GtkCheckButton *vibrato_enabled;
+
+  AgsDial *vibrato_gain; 
+  AgsDial *vibrato_lfo_depth;
+  AgsDial *vibrato_lfo_freq;
+  AgsDial *vibrato_tuning;
+
+  GtkCheckButton *wah_wah_enabled;
+  
+  AgsDial *wah_wah_attack_x;
+  AgsDial *wah_wah_attack_y;
+  AgsDial *wah_wah_decay_x;
+  AgsDial *wah_wah_decay_y;
+  AgsDial *wah_wah_sustain_x;
+  AgsDial *wah_wah_sustain_y;
+  AgsDial *wah_wah_release_x;
+  AgsDial *wah_wah_release_y;
+  AgsDial *wah_wah_ratio;
+
+  AgsDial *wah_wah_lfo_depth;
+  AgsDial *wah_wah_lfo_freq;
+  AgsDial *wah_wah_tuning;
+
+  GtkDrawingArea *wah_wah_drawing_area;
     
   GtkWidget *open_dialog;
 };

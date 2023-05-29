@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,6 +104,32 @@ struct _AgsSFZSynth
   AgsDial *chorus_mix;
   AgsDial *chorus_delay;
   
+  GtkCheckButton *tremolo_enabled;
+
+  AgsDial *tremolo_gain;
+  AgsDial *tremolo_lfo_depth;
+  AgsDial *tremolo_lfo_freq;
+  AgsDial *tremolo_tuning;
+
+  GtkCheckButton *vibrato_enabled;
+
+  AgsDial *vibrato_gain; 
+  AgsDial *vibrato_lfo_depth;
+  AgsDial *vibrato_lfo_freq;
+  AgsDial *vibrato_tuning;
+
+  GtkCheckButton *wah_wah_enabled;
+
+  AgsDial *wah_wah_attack;
+  AgsDial *wah_wah_decay;
+  AgsDial *wah_wah_sustain;
+  AgsDial *wah_wah_release;
+  AgsDial *wah_wah_ratio;
+
+  AgsDial *wah_wah_lfo_depth;
+  AgsDial *wah_wah_lfo_freq;
+  AgsDial *wah_wah_tuning;
+
   GtkWidget *open_dialog;
 };
 
