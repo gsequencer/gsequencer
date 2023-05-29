@@ -810,7 +810,15 @@ ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -881,7 +889,15 @@ ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -952,7 +968,15 @@ ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -1023,7 +1047,15 @@ ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -1094,7 +1126,15 @@ ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -1165,7 +1205,15 @@ ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *flu
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -1236,7 +1284,15 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -1307,7 +1363,15 @@ ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *f
 {
   gint8 *destination, *source;
   
+  guint samplerate;
   guint destination_stride, source_stride;
+  gdouble base_key;
+  gdouble tuning;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
