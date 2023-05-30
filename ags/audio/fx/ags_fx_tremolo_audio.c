@@ -339,6 +339,33 @@ ags_fx_tremolo_audio_set_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_tremolo_audio);
 
   switch(prop_id){
+  case PROP_TREMOLO_ENABLED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_tremolo_audio->tremolo_enabled){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_tremolo_audio->tremolo_enabled != NULL){
+	g_object_unref(G_OBJECT(fx_tremolo_audio->tremolo_enabled));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_tremolo_audio->tremolo_enabled = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_TREMOLO_GAIN:
     {
       AgsPort *port;
@@ -469,6 +496,15 @@ ags_fx_tremolo_audio_get_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_tremolo_audio);
 
   switch(prop_id){
+  case PROP_TREMOLO_ENABLED:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_tremolo_audio->tremolo_enabled);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_TREMOLO_GAIN:
     {
       g_rec_mutex_lock(recall_mutex);

@@ -68,9 +68,15 @@ struct _AgsSFZSynth
   AgsRecallContainer *sfz_synth_play_container;
   AgsRecallContainer *sfz_synth_recall_container;
 
+  AgsRecallContainer *tremolo_play_container;
+  AgsRecallContainer *tremolo_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
-  
+
+  AgsRecallContainer *wah_wah_play_container;
+  AgsRecallContainer *wah_wah_recall_container;
+    
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 

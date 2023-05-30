@@ -160,13 +160,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 
   /* properties */
   /**
-   * AgsFxWahWahChannel:wah-wha-enabled:
+   * AgsFxWahWahChannel:wah-wah-enabled:
    *
    * The enabled switch.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-enabled",
+  param_spec = g_param_spec_object("wah-wah-enabled",
 				   i18n_pspec("enabled of recall"),
 				   i18n_pspec("The recall's enabled"),
 				   AGS_TYPE_PORT,
@@ -176,13 +176,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-length-mode:
+   * AgsFxWahWahChannel:wah-wah-length-mode:
    *
    * The length mode.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-length-mode",
+  param_spec = g_param_spec_object("wah-wah-length-mode",
 				   i18n_pspec("length mode of recall"),
 				   i18n_pspec("The recall's length mode"),
 				   AGS_TYPE_PORT,
@@ -192,13 +192,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-fixed-length:
+   * AgsFxWahWahChannel:wah-wah-fixed-length:
    *
    * The fixed length.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-fixed-length",
+  param_spec = g_param_spec_object("wah-wah-fixed-length",
 				   i18n_pspec("fixed length of recall"),
 				   i18n_pspec("The recall's fixed length"),
 				   AGS_TYPE_PORT,
@@ -208,13 +208,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-attack:
+   * AgsFxWahWahChannel:wah-wah-attack:
    *
    * The attack.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-attack",
+  param_spec = g_param_spec_object("wah-wah-attack",
 				   i18n_pspec("attack of recall"),
 				   i18n_pspec("The recall's attack"),
 				   AGS_TYPE_PORT,
@@ -224,13 +224,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-decay:
+   * AgsFxWahWahChannel:wah-wah-decay:
    *
    * The decay.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-decay",
+  param_spec = g_param_spec_object("wah-wah-decay",
 				   i18n_pspec("decay of recall"),
 				   i18n_pspec("The recall's decay"),
 				   AGS_TYPE_PORT,
@@ -240,13 +240,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-sustain:
+   * AgsFxWahWahChannel:wah-wah-sustain:
    *
    * The sustain.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-sustain",
+  param_spec = g_param_spec_object("wah-wah-sustain",
 				   i18n_pspec("sustain of recall"),
 				   i18n_pspec("The recall's sustain"),
 				   AGS_TYPE_PORT,
@@ -256,13 +256,13 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-release:
+   * AgsFxWahWahChannel:wah-wah-release:
    *
    * The release.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-release",
+  param_spec = g_param_spec_object("wah-wah-release",
 				   i18n_pspec("release of recall"),
 				   i18n_pspec("The recall's release"),
 				   AGS_TYPE_PORT,
@@ -272,19 +272,67 @@ ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel)
 				  param_spec);
 
   /**
-   * AgsFxWahWahChannel:wah-wha-ratio:
+   * AgsFxWahWahChannel:wah-wah-ratio:
    *
    * The ratio.
    * 
    * Since: 5.2.0
    */
-  param_spec = g_param_spec_object("wah-wha-ratio",
+  param_spec = g_param_spec_object("wah-wah-ratio",
 				   i18n_pspec("ratio of recall"),
 				   i18n_pspec("The recall's ratio"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_WAH_WAH_RATIO,
+				  param_spec);
+
+  /**
+   * AgsFxWahWahChannel:wah-wah-lfo-depth:
+   *
+   * The lfo_depth.
+   * 
+   * Since: 5.2.0
+   */
+  param_spec = g_param_spec_object("wah-wah-lfo-depth",
+				   i18n_pspec("LFO depth of recall"),
+				   i18n_pspec("The recall's LFO depth"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAH_WAH_LFO_DEPTH,
+				  param_spec);
+
+  /**
+   * AgsFxWahWahChannel:wah-wah-lfo-freq:
+   *
+   * The lfo_freq.
+   * 
+   * Since: 5.2.0
+   */
+  param_spec = g_param_spec_object("wah-wah-lfo-freq",
+				   i18n_pspec("LFO freq of recall"),
+				   i18n_pspec("The recall's LFO freq"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAH_WAH_LFO_FREQ,
+				  param_spec);
+
+  /**
+   * AgsFxWahWahChannel:wah-wah-tuning:
+   *
+   * The tuning.
+   * 
+   * Since: 5.2.0
+   */
+  param_spec = g_param_spec_object("wah-wah-tuning",
+				   i18n_pspec("tuning of recall"),
+				   i18n_pspec("The recall's tuning"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAH_WAH_TUNING,
 				  param_spec);
 }
 
@@ -374,13 +422,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						    "specifier", ags_fx_wah_wah_channel_specifier[position],
 						    "control-port", ags_fx_wah_wah_channel_control_port[position],
 						    "port-value-is-pointer", FALSE,
-						    "port-value-type", AGS_TYPE_COMPLEX,
-						    "port-value-size", sizeof(AgsComplex),
+						    "port-value-type", G_TYPE_FLOAT,
+						    "port-value-size", sizeof(gfloat),
 						    "port-value-length", 1,
 						    NULL);
 
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_attack->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_attack->port_value.ags_port_float = (gfloat) (0.25 + 1.0 * I);
 
   g_object_set(fx_wah_wah_channel->wah_wah_attack,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_attack_plugin_port(),
@@ -397,13 +444,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						   "specifier", ags_fx_wah_wah_channel_specifier[position],
 						   "control-port", ags_fx_wah_wah_channel_control_port[position],
 						   "port-value-is-pointer", FALSE,
-						   "port-value-type", AGS_TYPE_COMPLEX,
-						   "port-value-size", sizeof(AgsComplex),
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
 						   "port-value-length", 1,
 						   NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_decay->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_decay->port_value.ags_port_float = (gfloat) (0.25 + 1.0 * I);
 
   g_object_set(fx_wah_wah_channel->wah_wah_decay,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_decay_plugin_port(),
@@ -420,13 +466,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						     "specifier", ags_fx_wah_wah_channel_specifier[position],
 						     "control-port", ags_fx_wah_wah_channel_control_port[position],
 						     "port-value-is-pointer", FALSE,
-						     "port-value-type", AGS_TYPE_COMPLEX,
-						     "port-value-size", sizeof(AgsComplex),
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
 						     "port-value-length", 1,
 						     NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_sustain->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_sustain->port_value.ags_port_float = (gfloat) (0.25 + 1.0 * I);
 
   g_object_set(fx_wah_wah_channel->wah_wah_sustain,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_sustain_plugin_port(),
@@ -443,13 +488,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						     "specifier", ags_fx_wah_wah_channel_specifier[position],
 						     "control-port", ags_fx_wah_wah_channel_control_port[position],
 						     "port-value-is-pointer", FALSE,
-						     "port-value-type", AGS_TYPE_COMPLEX,
-						     "port-value-size", sizeof(AgsComplex),
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
 						     "port-value-length", 1,
 						     NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_release->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_release->port_value.ags_port_float = (gfloat) (0.25 + 1.0 * I);
 
   g_object_set(fx_wah_wah_channel->wah_wah_release,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_release_plugin_port(),
@@ -466,13 +510,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						   "specifier", ags_fx_wah_wah_channel_specifier[position],
 						   "control-port", ags_fx_wah_wah_channel_control_port[position],
 						   "port-value-is-pointer", FALSE,
-						   "port-value-type", AGS_TYPE_COMPLEX,
-						   "port-value-size", sizeof(AgsComplex),
+						   "port-value-type", G_TYPE_FLOAT,
+						   "port-value-size", sizeof(gfloat),
 						   "port-value-length", 1,
 						   NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_ratio->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_ratio->port_value.ags_port_float = 0.0;
 
   g_object_set(fx_wah_wah_channel->wah_wah_ratio,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_ratio_plugin_port(),
@@ -489,13 +532,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						       "specifier", ags_fx_wah_wah_channel_specifier[position],
 						       "control-port", ags_fx_wah_wah_channel_control_port[position],
 						       "port-value-is-pointer", FALSE,
-						       "port-value-type", AGS_TYPE_COMPLEX,
-						       "port-value-size", sizeof(AgsComplex),
+						       "port-value-type", G_TYPE_FLOAT,
+						       "port-value-size", sizeof(gfloat),
 						       "port-value-length", 1,
 						       NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_lfo_depth->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_lfo_depth->port_value.ags_port_float = 0.0;
 
   g_object_set(fx_wah_wah_channel->wah_wah_lfo_depth,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_lfo_depth_plugin_port(),
@@ -512,13 +554,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						       "specifier", ags_fx_wah_wah_channel_specifier[position],
 						       "control-port", ags_fx_wah_wah_channel_control_port[position],
 						       "port-value-is-pointer", FALSE,
-						       "port-value-type", AGS_TYPE_COMPLEX,
-						       "port-value-size", sizeof(AgsComplex),
+						       "port-value-type", G_TYPE_FLOAT,
+						       "port-value-size", sizeof(gfloat),
 						       "port-value-length", 1,
 						       NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_lfo_freq->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_lfo_freq->port_value.ags_port_float = 8.179;
 
   g_object_set(fx_wah_wah_channel->wah_wah_lfo_freq,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_lfo_freq_plugin_port(),
@@ -535,13 +576,12 @@ ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel)
 						    "specifier", ags_fx_wah_wah_channel_specifier[position],
 						    "control-port", ags_fx_wah_wah_channel_control_port[position],
 						    "port-value-is-pointer", FALSE,
-						    "port-value-type", AGS_TYPE_COMPLEX,
-						    "port-value-size", sizeof(AgsComplex),
+						    "port-value-type", G_TYPE_FLOAT,
+						    "port-value-size", sizeof(gfloat),
 						    "port-value-length", 1,
 						    NULL);
   
-  ags_complex_set(&(fx_wah_wah_channel->wah_wah_tuning->port_value.ags_port_complex),
-		  1.0 + 0.25 * I);
+  fx_wah_wah_channel->wah_wah_tuning->port_value.ags_port_float = 0.0;
 
   g_object_set(fx_wah_wah_channel->wah_wah_tuning,
 	       "plugin-port", ags_fx_wah_wah_channel_get_wah_wah_tuning_plugin_port(),
@@ -1292,11 +1332,11 @@ ags_fx_wah_wah_channel_get_wah_wah_attack_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) (0.25 + 1.0 * I));
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      (gfloat) (1.0 + 1.0 * I));
   }
 
   g_mutex_unlock(&mutex);
@@ -1331,11 +1371,11 @@ ags_fx_wah_wah_channel_get_wah_wah_decay_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.5 * M_PI);
+		      (gfloat) (0.25 + 1.0 * I));
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      (gfloat) (1.0 + 1.0 * I));
   }
 
   g_mutex_unlock(&mutex);
@@ -1363,18 +1403,18 @@ ags_fx_wah_wah_channel_get_wah_wah_sustain_plugin_port()
 
     /* range */
     g_value_init(plugin_port->default_value,
-		 1.0 * M_PI);
+		 G_TYPE_FLOAT);
     g_value_init(plugin_port->lower_value,
 		 G_TYPE_FLOAT);
     g_value_init(plugin_port->upper_value,
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) (0.25 + 1.0 * I));
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      (gfloat) (1.0 + 1.0 * I));
   }
 
   g_mutex_unlock(&mutex);
@@ -1409,11 +1449,11 @@ ags_fx_wah_wah_channel_get_wah_wah_release_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.5 * M_PI);
+		      (gfloat) (0.25 + 1.0 * I));
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      2.0 * M_PI);
+		      (gfloat) (1.0 + 1.0 * I));
   }
 
   g_mutex_unlock(&mutex);
@@ -1448,11 +1488,11 @@ ags_fx_wah_wah_channel_get_wah_wah_ratio_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      (gfloat) (0.0 + 0.0 * I));
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      1.0);
+		      (gfloat) (1.0 + 0.0 * I));
   }
 
   g_mutex_unlock(&mutex);

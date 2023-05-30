@@ -152,7 +152,7 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   gdouble tremolo_tuning;
 
   GRecMutex *stream_mutex;
-  
+
   source = NULL;
 
   fx_tremolo_audio = NULL;

@@ -274,12 +274,6 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
   g_object_get(fx_wah_wah_channel,
 	       "source", &channel,
-	       "fixed-length", &fixed_length,
-	       "attack", &attack,
-	       "decay", &decay,
-	       "sustain", &sustain,
-	       "release", &release,
-	       "ratio", &ratio,
 	       NULL);
   
   g_object_get(source,
@@ -380,6 +374,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    port = NULL;
+    
     /* wah-wah enabled */    
     g_object_get(fx_wah_wah_channel,
 		 "wah-wah-enabled", &port,
@@ -400,11 +396,13 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_value_unset(&value);
   }
-
+  
   if(fx_wah_wah_channel != NULL){
     AgsPort *port;
 
     GValue value = {0,};
+    
+    port = NULL;
     
     /* wah-wah length mode */    
     g_object_get(fx_wah_wah_channel,
@@ -430,6 +428,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    port = NULL;
+    
     /* wah-wah fixed length */    
     g_object_get(fx_wah_wah_channel,
 		 "wah-wah-fixed-length", &port,
@@ -453,6 +453,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
     AgsPort *port;
 
     GValue value = {0,};
+
+    port = NULL;
     
     /* wah-wah attack */    
     g_object_get(fx_wah_wah_channel,
@@ -478,6 +480,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    port = NULL;
+    
     /* wah-wah decay */    
     g_object_get(fx_wah_wah_channel,
 		 "wah-wah-decay", &port,
@@ -501,6 +505,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
     AgsPort *port;
 
     GValue value = {0,};
+    
+    port = NULL;
     
     /* wah-wah sustain */    
     g_object_get(fx_wah_wah_channel,
@@ -526,6 +532,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    port = NULL;
+    
     /* wah-wah release */    
     g_object_get(fx_wah_wah_channel,
 		 "wah-wah-release", &port,
@@ -549,6 +557,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
     AgsPort *port;
 
     GValue value = {0,};
+    
+    port = NULL;
     
     /* wah-wah ratio */    
     g_object_get(fx_wah_wah_channel,
@@ -574,9 +584,11 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    port = NULL;
+    
     /* wah-wah LFO depth */    
     g_object_get(fx_wah_wah_channel,
-		 "wah-wah-lfo_depth", &port,
+		 "wah-wah-lfo-depth", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -598,9 +610,11 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
     GValue value = {0,};
     
+    port = NULL;
+    
     /* wah-wah LFO freq */    
     g_object_get(fx_wah_wah_channel,
-		 "wah-wah-lfo_freq", &port,
+		 "wah-wah-lfo-freq", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -621,6 +635,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
     AgsPort *port;
 
     GValue value = {0,};
+    
+    port = NULL;
     
     /* wah-wah tuning */    
     g_object_get(fx_wah_wah_channel,
@@ -650,7 +666,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
   }
   
   if(source != NULL &&
-     source->stream_current != NULL){
+     source->stream_current != NULL &&
+     wah_wah_enabled){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
     fx_wah_wah_audio_signal->envelope_util.destination_stride = 1;
@@ -747,12 +764,13 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	g_message("current-frame: %d", current_frame);
 #endif
 	
- 	fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset = current_frame % fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_frame_count;
+ 	fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset = current_frame;
 	
 	/* special case release - #0 key offset bigger than note offset */
 	if(x1 < note_offset){
 	  AgsVolumeUtil volume_util;
-	    
+
+#if 1 
 	  envelope_current_x = cattack.real + cdecay.real;
 	
 	  envelope_x0 = csustain.real;
@@ -786,7 +804,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  ags_volume_util_compute(&volume_util);
 
 	  g_rec_mutex_unlock(stream_mutex);
-	    
+#endif
+	  
 	  /* iterate */
 	  note = note->next;
 
@@ -851,6 +870,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
+	  
+	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
 	}    
       
 	if(offset >= buffer_size){
@@ -889,7 +910,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  current_volume = ags_fx_wah_wah_audio_signal_get_volume(envelope_y0, current_ratio,
 								  0, current_frame - envelope_start_frame,
 								  envelope_end_frame - envelope_start_frame);
-
+	  
 	  g_rec_mutex_lock(stream_mutex);
 	    
 	  fx_wah_wah_audio_signal->envelope_util.destination = source->stream_current->data + offset;
@@ -908,6 +929,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
+
+	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
 	}    
 
 	if(offset >= buffer_size){
@@ -965,6 +988,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  current_frame += current_frame_count;
 	  offset += current_frame_count;
+
+	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
 	}    
     
 	if(offset >= buffer_size){
@@ -1025,6 +1050,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  g_rec_mutex_unlock(stream_mutex);
 
 	  offset += current_frame_count;
+
+	  fx_wah_wah_audio_signal->envelope_util.wah_wah_lfo_offset += current_frame_count;
 
 	  if(trailing_frame_count != 0){
 	    AgsVolumeUtil volume_util;
