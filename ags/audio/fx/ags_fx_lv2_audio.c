@@ -580,8 +580,6 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
   AgsChannel *start_input;
   AgsRecallContainer *recall_container;
 
-  AgsLv2Plugin *lv2_plugin;
-
   GList *start_recall_channel, *recall_channel;
 
   guint input_pads;
@@ -595,18 +593,6 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
-
-  /* get lv2 plugin */
-  g_rec_mutex_lock(recall_mutex);
-
-  lv2_plugin = fx_lv2_audio->lv2_plugin;
-  
-  g_rec_mutex_unlock(recall_mutex);
-
-  if(lv2_plugin == NULL ||
-     !ags_base_plugin_test_flags((AgsBasePlugin *) lv2_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
-    return;
-  }
 
   start_input = NULL;
 
@@ -662,14 +648,18 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_fx_lv2_audio_channel_data_free(channel_data);
 	}
       }
-      
-      if(scope_data->channel_data == NULL){
-	scope_data->channel_data = (AgsFxLv2AudioChannelData **) g_malloc(audio_channels * sizeof(AgsFxLv2AudioChannelData *)); 
-      }else{
-	scope_data->channel_data = (AgsFxLv2AudioChannelData **) g_realloc(scope_data->channel_data,
-									   audio_channels * sizeof(AgsFxLv2AudioChannelData *)); 
-      }
 
+      if(audio_channels > 0){
+	if(scope_data->channel_data == NULL){
+	  scope_data->channel_data = (AgsFxLv2AudioChannelData **) g_malloc(audio_channels * sizeof(AgsFxLv2AudioChannelData *)); 
+	}else{
+	  scope_data->channel_data = (AgsFxLv2AudioChannelData **) g_realloc(scope_data->channel_data,
+									     audio_channels * sizeof(AgsFxLv2AudioChannelData *)); 
+	}
+      }else{
+	scope_data->channel_data = NULL;
+      }
+      
       if(audio_channels_old < audio_channels){
 	for(j = audio_channels_old; j < audio_channels; j++){
 	  AgsFxLv2AudioChannelData *channel_data;

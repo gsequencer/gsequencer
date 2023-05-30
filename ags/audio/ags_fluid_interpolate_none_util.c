@@ -151,6 +151,9 @@ ags_fluid_interpolate_none_util_copy(AgsFluidInterpolateNoneUtil *ptr)
   new_ptr->vibrato_lfo_freq = ptr->vibrato_lfo_freq;
   new_ptr->vibrato_tuning = ptr->vibrato_tuning;
 
+  new_ptr->vibrato_lfo_frame_count = ptr->vibrato_lfo_frame_count;
+  new_ptr->vibrato_lfo_offset = ptr->vibrato_lfo_offset;
+
   return(new_ptr);
 }
 
