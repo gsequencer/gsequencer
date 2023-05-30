@@ -854,7 +854,7 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1060,7 +1060,7 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1468,7 +1468,7 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1675,7 +1675,7 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1882,7 +1882,7 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 
@@ -2089,7 +2089,7 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 
@@ -2295,7 +2295,7 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
-    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth);
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * (sin((vibrato_lfo_offset + i) * 2.0 * M_PI * (vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0)) / samplerate) * vibrato_lfo_depth);
 
     new_freq_period = samplerate / new_freq;
 

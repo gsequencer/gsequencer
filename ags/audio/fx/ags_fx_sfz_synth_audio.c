@@ -794,7 +794,7 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 						     "port-value-length", 1,
 						     NULL);
   
-  fx_sfz_synth_audio->vibrato_enabled->port_value.ags_port_float = (gfloat) TRUE;
+  fx_sfz_synth_audio->vibrato_enabled->port_value.ags_port_float = (gfloat) FALSE;
 
   g_object_set(fx_sfz_synth_audio->vibrato_enabled,
 	       "plugin-port", ags_fx_sfz_synth_audio_get_vibrato_enabled_plugin_port(),
