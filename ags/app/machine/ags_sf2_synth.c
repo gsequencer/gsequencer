@@ -284,8 +284,14 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->sf2_synth_play_container = ags_recall_container_new();
   sf2_synth->sf2_synth_recall_container = ags_recall_container_new();
 
+  sf2_synth->tremolo_play_container = ags_recall_container_new();
+  sf2_synth->tremolo_recall_container = ags_recall_container_new();
+
   sf2_synth->envelope_play_container = ags_recall_container_new();
   sf2_synth->envelope_recall_container = ags_recall_container_new();
+
+  sf2_synth->wah_wah_play_container = ags_recall_container_new();
+  sf2_synth->wah_wah_recall_container = ags_recall_container_new();
 
   sf2_synth->buffer_play_container = ags_recall_container_new();
   sf2_synth->buffer_recall_container = ags_recall_container_new();
@@ -1491,6 +1497,27 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(sf2_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_chorus_delay_callback), sf2_synth);
 
+  g_signal_connect_after(sf2_synth->tremolo_lfo_depth, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_tremolo_lfo_depth_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->tremolo_lfo_freq, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_tremolo_lfo_freq_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->tremolo_tuning, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_tremolo_tuning_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->vibrato_gain, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_vibrato_gain_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->vibrato_lfo_depth, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_vibrato_lfo_depth_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->vibrato_lfo_freq, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_vibrato_lfo_freq_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->vibrato_tuning, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_vibrato_tuning_callback), sf2_synth);
+
   g_signal_connect_after(sf2_synth->wah_wah_attack_x, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_wah_wah_attack_callback), sf2_synth);
 
@@ -1517,6 +1544,15 @@ ags_sf2_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(sf2_synth->wah_wah_ratio, "value-changed",
 			 G_CALLBACK(ags_sf2_synth_wah_wah_ratio_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_lfo_depth, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_lfo_depth_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_lfo_freq, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_lfo_freq_callback), sf2_synth);
+
+  g_signal_connect_after(sf2_synth->wah_wah_tuning, "value-changed",
+			 G_CALLBACK(ags_sf2_synth_wah_wah_tuning_callback), sf2_synth);
 }
 
 void
@@ -1610,6 +1646,48 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_sf2_synth_chorus_delay_callback),
 		      (gpointer) sf2_synth,
 		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->tremolo_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_tremolo_gain_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->tremolo_lfo_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_tremolo_lfo_depth_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->tremolo_lfo_freq,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_tremolo_lfo_freq_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->tremolo_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_tremolo_tuning_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->vibrato_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_vibrato_gain_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->vibrato_lfo_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_vibrato_lfo_depth_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->vibrato_lfo_freq,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_vibrato_lfo_freq_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
   
   g_object_disconnect(sf2_synth->wah_wah_attack_x,
 		      "any_signal::value-changed",
@@ -1664,6 +1742,24 @@ ags_sf2_synth_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_sf2_synth_wah_wah_ratio_callback),
 		      sf2_synth,
 		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_lfo_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_lfo_depth_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_lfo_freq,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_lfo_freq_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) sf2_synth->wah_wah_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_sf2_synth_wah_wah_tuning_callback),
+		      (gpointer) sf2_synth,
+		      NULL);
 }
 
 void
@@ -1708,34 +1804,34 @@ ags_sf2_synth_wah_wah_draw_function(GtkDrawingArea *area,
 		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_ratio));
 
   cairo_line_to(cr,
-		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_y));
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_x), 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_attack_y)));
 
   /* decay */
   position_x += 480.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_x);
   
   cairo_move_to(cr,
-		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_attack_y));
+		position_x, 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_attack_y)));
 
   cairo_line_to(cr,
-		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_y));
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_x), 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_decay_y)));
 
   /* sustain */
   position_x += 480.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_x);
   
   cairo_move_to(cr,
-		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_decay_y));
+		position_x, 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_decay_y)));
 
   cairo_line_to(cr,
-		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_y));
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_x), 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_sustain_y)));
 
   /* release */
   position_x += 480.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_x);
   
   cairo_move_to(cr,
-		position_x, 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_sustain_y));
+		position_x, 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_sustain_y)));
 
   cairo_line_to(cr,
-		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_release_x), 120.0 - 120.0 * ags_dial_get_value(sf2_synth->wah_wah_release_y));
+		position_x + 480.0 * ags_dial_get_value(sf2_synth->wah_wah_release_x), 120.0 - 120.0 * (ags_dial_get_value(sf2_synth->wah_wah_ratio) + ags_dial_get_value(sf2_synth->wah_wah_release_y)));
 
   cairo_stroke(cr);
 }
@@ -1861,10 +1957,40 @@ ags_sf2_synth_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-tremolo */
+  start_recall = ags_fx_factory_create(audio,
+				       sf2_synth->tremolo_play_container, sf2_synth->tremolo_recall_container,
+				       "ags-fx-tremolo",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       sf2_synth->envelope_play_container, sf2_synth->envelope_recall_container,
 				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-wah-wah */
+  start_recall = ags_fx_factory_create(audio,
+				       sf2_synth->wah_wah_play_container, sf2_synth->wah_wah_recall_container,
+				       "ags-fx-wah-wah",
 				       NULL,
 				       NULL,
 				       0, 0,
@@ -1965,10 +2091,38 @@ ags_sf2_synth_input_map_recall(AgsSF2Synth *sf2_synth,
 	g_list_free_full(start_recall,
 			 (GDestroyNotify) g_object_unref);
 
+	/* ags-fx-tremolo */
+	start_recall = ags_fx_factory_create(audio,
+					     sf2_synth->tremolo_play_container, sf2_synth->tremolo_recall_container,
+					     "ags-fx-tremolo",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
+
 	/* ags-fx-envelope */
 	start_recall = ags_fx_factory_create(audio,
 					     sf2_synth->envelope_play_container, sf2_synth->envelope_recall_container,
 					     "ags-fx-envelope",
+					     NULL,
+					     NULL,
+					     j, j + 1,
+					     i, i + 1,
+					     position,
+					     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+	g_list_free_full(start_recall,
+			 (GDestroyNotify) g_object_unref);
+
+	/* ags-fx-wah-wah */
+	start_recall = ags_fx_factory_create(audio,
+					     sf2_synth->wah_wah_play_container, sf2_synth->wah_wah_recall_container,
+					     "ags-fx-wah-wah",
 					     NULL,
 					     NULL,
 					     j, j + 1,

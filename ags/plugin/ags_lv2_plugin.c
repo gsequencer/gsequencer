@@ -1958,7 +1958,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
     /* decode midi sequencer event */    
     if((count = ags_midi_buffer_util_decode(midi_buffer,
 					    &(events[i]))) <= 8){
-      g_message("add MIDI[%d] 0x%x 0x%x 0x%x 0x%x", count, midi_buffer[0], midi_buffer[1], midi_buffer[2], midi_buffer[3]);
+      //      g_message("add MIDI[%d] 0x%x 0x%x 0x%x 0x%x", count, midi_buffer[0], midi_buffer[1], midi_buffer[2], midi_buffer[3]);
       aev->time.frames = 0;
 
       aev->body.size = count;
