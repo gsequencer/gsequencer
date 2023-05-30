@@ -835,6 +835,12 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) tremolo_frame);
 
   tremolo_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(tremolo_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(tremolo_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child(tremolo_frame,
 		      (GtkWidget *) tremolo_grid);
 
@@ -923,6 +929,12 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) vibrato_frame);
 
   vibrato_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(vibrato_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(vibrato_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child(vibrato_frame,
 		      (GtkWidget *) vibrato_grid);
 
@@ -1011,6 +1023,12 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		 (GtkWidget *) wah_wah_frame);
 
   wah_wah_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(wah_wah_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(wah_wah_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_frame_set_child(wah_wah_frame,
 		      (GtkWidget *) wah_wah_grid);
   
@@ -1043,6 +1061,11 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_combo_box_set_active(sf2_synth->wah_wah_length,
 			   2);
+
+  gtk_grid_attach(wah_wah_grid,
+		  (GtkWidget *) sf2_synth->wah_wah_length,
+		  1, 1,
+		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("attack [x|y]"));
   gtk_widget_set_halign((GtkWidget *) label,
@@ -1314,7 +1337,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			GTK_ALIGN_START);
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) label,
-		  4, 1,
+		  5, 1,
 		  1, 1);
 
   sf2_synth->wah_wah_lfo_depth = (AgsDial *) ags_dial_new();
@@ -1324,7 +1347,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sf2_synth->wah_wah_lfo_depth,
-		  4, 1,
+		  6, 1,
 		  1, 1);
 
   label = (GtkLabel *) gtk_label_new(i18n("lfo-freq"));
