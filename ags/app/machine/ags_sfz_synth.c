@@ -822,6 +822,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   ags_dial_set_radius(sfz_synth->tremolo_gain,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sfz_synth->tremolo_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sfz_synth->tremolo_gain,
 		  1, 1,
@@ -839,6 +854,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   ags_dial_set_radius(sfz_synth->tremolo_lfo_depth,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->tremolo_lfo_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
 
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sfz_synth->tremolo_lfo_depth,
@@ -858,6 +888,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   ags_dial_set_radius(sfz_synth->tremolo_lfo_freq,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sfz_synth->tremolo_lfo_freq);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   6.0);
+
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sfz_synth->tremolo_lfo_freq,
 		  1, 3,
@@ -875,6 +920,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   ags_dial_set_radius(sfz_synth->tremolo_tuning,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->tremolo_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
 
   gtk_grid_attach(tremolo_grid,
 		  (GtkWidget *) sfz_synth->tremolo_tuning,
@@ -916,6 +976,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   ags_dial_set_radius(sfz_synth->vibrato_gain,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sfz_synth->vibrato_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sfz_synth->vibrato_gain,
 		  1, 1,
@@ -934,6 +1009,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   ags_dial_set_radius(sfz_synth->vibrato_lfo_depth,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sfz_synth->vibrato_lfo_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sfz_synth->vibrato_lfo_depth,
 		  1, 2,
@@ -951,7 +1041,22 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   ags_dial_set_radius(sfz_synth->vibrato_lfo_freq,
 		      12);
+  
+  adjustment = ags_dial_get_adjustment(sfz_synth->vibrato_lfo_freq);
 
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   8.172);
+  
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sfz_synth->vibrato_lfo_freq,
 		  1, 3,
@@ -969,6 +1074,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   ags_dial_set_radius(sfz_synth->vibrato_tuning,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->vibrato_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
 
   gtk_grid_attach(vibrato_grid,
 		  (GtkWidget *) sfz_synth->vibrato_tuning,
@@ -1304,6 +1424,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   ags_dial_set_radius(sfz_synth->wah_wah_lfo_depth,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_lfo_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sfz_synth->wah_wah_lfo_depth,
 		  6, 1,
@@ -1322,6 +1457,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   ags_dial_set_radius(sfz_synth->wah_wah_lfo_freq,
 		      12);
 
+  adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_lfo_freq);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   6.0);
+
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sfz_synth->wah_wah_lfo_freq,
 		  6, 2,
@@ -1339,6 +1489,21 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   ags_dial_set_radius(sfz_synth->wah_wah_tuning,
 		      12);
+
+  adjustment = ags_dial_get_adjustment(sfz_synth->wah_wah_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+  gtk_adjustment_set_page_increment(adjustment,
+				    0.1);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
 
   gtk_grid_attach(wah_wah_grid,
 		  (GtkWidget *) sfz_synth->wah_wah_tuning,

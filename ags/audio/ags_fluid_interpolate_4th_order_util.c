@@ -139,7 +139,8 @@ ags_fluid_interpolate_4th_order_util_alloc()
   ptr->phase_increment = 0.0;
 
   ptr->vibrato_gain = 1.0;
-  ptr->vibrato_lfo_depth = 0.0;
+
+  ptr->vibrato_lfo_depth = 1.0;
   ptr->vibrato_lfo_freq = 8.172;
   ptr->vibrato_tuning = 0.0;
 
