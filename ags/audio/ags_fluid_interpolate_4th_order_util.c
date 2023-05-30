@@ -956,7 +956,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1075,6 +1079,8 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -1116,7 +1122,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1235,6 +1245,8 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -1276,7 +1288,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1395,6 +1411,8 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -1436,7 +1454,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1555,6 +1577,8 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -1596,7 +1620,11 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1715,6 +1743,8 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -1756,7 +1786,11 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1875,6 +1909,8 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -1916,7 +1952,11 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -2036,6 +2076,8 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
   
   /* interpolate the sequence of sample points */
@@ -2078,7 +2120,11 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_4th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

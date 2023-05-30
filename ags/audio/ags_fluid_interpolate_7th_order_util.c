@@ -935,6 +935,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -977,6 +979,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1020,6 +1024,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -1064,7 +1070,11 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1187,6 +1197,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1229,6 +1241,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1272,6 +1286,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -1316,7 +1332,11 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1439,6 +1459,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1481,6 +1503,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1524,6 +1548,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -1568,7 +1594,11 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1691,6 +1721,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1733,6 +1765,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1776,6 +1810,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -1820,7 +1856,11 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1943,6 +1983,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -1985,6 +2027,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2028,6 +2072,8 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -2072,7 +2118,11 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -2195,6 +2245,8 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2237,6 +2289,8 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2280,6 +2334,8 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -2324,7 +2380,11 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -2447,6 +2507,8 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2489,6 +2551,8 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2532,6 +2596,8 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -2576,7 +2642,11 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -2700,6 +2770,8 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2743,6 +2815,8 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   start_index++;
@@ -2787,6 +2861,8 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
 
   /* set back to original start index */
@@ -2832,7 +2908,11 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_7th_order_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

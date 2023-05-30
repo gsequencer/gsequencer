@@ -9,14 +9,12 @@ ags (5.2.0)
 	* refactored AgsSF2Synth added tremolo, vibrato and wah-wah effect
 	* refactored AgsSFZSynth added tremolo, vibrato and wah-wah effect
 	* refactored ags-fx-lv2
-	* TODO:JK: refactored ags_sf2_synth_util.[ch] added vibrato
-	* TODO:JK: refactored ags_sfz_synth_util.[ch] added vibrato
 	* refactored ags_fluid_interpolate_none_util.[ch] added vibrato
 	* refactored ags_fluid_interpolate_linear_util.[ch] added vibrato
 	* refactored ags_fluid_interpolate_4th_order_util.[ch] added vibrato
 	* refactored ags_fluid_interpolate_7th_order_util.[ch] added vibrato
-	* TODO:JK: refactored ags_fast_pitch_util.[ch] added vibrato
-	* TODO:JK: refactored ags_hq_pitch_util.[ch] added vibrato
+	* refactored ags_fast_pitch_util.[ch] added vibrato
+	* refactored ags_hq_pitch_util.[ch] added vibrato
 	* refactored ags_envelope_util.[ch] added wah-wah
 	* refactored ags_volume_util.[ch] shortened struct access
 

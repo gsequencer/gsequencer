@@ -748,6 +748,12 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -797,6 +803,12 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -842,6 +854,10 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
+
     if(j >= new_freq_period){
       j = 0;
     }
@@ -904,7 +920,11 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -933,6 +953,12 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -982,6 +1008,13 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
+
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -1027,6 +1060,10 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
+
     if(j >= new_freq_period){
       j = 0;
     }
@@ -1089,7 +1126,11 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -1118,6 +1159,12 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -1167,6 +1214,13 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
+
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -1274,7 +1328,11 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -1303,6 +1361,12 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -1352,6 +1416,13 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
+
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -1397,6 +1468,11 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
+
+
     if(j >= new_freq_period){
       j = 0;
     }
@@ -1459,7 +1535,11 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -1488,6 +1568,12 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -1537,6 +1623,13 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
+
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -1582,6 +1675,11 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
+
+
     if(j >= new_freq_period){
       j = 0;
     }
@@ -1644,7 +1742,11 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -1673,6 +1775,12 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -1722,6 +1830,13 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
+
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -1767,6 +1882,11 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
+
+
     if(j >= new_freq_period){
       j = 0;
     }
@@ -1829,7 +1949,11 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -1858,6 +1982,12 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -1907,6 +2037,13 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
+
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -1952,6 +2089,11 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
 
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
+
+
     if(j >= new_freq_period){
       j = 0;
     }
@@ -2014,7 +2156,11 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
     }
     
     ptr_new_mix_buffer[0] = new_z;
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
@@ -2043,6 +2189,12 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
   guint buffer_length;
   guint samplerate;
   gdouble volume;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  guint vibrato_lfo_offset;
+
   gdouble base_freq, low_freq, new_freq;
   gdouble offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, low_freq_period, new_freq_period;
@@ -2092,6 +2244,12 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
   }
   
   volume = 1.0 / base_freq * new_freq;
+
+  vibrato_gain = hq_pitch_util->vibrato_gain;
+  vibrato_lfo_depth = hq_pitch_util->vibrato_lfo_depth;
+  vibrato_lfo_freq = hq_pitch_util->vibrato_lfo_freq;
+  vibrato_tuning = hq_pitch_util->vibrato_tuning;
+  vibrato_lfo_offset = hq_pitch_util->vibrato_lfo_offset;
   
   /* get frequency period */
   freq_period = 2.0 * M_PI * samplerate / base_freq;
@@ -2136,6 +2294,10 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
     double _Complex new_z;
     gdouble phase, low_phase, new_phase;    
     guint start_x, low_start_x;
+
+    new_freq = (exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0)) / 12.0) * 440.0) * sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq * (exp2(vibrato_tuning / 1200.0 + sin((vibrato_lfo_offset + i) * 2.0 * M_PI * vibrato_lfo_freq / samplerate) * vibrato_lfo_depth)) / samplerate);
+
+    new_freq_period = samplerate / new_freq;
 
     if(j >= new_freq_period){
       j = 0;
@@ -2200,7 +2362,11 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
     
     ags_complex_set(ptr_new_mix_buffer,
 		    new_z);
+
+    vibrato_lfo_offset += 1;
   }
+
+  hq_pitch_util->vibrato_lfo_offset = vibrato_lfo_offset;
   
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){

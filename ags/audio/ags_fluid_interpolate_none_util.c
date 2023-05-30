@@ -854,6 +854,8 @@ ags_fluid_interpolate_none_util_pitch_s8(AgsFluidInterpolateNoneUtil *fluid_inte
 
     vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -944,7 +946,11 @@ ags_fluid_interpolate_none_util_pitch_s16(AgsFluidInterpolateNoneUtil *fluid_int
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1035,7 +1041,11 @@ ags_fluid_interpolate_none_util_pitch_s24(AgsFluidInterpolateNoneUtil *fluid_int
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1126,7 +1136,11 @@ ags_fluid_interpolate_none_util_pitch_s32(AgsFluidInterpolateNoneUtil *fluid_int
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1217,7 +1231,11 @@ ags_fluid_interpolate_none_util_pitch_s64(AgsFluidInterpolateNoneUtil *fluid_int
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1308,7 +1326,11 @@ ags_fluid_interpolate_none_util_pitch_float(AgsFluidInterpolateNoneUtil *fluid_i
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1399,7 +1421,11 @@ ags_fluid_interpolate_none_util_pitch_double(AgsFluidInterpolateNoneUtil *fluid_
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1491,7 +1517,11 @@ ags_fluid_interpolate_none_util_pitch_complex(AgsFluidInterpolateNoneUtil *fluid
 
     /* round to nearest point */
     dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_none_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

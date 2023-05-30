@@ -899,7 +899,11 @@ ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1004,7 +1008,11 @@ ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1109,7 +1117,11 @@ ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1214,7 +1226,11 @@ ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1319,7 +1335,11 @@ ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1424,7 +1444,11 @@ ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *flu
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1529,7 +1553,11 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**
@@ -1634,7 +1662,11 @@ ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *f
     
     /* nearest point */
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    vibrato_lfo_offset += 1;
   }
+
+  fluid_interpolate_linear_util->vibrato_lfo_offset = vibrato_lfo_offset;
 }
 
 /**

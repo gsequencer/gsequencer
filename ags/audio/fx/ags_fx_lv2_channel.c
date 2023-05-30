@@ -35,6 +35,12 @@ void ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel);
 void ags_fx_lv2_channel_dispose(GObject *gobject);
 void ags_fx_lv2_channel_finalize(GObject *gobject);
 
+void ags_fx_lv2_channel_notify_filename_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data);
+void ags_fx_lv2_channel_notify_effect_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       gpointer user_data);
 void ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
 						    GParamSpec *pspec,
 						    gpointer user_data);
@@ -105,6 +111,12 @@ void
 ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel)
 {
   guint i;
+  
+  g_signal_connect(fx_lv2_channel, "notify::filename",
+		   G_CALLBACK(ags_fx_lv2_channel_notify_filename_callback), NULL);
+
+  g_signal_connect(fx_lv2_channel, "notify::effect",
+		   G_CALLBACK(ags_fx_lv2_channel_notify_effect_callback), NULL);
   
   g_signal_connect(fx_lv2_channel, "notify::buffer-size",
 		   G_CALLBACK(ags_fx_lv2_channel_notify_buffer_size_callback), NULL);
@@ -183,6 +195,92 @@ ags_fx_lv2_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_lv2_channel_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_lv2_channel_notify_filename_callback(GObject *gobject,
+					    GParamSpec *pspec,
+					    gpointer user_data)
+{
+  AgsFxLv2Channel *fx_lv2_channel;
+
+  AgsLv2Manager *lv2_manager;
+
+  gchar *filename, *effect;
+  
+  GRecMutex *recall_mutex;
+
+  fx_lv2_channel = AGS_FX_LV2_CHANNEL(gobject);
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_channel);
+
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_lv2_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* get lv2 plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(filename != NULL &&
+     effect != NULL){
+    fx_lv2_channel->lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+							       filename, effect);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_free(filename);
+  g_free(effect);
+}
+
+void
+ags_fx_lv2_channel_notify_effect_callback(GObject *gobject,
+					  GParamSpec *pspec,
+					  gpointer user_data)
+{
+  AgsFxLv2Channel *fx_lv2_channel;
+
+  AgsLv2Manager *lv2_manager;
+
+  gchar *filename, *effect;
+
+  GRecMutex *recall_mutex;
+  
+  fx_lv2_channel = AGS_FX_LV2_CHANNEL(gobject);
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_channel);
+
+  filename = NULL;
+  effect = NULL;
+
+  g_object_get(fx_lv2_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  /* get lv2 plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(filename != NULL &&
+     effect != NULL){
+    fx_lv2_channel->lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+							       filename, effect);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_free(filename);
+  g_free(effect);
 }
 
 void
