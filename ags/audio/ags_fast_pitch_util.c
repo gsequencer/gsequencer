@@ -966,7 +966,7 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1290,7 +1290,7 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1614,7 +1614,7 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
 
@@ -1938,7 +1938,7 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
 
@@ -2262,7 +2262,7 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
 
@@ -2586,7 +2586,7 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
 
@@ -2910,7 +2910,7 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
     
@@ -3236,7 +3236,7 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
+    new_freq = (exp2((fast_pitch_util->base_key + (fast_pitch_util->tuning + 100.0 * (vibrato_gain * sin((vibrato_lfo_offset) * 2.0 * M_PI * vibrato_lfo_freq * exp2(vibrato_tuning / 1200.0) / samplerate) * vibrato_lfo_depth) / 100.0)) / 12.0) * 440.0);
 
     new_freq_period = samplerate / new_freq;
     
