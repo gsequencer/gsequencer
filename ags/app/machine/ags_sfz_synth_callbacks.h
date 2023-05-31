@@ -54,15 +54,23 @@ void ags_sfz_synth_chorus_depth_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_chorus_mix_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_chorus_delay_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 
+void ags_sfz_synth_tremolo_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth);
+
 void ags_sfz_synth_tremolo_gain_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_tremolo_lfo_depth_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_tremolo_lfo_freq_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_tremolo_tuning_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 
+void ags_sfz_synth_vibrato_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth);
+
 void ags_sfz_synth_vibrato_gain_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_vibrato_lfo_depth_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_vibrato_lfo_freq_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_vibrato_tuning_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
+
+void ags_sfz_synth_wah_wah_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth);
+
+void ags_sfz_synth_wah_wah_length_callback(GtkComboBox *combo_box, AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_wah_wah_attack_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_wah_wah_decay_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);

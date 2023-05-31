@@ -743,6 +743,61 @@ ags_sfz_synth_volume_callback(GtkRange *range, AgsSFZSynth *sfz_synth)
 }
 
 void
+ags_sfz_synth_tremolo_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble tremolo_enabled;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sfz_synth)->audio;
+
+  tremolo_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TREMOLO_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "tremolo-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) tremolo_enabled);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_sfz_synth_tremolo_gain_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 {
   AgsAudio *audio;
@@ -947,6 +1002,61 @@ ags_sfz_synth_tremolo_tuning_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 
       g_value_set_float(&value,
 			(gfloat) tremolo_tuning);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_sfz_synth_vibrato_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble vibrato_enabled;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sfz_synth)->audio;
+
+  vibrato_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SFZ_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "vibrato-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) vibrato_enabled);
 
       ags_port_safe_write(port,
 			  &value);
@@ -1180,6 +1290,162 @@ ags_sfz_synth_vibrato_tuning_callback(AgsDial *dial, AgsSFZSynth *sfz_synth)
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_sfz_synth_wah_wah_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth)
+{
+  AgsAudio *audio;
+  AgsChannel *start_channel, *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble wah_wah_enabled;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sfz_synth)->audio;
+
+  wah_wah_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
+
+  start_channel =
+    channel = ags_audio_get_input(audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+  
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-enabled", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  (gfloat) wah_wah_enabled);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+    
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+}
+
+void
+ags_sfz_synth_wah_wah_length_callback(GtkComboBox *combo_box, AgsSFZSynth *sfz_synth)
+{
+  AgsAudio *audio;
+  AgsChannel *start_channel, *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble wah_wah_length;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sfz_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sfz_synth)->audio;
+
+  wah_wah_length = gtk_combo_box_get_active(sfz_synth->wah_wah_length);
+
+  start_channel =
+    channel = ags_audio_get_input(audio);
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+  
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_WAH_WAH_CHANNEL)) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "wah-wah-length", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  (gfloat) wah_wah_length);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+    
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /**/
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
 }
 
 void
