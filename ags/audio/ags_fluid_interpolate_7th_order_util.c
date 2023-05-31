@@ -153,6 +153,8 @@ ags_fluid_interpolate_7th_order_util_alloc()
 
   ptr->phase_increment = 0.0;
 
+  ptr->vibrato_enabled = TRUE;
+
   ptr->vibrato_gain = 1.0;
   ptr->vibrato_lfo_depth = 0.0;
   ptr->vibrato_lfo_freq = 8.172;
@@ -196,6 +198,8 @@ ags_fluid_interpolate_7th_order_util_copy(AgsFluidInterpolate7thOrderUtil *ptr)
   new_ptr->tuning = ptr->tuning;
 
   new_ptr->phase_increment = ptr->phase_increment;
+
+  new_ptr->vibrato_enabled = ptr->vibrato_enabled;
 
   new_ptr->vibrato_gain = ptr->vibrato_gain;
   new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
@@ -656,6 +660,46 @@ ags_fluid_interpolate_7th_order_util_set_phase_increment(AgsFluidInterpolate7thO
 }
 
 /**
+ * ags_fluid_interpolate_7th_order_util_get_vibrato_enabled:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * 
+ * Get vibrato enabled of @fluid_interpolate_7th_order_util.
+ * 
+ * Returns: %TRUE if the vibrato is enabled, otherwise %FALSE
+ * 
+ * Since: 5.2.0
+ */
+gboolean
+ags_fluid_interpolate_7th_order_util_get_vibrato_enabled(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return(FALSE);
+  }
+
+  return(fluid_interpolate_7th_order_util->vibrato_enabled);
+}
+
+/**
+ * ags_fluid_interpolate_7th_order_util_set_vibrato_enabled:
+ * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
+ * @vibrato_enabled: the vibrato enabled
+ *
+ * Set @vibrato_enabled of @fluid_interpolate_7th_order_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fluid_interpolate_7th_order_util_set_vibrato_enabled(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+							 gboolean vibrato_enabled)
+{
+  if(fluid_interpolate_7th_order_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_7th_order_util->vibrato_enabled = vibrato_enabled;
+}
+
+/**
  * ags_fluid_interpolate_7th_order_util_get_vibrato_gain:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
  * 
@@ -699,9 +743,9 @@ ags_fluid_interpolate_7th_order_util_set_vibrato_gain(AgsFluidInterpolate7thOrde
  * ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_depth:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
  * 
- * Get vibrato_lfo_depth of @fluid_interpolate_7th_order_util.
+ * Get vibrato LFO depth of @fluid_interpolate_7th_order_util.
  * 
- * Returns: the vibrato_lfo_depth
+ * Returns: the vibrato LFO depth
  * 
  * Since: 5.2.0
  */
@@ -718,7 +762,7 @@ ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_depth(AgsFluidInterpolate7t
 /**
  * ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_depth:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
- * @vibrato_lfo_depth: the vibrato_lfo_depth
+ * @vibrato_lfo_depth: the vibrato LFO depth
  *
  * Set @vibrato_lfo_depth of @fluid_interpolate_7th_order_util.
  *
@@ -739,9 +783,9 @@ ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_depth(AgsFluidInterpolate7t
  * ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_freq:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
  * 
- * Get vibrato_lfo_freq of @fluid_interpolate_7th_order_util.
+ * Get vibrato LFO frequency of @fluid_interpolate_7th_order_util.
  * 
- * Returns: the vibrato_lfo_freq
+ * Returns: the vibrato LFO frequency
  * 
  * Since: 5.2.0
  */
@@ -758,7 +802,7 @@ ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_freq(AgsFluidInterpolate7th
 /**
  * ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_freq:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
- * @vibrato_lfo_freq: the vibrato_lfo_freq
+ * @vibrato_lfo_freq: the vibrato LFO frequency
  *
  * Set @vibrato_lfo_freq of @fluid_interpolate_7th_order_util.
  *
@@ -779,9 +823,9 @@ ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_freq(AgsFluidInterpolate7th
  * ags_fluid_interpolate_7th_order_util_get_vibrato_tuning:
  * @fluid_interpolate_7th_order_util: the #AgsFluidInterpolate7thOrderUtil-struct
  * 
- * Get vibrato_tuning of @fluid_interpolate_7th_order_util.
+ * Get vibrato tuning of @fluid_interpolate_7th_order_util.
  * 
- * Returns: the vibrato_tuning
+ * Returns: the vibrato tuning
  * 
  * Since: 5.2.0
  */
@@ -876,6 +920,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
 
@@ -1135,6 +1183,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
 
@@ -1397,6 +1449,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1657,6 +1713,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
 
@@ -1919,6 +1979,10 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -2179,6 +2243,10 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
 
@@ -2441,6 +2509,10 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -2701,6 +2773,10 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
   vibrato_lfo_freq = fluid_interpolate_7th_order_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_7th_order_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_7th_order_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_7th_order_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
 

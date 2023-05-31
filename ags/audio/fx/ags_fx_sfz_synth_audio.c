@@ -69,6 +69,7 @@ static AgsPluginPort* ags_fx_sfz_synth_audio_get_chorus_mix_plugin_port();
 static AgsPluginPort* ags_fx_sfz_synth_audio_get_chorus_delay_plugin_port();
 
 static AgsPluginPort* ags_fx_sfz_synth_audio_get_vibrato_enabled_plugin_port();
+static AgsPluginPort* ags_fx_sfz_synth_audio_get_vibrato_gain_plugin_port();
 static AgsPluginPort* ags_fx_sfz_synth_audio_get_vibrato_lfo_depth_plugin_port();
 static AgsPluginPort* ags_fx_sfz_synth_audio_get_vibrato_lfo_freq_plugin_port();
 static AgsPluginPort* ags_fx_sfz_synth_audio_get_vibrato_tuning_plugin_port();
@@ -102,6 +103,7 @@ const gchar* ags_fx_sfz_synth_audio_specifier[] = {
   "./chorus-mix[0]",
   "./chorus-delay[0]",
   "./vibrato-enabled[0]",
+  "./vibrato-gain[0]",
   "./vibrato-lfo-depth[0]",
   "./vibrato-lfo-freq[0]",
   "./vibrato-tuning[0]",
@@ -109,23 +111,24 @@ const gchar* ags_fx_sfz_synth_audio_specifier[] = {
 };
 
 const gchar* ags_fx_sfz_synth_audio_control_port[] = {
-  "1/17",
-  "2/17",
-  "3/17",
-  "4/17",
-  "5/17",
-  "6/17",
-  "7/17",
-  "8/17",
-  "9/17",
-  "10/17",
-  "11/17",
-  "12/17",
-  "13/17",
-  "14/17",
-  "15/17",
-  "16/17",
-  "17/17",
+  "1/18",
+  "2/18",
+  "3/18",
+  "4/18",
+  "5/18",
+  "6/18",
+  "7/18",
+  "8/18",
+  "9/18",
+  "10/18",
+  "11/18",
+  "12/18",
+  "13/18",
+  "14/18",
+  "15/18",
+  "16/18",
+  "17/18",
+  "18/18",
   NULL,
 };
 
@@ -145,6 +148,7 @@ enum{
   PROP_CHORUS_MIX,
   PROP_CHORUS_DELAY,
   PROP_VIBRATO_ENABLED,
+  PROP_VIBRATO_GAIN,
   PROP_VIBRATO_LFO_DEPTH,
   PROP_VIBRATO_LFO_FREQ,
   PROP_VIBRATO_TUNING,
@@ -804,6 +808,28 @@ ags_fx_sfz_synth_audio_init(AgsFxSFZSynthAudio *fx_sfz_synth_audio)
 		      fx_sfz_synth_audio->vibrato_enabled);
 
   position++;
+
+  /* vibrato gain */
+  fx_sfz_synth_audio->vibrato_gain = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name", ags_fx_sfz_synth_audio_plugin_name,
+						  "specifier", ags_fx_sfz_synth_audio_specifier[position],
+						  "control-port", ags_fx_sfz_synth_audio_control_port[position],
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
+  
+  fx_sfz_synth_audio->vibrato_gain->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_sfz_synth_audio->vibrato_gain,
+	       "plugin-port", ags_fx_sfz_synth_audio_get_vibrato_gain_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_sfz_synth_audio,
+		      fx_sfz_synth_audio->vibrato_gain);
+
+  position++;
   
   /* vibrato LFO depth */
   fx_sfz_synth_audio->vibrato_lfo_depth = g_object_new(AGS_TYPE_PORT,
@@ -1279,6 +1305,33 @@ ags_fx_sfz_synth_audio_set_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
+  case PROP_VIBRATO_GAIN:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_sfz_synth_audio->vibrato_gain){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_sfz_synth_audio->vibrato_gain != NULL){
+      g_object_unref(G_OBJECT(fx_sfz_synth_audio->vibrato_gain));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_sfz_synth_audio->vibrato_gain = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_VIBRATO_LFO_DEPTH:
   {
     AgsPort *port;
@@ -1508,6 +1561,15 @@ ags_fx_sfz_synth_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);	
   }
   break;
+  case PROP_VIBRATO_GAIN:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_sfz_synth_audio->vibrato_gain);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_VIBRATO_LFO_DEPTH:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -1646,6 +1708,13 @@ ags_fx_sfz_synth_audio_dispose(GObject *gobject)
     fx_sfz_synth_audio->vibrato_enabled = NULL;
   }
 
+  /* vibrato gain */
+  if(fx_sfz_synth_audio->vibrato_gain != NULL){
+    g_object_unref(G_OBJECT(fx_sfz_synth_audio->vibrato_gain));
+
+    fx_sfz_synth_audio->vibrato_gain = NULL;
+  }
+
   /* vibrato LFO depth */
   if(fx_sfz_synth_audio->vibrato_lfo_depth != NULL){
     g_object_unref(G_OBJECT(fx_sfz_synth_audio->vibrato_lfo_depth));
@@ -1748,6 +1817,11 @@ ags_fx_sfz_synth_audio_finalize(GObject *gobject)
   /* vibrato enabled */
   if(fx_sfz_synth_audio->vibrato_enabled != NULL){
     g_object_unref(G_OBJECT(fx_sfz_synth_audio->vibrato_enabled));
+  }
+
+  /* vibrato gain */
+  if(fx_sfz_synth_audio->vibrato_gain != NULL){
+    g_object_unref(G_OBJECT(fx_sfz_synth_audio->vibrato_gain));
   }
 
   /* vibrato LFO depth */
@@ -2763,6 +2837,46 @@ ags_fx_sfz_synth_audio_get_chorus_delay_plugin_port()
 
 static AgsPluginPort*
 ags_fx_sfz_synth_audio_get_vibrato_enabled_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_sfz_synth_audio_get_vibrato_gain_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 

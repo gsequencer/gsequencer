@@ -64,6 +64,8 @@ struct _AgsFastPitchUtil
   gdouble base_key;
   gdouble tuning;
 
+  gdouble vibrato_enabled;
+
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -115,6 +117,10 @@ void ags_fast_pitch_util_set_base_key(AgsFastPitchUtil *fast_pitch_util,
 gdouble ags_fast_pitch_util_get_tuning(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_tuning(AgsFastPitchUtil *fast_pitch_util,
 				    gdouble tuning);
+
+gboolean ags_fast_pitch_util_get_vibrato_enabled(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_vibrato_enabled(AgsFastPitchUtil *fast_pitch_util,
+					     gboolean vibrato_enabled);
 
 gdouble ags_fast_pitch_util_get_vibrato_gain(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_vibrato_gain(AgsFastPitchUtil *fast_pitch_util,

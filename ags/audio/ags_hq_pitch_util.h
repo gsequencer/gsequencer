@@ -62,6 +62,8 @@ struct _AgsHQPitchUtil
 
   AgsLinearInterpolateUtil *linear_interpolate_util;
 
+  gdouble vibrato_enabled;
+
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -113,6 +115,10 @@ void ags_hq_pitch_util_set_base_key(AgsHQPitchUtil *hq_pitch_util,
 gdouble ags_hq_pitch_util_get_tuning(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_tuning(AgsHQPitchUtil *hq_pitch_util,
 				  gdouble tuning);
+
+gboolean ags_hq_pitch_util_get_vibrato_enabled(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_vibrato_enabled(AgsHQPitchUtil *hq_pitch_util,
+					   gboolean vibrato_enabled);
 
 gdouble ags_hq_pitch_util_get_vibrato_gain(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_vibrato_gain(AgsHQPitchUtil *hq_pitch_util,

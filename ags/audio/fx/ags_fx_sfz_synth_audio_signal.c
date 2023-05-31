@@ -172,6 +172,11 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   gint midi_note;
   gdouble octave;
   gdouble key;
+  gboolean vibrato_enabled;
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
   guint format;
   guint samplerate;
   guint audio_buffer_util_format;
@@ -253,7 +258,13 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
   octave = 0.0;
   key = 0.0;
-    
+
+  vibrato_enabled = FALSE;
+  vibrato_gain = 1.0;
+  vibrato_lfo_depth = 1.0;
+  vibrato_lfo_freq = 8.172;
+  vibrato_tuning = 0.0;
+  
   if(fx_sfz_synth_audio != NULL){
     AgsPort *port;
 
@@ -473,6 +484,98 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
       g_value_unset(&value);
     }
+
+    /* vibrato enabled */
+    g_object_get(fx_sfz_synth_audio,
+		 "vibrato-enabled", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	vibrato_enabled = TRUE;
+      }
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* vibrato gain */
+    g_object_get(fx_sfz_synth_audio,
+		 "vibrato-gain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      vibrato_gain = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* vibrato LFO depth */
+    g_object_get(fx_sfz_synth_audio,
+		 "vibrato-lfo-depth", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      vibrato_lfo_depth = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* vibrato LFO freq */
+    g_object_get(fx_sfz_synth_audio,
+		 "vibrato-lfo-freq", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      vibrato_lfo_freq = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* vibrato tuning */
+    g_object_get(fx_sfz_synth_audio,
+		 "vibrato-tuning", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      vibrato_tuning = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
   }
 
   if(midi_note >= 0 &&
@@ -521,6 +624,26 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 				       floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
     ags_sfz_synth_util_set_offset(channel_data->synth,
 				  floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
+
+    ags_common_pitch_util_set_vibrato_enabled(channel_data->synth->pitch_util,
+					      channel_data->synth->pitch_type,
+					      vibrato_enabled);
+
+    ags_common_pitch_util_set_vibrato_gain(channel_data->synth->pitch_util,
+					   channel_data->synth->pitch_type,
+					   vibrato_gain);
+    
+    ags_common_pitch_util_set_vibrato_lfo_depth(channel_data->synth->pitch_util,
+						channel_data->synth->pitch_type,
+						vibrato_lfo_depth);
+
+    ags_common_pitch_util_set_vibrato_lfo_freq(channel_data->synth->pitch_util,
+					       channel_data->synth->pitch_type,
+					       vibrato_lfo_freq);
+
+    ags_common_pitch_util_set_vibrato_tuning(channel_data->synth->pitch_util,
+					     channel_data->synth->pitch_type,
+					     vibrato_tuning);
 
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 				       buffer_size, audio_buffer_util_format);
