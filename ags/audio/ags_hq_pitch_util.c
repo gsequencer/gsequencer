@@ -93,6 +93,8 @@ ags_hq_pitch_util_alloc()
 
   ptr->linear_interpolate_util = ags_linear_interpolate_util_alloc();
 
+  ptr->vibrato_enabled = TRUE;
+
   ptr->vibrato_gain = 1.0;
   ptr->vibrato_lfo_depth = 0.0;
   ptr->vibrato_lfo_freq = 8.172;
@@ -144,6 +146,8 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 
   new_ptr->base_key = ptr->base_key;
   new_ptr->tuning = ptr->tuning;
+
+  new_ptr->vibrato_enabled = ptr->vibrato_enabled;
 
   new_ptr->vibrato_gain = ptr->vibrato_gain;
   new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
@@ -565,6 +569,46 @@ ags_hq_pitch_util_set_tuning(AgsHQPitchUtil *hq_pitch_util,
   }
 
   hq_pitch_util->tuning = tuning;
+}
+
+/**
+ * ags_hq_pitch_util_get_vibrato_enabled:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get vibrato enabled of @hq_pitch_util.
+ * 
+ * Returns: %TRUE if the vibrato is enabled, otherwise %FALSE
+ * 
+ * Since: 5.2.0
+ */
+gboolean
+ags_hq_pitch_util_get_vibrato_enabled(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(FALSE);
+  }
+
+  return(hq_pitch_util->vibrato_enabled);
+}
+
+/**
+ * ags_hq_pitch_util_set_vibrato_enabled:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @vibrato_enabled: the vibrato enabled
+ *
+ * Set @vibrato_enabled of @hq_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_hq_pitch_util_set_vibrato_enabled(AgsHQPitchUtil *hq_pitch_util,
+				      gboolean vibrato_enabled)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->vibrato_enabled = vibrato_enabled;
 }
 
 /**

@@ -52,6 +52,8 @@ struct _AgsFluidInterpolateNoneUtil
 
   gdouble phase_increment;
 
+  gboolean vibrato_enabled;
+  
   gdouble vibrato_gain;
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
@@ -107,6 +109,10 @@ void ags_fluid_interpolate_none_util_set_tuning(AgsFluidInterpolateNoneUtil *flu
 gdouble ags_fluid_interpolate_none_util_get_phase_increment(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_set_phase_increment(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
 							 gdouble phase_increment);
+
+gboolean ags_fluid_interpolate_none_util_get_vibrato_enabled(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_vibrato_enabled(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							 gboolean vibrato_enabled);
 
 gdouble ags_fluid_interpolate_none_util_get_vibrato_gain(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 void ags_fluid_interpolate_none_util_set_vibrato_gain(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,

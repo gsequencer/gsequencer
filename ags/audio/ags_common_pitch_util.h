@@ -97,6 +97,12 @@ void ags_common_pitch_util_set_tuning(gpointer pitch_util,
 				      GType pitch_type,
 				      gdouble tuning);
 
+gboolean ags_common_pitch_util_get_vibrato_enabled(gpointer pitch_util,
+						   GType pitch_type);
+void ags_common_pitch_util_set_vibrato_enabled(gpointer pitch_util,
+					       GType pitch_type,
+					       gboolean vibrato_enabled);
+
 gdouble ags_common_pitch_util_get_vibrato_gain(gpointer pitch_util,
 					       GType pitch_type);
 void ags_common_pitch_util_set_vibrato_gain(gpointer pitch_util,

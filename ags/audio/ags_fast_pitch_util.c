@@ -104,6 +104,8 @@ ags_fast_pitch_util_alloc()
   ptr->base_key = 0.0;
   ptr->tuning = 0.0;
 
+  ptr->vibrato_enabled = TRUE;
+
   ptr->vibrato_gain = 1.0;
   ptr->vibrato_lfo_depth = 0.0;
   ptr->vibrato_lfo_freq = 8.172;
@@ -584,6 +586,46 @@ ags_fast_pitch_util_set_tuning(AgsFastPitchUtil *fast_pitch_util,
   }
 
   fast_pitch_util->tuning = tuning;
+}
+
+/**
+ * ags_fast_pitch_util_get_vibrato_enabled:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get vibrato enabled of @fast_pitch_util.
+ * 
+ * Returns: %TRUE if the vibrato is enabled, otherwise %FALSE
+ * 
+ * Since: 5.2.0
+ */
+gboolean
+ags_fast_pitch_util_get_vibrato_enabled(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(FALSE);
+  }
+
+  return(fast_pitch_util->vibrato_enabled);
+}
+
+/**
+ * ags_fast_pitch_util_set_vibrato_enabled:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @vibrato_enabled: the vibrato enabled
+ *
+ * Set @vibrato_enabled of @fast_pitch_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fast_pitch_util_set_vibrato_enabled(AgsFastPitchUtil *fast_pitch_util,
+					gboolean vibrato_enabled)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->vibrato_enabled = vibrato_enabled;
 }
 
 /**

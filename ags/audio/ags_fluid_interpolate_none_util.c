@@ -102,6 +102,8 @@ ags_fluid_interpolate_none_util_alloc()
 
   ptr->phase_increment = 0.0;
 
+  ptr->vibrato_enabled = TRUE;
+
   ptr->vibrato_gain = 1.0;
   ptr->vibrato_lfo_depth = 0.0;
   ptr->vibrato_lfo_freq = 8.172;
@@ -145,6 +147,8 @@ ags_fluid_interpolate_none_util_copy(AgsFluidInterpolateNoneUtil *ptr)
   new_ptr->tuning = ptr->tuning;
 
   new_ptr->phase_increment = ptr->phase_increment;
+
+  new_ptr->vibrato_enabled = ptr->vibrato_enabled;
 
   new_ptr->vibrato_gain = ptr->vibrato_gain;
   new_ptr->vibrato_lfo_depth = ptr->vibrato_lfo_depth;
@@ -604,6 +608,46 @@ ags_fluid_interpolate_none_util_set_phase_increment(AgsFluidInterpolateNoneUtil 
 }
 
 /**
+ * ags_fluid_interpolate_none_util_get_vibrato_enabled:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * 
+ * Get vibrato enabled of @fluid_interpolate_none_util.
+ * 
+ * Returns: %TRUE if the vibrato is enabled, otherwise %FALSE
+ * 
+ * Since: 5.2.0
+ */
+gboolean
+ags_fluid_interpolate_none_util_get_vibrato_enabled(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util)
+{
+  if(fluid_interpolate_none_util == NULL){
+    return(FALSE);
+  }
+
+  return(fluid_interpolate_none_util->vibrato_enabled);
+}
+
+/**
+ * ags_fluid_interpolate_none_util_set_vibrato_enabled:
+ * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
+ * @vibrato_enabled: the vibrato enabled
+ *
+ * Set @vibrato_enabled of @fluid_interpolate_none_util.
+ *
+ * Since: 5.2.0
+ */
+void
+ags_fluid_interpolate_none_util_set_vibrato_enabled(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							  gboolean vibrato_enabled)
+{
+  if(fluid_interpolate_none_util == NULL){
+    return;
+  }
+
+  fluid_interpolate_none_util->vibrato_enabled = vibrato_enabled;
+}
+
+/**
  * ags_fluid_interpolate_none_util_get_vibrato_gain:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
  * 
@@ -647,9 +691,9 @@ ags_fluid_interpolate_none_util_set_vibrato_gain(AgsFluidInterpolateNoneUtil *fl
  * ags_fluid_interpolate_none_util_get_vibrato_lfo_depth:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
  * 
- * Get vibrato_lfo_depth of @fluid_interpolate_none_util.
+ * Get vibrato LFO depth of @fluid_interpolate_none_util.
  * 
- * Returns: the vibrato_lfo_depth
+ * Returns: the vibrato LFO depth
  * 
  * Since: 5.2.0
  */
@@ -666,7 +710,7 @@ ags_fluid_interpolate_none_util_get_vibrato_lfo_depth(AgsFluidInterpolateNoneUti
 /**
  * ags_fluid_interpolate_none_util_set_vibrato_lfo_depth:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
- * @vibrato_lfo_depth: the vibrato_lfo_depth
+ * @vibrato_lfo_depth: the vibrato LFO depth
  *
  * Set @vibrato_lfo_depth of @fluid_interpolate_none_util.
  *
@@ -687,9 +731,9 @@ ags_fluid_interpolate_none_util_set_vibrato_lfo_depth(AgsFluidInterpolateNoneUti
  * ags_fluid_interpolate_none_util_get_vibrato_lfo_freq:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
  * 
- * Get vibrato_lfo_freq of @fluid_interpolate_none_util.
+ * Get vibrato LFO frequency of @fluid_interpolate_none_util.
  * 
- * Returns: the vibrato_lfo_freq
+ * Returns: the vibrato LFO frequency
  * 
  * Since: 5.2.0
  */
@@ -706,7 +750,7 @@ ags_fluid_interpolate_none_util_get_vibrato_lfo_freq(AgsFluidInterpolateNoneUtil
 /**
  * ags_fluid_interpolate_none_util_set_vibrato_lfo_freq:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
- * @vibrato_lfo_freq: the vibrato_lfo_freq
+ * @vibrato_lfo_freq: the vibrato LFO freq
  *
  * Set @vibrato_lfo_freq of @fluid_interpolate_none_util.
  *
@@ -727,9 +771,9 @@ ags_fluid_interpolate_none_util_set_vibrato_lfo_freq(AgsFluidInterpolateNoneUtil
  * ags_fluid_interpolate_none_util_get_vibrato_tuning:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
  * 
- * Get vibrato_tuning of @fluid_interpolate_none_util.
+ * Get vibrato tuning of @fluid_interpolate_none_util.
  * 
- * Returns: the vibrato_tuning
+ * Returns: the vibrato tuning
  * 
  * Since: 5.2.0
  */
@@ -746,7 +790,7 @@ ags_fluid_interpolate_none_util_get_vibrato_tuning(AgsFluidInterpolateNoneUtil *
 /**
  * ags_fluid_interpolate_none_util_set_vibrato_tuning:
  * @fluid_interpolate_none_util: the #AgsFluidInterpolateNoneUtil-struct
- * @vibrato_tuning: the vibrato_tuning
+ * @vibrato_tuning: the vibrato tuning
  *
  * Set @vibrato_tuning of @fluid_interpolate_none_util.
  *
@@ -815,6 +859,10 @@ ags_fluid_interpolate_none_util_pitch_s8(AgsFluidInterpolateNoneUtil *fluid_inte
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+  
   dsp_phase = 0;
   
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -912,6 +960,10 @@ ags_fluid_interpolate_none_util_pitch_s16(AgsFluidInterpolateNoneUtil *fluid_int
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
   
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1006,6 +1058,10 @@ ags_fluid_interpolate_none_util_pitch_s24(AgsFluidInterpolateNoneUtil *fluid_int
   vibrato_lfo_freq = fluid_interpolate_none_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
   
@@ -1104,6 +1160,10 @@ ags_fluid_interpolate_none_util_pitch_s32(AgsFluidInterpolateNoneUtil *fluid_int
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
   
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1200,6 +1260,10 @@ ags_fluid_interpolate_none_util_pitch_s64(AgsFluidInterpolateNoneUtil *fluid_int
   vibrato_lfo_freq = fluid_interpolate_none_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
   
@@ -1298,6 +1362,10 @@ ags_fluid_interpolate_none_util_pitch_float(AgsFluidInterpolateNoneUtil *fluid_i
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
   
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1395,6 +1463,10 @@ ags_fluid_interpolate_none_util_pitch_double(AgsFluidInterpolateNoneUtil *fluid_
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
 
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
+
   dsp_phase = 0;
   
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1491,6 +1563,10 @@ ags_fluid_interpolate_none_util_pitch_complex(AgsFluidInterpolateNoneUtil *fluid
   vibrato_lfo_freq = fluid_interpolate_none_util->vibrato_lfo_freq;
   vibrato_tuning = fluid_interpolate_none_util->vibrato_tuning;
   vibrato_lfo_offset = fluid_interpolate_none_util->vibrato_lfo_offset;
+
+  if(fluid_interpolate_none_util->vibrato_enabled == FALSE){
+    vibrato_gain = 0.0;
+  }
 
   dsp_phase = 0;
   
