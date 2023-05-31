@@ -24,6 +24,7 @@
 
 #include <ags/i18n.h>
 
+#include <complex.h>
 #include <math.h>
 
 void ags_sfz_synth_open_dialog_response_callback(GtkWidget *widget, gint response,

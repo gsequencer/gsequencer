@@ -2871,7 +2871,7 @@ ags_fx_sfz_synth_audio_get_vibrato_lfo_freq_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      16.0);
+		      10.0);
   }
 
   g_mutex_unlock(&mutex);

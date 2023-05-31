@@ -40,10 +40,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
-    <release version="5.2.0" date="2023-05-30">
+    <release version="5.2.0" date="2023-05-31">
       <description>
 	<p>
-	  Additional effects.
+	  Additional effects for AgsSFZSynth and AgsSF2Synth.
+	</p>
+	<p>
+	  Fixes to AgsLiveLv2Bridge and ags-fx-lv2.
 	</p>
       </description>
     </release>
