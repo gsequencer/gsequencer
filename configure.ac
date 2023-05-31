@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[5.1.6],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[5.2.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -146,6 +146,11 @@ AC_ARG_ENABLE(vst3, [AS_HELP_STRING([--enable-vst3],
                                     [enable vst3 (default is no)])],
               [],
               [enable_vst3=no])
+
+AC_ARG_ENABLE(midi2, [AS_HELP_STRING([--enable-midi2],
+                                     [enable MIDI 2.0 (default is yes)])],
+              [],
+              [enable_midi2=no])
 
 AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
                                      [enable pulse (default is yes)])],
@@ -464,9 +469,13 @@ AS_IF([test "x$enable_introspection" != xno],
 AM_CONDITIONAL([HAVE_INTROSPECTION], [test "x$enable_introspection" == xyes])
 # GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
-PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
+PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
+
+PKG_CHECK_MODULES([JSON], [json-glib-1.0 >= 1.6.0])
+AC_SUBST(JSON_GLIB_CFLAGS)
+AC_SUBST(JSON_GLIB_LIBS)
 
 PKG_CHECK_MODULES([LIBSOUP], [libsoup-3.0 >= 3.0.0])
 AC_SUBST(LIBSOUP_CFLAGS)
@@ -617,6 +626,8 @@ LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_vst3_
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
+
+AM_CONDITIONAL([WITH_MIDI2], [test "x$enable_midi2" == xyes])
 
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,6 +62,13 @@ struct _AgsFxSF2SynthAudio
   AgsPort *synth_pitch_type;
 
   AgsPort *synth_volume;  
+
+  AgsPort *vibrato_enabled;
+
+  AgsPort *vibrato_gain;  
+  AgsPort *vibrato_lfo_depth;
+  AgsPort *vibrato_lfo_freq;
+  AgsPort *vibrato_tuning;
   
   AgsPort *chorus_enabled;
   

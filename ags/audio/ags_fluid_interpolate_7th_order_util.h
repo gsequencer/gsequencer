@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,16 @@ struct _AgsFluidInterpolate7thOrderUtil
   gdouble tuning;
 
   gdouble phase_increment;
+
+  gboolean vibrato_enabled;
+
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
 };
 
 GType ags_fluid_interpolate_7th_order_util_get_type(void);
@@ -99,6 +109,26 @@ void ags_fluid_interpolate_7th_order_util_set_tuning(AgsFluidInterpolate7thOrder
 gdouble ags_fluid_interpolate_7th_order_util_get_phase_increment(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
 void ags_fluid_interpolate_7th_order_util_set_phase_increment(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
 							      gdouble phase_increment);
+
+gboolean ags_fluid_interpolate_7th_order_util_get_vibrato_enabled(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+void ags_fluid_interpolate_7th_order_util_set_vibrato_enabled(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+							      gboolean vibrato_enabled);
+
+gdouble ags_fluid_interpolate_7th_order_util_get_vibrato_gain(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+void ags_fluid_interpolate_7th_order_util_set_vibrato_gain(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+							   gdouble vibrato_gain);
+
+gdouble ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_depth(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+void ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_depth(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+								gdouble vibrato_lfo_depth);
+
+gdouble ags_fluid_interpolate_7th_order_util_get_vibrato_lfo_freq(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+void ags_fluid_interpolate_7th_order_util_set_vibrato_lfo_freq(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+							       gdouble vibrato_lfo_freq);
+
+gdouble ags_fluid_interpolate_7th_order_util_get_vibrato_tuning(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
+void ags_fluid_interpolate_7th_order_util_set_vibrato_tuning(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util,
+							     gdouble vibrato_tuning);
 
 void ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);
 void ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util);

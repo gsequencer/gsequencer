@@ -5368,6 +5368,307 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
       
     xmlFree(str);
   }
+
+  /* ext */
+  str = xmlGetProp(node,
+		   "tremolo-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->tremolo_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->tremolo_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->tremolo_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->tremolo_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->vibrato_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->vibrato_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->vibrato_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->vibrato_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-attack-x");
+
+  if(str != NULL){
+    gdouble attack_x;
+
+    attack_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_attack_x,
+		       attack_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-attack-y");
+
+  if(str != NULL){
+    gdouble attack_y;
+
+    attack_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_attack_y,
+		       attack_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-decay-x");
+
+  if(str != NULL){
+    gdouble decay_x;
+
+    decay_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_decay_x,
+		       decay_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-decay-y");
+
+  if(str != NULL){
+    gdouble decay_y;
+
+    decay_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_decay_y,
+		       decay_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-sustain-x");
+
+  if(str != NULL){
+    gdouble sustain_x;
+
+    sustain_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_sustain_x,
+		       sustain_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-sustain-y");
+
+  if(str != NULL){
+    gdouble sustain_y;
+
+    sustain_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_sustain_y,
+		       sustain_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-release-x");
+
+  if(str != NULL){
+    gdouble release_x;
+
+    release_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_release_x,
+		       release_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-release-y");
+
+  if(str != NULL){
+    gdouble release_y;
+
+    release_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_release_y,
+		       release_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-ratio");
+
+  if(str != NULL){
+    gdouble ratio;
+
+    ratio = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_ratio,
+		       ratio);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sfz_synth->wah_wah_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
   
   if(filename != NULL){
     xmlFree(filename);
@@ -5793,6 +6094,307 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
     ags_dial_set_value(sf2_synth->chorus_delay,
 		       delay);
+      
+    xmlFree(str);
+  }
+
+  /* ext */
+  str = xmlGetProp(node,
+		   "tremolo-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->tremolo_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->tremolo_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->tremolo_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "tremolo-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->tremolo_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-gain");
+
+  if(str != NULL){
+    gdouble gain;
+
+    gain = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->vibrato_gain,
+		       gain);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->vibrato_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->vibrato_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "vibrato-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->vibrato_tuning,
+		       tuning);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-attack-x");
+
+  if(str != NULL){
+    gdouble attack_x;
+
+    attack_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_attack_x,
+		       attack_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-attack-y");
+
+  if(str != NULL){
+    gdouble attack_y;
+
+    attack_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_attack_y,
+		       attack_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-decay-x");
+
+  if(str != NULL){
+    gdouble decay_x;
+
+    decay_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_decay_x,
+		       decay_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-decay-y");
+
+  if(str != NULL){
+    gdouble decay_y;
+
+    decay_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_decay_y,
+		       decay_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-sustain-x");
+
+  if(str != NULL){
+    gdouble sustain_x;
+
+    sustain_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_sustain_x,
+		       sustain_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-sustain-y");
+
+  if(str != NULL){
+    gdouble sustain_y;
+
+    sustain_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_sustain_y,
+		       sustain_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-release-x");
+
+  if(str != NULL){
+    gdouble release_x;
+
+    release_x = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_release_x,
+		       release_x);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-release-y");
+
+  if(str != NULL){
+    gdouble release_y;
+
+    release_y = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_release_y,
+		       release_y);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-ratio");
+
+  if(str != NULL){
+    gdouble ratio;
+
+    ratio = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_ratio,
+		       ratio);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "wah-wah-lfo-depth");
+
+  if(str != NULL){
+    gdouble lfo_depth;
+
+    lfo_depth = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_lfo_depth,
+		       lfo_depth);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-lfo-freq");
+
+  if(str != NULL){
+    gdouble lfo_freq;
+
+    lfo_freq = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_lfo_freq,
+		       lfo_freq);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "wah-wah-tuning");
+
+  if(str != NULL){
+    gdouble tuning;
+
+    tuning = g_ascii_strtod(str,
+			   NULL);
+
+    ags_dial_set_value(sf2_synth->wah_wah_tuning,
+		       tuning);
       
     xmlFree(str);
   }
@@ -13247,6 +13849,187 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);    
+
+    /* ext */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->tremolo_gain));
+    
+    xmlNewProp(node,
+	       "tremolo-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->tremolo_lfo_depth));
+    
+    xmlNewProp(node,
+	       "tremolo-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->tremolo_lfo_freq));
+    
+    xmlNewProp(node,
+	       "tremolo-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->tremolo_tuning));
+    
+    xmlNewProp(node,
+	       "tremolo-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->vibrato_gain));
+    
+    xmlNewProp(node,
+	       "vibrato-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->vibrato_lfo_depth));
+    
+    xmlNewProp(node,
+	       "vibrato-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->vibrato_lfo_freq));
+    
+    xmlNewProp(node,
+	       "vibrato-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->vibrato_tuning));
+    
+    xmlNewProp(node,
+	       "vibrato-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_attack_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-attack-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_attack_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-attack-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_attack_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-decay-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_decay_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-decay-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_sustain_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-sustain-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_sustain_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-sustain-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_release_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-release-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_release_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-release-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_ratio));
+    
+    xmlNewProp(node,
+	       "wah-wah-ratio",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_lfo_depth));
+    
+    xmlNewProp(node,
+	       "wah-wah-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_lfo_freq));
+    
+    xmlNewProp(node,
+	       "wah-wah-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->wah_wah_tuning));
+    
+    xmlNewProp(node,
+	       "wah-wah-tuning",
+	       str);
+
+    g_free(str);    
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;
@@ -13476,6 +14259,187 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "chorus-delay",
+	       str);
+
+    g_free(str);    
+
+    /* ext */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->tremolo_gain));
+    
+    xmlNewProp(node,
+	       "tremolo-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->tremolo_lfo_depth));
+    
+    xmlNewProp(node,
+	       "tremolo-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->tremolo_lfo_freq));
+    
+    xmlNewProp(node,
+	       "tremolo-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->tremolo_tuning));
+    
+    xmlNewProp(node,
+	       "tremolo-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->vibrato_gain));
+    
+    xmlNewProp(node,
+	       "vibrato-gain",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->vibrato_lfo_depth));
+    
+    xmlNewProp(node,
+	       "vibrato-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->vibrato_lfo_freq));
+    
+    xmlNewProp(node,
+	       "vibrato-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->vibrato_tuning));
+    
+    xmlNewProp(node,
+	       "vibrato-tuning",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_attack_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-attack-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_attack_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-attack-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_attack_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-decay-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_decay_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-decay-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_sustain_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-sustain-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_sustain_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-sustain-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_release_x));
+    
+    xmlNewProp(node,
+	       "wah-wah-release-x",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_release_y));
+    
+    xmlNewProp(node,
+	       "wah-wah-release-y",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_ratio));
+    
+    xmlNewProp(node,
+	       "wah-wah-ratio",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_lfo_depth));
+    
+    xmlNewProp(node,
+	       "wah-wah-lfo-depth",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_lfo_freq));
+    
+    xmlNewProp(node,
+	       "wah-wah-lfo-freq",
+	       str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->wah_wah_tuning));
+    
+    xmlNewProp(node,
+	       "wah-wah-tuning",
 	       str);
 
     g_free(str);    

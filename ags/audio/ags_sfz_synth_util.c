@@ -1293,7 +1293,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
   guint buffer_length;
   guint samplerate, orig_samplerate;
   guint current_sample_buffer_length;
-    
+  
   gint midi_key;
   gdouble note;
 
@@ -1338,7 +1338,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
   current_sfz_note_range = NULL;
 
   midi_key = sfz_synth_util->midi_key;
-
+  
   nth_sample = 0;
  
   for(i = 0; i < sfz_synth_util->sfz_sample_count && i < 128; i++){
@@ -1418,7 +1418,7 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -1488,16 +1488,16 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -1732,7 +1732,7 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -1806,16 +1806,16 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -2050,7 +2050,7 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2120,16 +2120,16 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -2364,7 +2364,7 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2442,16 +2442,16 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -2686,7 +2686,7 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -2756,16 +2756,16 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -3000,7 +3000,7 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3070,16 +3070,16 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -3314,7 +3314,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3384,16 +3384,16 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     
@@ -3628,7 +3628,7 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
     current_sample_buffer = sfz_synth_util->sfz_resampled_buffer[nth_sample];
   }
 
-  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length;){
+  for(i = 0, j = 0, position = 0; i < offset + buffer_length && j < buffer_length && j < current_sample_buffer_length;){
     gboolean incr_j;
 
     incr_j = FALSE;
@@ -3698,16 +3698,16 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
     
   ags_common_pitch_util_set_base_key(pitch_util,
 				     pitch_type,
-				     (gdouble) root_note - 21.0);
+				     (gdouble) root_note - 69.0 + 48.0);
   
   ags_common_pitch_util_set_tuning(pitch_util,
 				   pitch_type,
-				   100.0 * ((midi_key + note) - (root_note - 21.0)));
+				   100.0 * (-1.0 * ((double) root_note - 69.0) + ((double) midi_key + note - 69.0)));
 
   ags_audio_buffer_util_clear_buffer(im_buffer, 1,
 				     buffer_length, AGS_AUDIO_BUFFER_UTIL_DOUBLE);      
     
-  if((double) midi_key - 48.0 + note == 0.0){
+  if((double) midi_key + note == (double) root_note){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						    AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     

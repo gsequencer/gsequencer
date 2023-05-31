@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2022 Joel Kraehemann
+#Copyright (C) 2005-2023 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -1343,6 +1343,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_time_stretch_util.h \
 	ags/audio/ags_track.h \
+	ags/audio/ags_tremolo_util.h \
 	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wave.h
 
@@ -1433,6 +1434,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_time_stretch_util.c \
 	ags/audio/ags_track.c \
+	ags/audio/ags_tremolo_util.c \
 	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wave.c
 
@@ -1951,6 +1953,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_volume_channel_processor.h \
 	ags/audio/fx/ags_fx_volume_recycling.h \
 	ags/audio/fx/ags_fx_volume_audio_signal.h \
+	ags/audio/fx/ags_fx_tremolo_audio.h \
+	ags/audio/fx/ags_fx_tremolo_audio_processor.h \
+	ags/audio/fx/ags_fx_tremolo_channel.h \
+	ags/audio/fx/ags_fx_tremolo_channel_processor.h \
+	ags/audio/fx/ags_fx_tremolo_recycling.h \
+	ags/audio/fx/ags_fx_tremolo_audio_signal.h \
 	ags/audio/fx/ags_fx_lfo_audio.h \
 	ags/audio/fx/ags_fx_lfo_audio_processor.h \
 	ags/audio/fx/ags_fx_lfo_channel.h \
@@ -1987,6 +1995,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_envelope_channel_processor.h \
 	ags/audio/fx/ags_fx_envelope_recycling.h \
 	ags/audio/fx/ags_fx_envelope_audio_signal.h \
+	ags/audio/fx/ags_fx_wah_wah_audio.h \
+	ags/audio/fx/ags_fx_wah_wah_audio_processor.h \
+	ags/audio/fx/ags_fx_wah_wah_channel.h \
+	ags/audio/fx/ags_fx_wah_wah_channel_processor.h \
+	ags/audio/fx/ags_fx_wah_wah_recycling.h \
+	ags/audio/fx/ags_fx_wah_wah_audio_signal.h \
 	ags/audio/fx/ags_fx_analyse_audio.h \
 	ags/audio/fx/ags_fx_analyse_audio_processor.h \
 	ags/audio/fx/ags_fx_analyse_channel.h \
@@ -2094,6 +2108,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_volume_channel_processor.c \
 	ags/audio/fx/ags_fx_volume_recycling.c \
 	ags/audio/fx/ags_fx_volume_audio_signal.c \
+	ags/audio/fx/ags_fx_tremolo_audio.c \
+	ags/audio/fx/ags_fx_tremolo_audio_processor.c \
+	ags/audio/fx/ags_fx_tremolo_channel.c \
+	ags/audio/fx/ags_fx_tremolo_channel_processor.c \
+	ags/audio/fx/ags_fx_tremolo_recycling.c \
+	ags/audio/fx/ags_fx_tremolo_audio_signal.c \
 	ags/audio/fx/ags_fx_low_pass_audio.c \
 	ags/audio/fx/ags_fx_low_pass_audio_processor.c \
 	ags/audio/fx/ags_fx_low_pass_channel.c \
@@ -2130,6 +2150,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_envelope_channel_processor.c \
 	ags/audio/fx/ags_fx_envelope_recycling.c \
 	ags/audio/fx/ags_fx_envelope_audio_signal.c \
+	ags/audio/fx/ags_fx_wah_wah_audio.c \
+	ags/audio/fx/ags_fx_wah_wah_audio_processor.c \
+	ags/audio/fx/ags_fx_wah_wah_channel.c \
+	ags/audio/fx/ags_fx_wah_wah_channel_processor.c \
+	ags/audio/fx/ags_fx_wah_wah_recycling.c \
+	ags/audio/fx/ags_fx_wah_wah_audio_signal.c \
 	ags/audio/fx/ags_fx_analyse_audio.c \
 	ags/audio/fx/ags_fx_analyse_audio_processor.c \
 	ags/audio/fx/ags_fx_analyse_channel.c \

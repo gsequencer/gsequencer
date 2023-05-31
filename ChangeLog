@@ -1,3 +1,23 @@
+ags (5.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags-fx-wah-wah
+	* implemented ags-fx-tremolo
+	* implemented ags_tremolo_util.[ch]
+	* extended ags_simple_file.c to persist with new AgsSF2Synth controls
+	* extended ags_simple_file.c to persist with new AgsSFZSynth controls
+	* extended AgsSF2Synth added tremolo, vibrato and wah-wah effect
+	* extended AgsSFZSynth added tremolo, vibrato and wah-wah effect
+	* refactored ags-fx-lv2
+	* refactored ags_fluid_interpolate_none_util.[ch] added vibrato
+	* refactored ags_fluid_interpolate_linear_util.[ch] added vibrato
+	* refactored ags_fluid_interpolate_4th_order_util.[ch] added vibrato
+	* refactored ags_fluid_interpolate_7th_order_util.[ch] added vibrato
+	* refactored ags_fast_pitch_util.[ch] added vibrato
+	* refactored ags_hq_pitch_util.[ch] added vibrato
+	* refactored ags_envelope_util.[ch] added wah-wah
+	* refactored ags_volume_util.[ch] shortened struct access
+
 ags (5.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

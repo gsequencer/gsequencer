@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,6 +96,36 @@ gdouble ags_common_pitch_util_get_tuning(gpointer pitch_util,
 void ags_common_pitch_util_set_tuning(gpointer pitch_util,
 				      GType pitch_type,
 				      gdouble tuning);
+
+gboolean ags_common_pitch_util_get_vibrato_enabled(gpointer pitch_util,
+						   GType pitch_type);
+void ags_common_pitch_util_set_vibrato_enabled(gpointer pitch_util,
+					       GType pitch_type,
+					       gboolean vibrato_enabled);
+
+gdouble ags_common_pitch_util_get_vibrato_gain(gpointer pitch_util,
+					       GType pitch_type);
+void ags_common_pitch_util_set_vibrato_gain(gpointer pitch_util,
+					    GType pitch_type,
+					    gdouble vibrato_gain);
+
+gdouble ags_common_pitch_util_get_vibrato_lfo_depth(gpointer pitch_util,
+						    GType pitch_type);
+void ags_common_pitch_util_set_vibrato_lfo_depth(gpointer pitch_util,
+						 GType pitch_type,
+						 gdouble vibrato_lfo_depth);
+
+gdouble ags_common_pitch_util_get_vibrato_lfo_freq(gpointer pitch_util,
+						   GType pitch_type);
+void ags_common_pitch_util_set_vibrato_lfo_freq(gpointer pitch_util,
+						GType pitch_type,
+						gdouble vibrato_lfo_freq);
+
+gdouble ags_common_pitch_util_get_vibrato_tuning(gpointer pitch_util,
+						 GType pitch_type);
+void ags_common_pitch_util_set_vibrato_tuning(gpointer pitch_util,
+					      GType pitch_type,
+					      gdouble vibrato_tuning);
 
 void ags_common_pitch_util_pitch(gpointer pitch_util,
 				 GType pitch_type);

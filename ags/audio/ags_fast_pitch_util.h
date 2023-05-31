@@ -63,6 +63,16 @@ struct _AgsFastPitchUtil
 
   gdouble base_key;
   gdouble tuning;
+
+  gdouble vibrato_enabled;
+
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
 };
 
 GType ags_fast_pitch_util_get_type(void);
@@ -107,6 +117,26 @@ void ags_fast_pitch_util_set_base_key(AgsFastPitchUtil *fast_pitch_util,
 gdouble ags_fast_pitch_util_get_tuning(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_tuning(AgsFastPitchUtil *fast_pitch_util,
 				    gdouble tuning);
+
+gboolean ags_fast_pitch_util_get_vibrato_enabled(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_vibrato_enabled(AgsFastPitchUtil *fast_pitch_util,
+					     gboolean vibrato_enabled);
+
+gdouble ags_fast_pitch_util_get_vibrato_gain(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_vibrato_gain(AgsFastPitchUtil *fast_pitch_util,
+					  gdouble vibrato_gain);
+
+gdouble ags_fast_pitch_util_get_vibrato_lfo_depth(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_vibrato_lfo_depth(AgsFastPitchUtil *fast_pitch_util,
+					       gdouble vibrato_lfo_depth);
+
+gdouble ags_fast_pitch_util_get_vibrato_lfo_freq(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_vibrato_lfo_freq(AgsFastPitchUtil *fast_pitch_util,
+					      gdouble vibrato_lfo_freq);
+
+gdouble ags_fast_pitch_util_get_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_vibrato_tuning(AgsFastPitchUtil *fast_pitch_util,
+					    gdouble vibrato_tuning);
 
 void ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util);

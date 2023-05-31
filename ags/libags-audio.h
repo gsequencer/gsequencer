@@ -130,6 +130,7 @@
 #include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_volume_util.h>
+#include <ags/audio/ags_tremolo_util.h>
 #include <ags/audio/ags_wave.h>
 
 /* audio thread */
@@ -279,6 +280,12 @@
 #include <ags/audio/fx/ags_fx_envelope_channel.h>
 #include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
 #include <ags/audio/fx/ags_fx_envelope_recycling.h>
+#include <ags/audio/fx/ags_fx_wah_wah_audio.h>
+#include <ags/audio/fx/ags_fx_wah_wah_audio_processor.h>
+#include <ags/audio/fx/ags_fx_wah_wah_audio_signal.h>
+#include <ags/audio/fx/ags_fx_wah_wah_channel.h>
+#include <ags/audio/fx/ags_fx_wah_wah_channel_processor.h>
+#include <ags/audio/fx/ags_fx_wah_wah_recycling.h>
 #include <ags/audio/fx/ags_fx_fm_synth_audio.h>
 #include <ags/audio/fx/ags_fx_fm_synth_audio_processor.h>
 #include <ags/audio/fx/ags_fx_fm_synth_audio_signal.h>
@@ -369,6 +376,12 @@
 #include <ags/audio/fx/ags_fx_volume_channel.h>
 #include <ags/audio/fx/ags_fx_volume_channel_processor.h>
 #include <ags/audio/fx/ags_fx_volume_recycling.h>
+#include <ags/audio/fx/ags_fx_tremolo_audio.h>
+#include <ags/audio/fx/ags_fx_tremolo_audio_processor.h>
+#include <ags/audio/fx/ags_fx_tremolo_audio_signal.h>
+#include <ags/audio/fx/ags_fx_tremolo_channel.h>
+#include <ags/audio/fx/ags_fx_tremolo_channel_processor.h>
+#include <ags/audio/fx/ags_fx_tremolo_recycling.h>
 
 #if defined(AGS_WITH_VST3)
 #include <ags/audio/fx/ags_fx_vst3_audio.h>

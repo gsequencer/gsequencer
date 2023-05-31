@@ -51,6 +51,16 @@ struct _AgsFluidInterpolateLinearUtil
   gdouble tuning;
 
   gdouble phase_increment;
+
+  gboolean vibrato_enabled;
+
+  gdouble vibrato_gain;
+  gdouble vibrato_lfo_depth;
+  gdouble vibrato_lfo_freq;
+  gdouble vibrato_tuning;
+  
+  guint vibrato_lfo_frame_count;
+  guint vibrato_lfo_offset;
 };
 
 GType ags_fluid_interpolate_linear_util_get_type(void);
@@ -99,6 +109,26 @@ void ags_fluid_interpolate_linear_util_set_tuning(AgsFluidInterpolateLinearUtil 
 gdouble ags_fluid_interpolate_linear_util_get_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_set_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 							   gdouble phase_increment);
+
+gboolean ags_fluid_interpolate_linear_util_get_vibrato_enabled(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_vibrato_enabled(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							   gboolean vibrato_enabled);
+
+gdouble ags_fluid_interpolate_linear_util_get_vibrato_gain(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_vibrato_gain(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							gdouble vibrato_gain);
+
+gdouble ags_fluid_interpolate_linear_util_get_vibrato_lfo_depth(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_vibrato_lfo_depth(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							     gdouble vibrato_lfo_depth);
+
+gdouble ags_fluid_interpolate_linear_util_get_vibrato_lfo_freq(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_vibrato_lfo_freq(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							    gdouble vibrato_lfo_freq);
+
+gdouble ags_fluid_interpolate_linear_util_get_vibrato_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_vibrato_tuning(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							  gdouble vibrato_tuning);
 
 void ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);

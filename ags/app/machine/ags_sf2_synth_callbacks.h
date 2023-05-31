@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2023 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,26 @@ void ags_sf2_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, Ags
 void ags_sf2_synth_chorus_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_chorus_mix_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_chorus_delay_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_tremolo_gain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_tremolo_lfo_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_tremolo_lfo_freq_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_tremolo_tuning_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_vibrato_gain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_vibrato_lfo_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_vibrato_lfo_freq_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_vibrato_tuning_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_wah_wah_attack_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_wah_wah_decay_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_wah_wah_sustain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_wah_wah_release_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_wah_wah_ratio_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_wah_wah_lfo_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_wah_wah_lfo_freq_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_wah_wah_tuning_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
 G_END_DECLS
 

@@ -227,6 +227,10 @@ INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
 INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
 JACK_CFLAGS = @JACK_CFLAGS@
 JACK_LIBS = @JACK_LIBS@
+JSON_CFLAGS = @JSON_CFLAGS@
+JSON_GLIB_CFLAGS = @JSON_GLIB_CFLAGS@
+JSON_GLIB_LIBS = @JSON_GLIB_LIBS@
+JSON_LIBS = @JSON_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBAGS_API_DIR = @LIBAGS_API_DIR@
@@ -451,9 +455,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign m4/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu m4/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign m4/Makefile
+	  $(AUTOMAKE) --gnu m4/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

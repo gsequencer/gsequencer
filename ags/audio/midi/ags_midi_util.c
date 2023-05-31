@@ -87,6 +87,8 @@ ags_midi_util_is_key_on(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+
   retval = ((0xf0 & buffer[0]) == 0x90) ? TRUE: FALSE;
 
   return(retval);
@@ -105,6 +107,8 @@ ags_midi_util_is_key_off(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+  
   retval = ((0xf0 & buffer[0]) == 0x80) ? TRUE: FALSE;
 
   return(retval);
@@ -122,6 +126,8 @@ gboolean
 ags_midi_util_is_key_pressure(guchar *buffer)
 {
   gboolean retval;
+
+  g_return_val_if_fail(buffer == NULL, FALSE);
 
   retval = ((0xf0 & buffer[0]) == 0xa0) ? TRUE: FALSE;
 
@@ -141,6 +147,8 @@ ags_midi_util_is_change_parameter(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+
   retval = ((0xf0 & buffer[0]) == 0xb0) ? TRUE: FALSE;
 
   return(retval);
@@ -158,6 +166,8 @@ gboolean
 ags_midi_util_is_pitch_bend(guchar *buffer)
 {
   gboolean retval;
+
+  g_return_val_if_fail(buffer == NULL, FALSE);
 
   retval = ((0xf0 & buffer[0]) == 0xe0) ? TRUE: FALSE;
 
@@ -177,6 +187,8 @@ ags_midi_util_is_change_program(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+
   retval = ((0xf0 & buffer[0]) == 0xc0) ? TRUE: FALSE;
 
   return(retval);
@@ -194,6 +206,8 @@ gboolean
 ags_midi_util_is_change_pressure(guchar *buffer)
 {
   gboolean retval;
+
+  g_return_val_if_fail(buffer == NULL, FALSE);
 
   retval = ((0xf0 & buffer[0]) == 0xd0) ? TRUE: FALSE;
 
@@ -213,6 +227,8 @@ ags_midi_util_is_sysex(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+
   retval = ((0xff & buffer[0]) == 0xf0) ? TRUE: FALSE;
 
   return(retval);
@@ -230,6 +246,8 @@ gboolean
 ags_midi_util_is_quarter_frame(guchar *buffer)
 {
   gboolean retval;
+
+  g_return_val_if_fail(buffer == NULL, FALSE);
 
   retval = ((0xff & buffer[0]) == 0xf1) ? TRUE: FALSE;
 
@@ -249,6 +267,8 @@ ags_midi_util_is_song_position(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+
   retval = ((0xff & buffer[0]) == 0xf2) ? TRUE: FALSE;
 
   return(retval);
@@ -266,6 +286,8 @@ gboolean
 ags_midi_util_is_song_select(guchar *buffer)
 {
   gboolean retval;
+
+  g_return_val_if_fail(buffer == NULL, FALSE);
 
   retval = ((0xff & buffer[0]) == 0xf3) ? TRUE: FALSE;
 
@@ -285,6 +307,8 @@ ags_midi_util_is_tune_request(guchar *buffer)
 {
   gboolean retval;
 
+  g_return_val_if_fail(buffer == NULL, FALSE);
+
   retval = ((0xff & buffer[0]) == 0xf6) ? TRUE: FALSE;
 
   return(retval);
@@ -302,6 +326,8 @@ gboolean
 ags_midi_util_is_meta_event(guchar *buffer)
 {
   gboolean retval;
+
+  g_return_val_if_fail(buffer == NULL, FALSE);
 
   retval = ((0xff & buffer[0]) == 0xff) ? TRUE: FALSE;
   
